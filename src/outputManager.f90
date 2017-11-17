@@ -581,6 +581,7 @@ contains
                 call ncClose(netcdfVars(i)%ncid)
             enddo
         end if
+        print*,'Done closing files'
     end subroutine closeNCFiles
 
     !---------------------------------------------------------------------------------------

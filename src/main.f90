@@ -20,29 +20,29 @@ contains
         !!------------------------------------------------------------------
         !! ## Dimension statements.
         !!
-        !!     ### first set of definitions:
-        !!     background variables, and prognostic and diagnostic
-        !!     variables normally provided by and/or used by the gcm.
-        !!      the suffix "rot" refers to variables existing on the
-        !!      mosaic grid on the current latitude circle.  the suffix
-        !!      "gat" refers to the same variables after they have undergone
-        !!      a "gather" operation in which the two mosaic dimensions
-        !!      are collapsed into one.  the suffix "row" refers both to
-        !!      grid-constant input variables. and to grid-averaged
-        !!      diagnostic variables.
+        !!     ### First set of definitions:
+        !!     Background variables, and prognostic and diagnostic
+        !!     variables normally provided by and/or used by the GCM.
+        !!     The suffix "rot" refers to variables existing on the
+        !!     mosaic grid on the current latitude circle.  The suffix
+        !!     "gat" refers to the same variables after they have undergone
+        !!     a "gather" operation in which the two mosaic dimensions
+        !!     are collapsed into one.  The suffix "row" refers both to
+        !!     grid-constant input variables. and to grid-averaged
+        !!     diagnostic variables.
         !!
-        !!      the first dimension element of the "rot" variables
-        !!      refers to the number of grid cells on the current
-        !!      latitude circle.  in this stand-alone version, this
-        !!      number is set to 1, the second dimension
-        !!      element of the "rot" variables refers to the maximum
-        !!      number of tiles in the mosaic.  the first
-        !!      dimension element in the "gat" variables is given by
-        !!      the product of the first two dimension elements in the
-        !!      "rot" variables.
+        !!     The first dimension element of the "rot" variables
+        !!     refers to the number of grid cells on the current
+        !!     latitude circle.  In this stand-alone version, this
+        !!     number is set to 1, the second dimension
+        !!     element of the "rot" variables refers to the maximum
+        !!     number of tiles in the mosaic.  The first
+        !!     dimension element in the "gat" variables is given by
+        !!     the product of the first two dimension elements in the
+        !!     "rot" variables.
         !!
         !!     The majority of CTEM parameters are stored in ctem_params.f90.
-        !!     Also the CTEM variables are stored in modules that we point to
+        !!     Also the CLASS and CTEM variables are stored in modules that we point to
         !!     in this driver. We access the variables and parameters
         !!     through use statements for modules:
 
@@ -57,7 +57,7 @@ contains
         use class_statevars,    only : class_gat,class_rot,resetclassaccum,&
             &                          resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-            &                               ctem_daily_aw,class_annual_aw
+            &                               ctem_daily_aw,class_annual_aw,class_hh_w
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
@@ -392,19 +392,19 @@ contains
         real, pointer, dimension(:,:) :: THRGAT  !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
         real, pointer, dimension(:,:) :: THRAGAT !<Fractional saturation of soil behind the wetting front [ ]
         real, pointer, dimension(:,:) :: ZBTWGAT !<Depth to permeable bottom of soil layer [m]
-        real, pointer, dimension(:,:) :: THLWGAT !<
+        real, pointer, dimension(:,:) :: THLWGAT !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
         real, pointer, dimension(:,:) :: GFLXGAT !<Heat conduction between soil layers \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:) :: HMFGGAT !<Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:) :: HTCGAT  !<Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:) :: QFCGAT  !<Diagnosed vapour flux from transpiration over modelled area \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:,:) :: TBARC  !<
-        real, pointer, dimension(:,:) :: TBARG  !<
-        real, pointer, dimension(:,:) :: TBARCS !<
-        real, pointer, dimension(:,:) :: TBARGS !<
-        real, pointer, dimension(:,:) :: THLIQC !<
-        real, pointer, dimension(:,:) :: THLIQG !<
-        real, pointer, dimension(:,:) :: THICEC !<
-        real, pointer, dimension(:,:) :: THICEG !<
+        real, pointer, dimension(:,:) :: TBARC  !< Temperature of soil layers for ground under canopy subarea [K]
+        real, pointer, dimension(:,:) :: TBARG  !< Temperature of soil layers for bareground subarea [K]
+        real, pointer, dimension(:,:) :: TBARCS !< Temperature of soil layers for snow-covered ground under canopy subarea [K]
+        real, pointer, dimension(:,:) :: TBARGS !< Temperature of soil layers for bareground subarea [K]
+        real, pointer, dimension(:,:) :: THLIQC !<Volumetric liquid water content of soil layers for ground under canopy subarea \f$[m^3 m^{-3} ]\f$
+        real, pointer, dimension(:,:) :: THLIQG !<Volumetric liquid water content of soil layers for bareground subarea \f$[m^3 m^{-3} ]\f$
+        real, pointer, dimension(:,:) :: THICEC !<Volumetric ice content of soil layers for ground under canopy subarea \f$[m^3 m^{-3} ]\f$
+        real, pointer, dimension(:,:) :: THICEG !<Volumetric ice content of soil layers for bareground subarea \f$[m^3 m^{-3} ]\f$
         real, pointer, dimension(:,:) :: FROOT  !<
         real, pointer, dimension(:,:) :: HCPC   !<
         real, pointer, dimension(:,:) :: HCPG   !<
@@ -459,33 +459,33 @@ contains
 
         ! These will be allocated the dimension: 'nlat'
 
-        real, pointer, dimension(:) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
-        real, pointer, dimension(:) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
-        real, pointer, dimension(:) :: EVAPACC !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: FLINACC !<Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:) :: FLUTACC !<Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:) :: FSINACC !<Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:) :: GROACC  !<Vegetation growth index [ ]
-        real, pointer, dimension(:) :: GTACC   !<Diagnosed effective surface black-body temperature [K]
-        real, pointer, dimension(:) :: HFSACC  !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:) :: HMFNACC !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:) :: OVRACC  !<Overland flow from top of soil column \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: PREACC  !<Surface precipitation rate \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: PRESACC !<Surface air pressure [Pa]
-        real, pointer, dimension(:) :: QAACC   !<Specific humidity at reference height \f$[kg kg^{-1} ]\f$
-        real, pointer, dimension(:) :: QEVPACC !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
-        real, pointer, dimension(:) :: RCANACC !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: RHOSACC !<Density of snow \f$[kg m^{-3} ]\f$
-        real, pointer, dimension(:) :: ROFACC  !<Total runoff from soil \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: SCANACC !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: SNOACC  !<Mass of snow pack \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: TAACC   !<Air temperature at reference height [K]
-        real, pointer, dimension(:) :: TCANACC !<Vegetation canopy temperature [K]
-        real, pointer, dimension(:) :: TSNOACC !<Snowpack temperature [K]
-        real, pointer, dimension(:) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
-        real, pointer, dimension(:) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
-        real, pointer, dimension(:) :: WTBLACC !<Depth of water table in soil [m]
-        real, pointer, dimension(:) :: ALTOTACC!<Broadband albedo [-]
+        !real, pointer, dimension(:) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
+!         real, pointer, dimension(:) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
+!         real, pointer, dimension(:) :: EVAPACC !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: FLINACC !<Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: FLUTACC !<Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: FSINACC !<Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: GROACC  !<Vegetation growth index [ ]
+!         real, pointer, dimension(:) :: GTACC   !<Diagnosed effective surface black-body temperature [K]
+!         real, pointer, dimension(:) :: HFSACC  !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: HMFNACC !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: OVRACC  !<Overland flow from top of soil column \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: PREACC  !<Surface precipitation rate \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: PRESACC !<Surface air pressure [Pa]
+!         real, pointer, dimension(:) :: QAACC   !<Specific humidity at reference height \f$[kg kg^{-1} ]\f$
+!         real, pointer, dimension(:) :: QEVPACC !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: RCANACC !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: RHOSACC !<Density of snow \f$[kg m^{-3} ]\f$
+!         real, pointer, dimension(:) :: ROFACC  !<Total runoff from soil \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: SCANACC !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: SNOACC  !<Mass of snow pack \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: TAACC   !<Air temperature at reference height [K]
+!         real, pointer, dimension(:) :: TCANACC !<Vegetation canopy temperature [K]
+!         real, pointer, dimension(:) :: TSNOACC !<Snowpack temperature [K]
+!         real, pointer, dimension(:) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
+!         real, pointer, dimension(:) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: WTBLACC !<Depth of water table in soil [m]
+        !real, pointer, dimension(:) :: ALTOTACC!<Broadband albedo [-]
         real, pointer, dimension(:) :: CANARE  !<
         real, pointer, dimension(:) :: SNOARE  !<
         real, pointer, dimension(:) :: CSZROW  !<
@@ -531,65 +531,65 @@ contains
         real, pointer, dimension(:) :: FLGROL  !<
         real, pointer, dimension(:) :: GUSTROL !<
         real, pointer, dimension(:) :: DEPBROW !<
-        real, pointer, dimension(:) :: ALIRROW !<
-        real, pointer, dimension(:) :: ALVSROW !<
-        real, pointer, dimension(:) :: CDHROW  !<
-        real, pointer, dimension(:) :: CDMROW  !<
-        real, pointer, dimension(:) :: DRROW   !<
-        real, pointer, dimension(:) :: EFROW   !<
-        real, pointer, dimension(:) :: FLGGROW !<
-        real, pointer, dimension(:) :: FLGSROW !<
-        real, pointer, dimension(:) :: FLGVROW !<
-        real, pointer, dimension(:) :: FSGGROW !<
-        real, pointer, dimension(:) :: FSGSROW !<
-        real, pointer, dimension(:) :: FSGVROW !<
-        real, pointer, dimension(:) :: FSNOROW !<
-        real, pointer, dimension(:) :: GAROW   !<
-        real, pointer, dimension(:) :: GTROW   !<
-        real, pointer, dimension(:) :: HBLROW  !<
-        real, pointer, dimension(:) :: HEVCROW !<
-        real, pointer, dimension(:) :: HEVGROW !<
-        real, pointer, dimension(:) :: HEVSROW !<
-        real, pointer, dimension(:) :: HFSROW  !<
-        real, pointer, dimension(:) :: HFSCROW !<
-        real, pointer, dimension(:) :: HFSGROW !<
-        real, pointer, dimension(:) :: HFSSROW !<
-        real, pointer, dimension(:) :: HMFCROW !<
-        real, pointer, dimension(:) :: HMFNROW !<
-        real, pointer, dimension(:) :: HTCCROW !<
-        real, pointer, dimension(:) :: HTCSROW !<
-        real, pointer, dimension(:) :: ILMOROW !<
-        real, pointer, dimension(:) :: PCFCROW !<
-        real, pointer, dimension(:) :: PCLCROW !<
-        real, pointer, dimension(:) :: PCPGROW !<
-        real, pointer, dimension(:) :: PCPNROW !<
-        real, pointer, dimension(:) :: PETROW  !<
-        real, pointer, dimension(:) :: QEVPROW !<
-        real, pointer, dimension(:) :: QFCFROW !<
-        real, pointer, dimension(:) :: QFCLROW !<
-        real, pointer, dimension(:) :: QFGROW  !<
-        real, pointer, dimension(:) :: QFNROW  !<
-        real, pointer, dimension(:) :: QFSROW  !<
-        real, pointer, dimension(:) :: QFXROW  !<
-        real, pointer, dimension(:) :: QGROW   !<
-        real, pointer, dimension(:) :: ROFROW  !<
-        real, pointer, dimension(:) :: ROFBROW !<
-        real, pointer, dimension(:) :: ROFCROW !<
-        real, pointer, dimension(:) :: ROFNROW !<
-        real, pointer, dimension(:) :: ROFOROW !<
-        real, pointer, dimension(:) :: ROFSROW !<
-        real, pointer, dimension(:) :: ROVGROW !<
-        real, pointer, dimension(:) :: SFCQROW !<
-        real, pointer, dimension(:) :: SFCTROW !<
-        real, pointer, dimension(:) :: SFCUROW !<
-        real, pointer, dimension(:) :: SFCVROW !<
-        real, pointer, dimension(:) :: TFXROW  !<
-        real, pointer, dimension(:) :: UEROW   !<
-        real, pointer, dimension(:) :: WTABROW !<
-        real, pointer, dimension(:) :: WTRCROW !<
-        real, pointer, dimension(:) :: WTRGROW !<
-        real, pointer, dimension(:) :: WTRSROW !<
-        real, pointer, dimension(:) :: SFRHROW !<
+!         real, pointer, dimension(:) :: ALIRROW !<
+!         real, pointer, dimension(:) :: ALVSROW !<
+        !real, pointer, dimension(:) :: CDHROW  !<
+        !real, pointer, dimension(:) :: CDMROW  !<
+!         real, pointer, dimension(:) :: DRROW   !<
+        !real, pointer, dimension(:) :: EFROW   !<
+!         real, pointer, dimension(:) :: FLGGROW !<
+!         real, pointer, dimension(:) :: FLGSROW !<
+!         real, pointer, dimension(:) :: FLGVROW !<
+!         real, pointer, dimension(:) :: FSGGROW !<
+!         real, pointer, dimension(:) :: FSGSROW !<
+!         real, pointer, dimension(:) :: FSGVROW !<
+!         real, pointer, dimension(:) :: FSNOROW !<
+        !real, pointer, dimension(:) :: GAROW   !<
+        !real, pointer, dimension(:) :: GTROW   !<
+!         real, pointer, dimension(:) :: HBLROW  !<
+!         real, pointer, dimension(:) :: HEVCROW !<
+!         real, pointer, dimension(:) :: HEVGROW !<
+!         real, pointer, dimension(:) :: HEVSROW !<
+        !real, pointer, dimension(:) :: HFSROW  !<
+!         real, pointer, dimension(:) :: HFSGROW !<
+!         real, pointer, dimension(:) :: HFSCROW !<
+!         real, pointer, dimension(:) :: HFSSROW !<
+!         real, pointer, dimension(:) :: HMFCROW !<
+!         real, pointer, dimension(:) :: HMFNROW !<
+!         real, pointer, dimension(:) :: HTCCROW !<
+!         real, pointer, dimension(:) :: HTCSROW !<
+!         real, pointer, dimension(:) :: ILMOROW !<
+!         real, pointer, dimension(:) :: PCFCROW !<
+!         real, pointer, dimension(:) :: PCLCROW !<
+!         real, pointer, dimension(:) :: PCPGROW !<
+!         real, pointer, dimension(:) :: PCPNROW !<
+        !real, pointer, dimension(:) :: PETROW  !<
+        !real, pointer, dimension(:) :: QEVPROW !<
+!         real, pointer, dimension(:) :: QFCFROW !<
+!         real, pointer, dimension(:) :: QFCLROW !<
+!         real, pointer, dimension(:) :: QFGROW  !<
+!         real, pointer, dimension(:) :: QFNROW  !<
+        !real, pointer, dimension(:) :: QFSROW  !<
+        !real, pointer, dimension(:) :: QFXROW  !<
+        !real, pointer, dimension(:) :: QGROW   !<
+!         real, pointer, dimension(:) :: ROFROW  !<
+!         real, pointer, dimension(:) :: ROFBROW !<
+!         real, pointer, dimension(:) :: ROFCROW !<
+!         real, pointer, dimension(:) :: ROFNROW !<
+!         real, pointer, dimension(:) :: ROFOROW !<
+!         real, pointer, dimension(:) :: ROFSROW !<
+!         real, pointer, dimension(:) :: ROVGROW !<
+!         real, pointer, dimension(:) :: SFCQROW !<
+!         real, pointer, dimension(:) :: SFCTROW !<
+!         real, pointer, dimension(:) :: SFCUROW !<
+!         real, pointer, dimension(:) :: SFCVROW !<
+        !real, pointer, dimension(:) :: TFXROW  !<
+!         real, pointer, dimension(:) :: UEROW   !<
+        real, pointer, dimension(:) :: WTABROW !<  FLAG make so only one of WTABROW and wtableROW ! JM.
+!         real, pointer, dimension(:) :: WTRCROW !<
+!         real, pointer, dimension(:) :: WTRGROW !<
+!         real, pointer, dimension(:) :: WTRSROW !<
+!         real, pointer, dimension(:) :: SFRHROW !<
         real, pointer, dimension(:) :: wtableROW !<Depth of water table in soil [m]
 
         ! These will be allocated the dimension: 'nlat,nmos'
@@ -761,14 +761,14 @@ contains
 
         ! These will be allocated the dimension: 'nlat,ignd'
 
-        real, pointer, dimension(:,:) :: TBARACC !<Temperature of soil layers [K]
-        real, pointer, dimension(:,:) :: THALACC !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
-        real, pointer, dimension(:,:) :: THICACC !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
-        real, pointer, dimension(:,:) :: THLQACC !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
-        real, pointer, dimension(:,:) :: GFLXROW !<
-        real, pointer, dimension(:,:) :: HMFGROW !<
-        real, pointer, dimension(:,:) :: HTCROW  !<
-        real, pointer, dimension(:,:) :: QFCROW  !<
+        !real, pointer, dimension(:,:) :: TBARACC !<Temperature of soil layers [K]
+        !real, pointer, dimension(:,:) :: THALACC !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
+        !real, pointer, dimension(:,:) :: THICACC !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+        !real, pointer, dimension(:,:) :: THLQACC !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+!         real, pointer, dimension(:,:) :: GFLXROW !<
+! !         real, pointer, dimension(:,:) :: HMFGROW !<
+!         real, pointer, dimension(:,:) :: HTCROW  !<
+!         real, pointer, dimension(:,:) :: QFCROW  !<
 
         ! These will be allocated the dimension: 'nlat,nmos,6,50'
         integer, pointer, dimension(:,:,:,:) :: ITCTROT !<
@@ -793,7 +793,7 @@ contains
         !     * CONSTANTS AND TEMPORARY VARIABLES.
         !
         REAL DAY,DECL,HOUR,COSZ,EVAPSUM,ALTOT,&
-             FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TSURF
+             FSSTAR,FLSTAR,QH,QE,ZSN,TCN,TSN,TPN,GTOUT,TSURF!,BEG,SNOMLT
 
         real :: CUMSNO
         !
@@ -1303,42 +1303,42 @@ contains
         real, pointer, dimension(:,:) :: lambdagat
         real, pointer, dimension(:,:) :: ccgat
         real, pointer, dimension(:,:) :: mmgat
-        integer, pointer, dimension(:) :: altotcntr_d
+!         integer, pointer, dimension(:) :: altotcntr_d
 
         ! Mosaic level:
 
-        real, pointer, dimension(:,:) :: PREACC_M
-        real, pointer, dimension(:,:) :: GTACC_M
-        real, pointer, dimension(:,:) :: QEVPACC_M
-        real, pointer, dimension(:,:) :: HFSACC_M
-        real, pointer, dimension(:,:) :: HMFNACC_M
-        real, pointer, dimension(:,:) :: ROFACC_M
-        real, pointer, dimension(:,:) :: SNOACC_M
-        real, pointer, dimension(:,:) :: OVRACC_M
-        real, pointer, dimension(:,:) :: WTBLACC_M
-        real, pointer, dimension(:,:,:) :: TBARACC_M
-        real, pointer, dimension(:,:,:) :: THLQACC_M
-        real, pointer, dimension(:,:,:) :: THICACC_M
-        real, pointer, dimension(:,:,:) :: THALACC_M
-        real, pointer, dimension(:,:) :: ALVSACC_M
-        real, pointer, dimension(:,:) :: ALIRACC_M
-        real, pointer, dimension(:,:) :: RHOSACC_M
-        real, pointer, dimension(:,:) :: TSNOACC_M
-        real, pointer, dimension(:,:) :: WSNOACC_M
-        real, pointer, dimension(:,:) :: SNOARE_M
-        real, pointer, dimension(:,:) :: TCANACC_M
-        real, pointer, dimension(:,:) :: RCANACC_M
-        real, pointer, dimension(:,:) :: SCANACC_M
-        real, pointer, dimension(:,:) :: GROACC_M
-        real, pointer, dimension(:,:) :: FSINACC_M
-        real, pointer, dimension(:,:) :: FLINACC_M
-        real, pointer, dimension(:,:) :: TAACC_M
-        real, pointer, dimension(:,:) :: UVACC_M
-        real, pointer, dimension(:,:) :: PRESACC_M
-        real, pointer, dimension(:,:) :: QAACC_M
-        real, pointer, dimension(:,:) :: ALTOTACC_M
-        real, pointer, dimension(:,:) :: EVAPACC_M
-        real, pointer, dimension(:,:) :: FLUTACC_M
+!         real, pointer, dimension(:,:) :: PREACC_M
+!         real, pointer, dimension(:,:) :: GTACC_M
+!         real, pointer, dimension(:,:) :: QEVPACC_M
+!         real, pointer, dimension(:,:) :: HFSACC_M
+!         real, pointer, dimension(:,:) :: HMFNACC_M
+!         real, pointer, dimension(:,:) :: ROFACC_M
+!         real, pointer, dimension(:,:) :: SNOACC_M
+!         real, pointer, dimension(:,:) :: OVRACC_M
+!         real, pointer, dimension(:,:) :: WTBLACC_M
+!         real, pointer, dimension(:,:,:) :: TBARACC_M
+!         real, pointer, dimension(:,:,:) :: THLQACC_M
+!         real, pointer, dimension(:,:,:) :: THICACC_M
+!         real, pointer, dimension(:,:,:) :: THALACC_M
+!         real, pointer, dimension(:,:) :: ALVSACC_M
+!         real, pointer, dimension(:,:) :: ALIRACC_M
+!         real, pointer, dimension(:,:) :: RHOSACC_M
+!         real, pointer, dimension(:,:) :: TSNOACC_M
+!         real, pointer, dimension(:,:) :: WSNOACC_M
+!         real, pointer, dimension(:,:) :: SNOARE_M
+!         real, pointer, dimension(:,:) :: TCANACC_M
+!         real, pointer, dimension(:,:) :: RCANACC_M
+!         real, pointer, dimension(:,:) :: SCANACC_M
+!         real, pointer, dimension(:,:) :: GROACC_M
+!         real, pointer, dimension(:,:) :: FSINACC_M
+!         real, pointer, dimension(:,:) :: FLINACC_M
+!         real, pointer, dimension(:,:) :: TAACC_M
+!         real, pointer, dimension(:,:) :: UVACC_M
+!         real, pointer, dimension(:,:) :: PRESACC_M
+!         real, pointer, dimension(:,:) :: QAACC_M
+!         real, pointer, dimension(:,:) :: ALTOTACC_M
+!         real, pointer, dimension(:,:) :: EVAPACC_M
+!         real, pointer, dimension(:,:) :: FLUTACC_M
 
         !      Outputs
 
@@ -1374,81 +1374,81 @@ contains
         !     -----------------------
         !     Grid-averaged variables (denoted with an ending of "_g")
 
-        real, pointer, dimension(:) ::  fsstar_g
-        real, pointer, dimension(:) ::  flstar_g
-        real, pointer, dimension(:) ::  qh_g
-        real, pointer, dimension(:) ::  qe_g
-        real, pointer, dimension(:) ::  snomlt_g
-        real, pointer, dimension(:) ::  beg_g
-        real, pointer, dimension(:) ::  gtout_g
-        real, pointer, dimension(:) ::  tpn_g
-        real, pointer, dimension(:) ::  altot_g
-        real, pointer, dimension(:) ::  tcn_g
-        real, pointer, dimension(:) ::  tsn_g
-        real, pointer, dimension(:) ::  zsn_g
-
-        real, pointer, dimension(:) :: WSNOROT_g
-        real, pointer, dimension(:) :: ROFSROT_g
-        real, pointer, dimension(:) :: SNOROT_g
-        real, pointer, dimension(:) :: RHOSROT_g
-        real, pointer, dimension(:) :: ROFROT_g
-        real, pointer, dimension(:) :: ZPNDROT_g
-        real, pointer, dimension(:) :: RCANROT_g
-        real, pointer, dimension(:) :: SCANROT_g
-        real, pointer, dimension(:) :: TROFROT_g
-        real, pointer, dimension(:) :: TROOROT_g
-        real, pointer, dimension(:) :: TROBROT_g
-        real, pointer, dimension(:) :: ROFOROT_g
-        real, pointer, dimension(:) :: ROFBROT_g
-        real, pointer, dimension(:) :: TROSROT_g
-        real, pointer, dimension(:) :: FSGVROT_g
-        real, pointer, dimension(:) :: FSGSROT_g
-        real, pointer, dimension(:) :: FLGVROT_g
-        real, pointer, dimension(:) :: FLGSROT_g
-        real, pointer, dimension(:) :: HFSCROT_g
-        real, pointer, dimension(:) :: HFSSROT_g
-        real, pointer, dimension(:) :: HEVCROT_g
-        real, pointer, dimension(:) :: HEVSROT_g
-        real, pointer, dimension(:) :: HMFCROT_g
-        real, pointer, dimension(:) :: HMFNROT_g
-        real, pointer, dimension(:) :: HTCSROT_g
-        real, pointer, dimension(:) :: HTCCROT_g
-        real, pointer, dimension(:) :: FSGGROT_g
-        real, pointer, dimension(:) :: FLGGROT_g
-        real, pointer, dimension(:) :: HFSGROT_g
-        real, pointer, dimension(:) :: HEVGROT_g
-        real, pointer, dimension(:) :: CDHROT_g
-        real, pointer, dimension(:) :: CDMROT_g
-        real, pointer, dimension(:) :: SFCUROT_g
-        real, pointer, dimension(:) :: SFCVROT_g
-        real, pointer, dimension(:) :: ACTLYR_g
-        real, pointer, dimension(:) :: FTABLE_g
-        real, pointer, dimension(:) :: fc_g
-        real, pointer, dimension(:) :: fg_g
-        real, pointer, dimension(:) :: fcs_g
-        real, pointer, dimension(:) :: fgs_g
-        real, pointer, dimension(:) :: PCFCROT_g
-        real, pointer, dimension(:) :: PCLCROT_g
-        real, pointer, dimension(:) :: PCPGROT_g
-        real, pointer, dimension(:) :: QFCFROT_g
-        real, pointer, dimension(:) :: QFGROT_g
-        real, pointer, dimension(:,:) :: QFCROT_g
-        real, pointer, dimension(:) :: ROFCROT_g
-        real, pointer, dimension(:) :: ROFNROT_g
-        real, pointer, dimension(:) :: WTRSROT_g
-        real, pointer, dimension(:) :: WTRGROT_g
-        real, pointer, dimension(:) :: PCPNROT_g
-        real, pointer, dimension(:) :: QFCLROT_g
-        real, pointer, dimension(:) :: QFNROT_g
-        real, pointer, dimension(:) :: WTRCROT_g
-        real, pointer, dimension(:,:) :: rmlvegrow_g
-        real, pointer, dimension(:,:) :: anvegrow_g
-        real, pointer, dimension(:,:) :: HMFGROT_g
-        real, pointer, dimension(:,:) :: HTCROT_g
-        real, pointer, dimension(:,:) :: TBARROT_g
-        real, pointer, dimension(:,:) :: THLQROT_g
-        real, pointer, dimension(:,:) :: THICROT_g
-        real, pointer, dimension(:,:) :: GFLXROT_g
+!         real, pointer, dimension(:) ::  fsstar_g
+!         real, pointer, dimension(:) ::  flstar_g
+!         real, pointer, dimension(:) ::  qh_g
+!         real, pointer, dimension(:) ::  qe_g
+!         real, pointer, dimension(:) ::  snomlt_g
+!         real, pointer, dimension(:) ::  beg_g
+!         real, pointer, dimension(:) ::  gtout_g
+!         real, pointer, dimension(:) ::  tpn_g
+!         real, pointer, dimension(:) ::  altot_g
+!         real, pointer, dimension(:) ::  tcn_g
+!         real, pointer, dimension(:) ::  tsn_g
+!         real, pointer, dimension(:) ::  zsn_g
+!
+!         real, pointer, dimension(:) :: WSNOROT_g
+!         real, pointer, dimension(:) :: ROFSROT_g
+!         real, pointer, dimension(:) :: SNOROT_g
+!         real, pointer, dimension(:) :: RHOSROT_g
+!         real, pointer, dimension(:) :: ROFROT_g
+!         real, pointer, dimension(:) :: ZPNDROT_g
+!         real, pointer, dimension(:) :: RCANROT_g
+!         real, pointer, dimension(:) :: SCANROT_g
+!         real, pointer, dimension(:) :: TROFROT_g
+!         real, pointer, dimension(:) :: TROOROT_g
+!         real, pointer, dimension(:) :: TROBROT_g
+!         real, pointer, dimension(:) :: ROFOROT_g
+!         real, pointer, dimension(:) :: ROFBROT_g
+!         real, pointer, dimension(:) :: TROSROT_g
+!         real, pointer, dimension(:) :: FSGVROT_g
+!         real, pointer, dimension(:) :: FSGSROT_g
+!         real, pointer, dimension(:) :: FLGVROT_g
+!         real, pointer, dimension(:) :: FLGSROT_g
+!         real, pointer, dimension(:) :: HFSCROT_g
+!         real, pointer, dimension(:) :: HFSSROT_g
+!         real, pointer, dimension(:) :: HEVCROT_g
+!         real, pointer, dimension(:) :: HEVSROT_g
+!         real, pointer, dimension(:) :: HMFCROT_g
+!         real, pointer, dimension(:) :: HMFNROT_g
+!         real, pointer, dimension(:) :: HTCSROT_g
+!         real, pointer, dimension(:) :: HTCCROT_g
+!         real, pointer, dimension(:) :: FSGGROT_g
+!         real, pointer, dimension(:) :: FLGGROT_g
+!         real, pointer, dimension(:) :: HFSGROT_g
+!         real, pointer, dimension(:) :: HEVGROT_g
+!         real, pointer, dimension(:) :: CDHROT_g
+!         real, pointer, dimension(:) :: CDMROT_g
+!         real, pointer, dimension(:) :: SFCUROT_g
+!         real, pointer, dimension(:) :: SFCVROT_g
+!         real, pointer, dimension(:) :: ACTLYR_g
+!         real, pointer, dimension(:) :: FTABLE_g
+!         real, pointer, dimension(:) :: fc_g
+!         real, pointer, dimension(:) :: fg_g
+!         real, pointer, dimension(:) :: fcs_g
+!         real, pointer, dimension(:) :: fgs_g
+!         real, pointer, dimension(:) :: PCFCROT_g
+!         real, pointer, dimension(:) :: PCLCROT_g
+!         real, pointer, dimension(:) :: PCPGROT_g
+!         real, pointer, dimension(:) :: QFCFROT_g
+!         real, pointer, dimension(:) :: QFGROT_g
+!         real, pointer, dimension(:,:) :: QFCROT_g
+!         real, pointer, dimension(:) :: ROFCROT_g
+!         real, pointer, dimension(:) :: ROFNROT_g
+!         real, pointer, dimension(:) :: WTRSROT_g
+!         real, pointer, dimension(:) :: WTRGROT_g
+!         real, pointer, dimension(:) :: PCPNROT_g
+!         real, pointer, dimension(:) :: QFCLROT_g
+!         real, pointer, dimension(:) :: QFNROT_g
+!         real, pointer, dimension(:) :: WTRCROT_g
+!         real, pointer, dimension(:,:) :: rmlvegrow_g
+!         real, pointer, dimension(:,:) :: anvegrow_g
+!         real, pointer, dimension(:,:) :: HMFGROT_g
+!         real, pointer, dimension(:,:) :: HTCROT_g
+!         real, pointer, dimension(:,:) :: TBARROT_g
+!         real, pointer, dimension(:,:) :: THLQROT_g
+!         real, pointer, dimension(:,:) :: THICROT_g
+!         real, pointer, dimension(:,:) :: GFLXROT_g
 
         ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
@@ -1869,33 +1869,33 @@ contains
         TSFSGAT => class_gat%TSFSGAT
         ITCTGAT => class_gat%ITCTGAT
 
-        ALIRACC => class_rot%ALIRACC
-        ALVSACC => class_rot%ALVSACC
-        EVAPACC => class_rot%EVAPACC
-        FLINACC => class_rot%FLINACC
-        FLUTACC => class_rot%FLUTACC
-        FSINACC => class_rot%FSINACC
-        GROACC => class_rot%GROACC
-        GTACC => class_rot%GTACC
-        HFSACC => class_rot%HFSACC
-        HMFNACC => class_rot%HMFNACC
-        OVRACC => class_rot%OVRACC
-        PREACC => class_rot%PREACC
-        PRESACC => class_rot%PRESACC
-        QAACC => class_rot%QAACC
-        QEVPACC => class_rot%QEVPACC
-        RCANACC => class_rot%RCANACC
-        RHOSACC => class_rot%RHOSACC
-        ROFACC => class_rot%ROFACC
-        SCANACC => class_rot%SCANACC
-        SNOACC => class_rot%SNOACC
-        TAACC => class_rot%TAACC
-        TCANACC => class_rot%TCANACC
-        TSNOACC => class_rot%TSNOACC
-        UVACC => class_rot%UVACC
-        WSNOACC => class_rot%WSNOACC
-        WTBLACC => class_rot%WTBLACC
-        ALTOTACC => class_rot%ALTOTACC
+!         ALIRACC => class_rot%ALIRACC
+!         ALVSACC => class_rot%ALVSACC
+!         EVAPACC => class_rot%EVAPACC
+!         FLINACC => class_rot%FLINACC
+!         FLUTACC => class_rot%FLUTACC
+!         FSINACC => class_rot%FSINACC
+!         GROACC => class_rot%GROACC
+!         GTACC => class_rot%GTACC
+!         HFSACC => class_rot%HFSACC
+!         HMFNACC => class_rot%HMFNACC
+!         OVRACC => class_rot%OVRACC
+!         PREACC => class_rot%PREACC
+!         PRESACC => class_rot%PRESACC
+!         QAACC => class_rot%QAACC
+!         QEVPACC => class_rot%QEVPACC
+!         RCANACC => class_rot%RCANACC
+!         RHOSACC => class_rot%RHOSACC
+!         ROFACC => class_rot%ROFACC
+!         SCANACC => class_rot%SCANACC
+!         SNOACC => class_rot%SNOACC
+!         TAACC => class_rot%TAACC
+!         TCANACC => class_rot%TCANACC
+!         TSNOACC => class_rot%TSNOACC
+!         UVACC => class_rot%UVACC
+!         WSNOACC => class_rot%WSNOACC
+!         WTBLACC => class_rot%WTBLACC
+        !ALTOTACC => class_rot%ALTOTACC
         CANARE => class_rot%CANARE
         SNOARE => class_rot%SNOARE
         CSZROW => class_rot%CSZROW
@@ -1941,66 +1941,66 @@ contains
         FLGROL => class_rot%FLGROL
         GUSTROL => class_rot%GUSTROL
         DEPBROW => class_rot%DEPBROW
-        ALIRROW => class_rot%ALIRROW
-        ALVSROW => class_rot%ALVSROW
-        CDHROW => class_rot%CDHROW
-        CDMROW => class_rot%CDMROW
-        DRROW => class_rot%DRROW
-        EFROW => class_rot%EFROW
-        FLGGROW => class_rot%FLGGROW
-        FLGSROW => class_rot%FLGSROW
-        FLGVROW => class_rot%FLGVROW
-        FSGGROW => class_rot%FSGGROW
-        FSGSROW => class_rot%FSGSROW
-        FSGVROW => class_rot%FSGVROW
-        FSNOROW => class_rot%FSNOROW
-        GAROW => class_rot%GAROW
-        GTROW => class_rot%GTROW
-        HBLROW => class_rot%HBLROW
-        HEVCROW => class_rot%HEVCROW
-        HEVGROW => class_rot%HEVGROW
-        HEVSROW => class_rot%HEVSROW
-        HFSROW => class_rot%HFSROW
-        HFSCROW => class_rot%HFSCROW
-        HFSGROW => class_rot%HFSGROW
-        HFSSROW => class_rot%HFSSROW
-        HMFCROW => class_rot%HMFCROW
-        HMFNROW => class_rot%HMFNROW
-        HTCCROW => class_rot%HTCCROW
-        HTCSROW => class_rot%HTCSROW
-        ILMOROW => class_rot%ILMOROW
-        PCFCROW => class_rot%PCFCROW
-        PCLCROW => class_rot%PCLCROW
-        PCPGROW => class_rot%PCPGROW
-        PCPNROW => class_rot%PCPNROW
-        PETROW => class_rot%PETROW
-        QEVPROW => class_rot%QEVPROW
-        QFCFROW => class_rot%QFCFROW
-        QFCLROW => class_rot%QFCLROW
-        QFGROW => class_rot%QFGROW
-        QFNROW => class_rot%QFNROW
-        QFSROW => class_rot%QFSROW
-        QFXROW => class_rot%QFXROW
-        QGROW => class_rot%QGROW
-        ROFROW => class_rot%ROFROW
-        ROFBROW => class_rot%ROFBROW
-        ROFCROW => class_rot%ROFCROW
-        ROFNROW => class_rot%ROFNROW
-        ROFOROW => class_rot%ROFOROW
-        ROFSROW => class_rot%ROFSROW
-        ROVGROW => class_rot%ROVGROW
-        SFCQROW => class_rot%SFCQROW
-        SFCTROW => class_rot%SFCTROW
-        SFCUROW => class_rot%SFCUROW
-        SFCVROW => class_rot%SFCVROW
-        TFXROW => class_rot%TFXROW
-        UEROW => class_rot%UEROW
-        WTABROW => class_rot%WTABROW
-        WTRCROW => class_rot%WTRCROW
-        WTRGROW => class_rot%WTRGROW
-        WTRSROW => class_rot%WTRSROW
-        SFRHROW => class_rot%SFRHROW
-        wtableROW => class_rot%wtableROW
+        !ALIRROW => class_rot%ALIRROW
+        !ALVSROW => class_rot%ALVSROW
+        !CDHROW => class_rot%CDHROW
+        !CDMROW => class_rot%CDMROW
+!         DRROW => class_rot%DRROW
+        !EFROW => class_rot%EFROW
+!         FLGGROW => class_rot%FLGGROW
+!         FLGSROW => class_rot%FLGSROW
+!         FLGVROW => class_rot%FLGVROW
+!         FSGGROW => class_rot%FSGGROW
+!         FSGSROW => class_rot%FSGSROW
+!         FSGVROW => class_rot%FSGVROW
+!         FSNOROW => class_rot%FSNOROW
+        !GAROW => class_rot%GAROW
+        !GTROW => class_rot%GTROW
+!         HBLROW => class_rot%HBLROW
+!         HEVCROW => class_rot%HEVCROW
+!         HEVGROW => class_rot%HEVGROW
+!         HEVSROW => class_rot%HEVSROW
+        !HFSROW => class_rot%HFSROW
+!         HFSCROW => class_rot%HFSCROW
+!         HFSGROW => class_rot%HFSGROW
+!         HFSSROW => class_rot%HFSSROW
+!         HMFCROW => class_rot%HMFCROW
+!         HMFNROW => class_rot%HMFNROW
+!         HTCCROW => class_rot%HTCCROW
+!         HTCSROW => class_rot%HTCSROW
+!         ILMOROW => class_rot%ILMOROW
+!         PCFCROW => class_rot%PCFCROW
+!         PCLCROW => class_rot%PCLCROW
+!         PCPGROW => class_rot%PCPGROW
+!         PCPNROW => class_rot%PCPNROW
+        !PETROW => class_rot%PETROW
+        !QEVPROW => class_rot%QEVPROW
+!         QFCFROW => class_rot%QFCFROW
+!         QFCLROW => class_rot%QFCLROW
+!         QFGROW => class_rot%QFGROW
+!         QFNROW => class_rot%QFNROW
+        !QFSROW => class_rot%QFSROW
+        !QFXROW => class_rot%QFXROW
+        !QGROW => class_rot%QGROW
+!         ROFROW => class_rot%ROFROW
+!         ROFBROW => class_rot%ROFBROW
+!         ROFCROW => class_rot%ROFCROW
+!         ROFNROW => class_rot%ROFNROW
+!         ROFOROW => class_rot%ROFOROW
+!         ROFSROW => class_rot%ROFSROW
+!         ROVGROW => class_rot%ROVGROW
+!         SFCQROW => class_rot%SFCQROW
+!         SFCTROW => class_rot%SFCTROW
+!         SFCUROW => class_rot%SFCUROW
+!         SFCVROW => class_rot%SFCVROW
+        !TFXROW => class_rot%TFXROW
+!         UEROW => class_rot%UEROW
+        WTABROW => class_rot%WTABROW  !FLAG
+!         WTRCROW => class_rot%WTRCROW
+!         WTRGROW => class_rot%WTRGROW
+!         WTRSROW => class_rot%WTRSROW
+!         SFRHROW => class_rot%SFRHROW
+        wtableROW => class_rot%wtableROW  !FLAG
         IGDRROT => class_rot%IGDRROT
         MIDROT => class_rot%MIDROT
         ALBSROT => class_rot%ALBSROT
@@ -2155,14 +2155,14 @@ contains
         FSDBROL => class_rot%FSDBROL
         FSFBROL => class_rot%FSFBROL
         FSSBROL => class_rot%FSSBROL
-        TBARACC => class_rot%TBARACC
-        THALACC => class_rot%THALACC
-        THICACC => class_rot%THICACC
-        THLQACC => class_rot%THLQACC
-        GFLXROW => class_rot%GFLXROW
-        HMFGROW => class_rot%HMFGROW
-        HTCROW => class_rot%HTCROW
-        QFCROW => class_rot%QFCROW
+!         TBARACC => class_rot%TBARACC
+!         THALACC => class_rot%THALACC
+!         THICACC => class_rot%THICACC
+!         THLQACC => class_rot%THLQACC
+!         GFLXROW => class_rot%GFLXROW
+! !         HMFGROW => class_rot%HMFGROW
+!         HTCROW => class_rot%HTCROW
+!         QFCROW => class_rot%QFCROW
         ITCTROT => class_rot%ITCTROT
         TSFSROT => class_rot%TSFSROT
 
@@ -2630,117 +2630,117 @@ contains
 
         ! Mosaic-level (CLASS vars):
 
-        PREACC_M          => class_rot%PREACC_M
-        GTACC_M           => class_rot%GTACC_M
-        QEVPACC_M         => class_rot%QEVPACC_M
-        HFSACC_M          => class_rot%HFSACC_M
-        HMFNACC_M         => class_rot%HMFNACC_M
-        ROFACC_M          => class_rot%ROFACC_M
-        SNOACC_M          => class_rot%SNOACC_M
-        OVRACC_M          => class_rot%OVRACC_M
-        WTBLACC_M         => class_rot%WTBLACC_M
-        TBARACC_M         => class_rot%TBARACC_M
-        THLQACC_M         => class_rot%THLQACC_M
-        THICACC_M         => class_rot%THICACC_M
-        THALACC_M         => class_rot%THALACC_M
-        ALVSACC_M         => class_rot%ALVSACC_M
-        ALIRACC_M         => class_rot%ALIRACC_M
-        RHOSACC_M         => class_rot%RHOSACC_M
-        TSNOACC_M         => class_rot%TSNOACC_M
-        WSNOACC_M         => class_rot%WSNOACC_M
-        SNOARE_M          => class_rot%SNOARE_M
-        TCANACC_M         => class_rot%TCANACC_M
-        RCANACC_M         => class_rot%RCANACC_M
-        SCANACC_M         => class_rot%SCANACC_M
-        GROACC_M          => class_rot%GROACC_M
-        FSINACC_M         => class_rot%FSINACC_M
-        FLINACC_M         => class_rot%FLINACC_M
-        TAACC_M           => class_rot%TAACC_M
-        UVACC_M           => class_rot%UVACC_M
-        PRESACC_M         => class_rot%PRESACC_M
-        QAACC_M           => class_rot%QAACC_M
-        ALTOTACC_M        => class_rot%ALTOTACC_M
-        EVAPACC_M         => class_rot%EVAPACC_M
-        FLUTACC_M         => class_rot%FLUTACC_M
-        altotcntr_d       => class_rot%altotcntr_d
+!         PREACC_M          => class_rot%PREACC_M
+!         GTACC_M           => class_rot%GTACC_M
+!         QEVPACC_M         => class_rot%QEVPACC_M
+!         HFSACC_M          => class_rot%HFSACC_M
+!         HMFNACC_M         => class_rot%HMFNACC_M
+!         ROFACC_M          => class_rot%ROFACC_M
+!         SNOACC_M          => class_rot%SNOACC_M
+!         OVRACC_M          => class_rot%OVRACC_M
+!         WTBLACC_M         => class_rot%WTBLACC_M
+!         TBARACC_M         => class_rot%TBARACC_M
+!         THLQACC_M         => class_rot%THLQACC_M
+!         THICACC_M         => class_rot%THICACC_M
+!         THALACC_M         => class_rot%THALACC_M
+!         ALVSACC_M         => class_rot%ALVSACC_M
+!         ALIRACC_M         => class_rot%ALIRACC_M
+!         RHOSACC_M         => class_rot%RHOSACC_M
+!         TSNOACC_M         => class_rot%TSNOACC_M
+!         WSNOACC_M         => class_rot%WSNOACC_M
+!         SNOARE_M          => class_rot%SNOARE_M
+!         TCANACC_M         => class_rot%TCANACC_M
+!         RCANACC_M         => class_rot%RCANACC_M
+!         SCANACC_M         => class_rot%SCANACC_M
+!         GROACC_M          => class_rot%GROACC_M
+!         FSINACC_M         => class_rot%FSINACC_M
+!         FLINACC_M         => class_rot%FLINACC_M
+!         TAACC_M           => class_rot%TAACC_M
+!         UVACC_M           => class_rot%UVACC_M
+!         PRESACC_M         => class_rot%PRESACC_M
+!         QAACC_M           => class_rot%QAACC_M
+!         ALTOTACC_M        => class_rot%ALTOTACC_M
+!         EVAPACC_M         => class_rot%EVAPACC_M
+!         FLUTACC_M         => class_rot%FLUTACC_M
+!         altotcntr_d       => class_rot%altotcntr_d
 
         ! grid-averaged (CLASS vars)
 
-        WSNOROT_g         => ctem_grd%WSNOROT_g
-        ROFSROT_g         => ctem_grd%ROFSROT_g
-        SNOROT_g          => ctem_grd%SNOROT_g
-        RHOSROT_g         => ctem_grd%RHOSROT_g
-        ROFROT_g          => ctem_grd%ROFROT_g
-        ZPNDROT_g         => ctem_grd%ZPNDROT_g
-        RCANROT_g         => ctem_grd%RCANROT_g
-        SCANROT_g         => ctem_grd%SCANROT_g
-        TROFROT_g         => ctem_grd%TROFROT_g
-        TROOROT_g         => ctem_grd%TROOROT_g
-        TROBROT_g         => ctem_grd%TROBROT_g
-        ROFOROT_g         => ctem_grd%ROFOROT_g
-        ROFBROT_g         => ctem_grd%ROFBROT_g
-        TROSROT_g         => ctem_grd%TROSROT_g
-        FSGVROT_g         => ctem_grd%FSGVROT_g
-        FSGSROT_g         => ctem_grd%FSGSROT_g
-        FLGVROT_g         => ctem_grd%FLGVROT_g
-        FLGSROT_g         => ctem_grd%FLGSROT_g
-        HFSCROT_g         => ctem_grd%HFSCROT_g
-        HFSSROT_g         => ctem_grd%HFSSROT_g
-        HEVCROT_g         => ctem_grd%HEVCROT_g
-        HEVSROT_g         => ctem_grd%HEVSROT_g
-        HMFCROT_g         => ctem_grd%HMFCROT_g
-        HMFNROT_g         => ctem_grd%HMFNROT_g
-        HTCSROT_g         => ctem_grd%HTCSROT_g
-        HTCCROT_g         => ctem_grd%HTCCROT_g
-        FSGGROT_g         => ctem_grd%FSGGROT_g
-        FLGGROT_g         => ctem_grd%FLGGROT_g
-        HFSGROT_g         => ctem_grd%HFSGROT_g
-        HEVGROT_g         => ctem_grd%HEVGROT_g
-        CDHROT_g          => ctem_grd%CDHROT_g
-        CDMROT_g          => ctem_grd%CDMROT_g
-        SFCUROT_g         => ctem_grd%SFCUROT_g
-        SFCVROT_g         => ctem_grd%SFCVROT_g
-        ACTLYR_g          => ctem_grd%ACTLYR_g
-        FTABLE_g          => ctem_grd%FTABLE_g
-        fc_g              => ctem_grd%fc_g
-        fg_g              => ctem_grd%fg_g
-        fcs_g             => ctem_grd%fcs_g
-        fgs_g             => ctem_grd%fgs_g
-        PCFCROT_g         => ctem_grd%PCFCROT_g
-        PCLCROT_g         => ctem_grd%PCLCROT_g
-        PCPGROT_g         => ctem_grd%PCPGROT_g
-        QFCFROT_g         => ctem_grd%QFCFROT_g
-        QFGROT_g          => ctem_grd%QFGROT_g
-        QFCROT_g          => ctem_grd%QFCROT_g
-        ROFCROT_g         => ctem_grd%ROFCROT_g
-        ROFNROT_g         => ctem_grd%ROFNROT_g
-        WTRSROT_g         => ctem_grd%WTRSROT_g
-        WTRGROT_g         => ctem_grd%WTRGROT_g
-        PCPNROT_g         => ctem_grd%PCPNROT_g
-        QFCLROT_g         => ctem_grd%QFCLROT_g
-        QFNROT_g          => ctem_grd%QFNROT_g
-        WTRCROT_g         => ctem_grd%WTRCROT_g
-        rmlvegrow_g       => ctem_grd%rmlvegrow_g
-        anvegrow_g        => ctem_grd%anvegrow_g
-        HMFGROT_g         => ctem_grd%HMFGROT_g
-        HTCROT_g          => ctem_grd%HTCROT_g
-        TBARROT_g         => ctem_grd%TBARROT_g
-        THLQROT_g         => ctem_grd%THLQROT_g
-        THICROT_g         => ctem_grd%THICROT_g
-        GFLXROT_g         => ctem_grd%GFLXROT_g
-
-        fsstar_g         => ctem_grd%fsstar_g
-        flstar_g         => ctem_grd%flstar_g
-        qh_g             => ctem_grd%qh_g
-        qe_g             => ctem_grd%qe_g
-        snomlt_g         => ctem_grd%snomlt_g
-        beg_g            => ctem_grd%beg_g
-        gtout_g          => ctem_grd%gtout_g
-        tpn_g            => ctem_grd%tpn_g
-        altot_g          => ctem_grd%altot_g
-        tcn_g            => ctem_grd%tcn_g
-        tsn_g            => ctem_grd%tsn_g
-        zsn_g            => ctem_grd%zsn_g
+!         WSNOROT_g         => ctem_grd%WSNOROT_g
+!         ROFSROT_g         => ctem_grd%ROFSROT_g
+!         SNOROT_g          => ctem_grd%SNOROT_g
+!         RHOSROT_g         => ctem_grd%RHOSROT_g
+!         ROFROT_g          => ctem_grd%ROFROT_g
+!         ZPNDROT_g         => ctem_grd%ZPNDROT_g
+!         RCANROT_g         => ctem_grd%RCANROT_g
+!         SCANROT_g         => ctem_grd%SCANROT_g
+!         TROFROT_g         => ctem_grd%TROFROT_g
+!         TROOROT_g         => ctem_grd%TROOROT_g
+!         TROBROT_g         => ctem_grd%TROBROT_g
+!         ROFOROT_g         => ctem_grd%ROFOROT_g
+!         ROFBROT_g         => ctem_grd%ROFBROT_g
+!         TROSROT_g         => ctem_grd%TROSROT_g
+!         FSGVROT_g         => ctem_grd%FSGVROT_g
+!         FSGSROT_g         => ctem_grd%FSGSROT_g
+!         FLGVROT_g         => ctem_grd%FLGVROT_g
+!         FLGSROT_g         => ctem_grd%FLGSROT_g
+!         HFSCROT_g         => ctem_grd%HFSCROT_g
+!         HFSSROT_g         => ctem_grd%HFSSROT_g
+!         HEVCROT_g         => ctem_grd%HEVCROT_g
+!         HEVSROT_g         => ctem_grd%HEVSROT_g
+!         HMFCROT_g         => ctem_grd%HMFCROT_g
+!         HMFNROT_g         => ctem_grd%HMFNROT_g
+!         HTCSROT_g         => ctem_grd%HTCSROT_g
+!         HTCCROT_g         => ctem_grd%HTCCROT_g
+!         FSGGROT_g         => ctem_grd%FSGGROT_g
+!         FLGGROT_g         => ctem_grd%FLGGROT_g
+!         HFSGROT_g         => ctem_grd%HFSGROT_g
+!         HEVGROT_g         => ctem_grd%HEVGROT_g
+!         CDHROT_g          => ctem_grd%CDHROT_g
+!         CDMROT_g          => ctem_grd%CDMROT_g
+!         SFCUROT_g         => ctem_grd%SFCUROT_g
+!         SFCVROT_g         => ctem_grd%SFCVROT_g
+!         ACTLYR_g          => ctem_grd%ACTLYR_g
+!         FTABLE_g          => ctem_grd%FTABLE_g
+!         fc_g              => ctem_grd%fc_g
+!         fg_g              => ctem_grd%fg_g
+!         fcs_g             => ctem_grd%fcs_g
+!         fgs_g             => ctem_grd%fgs_g
+!         PCFCROT_g         => ctem_grd%PCFCROT_g
+!         PCLCROT_g         => ctem_grd%PCLCROT_g
+!         PCPGROT_g         => ctem_grd%PCPGROT_g
+!         QFCFROT_g         => ctem_grd%QFCFROT_g
+!         QFGROT_g          => ctem_grd%QFGROT_g
+!         QFCROT_g          => ctem_grd%QFCROT_g
+!         ROFCROT_g         => ctem_grd%ROFCROT_g
+!         ROFNROT_g         => ctem_grd%ROFNROT_g
+!         WTRSROT_g         => ctem_grd%WTRSROT_g
+!         WTRGROT_g         => ctem_grd%WTRGROT_g
+!         PCPNROT_g         => ctem_grd%PCPNROT_g
+!         QFCLROT_g         => ctem_grd%QFCLROT_g
+!         QFNROT_g          => ctem_grd%QFNROT_g
+!         WTRCROT_g         => ctem_grd%WTRCROT_g
+!         rmlvegrow_g       => ctem_grd%rmlvegrow_g
+!         anvegrow_g        => ctem_grd%anvegrow_g
+!         HMFGROT_g         => ctem_grd%HMFGROT_g
+!         HTCROT_g          => ctem_grd%HTCROT_g
+!         TBARROT_g         => ctem_grd%TBARROT_g
+!         THLQROT_g         => ctem_grd%THLQROT_g
+!         THICROT_g         => ctem_grd%THICROT_g
+!         GFLXROT_g         => ctem_grd%GFLXROT_g
+!
+!         fsstar_g         => ctem_grd%fsstar_g
+!         flstar_g         => ctem_grd%flstar_g
+!         qh_g             => ctem_grd%qh_g
+!         qe_g             => ctem_grd%qe_g
+!         snomlt_g         => ctem_grd%snomlt_g
+!         beg_g            => ctem_grd%beg_g
+!         gtout_g          => ctem_grd%gtout_g
+!         tpn_g            => ctem_grd%tpn_g
+!         altot_g          => ctem_grd%altot_g
+!         tcn_g            => ctem_grd%tcn_g
+!         tsn_g            => ctem_grd%tsn_g
+!         zsn_g            => ctem_grd%zsn_g
 
         ! mosaic level variables (CLASS):
 
@@ -3891,7 +3891,7 @@ contains
             DO 430 M=1,50
                 DO 420 L=1,6
                     DO 410 K=1,NML
-                        ITCTROT(ILMOS(K),JLMOS(K),L,M)=ITCTGAT(K,L,M)
+                        ITCTROT(ILMOS(K),JLMOS(K),L,M)=ITCTGAT(K,L,M)  !FLAG never used???
 410                 CONTINUE
 420             CONTINUE
 430         CONTINUE
@@ -4053,25 +4053,26 @@ contains
 !6800                                    FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
 !6800  FORMAT(1X,I2,I3,I5,I6,3X,22(F12.4,3X),2(A7,2I2))
 !6900                                    FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))
-            !
-            !  fc,fg,fcs and fgs are one_dimensional in class subroutines
-            !  the transformations here to grid_cell mean fc_g,fg_g,fcs_g and fgs_g
-            !  are only applicable when nltest=1 (e.g., one grid cell)
-            !
-            do i=1,nltest
-                fc_g(i)=0.0
-                fg_g(i)=0.0
-                fcs_g(i)=0.0
-                fgs_g(i)=0.0
-                do m=1,nmtest
-                    fc_g(i)=fc_g(i)+fc(m)
-                    fg_g(i)=fg_g(i)+fg(m)
-                    fcs_g(i)=fcs_g(i)+fcs(m)
-                    fgs_g(i)=fgs_g(i)+fgs(m)
-                enddo
-            enddo
+!             !
+!             !  fc,fg,fcs and fgs are one_dimensional in class subroutines
+!             !  the transformations here to grid_cell mean fc_g,fg_g,fcs_g and fgs_g
+!             !  are only applicable when nltest=1 (e.g., one grid cell)
+!             !
+!             do i=1,nltest
+!                 fc_g(i)=0.0
+!                 fg_g(i)=0.0
+!                 fcs_g(i)=0.0
+!                 fgs_g(i)=0.0
+!                 do m=1,nmtest
+!                     fc_g(i)=fc_g(i)+fc(m)
+!                     fg_g(i)=fg_g(i)+fg(m)
+!                     fcs_g(i)=fcs_g(i)+fcs(m)
+!                     fgs_g(i)=fgs_g(i)+fgs(m)
+!                 enddo
+!             enddo
 
             ! Find the active layer depth and depth to the frozen water table.
+            ! FLAG move to daily calcs.
             ACTLYR=0.0
             FTABLE=0.0
             DO 440 J=1,IGND
@@ -4100,6 +4101,12 @@ contains
                     END DO
                 END DO
 440         CONTINUE
+
+            !if (dohhoutput .and. &
+            !    (iday >= jhhstd .and. iday <= jhhendd) .and. &
+            !    (iyear >= jhhsty .and. iyear <= jhhendy)) then &
+            !    call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,iyear,SBC,DELT,TFREZ)
+            !end if
 
 !      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR.
 !     &    (.not. LEAPNOW .AND. IDAY.GE.182 .AND. IDAY.LE.243)) THEN
@@ -4978,6 +4985,8 @@ contains
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
 
+                print*,'done restart write',latitude,longitude
+
 !                 ! check if the model is done running.
 !                 if (cyclemet .and. climiyear .ge. metcycendyr) then
 !
@@ -5069,7 +5078,7 @@ contains
 !         close(12)
 
         ! deallocate arrays used for input files
-        call deallocInput
+        !call deallocInput
         print*,'normal exit',latitude,longitude
         return
 

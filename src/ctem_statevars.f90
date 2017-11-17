@@ -187,30 +187,30 @@ type veg_rot
     logical, allocatable, dimension(:,:,:) :: pftexist  !<logical array indicating pfts exist (t) or not (f)
     integer, allocatable, dimension(:,:,:) :: lfstatus  !<leaf phenology status
     integer, allocatable, dimension(:,:,:) :: pandays   !<days with positive net photosynthesis (an) for use in
-                                                   !<the phenology subroutine
+                                                        !<the phenology subroutine
     real, allocatable, dimension(:,:,:) :: ailcmin      !<
     real, allocatable, dimension(:,:,:) :: ailcmax      !<
     !real, allocatable, dimension(:,:,:) :: dvdfcan      !<
-    real, allocatable, dimension(:,:,:) :: gleafmas     !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: bleafmas     !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: stemmass     !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: rootmass     !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: gleafmas     !<green leaf mass for each of the ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: bleafmas     !<brown leaf mass for each of the ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: stemmass     !<stem mass for each of the ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: rootmass     !<root mass for each of the ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: pstemmass    !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
     real, allocatable, dimension(:,:,:) :: pgleafmass   !<root mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, allocatable, dimension(:,:,:) :: fcancmx      !<max. fractional coverage of ctem's 9 pfts, but this can be
+    real, allocatable, dimension(:,:,:) :: fcancmx      !<max. fractional coverage of ctem's pfts, but this can be
                                                    !<modified by land-use change, and competition between pfts
-    real, allocatable, dimension(:,:,:) :: ailcg        !<green lai for ctem's 9 pfts
-    real, allocatable, dimension(:,:,:) :: ailcgs       !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
-    real, allocatable, dimension(:,:,:) :: fcancs       !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
-    real, allocatable, dimension(:,:,:) :: fcanc        !<FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
-    real, allocatable, dimension(:,:,:) :: co2i1cg      !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-    real, allocatable, dimension(:,:,:) :: co2i1cs      !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i1cg)
-    real, allocatable, dimension(:,:,:) :: co2i2cg      !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-    real, allocatable, dimension(:,:,:) :: co2i2cs      !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i2cg)
-    real, allocatable, dimension(:,:,:) :: ancsveg      !<net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
-    real, allocatable, dimension(:,:,:) :: ancgveg      !<net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
-    real, allocatable, dimension(:,:,:) :: rmlcsveg     !<leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
-    real, allocatable, dimension(:,:,:) :: rmlcgveg     !<leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
+    real, allocatable, dimension(:,:,:) :: ailcg        !<Green LAI for CTEM's pfts
+    real, allocatable, dimension(:,:,:) :: ailcgs       !<Green LAI for canopy over snow sub-area
+    real, allocatable, dimension(:,:,:) :: fcancs       !<Fraction of canopy over snow for ctem's pfts
+    real, allocatable, dimension(:,:,:) :: fcanc        !<Fractional coverage of carbon pfts, canopy over snow
+    real, allocatable, dimension(:,:,:) :: co2i1cg      !<Intercellular CO2 conc for pfts for canopy over ground subarea (Pa) - for single/sunlit leaf
+    real, allocatable, dimension(:,:,:) :: co2i1cs      !<Same as above but for shaded leaf (above being co2i1cg)
+    real, allocatable, dimension(:,:,:) :: co2i2cg      !<Intercellular CO2 conc for pfts for canopy over snowsubarea (pa) - for single/sunlit leaf
+    real, allocatable, dimension(:,:,:) :: co2i2cs      !<Same as above but for shaded leaf (above being co2i2cg)
+    real, allocatable, dimension(:,:,:) :: ancsveg      !<Net photosynthetic rate for CTEM's pfts for canopy over snow subarea
+    real, allocatable, dimension(:,:,:) :: ancgveg      !<Net photosynthetic rate for CTEM's pfts for canopy over ground subarea
+    real, allocatable, dimension(:,:,:) :: rmlcsveg     !<Leaf respiration rate for CTEM' pfts forcanopy over snow subarea
+    real, allocatable, dimension(:,:,:) :: rmlcgveg     !<Leaf respiration rate for CTEM' pfts forcanopy over ground subarea
     real, allocatable, dimension(:,:,:) :: slai         !<storage/imaginary lai for phenology purposes
     real, allocatable, dimension(:,:,:) :: ailcb        !<brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
     real, allocatable, dimension(:,:,:) :: flhrloss     !<fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$il1
@@ -787,13 +787,13 @@ type ctem_gridavg
       real, allocatable, dimension(:,:) :: rmlvegrow_g!<
       real, allocatable, dimension(:,:) :: anvegrow_g !<
       real, allocatable, dimension(:,:) :: rmatctem_g!<
+
       real, allocatable, dimension(:,:) :: HMFGROT_g !<
       real, allocatable, dimension(:,:) :: HTCROT_g  !<
       real, allocatable, dimension(:,:) :: TBARROT_g !<
       real, allocatable, dimension(:,:) :: THLQROT_g !<
       real, allocatable, dimension(:,:) :: THICROT_g !<
       real, allocatable, dimension(:,:) :: GFLXROT_g !<
-
       real, allocatable, dimension(:) :: fsstar_g !<
       real, allocatable, dimension(:) :: flstar_g !<
       real, allocatable, dimension(:) :: qh_g     !<

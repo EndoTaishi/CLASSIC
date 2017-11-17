@@ -70,10 +70,16 @@ program CLASSIC
     !> Run model over the land grid cells, in parallel or serial
     call processLandCells
 
+#if PARALLEL
+    !> This just ensures that all processors start the next step together.
+    call MPI_BARRIER(MPI_COMM_WORLD, ierr)
+#endif
+
     !> Close all of the output netcdf files and the restart file
     !! (these were written to so need to ensure buffer is flushed)
     !call closeNCFiles
     call closeNCFiles(rsid)
+print*,'after close'
 
 #if PARALLEL
     !> Shut down the MPI session

@@ -16,6 +16,7 @@ public :: resetclassmon
 public :: resetclassyr
 public :: resetclassaccum
 public :: initDiagnosticVars
+public :: initRowVars
 
 !=================================================================================
 !> Physics variables in the 'gather' structure
@@ -174,10 +175,10 @@ type class_gather
     real, allocatable, dimension(:) :: FTEMP   !<
     real, allocatable, dimension(:) :: FVAP    !<
     real, allocatable, dimension(:) :: RIB     !<
-    real, allocatable, dimension(:) :: FC      !<
-    real, allocatable, dimension(:) :: FG      !<
-    real, allocatable, dimension(:) :: FCS     !<
-    real, allocatable, dimension(:) :: FGS     !<
+    real, allocatable, dimension(:) :: FC      !< Subarea fractional coverage of modelled area - ground under canopy [ ]
+    real, allocatable, dimension(:) :: FG      !< Subarea fractional coverage of modelled area - bare ground [ ]
+    real, allocatable, dimension(:) :: FCS     !< Subarea fractional coverage of modelled area - snow-covered ground under canopy  [ ]
+    real, allocatable, dimension(:) :: FGS     !< Subarea fractional coverage of modelled area - snow-covered bare ground [ ]
     real, allocatable, dimension(:) :: RBCOEF  !<
     real, allocatable, dimension(:) :: ZSNOW   !<
     real, allocatable, dimension(:) :: FSVF    !<
@@ -300,7 +301,7 @@ type class_gather
     real, allocatable, dimension(:,:) :: THRGAT  !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:) :: THRAGAT !<Fractional saturation of soil behind the wetting front [ ]
     real, allocatable, dimension(:,:) :: ZBTWGAT !<Depth to permeable bottom of soil layer [m]
-    real, allocatable, dimension(:,:) :: THLWGAT !<
+    real, allocatable, dimension(:,:) :: THLWGAT !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:) :: GFLXGAT !<Heat conduction between soil layers \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:,:) :: HMFGGAT !<Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:,:) :: HTCGAT  !<Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2} ]\f$
@@ -403,36 +404,43 @@ type class_rotated
     real, allocatable, dimension(:) :: CSZROW  !<
     real, allocatable, dimension(:) :: DLONROW !<
     real, allocatable, dimension(:) :: DLATROW !<
-    real, allocatable, dimension(:) :: FCLOROW !<!<Fractional cloud cover [ ]
-    real, allocatable, dimension(:) :: FDLROW  !<
-    real, allocatable, dimension(:) :: FSIHROW !<
-    real, allocatable, dimension(:) :: FSVHROW !<
-    real, allocatable, dimension(:) :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
+    real, allocatable, dimension(:) :: FCLOROW !< Fractional cloud cover [ ]
+    real, allocatable, dimension(:) :: RHOSROW !< Density of snow \f$[kg m^{-3}]\f$
+    real, allocatable, dimension(:) :: FDLROW  !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: FSIHROW !< Near infrared shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: FSVHROW !< Visible shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: GCROW   !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
     real, allocatable, dimension(:) :: GGEOROW !<
     real, allocatable, dimension(:) :: PADRROW !<
-    real, allocatable, dimension(:) :: PREROW  !<
-    real, allocatable, dimension(:) :: PRESROW !<
-    real, allocatable, dimension(:) :: QAROW   !<
+    real, allocatable, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:) :: PRESROW !< Surface air pressure \f$[P_a]\f$
+    real, allocatable, dimension(:) :: QAROW   !< Specific humidity at reference height \f$[kg kg^{-1}]\f$
     real, allocatable, dimension(:) :: RADJROW !<
     real, allocatable, dimension(:) :: RHOAROW !<
     real, allocatable, dimension(:) :: RHSIROW !<
     real, allocatable, dimension(:) :: RPCPROW !<
-    real, allocatable, dimension(:) :: RPREROW !<Rainfall rate over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:) :: RPREROW !< Rainfall rate over modelled area \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: SPCPROW !<
-    real, allocatable, dimension(:) :: SPREROW !<Snowfall rate over modelled area \f$[kg m^{-2} s^{-1} ]\f$
-    real, allocatable, dimension(:) :: TAROW   !<
+    real, allocatable, dimension(:) :: SPREROW !< Snowfall rate over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:) :: TAROW   !< Air temperature at reference height [K]
+    real, allocatable, dimension(:) :: TSNOROW !< Snowpack temperature [K]
+    real, allocatable, dimension(:) :: TCANROW !< Vegetation canopy temperature [K]
+    real, allocatable, dimension(:) :: TPNDROW !< Temperature of ponded water [K]
+    real, allocatable, dimension(:) :: ZPNDROW !< Depth of ponded water [m]
+    real, allocatable, dimension(:) :: SCANROW !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:) :: RCANROW !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: TADPROW !<
     real, allocatable, dimension(:) :: TRPCROW !<
     real, allocatable, dimension(:) :: TSPCROW !<
-    real, allocatable, dimension(:) :: ULROW   !<
-    real, allocatable, dimension(:) :: VLROW   !<
-    real, allocatable, dimension(:) :: VMODROW !<
+    real, allocatable, dimension(:) :: ULROW   !< Zonal component of wind velocity \f$[m s^{-1} ]\f$
+    real, allocatable, dimension(:) :: VLROW   !< Meridional component of wind velocity \f$[m s^{-1} ]\f$
+    real, allocatable, dimension(:) :: VMODROW !< Wind speed at reference height \f$[m s^{-1} ]\f$
     real, allocatable, dimension(:) :: VPDROW  !<
-    real, allocatable, dimension(:) :: ZBLDROW !<
+    real, allocatable, dimension(:) :: ZBLDROW !< Atmospheric blending height for surface roughness length averaging [m]
     real, allocatable, dimension(:) :: ZDHROW  !<
     real, allocatable, dimension(:) :: ZDMROW  !<
-    real, allocatable, dimension(:) :: ZRFHROW !<
-    real, allocatable, dimension(:) :: ZRFMROW !<
+    real, allocatable, dimension(:) :: ZRFHROW !< Reference height associated with forcing air temperature and humidity [m]
+    real, allocatable, dimension(:) :: ZRFMROW !< Reference height associated with forcing wind speed [m]
     real, allocatable, dimension(:) :: UVROW   !<
     real, allocatable, dimension(:) :: XDIFFUS !<
     real, allocatable, dimension(:) :: Z0ORROW !<
@@ -502,6 +510,8 @@ type class_rotated
     real, allocatable, dimension(:) :: WTRGROW !<
     real, allocatable, dimension(:) :: WTRSROW !<
     real, allocatable, dimension(:) :: SFRHROW !<
+    real, allocatable, dimension(:) :: SNOROW  !< Mass of snow pack \f$[kg m^{-2}]\f$
+    real, allocatable, dimension(:) :: WSNOROW !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: wtableROW !<
     integer, allocatable, dimension(:) :: altotcntr_d     !<Used to count the number of time steps with the sun above the horizon
 
@@ -513,17 +523,17 @@ type class_rotated
     real, allocatable, dimension(:,:) :: CMAIROT !<
     real, allocatable, dimension(:,:) :: GROROT  !<
     real, allocatable, dimension(:,:) :: QACROT  !<
-    real, allocatable, dimension(:,:) :: RCANROT !<
-    real, allocatable, dimension(:,:) :: RHOSROT !<
-    real, allocatable, dimension(:,:) :: SCANROT !<
-    real, allocatable, dimension(:,:) :: SNOROT  !<
+    real, allocatable, dimension(:,:) :: RCANROT !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: RHOSROT !< Density of snow \f$[kg m^{-3}]\f$
+    real, allocatable, dimension(:,:) :: SCANROT !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: SNOROT  !< Mass of snow pack \f$[kg m^{-2}]\f$
     real, allocatable, dimension(:,:) :: TACROT  !<
     real, allocatable, dimension(:,:) :: TBASROT !<
-    real, allocatable, dimension(:,:) :: TCANROT !<
-    real, allocatable, dimension(:,:) :: TPNDROT !<
-    real, allocatable, dimension(:,:) :: TSNOROT !<
-    real, allocatable, dimension(:,:) :: WSNOROT !<
-    real, allocatable, dimension(:,:) :: ZPNDROT !<
+    real, allocatable, dimension(:,:) :: TCANROT !< Vegetation canopy temperature [K]
+    real, allocatable, dimension(:,:) :: TPNDROT !< Temperature of ponded water [K]
+    real, allocatable, dimension(:,:) :: TSNOROT !< Snowpack temperature [K]
+    real, allocatable, dimension(:,:) :: WSNOROT !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: ZPNDROT !< Depth of ponded water [m]
     real, allocatable, dimension(:,:) :: REFROT  !<
     real, allocatable, dimension(:,:) :: BCSNROT !<
     real, allocatable, dimension(:,:) :: AGIDROT !<
@@ -616,9 +626,9 @@ type class_rotated
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
     integer, allocatable, dimension(:,:,:) :: ISNDROT !<
-    real, allocatable, dimension(:,:,:) :: TBARROT !<
-    real, allocatable, dimension(:,:,:) :: THICROT !<
-    real, allocatable, dimension(:,:,:) :: THLQROT !<
+    real, allocatable, dimension(:,:,:) :: TBARROT !< Temperature of soil layers [K]
+    real, allocatable, dimension(:,:,:) :: THICROT !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+    real, allocatable, dimension(:,:,:) :: THLQROT !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: BIROT   !<
     real, allocatable, dimension(:,:,:) :: DLZWROT !<
     real, allocatable, dimension(:,:,:) :: GRKSROT !<
@@ -635,7 +645,7 @@ type class_rotated
     real, allocatable, dimension(:,:,:) :: THRROT  !<
     real, allocatable, dimension(:,:,:) :: THRAROT !<
     real, allocatable, dimension(:,:,:) :: ZBTWROT !<
-    real, allocatable, dimension(:,:,:) :: THLWROT !<
+    real, allocatable, dimension(:,:,:) :: THLWROT !< Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: GFLXROT !<
     real, allocatable, dimension(:,:,:) :: HMFGROT !<
     real, allocatable, dimension(:,:,:) :: HTCROT  !<
@@ -682,10 +692,14 @@ type class_rotated
 
     ! These will be allocated the dimension: 'nlat,ignd'
 
-    real, allocatable, dimension(:,:) :: TBARACC !<Temperature of soil layers [K]
-    real, allocatable, dimension(:,:) :: THALACC !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
-    real, allocatable, dimension(:,:) :: THICACC !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
-    real, allocatable, dimension(:,:) :: THLQACC !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+    real, allocatable, dimension(:,:) :: TBARACC !<Temperature of soil layers [K] (accumulated for daily means)
+    real, allocatable, dimension(:,:) :: THALACC !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for daily means)
+    real, allocatable, dimension(:,:) :: THICACC !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for daily means)
+    real, allocatable, dimension(:,:) :: THLQACC !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for daily means)
+    real, allocatable, dimension(:,:) :: TBARROW !<Temperature of soil layers [K]
+    real, allocatable, dimension(:,:) :: THALROW !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
+    real, allocatable, dimension(:,:) :: THICROW !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+    real, allocatable, dimension(:,:) :: THLQROW !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:) :: GFLXROW !<
     real, allocatable, dimension(:,:) :: HMFGROW !<
     real, allocatable, dimension(:,:) :: HTCROW  !<
@@ -1183,6 +1197,7 @@ allocate(class_rot% ALIRACC (nlat),&
          class_rot% DLONROW (nlat),&
          class_rot% DLATROW (nlat),&
          class_rot% FCLOROW (nlat),&
+         class_rot% RHOSROW (nlat),&
          class_rot% FDLROW  (nlat),&
          class_rot% FSIHROW (nlat),&
          class_rot% FSVHROW (nlat),&
@@ -1200,6 +1215,13 @@ allocate(class_rot% ALIRACC (nlat),&
          class_rot% SPCPROW (nlat),&
          class_rot% SPREROW (nlat),&
          class_rot% TAROW   (nlat),&
+         class_rot% TSNOROW (nlat),&
+         class_rot% WSNOROW (nlat),&
+         class_rot% TCANROW (nlat),&
+         class_rot% SCANROW (nlat),&
+         class_rot% RCANROW (nlat),&
+         class_rot% TPNDROW (nlat),&
+         class_rot% ZPNDROW (nlat),&
          class_rot% TADPROW (nlat),&
          class_rot% TRPCROW (nlat),&
          class_rot% TSPCROW (nlat),&
@@ -1281,6 +1303,7 @@ allocate(class_rot% ALIRACC (nlat),&
          class_rot% WTRGROW (nlat),&
          class_rot% WTRSROW (nlat),&
          class_rot% SFRHROW (nlat),&
+         class_rot% SNOROW (nlat),&
          class_rot% wtableROW (nlat),&
          class_rot%altotcntr_d(nlat),&
 
@@ -1542,6 +1565,10 @@ allocate(class_rot% TBARACC (nlat,ignd),&
          class_rot% THALACC (nlat,ignd),&
          class_rot% THICACC (nlat,ignd),&
          class_rot% THLQACC (nlat,ignd),&
+         class_rot% TBARROW (nlat,ignd),&
+         class_rot% THALROW (nlat,ignd),&
+         class_rot% THICROW (nlat,ignd),&
+         class_rot% THLQROW (nlat,ignd),&
          class_rot% GFLXROW (nlat,ignd),&
          class_rot% HMFGROW (nlat,ignd),&
          class_rot% HTCROW  (nlat,ignd),&
@@ -1837,6 +1864,109 @@ subroutine initDiagnosticVars(nml,ilg)
 340                     CONTINUE
 
 end subroutine initDiagnosticVars
+!>@}
+
+!>\ingroup class_statevars_initRowVars
+!!@{
+!> Initialization of diagnostic variables split out of CLASSG for consistency with gcm applications.
+
+subroutine initRowVars(nml)
+
+    use ctem_params, only : ignd
+
+    implicit none
+
+    integer, intent(in) :: nml
+
+    integer :: j,i
+
+    DO 525 I=1,nml
+        class_rot%CDHROW(I)=0.
+        class_rot%CDMROW(I)=0.
+        class_rot%HFSROW(I)=0.
+        class_rot%TFXROW(I)=0.
+        class_rot%QEVPROW(I)=0.
+        class_rot%QFSROW(I)=0.
+        class_rot%QFXROW(I)=0.
+        class_rot%PETROW(I)=0.
+        class_rot%GAROW(I)=0.
+        class_rot%EFROW(I)=0.
+        class_rot%GTROW(I)=0.
+        class_rot%QGROW(I)=0.
+        class_rot%ALVSROW(I)=0.
+        class_rot%ALIRROW(I)=0.
+        class_rot%SFCTROW(I)=0.
+        class_rot%SFCUROW(I)=0.
+        class_rot%SFCVROW(I)=0.
+        class_rot%SFCQROW(I)=0.
+        class_rot%SFRHROW(I)=0.
+        class_rot%SNOROW(I)=0.
+        class_rot%FSNOROW(I)=0.
+        class_rot%FSGVROW(I)=0.
+        class_rot%FSGSROW(I)=0.
+        class_rot%FSGGROW(I)=0.
+        class_rot%FLGVROW(I)=0.
+        class_rot%FLGSROW(I)=0.
+        class_rot%FLGGROW(I)=0.
+        class_rot%HFSCROW(I)=0.
+        class_rot%HFSSROW(I)=0.
+        class_rot%HFSGROW(I)=0.
+        class_rot%HEVCROW(I)=0.
+        class_rot%HEVSROW(I)=0.
+        class_rot%HEVGROW(I)=0.
+        class_rot%HMFCROW(I)=0.
+        class_rot%HMFNROW(I)=0.
+        class_rot%HTCCROW(I)=0.
+        class_rot%HTCSROW(I)=0.
+        class_rot%PCFCROW(I)=0.
+        class_rot%PCLCROW(I)=0.
+        class_rot%PCPNROW(I)=0.
+        class_rot%PCPGROW(I)=0.
+        class_rot%QFGROW(I)=0.
+        class_rot%QFNROW(I)=0.
+        class_rot%QFCLROW(I)=0.
+        class_rot%QFCFROW(I)=0.
+        class_rot%ROFROW(I)=0.
+        class_rot%ROFOROW(I)=0.
+        class_rot%ROFSROW(I)=0.
+        class_rot%ROFBROW(I)=0.
+        class_rot%ROFCROW(I)=0.
+        class_rot%ROFNROW(I)=0.
+        class_rot%ROVGROW(I)=0.
+        class_rot%RHOSROW(I)=0.
+        class_rot%WTRCROW(I)=0.
+        class_rot%WTRSROW(I)=0.
+        class_rot%WTRGROW(I)=0.
+        class_rot%DRROW(I)=0.
+        class_rot%TCANROW(I)=0.
+        class_rot%SCANROW(I)=0.
+        class_rot%RCANROW(I)=0.
+        class_rot%TSNOROW(I)=0.
+        class_rot%WSNOROW(I)=0.
+        class_rot%TPNDROW(I)=0.
+        class_rot%ZPNDROW(I)=0.
+
+        class_rot%wtableROW(I)=0. !FLAG
+
+        class_rot%ILMOROW(I)=0.
+        class_rot%UEROW(I)=0.
+        class_rot%HBLROW(I)=0.
+
+        !G12GRD(I)= 0.       !YW March 27, 2015
+        !G23GRD(I)= 0.       !YW March 27, 2015
+        DO 500 J=1,IGND
+            class_rot%HMFGROW(I,J)=0.
+            class_rot%HTCROW(I,J)=0.
+            class_rot%QFCROW(I,J)=0.
+            class_rot%GFLXROW(I,J)=0.
+            class_rot%TBARROW(I,J)=0.
+            class_rot%THALROW(I,J)=0.
+            class_rot%THICROW(I,J)=0.
+            class_rot%THLQROW(I,J)=0.
+500                 CONTINUE
+525             CONTINUE
+
+end subroutine initRowVars
 !>@}
 !>\file
 !>Contains the physics variable type structures.
