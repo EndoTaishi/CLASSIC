@@ -1,38 +1,49 @@
-!> The File IO Module contains wrappers for accessing netCDF/PnetCDF files.
+!> The File IO Module contains wrappers for accessing netCDF files.
 !! It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF.
 module fileIOModule
 #if PARALLEL
     use mpi
-    use pnetcdf
-#else
-    use netcdf
 #endif
+    use netcdf
     implicit none
 contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Creates a new netCDF/PnetCDF file and returns the file id.
+    !> Creates a new netCDF file and returns the file id.
     integer function ncCreate(fileName, cmode)
         character(*), intent(in)    :: fileName !< File name
         integer, intent(in)         :: cmode    !< Creation mode
+        integer                     :: info, status, mode
+
 #if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
-        call checkNC(nf90mpi_create(MPI_COMM_WORLD, trim(fileName), cmode, MPI_INFO_NULL, ncCreate))
+        call MPI_INFO_CREATE(info, status)
+        call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status)
+        mode = 0
+        mode = ior(NF90_MPIIO, NF90_CLOBBER)
+        mode = ior(mode, NF90_NETCDF4)
+        call checkNC(nf90_create_par(trim(fileName), mode, MPI_COMM_WORLD, info, ncCreate), tag = 'ncCreate(' // trim(filename) // ') ')
 #else
-        call checkNC(nf90_create(trim(fileName), cmode, ncCreate))
+        call checkNC(nf90_create(trim(fileName), cmode, ncCreate), tag = 'ncCreate(' // trim(filename) // ') ')
 #endif
     end function ncCreate
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Opens an existing netCDF/PnetCDF file and returns the file id.
+    !> Opens an existing netCDF file and returns the file id.
     integer function ncOpen(fileName, omode)
         character(*), intent(in)    :: fileName !< File name
         integer, intent(in)         :: omode    !< Open mode
+        integer                     :: info, status, mode
 #if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
-        call checkNC(nf90mpi_open(MPI_COMM_WORLD, trim(fileName), omode, MPI_INFO_NULL, ncOpen))
+        call MPI_INFO_CREATE(info, status)
+        call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status)
+        mode = 0
+        mode = ior(NF90_MPIIO, omode)
+        mode = ior(mode, NF90_NETCDF4)
+        call checkNC(nf90_open_par(trim(fileName), mode, MPI_COMM_WORLD, info, ncOpen), tag = 'ncOpen(' // trim(filename) // ') ')
 #else
-        call checkNC(nf90_open(trim(fileName), omode, ncOpen))
+        call checkNC(nf90_open(trim(fileName), omode, ncOpen), tag = 'ncOpen(' // trim(filename) // ') ')
 #endif
     end function ncOpen
 
@@ -40,12 +51,8 @@ contains
     !> Returns the variable id for a given file id a variable label.
     integer function ncGetVarId(fileId, label)
         integer, intent(in)         :: fileId   !< File id
-        character(*), intent(in)    :: label    !< netCDF/PnetCDF variable label
-#if PARALLEL
-        call checkNC(nf90mpi_inq_varid(fileId, label, ncGetVarId))
-#else
-        call checkNC(nf90_inq_varid(fileId, label, ncGetVarId))
-#endif
+        character(*), intent(in)    :: label    !< netCDF variable label
+        call checkNC(nf90_inq_varid(fileId, label, ncGetVarId), tag = 'ncGetVarId(' // trim(label) // ') ')
     end function ncGetVarId
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -53,11 +60,7 @@ contains
     integer function ncGetVarDimensions(fileId, varId)
         integer, intent(in)         :: fileId   !< File id
         integer, intent(in)         :: varId    !< Variable id
-#if PARALLEL
-        call checkNC(nf90mpi_inquire_variable(fileId, varId, ndims = ncGetVarDimensions))
-#else
-        call checkNC(nf90_inquire_variable(fileId, varId, ndims = ncGetVarDimensions))
-#endif
+        call checkNC(nf90_inquire_variable(fileId, varId, ndims = ncGetVarDimensions), tag = 'ncGetVarDimensions() ')
     end function ncGetVarDimensions
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -65,11 +68,7 @@ contains
     integer function ncGetDimId(fileId, label)
         integer, intent(in)         :: fileId   !< File id
         character(*), intent(in)    :: label    !< Variable label
-#if PARALLEL
-        call checkNC(nf90mpi_inq_dimid(fileId, label, ncGetDimId))
-#else
-        call checkNC(nf90_inq_dimid(fileId, label, ncGetDimId))
-#endif
+        call checkNC(nf90_inq_dimid(fileId, label, ncGetDimId), tag = 'ncGetDimId(' // trim(label) // ') ')
     end function ncGetDimId
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -78,18 +77,9 @@ contains
         integer, intent(in)             :: fileId   !< File id
         character(*), intent(in)        :: label    !< Dimension label
         integer                         :: dimId    !< Dimension id
-#if PARALLEL
-        integer(kind=MPI_OFFSET_KIND)   :: dimLen
-#else
         integer                         :: dimLen
-#endif
         dimId = ncGetDimId(fileId, label)
-#if PARALLEL
-        call checkNC(nf90mpi_inquire_dimension(fileId, dimId, len=dimLen))
-#else
-        call checkNC(nf90_inquire_dimension(fileId, dimId, len=dimLen))
-#endif
-        ncGetDimLen = dimLen
+        call checkNC(nf90_inquire_dimension(fileId, dimId, len=ncGetDimLen), tag = 'ncGetDimLen(' // trim(label) // ') ')
     end function ncGetDimLen
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -101,14 +91,13 @@ contains
         integer                                     :: err, locaLength
 #if PARALLEL
         if (label == 'time') then
-            locaLength = NFMPI_UNLIMITED !< Special case
+            !locaLength = NFMPI_UNLIMITED !< Special case
+            locaLength = 0 !< Special case
         else
             locaLength = length
         end if
-        call checkNC(nf90mpi_def_dim(fileId, label, int(locaLength,8), ncDefDim))
-#else
-        call checkNC(nf90_def_dim(fileId, label, length, ncDefDim))
 #endif
+        call checkNC(nf90_def_dim(fileId, label, length, ncDefDim), tag = 'ncDefDim(' // trim(label) // ') ')
     end function ncDefDim
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -118,37 +107,24 @@ contains
         integer, intent(in)                         :: dimIds(:)!< Dimension ids
         integer, intent(in)                         :: type     !< Variable type
         character(*), intent(in)                    :: label    !< Variable label
-#if PARALLEL
-        call checkNC(nf90mpi_def_var(fileId, label, type, dimIds, ncDefVar))
-#else
-        call checkNC(nf90_def_var(fileId, label, type, dimIds, ncDefVar))
-#endif
+        call checkNC(nf90_def_var(fileId, label, type, dimIds, ncDefVar), tag = 'ncDefVar(' // trim(label) // ') ')
     end function ncDefVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Ends the definition mode.
     subroutine ncEndDef(fileId)
         integer, intent(in)                 :: fileId   !< File id
-#if PARALLEL
-        call checkNC(nf90mpi_enddef(fileId))
-#else
         call checkNC(nf90_enddef(fileId))
-#endif
     end subroutine ncEndDef
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Enters definition mode.
     subroutine ncReDef(fileId)
         integer, intent(in)                 :: fileId   !< File id
-#if PARALLEL
-        call checkNC(nf90mpi_redef(fileId))
-#else
         call checkNC(nf90_redef(fileId))
-#endif
     end subroutine ncReDef
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-
     !> For PARALLEL only, we need to set fill mode on the netcdf file. NetCDF is setfill by default while Pnetcdf is no_fill.
     subroutine ncSetFill(fileId,label,start)
         integer, intent(in)                 :: fileId   !< File id
@@ -159,7 +135,7 @@ contains
 
 #if PARALLEL
         varId = ncGetVarId(fileId, label)
-        call checkNC(nf90mpi_fill_var_rec(fileId, varId, int(start,8)))
+        !call checkNC(nf90mpi_fill_var_rec(fileId, varId, int(start,8)))
 #endif
         return
     end subroutine ncSetFill
@@ -168,11 +144,7 @@ contains
     !> Closes a given file.
     subroutine ncClose(fileId)
         integer, intent(in)                 :: fileId !< File id
-#if PARALLEL
-        call checkNC(nf90mpi_close(fileId))
-#else
         call checkNC(nf90_close(fileId))
-#endif
     end subroutine ncClose
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -188,29 +160,16 @@ contains
         integer                 :: counter
 
         counter = 0
-#if PARALLEL
         if (present(charValues)) then
             counter = counter + 1
-            call checkNC(nf90mpi_put_att(fileId, varId, label, charValues))
+            call checkNC(nf90_put_att(fileId, varId, label, charValues), tag = 'ncPutAtt(' // trim(label) // ') ')
         else if (present(intValues)) then
             counter = counter + 1
-            call checkNC(nf90mpi_put_att(fileId, varId, label, intValues))
-        else
-            counter = counter + 1
-            call checkNC(nf90mpi_put_att(fileId, varId, label, realValues))
-        end if
-#else
-        if (present(charValues)) then
-            counter = counter + 1
-            call checkNC(nf90_put_att(fileId, varId, label, charValues))
-        else if (present(intValues)) then
-            counter = counter + 1
-            call checkNC(nf90_put_att(fileId, varId, label, intValues))
+            call checkNC(nf90_put_att(fileId, varId, label, intValues), tag = 'ncPutAtt(' // trim(label) // ') ')
         else if (present(realValues)) then
             counter = counter + 1
-            call checkNC(nf90_put_att(fileId, varId, label, realValues))
+            call checkNC(nf90_put_att(fileId, varId, label, realValues), tag = 'ncPutAtt(' // trim(label) // ') ')
         end if
-#endif
         if (counter /= 1) stop('In function ncPutAtt, please supply either charValues, intValue or realValues; just one')
     end subroutine ncPutAtt
 
@@ -229,59 +188,31 @@ contains
         ndims = ncGetVarDimensions(fileId, varId)
 
         select case(ndims)
-#if PARALLEL
         case(1)
             allocate(ncGetVar(count(1)))
             allocate(temp1D(count(1)))
-            call checkNC(nf90mpi_get_var_all(fileId, varId, temp1D, start = int(start,8), count = int(count,8)))
+            call checkNC(nf90_get_var(fileId, varId, temp1D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = temp1D
         case(2)
             allocate(ncGetVar(count(1) * count(2)))
             allocate(temp2D(count(1), count(2)))
-            call checkNC(nf90mpi_get_var_all(fileId, varId, temp2D, start = int(start,8), count = int(count,8)))
+            call checkNC(nf90_get_var(fileId, varId, temp2D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = reshape(temp2D,(/size(temp2D)/))
         case(3)
             allocate(ncGetVar(count(1) * count(2) * count(3)))
             allocate(temp3D(count(1), count(2), count(3)))
-            call checkNC(nf90mpi_get_var_all(fileId, varId, temp3D, start = int(start,8), count = int(count,8)))
+            call checkNC(nf90_get_var(fileId, varId, temp3D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = reshape(temp3D,(/size(temp3D)/))
         case(4)
             allocate(ncGetVar(count(1) * count(2) * count(3) * count(4)))
             allocate(temp4D(count(1), count(2), count(3), count(4)))
-            call checkNC(nf90mpi_get_var_all(fileId, varId, temp4D, start = int(start,8), count = int(count,8)))
+            call checkNC(nf90_get_var(fileId, varId, temp4D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = reshape(temp4D,(/size(temp4D)/))
         case(5)
             allocate(ncGetVar(count(1) * count(2) * count(3) * count(4) * count(5)))
             allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
-            call checkNC(nf90mpi_get_var_all(fileId, varId, temp5D, start = int(start,8), count = int(count,8)))
+            call checkNC(nf90_get_var(fileId, varId, temp5D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = reshape(temp5D,(/size(temp5D)/))
-#else
-        case(1)
-            allocate(ncGetVar(count(1)))
-            allocate(temp1D(count(1)))
-            call checkNC(nf90_get_var(fileId, varId, temp1D, start = start, count = count))
-            ncGetVar = temp1D
-        case(2)
-            allocate(ncGetVar(count(1) * count(2)))
-            allocate(temp2D(count(1), count(2)))
-            call checkNC(nf90_get_var(fileId, varId, temp2D, start = start, count = count))
-            ncGetVar = reshape(temp2D,(/size(temp2D)/))
-        case(3)
-            allocate(ncGetVar(count(1) * count(2) * count(3)))
-            allocate(temp3D(count(1), count(2), count(3)))
-            call checkNC(nf90_get_var(fileId, varId, temp3D, start = start, count = count))
-            ncGetVar = reshape(temp3D,(/size(temp3D)/))
-        case(4)
-            allocate(ncGetVar(count(1) * count(2) * count(3) * count(4)))
-            allocate(temp4D(count(1), count(2), count(3), count(4)))
-            call checkNC(nf90_get_var(fileId, varId, temp4D, start = start, count = count))
-            ncGetVar = reshape(temp4D,(/size(temp4D)/))
-        case(5)
-            allocate(ncGetVar(count(1) * count(2) * count(3) * count(4) * count(5)))
-            allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
-            call checkNC(nf90_get_var(fileId, varId, temp5D, start = start, count = count))
-            ncGetVar = reshape(temp5D,(/size(temp5D)/))
-#endif
         case default
             stop("Only up to 5 dimensions have been implemented!")
         end select
@@ -308,18 +239,10 @@ contains
 
         if (present(realValues)) then
             counter = counter + 1
-#if PARALLEL
-            call checkNC(nf90mpi_put_var_all(fileId, varId, realValues, int(localStart,8), int(localCount,8)))
-#else
-            call checkNC(nf90_put_var(fileId, varId, realValues, localStart, localCount))
-#endif
+            call checkNC(nf90_put_var(fileId, varId, realValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
         else if (present(intValues)) then
             counter = counter + 1
-#if PARALLEL
-            call checkNC(nf90mpi_put_var_all(fileId, varId, intValues, int(localStart,8), int(localCount,8)))
-#else
-            call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount))
-#endif
+            call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
         end if
 
         if (counter /= 1) stop('In function ncPutAtt, please supply either intValues or realValues; just one')
@@ -341,18 +264,10 @@ contains
 
         if (present(realValues)) then
             counter = counter + 1
-#if PARALLEL
-            call checkNC(nf90mpi_put_var_all(fileId, varId, realValues, int(start,8), int(count,8)))
-#else
-            call checkNC(nf90_put_var(fileId, varId, realValues, start, count))
-#endif
+            call checkNC(nf90_put_var(fileId, varId, realValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
         else
             counter = counter + 1
-#if PARALLEL
-            call checkNC(nf90mpi_put_var_all(fileId, varId, intValues, int(start,8), int(count,8)))
-#else
-            call checkNC(nf90_put_var(fileId, varId, intValues, start, count))
-#endif
+            call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
         end if
 
         if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
@@ -577,7 +492,7 @@ contains
     subroutine checkNC(ncStatus, tag)
         integer, intent(in)         :: ncStatus !< Status variable
         integer                     :: err      !< MPI Error variable
-        character(100), optional    :: tag  !< Optional tag
+        character(*), optional      :: tag  !< Optional tag
         character(100)              :: message
         if (present(tag)) then
             message = tag
@@ -585,20 +500,13 @@ contains
             message = 'Unspecified tag'
         endif
 
-
         if(ncStatus /= nf90_noerr) then
-#if PARALLEL
-            print*,'netCDF error with tag ', message, ' : ', trim(nf90mpi_strerror(ncStatus))
-            call MPI_Abort(MPI_COMM_WORLD, -1, err)
-#else
-            print*,'netCDF error with tag ', message, ' : ', trim(nf90_strerror(ncStatus))
+            print*,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
             stop
-#endif
         end if
     end subroutine checkNC
 
     ! OLD FUNCTIONS TO BE DELETED
-
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     ! Write a local 2D variable
 #if PARALLEL
@@ -619,7 +527,7 @@ contains
         localFormat = count
         varId = ncGetVarId(fileId, label)
         temp3D = reshape(data, localFormat)
-        call checkNC(nf90mpi_put_var_all(fileId, varId, temp3D, int(start,8), int(localCount,8)))
+        !call checkNC(nf90mpi_put_var_all(fileId, varId, temp3D, int(start,8), int(localCount,8)))
     end subroutine ncPut2DVar
 #else
     subroutine ncPut2DVar(fileId, label, data, start, count)
@@ -656,7 +564,7 @@ contains
         format = count
         varId = ncGetVarId(fileId, label)
         temp4D = reshape(data, format)
-        call checkNC(nf90mpi_put_var_all(fileId, varId, temp4D, int(start,8), int(count,8)))
+        !call checkNC(nf90mpi_put_var_all(fileId, varId, temp4D, int(start,8), int(count,8)))
     end subroutine ncPut3DVar
 #else
     subroutine ncPut3DVar(fileId, label, data, start, count)
