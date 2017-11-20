@@ -12,6 +12,8 @@ module generalUtils
 
     contains
 
+    !---------------------------------------------------------------------------------------
+
     subroutine abandonCell
 
         use class_statevars,    only : class_rot
@@ -30,6 +32,7 @@ module generalUtils
 
     end subroutine abandonCell
 
+    !---------------------------------------------------------------------------------------
 
     !> Calculate the daylength based on the latitude and day of year
     real function findDaylength(solday,radl)
@@ -53,6 +56,8 @@ module generalUtils
             findDaylength=24.0-(24.0/pi)*acos(term)
 
     end function findDaylength
+
+    !---------------------------------------------------------------------------------------
 
     subroutine findLeapYears(iyear,leapnow,lastDOY)
 
@@ -99,6 +104,8 @@ module generalUtils
 
     end subroutine findLeapYears
 
+    !---------------------------------------------------------------------------------------
+    
     function parseTimeStamp(timeStamp)
 
     implicit none

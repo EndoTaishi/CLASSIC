@@ -13,6 +13,7 @@ module outputManager
     private :: getDescriptor
     public :: getIdByKey
     public  :: createNetCDF
+    public :: addTime
     private :: identityVector
     public :: writeOutput1D
     public  :: closeNCFiles
@@ -122,7 +123,7 @@ contains
             id = addVariable(nameInCode, filename)
 
             ! Make the netcdf file for the new variable (mostly definitions)
-            call createNetCDF(filename, id, outputForm, descriptor)
+            call createNetCDF(filename, id, outputForm, descriptor, timeFreq)
 
             ! Now make sure the file was properly created
             fileCreatedOk = checkFileExists(filename)
@@ -286,7 +287,7 @@ contains
     !---------------------------------------------------------------------------------------
 
     ! Create the output netcdf files
-    subroutine createNetCDF(fileName, id, outputForm, descriptor)
+    subroutine createNetCDF(fileName, id, outputForm, descriptor,timeFreq)
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
@@ -296,6 +297,7 @@ contains
 
         character(*), intent(in)              :: fileName
         character(*), intent(in)              :: outputForm
+        character(*), intent(in)              :: timeFreq
         type(outputDescriptor), intent(in)    :: descriptor
         integer, intent(in)                   :: id
 
@@ -399,6 +401,9 @@ contains
 
         ! Fill in the dimension variables and define the model output vars
 
+        ! Figure out the total run length, make a time vector and add to file.
+        call addTime(ncid,timeFreq)
+
         call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=(/myDomain%cntx/))
         call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=(/myDomain%cnty/))
         
@@ -465,6 +470,116 @@ contains
     end subroutine createNetCDF
 
     !---------------------------------------------------------------------------------------
+    ! Determine the time vector for this run and write to the output file
+    subroutine addTime(ncid,timeFreq)
+
+        use fileIOModule
+        use ctem_statevars,     only : c_switch
+        use generalUtils,       only : findLeapYears
+        use ctem_params,        only : monthend
+
+        implicit none
+
+        character(*), intent(in)              :: timeFreq
+        integer, intent(in)                   :: ncid
+        real, allocatable, dimension(:)       :: timeVect
+        integer :: totsteps, totyrs, i, st, en, j, m
+        integer :: lastDOY
+        logical :: leapnow
+
+        logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
+                                           !< also accounts for leap years in .MET when cycling over meteorology (metLoop > 1)
+        integer, pointer :: metLoop        !< no. of times the meteorological data is to be looped over. this
+                                           !< option is useful to equilibrate CTEM's C pools
+        integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
+        integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+        integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
+        integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
+        integer, pointer :: jdstd   !< day of the year to start writing the daily output
+        integer, pointer :: jdendd  !< day of the year to stop writing the daily output
+        integer, pointer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
+        integer, pointer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
+        integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
+        integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
+        integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
+
+        leap            => c_switch%leap
+        metLoop         => c_switch%metLoop
+        readMetStartYear=> c_switch%readMetStartYear
+        readMetEndYear  => c_switch%readMetEndYear
+        jhhstd          => c_switch%jhhstd
+        jhhendd         => c_switch%jhhendd
+        jdstd           => c_switch%jdstd
+        jdendd          => c_switch%jdendd
+        jhhsty          => c_switch%jhhsty
+        jhhendy         => c_switch%jhhendy
+        jdsty           => c_switch%jdsty
+        jdendy          => c_switch%jdendy
+        jmosty          => c_switch%jmosty
+
+        select case(trim(timeFreq))
+
+            case("annually")
+                totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
+                totsteps = totyrs
+                allocate(timeVect(totsteps))
+                do i = 1, totsteps
+                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    timeVect(i) = (readMetStartYear + i - 1 - refyr) * lastDOY
+                end do
+                print*,'annual',timeVect
+            case("monthly")
+                ! Monthly may start writing later (after jmosty) so make sure to account for that.
+                ! Also if leap years are on it changes the timestamps
+                if (readMetStartYear < jmosty) then
+                    totyrs = (readMetEndYear - jmosty + 1) * metLoop
+                else
+                    totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
+                end if
+                totsteps = totyrs*12
+                allocate(timeVect(totsteps))
+                do i = 1, totyrs
+                    ! Find out if this year is a leap year. It adjusts the monthend array.
+                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    do m = 1, 12
+                        j = ((i - 1) * 12) + m
+                        timeVect(j) = (readMetStartYear + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
+                    end do
+                end do
+                print*,'monthly',timeVect
+            case("daily")
+                if (readMetStartYear < jdsty) then
+                    st = jdsty
+                else
+                    st = readMetStartYear
+                end if
+                if (readMetEndYear < jdendy) then
+                    en = jdendy
+                else
+                    en = readMetEndYear
+                end if
+                totyrs = (en - st + 1) * metLoop
+                totsteps = 0
+                ! Determine size of vector to be allocated for the time stamps
+                do i = 1, totyrs
+                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    st = max(1, jdstd)
+                    en = min(jdendd, lastDOY)
+                    totsteps = totsteps + (en - st + 1)
+                end do
+                allocate(timeVect(totsteps))
+                print *, 'NOT FINISHED, daily in addTime'
+
+            case("halfhourly")
+            case default
+                print*,'addTime says - Unknown timeFreq: ',timeFreq
+        end select
+
+        call ncPutDimValues(ncid, 'lon', timeVect, count=(/totsteps/))
+
+    end subroutine addTime
+
+    !---------------------------------------------------------------------------------------
 
     ! Write model outputs to already created netcdf files
     subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
@@ -512,27 +627,29 @@ contains
         ! Check if the time period has already been added to the file
         timeIndex = ncGetDimLen(ncid, "time")
 
-        if (timeIndex == 0) then
+        !if (timeIndex == 0) then
             ! This is the first time step so add it and set the array to fill_value
-            timeIndex = timeIndex + 1
-            call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
-            call ncSetFill(ncid, label,timeIndex)
-        else
+        !    timeIndex = timeIndex + 1
+        !    call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
+        !    call ncSetFill(ncid, label,timeIndex)
+        !else
             ! This is a subsequent time step so need to check if it has already been added by
             ! another grid cell.
             allocate(timeWritten(timeIndex))
             timeWritten= ncGetDimValues(ncid, "time", count = (/timeIndex/))
             posTimeWanted = checkForTime(timeIndex,timeWritten,localStamp(1))
 
-            if (posTimeWanted == 0) then ! Need to add this time step and set the array to fill_value
-                timeIndex = timeIndex + 1
-                call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
-                call ncSetFill(ncid, label,timeIndex)
+            if (posTimeWanted == 0) then
+                print*,'missing timestep in output file',localStamp
+                stop
+                !timeIndex = timeIndex + 1
+                !call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
+                !call ncSetFill(ncid, label,timeIndex)
             else
                 ! timeStamp already added so just use it.
                 timeIndex = posTimeWanted
             end if
-        end if
+        !end if
 
         if (length > 1) then
            call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])

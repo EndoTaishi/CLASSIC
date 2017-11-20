@@ -13,7 +13,7 @@ public :: initrowvars
 public :: resetdaily
 public :: resetmonthend
 public :: resetyearend
-public :: resetgridavg
+!public :: resetgridavg
 
 !=================================================================================
 !>switches for running the model, read from the joboptions file
@@ -661,60 +661,61 @@ type ctem_gridavg
 ! Grid-averaged variables (denoted with an ending of "_g")
 
 ! allocated with nlat:
-      real, allocatable, dimension(:) :: WSNOROT_g !<
-      real, allocatable, dimension(:) :: ROFSROT_g !<
-      real, allocatable, dimension(:) :: SNOROT_g  !<
-      real, allocatable, dimension(:) :: RHOSROT_g !<
-      real, allocatable, dimension(:) :: ROFROT_g  !<
-      real, allocatable, dimension(:) :: ZPNDROT_g !<
-      real, allocatable, dimension(:) :: RCANROT_g !<
-      real, allocatable, dimension(:) :: SCANROT_g !<
-      real, allocatable, dimension(:) :: TROFROT_g !<
-      real, allocatable, dimension(:) :: TROOROT_g !<
-      real, allocatable, dimension(:) :: TROBROT_g !<
-      real, allocatable, dimension(:) :: ROFOROT_g !<
-      real, allocatable, dimension(:) :: ROFBROT_g !<
-      real, allocatable, dimension(:) :: TROSROT_g !<
-      real, allocatable, dimension(:) :: FSGVROT_g !<
-      real, allocatable, dimension(:) :: FSGSROT_g !<
-      real, allocatable, dimension(:) :: FLGVROT_g !<
-      real, allocatable, dimension(:) :: FLGSROT_g !<
-      real, allocatable, dimension(:) :: HFSCROT_g !<
-      real, allocatable, dimension(:) :: HFSSROT_g !<
-      real, allocatable, dimension(:) :: HEVCROT_g !<
-      real, allocatable, dimension(:) :: HEVSROT_g !<
-      real, allocatable, dimension(:) :: HMFCROT_g !<
-      real, allocatable, dimension(:) :: HMFNROT_g !<
-      real, allocatable, dimension(:) :: HTCSROT_g !<
-      real, allocatable, dimension(:) :: HTCCROT_g !<
-      real, allocatable, dimension(:) :: FSGGROT_g !<
-      real, allocatable, dimension(:) :: FLGGROT_g !<
-      real, allocatable, dimension(:) :: HFSGROT_g !<
-      real, allocatable, dimension(:) :: HEVGROT_g !<
-      real, allocatable, dimension(:) :: CDHROT_g  !<
-      real, allocatable, dimension(:) :: CDMROT_g  !<
-      real, allocatable, dimension(:) :: SFCUROT_g !<
-      real, allocatable, dimension(:) :: SFCVROT_g !<
-      real, allocatable, dimension(:) :: ACTLYR_g
-      real, allocatable, dimension(:) :: FTABLE_g
-      real, allocatable, dimension(:) :: fc_g      !<
-      real, allocatable, dimension(:) :: fg_g      !<
-      real, allocatable, dimension(:) :: fcs_g     !<
-      real, allocatable, dimension(:) :: fgs_g     !<
-      real, allocatable, dimension(:) :: PCFCROT_g !<
-      real, allocatable, dimension(:) :: PCLCROT_g !<
-      real, allocatable, dimension(:) :: PCPGROT_g !<
-      real, allocatable, dimension(:) :: QFCFROT_g !<
-      real, allocatable, dimension(:) :: QFGROT_g  !<
-      real, allocatable, dimension(:,:) :: QFCROT_g !<
-      real, allocatable, dimension(:) :: ROFCROT_g  !<
-      real, allocatable, dimension(:) :: ROFNROT_g  !<
-      real, allocatable, dimension(:) :: WTRSROT_g  !<
-      real, allocatable, dimension(:) :: WTRGROT_g  !<
-      real, allocatable, dimension(:) :: PCPNROT_g  !<
-      real, allocatable, dimension(:) :: QFCLROT_g  !<
-      real, allocatable, dimension(:) :: QFNROT_g   !<
-      real, allocatable, dimension(:) :: WTRCROT_g  !<
+
+!       real, allocatable, dimension(:) :: WSNOROT_g !<
+!       real, allocatable, dimension(:) :: ROFSROT_g !<
+!       real, allocatable, dimension(:) :: SNOROT_g  !<
+!       real, allocatable, dimension(:) :: RHOSROT_g !<
+!       real, allocatable, dimension(:) :: ROFROT_g  !<
+!       real, allocatable, dimension(:) :: ZPNDROT_g !<
+!       real, allocatable, dimension(:) :: RCANROT_g !<
+!       real, allocatable, dimension(:) :: SCANROT_g !<
+!       real, allocatable, dimension(:) :: TROFROT_g !<
+!       real, allocatable, dimension(:) :: TROOROT_g !<
+!       real, allocatable, dimension(:) :: TROBROT_g !<
+!       real, allocatable, dimension(:) :: ROFOROT_g !<
+!       real, allocatable, dimension(:) :: ROFBROT_g !<
+!       real, allocatable, dimension(:) :: TROSROT_g !<
+!       real, allocatable, dimension(:) :: FSGVROT_g !<
+!       real, allocatable, dimension(:) :: FSGSROT_g !<
+!       real, allocatable, dimension(:) :: FLGVROT_g !<
+!       real, allocatable, dimension(:) :: FLGSROT_g !<
+!       real, allocatable, dimension(:) :: HFSCROT_g !<
+!       real, allocatable, dimension(:) :: HFSSROT_g !<
+!       real, allocatable, dimension(:) :: HEVCROT_g !<
+!       real, allocatable, dimension(:) :: HEVSROT_g !<
+!       real, allocatable, dimension(:) :: HMFCROT_g !<
+!       real, allocatable, dimension(:) :: HMFNROT_g !<
+!       real, allocatable, dimension(:) :: HTCSROT_g !<
+!       real, allocatable, dimension(:) :: HTCCROT_g !<
+!       real, allocatable, dimension(:) :: FSGGROT_g !<
+!       real, allocatable, dimension(:) :: FLGGROT_g !<
+!       real, allocatable, dimension(:) :: HFSGROT_g !<
+!       real, allocatable, dimension(:) :: HEVGROT_g !<
+!       real, allocatable, dimension(:) :: CDHROT_g  !<
+!       real, allocatable, dimension(:) :: CDMROT_g  !<
+!       real, allocatable, dimension(:) :: SFCUROT_g !<
+!       real, allocatable, dimension(:) :: SFCVROT_g !<
+!       real, allocatable, dimension(:) :: ACTLYR_g
+!       real, allocatable, dimension(:) :: FTABLE_g
+!       real, allocatable, dimension(:) :: fc_g      !<
+!       real, allocatable, dimension(:) :: fg_g      !<
+!       real, allocatable, dimension(:) :: fcs_g     !<
+!       real, allocatable, dimension(:) :: fgs_g     !<
+!       real, allocatable, dimension(:) :: PCFCROT_g !<
+!       real, allocatable, dimension(:) :: PCLCROT_g !<
+!       real, allocatable, dimension(:) :: PCPGROT_g !<
+!       real, allocatable, dimension(:) :: QFCFROT_g !<
+!       real, allocatable, dimension(:) :: QFGROT_g  !<
+!       real, allocatable, dimension(:,:) :: QFCROT_g !<
+!       real, allocatable, dimension(:) :: ROFCROT_g  !<
+!       real, allocatable, dimension(:) :: ROFNROT_g  !<
+!       real, allocatable, dimension(:) :: WTRSROT_g  !<
+!       real, allocatable, dimension(:) :: WTRGROT_g  !<
+!       real, allocatable, dimension(:) :: PCPNROT_g  !<
+!       real, allocatable, dimension(:) :: QFCLROT_g  !<
+!       real, allocatable, dimension(:) :: QFNROT_g   !<
+!       real, allocatable, dimension(:) :: WTRCROT_g  !<
       real, allocatable, dimension(:) :: gpp_g      !<
       real, allocatable, dimension(:) :: npp_g      !<
       real, allocatable, dimension(:) :: nbp_g      !<
@@ -784,28 +785,29 @@ type ctem_gridavg
       real, allocatable, dimension(:,:) :: afrstem_g  !<
       real, allocatable, dimension(:,:) :: afrroot_g  !<
       real, allocatable, dimension(:,:) :: lfstatus_g !<
-      real, allocatable, dimension(:,:) :: rmlvegrow_g!<
-      real, allocatable, dimension(:,:) :: anvegrow_g !<
+       real, allocatable, dimension(:,:) :: rmlvegrow_g!<
+       real, allocatable, dimension(:,:) :: anvegrow_g !<
       real, allocatable, dimension(:,:) :: rmatctem_g!<
 
-      real, allocatable, dimension(:,:) :: HMFGROT_g !<
-      real, allocatable, dimension(:,:) :: HTCROT_g  !<
-      real, allocatable, dimension(:,:) :: TBARROT_g !<
-      real, allocatable, dimension(:,:) :: THLQROT_g !<
-      real, allocatable, dimension(:,:) :: THICROT_g !<
-      real, allocatable, dimension(:,:) :: GFLXROT_g !<
-      real, allocatable, dimension(:) :: fsstar_g !<
-      real, allocatable, dimension(:) :: flstar_g !<
-      real, allocatable, dimension(:) :: qh_g     !<
-      real, allocatable, dimension(:) :: qe_g     !<
-      real, allocatable, dimension(:) :: snomlt_g !<
-      real, allocatable, dimension(:) :: beg_g    !<
-      real, allocatable, dimension(:) :: gtout_g  !<
-      real, allocatable, dimension(:) :: tpn_g    !<
-      real, allocatable, dimension(:) :: altot_g  !<
-      real, allocatable, dimension(:) :: tcn_g    !<
-      real, allocatable, dimension(:) :: tsn_g    !<
-      real, allocatable, dimension(:) :: zsn_g    !<
+!       real, allocatable, dimension(:,:) :: HMFGROT_g !<
+!       real, allocatable, dimension(:,:) :: HTCROT_g  !<
+!       real, allocatable, dimension(:,:) :: TBARROT_g !<
+!       real, allocatable, dimension(:,:) :: THLQROT_g !<
+!       real, allocatable, dimension(:,:) :: THICROT_g !<
+!       real, allocatable, dimension(:,:) :: GFLXROT_g !<
+
+!       real, allocatable, dimension(:) :: fsstar_g !<
+!       real, allocatable, dimension(:) :: flstar_g !<
+!       real, allocatable, dimension(:) :: qh_g     !<
+!       real, allocatable, dimension(:) :: qe_g     !<
+!       real, allocatable, dimension(:) :: snomlt_g !<
+!       real, allocatable, dimension(:) :: beg_g    !<
+!       real, allocatable, dimension(:) :: gtout_g  !<
+!       real, allocatable, dimension(:) :: tpn_g    !<
+!       real, allocatable, dimension(:) :: altot_g  !<
+!       real, allocatable, dimension(:) :: tcn_g    !<
+!       real, allocatable, dimension(:) :: tsn_g    !<
+!       real, allocatable, dimension(:) :: zsn_g    !<
 
 
 end type ctem_gridavg
@@ -1643,60 +1645,60 @@ allocate(vgat%grclarea(ilg),&
          vgat%tmonth (12,ilg),&
 
 
-         ctem_grd%WSNOROT_g (nlat),&
-         ctem_grd%ROFSROT_g (nlat),&
-         ctem_grd%SNOROT_g (nlat),&
-         ctem_grd%RHOSROT_g (nlat),&
-         ctem_grd%ROFROT_g (nlat),&
-         ctem_grd%ZPNDROT_g (nlat),&
-         ctem_grd%RCANROT_g (nlat),&
-         ctem_grd%SCANROT_g (nlat),&
-         ctem_grd%TROFROT_g (nlat),&
-         ctem_grd%TROOROT_g (nlat),&
-         ctem_grd%TROBROT_g (nlat),&
-         ctem_grd%ROFOROT_g (nlat),&
-         ctem_grd%ROFBROT_g (nlat),&
-         ctem_grd%TROSROT_g (nlat),&
-         ctem_grd%FSGVROT_g (nlat),&
-         ctem_grd%FSGSROT_g (nlat),&
-         ctem_grd%FLGVROT_g (nlat),&
-         ctem_grd%FLGSROT_g (nlat),&
-         ctem_grd%HFSCROT_g (nlat),&
-         ctem_grd%HFSSROT_g (nlat),&
-         ctem_grd%HEVCROT_g (nlat),&
-         ctem_grd%HEVSROT_g (nlat),&
-         ctem_grd%HMFCROT_g (nlat),&
-         ctem_grd%HMFNROT_g (nlat),&
-         ctem_grd%HTCSROT_g (nlat),&
-         ctem_grd%HTCCROT_g (nlat),&
-         ctem_grd%FSGGROT_g (nlat),&
-         ctem_grd%FLGGROT_g (nlat),&
-         ctem_grd%HFSGROT_g (nlat),&
-         ctem_grd%HEVGROT_g (nlat),&
-         ctem_grd%CDHROT_g (nlat),&
-         ctem_grd%CDMROT_g (nlat),&
-         ctem_grd%SFCUROT_g (nlat),&
-         ctem_grd%SFCVROT_g (nlat),&
-         ctem_grd%ACTLYR_g (nlat),&
-         ctem_grd%FTABLE_g (nlat),&
-         ctem_grd%fc_g (nlat),&
-         ctem_grd%fg_g (nlat),&
-         ctem_grd%fcs_g (nlat),&
-         ctem_grd%fgs_g (nlat),&
-         ctem_grd%PCFCROT_g (nlat),&
-         ctem_grd%PCLCROT_g (nlat),&
-         ctem_grd%PCPGROT_g (nlat),&
-         ctem_grd%QFCFROT_g (nlat),&
-         ctem_grd%QFGROT_g (nlat),&
-         ctem_grd%ROFCROT_g (nlat),&
-         ctem_grd%QFCROT_g (nlat,ignd),&
-         ctem_grd%ROFNROT_g (nlat),&
-         ctem_grd%WTRSROT_g (nlat),&
-         ctem_grd%WTRGROT_g (nlat),&
-         ctem_grd%PCPNROT_g (nlat),&
-         ctem_grd%QFCLROT_g (nlat),&
-         ctem_grd%QFNROT_g (nlat),&
-         ctem_grd%WTRCROT_g (nlat),&
+!          ctem_grd%WSNOROT_g (nlat),&
+!          ctem_grd%ROFSROT_g (nlat),&
+!          ctem_grd%SNOROT_g (nlat),&
+!          ctem_grd%RHOSROT_g (nlat),&
+!          ctem_grd%ROFROT_g (nlat),&
+!          ctem_grd%ZPNDROT_g (nlat),&
+!          ctem_grd%RCANROT_g (nlat),&
+!          ctem_grd%SCANROT_g (nlat),&
+!          ctem_grd%TROFROT_g (nlat),&
+!          ctem_grd%TROOROT_g (nlat),&
+!          ctem_grd%TROBROT_g (nlat),&
+!          ctem_grd%ROFOROT_g (nlat),&
+!          ctem_grd%ROFBROT_g (nlat),&
+!          ctem_grd%TROSROT_g (nlat),&
+!          ctem_grd%FSGVROT_g (nlat),&
+!          ctem_grd%FSGSROT_g (nlat),&
+!          ctem_grd%FLGVROT_g (nlat),&
+!          ctem_grd%FLGSROT_g (nlat),&
+!          ctem_grd%HFSCROT_g (nlat),&
+!          ctem_grd%HFSSROT_g (nlat),&
+!          ctem_grd%HEVCROT_g (nlat),&
+!          ctem_grd%HEVSROT_g (nlat),&
+!          ctem_grd%HMFCROT_g (nlat),&
+!          ctem_grd%HMFNROT_g (nlat),&
+!          ctem_grd%HTCSROT_g (nlat),&
+!          ctem_grd%HTCCROT_g (nlat),&
+!          ctem_grd%FSGGROT_g (nlat),&
+!          ctem_grd%FLGGROT_g (nlat),&
+!          ctem_grd%HFSGROT_g (nlat),&
+!          ctem_grd%HEVGROT_g (nlat),&
+!          ctem_grd%CDHROT_g (nlat),&
+!          ctem_grd%CDMROT_g (nlat),&
+!          ctem_grd%SFCUROT_g (nlat),&
+!          ctem_grd%SFCVROT_g (nlat),&
+!          ctem_grd%ACTLYR_g (nlat),&
+!          ctem_grd%FTABLE_g (nlat),&
+!          ctem_grd%fc_g (nlat),&
+!          ctem_grd%fg_g (nlat),&
+!          ctem_grd%fcs_g (nlat),&
+!          ctem_grd%fgs_g (nlat),&
+!          ctem_grd%PCFCROT_g (nlat),&
+!          ctem_grd%PCLCROT_g (nlat),&
+!          ctem_grd%PCPGROT_g (nlat),&
+!          ctem_grd%QFCFROT_g (nlat),&
+!          ctem_grd%QFGROT_g (nlat),&
+!          ctem_grd%ROFCROT_g (nlat),&
+!          ctem_grd%QFCROT_g (nlat,ignd),&
+!          ctem_grd%ROFNROT_g (nlat),&
+!          ctem_grd%WTRSROT_g (nlat),&
+!          ctem_grd%WTRGROT_g (nlat),&
+!          ctem_grd%PCPNROT_g (nlat),&
+!          ctem_grd%QFCLROT_g (nlat),&
+!          ctem_grd%QFNROT_g (nlat),&
+!          ctem_grd%WTRCROT_g (nlat),&
          ctem_grd%gpp_g (nlat),&
          ctem_grd%npp_g (nlat),&
          ctem_grd%nbp_g (nlat),&
@@ -1765,27 +1767,27 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd%afrstem_g (nlat,icc),&
          ctem_grd%afrroot_g (nlat,icc),&
          ctem_grd%lfstatus_g (nlat,icc),&
-         ctem_grd%rmlvegrow_g (nlat,icc),&
-         ctem_grd%anvegrow_g(nlat,icc),&
+          ctem_grd%rmlvegrow_g (nlat,icc),&
+          ctem_grd%anvegrow_g(nlat,icc),&
          ctem_grd%rmatctem_g (nlat,ignd),&
-         ctem_grd%HMFGROT_g (nlat,ignd),&
-         ctem_grd%HTCROT_g(nlat,ignd),&
-         ctem_grd%TBARROT_g (nlat,ignd),&
-         ctem_grd%THLQROT_g (nlat,ignd),&
-         ctem_grd%THICROT_g (nlat,ignd),&
-         ctem_grd%GFLXROT_g (nlat,ignd),&
-         ctem_grd%fsstar_g (nlat),&
-         ctem_grd%flstar_g (nlat),&
-         ctem_grd%qh_g(nlat),&
-         ctem_grd%qe_g (nlat),&
-         ctem_grd%snomlt_g (nlat),&
-         ctem_grd%beg_g (nlat),&
-         ctem_grd%gtout_g (nlat),&
-         ctem_grd%tpn_g (nlat),&
-         ctem_grd%altot_g(nlat),&
-         ctem_grd%tcn_g (nlat),&
-         ctem_grd%tsn_g (nlat),&
-         ctem_grd%zsn_g (nlat),&
+!          ctem_grd%HMFGROT_g (nlat,ignd),&
+!          ctem_grd%HTCROT_g(nlat,ignd),&
+!          ctem_grd%TBARROT_g (nlat,ignd),&
+!          ctem_grd%THLQROT_g (nlat,ignd),&
+!          ctem_grd%THICROT_g (nlat,ignd),&
+!          ctem_grd%GFLXROT_g (nlat,ignd),&
+!          ctem_grd%fsstar_g (nlat),&
+!          ctem_grd%flstar_g (nlat),&
+!          ctem_grd%qh_g(nlat),&
+!          ctem_grd%qe_g (nlat),&
+!          ctem_grd%snomlt_g (nlat),&
+!          ctem_grd%beg_g (nlat),&
+!          ctem_grd%gtout_g (nlat),&
+!          ctem_grd%tpn_g (nlat),&
+!          ctem_grd%altot_g(nlat),&
+!          ctem_grd%tcn_g (nlat),&
+!          ctem_grd%tsn_g (nlat),&
+!          ctem_grd%zsn_g (nlat),&
 
          ctem_tile%leaflitr_t (nlat,nmos),&
          ctem_tile%tltrleaf_t (nlat,nmos),&
@@ -2744,102 +2746,102 @@ end subroutine resetyearend
 !!@{
 !> Resets grid average variables in preparation for next time period
 
-subroutine resetgridavg(nltest)
-
-use ctem_params, only : ignd,icc
-
-implicit none
-
-integer, intent(in) :: nltest
-
-integer :: i,j
-
-        do i = 1, nltest
-
-        ctem_grd%fsstar_g(i) =0.0
-        ctem_grd%flstar_g(i) =0.0
-        ctem_grd%qh_g(i)     =0.0
-        ctem_grd%qe_g(i)     =0.0
-        ctem_grd%snomlt_g(i) =0.0
-        ctem_grd%beg_g(i)    =0.0
-        ctem_grd%gtout_g(i)  =0.0
-        ctem_grd%SNOROT_g(i) =0.0
-        ctem_grd%RHOSROT_g(i)=0.0
-        ctem_grd%WSNOROT_g(i)=0.0
-        ctem_grd%altot_g(i)  =0.0
-        ctem_grd%ROFROT_g(i) =0.0
-        ctem_grd%tpn_g(i)    =0.0
-        ctem_grd%ZPNDROT_g(i)=0.0
-        ctem_grd%tcn_g(i)=0.0
-        ctem_grd%tsn_g(i)=0.0
-        ctem_grd%zsn_g(i)=0.0
-
-        do j=1,ignd
-         ctem_grd%TBARROT_g(i,j)=0.0
-         ctem_grd%THLQROT_g(i,j)=0.0
-         ctem_grd%THICROT_g(i,j)=0.0
-         ctem_grd%GFLXROT_g(i,j)=0.0
-         ctem_grd%HMFGROT_g(i,j)=0.0
-         ctem_grd%HTCROT_g(i,j)=0.0
-         ctem_grd%QFCROT_g(i,j)=0.0
-        end do
-
-        
-        ctem_grd%RCANROT_g(i) =0.0
-        ctem_grd%SCANROT_g(i) =0.0
-        ctem_grd%TROFROT_g(i)=0.0
-        ctem_grd%TROOROT_g(i)=0.0
-        ctem_grd%TROBROT_g(i)=0.0
-        ctem_grd%TROSROT_g(i)=0.0
-        ctem_grd%ROFOROT_g(i)=0.0
-        ctem_grd%ROFSROT_g(i)=0.0
-        ctem_grd%ROFBROT_g(i)=0.0
-        ctem_grd%FSGVROT_g(i)=0.0
-        ctem_grd%FSGSROT_g(i)=0.0
-        ctem_grd%FSGGROT_g(i)=0.0
-        ctem_grd%FLGVROT_g(i)=0.0
-        ctem_grd%FLGSROT_g(i)=0.0
-        ctem_grd%FLGGROT_g(i)=0.0
-        ctem_grd%HFSCROT_g(i)=0.0
-        ctem_grd%HFSSROT_g(i)=0.0
-        ctem_grd%HFSGROT_g(i)=0.0
-        ctem_grd%HEVCROT_g(i)=0.0
-        ctem_grd%HEVSROT_g(i)=0.0
-        ctem_grd%HEVGROT_g(i)=0.0
-        ctem_grd%HMFCROT_g(i)=0.0
-        ctem_grd%HMFNROT_g(i)=0.0
-        ctem_grd%HTCCROT_g(i)=0.0
-        ctem_grd%HTCSROT_g(i)=0.0
-        ctem_grd%PCFCROT_g(i)=0.0
-        ctem_grd%PCLCROT_g(i)=0.0
-        ctem_grd%PCPNROT_g(i)=0.0
-        ctem_grd%PCPGROT_g(i)=0.0
-        ctem_grd%QFCFROT_g(i)=0.0
-        ctem_grd%QFCLROT_g(i)=0.0
-        ctem_grd%QFNROT_g(i)=0.0
-        ctem_grd%QFGROT_g(i)=0.0
-        ctem_grd%ROFCROT_g(i)=0.0
-        ctem_grd%ROFNROT_g(i)=0.0
-        ctem_grd%WTRCROT_g(i)=0.0
-        ctem_grd%WTRSROT_g(i)=0.0
-        ctem_grd%WTRGROT_g(i)=0.0
-        ctem_grd%CDHROT_g(i)=0.0
-        ctem_grd%CDMROT_g(i)=0.0
-        ctem_grd%SFCUROT_g(i)=0.0
-        ctem_grd%SFCVROT_g(i)=0.0
-        ctem_grd%ACTLYR_g(i)=0.0
-        ctem_grd%FTABLE_g(i)=0.0
-
-       if (c_switch%ctem_on) then
-          do j=1,icc
-            ctem_grd%anvegrow_g(i,j)=0.0
-            ctem_grd%rmlvegrow_g(i,j)=0.0
-          end do
-       end if
-
-       end do
-
-end subroutine resetgridavg
+! subroutine resetgridavg(nltest)
+!
+! use ctem_params, only : ignd,icc
+!
+! implicit none
+!
+! integer, intent(in) :: nltest
+!
+! integer :: i,j
+!
+!         do i = 1, nltest
+!
+! !         ctem_grd%fsstar_g(i) =0.0
+! !         ctem_grd%flstar_g(i) =0.0
+! !         ctem_grd%qh_g(i)     =0.0
+! !         ctem_grd%qe_g(i)     =0.0
+! !         ctem_grd%snomlt_g(i) =0.0
+! !         ctem_grd%beg_g(i)    =0.0
+! !         ctem_grd%gtout_g(i)  =0.0
+! !         ctem_grd%SNOROT_g(i) =0.0
+! !         ctem_grd%RHOSROT_g(i)=0.0
+! !         ctem_grd%WSNOROT_g(i)=0.0
+! !         ctem_grd%altot_g(i)  =0.0
+! !         ctem_grd%ROFROT_g(i) =0.0
+! !         ctem_grd%tpn_g(i)    =0.0
+! !         ctem_grd%ZPNDROT_g(i)=0.0
+! !         ctem_grd%tcn_g(i)=0.0
+! !         ctem_grd%tsn_g(i)=0.0
+! !         ctem_grd%zsn_g(i)=0.0
+!
+!         do j=1,ignd
+!          ctem_grd%TBARROT_g(i,j)=0.0
+!          ctem_grd%THLQROT_g(i,j)=0.0
+!          ctem_grd%THICROT_g(i,j)=0.0
+!          ctem_grd%GFLXROT_g(i,j)=0.0
+!          ctem_grd%HMFGROT_g(i,j)=0.0
+!          ctem_grd%HTCROT_g(i,j)=0.0
+!          ctem_grd%QFCROT_g(i,j)=0.0
+!         end do
+!
+!
+!         ctem_grd%RCANROT_g(i) =0.0
+!         ctem_grd%SCANROT_g(i) =0.0
+!         ctem_grd%TROFROT_g(i)=0.0
+!         ctem_grd%TROOROT_g(i)=0.0
+!         ctem_grd%TROBROT_g(i)=0.0
+!         ctem_grd%TROSROT_g(i)=0.0
+!         ctem_grd%ROFOROT_g(i)=0.0
+!         ctem_grd%ROFSROT_g(i)=0.0
+!         ctem_grd%ROFBROT_g(i)=0.0
+!         ctem_grd%FSGVROT_g(i)=0.0
+!         ctem_grd%FSGSROT_g(i)=0.0
+!         ctem_grd%FSGGROT_g(i)=0.0
+!         ctem_grd%FLGVROT_g(i)=0.0
+!         ctem_grd%FLGSROT_g(i)=0.0
+!         ctem_grd%FLGGROT_g(i)=0.0
+!         ctem_grd%HFSCROT_g(i)=0.0
+!         ctem_grd%HFSSROT_g(i)=0.0
+!         ctem_grd%HFSGROT_g(i)=0.0
+!         ctem_grd%HEVCROT_g(i)=0.0
+!         ctem_grd%HEVSROT_g(i)=0.0
+!         ctem_grd%HEVGROT_g(i)=0.0
+!         ctem_grd%HMFCROT_g(i)=0.0
+!         ctem_grd%HMFNROT_g(i)=0.0
+!         ctem_grd%HTCCROT_g(i)=0.0
+!         ctem_grd%HTCSROT_g(i)=0.0
+!         ctem_grd%PCFCROT_g(i)=0.0
+!         ctem_grd%PCLCROT_g(i)=0.0
+!         ctem_grd%PCPNROT_g(i)=0.0
+!         ctem_grd%PCPGROT_g(i)=0.0
+!         ctem_grd%QFCFROT_g(i)=0.0
+!         ctem_grd%QFCLROT_g(i)=0.0
+!         ctem_grd%QFNROT_g(i)=0.0
+!         ctem_grd%QFGROT_g(i)=0.0
+!         ctem_grd%ROFCROT_g(i)=0.0
+!         ctem_grd%ROFNROT_g(i)=0.0
+!         ctem_grd%WTRCROT_g(i)=0.0
+!         ctem_grd%WTRSROT_g(i)=0.0
+!         ctem_grd%WTRGROT_g(i)=0.0
+!         ctem_grd%CDHROT_g(i)=0.0
+!         ctem_grd%CDMROT_g(i)=0.0
+!         ctem_grd%SFCUROT_g(i)=0.0
+!         ctem_grd%SFCVROT_g(i)=0.0
+!         ctem_grd%ACTLYR_g(i)=0.0
+!         ctem_grd%FTABLE_g(i)=0.0
+!
+!        if (c_switch%ctem_on) then
+!           do j=1,icc
+!             ctem_grd%anvegrow_g(i,j)=0.0
+!             ctem_grd%rmlvegrow_g(i,j)=0.0
+!           end do
+!        end if
+!
+!        end do
+!
+! end subroutine resetgridavg
 !!@}
 
 !==================================================

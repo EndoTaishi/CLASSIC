@@ -122,7 +122,7 @@
     JDSTY = 2901 ,              !< simulation year (iyear) to start writing the daily output
     JDENDY = 2999 ,             !< simulation year (iyear) to stop writing the daily output
 
-    domonthoutput = .false. ,    !< Switch for making monthly output files (annual are always outputted)
+    domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
     JMOSTY = 1000 ,             !< Year to start writing out the monthly output files.
 
     Comment = ' test '          !< Comment about the run that will be written to the output netcdfs

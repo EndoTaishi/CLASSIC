@@ -53,7 +53,7 @@ contains
         use landuse_change,     only : initializeLandCover
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
             &                               resetmonthend,resetyearend,&
-            &                               ctem_grd,ctem_tile,resetgridavg
+            &                               ctem_grd,ctem_tile!,resetgridavg
         use class_statevars,    only : class_gat,class_rot,resetclassaccum,&
             &                          resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
