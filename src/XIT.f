@@ -3,6 +3,10 @@ C!Prints the name of the subroutine and an error code when
 C!an error condition is encountered.
 C!
       SUBROUTINE XIT(NAME,N)
+
+      use generalUtils, only : abandonCell
+
+      implicit none
 C
 C     * SEP 05/12 - J.MELTON.(CHANGE DEPRECATED STOP TO CALL EXIT)
 C     * OCT 01/92 - E.CHAN. (CHANGE STOP 1 TO STOP)
@@ -20,10 +24,11 @@ C     * N.LT.0 IS FOR AN ABNORMAL END. THE LINE IS DOTTED.
 C     * IF N IS LESS THAN -100 THE PROGRAM SIMPLY TERMINATES. 
 C     * OTHERWISE IF N IS LESS THAN ZERO THE PROGRAM ABORTS.
 C 
-      CHARACTER*(*) NAME    !<Name of the subroutine in which the error 
+      CHARACTER*(*) NAME    !<Name of the subroutine in which the error
                             !<was found
                             !<N: error code
       CHARACTER*8   NAME8, DASH, STAR
+      integer :: i,N
 C 
       DATA DASH /'--------'/, STAR /'********'/ 
 C---------------------------------------------------------------------
@@ -42,9 +47,11 @@ C
       IF(N.LT.0) WRITE(6,6010) STAR,NAME8,(STAR,I=1,9),N 
 C 
       IF ( N.GE.0 .OR. N.LT.-100 ) THEN
-        CALL EXIT
+        !CALL EXIT
+        call abandonCell
       ELSE
-        CALL ABORT
+        !CALL ABORT
+        call abandonCell
       ENDIF
 C 
 C---------------------------------------------------------------------

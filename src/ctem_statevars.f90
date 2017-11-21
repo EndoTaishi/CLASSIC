@@ -30,22 +30,22 @@ type ctem_switches
     integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
 
     logical :: transientCO2     !<use \f$CO_2\f$ time series, if false, fixedYearCO2 is used
-    character(180) :: CO2File   !< Location of the netcdf file containing atmospheric \f$CO_2\f$ values
+    character(350) :: CO2File   !< Location of the netcdf file containing atmospheric \f$CO_2\f$ values
     integer :: fixedYearCO2     !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
 
     logical :: transientCH4     !<use \f$CH_4\f$ time series, if false, fixedYearCH4 is used
-    character(180) :: CH4File   !< Location of the netcdf file containing atmospheric \f$CH_4\f$ values
+    character(350) :: CH4File   !< Location of the netcdf file containing atmospheric \f$CH_4\f$ values
     integer :: fixedYearCH4     !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
 
     logical :: dofire           !<boolean, if true allow fire disturbance, if false no fire occurs.
     logical :: transientPOPD    !<if set true use time series of population density data to calculate
                                 !<fire extinguishing probability and probability of fire due to human causes, false use
                                 !<value from single year (fixedYearPOPD)
-    character(180) :: POPDFile  !< Location of the netcdf file containing population density values
+    character(350) :: POPDFile  !< Location of the netcdf file containing population density values
     integer :: fixedYearPOPD    !< set the year to use for population density values if transientPOPD is false. (\f$people/km^2\f$)
 
     logical :: transientLGHT    !<use lightning strike time series, otherwise use fixedYearLGHT
-    character(180) :: LGHTFile  !< Location of the netcdf file containing lightning strike values
+    character(350) :: LGHTFile  !< Location of the netcdf file containing lightning strike values
     integer :: fixedYearLGHT    !< set the year to use for lightning strikes if transientLGHT is false.
 
     logical :: PFTCompetition   !<logical boolean telling if competition between pfts is on or not
@@ -57,7 +57,7 @@ type ctem_switches
                                 !<values(true).
 
     logical :: lnduseon         !<If true then the land cover is read in from LUCFile and changes annually
-    character(180) :: LUCFile   !<Location of the netcdf file containing land use change information
+    character(350) :: LUCFile   !<Location of the netcdf file containing land use change information
     integer :: fixedYearLUC     !<Set the year to use for land cover if lnduseon is false. If set to -9999,
                                 !<we use the PFT distribution found in the initialization file. Any other year
                                 !<we search for that year in the LUCFile
@@ -65,19 +65,19 @@ type ctem_switches
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
 
-    character(180) :: metFileFss        !< location of the incoming shortwave radiation meteorology file
-    character(180) :: metFileFdl        !< location of the incoming longwave radiation meteorology file
-    character(180) :: metFilePre        !< location of the precipitation meteorology file
-    character(180) :: metFileTa         !< location of the air temperature meteorology file
-    character(180) :: metFileQa         !< location of the specific humidity meteorology file
-    character(180) :: metFileUv         !< location of the wind speed meteorology file
-    character(180) :: metFilePres       !< location of the atmospheric pressure meteorology file
-    character(180) :: init_file         !< location of the netcdf initialization file
-    character(180) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
-    character(180) :: runparams_file    !< location of the namelist file containing the model parameters
-    character(180) :: Comment           !< Comment about the run that will be written to the output netcdfs
-    character(180) :: output_directory  !< Directory where the output netcdfs will be placed
-    character(180) :: xmlFile           !< location of the xml file that outlines the possible netcdf output files
+    character(350) :: metFileFss        !< location of the incoming shortwave radiation meteorology file
+    character(350) :: metFileFdl        !< location of the incoming longwave radiation meteorology file
+    character(350) :: metFilePre        !< location of the precipitation meteorology file
+    character(350) :: metFileTa         !< location of the air temperature meteorology file
+    character(350) :: metFileQa         !< location of the specific humidity meteorology file
+    character(350) :: metFileUv         !< location of the wind speed meteorology file
+    character(350) :: metFilePres       !< location of the atmospheric pressure meteorology file
+    character(350) :: init_file         !< location of the netcdf initialization file
+    character(350) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
+    character(350) :: runparams_file    !< location of the namelist file containing the model parameters
+    character(350) :: Comment           !< Comment about the run that will be written to the output netcdfs
+    character(350) :: output_directory  !< Directory where the output netcdfs will be placed
+    character(350) :: xmlFile           !< location of the xml file that outlines the possible netcdf output files
 
     logical :: doperpftoutput           !< Switch for making extra output files that are at the per PFT level
     logical :: dopertileoutput          !< Switch for making extra output files that are at the per tile level

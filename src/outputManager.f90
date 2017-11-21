@@ -1,3 +1,4 @@
+!>Central module for all netcdf output file operations
 module outputManager
 
     use ctem_statevars, only : c_switch
@@ -49,6 +50,7 @@ module outputManager
 
     type(outputDescriptor), allocatable     :: outputDescriptors(:)
 
+    !> Contains characteristic information about the output netcdf files and is used in their creation
     type variant
         character(80)   :: nameInCode           = ''
         character(80)   :: timeFrequency        = ''
@@ -58,16 +60,17 @@ module outputManager
 
     type(variant), allocatable              :: variants(:)
 
+    !> Stores the information needed to retrieve the output netcdf files to write to them
     type netcdfVar
         integer         :: ncid
         character(30)   :: key
-        character(80)   :: filename
+        character(350)   :: filename
     end type
 
-    integer, parameter  :: maxncVariableNumber = 300
+    integer, parameter  :: maxncVariableNumber = 300        !< Maximum number of netcdf output files to make (can be adjusted)
     type(netcdfVar)     :: netcdfVars(maxncVariableNumber)
 
-    integer :: variableCount = 0, descriptorCount = 0, variantCount = 0
+    integer :: variableCount = 0, descriptorCount = 0, variantCount = 0 !< Initializes the counter variables
 
     integer         :: refyr = 1850                     !< Time reference for netcdf output files
     character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
@@ -76,6 +79,9 @@ module outputManager
 contains
 
     !---------------------------------------------------------------------------------------
+    !>\ingroup output_generateOutputFiles
+    !>@{
+    !> Runs through all possible variants and calls for the generation of the required output files.
     subroutine generateOutputFiles
 
         implicit none
@@ -91,16 +97,19 @@ contains
 
     end subroutine generateOutputFiles
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_generateNetCDFFile
+    !>@{
+    !> Generates a new (netcdf) variable
     subroutine generateNetCDFFile(nameInCode, timeFreq, outputForm, descriptorLabel)
-    ! Generates a new (netcdf) variable
 
         implicit none
 
         character(*), intent(in)                :: nameInCode, timeFreq, outputForm, descriptorLabel
         type(outputDescriptor)                  :: descriptor
-        character(80)                           :: filename = ''
+        character(350)                           :: filename = ''
         logical                                 :: isTimeValid, isGroupValid, fileCreatedOk
         integer                                 :: id
 
@@ -137,8 +146,12 @@ contains
 
     end subroutine generateNetCDFFile
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_checkFileExists
+    !>@{
+    !> Checks if file exists
     logical function checkFileExists(filename)
 
         character(*), intent(in) :: filename
@@ -147,9 +160,12 @@ contains
 
     end function
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
-    ! Adds the new variable to the list of variables (see the type "netcdfVars")
+    !>\ingroup output_addVariable
+    !>@{
+    !> Adds the new variable to the list of variables (see the type "netcdfVars")
     integer function addVariable(key, filename)
         use fileIOModule
         implicit none
@@ -166,9 +182,12 @@ contains
 
     end function addVariable
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
-    ! Determines if the current variable matches the project configuration
+    !>\ingroup output_validGroup
+    !>@{
+    !> Determines if the current variable matches the project configuration
     logical function validGroup(descriptor)
 
         implicit none
@@ -196,9 +215,12 @@ contains
         endif
     end function validGroup
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
-    ! Determines wether the current variable matches the project configuration
+    !>\ingroup output_validTime
+    !>@{
+    !> Determines wether the current variable matches the project configuration
     logical function validTime(timeFreq, descriptor)
 
         implicit none
@@ -223,10 +245,13 @@ contains
         validTime = valid
     end function validTime
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
-    ! Generates the filename for the current variable
-    character(80) function generateFilename(outputForm, descriptor)
+    !>\ingroup output_generateFilename
+    !>@{
+    !> Generates the filename for the current variable
+    character(350) function generateFilename(outputForm, descriptor)
 
         implicit none
 
@@ -248,9 +273,12 @@ contains
         trim(descriptor%timeFreq) // trim(suffix) // '.nc'
     end function generateFilename
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
-    ! Retrieve a variable descriptor based on a given key (e.g. shortName)
+    !>\ingroup output_getDescriptor
+    !>@{
+    !> Retrieve a variable descriptor based on a given key (e.g. shortName)
     type (outputDescriptor) function getDescriptor(key)
 
         implicit none
@@ -267,9 +295,12 @@ contains
         print*, "something went awry with the getDescriptor function"
     end function getDescriptor
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
-    ! Find the id of the variable with the following key
+    !>\ingroup output_getIdByKey
+    !>@{
+    !> Find the id of the variable with the following key
     integer function getIdByKey(key)
 
         implicit none
@@ -284,8 +315,11 @@ contains
         getIdByKey = 0
     end function getIdByKey
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_createNetCDF
+    !>@{
     ! Create the output netcdf files
     subroutine createNetCDF(fileName, id, outputForm, descriptor,timeFreq)
 
@@ -384,6 +418,8 @@ contains
         timeDimId = ncDefDim(ncid,'time',nf90_unlimited)
         varid = ncDefVar(ncid,'time',nf90_double,[timeDimId])
 
+        ! Unlimited dimensions require collective writes
+        call ncWriteKind(ncid,varid,collective=.true.)
         call ncPutAtt(ncid,varid,'long_name',charvalues='time')
         call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
 
@@ -403,6 +439,10 @@ contains
 
         ! Figure out the total run length, make a time vector and add to file.
         call addTime(ncid,timeFreq)
+
+        ! Unlimited dimensions require collective writes, but now wish it to become
+        ! independent for accesses later.
+        call ncWriteKind(ncid,varid,collective=.false.)
 
         call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=(/myDomain%cntx/))
         call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=(/myDomain%cnty/))
@@ -464,13 +504,15 @@ contains
 
         call ncEndDef(ncid)
 
-        !call ncSetFill(ncid,varid,fill_value)  !< Set the netcdf to fill all unwritten values with _FillValue
-
-
     end subroutine createNetCDF
 
+    !<@}
     !---------------------------------------------------------------------------------------
-    ! Determine the time vector for this run and write to the output file
+    !>\ingroup output_addTime
+    !>@{
+    !> Determine the time vector for this run and write to the output file. This implictly
+    !! assumes that leap year meteorological forcing is used for runs with metLoop = 1, otherwise
+    !! the timing of the leap years will be off in the output files.
     subroutine addTime(ncid,timeFreq)
 
         use fileIOModule
@@ -483,8 +525,9 @@ contains
         character(*), intent(in)              :: timeFreq
         integer, intent(in)                   :: ncid
         real, allocatable, dimension(:)       :: timeVect
-        integer :: totsteps, totyrs, i, st, en, j, m
-        integer :: lastDOY
+        real, allocatable, dimension(:) :: temptime
+        integer :: totsteps, totyrs, i, st, en, j, m, cnt
+        integer :: lastDOY, length
         logical :: leapnow
 
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
@@ -527,10 +570,10 @@ contains
                     call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     timeVect(i) = (readMetStartYear + i - 1 - refyr) * lastDOY
                 end do
-                print*,'annual',timeVect
+ 
             case("monthly")
                 ! Monthly may start writing later (after jmosty) so make sure to account for that.
-                ! Also if leap years are on it changes the timestamps
+                ! Also if leap years are on, it changes the timestamps
                 if (readMetStartYear < jmosty) then
                     totyrs = (readMetEndYear - jmosty + 1) * metLoop
                 else
@@ -546,41 +589,110 @@ contains
                         timeVect(j) = (readMetStartYear + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
                     end do
                 end do
-                print*,'monthly',timeVect
+             
             case("daily")
+                ! Daily may start writing later (after jdsty) and end earlier (jdendy) so make sure to account for that.
+                ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps
+                ! First determine the number of years
+
+                ! Sanity check on jdsty and jdendy
+                if (readMetEndYear < jdsty .or. readMetStartYear > jdendy) then
+                    print*,'**addTime says: Check your daily output file start and end points, they are outside the range of this run'
+                    stop
+                end if
                 if (readMetStartYear < jdsty) then
                     st = jdsty
                 else
                     st = readMetStartYear
                 end if
-                if (readMetEndYear < jdendy) then
+                if (readMetEndYear > jdendy) then
                     en = jdendy
                 else
                     en = readMetEndYear
                 end if
                 totyrs = (en - st + 1) * metLoop
+                ! Now determine the total number of timesteps (days) across all years
                 totsteps = 0
-                ! Determine size of vector to be allocated for the time stamps
+                allocate(timeVect(0))
+                cnt=0
+                ! Create the time vector to write to the file
                 do i = 1, totyrs
                     call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     st = max(1, jdstd)
                     en = min(jdendd, lastDOY)
                     totsteps = totsteps + (en - st + 1)
+                    allocate(temptime(totsteps))
+                    length = size(timeVect)
+                    if (i > 1) then
+                        temptime(1 : length) = timeVect
+                    end if
+                    do j = st,en
+                        cnt=cnt+1
+                        temptime(cnt) = (readMetStartYear + i - 1 - refyr) * lastDOY + j
                 end do
-                allocate(timeVect(totsteps))
-                print *, 'NOT FINISHED, daily in addTime'
+                    call move_alloc(temptime,timeVect)
+                end do
 
             case("halfhourly")
+                ! Similar to daily in that it may start writing later (after jhhsty) and end earlier (jhhendy) so make sure to account for that.
+                ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps
+
+                ! Sanity check on jhhsty and jhhendy
+                if (readMetEndYear < jhhsty .or. readMetStartYear > jhhendy) then
+                    print*,'**addTime says: Check your half-hourly output file start and end points, they are outside the range of this run'
+                    stop
+                end if
+
+                if (readMetStartYear < jhhsty) then
+                    st = jhhsty
+                else
+                    st = readMetStartYear
+                end if
+                if (readMetEndYear > jhhendy) then
+                    en = jhhendy
+                else
+                    en = readMetEndYear
+                end if
+                totyrs = (en - st + 1) * metLoop
+
+                ! Now determine the total number of timesteps (halfhours) across all years
+                totsteps = 0
+                allocate(timeVect(0))
+                cnt=0
+                ! Create the time vector to write to the file
+                do i = 1, totyrs
+                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    st = max(1, jhhstd)
+                    en = min(jhhendd, lastDOY)
+                    totsteps = totsteps + (en - st + 1) * 48 ! 48 half hours in a day. !FLAG change this if delt is not half-hour
+
+                    allocate(temptime(totsteps))
+                    length = size(timeVect)
+                    if (i > 1) then
+                        temptime(1 : length) = timeVect
+                    end if
+                    do j = st,en
+                        do m = 1,48
+                            cnt=cnt+1
+                            temptime(cnt) = (readMetStartYear + i - 1 - refyr) * lastDOY + j + (m - 1) / 48.
+                        end do
+                    end do
+                    call move_alloc(temptime,timeVect)
+                end do
             case default
                 print*,'addTime says - Unknown timeFreq: ',timeFreq
+                stop
         end select
 
-        call ncPutDimValues(ncid, 'lon', timeVect, count=(/totsteps/))
+        call ncPutDimValues(ncid, 'time', timeVect, count=(/totsteps/))
 
     end subroutine addTime
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_writeOutput1D
+    !>@{
     ! Write model outputs to already created netcdf files
     subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
 
@@ -627,29 +739,16 @@ contains
         ! Check if the time period has already been added to the file
         timeIndex = ncGetDimLen(ncid, "time")
 
-        !if (timeIndex == 0) then
-            ! This is the first time step so add it and set the array to fill_value
-        !    timeIndex = timeIndex + 1
-        !    call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
-        !    call ncSetFill(ncid, label,timeIndex)
-        !else
-            ! This is a subsequent time step so need to check if it has already been added by
-            ! another grid cell.
-            allocate(timeWritten(timeIndex))
-            timeWritten= ncGetDimValues(ncid, "time", count = (/timeIndex/))
-            posTimeWanted = checkForTime(timeIndex,timeWritten,localStamp(1))
+        allocate(timeWritten(timeIndex))
+        timeWritten= ncGetDimValues(ncid, "time", count = (/timeIndex/))
+        posTimeWanted = checkForTime(timeIndex,timeWritten,localStamp(1))
 
             if (posTimeWanted == 0) then
-                print*,'missing timestep in output file',localStamp
+            print*,'missing timestep in output file',key,localStamp
                 stop
-                !timeIndex = timeIndex + 1
-                !call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
-                !call ncSetFill(ncid, label,timeIndex)
             else
-                ! timeStamp already added so just use it.
                 timeIndex = posTimeWanted
             end if
-        !end if
 
         if (length > 1) then
            call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])
@@ -659,8 +758,11 @@ contains
 
     end subroutine writeOutput1D
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_checkForTime
+    !>@{
     ! Find if a time period is already in the timeIndex of the file
     integer function checkForTime(timeIndex,timeWritten,timeStamp)
 
@@ -679,8 +781,11 @@ contains
         checkForTime = 0
     end function checkForTime
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_closeNCFiles
+    !>@{
     ! Close all output netcdfs or just a select file
     subroutine closeNCFiles(incid)
 
@@ -698,11 +803,13 @@ contains
                 call ncClose(netcdfVars(i)%ncid)
             enddo
         end if
-        print*,'Done closing files'
-    end subroutine closeNCFiles
 
+    end subroutine closeNCFiles
+    !<@}
     !---------------------------------------------------------------------------------------
 
+    !>\ingroup output_identityVector
+    !>@{
     pure function identityVector(n) result(res)
         integer, allocatable ::res(:)
         integer, intent(in) :: n
@@ -713,7 +820,9 @@ contains
         end forall
     end function identityVector
 
+    !<@}
     !---------------------------------------------------------------------------------------
 
+!>\namespace output
 
 end module outputManager

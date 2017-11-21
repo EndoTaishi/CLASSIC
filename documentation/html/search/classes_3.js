@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['outputdescriptor',['outputdescriptor',['../structoutputmanager_1_1outputdescriptor.html',1,'outputmanager']]]
+  ['simulationdomain',['simulationdomain',['../structoutputmanager_1_1simulationdomain.html',1,'outputmanager']]]
 ];

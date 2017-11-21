@@ -125,21 +125,37 @@ contains
     end subroutine ncReDef
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> For PARALLEL only, we need to set fill mode on the netcdf file. NetCDF is setfill by default while Pnetcdf is no_fill.
-    subroutine ncSetFill(fileId,label,start)
+    !> Set the access for a variable, either collective or independent. Only applies to PARALLEL.
+    subroutine ncWriteKind(fileId,varId,collective)
         integer, intent(in)                 :: fileId   !< File id
-        character(*), intent(in)            :: label    !< Label
-        integer, intent(in)                 :: start    !< What position in the record ('time') do we need to make all positions
-                                                        !! the fill_value?
-        integer :: varId
-
+        integer, intent(in)                 :: varId    !< Variable id
+        logical :: collective
 #if PARALLEL
-        varId = ncGetVarId(fileId, label)
-        !call checkNC(nf90mpi_fill_var_rec(fileId, varId, int(start,8)))
+        if (collective) then
+            call checkNC(nf90_var_par_access(fileId, varId, nf90_collective))
+        else !independent
+            call checkNC(nf90_var_par_access(fileId, varId, nf90_independent))
+        end if
 #endif
         return
-    end subroutine ncSetFill
+    end subroutine ncWriteKind
 
+!     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+!     !> For PARALLEL only, we need to set fill mode on the netcdf file. NetCDF is setfill by default while Pnetcdf is no_fill.
+!     subroutine ncSetFill(fileId,label,start)
+!         integer, intent(in)                 :: fileId   !< File id
+!         character(*), intent(in)            :: label    !< Label
+!         integer, intent(in)                 :: start    !< What position in the record ('time') do we need to make all positions
+!                                                         !! the fill_value?
+!         integer :: varId
+!
+! #if PARALLEL
+!         varId = ncGetVarId(fileId, label)
+!         !call checkNC(nf90mpi_fill_var_rec(fileId, varId, int(start,8)))
+! #endif
+!         return
+!     end subroutine ncSetFill
+!
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Closes a given file.
     subroutine ncClose(fileId)

@@ -14,7 +14,6 @@ var ctem__statevars_8f90 =
     [ "alloc_ctem_vars", "ctem__statevars_8f90.html#ad342e3a360b7b12a40b1c80a251d95b9", null ],
     [ "initrowvars", "ctem__statevars_8f90.html#a069aa6fb4b132ef4fe61febb61d40ec1", null ],
     [ "resetdaily", "ctem__statevars_8f90.html#af1d0ff0bbf816233f2b51362f1ccb523", null ],
-    [ "resetgridavg", "ctem__statevars_8f90.html#a424132cbb7cede85302f098c104b6b81", null ],
     [ "resetmonthend", "ctem__statevars_8f90.html#afcc1311f7dd0743cf4002b0d2635e824", null ],
     [ "resetyearend", "ctem__statevars_8f90.html#a090f13e5df0ad3551010689fcf82a0ac", null ],
     [ "c_switch", "ctem__statevars_8f90.html#ae5b8eaa631db6fcf2adc586a8ffdb722", null ],

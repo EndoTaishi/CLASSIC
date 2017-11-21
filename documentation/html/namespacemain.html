@@ -177,29 +177,29 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<pre class="fragment">### first set of definitions:
-background variables, and prognostic and diagnostic
-variables normally provided by and/or used by the gcm.
- the suffix "rot" refers to variables existing on the
- mosaic grid on the current latitude circle.  the suffix
- "gat" refers to the same variables after they have undergone
- a "gather" operation in which the two mosaic dimensions
- are collapsed into one.  the suffix "row" refers both to
- grid-constant input variables. and to grid-averaged
- diagnostic variables.
+<pre class="fragment">### First set of definitions:
+Background variables, and prognostic and diagnostic
+variables normally provided by and/or used by the GCM.
+The suffix "rot" refers to variables existing on the
+mosaic grid on the current latitude circle.  The suffix
+"gat" refers to the same variables after they have undergone
+a "gather" operation in which the two mosaic dimensions
+are collapsed into one.  The suffix "row" refers both to
+grid-constant input variables. and to grid-averaged
+diagnostic variables.
 
- the first dimension element of the "rot" variables
- refers to the number of grid cells on the current
- latitude circle.  in this stand-alone version, this
- number is set to 1, the second dimension
- element of the "rot" variables refers to the maximum
- number of tiles in the mosaic.  the first
- dimension element in the "gat" variables is given by
- the product of the first two dimension elements in the
- "rot" variables.
+The first dimension element of the "rot" variables
+refers to the number of grid cells on the current
+latitude circle.  In this stand-alone version, this
+number is set to 1, the second dimension
+element of the "rot" variables refers to the maximum
+number of tiles in the mosaic.  The first
+dimension element in the "gat" variables is given by
+the product of the first two dimension elements in the
+"rot" variables.
 
 The majority of CTEM parameters are stored in ctem_params.f90.
-Also the CTEM variables are stored in modules that we point to
+Also the CLASS and CTEM variables are stored in modules that we point to
 in this driver. We access the variables and parameters
 through use statements for modules: </pre> <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -209,29 +209,29 @@ through use statements for modules: </pre> <dl class="params"><dt>Parameters</dt
   </table>
   </dd>
 </dl>
-<pre class="fragment">### first set of definitions:
-background variables, and prognostic and diagnostic
-variables normally provided by and/or used by the gcm.
- the suffix "rot" refers to variables existing on the
- mosaic grid on the current latitude circle.  the suffix
- "gat" refers to the same variables after they have undergone
- a "gather" operation in which the two mosaic dimensions
- are collapsed into one.  the suffix "row" refers both to
- grid-constant input variables. and to grid-averaged
- diagnostic variables.
+<pre class="fragment">### First set of definitions:
+Background variables, and prognostic and diagnostic
+variables normally provided by and/or used by the GCM.
+The suffix "rot" refers to variables existing on the
+mosaic grid on the current latitude circle.  The suffix
+"gat" refers to the same variables after they have undergone
+a "gather" operation in which the two mosaic dimensions
+are collapsed into one.  The suffix "row" refers both to
+grid-constant input variables. and to grid-averaged
+diagnostic variables.
 
- the first dimension element of the "rot" variables
- refers to the number of grid cells on the current
- latitude circle.  in this stand-alone version, this
- number is set to 1, the second dimension
- element of the "rot" variables refers to the maximum
- number of tiles in the mosaic.  the first
- dimension element in the "gat" variables is given by
- the product of the first two dimension elements in the
- "rot" variables.
+The first dimension element of the "rot" variables
+refers to the number of grid cells on the current
+latitude circle.  In this stand-alone version, this
+number is set to 1, the second dimension
+element of the "rot" variables refers to the maximum
+number of tiles in the mosaic.  The first
+dimension element in the "gat" variables is given by
+the product of the first two dimension elements in the
+"rot" variables.
 
 The majority of CTEM parameters are stored in ctem_params.f90.
-Also the CTEM variables are stored in modules that we point to
+Also the CLASS and CTEM variables are stored in modules that we point to
 in this driver. We access the variables and parameters
 through use statements for modules: </pre> <p>NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run. This the driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then of nlat and nmos</p>
 <p>The parameter JLAT is calculated from DLATROW as the nearest integer value,</p>
@@ -265,7 +265,7 @@ through use statements for modules: </pre> <p>NLTEST and NMTEST, the number of g
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemain.html">main</a></li>
-    <li class="footer">Generated on Thu Oct 26 2017 11:36:04 for CLASSIC by
+    <li class="footer">Generated on Mon Nov 20 2017 21:28:00 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -4949,8 +4949,8 @@ contains
                                                             ACTLYR,FTABLE,lastDOY)
 
             ! Annual physics outputs
-            !call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
-            !   &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
+            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
+               &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
                 if (dodayoutput) then

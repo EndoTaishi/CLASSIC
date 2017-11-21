@@ -370,6 +370,7 @@ C
      1            DELZW(I,1),DELZW(I,2),DELZW(I,3)
 6443          FORMAT(2X,'LAYER 1 ENERGY BALANCE  ',2I8,2F20.8)
               !CALL EXIT
+              call abandonCell
           ENDIF
           IF(ABS(CT2STP(I)-QSUM2).GT.5.0) THEN
               WRITE(6,6444) N,I,CT2STP(I),QSUM2
@@ -384,6 +385,7 @@ C
      1            DELZW(I,2),HCPS(I,2),DELZW(I,3)
 6451          FORMAT(2X,7E20.6)
               !CALL EXIT
+              call abandonCell
           ENDIF
           IF(ABS(CT3STP(I)-QSUM3).GT.10.0) THEN
               WRITE(6,6445) N,I,CT3STP(I),QSUM3
@@ -398,6 +400,7 @@ C
               WRITE(6,6446) N,WTVSTP(I),WSUMV
 6446          FORMAT(2X,'CANOPY WATER BALANCE  ',I8,2F20.8)
               !CALL EXIT
+              call abandonCell
           ENDIF
           IF(ABS(WTSSTP(I)-WSUMS).GT.1.0E-2) THEN
               WRITE(6,6447) N,I,WTSSTP(I),WSUMS
@@ -407,6 +410,7 @@ C
               WRITE(6,6450) SNO(I),WSNOW(I),TSNOW(I)-TFREZ
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I)
               !CALL EXIT
+              call abandonCell
           ENDIF
           IF(ABS(WTGSTP(I)-WSUMG).GT.1.0E-1) THEN
               WRITE(6,6448) N,I,WTGSTP(I),WSUMG
@@ -424,6 +428,7 @@ C
 6450          FORMAT(2X,7F15.6)
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I)
               !CALL EXIT
+              call abandonCell
           ENDIF
 400   CONTINUE
 C

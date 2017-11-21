@@ -359,7 +359,7 @@ real :: gamma_m                                 !< equivalent co2 fertilization 
 
 ! Passed variables:
 
-character(80)    :: runParamsFile
+character(350)    :: runParamsFile
 logical          :: PFTCompetitionSwitch
 
 

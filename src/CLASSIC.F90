@@ -62,11 +62,6 @@ program CLASSIC
     !! and the parameters of the initilization netcdf file.
     call generateOutputFiles
 
-! #if PARALLEL
-!     !> This just ensures that all processors start the next step together.
-!     call MPI_BARRIER(MPI_COMM_WORLD, ierr)
-! #endif
-
     !> Run model over the land grid cells, in parallel or serial
     call processLandCells
 

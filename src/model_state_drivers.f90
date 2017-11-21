@@ -78,20 +78,20 @@ contains
         implicit none
 
         ! pointers:
-        character(180), pointer          :: init_file
-        character(180), pointer          :: rs_file_to_overwrite
-        character(180), pointer          :: CO2File
-        character(180), pointer          :: CH4File
-        character(180), pointer          :: POPDFile
-        character(180), pointer          :: LGHTFile
-        character(180), pointer          :: LUCFile
-        character(180), pointer          :: metFileFss
-        character(180), pointer          :: metFileFdl
-        character(180), pointer          :: metFilePre
-        character(180), pointer          :: metFileTa
-        character(180), pointer          :: metFileQa
-        character(180), pointer          :: metFileUv
-        character(180), pointer          :: metFilePres
+        character(350), pointer          :: init_file
+        character(350), pointer          :: rs_file_to_overwrite
+        character(350), pointer          :: CO2File
+        character(350), pointer          :: CH4File
+        character(350), pointer          :: POPDFile
+        character(350), pointer          :: LGHTFile
+        character(350), pointer          :: LUCFile
+        character(350), pointer          :: metFileFss
+        character(350), pointer          :: metFileFdl
+        character(350), pointer          :: metFilePre
+        character(350), pointer          :: metFileTa
+        character(350), pointer          :: metFileQa
+        character(350), pointer          :: metFileUv
+        character(350), pointer          :: metFilePres
         logical, pointer                 :: ctem_on
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon

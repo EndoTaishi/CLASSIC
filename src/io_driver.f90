@@ -1688,7 +1688,7 @@ contains
 
                 ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
                 ! rather than the first day of the next month.
-                timeStamp = (iyear - 1 - refyr) * lastDOY + monthend(imonth+1) - 1
+                timeStamp = (iyear - refyr) * lastDOY + monthend(imonth+1) - 1
 
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])

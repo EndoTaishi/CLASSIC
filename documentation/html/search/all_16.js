@@ -16,6 +16,8 @@ var searchData=
   ['write_5frestart',['write_restart',['../namespacemodel__state__drivers.html#a0864e6b6afaeae951a26d12fef4d2f42',1,'model_state_drivers']]],
   ['wsnoacc',['wsnoacc',['../structclass__statevars_1_1class__rotated.html#ae0860c25f95e7270b5c6770f349d481b',1,'class_statevars::class_rotated']]],
   ['wsnogat',['wsnogat',['../structclass__statevars_1_1class__gather.html#aebcf26539cf06260a9f1e086b34834c9',1,'class_statevars::class_gather']]],
+  ['wsnorot',['wsnorot',['../structclass__statevars_1_1class__rotated.html#ae483e7379b77f4077d9f937be0ae2f26',1,'class_statevars::class_rotated']]],
+  ['wsnorow',['wsnorow',['../structclass__statevars_1_1class__rotated.html#ad0766ac0801121307841d8a5935fbcb3',1,'class_statevars::class_rotated']]],
   ['wtabgat',['wtabgat',['../structclass__statevars_1_1class__gather.html#ace80e54c3cb5dde3c04ac573ddf92575',1,'class_statevars::class_gather']]],
   ['wtablegat',['wtablegat',['../structclass__statevars_1_1class__gather.html#af35b83194880929af322de664c9438e6',1,'class_statevars::class_gather']]],
   ['wtblacc',['wtblacc',['../structclass__statevars_1_1class__rotated.html#ad94726b5c27697adc1f751588220f0a3',1,'class_statevars::class_rotated']]],

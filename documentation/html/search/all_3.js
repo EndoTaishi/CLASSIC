@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['datapackage',['datapackage',['../structdatatransfermodule_1_1datapackage.html',1,'datatransfermodule']]],
+  ['datafunc',['datafunc',['../namespacexmlmanager.html#a2884eec136afc157e5963e57dbc82b6d',1,'xmlmanager']]],
   ['dayl',['dayl',['../structctem__statevars_1_1veg__rot.html#adb16590525cc1421465a2e36a893d1bd',1,'ctem_statevars::veg_rot::dayl()'],['../structctem__statevars_1_1veg__gat.html#afa3f97466f063a79fe303a14ed59b37f',1,'ctem_statevars::veg_gat::dayl()']]],
   ['dayl_5fmax',['dayl_max',['../structctem__statevars_1_1veg__rot.html#ae2c141da751b74b5d88423298d9f1693',1,'ctem_statevars::veg_rot::dayl_max()'],['../structctem__statevars_1_1veg__gat.html#a50dcc9d5196dc4bee52dedb1d41d767c',1,'ctem_statevars::veg_gat::dayl_max()']]],
   ['dayschk',['dayschk',['../namespacectem__params.html#a7fd36a002b263cef0aa39ef02ad88f92',1,'ctem_params']]],

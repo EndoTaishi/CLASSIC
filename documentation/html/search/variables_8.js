@@ -13,7 +13,7 @@ var searchData=
   ['includebareground',['includebareground',['../structoutputmanager_1_1outputdescriptor.html#abc148b210bc74ddb8e565f5c17552afa',1,'outputmanager::outputdescriptor']]],
   ['inibioclim',['inibioclim',['../structctem__statevars_1_1ctem__switches.html#a363efc622307abfadb56494f98bf4b35',1,'ctem_statevars::ctem_switches']]],
   ['inico2i',['inico2i',['../namespacectem__params.html#a0cdf4bffeae1e20241712787c90ad71f',1,'ctem_params']]],
-  ['init_5ffile',['init_file',['../structctem__statevars_1_1ctem__switches.html#af17d01da21648e1c911639191b97f2b2',1,'ctem_statevars::ctem_switches']]],
+  ['init_5ffile',['init_file',['../structctem__statevars_1_1ctem__switches.html#a74d588073a6a640b2387583381e752fd',1,'ctem_statevars::ctem_switches']]],
   ['intrmort',['intrmort',['../structctem__statevars_1_1veg__gat.html#acc2d305d85a52c0db34f26fd0f52afb5',1,'ctem_statevars::veg_gat']]],
   ['ipai',['ipai',['../structctem__statevars_1_1ctem__switches.html#aee2479d5348ac55b7a91de5fd5ab9e98',1,'ctem_statevars::ctem_switches']]],
   ['ipcp',['ipcp',['../structctem__statevars_1_1ctem__switches.html#a21450d2957b671b4705e6576d0388988',1,'ctem_statevars::ctem_switches']]],

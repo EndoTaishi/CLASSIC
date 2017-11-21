@@ -17,7 +17,12 @@
 					<timeFrequency>monthly</timeFrequency>
 					<outputForm>grid</outputForm>
 				</variant>
-			</variants>
+                <variant>
+                    <nameInCode>fsstar_hh</nameInCode>
+                    <timeFrequency>halfhourly</timeFrequency>
+                    <outputForm>grid</outputForm>
+                </variant>
+            </variants>
 		</variable>
 
 		<variable includeBareGround="false">

@@ -104,8 +104,8 @@ contains
         logical, pointer :: dohhoutput    !< Switch for making half hourly output files (annual are always outputted)
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
 
-        character(140) :: jobfile
-        character(80) :: argbuff
+        character(350) :: jobfile
+        character(350) :: argbuff
         integer :: argcount, iargc
 
         ! Order of the namelist and order in the file don't have to match.
