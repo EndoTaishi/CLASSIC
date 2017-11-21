@@ -125,38 +125,6 @@ contains
     end subroutine ncReDef
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Set the access for a variable, either collective or independent. Only applies to PARALLEL.
-    subroutine ncWriteKind(fileId,varId,collective)
-        integer, intent(in)                 :: fileId   !< File id
-        integer, intent(in)                 :: varId    !< Variable id
-        logical :: collective
-#if PARALLEL
-        if (collective) then
-            call checkNC(nf90_var_par_access(fileId, varId, nf90_collective))
-        else !independent
-            call checkNC(nf90_var_par_access(fileId, varId, nf90_independent))
-        end if
-#endif
-        return
-    end subroutine ncWriteKind
-
-!     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-!     !> For PARALLEL only, we need to set fill mode on the netcdf file. NetCDF is setfill by default while Pnetcdf is no_fill.
-!     subroutine ncSetFill(fileId,label,start)
-!         integer, intent(in)                 :: fileId   !< File id
-!         character(*), intent(in)            :: label    !< Label
-!         integer, intent(in)                 :: start    !< What position in the record ('time') do we need to make all positions
-!                                                         !! the fill_value?
-!         integer :: varId
-!
-! #if PARALLEL
-!         varId = ncGetVarId(fileId, label)
-!         !call checkNC(nf90mpi_fill_var_rec(fileId, varId, int(start,8)))
-! #endif
-!         return
-!     end subroutine ncSetFill
-!
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Closes a given file.
     subroutine ncClose(fileId)
         integer, intent(in)                 :: fileId !< File id
@@ -240,8 +208,8 @@ contains
     subroutine ncPutDimValues(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                 :: fileId       !< File id
         character(*), intent(in)            :: label        !< Label
-        real, intent(inout), optional       :: realValues(:)!< Array of reals
-        integer, intent(inout), optional    :: intValues(:) !< Array of ints
+        real, intent(in), optional       :: realValues(:)!< Array of reals
+        integer, intent(in), optional    :: intValues(:) !< Array of ints
         integer, intent(in), optional       :: start(1)     !< Start array
         integer, intent(in), optional       :: count(1)     !< Count array
         integer                             :: localStart(1) = [1], localCount(1) = [1], varId, counter
@@ -261,7 +229,10 @@ contains
             call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutAtt, please supply either intValues or realValues; just one')
+        if (counter /= 1) then
+            print*,'In function ncPutDimValues, please supply either intValues or realValues; just one ',trim(label)
+            stop
+        end if
 
     end subroutine ncPutDimValues
 
@@ -270,12 +241,13 @@ contains
     subroutine ncPutVar(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                                     :: fileId       !< File id
         character(*), intent(in)                                :: label        !< Label
-        real, intent(inout), optional                           :: realValues(:)!< Array of reals
-        integer, intent(inout), optional                        :: intValues(:) !< Array of ints
+        real, intent(in), optional                           :: realValues(:)!< Array of reals
+        integer, intent(in), optional                        :: intValues(:) !< Array of ints
         integer, intent(in)                                     :: start(:)     !< Start array
         integer, intent(in)                                     :: count(:)     !< Count array
         integer                                                 :: varId, counter
 
+        counter = 0
         varId = ncGetVarId(fileId, label)
 
         if (present(realValues)) then

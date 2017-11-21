@@ -14,7 +14,7 @@ module outputManager
     private :: getDescriptor
     public :: getIdByKey
     public  :: createNetCDF
-    public :: addTime
+    private :: determineTime
     private :: identityVector
     public :: writeOutput1D
     public  :: closeNCFiles
@@ -75,6 +75,7 @@ module outputManager
     integer         :: refyr = 1850                     !< Time reference for netcdf output files
     character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
     real   :: fill_value = 1.E38             !< Default fill value for missing values in netcdf output files
+    real, dimension(:), allocatable :: timeVect  !< Array of the timesteps in days since refyr for this model run and output file
 
 contains
 
@@ -337,7 +338,7 @@ contains
 
         character(8)  :: today
         character(10) :: now
-        integer                     :: ncid, varid, suffix,i
+        integer                     :: ncid, varid, suffix,i,timeLength
         integer                     :: DimId,lonDimId,latDimId,tileDimId,pftDimId,layerDimId,timeDimId
         real, dimension(2)          :: xrange, yrange
         integer, dimension(:), allocatable :: intArray
@@ -414,12 +415,16 @@ contains
 
         end select
 
+        ! Figure out the total run length, make a time vector and add to file.
+        call determineTime(timeFreq)
+
+        timeLength = size(timeVect)
+
         ! Set up the time dimension
-        timeDimId = ncDefDim(ncid,'time',nf90_unlimited)
+        timeDimId = ncDefDim(ncid,'time',timeLength)
+
         varid = ncDefVar(ncid,'time',nf90_double,[timeDimId])
 
-        ! Unlimited dimensions require collective writes
-        call ncWriteKind(ncid,varid,collective=.true.)
         call ncPutAtt(ncid,varid,'long_name',charvalues='time')
         call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
 
@@ -435,17 +440,14 @@ contains
 
         call ncEndDef(ncid)
 
+        call ncPutDimValues(ncid, 'time', realValues=timeVect, count=(/timelength/))
+
+        deallocate(timeVect) !needs to be deallocated so the next file can allocate it.
+
         ! Fill in the dimension variables and define the model output vars
 
-        ! Figure out the total run length, make a time vector and add to file.
-        call addTime(ncid,timeFreq)
-
-        ! Unlimited dimensions require collective writes, but now wish it to become
-        ! independent for accesses later.
-        call ncWriteKind(ncid,varid,collective=.false.)
-
-        call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=(/myDomain%cntx/))
-        call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=(/myDomain%cnty/))
+        call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
+        call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
         
         select case(trim(outputForm))
             case ("tile")       ! Per tile outputs
@@ -508,12 +510,12 @@ contains
 
     !<@}
     !---------------------------------------------------------------------------------------
-    !>\ingroup output_addTime
+    !>\ingroup output_determineTime
     !>@{
-    !> Determine the time vector for this run and write to the output file. This implictly
+    !> Determine the time vector for this run. This implictly
     !! assumes that leap year meteorological forcing is used for runs with metLoop = 1, otherwise
     !! the timing of the leap years will be off in the output files.
-    subroutine addTime(ncid,timeFreq)
+    subroutine determineTime(timeFreq)
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
@@ -523,8 +525,6 @@ contains
         implicit none
 
         character(*), intent(in)              :: timeFreq
-        integer, intent(in)                   :: ncid
-        real, allocatable, dimension(:)       :: timeVect
         real, allocatable, dimension(:) :: temptime
         integer :: totsteps, totyrs, i, st, en, j, m, cnt
         integer :: lastDOY, length
@@ -684,9 +684,7 @@ contains
                 stop
         end select
 
-        call ncPutDimValues(ncid, 'time', timeVect, count=(/totsteps/))
-
-    end subroutine addTime
+    end subroutine determineTime
 
     !<@}
     !---------------------------------------------------------------------------------------

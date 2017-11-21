@@ -28,7 +28,7 @@ ifeq ($(mode), supercomputer)
 	# Supercomputer Include Flags
 	IFLAGS =
 	# Supercomputer Library Flags
-	LFLAGS = -DPARALLEL -lpnetcdf -r8 -align array64byte -O1 -g -p -init=arrays -init=zero -traceback
+	LFLAGS = -DPARALLEL -lnetcdf -r8 -align array64byte -O1 -g -p -init=arrays -init=zero -traceback
 else
 ifeq ($(mode), parallel)
 	# Parallel compiler
@@ -36,7 +36,7 @@ ifeq ($(mode), parallel)
 	# Parallel Include Flags
 	IFLAGS =  -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
 	# Parallel Library Flags
-	LFLAGS = -DPARALLEL -lpnetcdf
+	LFLAGS = -DPARALLEL -lnetcdf
 	# Additional flags
 	LFLAGS += -O3 -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
 else
