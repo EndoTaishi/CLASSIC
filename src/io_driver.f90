@@ -21,7 +21,7 @@ contains
     !>\ingroup io_driver_class_halfhourly_aw
     !>@{
 
-    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,iyear,SBC,DELT,TFREZ)!,FAREROT,jdstd,jdsty,jdendd,jdendy)
+    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,runyr,SBC,DELT,TFREZ)!,FAREROT,jdstd,jdsty,jdendd,jdendy)
 
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
@@ -36,7 +36,7 @@ contains
         integer, intent(in) :: nmtest
         integer, intent(in) :: ncount
         integer, intent(in) :: iday
-        integer, intent(in) :: iyear
+        integer, intent(in) :: runyr
         real, intent(in) :: SBC  !CLASS common block items,
         real, intent(in) :: DELT !CLASS common block items,
         real, intent(in) :: TFREZ !CLASS common block items,
@@ -474,7 +474,7 @@ contains
 
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (iyear - 1 - refyr) !* !FLAG sort this out.
+        timeStamp = (runyr - 1 - refyr) !* !FLAG sort this out.
 
 
         ! Now prepare and write out the grid averaged physics variables to output files
@@ -642,7 +642,7 @@ contains
 
 !                                 !
 !                                     &                   FCS(M),FGS(M),FC(M),FG(M),'
-!                                 WRITE(68,6800) IHOUR,IMIN,IDAY,IYEAR,&
+!                                 WRITE(68,6800) IHOUR,IMIN,IDAY,runyr,&
 !                                     &                   FSGVROT(I,M),FSGSROT(I,M),FSGGROT(I,M),&
 !                                     &                   FLGVROT(I,M),FLGSROT(I,M),FLGGROT(I,M),&
 !                                     &                   HFSCROT(I,M),HFSSROT(I,M),HFSGROT(I,M),&
@@ -651,7 +651,7 @@ contains
 !                                     &                   (HMFGROT(I,M,J),J=1,3),&
 !                                     &                   HTCCROT(I,M),HTCSROT(I,M),&
 !                                     &                   (HTCROT(I,M,J),J=1,3),' TILE ',M
-!                                 WRITE(69,6900) IHOUR,IMIN,IDAY,IYEAR,&
+!                                 WRITE(69,6900) IHOUR,IMIN,IDAY,runyr,&
 !                                     &                   PCFCROT(I,M),PCLCROT(I,M),PCPNROT(I,M),&
 !                                     &                   PCPGROT(I,M),QFCFROT(I,M),QFCLROT(I,M),&
 !                                     &                   QFNROT(I,M),QFGROT(I,M),(QFCROT(I,M,J),J=1,3),&
@@ -1112,30 +1112,30 @@ contains
 !                 ENDIF
 !                 GTOUT=GTACC(I)-TFREZ
 !
-!                 if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+!                 if ((runyr .ge. jdsty) .and. (runyr .le. jdendy)) then
 !                     if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
 !
-!                         WRITE(61,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,&
+!                         WRITE(61,6100) IDAY,runyr,FSSTAR,FLSTAR,QH,QE,SNOMLT,&
 !                             &                       BEG,GTOUT,SNOACC(I),RHOSACC(I),&
 !                             &                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
 !                         IF(IGND.GT.3) THEN
-!                             WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,&
+!                             WRITE(62,6201) IDAY,runyr,(TBARACC(I,J)-TFREZ,&
 !                                 &                       THLQACC(I,J),THICACC(I,J),J=1,IGND),&
 !                                 &                       ACTLYR_G(I),FTABLE_g(I)
 !                         ELSE
-!                             WRITE(62,6200) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,&
+!                             WRITE(62,6200) IDAY,runyr,(TBARACC(I,J)-TFREZ,&
 !                                 &                       THLQACC(I,J),THICACC(I,J),J=1,3),&
 !                                 &                       TCN,RCANACC(I),SCANACC(I),TSN,ZSN,&
 !                                 &                       ACTLYR_G(I),FTABLE_g(I)
 !                         ENDIF
-!                         WRITE(63,6300) IDAY,IYEAR,FSINACC(I),FLINACC(I),&
+!                         WRITE(63,6300) IDAY,runyr,FSINACC(I),FLINACC(I),&
 !                             &                       TAACC(I)-TFREZ,UVACC(I),PRESACC(I),&
 !                             &                       QAACC(I),PREACC(I),EVAPACC(I)
 !
 !                     endif
 !                 ENDIF
 !
-! 6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',&
+! 6903  format (2X,'iday runyr nppmoss   armoss   gppmoss   ',&
 !          'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',&
 !          'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',&
 !          'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',&
@@ -1147,7 +1147,7 @@ contains
 !          'heteresp9   heteresp10  heteresp11  heteresp12   ',&
 !          'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',&
 !          'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
-! 6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',&
+! 6904  format (2X,'iday   runyr   veghght1   veghght2   veghght3   ',&
 !          'veghght4   veghght5   veghght6   veghght7   veghght8   ',&
 !          'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',&
 !          'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',&
@@ -1197,7 +1197,7 @@ contains
 
 !                 !    ----peatland output-----------------------------------------------\
 !
-!                 write(99,6999)  IDAY,IYEAR,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
+!                 write(99,6999)  IDAY,runyr,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
 ! 6999    format(1X,I4,I5,10f12.3)
 !                 !    ----YW March 23, 2015 --------------------------------------------/
 !
@@ -1375,26 +1375,26 @@ contains
 !
 !                     GTOUT=GTACC_M(I,M)-TFREZ
 !
-!                     if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+!                     if ((runyr .ge. jdsty) .and. (runyr .le. jdendy)) then
 !                         if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
 !                             !
 !                             !         WRITE TO OUTPUT FILES
 !                             !
-!                             WRITE(611,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,&
+!                             WRITE(611,6100) IDAY,runyr,FSSTAR,FLSTAR,QH,QE,SNOMLT,&
 !                                 &                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M),&
 !                                 &                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M),&
 !                                 &                    CUMSNO,' TILE ',M
 !                             IF(IGND.GT.3) THEN
-!                                 WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,&
+!                                 WRITE(621,6201) IDAY,runyr,(TBARACC_M(I,M,J)-TFREZ,&
 !                                     &                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,IGND)&
 !                                     &                  ,ACTLYR(I,M), FTABLE(I,M),' TILE ',M
 !                             ELSE
-!                                 WRITE(621,6200) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,&
+!                                 WRITE(621,6200) IDAY,runyr,(TBARACC_M(I,M,J)-TFREZ,&
 !                                     &                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,3),&
 !                                     &                  TCN,RCANACC_M(I,M),SCANACC_M(I,M),TSN,ZSN,&
 !                                     &                  ' TILE ',M
 !                             ENDIF
-!                             WRITE(631,6300) IDAY,IYEAR,FSINACC_M(I,M),FLINACC_M(I,M),&
+!                             WRITE(631,6300) IDAY,runyr,FSINACC_M(I,M),FLINACC_M(I,M),&
 !                                 &                  TAACC_M(I,M)-TFREZ,UVACC_M(I,M),PRESACC_M(I,M),&
 !                                 &                  QAACC_M(I,M),PREACC_M(I,M),EVAPACC_M(I,M),&
 !                                 &                  ' TILE ',M
@@ -1419,7 +1419,7 @@ contains
     !>@{
     !>Accumulate and write out the monthly physics outputs
 
-    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
+    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
                                 ACTLYR,FTABLE,lastDOY)
                            
         use class_statevars, only : class_out,resetclassmon,class_rot
@@ -1431,7 +1431,7 @@ contains
         ! arguments
         integer, intent(in) :: lonLocalIndex,latLocalIndex
         integer, intent(in) :: IDAY
-        integer, intent(in) :: IYEAR
+        integer, intent(in) :: runyr
         integer, intent(in) :: NCOUNT
         integer, intent(in) :: NDAY
         integer, intent(in) :: lastDOY
@@ -1688,7 +1688,7 @@ contains
 
                 ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
                 ! rather than the first day of the next month.
-                timeStamp = (iyear - refyr) * lastDOY + monthend(imonth+1) - 1
+                timeStamp = (runyr - refyr) * lastDOY + monthend(imonth+1) - 1
 
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
@@ -1729,7 +1729,7 @@ end subroutine class_monthly_aw
 !>@{
 !>Accumulate and write out the annual physics outputs
 
-subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
+subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,SBC,DELT, &
                             nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
     use class_statevars,     only : class_out,resetclassyr,class_rot
@@ -1741,7 +1741,7 @@ subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SB
     ! arguments
     integer, intent(in) :: lonLocalIndex,latLocalIndex
     integer, intent(in) :: IDAY
-    integer, intent(in) :: IYEAR
+    integer, intent(in) :: runyr
     integer, intent(in) :: NCOUNT
     integer, intent(in) :: NDAY
     integer, intent(in) :: nltest
@@ -1912,7 +1912,7 @@ subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SB
         end if
 
         ! Prepare the timestamp for this year
-        timeStamp = (iyear - refyr) * lastDOY
+        timeStamp = (runyr - refyr) * lastDOY
 
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_yr' ,timeStamp,'rss', [FSSTAR_YR])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_yr' ,timeStamp,'rls', [FLSTAR_YR])
@@ -1938,7 +1938,7 @@ end subroutine class_annual_aw
 !>@{
 !> Accumulate and write the daily biogeochemical outputs
 
-subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT,ipeatlandrow)
+subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,runyr,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT,ipeatlandrow)
 
     ! Accumulate and write out the daily CTEM outputs
 
@@ -1955,7 +1955,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
     real, intent(in), dimension(:,:) :: FAREROT
-    integer, intent(in) :: iyear
+    integer, intent(in) :: runyr
     integer, intent(in) :: jdstd
     integer, intent(in) :: jdsty
     integer, intent(in) :: jdendd
@@ -2403,7 +2403,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
     !       ---------------------------------------------------------
 
     !>write daily ctem results
-    if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
+    if ((runyr .ge. jdsty).and.(runyr.le.jdendy))then
         if ((iday .ge. jdstd).and.(iday .le.jdendd))then
 
             !>Reset the grid and tile average variables.
@@ -2603,7 +2603,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                             barefrac = barefrac - fcancmxrow(i,m,j)
 
                             !>File: .CT01D
-                            write(72,8200)iday,iyear,gppvegrow(i,m,j),nppvegrow(i,m,j), &
+                            write(72,8200)iday,runyr,gppvegrow(i,m,j),nppvegrow(i,m,j), &
                             nepvegrow(i,m,j),nbpvegrow(i,m,j),autoresvegrow(i,m,j), &
                             hetroresvegrow(i,m,j),litresvegrow(i,m,j),soilcresvegrow(i,m,j), &
                             (dstcemlsrow(i,m)+dstcemls3row(i,m)), &   ! FLAG at present dstcemls are only per tile values
@@ -2611,14 +2611,14 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                             ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
                             !>File .CT02D
-                            write(73,8300)iday,iyear,rmlvegaccrow(i,m,j), &
+                            write(73,8300)iday,runyr,rmlvegaccrow(i,m,j), &
                             rmsvegrow(i,m,j),rmrvegrow(i,m,j),rgvegrow(i,m,j), &
                             leaflitrrow(i,m,j),tltrleafrow(i,m,j), &
                             tltrstemrow(i,m,j),tltrrootrow(i,m,j), &
                             ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
                             !>File *.CT03D
-                            write(74,8401)iday,iyear,vgbiomas_vegrow(i,m,j), &
+                            write(74,8401)iday,runyr,vgbiomas_vegrow(i,m,j), &
                             ailcgrow(i,m,j),gleafmasrow(i,m,j), &
                             bleafmasrow(i,m,j), stemmassrow(i,m,j), &
                             rootmassrow(i,m,j), litrmassrow(i,m,j),  &
@@ -2626,21 +2626,21 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                             ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
                             !>File .CT04D
-                            write(75,8500)iday,iyear, ailcgrow(i,m,j),  &
+                            write(75,8500)iday,runyr, ailcgrow(i,m,j),  &
                             ailcbrow(i,m,j),(rmatctemrow(i,m,j,k),k=1,3), &
                             veghghtrow(i,m,j),rootdpthrow(i,m,j), &
                             roottemprow(i,m,j),slairow(i,m,j), &
                             ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
                             ! File .CT05D
-                            !write(76,8600)iday,iyear, afrleafrow(i,m,j),  &
+                            !write(76,8600)iday,runyr, afrleafrow(i,m,j),  &
                             !afrstemrow(i,m,j),afrrootrow(i,m,j),  &
                             !tcanoaccrow_out(i,m), lfstatusrow(i,m,j), &
                             !' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
                             !>File *.CT06D
                             if (dofire .or. lnduseon) then
-                                write(77,8800)iday,iyear, &
+                                write(77,8800)iday,runyr, &
                                 emit_co2row(i,m,j),emit_corow(i,m,j),emit_ch4row(i,m,j), &
                                 emit_nmhcrow(i,m,j),emit_h2row(i,m,j),emit_noxrow(i,m,j), &
                                 emit_n2orow(i,m,j),emit_pm25row(i,m,j), &
@@ -2660,7 +2660,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                     if (barefrac .gt. seed) then
 
                         !>File: .CT01D
-                        write(72,8200)iday,iyear,0.0,0.0, &
+                        write(72,8200)iday,runyr,0.0,0.0, &
                         nepvegrow(i,m,iccp1),nbpvegrow(i,m,iccp1),0.0, &
                         hetroresvegrow(i,m,iccp1),litresvegrow(i,m,iccp1),soilcresvegrow(i,m,iccp1), &
                         (dstcemlsrow(i,m)+dstcemls3row(i,m)), &   ! FLAG at present dstcemls are only per tile values
@@ -2668,7 +2668,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                         ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
 
                         !>File *.CT03D
-                        write(74,8401)iday,iyear,0.0, &
+                        write(74,8401)iday,runyr,0.0, &
                         0.0,0.0, &
                         0.0, 0.0, &
                         0.0, litrmassrow(i,m,iccp1),  &
@@ -2682,7 +2682,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                     if (nmtest > 1) then
 
                         !>File: .CT01D
-                        write(72,8200)iday,iyear,gpprow(i,m),npprow(i,m), &
+                        write(72,8200)iday,runyr,gpprow(i,m),npprow(i,m), &
                         neprow(i,m),nbprow(i,m),autoresrow(i,m), &
                         hetroresrow(i,m),litresrow(i,m),socresrow(i,m), &
                         (dstcemlsrow(i,m)+dstcemls3row(i,m)), &
@@ -2690,13 +2690,13 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
                         !>File .CT02D
-                        write(73,8300)iday,iyear,rmlrow(i,m),rmsrow(i,m), &
+                        write(73,8300)iday,runyr,rmlrow(i,m),rmsrow(i,m), &
                         rmrrow(i,m),rgrow(i,m),leaflitr_t(i,m),tltrleaf_t(i,m), &
                         tltrstem_t(i,m),tltrroot_t(i,m), &
                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
                         !>File .CT03D
-                        write(74,8401)iday,iyear,vgbiomasrow(i,m), &
+                        write(74,8401)iday,runyr,vgbiomasrow(i,m), &
                         ailcg_t(i,m), gleafmas_t(i,m), &
                         bleafmas_t(i,m), stemmass_t(i,m), &
                         rootmass_t(i,m), litrmass_t(i,m), &
@@ -2704,20 +2704,20 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
                         !>File .CT04D
-                        write(75,8500)iday,iyear,ailcg_t(i,m), &
+                        write(75,8500)iday,runyr,ailcg_t(i,m), &
                         ailcb_t(i,m),(rmatctem_t(i,m,k),k=1,3), &
                         veghght_t(i,m),rootdpth_t(i,m), &
                         roottemp_t(i,m),slai_t(i,m), &
                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
                         ! File .CT05D
-                        !write(76,8601)iday,iyear, afrleaf_t(i,m), &
+                        !write(76,8601)iday,runyr, afrleaf_t(i,m), &
                         !    afrstem_t(i,m),afrroot_t(i,m),  &
                         !    tcanoaccrow_out(i,m), -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
                         !    ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
                         if (dofire .or. lnduseon) then
-                            write(77,8800)iday,iyear,  &
+                            write(77,8800)iday,runyr,  &
                             emit_co2_t(i,m), emit_co_t(i,m), emit_ch4_t(i,m), &
                             emit_nmhc_t(i,m), emit_h2_t(i,m), emit_nox_t(i,m), &
                             emit_n2o_t(i,m), emit_pm25_t(i,m), emit_tpm_t(i,m), &
@@ -2735,38 +2735,38 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                 !>Finally do the grid avg values:
 
                 !>File: .CT01D
-                write(72,8200)iday,iyear,gpp_g(i),npp_g(i), &
+                write(72,8200)iday,runyr,gpp_g(i),npp_g(i), &
                 nep_g(i),nbp_g(i),autores_g(i), &
                 hetrores_g(i),litres_g(i),socres_g(i), &
                 (dstcemls_g(i)+dstcemls3_g(i)), &
                 litrfall_g(i),humiftrs_g(i),' GRDAV'
 
                 !>File .CT02D
-                write(73,8300)iday,iyear,rml_g(i),rms_g(i), &
+                write(73,8300)iday,runyr,rml_g(i),rms_g(i), &
                 rmr_g(i),rg_g(i),leaflitr_g(i),tltrleaf_g(i), &
                 tltrstem_g(i),tltrroot_g(i),' GRDAV'
 
                 !>File .CT03D
-                write(74,8401)iday,iyear,vgbiomas_g(i), &
+                write(74,8401)iday,runyr,vgbiomas_g(i), &
                 gavglai_g(i), &
                 gleafmas_g(i), bleafmas_g(i), stemmass_g(i), &
                 rootmass_g(i), litrmass_g(i), soilcmas_g(i),' GRDAV'
 
                 !>File .CT04D
-                write(75,8500)iday,iyear, ailcg_g(i),  &
+                write(75,8500)iday,runyr, ailcg_g(i),  &
                 ailcb_g(i),(rmatctem_g(i,k),k=1,3), &
                 veghght_g(i),rootdpth_g(i),roottemp_g(i),&
                 slai_g(i),' GRDAV'
 
                 ! File .CT05D
-                !write(76,8601)iday,iyear, afrleaf_t(i,m), &
+                !write(76,8601)iday,runyr, afrleaf_t(i,m), &
                 !    afrstem_t(i,m),afrroot_t(i,m),  &
                 !    tcanoaccrow_out(i,m), -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
                 !    ' GRDAV'
 
                 !>File *.CT06D
                 if (dofire .or. lnduseon) then
-                    write(77,8800)iday,iyear,  &
+                    write(77,8800)iday,runyr,  &
                     emit_co2_g(i), emit_co_g(i), emit_ch4_g(i), &
                     emit_nmhc_g(i), emit_h2_g(i), emit_nox_g(i), &
                     emit_n2o_g(i), emit_pm25_g(i), emit_tpm_g(i), &
@@ -2779,7 +2779,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
 
                 !>File .CT08D
                 if (dowetlands .or. obswetf) then
-                    write(79,8810)iday,iyear, ch4wet1_g(i),  &
+                    write(79,8810)iday,runyr, ch4wet1_g(i),  &
                     ch4wet2_g(i), wetfdyn_g(i),  &
                     ch4dyn1_g(i), ch4dyn2_g(i),  &
                     ch4soills_g(i),' GRDAV'
@@ -2798,7 +2798,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                 do m=1,nmtest
 
                     !   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day
-                    write (93,6993) iday,iyear, &
+                    write (93,6993) iday,runyr, &
                     nppmossrow(i,m),armossrow(i,m), &!,gppmosac_g(1)*1.0377, &
                     (fcancmxrow(i,m,j)*gppvegrow(i,m,j),j=1,icc),      &
                     (fcancmxrow(i,m,j)*nppvegrow(i,m,j),j=1,icc),      &
@@ -2806,7 +2806,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                     (fcancmxrow(i,m,j)*hetroresvegrow(i,m,j),j=1,icc), &
                     (fcancmxrow(i,m,j),j=1,icc)
                     !   CT12D_G
-                    write (94,6993) iday,iyear,(veghghtrow(i,m,j),j=1,icc), &
+                    write (94,6993) iday,runyr,(veghghtrow(i,m,j),j=1,icc), &
                     (rootdpthrow(i,m,j),j=1,icc),(ailcgrow(i,m,j),j=1,icc), &
                     (fcancmxrow(i,m,j)*stemmassrow(i,m,j),j=1,icc), &
                     (fcancmxrow(i,m,j)*rootmassrow(i,m,j),j=1,icc), &
@@ -2827,14 +2827,14 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
                         do m=1,nmos
                             sumfare=sumfare+FAREROT(i,m)
                         enddo
-                        write(78,8200)iday,iyear,(FAREROT(i,m)*100.,m=1,nmos),sumfare
+                        write(78,8200)iday,runyr,(FAREROT(i,m)*100.,m=1,nmos),sumfare
                     else !composite
                         do m=1,nmos
                             sumfare=0.0
                             do j=1,icc  !m = 1
                                 sumfare=sumfare+fcancmxrow(i,m,j)
                             enddo !j
-                            write(78,8200)iday,iyear,(fcancmxrow(i,m,j)*100.,j=1,icc),(1.0-sumfare)*100.,sumfare,' TILE ',m
+                            write(78,8200)iday,runyr,(fcancmxrow(i,m,j)*100.,j=1,icc),(1.0-sumfare)*100.,sumfare,' TILE ',m
                         end do !m
                     endif !mosaic/composite
                 endif !PFTCompetition/lnduseon
@@ -2866,7 +2866,7 @@ end subroutine ctem_daily_aw
 !>@{
 !> Accumulate and write out the monthly CTEM outputs
 
-subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY)
+subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,runyr,nday,lastDOY)
 
     ! J. Melton Feb 2016.
 
@@ -2883,7 +2883,7 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
     real, intent(in), dimension(:,:) :: FAREROT
-    integer, intent(in) :: iyear
+    integer, intent(in) :: runyr
     integer, intent(in) :: nday
     integer, intent(in) :: lastDOY
 
@@ -3487,9 +3487,9 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
 
             imonth=nt
 
-            ! Prepare the timestamp for this month !FLAG this isn't correct for leap yet. Need to look at yrs before iyear too!
+            ! Prepare the timestamp for this month !FLAG this isn't correct for leap yet. Need to look at yrs before runyr too!
             !Take one day off so it is the last day of the month rather than the first day of the next month.
-            timeStamp(1) = (iyear - 1 - refyr) * lastDOY + monthend(imonth+1) - 1
+            timeStamp(1) = (runyr - 1 - refyr) * lastDOY + monthend(imonth+1) - 1
 
             call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
@@ -3615,7 +3615,7 @@ end subroutine ctem_monthly_aw
 !>@{
 !> Accumulate and write out the annual biogeochemical (CTEM) outputs
 
-subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,lastDOY)
+subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,runyr,nltest,nmtest,FAREROT,lastDOY)
 
     use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
     resetyearend
@@ -3632,7 +3632,7 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,n
     integer, intent(in) :: iday
     integer, intent(in) :: imonth
     real, intent(in), dimension(:,:) :: FAREROT
-    integer, intent(in) :: iyear
+    integer, intent(in) :: runyr
     integer, intent(in) :: lastDOY
 
     ! pointers
@@ -4196,8 +4196,8 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,n
 
         !>Write to annual output files:
 
-        ! Prepare the timestamp for this year  !FLAG this isn't correct for leap yet. Need to look at yrs before iyear too!
-        timeStamp = (iyear - refyr) * lastDOY
+        ! Prepare the timestamp for this year  !FLAG this isn't correct for leap yet. Need to look at yrs before runyr too!
+        timeStamp = (runyr - refyr) * lastDOY
 
         !> First write out the per gridcell values
         call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])

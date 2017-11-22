@@ -1322,7 +1322,7 @@ contains
     !>\ingroup model_state_drivers_updateMet
     !!@{
     !> This transfers the met data of this time step from the read-in array to the
-    !! instantaneous variables. This also set iyear to the present year of MET being read in.
+    !! instantaneous variables. This also sets iyear to the present year of MET being read in.
 
     subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 

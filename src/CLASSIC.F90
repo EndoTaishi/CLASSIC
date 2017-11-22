@@ -107,11 +107,10 @@ contains
                                 myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
             call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),&
                              myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
-            print*,rank,'fini'
         enddo
 
         cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
-        print*,'I am rank',rank,remainder
+
         if (rank < remainder) print*,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
         if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&

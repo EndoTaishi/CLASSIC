@@ -72,6 +72,7 @@ contains
         integer :: lastDOY             !< Initialized to 365 days, can be overwritten later is leap = true and it is a leap year.
         integer :: metTimeIndex        !< Counter used to move through the meteorological input arrays
         logical :: metDone             !< Logical switch when the end of the stored meteorological array is reached.
+        integer :: runyr               !< Year of the model run (counts up starting with readMetStartYear continously, even if metLoop > 1)
         !logical :: run_model           !< Simple logical switch to either keep run going or finish
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
@@ -79,7 +80,7 @@ contains
         INTEGER NCOUNT  !<Counter for daily averaging
         INTEGER NDAY    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
         INTEGER :: IMONTH!<Month of the year simulation is in.
-        integer :: DOM  !< Day of month counter
+        !integer :: DOM  !< Day of month counter
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -107,6 +108,8 @@ contains
         INTEGER ITD4       !<
         INTEGER NFS        !<
         INTEGER NDRY       !<
+
+        integer, pointer :: readMetStartYear    !< First year of meteorological forcing to read in from the met file
 
         ! The following are stored in the data structure: class_gat
         ! they are allocatted in alloc_class_vars in the class_statevars
@@ -2210,6 +2213,7 @@ contains
         domonthoutput     => c_switch%domonthoutput
         dodayoutput       => c_switch%dodayoutput
         dohhoutput        => c_switch%dohhoutput
+        readMetStartYear  => c_switch%readMetStartYear
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -2795,7 +2799,7 @@ contains
         metDone = .false.   !< Logical switch when the end of the stored meteorological array is reached.
         run_model = .true.  !< Simple logical switch to either keep run going or finish
         IMONTH = 0          !<Month of the year simulation is in.
-        DOM = 1             !< Day of month counter
+        !DOM = 1             !< Day of month counter
         CUMSNO = 0.0
         lopcount = 1
         leapnow = .false.
@@ -3134,6 +3138,8 @@ contains
 !        met_rewound=.false.
 
 !200     continue
+
+        runyr = readMetStartYear
 
       !> The do while loop marks the beginning of the time stepping loop
       !> for the actual run.  N is incremented by 1, and the atmospheric forcing
@@ -3991,7 +3997,7 @@ contains
 
             if(ncount.eq.nday) then
 
-                DOM=DOM + 1 !increment the day of month counter
+               ! DOM=DOM + 1 !increment the day of month counter
 
                 !     reset mosaic accumulator arrays.
 
@@ -4104,8 +4110,8 @@ contains
 
             !if (dohhoutput .and. &
             !    (iday >= jhhstd .and. iday <= jhhendd) .and. &
-            !    (iyear >= jhhsty .and. iyear <= jhhendy)) then &
-            !    call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,iyear,SBC,DELT,TFREZ)
+            !    (runyr >= jhhsty .and. runyr <= jhhendy)) then &
+            !    call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,runyr,SBC,DELT,TFREZ)
             !end if
 
 !      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR.
@@ -4938,25 +4944,25 @@ contains
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
                     IMONTH=NT
-                    DOM=1 !reset the day of month counter
+                    !DOM=1 !reset the day of month counter
                 ENDIF
             ENDDO
 
             ! Monthly physics outputs
             if (domonthoutput .and. (iyear .ge. jmosty)) call class_monthly_aw(lonLocalIndex,&
-                                                            latLocalIndex,IDAY,IYEAR,NCOUNT,&
+                                                            latLocalIndex,IDAY,runyr,NCOUNT,&
                                                             NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
                                                             ACTLYR,FTABLE,lastDOY)
 
             ! Annual physics outputs
-            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
+            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,SBC,DELT,&
                &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
                 if (dodayoutput) then
                     ! Calculate daily outputs from ctem
                     call ctem_daily_aw(nltest,nmtest,iday,FAREROT,&
-                    &                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,&
+                    &                      runyr,jdstd,jdsty,jdendd,jdendy,grclarea,&
                     &                      onetile_perPFT,ipeatlandrow)
 
                     !-reset peatland accumulators-------------------------------
@@ -4971,10 +4977,10 @@ contains
                 ! Monthly biogeochem outputs
                 if (domonthoutput .and. (iyear .ge. jmosty)) call ctem_monthly_aw(lonLocalIndex,&
                                                                 latLocalIndex,nltest,nmtest,iday,&
-                                                                FAREROT,iyear,nday,lastDOY)
+                                                                FAREROT,runyr,nday,lastDOY)
 
                 ! Annual biogeochem outputs
-                call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,&
+                call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,runyr,nltest,&
                     &               nmtest,FAREROT,lastDOY)
             endif
 
@@ -4985,7 +4991,8 @@ contains
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
 
-                print*,'done restart write',latitude,longitude
+                ! Increment the runyr
+                runyr = runyr + 1
 
 !                 ! check if the model is done running.
 !                 if (cyclemet .and. climiyear .ge. metcycendyr) then
@@ -5078,8 +5085,8 @@ contains
 !         close(12)
 
         ! deallocate arrays used for input files
-        !call deallocInput
-        print*,'normal exit',latitude,longitude
+        call deallocInput
+
         return
 
 !         ! the 999 label below is hit when an input file reaches its end.
