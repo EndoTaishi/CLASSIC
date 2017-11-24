@@ -54,7 +54,7 @@ contains
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
             &                               resetmonthend,resetyearend,&
             &                               ctem_grd,ctem_tile!,resetgridavg
-        use class_statevars,    only : class_gat,class_rot,resetclassaccum,&
+        use class_statevars,    only : class_gat,class_rot,resetAccVars,&
             &                          resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
             &                               ctem_daily_aw,class_annual_aw,class_hh_w
@@ -2770,7 +2770,7 @@ contains
         lastDOY = 365
 
         call initrowvars
-        call resetclassaccum(nlat,nmos)
+        call resetAccVars(nlat,nmos)
 
         !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
         !> energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
@@ -3882,9 +3882,9 @@ contains
 !                 END DO
 ! 440         CONTINUE
 
-            if (dohhoutput .and. &
-                (iday >= jhhstd .and. iday <= jhhendd) .and. &
-                (runyr >= jhhsty .and. runyr <= jhhendy)) then &
+            if (dohhoutput .and.&
+                (runyr >= jhhsty) .and. (runyr <= jhhendy) .and. &
+                (iday >= jhhstd) .and. (iday <= jhhendd) ) then
                 call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,runyr,SBC,DELT,TFREZ)
             end if
 

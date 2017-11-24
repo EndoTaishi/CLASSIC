@@ -14,7 +14,7 @@ implicit none
 public :: alloc_class_vars
 public :: resetclassmon
 public :: resetclassyr
-public :: resetclassaccum
+public :: resetAccVars
 public :: initDiagnosticVars
 public :: initRowVars
 
@@ -1669,11 +1669,11 @@ end subroutine resetclassyr
 !>@}
 !==================================================
 
-!>\ingroup class_statevars_resetclassaccum
+!>\ingroup class_statevars_resetAccVars
 !!@{
 !> Resets the CLASS (physics) aggregation variables in preparation for the next period
 
-subroutine resetclassaccum(nltest,nmtest)
+subroutine resetAccVars(nltest,nmtest)
 
 use ctem_params, only : ignd
 
@@ -1765,7 +1765,7 @@ DO I=1,NLTEST
   end do
 end do
 
-end subroutine resetclassaccum
+end subroutine resetAccVars
 !>@}
 !==================================================
 !>\ingroup class_statevars_initDiagnosticVars

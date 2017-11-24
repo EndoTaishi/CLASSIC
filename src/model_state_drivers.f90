@@ -958,6 +958,8 @@ contains
         !! and later determine the year we need (in updateInput). The general approach is that these
         !! files are light enough on memory demands to make this acceptable.
 
+        !! It is important that the files have time as the fastest varying dimension.
+
         case ('CO2') ! Carbon dioxide concentration
 
             lengthOfFile = ncGetDimLen(co2id, 'time')
@@ -1033,7 +1035,7 @@ contains
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
                 allocate(POPDFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(popid, 'popd', start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+                POPDFromFile = ncGet1DVar(popid, 'popd', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
 
             else
                 ! Find the requested year in the file.
@@ -1042,7 +1044,7 @@ contains
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                popdinrow(i,:) = ncGet1DVar(popid, 'popd', start = [lonloc,latloc,arrindex], count = [1,1,1])
+                popdinrow(i,:) = ncGet1DVar(popid, 'popd', start = [arrindex,lonloc,latloc], count = [1,1,1])
 
             end if
 
@@ -1066,7 +1068,7 @@ contains
             if (transientLGHT) then
                 ! We read in the whole POPD times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
-                LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+                LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
 
             else
                 ! Find the requested day and year in the file.
@@ -1102,7 +1104,7 @@ contains
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
                 allocate(LUCFromFile(lengthOfFile,icc))
-                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
+                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
@@ -1114,7 +1116,7 @@ contains
 
                 if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
 
-                fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
+                fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
 
             end if
 
@@ -1255,6 +1257,9 @@ contains
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
 
+        !! It is very important that the files have time as the fastest varying dimension.
+        !! There is a orders of magnitude slow-up if the dimensions are out of order.
+
         ! Grab the length of time dimension from the SW met file and write it to an array.
         ! NOTE: We assume the user is careful enough to ensure the time array is the same
         ! across all met files!
@@ -1306,13 +1311,13 @@ contains
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
                  metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
 
-        metFss = ncGet1DVar(metFssId, 'sw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metFdl = ncGet1DVar(metFdlId, 'lw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metPre = ncGet1DVar(metPreId, 'pr', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metTa = ncGet1DVar(metTaId, 'ta', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metQa = ncGet1DVar(metQaId, 'qa', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metUv = ncGet1DVar(metUvId, 'wi', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metPres = ncGet1DVar(metPresId, 'ap', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metTa = ncGet1DVar(metTaId, 'ta', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metQa = ncGet1DVar(metQaId, 'qa', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 
     end subroutine getMet
 

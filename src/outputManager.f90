@@ -573,6 +573,7 @@ contains
         jdendy          => c_switch%jdendy
         jmosty          => c_switch%jmosty
 
+        lastDOY = 365
         select case(trim(timeFreq))
 
             case("annually")
@@ -580,7 +581,7 @@ contains
                 totsteps = totyrs
                 allocate(timeVect(totsteps))
                 do i = 1, totsteps
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     timeVect(i) = (readMetStartYear + i - 1 - refyr) * lastDOY
                 end do
  
@@ -596,7 +597,7 @@ contains
                 allocate(timeVect(totsteps))
                 do i = 1, totyrs
                     ! Find out if this year is a leap year. It adjusts the monthend array.
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     do m = 1, 12
                         j = ((i - 1) * 12) + m
                         timeVect(j) = (readMetStartYear + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
@@ -630,7 +631,7 @@ contains
                 cnt=0
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     st = max(1, jdstd)
                     en = min(jdendd, lastDOY)
                     totsteps = totsteps + (en - st + 1)
@@ -674,7 +675,7 @@ contains
                 cnt=0
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     st = max(1, jhhstd)
                     en = min(jhhendd, lastDOY)
                     totsteps = totsteps + (en - st + 1) * 48 ! 48 half hours in a day. !FLAG change this if delt is not half-hour
