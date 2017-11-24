@@ -3366,8 +3366,8 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
 
             ! Prepare the timestamp for this month !FLAG this isn't correct for leap yet. Need to look at yrs before realyr too!
             !Take one day off so it is the last day of the month rather than the first day of the next month.
-            timeStamp(1) = (realyr - 1 - refyr) * lastDOY + monthend(imonth+1) - 1
-
+            timeStamp(1) = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
+            
             call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])

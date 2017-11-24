@@ -1134,12 +1134,12 @@
 				<variant>
 					<nameInCode>fcancmxrow_yr_g</nameInCode>
 					<timeFrequency>annually</timeFrequency>
-					<outputForm>pft</outputForm>
+					<outputForm>grid</outputForm>
 				</variant>
 				<variant>
 					<nameInCode>fcancmxrow_mo_g</nameInCode>
 					<timeFrequency>monthly</timeFrequency>
-					<outputForm>pft</outputForm>
+					<outputForm>grid</outputForm>
 				</variant>
 			</variants>
 		</variable>
