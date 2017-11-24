@@ -501,7 +501,7 @@ contains
         real, pointer, dimension(:) :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
         real, pointer, dimension(:) :: GGEOROW !<The geothermal heat flux
         real, pointer, dimension(:) :: PADRROW !<
-        real, pointer, dimension(:) :: PREROW  !<
+        real, pointer, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} ]\f$
         real, pointer, dimension(:) :: PRESROW !<
         real, pointer, dimension(:) :: QAROW   !<
         real, pointer, dimension(:) :: RADJROW !<
@@ -2632,42 +2632,6 @@ contains
         rmlcmoss         => vgat%rmlcmoss
         rmlgmoss         => vgat%rmlgmoss
 
-        ! Mosaic-level (CLASS vars):
-
-!         PREACC_M          => class_rot%PREACC_M
-!         GTACC_M           => class_rot%GTACC_M
-!         QEVPACC_M         => class_rot%QEVPACC_M
-!         HFSACC_M          => class_rot%HFSACC_M
-!         HMFNACC_M         => class_rot%HMFNACC_M
-!         ROFACC_M          => class_rot%ROFACC_M
-!         SNOACC_M          => class_rot%SNOACC_M
-!         OVRACC_M          => class_rot%OVRACC_M
-!         WTBLACC_M         => class_rot%WTBLACC_M
-!         TBARACC_M         => class_rot%TBARACC_M
-!         THLQACC_M         => class_rot%THLQACC_M
-!         THICACC_M         => class_rot%THICACC_M
-!         THALACC_M         => class_rot%THALACC_M
-!         ALVSACC_M         => class_rot%ALVSACC_M
-!         ALIRACC_M         => class_rot%ALIRACC_M
-!         RHOSACC_M         => class_rot%RHOSACC_M
-!         TSNOACC_M         => class_rot%TSNOACC_M
-!         WSNOACC_M         => class_rot%WSNOACC_M
-!         SNOARE_M          => class_rot%SNOARE_M
-!         TCANACC_M         => class_rot%TCANACC_M
-!         RCANACC_M         => class_rot%RCANACC_M
-!         SCANACC_M         => class_rot%SCANACC_M
-!         GROACC_M          => class_rot%GROACC_M
-!         FSINACC_M         => class_rot%FSINACC_M
-!         FLINACC_M         => class_rot%FLINACC_M
-!         TAACC_M           => class_rot%TAACC_M
-!         UVACC_M           => class_rot%UVACC_M
-!         PRESACC_M         => class_rot%PRESACC_M
-!         QAACC_M           => class_rot%QAACC_M
-!         ALTOTACC_M        => class_rot%ALTOTACC_M
-!         EVAPACC_M         => class_rot%EVAPACC_M
-!         FLUTACC_M         => class_rot%FLUTACC_M
-!         altotcntr_d       => class_rot%altotcntr_d
-
         ! grid-averaged (CLASS vars)
 
 !         WSNOROT_g         => ctem_grd%WSNOROT_g
@@ -2843,16 +2807,6 @@ contains
         ! Read in the meteorological forcing data to a suite of arrays
         call getMet(longitude,latitude,nday,delt)
 
-        !     CTEM initialization done
-
-        !     open files for reading and writing. these are for coupled model (class_ctem)
-        !     we added both grid and mosaic output files
-        !
-        !     * input files
-
-!         open(unit=12,file='/home/rjm/Documents/CTEM/test/test.MET',&
-!             &      status='old')
-
 !     Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
     !> depth, ZSNL, is assigned its operational value of 0.10 m.
@@ -2954,30 +2908,6 @@ contains
                     thicegacc_t(i,j)=0.0
 112             continue
 123         continue
-
-        end if ! ctem_on
-
-!        iyear=-99999  ! initialization, forces entry to loop below
-
-! 5300                    FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,&
-!                              &       F9.4)
-
-        !     find the first year of met data
-!         do while (iyear .lt. metcylyrst)
-!             do i=1,nltest
-!                 read(12,5300) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),&
-!                     &         PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
-!             enddo
-!         enddo
-!
-!         !      back up one space in the met file so it is ready for the next readin
-!         backspace(12)
-!
-!         ! If you are not cycling over the MET, you can still specify to end on a
-!         ! year that is shorter than the total climate file length.
-!         if (.not. cyclemet) endyr = iyear + ncyear - 1
-
-        if (ctem_on) then
 
             ! if land use change switch is on then read the fractional coverages
             ! of ctem's 9 pfts for the first year.
@@ -3134,9 +3064,6 @@ contains
 
         !     **** LAUNCH RUN. ****
 
-!        run_model=.true.
-!        met_rewound=.false.
-
 !200     continue
 
         runyr = readMetStartYear
@@ -3168,6 +3095,11 @@ contains
 
         do while (run_model)
 
+            !
+            !     * READ IN METEOROLOGICAL FORCING DATA FOR CURRENT TIME STEP;
+            !     * CALCULATE SOLAR ZENITH ANGLE AND COMPONENTS OF INCOMING SHORT-
+            !     * WAVE RADIATION FLUX; ESTIMATE FLUX PARTITIONS IF NECESSARY.
+            !
             call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
             !print*,ihour,imin,iday,iyear,longitude,latitude !FSSROW(I),FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
@@ -3177,71 +3109,9 @@ contains
             if (PREROW(i) < 0.) PREROW(i) = 0.  !FLAG temp!!!
             if (QAROW(i) < 0.) QAROW(i) = 0.0012066  !FLAG temp!!!
 
-!             ! if the met file has been rewound (due to cycling over the met data)
-!             ! then we need to find the proper year in the file before we continue on with the run
-!             if (met_rewound) then
-!                 do while (iyear .lt. metcylyrst)
-!                     do i=1,nltest
-!                         !         this reads in one 30 min slice of met data, when it reaches
-!                         !         the end of file it will go to label 999.
-!                         read(12,5300,end=999) ihour,imin,iday,iyear,FSSROW(I),&
-!                             &         FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
-!                     enddo
-!                 enddo
-!
-!                 !       back up one space in the met file so it is ready for the next readin
-!                 !       but only if it was read in during the loop above.
-!                 if (metcylyrst .ne. -9999) backspace(12)
-!
-!                 met_rewound = .false.
-!
-!             endif !met_rewound
-
-      !if ( (N.eq.0) .and. (.not. transientCO2) ) then
-        ! FLAG: Needs to be reviewed.
-        ! Set initial co2 concentration. Otherwise, if .MET file does not begin 
-        ! at iday=1, ihour=0, and imin=0 (see below), then co2concrow is never set and
-        ! causes a floating exception at line 1255 in PHTSYN3. 
-      !  co2concrow=fixedCO2Conc
-        ! However, there are also other problems (e.g. daily output is done at 
-        ! ncount=nday and since there are <nday number of idays in the .MET file,
-        ! the wrong iday is output).
-        ! Simpler to extrapolate .MET file to begin at iday=1,ihour=0,imin=0.  EC Dec 23 2016.
-      !endif
-
-            !===================== CTEM ============================================ /
-            !
-            !     * READ IN METEOROLOGICAL FORCING DATA FOR CURRENT TIME STEP;
-            !     * CALCULATE SOLAR ZENITH ANGLE AND COMPONENTS OF INCOMING SHORT-
-            !     * WAVE RADIATION FLUX; ESTIMATE FLUX PARTITIONS IF NECESSARY.
-            !
             N=N+1
 
             DO 250 I=1,NLTEST
-
-
-
-!                 !         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES
-!                 !         THE END OF FILE IT WILL GO TO 999.
-!                 READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),&
-!                     &        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
-
-                !         Assign the met climate year to climiyear
-!                 climiyear = iyear
-!
-!                 !         If in a transient_run that has to cycle over MET then change
-!                 !         the iyear here:
-!                 if (transient_run .and. cyclemet) then
-!                     iyear = iyear - (metcylyrst - trans_startyr)
-!                 end if
-!                 !
-!                 if(lopcount .gt. 1) then
-!                     if (cyclemet) then
-!                         iyear=iyear + nummetcylyrs*(lopcount-1)
-!                     else
-!                         iyear=iyear + ncyear*(lopcount-1)
-!                     end if
-!                 endif   ! lopcount .gt. 1
 
                 !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
@@ -3377,84 +3247,6 @@ contains
             !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
             !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
             call initDiagnosticVars(nml,ilg)
-!
-!             DO 330 K=1,ILG
-!                 CDHGAT (K)=0.0
-!                 CDMGAT (K)=0.0
-!                 HFSGAT (K)=0.0
-!                 TFXGAT (K)=0.0
-!                 QEVPGAT(K)=0.0
-!                 QFSGAT (K)=0.0
-!                 QFXGAT (K)=0.0
-!                 PETGAT (K)=0.0
-!                 GAGAT  (K)=0.0
-!                 EFGAT  (K)=0.0
-!                 GTGAT  (K)=0.0
-!                 QGGAT  (K)=0.0
-!                 ALVSGAT(K)=0.0
-!                 ALIRGAT(K)=0.0
-!                 SFCTGAT(K)=0.0
-!                 SFCUGAT(K)=0.0
-!                 SFCVGAT(K)=0.0
-!                 SFCQGAT(K)=0.0
-!                 FSNOGAT(K)=0.0
-!                 FSGVGAT(K)=0.0
-!                 FSGSGAT(K)=0.0
-!                 FSGGGAT(K)=0.0
-!                 FLGVGAT(K)=0.0
-!                 FLGSGAT(K)=0.0
-!                 FLGGGAT(K)=0.0
-!                 HFSCGAT(K)=0.0
-!                 HFSSGAT(K)=0.0
-!                 HFSGGAT(K)=0.0
-!                 HEVCGAT(K)=0.0
-!                 HEVSGAT(K)=0.0
-!                 HEVGGAT(K)=0.0
-!                 HMFCGAT(K)=0.0
-!                 HMFNGAT(K)=0.0
-!                 HTCCGAT(K)=0.0
-!                 HTCSGAT(K)=0.0
-!                 PCFCGAT(K)=0.0
-!                 PCLCGAT(K)=0.0
-!                 PCPNGAT(K)=0.0
-!                 PCPGGAT(K)=0.0
-!                 QFGGAT (K)=0.0
-!                 QFNGAT (K)=0.0
-!                 QFCFGAT(K)=0.0
-!                 QFCLGAT(K)=0.0
-!                 ROFGAT (K)=0.0
-!                 ROFOGAT(K)=0.0
-!                 ROFSGAT(K)=0.0
-!                 ROFBGAT(K)=0.0
-!                 TROFGAT(K)=0.0
-!                 TROOGAT(K)=0.0
-!                 TROSGAT(K)=0.0
-!                 TROBGAT(K)=0.0
-!                 ROFCGAT(K)=0.0
-!                 ROFNGAT(K)=0.0
-!                 ROVGGAT(K)=0.0
-!                 WTRCGAT(K)=0.0
-!                 WTRSGAT(K)=0.0
-!                 WTRGGAT(K)=0.0
-!                 DRGAT  (K)=0.0
-! 330                     CONTINUE
-!
-!             DO 334 L=1,IGND
-!                 DO 332 K=1,ILG
-!                     HMFGGAT(K,L)=0.0
-!                     HTCGAT (K,L)=0.0
-!                     QFCGAT (K,L)=0.0
-!                     GFLXGAT(K,L)=0.0
-! 332                         CONTINUE
-! 334                     CONTINUE
-!
-!             DO 340 M=1,50
-!                 DO 338 L=1,6
-!                     DO 336 K=1,NML
-!                         ITCTGAT(K,L,M)=0
-! 336                             CONTINUE
-! 338                         CONTINUE
-! 340                     CONTINUE
 
             !========================================================================
 
@@ -4041,25 +3833,7 @@ contains
                 endif  ! if(ctem_on)
             end if !ncount eq nday
 
-            ! * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 
-!6100                                    FORMAT(1X,I4,I5,9F8.2,2F8.3,F12.4,F8.2,2(A6,I2))
-!6200                                    FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
-! Instead of using fixed format specifiers for IGND, set the format
-! dynamically on the write statement. Same for 6601 below. EC Jan 20 2017.
-!6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
-!6300                                    FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
-!6400                                    FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
-!6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,2(A6,I2))
-!6600                                    FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
-!6501                                    FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-!6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
-!6601  FORMAT(1X,I2,I3,I5,I6,7(F8.2,2F7.3),10F10.4,2(A7,I3))
-!6700                                    FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
-!6800                                    FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
-!6800  FORMAT(1X,I2,I3,I5,I6,3X,22(F12.4,3X),2(A7,2I2))
-!6900                                    FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))
-!             !
 !             !  fc,fg,fcs and fgs are one_dimensional in class subroutines
 !             !  the transformations here to grid_cell mean fc_g,fg_g,fcs_g and fgs_g
 !             !  are only applicable when nltest=1 (e.g., one grid cell)
@@ -4077,42 +3851,42 @@ contains
 !                 enddo
 !             enddo
 
-            ! Find the active layer depth and depth to the frozen water table.
-            ! FLAG move to daily calcs.
-            ACTLYR=0.0
-            FTABLE=0.0
-            DO 440 J=1,IGND
-                DO I = 1, NLTEST
-                    DO M = 1,NMTEST
-                        IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
-                            IF(ISNDROT(I,M,J).GT.-3) THEN
-                                ACTLYR(I,M)=ACTLYR(I,M)+(THLQROT(I,M,J)/(THLQROT(I,M,J)+&
-                                    &               THICROT(I,M,J)))*DLZWROT(I,M,J)
-                                !ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
-                                !    ACTLYR=ACTLYR+DELZ(J)
-                            ENDIF
-                        ELSEIF(TBARROT(I,M,J).GT.TFREZ) THEN
-                            ACTLYR(I,M)=ACTLYR(I,M)+DELZ(J)
-                        ENDIF
-                        IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
-                            IF(ISNDROT(I,M,J).GT.-3) THEN
-                                FTABLE(I,M)=FTABLE(I,M)+(THICROT(I,M,J)/(THLQROT(I,M,J)+&
-                                    &              THICROT(I,M,J)-THMROT(I,M,J)))*DLZWROT(I,M,J)
-                                !ELSE
-                                !    FTABLE=FTABLE+DELZ(J)
-                            ENDIF
-                        ELSEIF(TBARROT(I,M,J).LT.TFREZ) THEN
-                            FTABLE(I,M)=FTABLE(I,M)+DELZ(J)
-                        ENDIF
-                    END DO
-                END DO
-440         CONTINUE
+!             ! Find the active layer depth and depth to the frozen water table.
+!             ! FLAG move to daily calcs.
+!             ACTLYR=0.0
+!             FTABLE=0.0
+!             DO 440 J=1,IGND
+!                 DO I = 1, NLTEST
+!                     DO M = 1,NMTEST
+!                         IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
+!                             IF(ISNDROT(I,M,J).GT.-3) THEN
+!                                 ACTLYR(I,M)=ACTLYR(I,M)+(THLQROT(I,M,J)/(THLQROT(I,M,J)+&
+!                                     &               THICROT(I,M,J)))*DLZWROT(I,M,J)
+!                                 !ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
+!                                 !    ACTLYR=ACTLYR+DELZ(J)
+!                             ENDIF
+!                         ELSEIF(TBARROT(I,M,J).GT.TFREZ) THEN
+!                             ACTLYR(I,M)=ACTLYR(I,M)+DELZ(J)
+!                         ENDIF
+!                         IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
+!                             IF(ISNDROT(I,M,J).GT.-3) THEN
+!                                 FTABLE(I,M)=FTABLE(I,M)+(THICROT(I,M,J)/(THLQROT(I,M,J)+&
+!                                     &              THICROT(I,M,J)-THMROT(I,M,J)))*DLZWROT(I,M,J)
+!                                 !ELSE
+!                                 !    FTABLE=FTABLE+DELZ(J)
+!                             ENDIF
+!                         ELSEIF(TBARROT(I,M,J).LT.TFREZ) THEN
+!                             FTABLE(I,M)=FTABLE(I,M)+DELZ(J)
+!                         ENDIF
+!                     END DO
+!                 END DO
+! 440         CONTINUE
 
-            !if (dohhoutput .and. &
-            !    (iday >= jhhstd .and. iday <= jhhendd) .and. &
-            !    (runyr >= jhhsty .and. runyr <= jhhendy)) then &
-            !    call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,runyr,SBC,DELT,TFREZ)
-            !end if
+            if (dohhoutput .and. &
+                (iday >= jhhstd .and. iday <= jhhendd) .and. &
+                (runyr >= jhhsty .and. runyr <= jhhendy)) then &
+                call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,runyr,SBC,DELT,TFREZ)
+            end if
 
 !      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR.
 !     &    (.not. LEAPNOW .AND. IDAY.GE.182 .AND. IDAY.LE.243)) THEN
@@ -4959,6 +4733,7 @@ contains
                &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
+
                 if (dodayoutput) then
                     ! Calculate daily outputs from ctem
                     call ctem_daily_aw(nltest,nmtest,iday,FAREROT,&
@@ -4967,6 +4742,7 @@ contains
 
                     !-reset peatland accumulators-------------------------------
                     ! Note: these must be reset only at the end of a day. EC Jan 30 2017.
+                    ! FLAG move these elsewhere.
                     anmossac_t  = 0.0
                     rmlmossac_t = 0.0
                     gppmossac_t = 0.0
@@ -4994,42 +4770,6 @@ contains
                 ! Increment the runyr
                 runyr = runyr + 1
 
-!                 ! check if the model is done running.
-!                 if (cyclemet .and. climiyear .ge. metcycendyr) then
-!
-!                     lopcount = lopcount+1
-!
-!                     if(lopcount.le.metLoop .and. .not. transient_run)then
-!
-!                         rewind(12)   ! rewind met file
-!
-!                         met_rewound = .true.
-!                         iyear=-9999
-! !                        obswetyr=-9999
-!
-!                     else if (lopcount.le.metLoop .and. transient_run)then
-!                         ! rewind only the MET file (since we are looping over the MET  while
-!                         ! the other inputs continue on.
-!                         rewind(12)   ! rewind met file
-!
-!                     else
-!                         if (transient_run .and. cyclemet) then
-!                             ! Now switch from cycling over the MET to running through the file
-!                             rewind(12)   ! rewind met file
-!                             cyclemet = .false.
-!                             lopcount = 1
-!                             endyr = metcylyrst + ncyear - 1  !set the new end year. We assume you are starting from the start of your MET file!
-!
-!                         else
-!                             run_model = .false.
-!                         endif
-!                     endif
-!
-!                 else if (iyear .eq. endyr .and. .not. cyclemet) then
-!
-!                     run_model = .false.
-!
-!                 endif !if cyclemet and iyear > metcycendyr
             endif !last day of year check
 
             NCOUNT=NCOUNT+1
@@ -5056,101 +4796,10 @@ contains
 
         ENDDO !MAIN MODEL LOOP
 
-        ! MODEL RUN HAS COMPLETED SO NOW CLOSE OUTPUT FILES AND EXIT
-        !==================================================================
-
-!         IF (dodayoutput) THEN
-!             !       FIRST ANY CLASS OUTPUT FILES
-!             CLOSE(61)
-!             CLOSE(62)
-!             CLOSE(63)
-!             CLOSE(64)
-!             CLOSE(65)
-!             CLOSE(66)
-!             CLOSE(67)
-!             CLOSE(68)
-!             CLOSE(69)
-!             CLOSE(611)
-!             CLOSE(621)
-!             CLOSE(631)
-!             CLOSE(641)
-!             CLOSE(651)
-!             CLOSE(661)
-!             CLOSE(671)
-!             CLOSE(681)
-!             CLOSE(691)
-!         end if ! moved this up from below so it calls the close subroutine. JRM.
-
-!         !close the input files too
-!         close(12)
-
         ! deallocate arrays used for input files
         call deallocInput
 
         return
-
-!         ! the 999 label below is hit when an input file reaches its end.
-! 999     continue
-!
-!         lopcount = lopcount+1
-!
-!         if(lopcount.le.metLoop)then
-!
-!             rewind(12)   ! rewind met file
-!
-!             met_rewound = .true.
-!             iyear=-9999
-!
-!         else
-!             run_model = .false.
-!         endif
-!
-!         !     return to the time stepping loop
-!         if (run_model) then
-!             goto 200
-!         else
-!
-!             ! close the output files
-!             ! FIRST ANY CLASS OUTPUT FILES
-!             IF (dodayoutput) THEN
-!                 CLOSE(61)
-!                 CLOSE(62)
-!                 CLOSE(63)
-!                 CLOSE(64)
-!                 CLOSE(65)
-!                 CLOSE(66)
-!                 CLOSE(67)
-!                 CLOSE(68)
-!                 CLOSE(69)
-!                 CLOSE(611)
-!                 CLOSE(621)
-!                 CLOSE(631)
-!                 CLOSE(641)
-!                 CLOSE(651)
-!                 CLOSE(661)
-!                 CLOSE(671)
-!                 CLOSE(681)
-!                 CLOSE(691)
-!             end if
-!
-!             !     CLOSE THE INPUT FILES TOO
-!             CLOSE(12)
-!
-!             ! -close peatland output and input files--------------\
-!
-!             close(17)
-!             close(93)
-!             close(94)
-!             close(95)
-!             close(96)
-!             close(97)
-!             close(98)
-!             close(99)
-!         ! deallocate arrays used for input files
-!         call deallocInput
-!
-!             return
-!         END IF
 
     end subroutine main_driver
     !!@}
@@ -5163,4 +4812,3 @@ contains
 !! that aggregate and write outputs, and closes the run for this grid cell.
 
 end module main
-

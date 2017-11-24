@@ -8,7 +8,7 @@ implicit none
 ! subroutines contained in this module:
 
 public  :: class_hh_w           ! Prepares and writes the CLASS (physics) half hourly file
-!public  :: class_daily_aw       ! Accumulates and writes the CLASS (physics) daily outputs
+public  :: class_daily_aw       ! Accumulates and writes the CLASS (physics) daily outputs
 public  :: class_monthly_aw     ! Accumulates and writes the CLASS (physics) monthly outputs
 public  :: class_annual_aw      ! Accumulates and writes the CLASS (physics) annual outputs
 public  :: ctem_daily_aw        ! Accumulates and writes the CTEM (biogeochemistry) daily outputs
@@ -706,32 +706,84 @@ contains
     !==============================================================================================================
     !>\ingroup io_driver_class_daily_aw
     !>@{
-!
-!     subroutine class_daily_aw
-!
-!         use class_statevars, only : class_rot
-!         !use ctem_params, only : nmon, monthend, nlat, nmos, ignd
-!         !use outputManager, only : writeOutput1D,refyr
-!
-!         implicit none
-!
-!         ! arguments
-!
-!         ! pointers
+
+    subroutine class_daily_aw(iday,sbs,delt)
+
+        use class_statevars, only : class_rot
+        use ctem_params, only : ignd !,nmon, monthend, nlat, nmos
+        use outputManager, only : writeOutput1D,refyr
+
+        implicit none
+
+        ! arguments
+
+        ! pointers
+        real, pointer, dimension(:,:) :: FSGVROT        !< Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: FSGGROT        !< Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: FSGSROT        !< Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: GTROT          !< Diagnosed effective surface black-body temperature [K]
+        real, pointer, dimension(:,:) :: QEVPROT        !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: QFSROT         !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+        real, pointer, dimension(:,:) :: HFSROT         !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: HMFNROT        !< Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: ROFROT         !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
+        real, pointer, dimension(:,:) :: ROFOROT        !< Overland flow from top of soil column \f$[kg m^{-2} s^{-1} ]\f$
+        real, pointer, dimension(:,:,:) :: TBARROT      !< Temperature of soil layers [K]
+        real, pointer, dimension(:,:,:) :: THICROT      !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+        real, pointer, dimension(:,:,:) :: THLQROT      !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+        real, pointer, dimension(:,:) :: ALIRROT        !< Diagnosed total near-infrared albedo of land surface [ ]
+        real, pointer, dimension(:,:) :: ALVSROT        !< Diagnosed total visible albedo of land surface [ ]
+        real, pointer, dimension(:,:) :: SNOROT         !< Mass of snow pack \f$[kg m^{-2}]\f$
+        real, pointer, dimension(:,:) :: RHOSROT        !< Density of snow \f$[kg m^{-3}]\f$
+        real, pointer, dimension(:,:) :: TSNOROT        !< Snowpack temperature [K]
+        real, pointer, dimension(:,:) :: TCANROT        !< Vegetation canopy temperature [K]
+        real, pointer, dimension(:,:) :: RCANROT        !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: SCANROT        !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+        real, pointer, dimension(:,:) :: GROROT         !< Vegetation growth index [ ]
+
+        real, pointer, dimension(:) :: FSSROW           !< Shortwave radiation \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:) :: FDLROW           !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
+        real, dimension(:), pointer :: PREROW           !< Surface precipitation rate \f$[kg m^{-2} ]\f$
+        real, dimension(:), pointer :: FSVHROW          !< Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+        real, dimension(:), pointer :: FSIHROW          !< Near infrared shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$
+        real, dimension(:), pointer :: TAROW            !< Air temperature at reference height [K]
+
+        real, pointer, dimension(:,:) :: ALTOTACC_M     !< Broadband albedo [-] (accumulated)
+        real, pointer, dimension(:,:) :: PREACC_M       !< Surface precipitation rate \f$[kg m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: GTACC_M        !< Diagnosed effective surface black-body temperature [K] (accumulated)
+        real, pointer, dimension(:,:) :: QEVPACC_M      !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: EVAPACC_M      !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: HFSACC_M       !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: HMFNACC_M      !< Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: ROFACC_M       !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: OVRACC_M       !< Overland flow from top of soil column \f$[kg m^{-2} s^{-1} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: WTBLACC_M
+        real, pointer, dimension(:,:,:) :: TBARACC_M    !< Temperature of soil layers [K] (accumulated)
+        real, pointer, dimension(:,:,:) :: THLQACC_M    !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
+        real, pointer, dimension(:,:,:) :: THICACC_M    !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: ALVSACC_M      !< Diagnosed total visible albedo of land surface [ ] (accumulated)
+        real, pointer, dimension(:,:) :: ALIRACC_M      !< Diagnosed total near-infrared albedo of land surface [ ] (accumulated)
+        real, pointer, dimension(:,:) :: WSNOACC_M      !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: TCANACC_M      !< Vegetation canopy temperature [K] (accumulated)
+        real, pointer, dimension(:,:) :: SNOACC_M       !< Mass of snow pack \f$[kg m^{-2}]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: RHOSACC_M      !< Density of snow \f$[kg m^{-3}]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: TSNOACC_M      !< Snowpack temperature [K] (accumulated)
+        real, pointer, dimension(:,:) :: RCANACC_M      !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: SCANACC_M      !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: GROACC_M       !< Vegetation growth index [ ] (accumulated)
+        real, pointer, dimension(:,:) :: FSINACC_M      !< Shortwave radiation \f$[W m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: FLINACC_M      !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: FLUTACC_M      !< Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$ (accumulated)
+        real, pointer, dimension(:,:) :: TAACC_M        !< Air temperature at reference height [K] (accumulated)
+
 !         real, pointer, dimension(:,:) :: CDHROT  !< Surface drag coefficient for heat [ ]
 !         real, pointer, dimension(:,:) :: CDMROT  !< Surface drag coefficient for momentum [ ]
-!         real, pointer, dimension(:,:) :: HFSROT  !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: TFXROT  !< Product of surface drag coefficient, wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
-!         real, pointer, dimension(:,:) :: QEVPROT !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
-!         real, pointer, dimension(:,:) :: QFSROT  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: QFXROT  !< Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: PETROT  !< Diagnosed potential evapotranspiration \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: GAROT   !< Diagnosed product of drag coefficient and wind speed over modelled area \f$[m s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: EFROT   !< Evaporation efficiency at ground surface [ ]
-!         real, pointer, dimension(:,:) :: GTROT   !< Diagnosed effective surface black-body temperature [K]
 !         real, pointer, dimension(:,:) :: QGROT   !< Diagnosed surface specific humidity \f$[kg kg^{-1} ]\f$
-!         real, pointer, dimension(:,:) :: ALIRROT !< Diagnosed total near-infrared albedo of land surface [ ]
-!         real, pointer, dimension(:,:) :: ALVSROT !< Diagnosed total visible albedo of land surface [ ]
 !         real, pointer, dimension(:,:) :: SFCQROT !< Diagnosed screen-level specific humidity \f$[kg kg^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: SFCTROT !< Diagnosed screen-level air temperature [K]
 !         real, pointer, dimension(:,:) :: SFCUROT !< Diagnosed anemometer-level zonal wind \f$[m s^{-1} ]\f$
@@ -741,9 +793,6 @@ contains
 !         real, pointer, dimension(:,:) :: FLGGROT !< Diagnosed net longwave radiation at soil surface \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: FLGSROT !< Diagnosed net longwave radiation at snow surface \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: FLGVROT !< Diagnosed net longwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
-!         real, pointer, dimension(:,:) :: FSGGROT !< Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
-!         real, pointer, dimension(:,:) :: FSGSROT !< Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
-!         real, pointer, dimension(:,:) :: FSGVROT !< Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HEVCROT !< Diagnosed latent heat flux on vegetation canopy \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HEVGROT !< Diagnosed latent heat flux at soil surface \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HEVSROT !< Diagnosed latent heat flux at snow surface \f$[W m^{-2} ]\f$
@@ -751,7 +800,6 @@ contains
 !         real, pointer, dimension(:,:) :: HFSCROT !< Diagnosed sensible heat flux on vegetation canopy \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HFSSROT !< Diagnosed sensible heat flux at snow surface \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HMFCROT !< Diagnosed energy associated with phase change of water on vegetation \f$[W m^{-2} ]\f$
-!         real, pointer, dimension(:,:) :: HMFNROT !< Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HTCCROT !< Diagnosed internal energy change of vegetation canopy due to conduction and/or change in mass \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: HTCSROT !< Diagnosed internal energy change of snow pack due to conduction and/or change in mass \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:) :: PCFCROT !< Diagnosed frozen precipitation intercepted by vegetation \f$[kg m^{-2} s^{-1} ]\f$
@@ -762,11 +810,9 @@ contains
 !         real, pointer, dimension(:,:) :: QFCLROT !< Diagnosed vapour flux from liquid water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: QFGROT  !< Diagnosed water vapour flux from ground \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: QFNROT  !< Diagnosed water vapour flux from snow pack \f$[kg m^{-2} s^{-1} ]\f$
-!         real, pointer, dimension(:,:) :: ROFROT  !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: ROFBROT !< Base flow from bottom of soil column \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: ROFCROT !< Liquid/frozen water runoff from vegetation \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: ROFNROT !< Liquid water runoff from snow pack \f$[kg m^{-2} s^{-1} ]\f$
-!         real, pointer, dimension(:,:) :: ROFOROT !< Overland flow from top of soil column \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: ROFSROT !< Interflow from sides of soil column \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: ROVGROT !< Diagnosed liquid/frozen water runoff from vegetation to ground surface \f$[kg m^{-2} s^{-1} ]\f$
 !         real, pointer, dimension(:,:) :: WTRCROT !< Diagnosed residual water transferred off the vegetation canopy \f$[kg m^{-2} s^{-1} ]\f$
@@ -780,60 +826,66 @@ contains
 !         real, pointer, dimension(:,:,:) :: GFLXROT !< Heat conduction between soil layers \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:,:) :: HTCROT  !< Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2} ]\f$
 !         real, pointer, dimension(:,:,:) :: QFCROT  !< Diagnosed vapour flux from transpiration over modelled area \f$[W m^{-2} ]\f$
-!
+
+!       real, pointer, dimension(:) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
+!         real, pointer, dimension(:) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
+!         real, pointer, dimension(:) :: EVAPACC !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: FLINACC !<Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: FLUTACC !<Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: FSINACC !<Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: GROACC  !<Vegetation growth index [ ]
+!         real, pointer, dimension(:) :: GTACC   !<Diagnosed effective surface black-body temperature [K]
+!         real, pointer, dimension(:) :: HFSACC  !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: HMFNACC !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: OVRACC  !<Overland flow from top of soil column \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: PREACC  !<Surface precipitation rate \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: PRESACC !<Surface air pressure [Pa]
+!         real, pointer, dimension(:) :: QAACC   !<Specific humidity at reference height \f$[kg kg^{-1} ]\f$
+!         real, pointer, dimension(:) :: QEVPACC !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+!         real, pointer, dimension(:) :: RCANACC !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: RHOSACC !<Density of snow \f$[kg m^{-3} ]\f$
+!         real, pointer, dimension(:) :: ROFACC  !<Total runoff from soil \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: SCANACC !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: SNOACC  !<Mass of snow pack \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: TAACC   !<Air temperature at reference height [K]
+!         real, pointer, dimension(:) :: TCANACC !<Vegetation canopy temperature [K]
+!         real, pointer, dimension(:) :: TSNOACC !<Snowpack temperature [K]
+!         real, pointer, dimension(:) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
+!         real, pointer, dimension(:) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+!         real, pointer, dimension(:) :: WTBLACC !<Depth of water table in soil [m]
 !         real, pointer, dimension(:) :: ALTOTACC!<Broadband albedo [-]
-!         real, pointer, dimension(:) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
-!
-!         ALTOTACC => class_rot%ALTOTACC
-!         FSSROW => class_rot%FSSROW
-!
-!         real, pointer, dimension(:,:) :: PREACC_M
-!         real, pointer, dimension(:,:) :: GTACC_M
-!         real, pointer, dimension(:,:) :: QEVPACC_M
-!         real, pointer, dimension(:,:) :: HFSACC_M
-!         real, pointer, dimension(:,:) :: HMFNACC_M
-!         real, pointer, dimension(:,:) :: ROFACC_M
-!         real, pointer, dimension(:,:) :: SNOACC_M
-!         real, pointer, dimension(:,:) :: OVRACC_M
-!         real, pointer, dimension(:,:) :: WTBLACC_M
-!         real, pointer, dimension(:,:,:) :: TBARACC_M
-!         real, pointer, dimension(:,:,:) :: THLQACC_M
-!         real, pointer, dimension(:,:,:) :: THICACC_M
-!         real, pointer, dimension(:,:,:) :: THALACC_M
-!         real, pointer, dimension(:,:) :: ALVSACC_M
-!         real, pointer, dimension(:,:) :: ALIRACC_M
-!         real, pointer, dimension(:,:) :: RHOSACC_M
-!         real, pointer, dimension(:,:) :: TSNOACC_M
-!         real, pointer, dimension(:,:) :: WSNOACC_M
 !         real, pointer, dimension(:,:) :: SNOARE_M
-!         real, pointer, dimension(:,:) :: TCANACC_M
-!         real, pointer, dimension(:,:) :: RCANACC_M
-!         real, pointer, dimension(:,:) :: SCANACC_M
-!         real, pointer, dimension(:,:) :: GROACC_M
-!         real, pointer, dimension(:,:) :: FSINACC_M
-!         real, pointer, dimension(:,:) :: FLINACC_M
-!         real, pointer, dimension(:,:) :: TAACC_M
 !         real, pointer, dimension(:,:) :: UVACC_M
 !         real, pointer, dimension(:,:) :: PRESACC_M
 !         real, pointer, dimension(:,:) :: QAACC_M
-!         real, pointer, dimension(:,:) :: ALTOTACC_M
-!         real, pointer, dimension(:,:) :: EVAPACC_M
-!         real, pointer, dimension(:,:) :: FLUTACC_M
-!
+
+
+        !ALTOTACC => class_rot%ALTOTACC
+        FSSROW => class_rot%FSSROW
+        PREROW  => class_rot%PREROW
+        FSVHROW => class_rot%FSVHROW
+        FSIHROW => class_rot%FSIHROW
+        FDLROW => class_rot%FDLROW
+        TAROW  => class_rot%TAROW
+        TBARROT=> class_rot%TBARROT
+        THICROT=> class_rot%THICROT
+        THLQROT=> class_rot%THLQROT
+        SNOROT => class_rot%SNOROT
+
 !         CDHROT => class_rot%CDHROT
 !         CDMROT => class_rot%CDMROT
-!         HFSROT => class_rot%HFSROT
+        HFSROT => class_rot%HFSROT
 !         TFXROT => class_rot%TFXROT
-!         QEVPROT => class_rot%QEVPROT
-!         QFSROT => class_rot%QFSROT
+        QEVPROT => class_rot%QEVPROT
+        QFSROT => class_rot%QFSROT
 !         QFXROT => class_rot%QFXROT
 !         PETROT => class_rot%PETROT
 !         GAROT => class_rot%GAROT
 !         EFROT => class_rot%EFROT
-!         GTROT => class_rot%GTROT
+        GTROT => class_rot%GTROT
 !         QGROT => class_rot%QGROT
-!         ALIRROT => class_rot%ALIRROT
-!         ALVSROT => class_rot%ALVSROT
+        ALIRROT => class_rot%ALIRROT
+        ALVSROT => class_rot%ALVSROT
 !         SFCQROT => class_rot%SFCQROT
 !         SFCTROT => class_rot%SFCTROT
 !         SFCUROT => class_rot%SFCUROT
@@ -843,9 +895,9 @@ contains
 !         FLGGROT => class_rot%FLGGROT
 !         FLGSROT => class_rot%FLGSROT
 !         FLGVROT => class_rot%FLGVROT
-!         FSGGROT => class_rot%FSGGROT
-!         FSGSROT => class_rot%FSGSROT
-!         FSGVROT => class_rot%FSGVROT
+        FSGGROT => class_rot%FSGGROT
+        FSGSROT => class_rot%FSGSROT
+        FSGVROT => class_rot%FSGVROT
 !         HEVCROT => class_rot%HEVCROT
 !         HEVGROT => class_rot%HEVGROT
 !         HEVSROT => class_rot%HEVSROT
@@ -853,7 +905,7 @@ contains
 !         HFSGROT => class_rot%HFSGROT
 !         HFSSROT => class_rot%HFSSROT
 !         HMFCROT => class_rot%HMFCROT
-!         HMFNROT => class_rot%HMFNROT
+        HMFNROT => class_rot%HMFNROT
 !         HTCCROT => class_rot%HTCCROT
 !         HTCSROT => class_rot%HTCSROT
 !         PCFCROT => class_rot%PCFCROT
@@ -864,11 +916,18 @@ contains
 !         QFCLROT => class_rot%QFCLROT
 !         QFGROT => class_rot%QFGROT
 !         QFNROT => class_rot%QFNROT
-!         ROFROT => class_rot%ROFROT
+        ROFROT => class_rot%ROFROT
+        GROROT => class_rot%GROROT
 !         ROFBROT => class_rot%ROFBROT
 !         ROFCROT => class_rot%ROFCROT
 !         ROFNROT => class_rot%ROFNROT
-!         ROFOROT => class_rot%ROFOROT
+        ROFOROT => class_rot%ROFOROT
+        RHOSROT => class_rot%RHOSROT
+        TSNOROT=> class_rot%TSNOROT
+        WSNOROT => class_rot%WSNOROT
+        TCANROT=> class_rot%TCANROT
+        RCANROT => class_rot%RCANROT
+        SCANROT => class_rot%SCANROT
 !         ROFSROT => class_rot%ROFSROT
 !         ROVGROT => class_rot%ROVGROT
 !         WTRCROT => class_rot%WTRCROT
@@ -882,114 +941,118 @@ contains
 !         GFLXROT => class_rot%GFLXROT
 !         HTCROT => class_rot%HTCROT
 !         QFCROT => class_rot%QFCROT
-!
-! !         CDHROW => class_rot%CDHROW
-! !         CDMROW => class_rot%CDMROW
-! !         HFSROW => class_rot%HFSROW
-! !         TFXROW => class_rot%TFXROW
-! !         QEVPROW => class_rot%QEVPROW
-! !         QFSROW => class_rot%QFSROW
-! !         QFXROW => class_rot%QFXROW
-! !         PETROW => class_rot%PETROW
-! !         GAROW => class_rot%GAROW
-! !         EFROW => class_rot%EFROW
-! !         GTROW => class_rot%GTROW
-! !         QGROW => class_rot%QGROW
-! !         ALIRROW => class_rot%ALIRROW
-! !         ALVSROW => class_rot%ALVSROW
-! !         SFCQROW => class_rot%SFCQROW
-! !         SFCTROW => class_rot%SFCTROW
-! !         SFCUROW => class_rot%SFCUROW
-! !         SFCVROW => class_rot%SFCVROW
-! !         SFRHROW => class_rot%SFRHROW
-! !         FSNOROW => class_rot%FSNOROW
-! !         FLGGROW => class_rot%FLGGROW
-! !         FLGSROW => class_rot%FLGSROW
-! !         FLGVROW => class_rot%FLGVROW
-! !         FSGGROW => class_rot%FSGGROW
-! !         FSGSROW => class_rot%FSGSROW
-! !         FSGVROW => class_rot%FSGVROW
-! !         HEVCROW => class_rot%HEVCROW
-! !         HEVGROW => class_rot%HEVGROW
-! !         HEVSROW => class_rot%HEVSROW
-! !         HFSCROW => class_rot%HFSCROW
-! !         HFSGROW => class_rot%HFSGROW
-! !         HFSSROW => class_rot%HFSSROW
-! !         HMFCROW => class_rot%HMFCROW
-! !         HMFNROW => class_rot%HMFNROW
-! !         HTCCROW => class_rot%HTCCROW
-! !         HTCSROW => class_rot%HTCSROW
-! !         PCFCROW => class_rot%PCFCROW
-! !         PCLCROW => class_rot%PCLCROW
-! !         PCPGROW => class_rot%PCPGROW
-! !         PCPNROW => class_rot%PCPNROW
-! !         QFCFROW => class_rot%QFCFROW
-! !         QFCLROW => class_rot%QFCLROW
-! !         QFGROW => class_rot%QFGROW
-! !         QFNROW => class_rot%QFNROW
-! !         ROFROW => class_rot%ROFROW
-! !         ROFBROW => class_rot%ROFBROW
-! !         ROFCROW => class_rot%ROFCROW
-! !         ROFNROW => class_rot%ROFNROW
-! !         ROFOROW => class_rot%ROFOROW
-! !         ROFSROW => class_rot%ROFSROW
-! !         ROVGROW => class_rot%ROVGROW
-! !         WTRCROW => class_rot%WTRCROW
-! !         WTRGROW => class_rot%WTRGROW
-! !         WTRSROW => class_rot%WTRSROW
-! !         DRROW => class_rot%DRROW
-! !         ILMOROW => class_rot%ILMOROW
-! !         UEROW => class_rot%UEROW
-! !         HBLROW => class_rot%HBLROW
-! !         HMFGROW => class_rot%HMFGROW
-! !         GFLXROW => class_rot%GFLXROW
-! !         HTCROW => class_rot%HTCROW
-! !         QFCROW => class_rot%QFCROW
-!
-!         PREACC_M          => class_rot%PREACC_M
-!         GTACC_M           => class_rot%GTACC_M
-!         QEVPACC_M         => class_rot%QEVPACC_M
-!         HFSACC_M          => class_rot%HFSACC_M
-!         HMFNACC_M         => class_rot%HMFNACC_M
-!         ROFACC_M          => class_rot%ROFACC_M
-!         SNOACC_M          => class_rot%SNOACC_M
-!         OVRACC_M          => class_rot%OVRACC_M
-!         WTBLACC_M         => class_rot%WTBLACC_M
-!         TBARACC_M         => class_rot%TBARACC_M
-!         THLQACC_M         => class_rot%THLQACC_M
-!         THICACC_M         => class_rot%THICACC_M
-!         THALACC_M         => class_rot%THALACC_M
-!         ALVSACC_M         => class_rot%ALVSACC_M
-!         ALIRACC_M         => class_rot%ALIRACC_M
-!         RHOSACC_M         => class_rot%RHOSACC_M
-!         TSNOACC_M         => class_rot%TSNOACC_M
-!         WSNOACC_M         => class_rot%WSNOACC_M
+
+        PREACC_M          => class_rot%PREACC_M
+        GTACC_M           => class_rot%GTACC_M
+        QEVPACC_M         => class_rot%QEVPACC_M
+        HFSACC_M          => class_rot%HFSACC_M
+        HMFNACC_M         => class_rot%HMFNACC_M
+        ROFACC_M          => class_rot%ROFACC_M
+        SNOACC_M          => class_rot%SNOACC_M
+        OVRACC_M          => class_rot%OVRACC_M
+        WTBLACC_M         => class_rot%WTBLACC_M
+        TBARACC_M         => class_rot%TBARACC_M
+        THLQACC_M         => class_rot%THLQACC_M
+        THICACC_M         => class_rot%THICACC_M
+        ALVSACC_M         => class_rot%ALVSACC_M
+        ALIRACC_M         => class_rot%ALIRACC_M
+        RHOSACC_M         => class_rot%RHOSACC_M
+        TSNOACC_M         => class_rot%TSNOACC_M
+        WSNOACC_M         => class_rot%WSNOACC_M
 !         SNOARE_M          => class_rot%SNOARE_M
-!         TCANACC_M         => class_rot%TCANACC_M
-!         RCANACC_M         => class_rot%RCANACC_M
-!         SCANACC_M         => class_rot%SCANACC_M
-!         GROACC_M          => class_rot%GROACC_M
-!         FSINACC_M         => class_rot%FSINACC_M
-!         FLINACC_M         => class_rot%FLINACC_M
-!         TAACC_M           => class_rot%TAACC_M
+        TCANACC_M         => class_rot%TCANACC_M
+        RCANACC_M         => class_rot%RCANACC_M
+        SCANACC_M         => class_rot%SCANACC_M
+        GROACC_M          => class_rot%GROACC_M
+        FSINACC_M         => class_rot%FSINACC_M
+        FLINACC_M         => class_rot%FLINACC_M
+        TAACC_M           => class_rot%TAACC_M
 !         UVACC_M           => class_rot%UVACC_M
 !         PRESACC_M         => class_rot%PRESACC_M
 !         QAACC_M           => class_rot%QAACC_M
-!         ALTOTACC_M        => class_rot%ALTOTACC_M
-!         EVAPACC_M         => class_rot%EVAPACC_M
-!         FLUTACC_M         => class_rot%FLUTACC_M
+         ALTOTACC_M        => class_rot%ALTOTACC_M
+        EVAPACC_M         => class_rot%EVAPACC_M
+        FLUTACC_M         => class_rot%FLUTACC_M
+         altotcntr_d       => class_rot%altotcntr_d
+
+!         ALIRACC => class_rot%ALIRACC
+!         ALVSACC => class_rot%ALVSACC
+!         EVAPACC => class_rot%EVAPACC
+!         FLINACC => class_rot%FLINACC
+!         FLUTACC => class_rot%FLUTACC
+!         FSINACC => class_rot%FSINACC
+!         GROACC => class_rot%GROACC
+!         GTACC => class_rot%GTACC
+!         HFSACC => class_rot%HFSACC
+!         HMFNACC => class_rot%HMFNACC
+!         OVRACC => class_rot%OVRACC
+!         PREACC => class_rot%PREACC
+!         PRESACC => class_rot%PRESACC
+!         QAACC => class_rot%QAACC
+!         QEVPACC => class_rot%QEVPACC
+!         RCANACC => class_rot%RCANACC
+!         RHOSACC => class_rot%RHOSACC
+!         ROFACC => class_rot%ROFACC
+!         SCANACC => class_rot%SCANACC
+!         SNOACC => class_rot%SNOACC
+!         TAACC => class_rot%TAACC
+!         TCANACC => class_rot%TCANACC
+!         TSNOACC => class_rot%TSNOACC
+!         UVACC => class_rot%UVACC
+!         WSNOACC => class_rot%WSNOACC
+!         WTBLACC => class_rot%WTBLACC
+
+        ! Accumulate output data for diurnally averaged fields. both grid mean and mosaic mean
+        !
+        DO 675 I=1,NLTEST
+            DO 650 M=1,NMTEST
+                if (FSSROW(I) .gt. 0. then
+                    ALTOTACC_M(I,M) = ALTOTACC_M(I,M) + (FSSROW(I)-(FSGVROT(I,M)&
+                                       +FSGSROT(I,M)+FSGGROT(I,M)))/FSSROW(I)
+                    altotcntr_d(i)=altotcntr_d(i) + 1
+                end if
+
+                PREACC_M(I,M)=PREACC_M(I,M)+PREROW(I)*DELT
+                GTACC_M(I,M)=GTACC_M(I,M)+GTROT(I,M)
+                QEVPACC_M(I,M)=QEVPACC_M(I,M)+QEVPROT(I,M)
+                EVAPACC_M(I,M)=EVAPACC_M(I,M)+QFSROT(I,M)*DELT
+                HFSACC_M(I,M)=HFSACC_M(I,M)+HFSROT(I,M)
+                HMFNACC_M(I,M)=HMFNACC_M(I,M)+HMFNROT(I,M)
+                ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
+                OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
+                !WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)  !FLAG fix!
+                do J=1,IGND
+                    TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)
+                    THLQACC_M(I,M,J)=THLQACC_M(I,M,J)+THLQROT(I,M,J)
+                    THICACC_M(I,M,J)=THICACC_M(I,M,J)+THICROT(I,M,J)
+                end do
+                ALVSACC_M(I,M)=ALVSACC_M(I,M)+ALVSROT(I,M)*FSVHROW(I)
+                ALIRACC_M(I,M)=ALIRACC_M(I,M)+ALIRROT(I,M)*FSIHROW(I)
+                IF(SNOROT(I,M).GT.0.0) THEN
+                    RHOSACC_M(I,M)=RHOSACC_M(I,M)+RHOSROT(I,M)
+                    TSNOACC_M(I,M)=TSNOACC_M(I,M)+TSNOROT(I,M)
+                    WSNOACC_M(I,M)=WSNOACC_M(I,M)+WSNOROT(I,M)
+!                     SNOARE_M(I,M) = SNOARE_M(I,M) + 1.0 !FLAG What is this??
+                ENDIF
+                IF(TCANROT(I,M).GT.0.5) THEN
+                    TCANACC_M(I,M)=TCANACC_M(I,M)+TCANROT(I,M)
+!                 ! CANARE(I)=CANARE(I)+FAREROT(I,M) !FLAG What is this??
+                ENDIF
+                SNOACC_M(I,M)=SNOACC_M(I,M)+SNOROT(I,M)
+                RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
+                SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
+                GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
+                FSINACC_M(I,M)=FSINACC_M(I,M)+FSSROW(I)
+                FLINACC_M(I,M)=FLINACC_M(I,M)+FDLROW(I)
+                FLUTACC_M(I,M)=FLUTACC_M(I,M)+SBC*GTROT(I,M)**4
+                TAACC_M(I,M)=TAACC_M(I,M)+TAROW(I)
+                UVACC_M(I,M)=UVACC_M(I,M)+UVROW(I)
+!                 PRESACC_M(I,M)=PRESACC_M(I,M)+PRESROW(I)
+!                 QAACC_M(I,M)=QAACC_M(I,M)+QAROW(I)
+650                 CONTINUE
+675             CONTINUE
 !
-!         ! Accumulate output data for diurnally averaged fields. both grid mean and mosaic mean
-!         !
-!         DO 675 I=1,NLTEST
-!
-!             IF (FSSROW(I) .gt. 0.) then
-!                 ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)&
-!                     &                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
-!                 altotcntr_d(i)=altotcntr_d(i) + 1
-!             END IF
-!
-!             DO 650 M=1,NMTEST
+
 !                 PREACC(I)=PREACC(I)+PREROW(I)*FAREROT(I,M)*DELT
 !                 GTACC(I)=GTACC(I)+GTROT(I,M)*FAREROT(I,M)
 !                 QEVPACC(I)=QEVPACC(I)+QEVPROT(I,M)*FAREROT(I,M)
@@ -1194,7 +1257,36 @@ contains
 !       open(unit=90,file='test.CT18Y_G') !peatland depth information
 
 
-
+            ! Find the active layer depth and depth to the frozen water table.
+            ! FLAG move to daily calcs.
+            ACTLYR=0.0
+            FTABLE=0.0
+            DO 440 J=1,IGND
+                DO I = 1, NLTEST
+                    DO M = 1,NMTEST
+                        IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
+                            IF(ISNDROT(I,M,J).GT.-3) THEN
+                                ACTLYR(I,M)=ACTLYR(I,M)+(THLQROT(I,M,J)/(THLQROT(I,M,J)+&
+                                    &               THICROT(I,M,J)))*DLZWROT(I,M,J)
+                                !ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
+                                !    ACTLYR=ACTLYR+DELZ(J)
+                            ENDIF
+                        ELSEIF(TBARROT(I,M,J).GT.TFREZ) THEN
+                            ACTLYR(I,M)=ACTLYR(I,M)+DELZ(J)
+                        ENDIF
+                        IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
+                            IF(ISNDROT(I,M,J).GT.-3) THEN
+                                FTABLE(I,M)=FTABLE(I,M)+(THICROT(I,M,J)/(THLQROT(I,M,J)+&
+                                    &              THICROT(I,M,J)-THMROT(I,M,J)))*DLZWROT(I,M,J)
+                                !ELSE
+                                !    FTABLE=FTABLE+DELZ(J)
+                            ENDIF
+                        ELSEIF(TBARROT(I,M,J).LT.TFREZ) THEN
+                            FTABLE(I,M)=FTABLE(I,M)+DELZ(J)
+                        ENDIF
+                    END DO
+                END DO
+440         CONTINUE
 !                 !    ----peatland output-----------------------------------------------\
 !
 !                 write(99,6999)  IDAY,runyr,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
@@ -1410,7 +1502,7 @@ contains
 !         ENDIF ! IF(NCOUNT.EQ.NDAY)
 !     ENDIF !  IFdodayoutput
 !
-!     end subroutine class_daily_aw
+     end subroutine class_daily_aw
     !>@}
 
     !==============================================================================================================
