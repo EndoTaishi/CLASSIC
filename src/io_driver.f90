@@ -707,18 +707,30 @@ contains
     !>\ingroup io_driver_class_daily_aw
     !>@{
 
-    subroutine class_daily_aw(iday)!,sbs,delt)
+    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,delt,ncount,nday,lastDOY,realyr)
 
         use class_statevars, only : class_rot
-        use ctem_params, only : ignd !,nmon, monthend, nlat, nmos
+        use ctem_params, only : ignd, nlat !,nmon, monthend, nlat, nmos
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
 
         ! arguments
+        integer, intent(in) :: lonLocalIndex,latLocalIndex
         integer, intent(in) :: iday
+        integer, intent(in) :: nltest
+        integer, intent(in) :: nmtest
+        integer, intent(in) :: sbc
+        integer, intent(in) :: delt
+        integer, intent(in) :: ncount
+        integer, intent(in) :: nday
+        integer, intent(in) :: lastDOY
+        integer, intent(in) :: realyr
 
         ! local variables
+        integer :: i,m,j
+        real, dimension(1) :: timeStamp
+        real :: FSSTAR, FLSTAR
         real, allocatable, dimension(:) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
         real, allocatable, dimension(:) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
         real, allocatable, dimension(:) :: EVAPACC !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} ]\f$
@@ -746,12 +758,18 @@ contains
         real, allocatable, dimension(:) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
         real, allocatable, dimension(:) :: WTBLACC !<Depth of water table in soil [m]
         real, allocatable, dimension(:) :: ALTOTACC!<Broadband albedo [-]
+        real, allocatable, dimension(:,:) :: TBARACC  !< Temperature of soil layers [K] (accumulated)
+        real, allocatable, dimension(:,:) :: THLQACC  !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
+        real, allocatable, dimension(:,:) :: THICACC  !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
+
         real, allocatable, dimension(:,:) :: SNOARE_M
         real, allocatable, dimension(:,:) :: UVACC_M
         real, allocatable, dimension(:,:) :: PRESACC_M
         real, allocatable, dimension(:,:) :: QAACC_M
 
         ! pointers
+        integer, pointer, dimension(:) :: altotcntr_d   !<Used to count the number of time steps with the sun above the horizon
+        real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
         real, pointer, dimension(:,:) :: FSGVROT        !< Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:) :: FSGGROT        !< Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:) :: FSGSROT        !< Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
@@ -767,6 +785,7 @@ contains
         real, pointer, dimension(:,:,:) :: THLQROT      !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
         real, pointer, dimension(:,:) :: ALIRROT        !< Diagnosed total near-infrared albedo of land surface [ ]
         real, pointer, dimension(:,:) :: ALVSROT        !< Diagnosed total visible albedo of land surface [ ]
+        real, pointer, dimension(:,:) :: WSNOROT        !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
         real, pointer, dimension(:,:) :: SNOROT         !< Mass of snow pack \f$[kg m^{-2}]\f$
         real, pointer, dimension(:,:) :: RHOSROT        !< Density of snow \f$[kg m^{-3}]\f$
         real, pointer, dimension(:,:) :: TSNOROT        !< Snowpack temperature [K]
@@ -835,10 +854,11 @@ contains
         ROFOROT => class_rot%ROFOROT
         RHOSROT => class_rot%RHOSROT
         TSNOROT=> class_rot%TSNOROT
-!        WSNOROT => class_rot%WSNOROT
+        WSNOROT => class_rot%WSNOROT
         TCANROT=> class_rot%TCANROT
         RCANROT => class_rot%RCANROT
         SCANROT => class_rot%SCANROT
+        FAREROT=> class_rot%FAREROT
         PREACC_M  => class_rot%PREACC_M
         GTACC_M   => class_rot%GTACC_M
         QEVPACC_M => class_rot%QEVPACC_M
@@ -870,129 +890,130 @@ contains
          ALTOTACC_M => class_rot%ALTOTACC_M
         EVAPACC_M   => class_rot%EVAPACC_M
         FLUTACC_M   => class_rot%FLUTACC_M
-!        altotcntr_d => class_rot%altotcntr_d
+        altotcntr_d => class_rot%altotcntr_d
 
         ! Accumulate output data for diurnally averaged fields. both grid mean and mosaic mean
         !
-!         DO 675 I=1,NLTEST
-!             DO 650 M=1,NMTEST
-!                 if (FSSROW(I) .gt. 0. then
-!                     ALTOTACC_M(I,M) = ALTOTACC_M(I,M) + (FSSROW(I)-(FSGVROT(I,M)&
-!                                        +FSGSROT(I,M)+FSGGROT(I,M)))/FSSROW(I)
-!                     altotcntr_d(i)=altotcntr_d(i) + 1
-!                 end if
+        DO 75 I=1,NLTEST
+            DO 50 M=1,NMTEST
+                if (FSSROW(I) .gt. 0.) then
+                    ALTOTACC_M(I,M) = ALTOTACC_M(I,M) + (FSSROW(I)-(FSGVROT(I,M)&
+                                       +FSGSROT(I,M)+FSGGROT(I,M)))/FSSROW(I)
+                    if (i == 1) altotcntr_d(i)=altotcntr_d(i) + 1 !only count once per gridcell, not per tile
+                end if
+
+                PREACC_M(I,M)=PREACC_M(I,M)+PREROW(I)*DELT
+                GTACC_M(I,M)=GTACC_M(I,M)+GTROT(I,M)
+                QEVPACC_M(I,M)=QEVPACC_M(I,M)+QEVPROT(I,M)
+                EVAPACC_M(I,M)=EVAPACC_M(I,M)+QFSROT(I,M)*DELT
+                HFSACC_M(I,M)=HFSACC_M(I,M)+HFSROT(I,M)
+                HMFNACC_M(I,M)=HMFNACC_M(I,M)+HMFNROT(I,M)
+                ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
+                OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
+                !WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)  !FLAG fix!
+                do J=1,IGND
+                    TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)
+                    THLQACC_M(I,M,J)=THLQACC_M(I,M,J)+THLQROT(I,M,J)
+                    THICACC_M(I,M,J)=THICACC_M(I,M,J)+THICROT(I,M,J)
+                end do
+                ALVSACC_M(I,M)=ALVSACC_M(I,M)+ALVSROT(I,M)*FSVHROW(I)
+                ALIRACC_M(I,M)=ALIRACC_M(I,M)+ALIRROT(I,M)*FSIHROW(I)
+                IF(SNOROT(I,M).GT.0.0) THEN
+                    RHOSACC_M(I,M)=RHOSACC_M(I,M)+RHOSROT(I,M)
+                    TSNOACC_M(I,M)=TSNOACC_M(I,M)+TSNOROT(I,M)
+                    WSNOACC_M(I,M)=WSNOACC_M(I,M)+WSNOROT(I,M)
+!                     SNOARE_M(I,M) = SNOARE_M(I,M) + 1.0 !FLAG What is this??
+                ENDIF
+                IF(TCANROT(I,M).GT.0.5) THEN
+                    TCANACC_M(I,M)=TCANACC_M(I,M)+TCANROT(I,M)
+!                 ! CANARE(I)=CANARE(I)+FAREROT(I,M) !FLAG What is this??
+                ENDIF
+                SNOACC_M(I,M)=SNOACC_M(I,M)+SNOROT(I,M)
+                RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
+                SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
+                GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
+                FSINACC_M(I,M)=FSINACC_M(I,M)+FSSROW(I)  !not per tile
+                FLINACC_M(I,M)=FLINACC_M(I,M)+FDLROW(I)  !not per tile
+                FLUTACC_M(I,M)=FLUTACC_M(I,M)+SBC*GTROT(I,M)**4
+                TAACC_M(I,M)=TAACC_M(I,M)+TAROW(I)  !not per tile
+!                UVACC_M(I,M)=UVACC_M(I,M)+UVROW(I)  !not per tile
+!                 PRESACC_M(I,M)=PRESACC_M(I,M)+PRESROW(I)
+!                 QAACC_M(I,M)=QAACC_M(I,M)+QAROW(I)
+50                 CONTINUE
+75             CONTINUE
 !
-!                 PREACC_M(I,M)=PREACC_M(I,M)+PREROW(I)*DELT
-!                 GTACC_M(I,M)=GTACC_M(I,M)+GTROT(I,M)
-!                 QEVPACC_M(I,M)=QEVPACC_M(I,M)+QEVPROT(I,M)
-!                 EVAPACC_M(I,M)=EVAPACC_M(I,M)+QFSROT(I,M)*DELT
-!                 HFSACC_M(I,M)=HFSACC_M(I,M)+HFSROT(I,M)
-!                 HMFNACC_M(I,M)=HMFNACC_M(I,M)+HMFNROT(I,M)
-!                 ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
-!                 OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
-!                 !WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)  !FLAG fix!
-!                 do J=1,IGND
-!                     TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)
-!                     THLQACC_M(I,M,J)=THLQACC_M(I,M,J)+THLQROT(I,M,J)
-!                     THICACC_M(I,M,J)=THICACC_M(I,M,J)+THICROT(I,M,J)
-!                 end do
-!                 ALVSACC_M(I,M)=ALVSACC_M(I,M)+ALVSROT(I,M)*FSVHROW(I)
-!                 ALIRACC_M(I,M)=ALIRACC_M(I,M)+ALIRROT(I,M)*FSIHROW(I)
-!                 IF(SNOROT(I,M).GT.0.0) THEN
-!                     RHOSACC_M(I,M)=RHOSACC_M(I,M)+RHOSROT(I,M)
-!                     TSNOACC_M(I,M)=TSNOACC_M(I,M)+TSNOROT(I,M)
-!                     WSNOACC_M(I,M)=WSNOACC_M(I,M)+WSNOROT(I,M)
-! !                     SNOARE_M(I,M) = SNOARE_M(I,M) + 1.0 !FLAG What is this??
-!                 ENDIF
-!                 IF(TCANROT(I,M).GT.0.5) THEN
-!                     TCANACC_M(I,M)=TCANACC_M(I,M)+TCANROT(I,M)
-! !                 ! CANARE(I)=CANARE(I)+FAREROT(I,M) !FLAG What is this??
-!                 ENDIF
-!                 SNOACC_M(I,M)=SNOACC_M(I,M)+SNOROT(I,M)
-!                 RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
-!                 SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
-!                 GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
-!                 FSINACC_M(I,M)=FSINACC_M(I,M)+FSSROW(I)  !not per tile
-!                 FLINACC_M(I,M)=FLINACC_M(I,M)+FDLROW(I)  !not per tile
-!                 FLUTACC_M(I,M)=FLUTACC_M(I,M)+SBC*GTROT(I,M)**4
-!                 TAACC_M(I,M)=TAACC_M(I,M)+TAROW(I)  !not per tile
-!                 UVACC_M(I,M)=UVACC_M(I,M)+UVROW(I)  !not per tile
-! !                 PRESACC_M(I,M)=PRESACC_M(I,M)+PRESROW(I)
-! !                 QAACC_M(I,M)=QAACC_M(I,M)+QAROW(I)
-! 650                 CONTINUE
-! 675             CONTINUE
-! !
-!         IF(NCOUNT.EQ.NDAY) THEN
-!
-!             allocate(ALIRACC(nlat),ALVSACC(nlat),EVAPACC(nlat),FLINACC(nlat), &
-!                 FLUTACC(nlat),FSINACC(nlat),GROACC(nlat),GTACC(nlat), &
-!                 HFSACC(nlat),HMFNACC(nlat),OVRACC(nlat),PREACC(nlat),
-!                 PRESACC(nlat),QAACC(nlat),QEVPACC(nlat),RCANACC(nlat),
-!                 RHOSACC(nlat),ROFACC(nlat),SCANACC(nlat),SNOACC(nlat),
-!                 TAACC(nlat),TCANACC(nlat),TSNOACC(nlat),UVACC(nlat),
-!                 WSNOACC(nlat),WTBLACC(nlat),ALTOTACC(nlat),
-!                 ! SNOARE_M,UVACC_M,PRESACC_M,QAACC_M
-!
-!             DO I=1,NLTEST
-!                 DO M=1,NMTEST
-!                     PREACC(I)=PREACC(I)+PREACC_M(I)*FAREROT(I,M)
-!                     GTACC(I)=GTACC(I)+GTACC_M(I,M)*FAREROT(I,M)
-!                     QEVPACC(I)=QEVPACC(I)+QEVPACC_M(I,M)*FAREROT(I,M)
-!                     EVAPACC(I)=EVAPACC(I)+EVAPACC_M(I,M)*FAREROT(I,M)
-!                     HFSACC(I)=HFSACC(I)+HFSACC_M(I,M)*FAREROT(I,M)
-!                     HMFNACC(I)=HMFNACC(I)+HMFNACC_M(I,M)*FAREROT(I,M)
-!                     ROFACC(I)=ROFACC(I)+ROFACC_M(I,M)*FAREROT(I,M)
-!                     OVRACC(I)=OVRACC(I)+OVRACC_M(I,M)*FAREROT(I,M)
-!                     WTBLACC(I)=WTBLACC(I)+WTBLACC_M(I,M)*FAREROT(I,M)
-!                     ALTOTACC(I)=ALTOTACC(I) + ALTOTACC_M*FAREROT(I,M)
-!                     DO J=1,IGND
-!                         TBARACC(I,J)=TBARACC(I,J)+TBARACC_M(I,M,J)*FAREROT(I,M)
-!                         THLQACC(I,J)=THLQACC(I,J)+THLQACC_M(I,M,J)*FAREROT(I,M)
-!                         THICACC(I,J)=THICACC(I,J)+THICACC_M(I,M,J)*FAREROT(I,M)
-!                     end do
-!                     ALVSACC(I)=ALVSACC(I)+ALVSACC_M(I,M)*FAREROT(I,M)
-!                     ALIRACC(I)=ALIRACC(I)+ALIRACC_M(I,M)*FAREROT(I,M)
-!                     RHOSACC(I)=RHOSACC(I)+RHOSACC_M(I,M)*FAREROT(I,M)
-!                     TSNOACC(I)=TSNOACC(I)+TSNOACC_M(I,M)*FAREROT(I,M)
-!                     WSNOACC(I)=WSNOACC(I)+WSNOACC_M(I,M)*FAREROT(I,M)
-!                     !SNOARE(I)=SNOARE(I)+FAREROT(I,M)
-!                     TCANACC(I)=TCANACC(I)+TCANACC_M(I,M)*FAREROT(I,M)
-!                     !CANARE(I)=CANARE(I)+FAREROT(I,M)
-!                     SNOACC(I)=SNOACC(I)+SNOACC_M(I,M)*FAREROT(I,M)
-!                     RCANACC(I)=RCANACC(I)+RCANACC_M(I,M)*FAREROT(I,M)
-!                     SCANACC(I)=SCANACC(I)+SCANACC_M(I,M)*FAREROT(I,M)
-!                     GROACC(I)=GROACC(I)+GROACC_M(I,M)*FAREROT(I,M)
-!                     FSINACC(I)=FSINACC(I)+FSINACC_M(I)*FAREROT(I,M)
-!                     FLINACC(I)=FLINACC(I)+FLINACC_M(I)*FAREROT(I,M)
-!                     FLUTACC(I)=FLUTACC(I)+FLUTACC_M*FAREROT(I,M)
-!                     TAACC(I)=TAACC(I)+TAACC_M(I)*FAREROT(I,M)
-!                     UVACC(I)=UVACC(I)+UVACC_M(I)*FAREROT(I,M)
-!                     !PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I,M)
-!                     !QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I,M)
-!                 end do
-!             end do
-!
-!             ! Now write to file the grid average values
-!
-!             ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
-!             ! rather than the first day of the next month.
-!             timeStamp = (realyr - refyr) * lastDOY + iday
-!             print*,'timeStamp from class daily',timeStamp
-!
-!             do i = 1,nltest
-!                 if (altotcntr_d(i) > 0) then
-!                     ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
-!                 else
-!                     ALTOTACC(I)=0.
-!                 end if
-!                 FSSTAR=FSINACC(I)/real(nday)*(1.-ALTOTACC(I))
-!                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_d' ,timeStamp,'rss', [FSSTAR])
-!
-!                 FLSTAR=(FLINACC(I)-FLUTACC(I))/REAL(NDAY)
-!                 call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_d' ,timeStamp,'rls', [FLSTAR])
-!                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_d'     ,timeStamp,'hfss', [HFSACC(I)/REAL(NDAY)])
-!                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/REAL(NDAY)])
-!                 call writeOutput1D(lonLocalIndex,latLocalIndex,'snomlt_d' ,timeStamp,'snomlt', [HMFNACC(I)]) !name?
+        IF(NCOUNT.EQ.NDAY) THEN
+
+            allocate(ALIRACC(nlat),ALVSACC(nlat),EVAPACC(nlat),FLINACC(nlat), &
+                FLUTACC(nlat),FSINACC(nlat),GROACC(nlat),GTACC(nlat), &
+                HFSACC(nlat),HMFNACC(nlat),OVRACC(nlat),PREACC(nlat), &
+                PRESACC(nlat),QAACC(nlat),QEVPACC(nlat),RCANACC(nlat), &
+                RHOSACC(nlat),ROFACC(nlat),SCANACC(nlat),SNOACC(nlat), &
+                TAACC(nlat),TCANACC(nlat),TSNOACC(nlat),UVACC(nlat), &
+                WSNOACC(nlat),WTBLACC(nlat),ALTOTACC(nlat),TBARACC(nlat,ignd),&
+                THLQACC(nlat,ignd),THICACC(nlat,ignd))
+                ! SNOARE_M,UVACC_M,PRESACC_M,QAACC_M
+
+            DO I=1,NLTEST
+                DO M=1,NMTEST
+                    PREACC(I)=PREACC(I)+PREACC_M(I,M)*FAREROT(I,M)
+                    GTACC(I)=GTACC(I)+GTACC_M(I,M)*FAREROT(I,M)
+                    QEVPACC(I)=QEVPACC(I)+QEVPACC_M(I,M)*FAREROT(I,M)
+                    EVAPACC(I)=EVAPACC(I)+EVAPACC_M(I,M)*FAREROT(I,M)
+                    HFSACC(I)=HFSACC(I)+HFSACC_M(I,M)*FAREROT(I,M)
+                    HMFNACC(I)=HMFNACC(I)+HMFNACC_M(I,M)*FAREROT(I,M)
+                    ROFACC(I)=ROFACC(I)+ROFACC_M(I,M)*FAREROT(I,M)
+                    OVRACC(I)=OVRACC(I)+OVRACC_M(I,M)*FAREROT(I,M)
+                    WTBLACC(I)=WTBLACC(I)+WTBLACC_M(I,M)*FAREROT(I,M)
+                    ALTOTACC(I)=ALTOTACC(I) + ALTOTACC_M(I,M)*FAREROT(I,M)
+                    DO J=1,IGND
+                        TBARACC(I,J)=TBARACC(I,J)+TBARACC_M(I,M,J)*FAREROT(I,M)
+                        THLQACC(I,J)=THLQACC(I,J)+THLQACC_M(I,M,J)*FAREROT(I,M)
+                        THICACC(I,J)=THICACC(I,J)+THICACC_M(I,M,J)*FAREROT(I,M)
+                    end do
+                    ALVSACC(I)=ALVSACC(I)+ALVSACC_M(I,M)*FAREROT(I,M)
+                    ALIRACC(I)=ALIRACC(I)+ALIRACC_M(I,M)*FAREROT(I,M)
+                    RHOSACC(I)=RHOSACC(I)+RHOSACC_M(I,M)*FAREROT(I,M)
+                    TSNOACC(I)=TSNOACC(I)+TSNOACC_M(I,M)*FAREROT(I,M)
+                    WSNOACC(I)=WSNOACC(I)+WSNOACC_M(I,M)*FAREROT(I,M)
+                    !SNOARE(I)=SNOARE(I)+FAREROT(I,M)
+                    TCANACC(I)=TCANACC(I)+TCANACC_M(I,M)*FAREROT(I,M)
+                    !CANARE(I)=CANARE(I)+FAREROT(I,M)
+                    SNOACC(I)=SNOACC(I)+SNOACC_M(I,M)*FAREROT(I,M)
+                    RCANACC(I)=RCANACC(I)+RCANACC_M(I,M)*FAREROT(I,M)
+                    SCANACC(I)=SCANACC(I)+SCANACC_M(I,M)*FAREROT(I,M)
+                    GROACC(I)=GROACC(I)+GROACC_M(I,M)*FAREROT(I,M)
+                    FSINACC(I)=FSINACC(I)+FSINACC_M(I,M)*FAREROT(I,M)
+                    FLINACC(I)=FLINACC(I)+FLINACC_M(I,M)*FAREROT(I,M)
+                    FLUTACC(I)=FLUTACC(I)+FLUTACC_M(I,M)*FAREROT(I,M)
+                    TAACC(I)=TAACC(I)+TAACC_M(I,M)*FAREROT(I,M)
+                    !UVACC(I)=UVACC(I)+UVACC_M(I)*FAREROT(I,M)
+                    !PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I,M)
+                    !QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I,M)
+                end do
+            end do
+
+            ! Now write to file the grid average values
+
+            ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
+            ! rather than the first day of the next month.
+            timeStamp = (realyr - refyr) * lastDOY + iday
+            print*,'timeStamp from class daily',timeStamp
+
+            do i = 1,nltest
+                if (altotcntr_d(i) > 0) then
+                    ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
+                else
+                    ALTOTACC(I)=0.
+                end if
+                FSSTAR=FSINACC(I)/real(nday)*(1.-ALTOTACC(I))
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_d' ,timeStamp,'rss', [FSSTAR])
+
+                FLSTAR=(FLINACC(I)-FLUTACC(I))/REAL(NDAY)
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_d' ,timeStamp,'rls', [FLSTAR])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_d'     ,timeStamp,'hfss', [HFSACC(I)/REAL(NDAY)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/REAL(NDAY)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'snomlt_d' ,timeStamp,'snomlt', [HMFNACC(I)]) !name?
 !                 !                 BEG=FSSTAR+FLSTAR-QH-QE
 !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  !name
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [HMFNACC(I)])
@@ -1037,6 +1058,7 @@ contains
 ! !                                 &                  ' TILE ',M
 !
 ! !
+            end do
 ! !             DO 800 I=1,NLTEST
 ! !                 PREACC(I)=PREACC(I)
 ! !                 GTACC(I)=GTACC(I)/REAL(NDAY)
@@ -1278,14 +1300,14 @@ contains
 ! !
 ! ! 809                     CONTINUE
 ! ! 808                 CONTINUE
-!
-!             deallocate(ALIRACC,ALVSACC,EVAPACC,FLINACC,FLUTACC,FSINACC,GROACC,GTACC, &
-!                        HFSACC,HMFNACC,OVRACC,PREACC,PRESACC,QAACC,QEVPACC,RCANACC, &
-!                        RHOSACC,ROFACC,SCANACC,SNOACC,TAACC,TCANACC,TSNOACC,UVACC, &
-!                        WSNOACC,WTBLACC,ALTOTACC)
-!                 ! SNOARE_M,UVACC_M,PRESACC_M,QAACC_M
-!
-!         ENDIF ! IF(NCOUNT.EQ.NDAY)
+
+            deallocate(ALIRACC,ALVSACC,EVAPACC,FLINACC,FLUTACC,FSINACC,GROACC,GTACC, &
+                       HFSACC,HMFNACC,OVRACC,PREACC,PRESACC,QAACC,QEVPACC,RCANACC, &
+                       RHOSACC,ROFACC,SCANACC,SNOACC,TAACC,TCANACC,TSNOACC,UVACC, &
+                       WSNOACC,WTBLACC,ALTOTACC)
+                ! SNOARE_M,UVACC_M,PRESACC_M,QAACC_M
+
+        ENDIF ! IF(NCOUNT.EQ.NDAY)
 
      end subroutine class_daily_aw
     !>@}
@@ -3367,7 +3389,7 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
             ! Prepare the timestamp for this month !FLAG this isn't correct for leap yet. Need to look at yrs before realyr too!
             !Take one day off so it is the last day of the month rather than the first day of the next month.
             timeStamp(1) = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
-            
+
             call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])

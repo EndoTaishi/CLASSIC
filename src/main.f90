@@ -62,6 +62,7 @@ contains
         use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
+        use metDisaggModule, only : disaggGridCell
 
         implicit none
 
@@ -2804,8 +2805,12 @@ contains
             call initializeLandCover
         end if
 
-        ! Read in the meteorological forcing data to a suite of arrays
+        !> Read in the meteorological forcing data to a suite of arrays
         call getMet(longitude,latitude,nday,delt)
+
+        !> Now disaggregate the meteorological forcing to the right timestep
+        !! for this model run
+        call disaggGridCell(lonIndex, latIndex,delt,lastDOY)
 
 !     Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow

@@ -55,6 +55,8 @@ module model_state_drivers
     integer :: lghtid                               !> netcdf file id for the lightning density input file
     integer :: lucid                                !> netcdf file id for the land use change input file
 
+    real :: metInputTimeStep                        !> The timestep of the read in meteorology (hours)
+
 contains
 
     !---
@@ -931,7 +933,7 @@ contains
         logical, pointer :: lnduseon
         integer, pointer :: fixedYearLUC
 
-        real, dimension(4) :: dateTime
+        real, dimension(5) :: dateTime
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
@@ -1232,7 +1234,7 @@ contains
 
         use fileIOModule
         use ctem_statevars, only : c_switch
-        use generalUtils, only : parseTimeStamp
+        use generalUtils, only : parseTimeStamp,closeEnough
 
         implicit none
 
@@ -1252,7 +1254,7 @@ contains
         real, dimension(:), allocatable :: tempTime
         integer :: validTimestep
         integer :: firstIndex
-        real, dimension(4) :: firstTime
+        real, dimension(5) :: firstTime,secondTime
 
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
@@ -1299,9 +1301,14 @@ contains
 
         ! Check that the first day is Jan 1, otherwise warn the user
         firstTime =  parseTimeStamp(metTime(1))
-        if (firstTime(2) .ne. 1. .and. firstTime(3) .ne. 1.) then
-            print*,'Warning, your met file does not start on Jan 1!'
+        if (.not. closeEnough(firstTime(5),1.)) then
+            print*,'Warning, your met file does not start on Jan 1.'
         end if
+
+        ! Determine the time step of the met data and
+        ! convert from fraction of day to period in seconds
+        secondTime =  parseTimeStamp(metTime(2))
+        metInputTimeStep = (secondTime(4) - firstTime(4)) * 86400.
 
         ! Find the closest cell to our lon and lat
         lonloc = closestCell(metFssId,'lon',longitude)
@@ -1311,13 +1318,21 @@ contains
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
                  metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
 
-        metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metTa = ncGet1DVar(metTaId, 'ta', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metQa = ncGet1DVar(metQaId, 'qa', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metTa = ncGet1DVar(metTaId, 'ta', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metQa = ncGet1DVar(metQaId, 'qa', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+
+        metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metFdl = ncGet1DVar(metFdlId, 'Incoming_Long_Wave_Radiation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metPre = ncGet1DVar(metPreId, 'Total_Precipitation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metTa = ncGet1DVar(metTaId, 'Temperature', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metQa = ncGet1DVar(metQaId, 'Air_Specific_Humidity', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metUv = ncGet1DVar(metUvId, 'U_wind_component', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metPres = ncGet1DVar(metPresId, 'Pression', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 
     end subroutine getMet
 
@@ -1354,7 +1369,7 @@ contains
         real, pointer, dimension(:) :: PRESROW      !<
 
         integer :: i,numsteps
-        real, dimension(4) :: theTime
+        real, dimension(5) :: theTime
         real :: dayfrac, month, dom, hour, minute
 
         FSSROW => class_rot%FSSROW
@@ -1374,10 +1389,7 @@ contains
         month = theTime(2)
         dom = theTime(3)
         dayfrac = theTime(4)
-
-        !> Finding the day is straight forward from the day of month (dom)
-        !! and the month
-        iday = monthend(int(month)) + int(dom)
+        iday = int(theTime(5))
 
         !> The dayfrac can then be parsed to give the hour and minute.
         numsteps = nint(dayfrac * 24. / (delt / 3600.))
