@@ -1,0 +1,1581 @@
+<?xml version="1.0"?>
+<variableSet>
+	<group type="class" description="Physics variables">
+		<variable includeBareGround="false">
+			<standardName>Net Shortwave Surface Radiation</standardName>
+			<longName>Net downward shortwave radiation at the surface</longName>
+			<shortName>rss</shortName>
+			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>fsstar_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>fsstar_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+                <variant>
+                    <nameInCode>fsstar_hh</nameInCode>
+                    <timeFrequency>half hourly</timeFrequency>
+                    <outputForm>grid</outputForm>
+                </variant>
+            </variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Net longwave surface radiation</standardName>
+			<longName>Net longwave radiation at the surface</longName>
+			<shortName>rls</shortName>
+			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>flstar_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>flstar_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Surface Net Sensible Heat Flux</standardName>
+			<longName>Surface Net Sensible Heat Flux</longName>
+			<shortName>hfss</shortName>
+			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>qh_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>qh_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Surface Net Latent Heat Flux</standardName>
+			<longName>Surface Net Latent Heat Flux</longName>
+			<shortName>hfls</shortName>
+			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>qe_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>qe_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Surface Snow Amount</standardName>
+			<longName>
+				The mass of surface snow on the land portion of the grid
+				cell divided by the land area in the grid cell reported as missing
+				where the land fraction is 0 excludes snow on vegetation canopy or
+				on sea ice.
+			</longName>
+			<shortName>snw</shortName>
+			<units>kg/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>snoacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Liquid water content of snow pack</standardName>
+			<longName>
+				The total mass of liquid water contained interstitially
+				within the whole depth of the snow pack of the land portion of a
+				grid cell divided by the area of the land portion of the cell.
+			</longName>
+			<shortName>wsnw</shortName>
+			<units>kg/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>wsnoacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Total Run-off</standardName>
+			<longName>
+				The total run-off (including drainage through the base of
+				the soil model) per unit area leaving the land portion of the grid
+				cell.
+			</longName>
+			<shortName>mrro</shortName>
+			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>rofacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>rofacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Precipitation</standardName>
+			<longName>
+				Preciptiation, includes both solid and liquid phases
+			</longName>
+			<shortName>pr</shortName>
+			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>preacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>preacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Evaporation</standardName>
+			<longName>
+				Evaporation at surface: flux of water into the atmosphere
+				due to conversion of both liquid and solid phases to vapor (from
+				underlying surface and vegetation)
+			</longName>
+			<shortName>evspsbl</shortName>
+			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>evapacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>evapacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Water Evaporation from Soil</standardName>
+			<longName>
+				Water evaporation from soil (including sublimation)
+			</longName>
+			<shortName>evspsblsoi</shortName>
+			<units>kg/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>groundevap</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Water Evaporation from Canopy</standardName>
+			<longName>
+				The canopy evaporation and sublimation; may include dew
+				formation as a negative flux.
+			</longName>
+			<shortName>evspsblveg</shortName>
+			<units>mm/month</units>
+			<variants>
+				<variant>
+					<nameInCode>canopyevap</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Transpiration</standardName>
+			<longName>Transpiration</longName>
+			<shortName>tran</shortName>
+			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>transpacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>transpacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Surface Temperature</standardName>
+			<longName>
+				Temperature of the lower boundary of the atmosphere
+			</longName>
+			<shortName>ts</shortName>
+			<units>$\circ$C</units>
+			<variants>
+				<variant>
+					<nameInCode>taacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Surface Albedo</standardName>
+			<longName>
+				Grid cell average albedo for all wavelengths.
+			</longName>
+			<shortName>albs</shortName>
+			<units>fraction</units>
+			<variants>
+				<variant>
+					<nameInCode>altotacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>altotacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Temperature of Soil</standardName>
+			<longName>
+				Temperature of each soil layer. Reported as missing for
+				grid cells with no land.
+			</longName>
+			<shortName>tsl</shortName>
+			<units>$\circ$C</units>
+			<variants>
+				<variant>
+					<nameInCode>tbaracc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>layer</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Liquid water content of soil layer</standardName>
+			<longName>
+				In each soil layer, the mass of water in liquid phase.
+				Reported as "missing" for grid cells occupied entirely by "sea"
+			</longName>
+			<shortName>mrsll</shortName>
+			<units>$m^3$/$m^3$</units>
+			<variants>
+				<variant>
+					<nameInCode>thlqacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>layer</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Frozen water content of soil layer</standardName>
+			<longName>
+				In each soil layer, the mass of water in ice phase.
+				Reported as "missing" for grid cells occupied entirely by "sea"
+			</longName>
+			<shortName>mrsfl</shortName>
+			<units>$m^3$/$m^3$</units>
+			<variants>
+				<variant>
+					<nameInCode>thicacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>layer</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Active Layer Depth</standardName>
+			<longName>Mean active layer depth</longName>
+			<shortName>actlyr</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>actlyr_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Maximum Active Layer Depth</standardName>
+			<longName>Maximum active layer depth</longName>
+			<shortName>actlyrmax</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>actlyr_max_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Minimum Active Layer Depth</standardName>
+			<longName>Minimum Active Layer Depth</longName>
+			<shortName>actlyrmin</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>actlyr_min_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Mean depth to frozen water table</standardName>
+			<longName>Mean depth to frozen water table</longName>
+			<shortName>ftable</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>ftable_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Maximum depth to frozen water table</standardName>
+			<longName>Maximum depth to frozen water table</longName>
+			<shortName>ftablemax</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>ftable_max_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>Minimum depth to frozen water table</standardName>
+			<longName>Minimum depth to frozen water table</longName>
+			<shortName>ftablemin</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>ftable_min_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
+
+	<group type="ctem" description="Biogeochemical variables">
+		<variable includeBareGround="false">
+			<standardName>
+				Leaf area index
+			</standardName>
+			<longName>
+				Leaf Area Index
+			</longName>
+			<shortName>lai</shortName>
+			<units>$m^2$/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>laimaxg_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Carbon Mass in Vegetation
+			</standardName>
+			<longName>
+				Carbon mass per unit area in vegetation
+			</longName>
+			<shortName>cVeg</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>vgbiomas_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Carbon Mass in Stem
+			</standardName>
+			<longName>
+				Carbon Mass in Stem including sapwood and hardwood.
+			</longName>
+			<shortName>cStem</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>stemmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>stemmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>stemmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Carbon Mass in Roots
+			</standardName>
+			<longName>
+				Carbon mass per unit area in roots, including fine and
+				coarse roots.
+			</longName>
+			<shortName>cRoot</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>rootmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>rootmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>rootmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Carbon Mass in Litter Pool
+			</standardName>
+			<longName>
+				Carbon Mass in Litter Pool
+			</longName>
+			<shortName>cLitter</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>litrmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_mo</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_mo_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Carbon Mass in Model Soil Pool
+			</standardName>
+			<longName>
+				Carbon mass in the full depth of the soil model.
+			</longName>
+			<shortName>cSoil</shortName>
+			<units></units>
+			<variants>
+				<variant>
+					<nameInCode>soilcmas_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Total Carbon in All Terrestrial Carbon Pools
+			</standardName>
+			<longName>
+				Report missing data over ocean grid cells. For fractional
+				land report value averaged over the land fraction.
+			</longName>
+			<shortName>cLand</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>totcmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>totcmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>totcmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Vegetation Height
+			</standardName>
+			<longName>
+				Vegetation height over the vegetated fraction of the
+				gridcell.
+			</longName>
+			<shortName>vegHeight</shortName>
+			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>veghght_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>veghght_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>veghght_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Net Primary Productivity of Biomass Expressed As Carbon
+			</standardName>
+			<longName>
+				Carbon Mass Flux out of Atmosphere due to Net Primary
+				Production on Land
+			</longName>
+			<shortName>npp</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>npp_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Gross Primary Productivity of Biomass Expressed As
+				Carbon
+			</standardName>
+			<longName>
+				Carbon Mass Flux out of Atmosphere due to Gross Primary
+				Production on Land
+			</longName>
+			<shortName>gpp</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>gpp_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Net Carbon Mass Flux out of Atmosphere due to Net
+				Ecosystem Productivity on Land
+			</standardName>
+			<longName>
+				Natural flux of CO2 (expressed as a mass flux of carbon)
+				from the atmosphere to the land calculated as the difference between
+				uptake associated will photosynthesis and the release of CO2 from
+				the
+				sum of plant and soil respiration and fire. Positive flux is into
+				the
+				land. emissions from natural fires and human ignition fires as
+				calculated by the fire module of the dynamic vegetation model, but
+				excluding any CO2 flux from fire included in fLuc (CO2 Flux to
+				Atmosphere from Land Use Change).
+			</longName>
+			<shortName>nep</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>nep_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Net Carbon Mass Flux out of Atmosphere due to Net
+				Biospheric Productivity on Land
+			</standardName>
+			<longName>
+				This is the net mass flux of carbon from atmosphere into
+				land, calculated as photosynthesis MINUS the sum of plant and soil
+				respiration, carbon fluxes from fire, harvest, grazing and land use
+				change. Positive flux is into the land.
+			</longName>
+			<shortName>nbp</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>nbp_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Carbon Mass Flux into Atmosphere due to Heterotrophic
+				Respiration on Land
+			</standardName>
+			<longName>
+				Carbon mass flux per unit area into atmosphere due to
+				heterotrophic respiration on land (respiration by consumers)
+			</longName>
+			<shortName>rh</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>hetrores_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Total autotrophic respiration
+			</standardName>
+			<longName>
+				Autotrophic Respiration from All Vegetation Pools
+			</longName>
+			<shortName>ra</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>autores_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Litter heterotrophic respiration
+			</standardName>
+			<longName>
+				Carbon Mass Flux into Atmosphere due to Heterotrophic
+				Respiration from Litter on Land
+			</longName>
+			<shortName>rhLitter</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>litres_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Soil heterotrophic respiration
+			</standardName>
+			<longName>
+				Carbon Mass Flux into Atmosphere due to Heterotrophic
+				Respiration from Soil on Land
+			</longName>
+			<shortName>rhSoil</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>soilcres_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Total Carbon Mass Flux from Vegetation to Litter
+			</standardName>
+			<longName>
+				Total Carbon Mass Flux from Vegetation to Litter
+			</longName>
+			<shortName>fVegLitter</shortName>
+			<units></units>
+			<variants>
+				<variant>
+					<nameInCode>litrfall_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrfallveg_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrfall_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Total Carbon Mass Flux from Litter to Soil
+			</standardName>
+			<longName>
+				Total Carbon Mass Flux from Litter to Soil
+			</longName>
+			<shortName>fLitterSoil</shortName>
+			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>humiftrs_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>humiftrsveg_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>humiftrs_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="true">
+			<standardName>
+				Fraction of Area by Vegetation/Land Cover Category
+			</standardName>
+			<longName>
+				Fraction of grid cell area occupied by different model
+				vegetation/land cover categories.
+			</longName>
+			<shortName>landCoverFrac</shortName>
+			<units>fraction</units>
+			<variants>
+				<variant>
+					<nameInCode>fcancmxrow_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>fcancmxrow_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
+
+	<group type="fire" description="Fire">
+		<variable includeBareGround="false">
+			<standardName>
+				Carbon Mass Flux into Atmosphere due to CO2 Emission
+				from Fire
+			</standardName>
+			<longName>
+				CO2 emissions (expressed as a CO2 mass flux per unit area)
+				from natural fires and human ignition fires as calculated by the
+				fire module of the dynamic vegetation model, but excluding any CO2
+				flux from fire included in fLuc (CO2 Flux to Atmosphere from Land
+				Use Change)
+			</longName>
+			<shortName>fFire</shortName>
+			<units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>emit_co2_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Carbon Mass Flux into Atmosphere due to CH4 Emission
+				from Fire
+			</standardName>
+			<longName>
+				CH4 emissions (expressed as a CH4 mass flux per unit area)
+				from natural fires and human ignition fires as calculated by the
+				fire module of the dynamic vegetation model
+			</longName>
+			<shortName>fFireCH4</shortName>
+			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>emit_ch4_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Percentage of Entire Grid cell that is Covered by Burnt
+				Vegetation (All Classes)
+			</standardName>
+			<longName>
+				Percentage of grid cell burned due to all fires including
+				natural and anthropogenic fires
+			</longName>
+			<shortName>burntFractionAll</shortName>
+			<units>fraction</units>
+			<variants>
+				<variant>
+					<nameInCode>burnfrac_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
+
+	<group type="land" description="Land">
+		<variable includeBareGround="false">
+			<standardName>
+				Deforested biomass that goes into atmosphere as a
+				result of anthropogenic land use change
+			</standardName>
+			<longName>
+				When land use change results in deforestation of natural
+				vegetation (trees or grasslands) then natural biomass is removed.
+			</longName>
+			<shortName>fDeforestToAtmos</shortName>
+			<units>g C $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>luc_emc_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Deforested biomass that goes into litter as a result of
+				anthropogenic land use change
+			</standardName>
+			<longName>
+				When land use change results in deforestation of natural
+				vegetation (trees or grasslands) then natural biomass is removed and
+				some transferred to litter.
+			</longName>
+			<shortName>fDeforestToLitter</shortName>
+			<units>g C $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>lucltrin_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Deforested biomass that goes into soil as a result of
+				anthropogenic land use change
+			</standardName>
+			<longName>
+				When land use change results in deforestation of natural
+				vegetation (trees or grasslands) then natural biomass is removed and
+				some transferred to soil.
+			</longName>
+			<shortName>fDeforestToSoil</shortName>
+			<units>g C $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>lucsocin_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
+
+	<group type="PFTCompetition" description="Compete">
+		<variable includeBareGround="false">
+			<standardName>
+				Boolean for existance of Vegetation/Land Cover Category
+				based on bioclimatic indices (1 is exist, 0 is not)
+			</standardName>
+			<longName>
+				Boolean for existance of Vegetation/Land Cover Category
+				based on bioclimatic indices
+			</longName>
+			<shortName>landCoverExist</shortName>
+			<units>T/F</units>
+			<variants>
+				<variant>
+					<nameInCode>pftexistrow_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>pftexistrow_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
+
+	<group type="methane" description="Methane">
+		<variable includeBareGround="false">
+			<standardName>
+				Methane emissions from wetlands
+			</standardName>
+			<longName>
+				Methane emissions from specified wetland areas based on
+				heterotrophic respiration
+			</longName>
+			<shortName>wetlandCH4spec</shortName>
+			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>ch4wet1_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4wet1_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4wet1_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4wet1_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Methane emissions from wetlands
+			</standardName>
+			<longName>
+				Methane emissions from dynamically determined wetland areas
+				based on heterotrophic respiration
+			</longName>
+			<shortName>wetlandCH4dyn</shortName>
+			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>ch4dyn1_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4dyn1_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4dyn1_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4dyn1_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Methane uptake (methanotrophy) by oxic soils
+			</standardName>
+			<longName>
+				Methane uptake (methanotrophy) by oxic soils
+			</longName>
+			<shortName>soilCH4cons</shortName>
+			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>ch4soills_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4soills_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>wetfdyn_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>wetfdyn_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+
+		<variable includeBareGround="false">
+			<standardName>
+				Fraction of a grid cell covered by wetland
+			</standardName>
+			<longName>
+				Fraction of a grid cell covered by wetland. Prognostically
+				determined.
+			</longName>
+			<shortName>wetlandFrac</shortName>
+			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>wetfdyn_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>wetfdyn_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
+</variableSet>

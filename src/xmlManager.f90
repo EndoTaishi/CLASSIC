@@ -15,7 +15,8 @@ module xmlManager
     character(len=80), dimension(2,10)      :: attribs
     character(len=400), dimension(100)      :: data
     logical                                 :: error
-    character(len=80)                       :: currentGroup, currentVariableName
+    character(len=80)                       :: currentGroup, currentVariableName, variableSetType, variableSetDate, variableSetVersion
+    real                                    :: xmlVersion
 
 contains
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -41,6 +42,17 @@ contains
         select case( tag )
             ! If the tag is <variableSet>, allocate the variable descriptors and the variants.
             case( 'variableSet' )
+                xmlVersion = 0;
+                variableSetType = trim(attribs(2,1))
+                variableSetVersion = trim(attribs(2,2));
+                if (variableSetVersion == '') then
+                    stop("The input XML document doesn't feature the required version field");
+                else
+                    xmlVersion = charToReal(variableSetVersion);
+                    if (xmlVersion < 1) stop('Older XML document found, please upgrade to a more recent version');
+                endif
+
+                variableSetDate = trim(attribs(2,3))
                 allocate(outputDescriptors(0))
                 allocate(variants(0))
             ! If the tag is <group>, remember the current group.
@@ -120,4 +132,11 @@ contains
         character(len=*), intent(in)    :: input    !< Char input
         read(input,*) charToInt
     end function charToInt
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> The charToInt function returns the integer value of a given char input
+    real function charToReal(input)
+        character(len=*), intent(in)    :: input    !< Char input
+        read(input,*) charToReal
+    end function charToReal
 end module xmlManager
