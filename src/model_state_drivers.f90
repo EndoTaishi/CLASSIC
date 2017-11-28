@@ -1318,6 +1318,8 @@ contains
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
                  metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
 
+        ! NOTE: Carefully check that your incoming inputs are in the expected units!
+        
 !         metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 !         metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 !         metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
