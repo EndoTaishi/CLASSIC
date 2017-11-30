@@ -173,6 +173,7 @@ contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Linear interpolation
+    ! This method splits the dataset into intervals and performs linear interpolation of each individual interval
     subroutine linearInterpolation(var)
 
         implicit none
@@ -183,18 +184,25 @@ contains
 
         countr = size(var)
 
-        ! TODO: Explain this thoroughly FLAG EDUARD
+        ! Determine how many short intervals we'll process
         shortIntervals = countr / numberPhysInMet
+        ! For every interval except the last one, do:
         do i = 1, shortIntervals - 1
+            ! Copy the first value of the next interval to the last position of the current interval
             var(i * numberPhysInMet) = var(i * numberPhysInMet + 1)
         enddo
+        ! For the last interval, copy the first value of the interval to the last value
         var(countr) = var(countr - numberPhysInMet)
-        ! up to here!!!
+
+        ! For every interval
         do i = 1, shortIntervals
+            ! Determine the start and end indices of the interval
             do j = 0, numberPhysInMet - 1
                 start = (i - 1) * numberPhysInMet + 1
                 endpt = i * numberPhysInMet
+                ! Compute the interval offset
                 t = real(j) / numberPhysInMet
+                ! Compute the interpolated values based on the difference betweent the start and end as interval offset
                 var(start + j) = var(start) + (var(endpt) - var(start)) * t
             enddo
         enddo
