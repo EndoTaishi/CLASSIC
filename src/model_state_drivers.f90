@@ -145,6 +145,24 @@ contains
         myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
         myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
 
+        !> Check that our domain is within the longitude and latitude limits of
+        !! the input files. Otherwise print a warning. Primarily we are trying to
+        !! catch instances where the input file runs from 0 to 360 longitude while
+        !! the user expects -180 to 180.
+        if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
+            print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLonValues(1)
+        else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
+            print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
+        else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
+            print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLatValues(1)
+        else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
+            print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
+        end if
+
         !> Based on the domainBounds, we make vectors of the cells to be run.
         pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
         xpos(1) = pos(1)
@@ -182,11 +200,10 @@ contains
                  myDomain%lonUnique(myDomain%cntx))
 
         !> Retrieve the number of soil layers (set ignd!)
-
         ignd = ncGetDimLen(initid, 'layer')
 
         !> Grab the model domain. We use GC since it is the land cells we want to run the model over.
-        !! the 'Mask' variable is all land (we don't run over Antarctica).
+        !! the 'Mask' variable is all land (but we don't run over Antarctica).
         allocate(mask(myDomain%cntx, myDomain%cnty))
         mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty],&
                           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
@@ -212,6 +229,10 @@ contains
                 endif
             enddo
         enddo
+
+        if (myDomain%LandCellCount == 0) then
+            print*,'=>Your domain is nothing but ocean my friend.'
+        end if
         
         nlat = 1
 
@@ -1319,6 +1340,10 @@ contains
                  metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
 
         ! NOTE: Carefully check that your incoming inputs are in the expected units!
+
+        ! Also take care here. If you use ncdump on a file it will show the opposite order for the
+        ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
+        ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
         
 !         metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 !         metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
@@ -1362,13 +1387,13 @@ contains
         integer, intent(out) :: imin                !< Present minute of simulation
         logical, intent(out) :: metDone             !< Switch signalling end of met data
 
-        real, pointer, dimension(:) :: FDLROW       !<
-        real, pointer, dimension(:) :: FSSROW       !<
-        real, pointer, dimension(:) :: PREROW       !<
-        real, pointer, dimension(:) :: TAROW        !<
-        real, pointer, dimension(:) :: QAROW        !<
-        real, pointer, dimension(:) :: UVROW        !<
-        real, pointer, dimension(:) :: PRESROW      !<
+        real, pointer, dimension(:) :: FDLROW       !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:) :: FSSROW       !< Shortwave radiation \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:) :: PREROW       !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+        real, pointer, dimension(:) :: TAROW        !< Air temperature at reference height [K]
+        real, pointer, dimension(:) :: QAROW        !< Specific humidity at reference height \f$[kg kg^{-1}]\f$
+        real, pointer, dimension(:) :: UVROW        !< Wind speed at reference height \f$[m s^{-1} ]\f$
+        real, pointer, dimension(:) :: PRESROW      !< Surface air pressure \f$[P_a]\f$
 
         integer :: i,numsteps
         real, dimension(5) :: theTime
@@ -1405,11 +1430,11 @@ contains
         FSSROW(I)   = metFss(metTimeIndex)
         FDLROW(i)   = metFdl(metTimeIndex)
         PREROW(i)   = metPre(metTimeIndex)
-        TAROW(i)    = metTa(metTimeIndex)
+        TAROW(i)    = metTa(metTimeIndex) ! This is converted from the read-in degree C to K in main_driver!
         QAROW(i)    = metQa(metTimeIndex)
         UVROW(i)    = metUv(metTimeIndex)
         PRESROW(i)  = metPres(metTimeIndex)
-
+        
         !> If the end of the timeseries is reached, change the metDone switch to true.
         if (metTimeIndex ==  size(metTime)) metDone = .true.
 

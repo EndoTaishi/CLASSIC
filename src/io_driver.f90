@@ -796,7 +796,7 @@ contains
 
         real, pointer, dimension(:) :: FSSROW           !< Shortwave radiation \f$[W m^{-2} ]\f$
         real, pointer, dimension(:) :: FDLROW           !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
-        real, dimension(:), pointer :: PREROW           !< Surface precipitation rate \f$[kg m^{-2} ]\f$
+        real, dimension(:), pointer :: PREROW           !< Surface precipitation rate \f$[kg m^{-2}  s^{-1} ]\f$
         real, dimension(:), pointer :: FSVHROW          !< Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
         real, dimension(:), pointer :: FSIHROW          !< Near infrared shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$
         real, dimension(:), pointer :: TAROW            !< Air temperature at reference height [K]
