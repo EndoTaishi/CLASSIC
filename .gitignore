@@ -1,6 +1,10 @@
 objectFiles/*.o
 objectFiles/*.mod
-configurationFiles/Output Variable Editor/.project
-configurationFiles/Output Variable Editor/.settings
-configurationFiles/Output Variable Editor/.tern-project
+or/.project
+tools/metASCIILoader/.settings
+tools/metASCIILoader/.cproject
+tools/metASCIILoader/.project
+tools/outputVariableEditor/.settings
+tools/outputVariableEditor/.project
+tools/outputVariableEditor/.tern-project
 bin/CLASSIC
