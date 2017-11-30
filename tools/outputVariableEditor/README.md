@@ -4,7 +4,7 @@ Output Variable Editor (OVE)
 The Output Variable Editor (OVE) is a web interface that allows a user to configure the output variables for the CLASS-CTEM model. Using this interface the user can load an existing XML file and add/remove variables and variants. Once the changes are complete, the user may download an updated version of the XML configuration file.
 
 # Opening Instructions
-The *Output Variable Editor* folder is located in the configurationFiles folder of your local CLASS directory.
+The *Output Variable Editor* folder is located in the *tools* folder of your local CLASS directory.
 Open index.html in your favorite browser and edit the output variable descriptors using the web interface.
 
 # Work flow
