@@ -1,3 +1,6 @@
 objectFiles/*.o
 objectFiles/*.mod
+configurationFiles/Output Variable Editor/.project
+configurationFiles/Output Variable Editor/.settings
+configurationFiles/Output Variable Editor/.tern-project
 bin/CLASSIC
