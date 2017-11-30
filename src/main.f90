@@ -62,6 +62,7 @@ contains
         use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
+        use metDisaggModule, only : disaggGridCell
 
         implicit none
 
@@ -501,7 +502,7 @@ contains
         real, pointer, dimension(:) :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
         real, pointer, dimension(:) :: GGEOROW !<The geothermal heat flux
         real, pointer, dimension(:) :: PADRROW !<
-        real, pointer, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} ]\f$
+        real, pointer, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
         real, pointer, dimension(:) :: PRESROW !<
         real, pointer, dimension(:) :: QAROW   !<
         real, pointer, dimension(:) :: RADJROW !<
@@ -2804,8 +2805,12 @@ contains
             call initializeLandCover
         end if
 
-        ! Read in the meteorological forcing data to a suite of arrays
+        !> Read in the meteorological forcing data to a suite of arrays
         call getMet(longitude,latitude,nday,delt)
+
+        !> Now disaggregate the meteorological forcing to the right timestep
+        !! for this model run
+        call disaggGridCell(longitude, latitude,delt)
 
 !     Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
@@ -3096,18 +3101,20 @@ contains
         do while (run_model)
 
             !
-            !     * READ IN METEOROLOGICAL FORCING DATA FOR CURRENT TIME STEP;
-            !     * CALCULATE SOLAR ZENITH ANGLE AND COMPONENTS OF INCOMING SHORT-
-            !     * WAVE RADIATION FLUX; ESTIMATE FLUX PARTITIONS IF NECESSARY.
+            !     * Read in meteorological forcing data for current time step;
+            !     * Calculate solar zenith angle and components of incoming short-
+            !     * wave radiation flux; Estimate flux partitions if necessary.
             !
             call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
-            !print*,ihour,imin,iday,iyear,longitude,latitude !FSSROW(I),FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
-
-            !FLAG !FLAG temp until Ed's file is fixed!!
-            i=1  !FLAG temp!!!
-            if (PREROW(i) < 0.) PREROW(i) = 0.  !FLAG temp!!!
-            if (QAROW(i) < 0.) QAROW(i) = 0.0012066  !FLAG temp!!!
+            !if (iday > 110) then
+            !    print*,ihour,imin,iday,iyear,FSSROW(1),FDLROW(1),PREROW(1),TAROW(1),QAROW(1),UVROW(1),PRESROW(1)
+            !    read(*,*)
+            !end if
+!             !FLAG !FLAG temp until Ed's file is fixed!!
+!             i=1  !FLAG temp!!!
+!             if (PREROW(i) < 0.) PREROW(i) = 0.  !FLAG temp!!!
+!             if (QAROW(i) < 0.) QAROW(i) = 0.0012066  !FLAG temp!!!
 
             N=N+1
 

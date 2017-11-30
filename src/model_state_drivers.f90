@@ -55,6 +55,8 @@ module model_state_drivers
     integer :: lghtid                               !> netcdf file id for the lightning density input file
     integer :: lucid                                !> netcdf file id for the land use change input file
 
+    real :: metInputTimeStep                        !> The timestep of the read in meteorology (hours)
+
 contains
 
     !---
@@ -143,6 +145,24 @@ contains
         myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
         myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
 
+        !> Check that our domain is within the longitude and latitude limits of
+        !! the input files. Otherwise print a warning. Primarily we are trying to
+        !! catch instances where the input file runs from 0 to 360 longitude while
+        !! the user expects -180 to 180.
+        if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
+            print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLonValues(1)
+        else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
+            print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
+        else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
+            print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLatValues(1)
+        else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
+            print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
+                ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
+        end if
+
         !> Based on the domainBounds, we make vectors of the cells to be run.
         pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
         xpos(1) = pos(1)
@@ -180,11 +200,10 @@ contains
                  myDomain%lonUnique(myDomain%cntx))
 
         !> Retrieve the number of soil layers (set ignd!)
-
         ignd = ncGetDimLen(initid, 'layer')
 
         !> Grab the model domain. We use GC since it is the land cells we want to run the model over.
-        !! the 'Mask' variable is all land (we don't run over Antarctica).
+        !! the 'Mask' variable is all land (but we don't run over Antarctica).
         allocate(mask(myDomain%cntx, myDomain%cnty))
         mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty],&
                           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
@@ -210,6 +229,10 @@ contains
                 endif
             enddo
         enddo
+
+        if (myDomain%LandCellCount == 0) then
+            print*,'=>Your domain is nothing but ocean my friend.'
+        end if
         
         nlat = 1
 
@@ -931,7 +954,7 @@ contains
         logical, pointer :: lnduseon
         integer, pointer :: fixedYearLUC
 
-        real, dimension(4) :: dateTime
+        real, dimension(5) :: dateTime
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
@@ -1232,7 +1255,7 @@ contains
 
         use fileIOModule
         use ctem_statevars, only : c_switch
-        use generalUtils, only : parseTimeStamp
+        use generalUtils, only : parseTimeStamp,closeEnough
 
         implicit none
 
@@ -1252,7 +1275,7 @@ contains
         real, dimension(:), allocatable :: tempTime
         integer :: validTimestep
         integer :: firstIndex
-        real, dimension(4) :: firstTime
+        real, dimension(5) :: firstTime,secondTime
 
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
@@ -1299,9 +1322,14 @@ contains
 
         ! Check that the first day is Jan 1, otherwise warn the user
         firstTime =  parseTimeStamp(metTime(1))
-        if (firstTime(2) .ne. 1. .and. firstTime(3) .ne. 1.) then
-            print*,'Warning, your met file does not start on Jan 1!'
+        if (.not. closeEnough(firstTime(5),1.)) then
+            print*,'Warning, your met file does not start on Jan 1.'
         end if
+
+        ! Determine the time step of the met data and
+        ! convert from fraction of day to period in seconds
+        secondTime =  parseTimeStamp(metTime(2))
+        metInputTimeStep = (secondTime(4) - firstTime(4)) * 86400.
 
         ! Find the closest cell to our lon and lat
         lonloc = closestCell(metFssId,'lon',longitude)
@@ -1311,13 +1339,27 @@ contains
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
                  metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
 
-        metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metTa = ncGet1DVar(metTaId, 'ta', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metQa = ncGet1DVar(metQaId, 'qa', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        ! NOTE: Carefully check that your incoming inputs are in the expected units!
+
+        ! Also take care here. If you use ncdump on a file it will show the opposite order for the
+        ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
+        ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
+        
+!         metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metTa = ncGet1DVar(metTaId, 'ta', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metQa = ncGet1DVar(metQaId, 'qa', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+!         metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+
+        metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metFdl = ncGet1DVar(metFdlId, 'Incoming_Long_Wave_Radiation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metPre = ncGet1DVar(metPreId, 'Total_Precipitation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metTa = ncGet1DVar(metTaId, 'Temperature', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metQa = ncGet1DVar(metQaId, 'Air_Specific_Humidity', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metUv = ncGet1DVar(metUvId, 'U_wind_component', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metPres = ncGet1DVar(metPresId, 'Pression', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 
     end subroutine getMet
 
@@ -1345,16 +1387,16 @@ contains
         integer, intent(out) :: imin                !< Present minute of simulation
         logical, intent(out) :: metDone             !< Switch signalling end of met data
 
-        real, pointer, dimension(:) :: FDLROW       !<
-        real, pointer, dimension(:) :: FSSROW       !<
-        real, pointer, dimension(:) :: PREROW       !<
-        real, pointer, dimension(:) :: TAROW        !<
-        real, pointer, dimension(:) :: QAROW        !<
-        real, pointer, dimension(:) :: UVROW        !<
-        real, pointer, dimension(:) :: PRESROW      !<
+        real, pointer, dimension(:) :: FDLROW       !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:) :: FSSROW       !< Shortwave radiation \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:) :: PREROW       !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+        real, pointer, dimension(:) :: TAROW        !< Air temperature at reference height [K]
+        real, pointer, dimension(:) :: QAROW        !< Specific humidity at reference height \f$[kg kg^{-1}]\f$
+        real, pointer, dimension(:) :: UVROW        !< Wind speed at reference height \f$[m s^{-1} ]\f$
+        real, pointer, dimension(:) :: PRESROW      !< Surface air pressure \f$[P_a]\f$
 
         integer :: i,numsteps
-        real, dimension(4) :: theTime
+        real, dimension(5) :: theTime
         real :: dayfrac, month, dom, hour, minute
 
         FSSROW => class_rot%FSSROW
@@ -1374,10 +1416,7 @@ contains
         month = theTime(2)
         dom = theTime(3)
         dayfrac = theTime(4)
-
-        !> Finding the day is straight forward from the day of month (dom)
-        !! and the month
-        iday = monthend(int(month)) + int(dom)
+        iday = int(theTime(5))
 
         !> The dayfrac can then be parsed to give the hour and minute.
         numsteps = nint(dayfrac * 24. / (delt / 3600.))
@@ -1391,11 +1430,11 @@ contains
         FSSROW(I)   = metFss(metTimeIndex)
         FDLROW(i)   = metFdl(metTimeIndex)
         PREROW(i)   = metPre(metTimeIndex)
-        TAROW(i)    = metTa(metTimeIndex)
+        TAROW(i)    = metTa(metTimeIndex) ! This is converted from the read-in degree C to K in main_driver!
         QAROW(i)    = metQa(metTimeIndex)
         UVROW(i)    = metUv(metTimeIndex)
         PRESROW(i)  = metPres(metTimeIndex)
-
+        
         !> If the end of the timeseries is reached, change the metDone switch to true.
         if (metTimeIndex ==  size(metTime)) metDone = .true.
 

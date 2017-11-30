@@ -9,7 +9,7 @@ OBJ = fileIOModule.o ctem_params.o ctem_statevars.o  peatlands_mod.o \
 	TNPOST.o WEND.o balcar.o ORDLEG.o mainres.o allocate.o phenolgy.o turnover.o mortality.o \
 	disturb.o ctems2.o landuse_change_mod.o soil_ch4uptake.o \
 	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o io_driver.o  \
-	model_state_drivers.o read_from_job_options.o main.o xmlParser.o xmlManager.o CLASSIC.o
+	model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o xmlManager.o CLASSIC.o
 
 # This is the directory our .o and .mod files will be put into. (except for supercomputer runs where they are just dumped in
 # same directory as the Makefile

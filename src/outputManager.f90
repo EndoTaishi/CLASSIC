@@ -108,7 +108,8 @@ contains
 
         implicit none
 
-        character(*), intent(in)                :: nameInCode, timeFreq, outputForm, descriptorLabel
+        character(*), intent(in)                :: nameInCode, timeFreq, descriptorLabel
+        character(*), intent(inout)             :: outputForm
         type(outputDescriptor)                  :: descriptor
         character(350)                           :: filename = ''
         logical                                 :: isTimeValid, isGroupValid, fileCreatedOk
@@ -344,7 +345,7 @@ contains
         implicit none
 
         character(*), intent(in)              :: fileName
-        character(*), intent(in)              :: outputForm
+        character(*), intent(inout)              :: outputForm
         character(*), intent(in)              :: timeFreq
         type(outputDescriptor), intent(in)    :: descriptor
         integer, intent(in)                   :: id
@@ -391,6 +392,13 @@ contains
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
         !call ncPutAtt(ncid,varid,'actual_range',yrange) #FLAG need to find the xrange from all_lon.
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+
+        ! The landCoverFrac, while 'grid' so that it will output in all runs
+        ! needs to be switched to 'pft' so that it can be properly given the
+        ! dimensions needed.
+        if (trim(descriptor%shortName) == 'landCoverFrac') then
+            outputForm = 'pft'
+        end if
 
         select case(trim(outputForm))
 
@@ -603,7 +611,7 @@ contains
                         timeVect(j) = (readMetStartYear + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
                     end do
                 end do
-             
+
             case("daily")
                 ! Daily may start writing later (after jdsty) and end earlier (jdendy) so make sure to account for that.
                 ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps

@@ -1,14 +1,23 @@
 <element name="variableSet" xmlns="http://relaxng.org/ns/structure/1.0">
+	<attribute name="type">
+		<text />
+	</attribute>
+	<attribute name="version">
+		<text />
+	</attribute>
+	<attribute name="created">
+		<text />
+	</attribute>
 	<oneOrMore>
 		<element name="group">
 			<attribute name="type">
 				<text />
 			</attribute>
-			<attribute name="description">
-				<text />
-			</attribute>
-			<oneOrMore>
+			<zeroOrMore>
 				<element name="variable">
+					<attribute name="id">
+						<text />
+					</attribute>
 					<attribute name="includeBareGround">
 						<text />
 					</attribute>
@@ -24,38 +33,36 @@
 					<element name="units">
 						<text />
 					</element>
-					<element name="variants">
-						<zeroOrMore>
-							<element name="variant">
-								<element name="nameInCode">
-									<text />
-								</element>
-								<element name="timeFrequency">
-									<text />
-								</element>
-								<element name="outputForm">
-									<text />
-								</element>
-								<optional>
-									<element name="units">
-										<text />
-									</element>
-								</optional>
-								<optional>
-									<element name="comment">
-										<text />
-									</element>
-								</optional>
+					<zeroOrMore>
+						<element name="variant">
+							<element name="timeFrequency">
+								<text />
 							</element>
-						</zeroOrMore>
-					</element>
+							<element name="outputForm">
+								<text />
+							</element>
+							<element name="nameInCode">
+								<text />
+							</element>
+							<optional>
+								<element name="units">
+									<text />
+								</element>
+							</optional>
+							<optional>
+								<element name="comment">
+									<text />
+								</element>
+							</optional>
+						</element>
+					</zeroOrMore>
 					<optional>
 						<element name="comment">
 							<text />
 						</element>
 					</optional>
 				</element>
-			</oneOrMore>
+			</zeroOrMore>
 		</element>
 	</oneOrMore>
 </element>

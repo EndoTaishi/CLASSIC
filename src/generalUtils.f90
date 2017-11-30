@@ -105,15 +105,19 @@ module generalUtils
     end subroutine findLeapYears
 
     !---------------------------------------------------------------------------------------
-    
+    !> Parses a time stamp in the expected form "day as %Y%m%d.%f"
+    !! Returns an array with 1) year, 2) month, 3) day, 4) fraction of day
+    !! 5) day of year
     function parseTimeStamp(timeStamp)
+
+    use ctem_params, only : monthdays
 
     implicit none
 
-    real, dimension(4) :: parseTimeStamp
+    real, dimension(5) :: parseTimeStamp
     real, intent(in) :: timeStamp
     real :: date, moment
-    integer :: intdate, day, month, year
+    integer :: intdate, day, month, year,totdays,t
 
     date = floor(timeStamp) ! remove the part days
     parseTimeStamp(4) = timeStamp - date ! save the part days
@@ -124,8 +128,28 @@ module generalUtils
     parseTimeStamp(1) = real(year)
     parseTimeStamp(2) = real(month)
     parseTimeStamp(3) = real(day)
+    totdays=0
+    if (month > 1) then
+        do t = 1, month-1
+            totdays = totdays + monthdays(t)
+        end do
+    end if
+    parseTimeStamp(5) = real(totdays + day)
 
     end function parseTimeStamp
+
+    !---------------------------------------------------------------------------------------
+
+    !> As real numbers are not precise, this is a simple way to compare two reals
+    logical function closeEnough(num1, num2)
+        real, intent(in)    :: num1, num2
+        real, parameter     :: error = 0.001
+        if (abs(num1 - num2) < error) then
+            closeEnough = .true.
+        else
+            closeEnough = .false.
+        endif
+    end function closeEnough
 
 end module generalUtils
 
