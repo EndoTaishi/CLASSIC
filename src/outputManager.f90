@@ -108,7 +108,8 @@ contains
 
         implicit none
 
-        character(*), intent(in)                :: nameInCode, timeFreq, outputForm, descriptorLabel
+        character(*), intent(in)                :: nameInCode, timeFreq, descriptorLabel
+        character(*), intent(inout)             :: outputForm
         type(outputDescriptor)                  :: descriptor
         character(350)                           :: filename = ''
         logical                                 :: isTimeValid, isGroupValid, fileCreatedOk
@@ -121,7 +122,7 @@ contains
         isTimeValid = validTime(timeFreq, descriptor)
 
         ! If the group property of descriptor matches the project config, all's good
-        isGroupValid = validGroup(descriptor)
+        isGroupValid = validGroup(descriptor,outputForm)
 
         ! If the project config and variable descriptor match the request, process current variable
         if (isTimeValid .and. isGroupValid) then
@@ -189,12 +190,25 @@ contains
     !>\ingroup output_validGroup
     !>@{
     !> Determines if the current variable matches the project configuration
-    logical function validGroup(descriptor)
+    logical function validGroup(descriptor,outputForm)
 
         implicit none
 
+        character(*), intent(in)              :: outputForm
         type(outputDescriptor), intent(in)    :: descriptor
 
+        ! First weed out the per pft, per tile options if they should not be used.
+        if (.not. c_switch%doperpftoutput .and. trim(outputForm) == "pft") then
+            validGroup = .false.
+            return
+        end if
+
+        if (.not. c_switch%dopertileoutput .and. trim(outputForm) == "tile") then
+            validGroup = .false.
+            return
+        end if
+
+        ! Now check over the remaining options
         if (trim(descriptor%group) == "class") then !CLASS outputs always are valid
             validGroup = .true.
         elseif (c_switch%ctem_on .and. trim(descriptor%group) == "ctem") then
@@ -331,7 +345,7 @@ contains
         implicit none
 
         character(*), intent(in)              :: fileName
-        character(*), intent(in)              :: outputForm
+        character(*), intent(inout)              :: outputForm
         character(*), intent(in)              :: timeFreq
         type(outputDescriptor), intent(in)    :: descriptor
         integer, intent(in)                   :: id
@@ -359,7 +373,7 @@ contains
 
         call ncPutAtt(ncid,nf90_global,'timestamp',charvalues=today//' '//now(1:4))
         call ncPutAtt(ncid,nf90_global,'Conventions',charvalues='COARDS')
-        call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
+        !call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
 
         !----1 - Longitude
 
@@ -368,7 +382,7 @@ contains
         call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
         !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
-        call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+        !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
 
         !----2 - Latitude
@@ -377,7 +391,14 @@ contains
         call ncPutAtt(ncid,varid,'long_name',charvalues='latitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
         !call ncPutAtt(ncid,varid,'actual_range',yrange) #FLAG need to find the xrange from all_lon.
-        call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+        !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+
+        ! The landCoverFrac, while 'grid' so that it will output in all runs
+        ! needs to be switched to 'pft' so that it can be properly given the
+        ! dimensions needed.
+        if (trim(descriptor%shortName) == 'landCoverFrac') then
+            outputForm = 'pft'
+        end if
 
         select case(trim(outputForm))
 
@@ -387,8 +408,8 @@ contains
                 varid = ncDefVar(ncid,'tile',nf90_short,[tileDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='tile')
                 call ncPutAtt(ncid,varid,'units',charvalues='tile number')
-                call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
-                call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+                !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+                !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
             case("pft")         ! Per PFT outputs
 
@@ -401,8 +422,8 @@ contains
                 varid = ncDefVar(ncid,'pft',nf90_short,[pftDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='Plant Functional Type')
                 call ncPutAtt(ncid,varid,'units',charvalues='PFT')
-                call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
-                call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+                !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+                !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
             case ("layer")      ! Per layer outputs
 
@@ -410,8 +431,8 @@ contains
                 varid = ncDefVar(ncid,'layer',nf90_short,[layerDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='soil layer')
                 call ncPutAtt(ncid,varid,'units',charvalues='layer')
-                call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
-                call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+                !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+                !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
         end select
 
@@ -434,9 +455,9 @@ contains
             call ncPutAtt(ncid,varid,'calendar',charvalues="365_day")
         end if
 
-        call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
-        call ncPutAtt(ncid,varid,'_Chunksizes',intvalues=1)
-        call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+        !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
+        !call ncPutAtt(ncid,varid,'_Chunksizes',intvalues=1)
+        !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
         call ncEndDef(ncid)
 
@@ -499,9 +520,9 @@ contains
         call ncPutAtt(ncid,varid,'long_name',charvalues=descriptor%longName)
         call ncPutAtt(ncid,varid,'units',charvalues=descriptor%units)
         call ncPutAtt(ncid,varid,'_FillValue',realvalues=fill_value)
-        call ncPutAtt(ncid,varid,'missing_value',realvalues=fill_value)
-        call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
-        call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
+        !call ncPutAtt(ncid,varid,'missing_value',realvalues=fill_value)
+        !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
+        !call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
         call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
 
         call ncEndDef(ncid)
@@ -560,6 +581,7 @@ contains
         jdendy          => c_switch%jdendy
         jmosty          => c_switch%jmosty
 
+        lastDOY = 365
         select case(trim(timeFreq))
 
             case("annually")
@@ -567,7 +589,7 @@ contains
                 totsteps = totyrs
                 allocate(timeVect(totsteps))
                 do i = 1, totsteps
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     timeVect(i) = (readMetStartYear + i - 1 - refyr) * lastDOY
                 end do
  
@@ -583,13 +605,13 @@ contains
                 allocate(timeVect(totsteps))
                 do i = 1, totyrs
                     ! Find out if this year is a leap year. It adjusts the monthend array.
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     do m = 1, 12
                         j = ((i - 1) * 12) + m
                         timeVect(j) = (readMetStartYear + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
                     end do
                 end do
-             
+
             case("daily")
                 ! Daily may start writing later (after jdsty) and end earlier (jdendy) so make sure to account for that.
                 ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps
@@ -617,7 +639,7 @@ contains
                 cnt=0
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     st = max(1, jdstd)
                     en = min(jdendd, lastDOY)
                     totsteps = totsteps + (en - st + 1)
@@ -661,7 +683,7 @@ contains
                 cnt=0
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
-                    call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     st = max(1, jhhstd)
                     en = min(jhhendd, lastDOY)
                     totsteps = totsteps + (en - st + 1) * 48 ! 48 half hours in a day. !FLAG change this if delt is not half-hour
