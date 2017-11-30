@@ -9,27 +9,37 @@ module metDisaggModule
 
     implicit none
 
-        integer :: numberPhysInMet  !< Number of physics timesteps that fit into one MET input file timestep
-        integer :: numberMetInput   !< Number of MET input file timesteps that fit into one day
-        integer :: tslongCount      !< Number of physics timesteps in the original met arrays
-        integer :: shortSteps       !< Number of physics timesteps in one day
+    public :: disaggGridCell
+    public :: makebig
+    public :: stepInterpolation
+    public :: linearInterpolation
+    public :: precipDistribution
+    public :: diurnalDistribution
+    public :: zenithAngles
+    public :: daylightIndices
+    public :: distributeDiurnally
+    public :: timeZone
+    public :: timeShift
+
+    integer :: numberPhysInMet      !< Number of physics timesteps that fit into one MET input file timestep
+    integer :: numberMetInputinDay  !< Number of MET input file timesteps that fit into one day
+    integer :: tslongCount          !< Number of physics timesteps in the original met arrays
+    integer :: shortSteps           !< Number of physics timesteps in one day
 
 contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    ! Processes one single grid cell
-    subroutine disaggGridCell(longitude, latitude,delt,lastDOY,nday) ! longitude, latitude
+    !> Main subroutine to disaggregate input meteorology to that of the physics timestep
+    subroutine disaggGridCell(longitude, latitude,delt) ! longitude, latitude
 
         implicit none
 
-        real, intent(in)    :: longitude, latitude
-        real, intent(in)    :: delt         !< Simulation physics timestep
-        integer, intent(in) :: lastDOY
-        integer, intent(in) :: nday
+        real, intent(in)    :: longitude, latitude  !in degrees
+        real, intent(in)    :: delt                 !< Simulation physics timestep
         integer             :: i,vcount,vcountPlus
 
         !> First check that we should be doing the disaggregation. If we are already
-        !! at the needed timestep (delt) then we can return the main.
+        !! at the needed timestep (delt) then we can return to the main.
         if (closeEnough(metInputTimeStep,delt)) then
            return
         end if
@@ -38,22 +48,29 @@ contains
         numberPhysInMet = int(metInputTimeStep / delt)
 
         !> Determine how many metInputTimeStep fit into a day
-        numberMetInput = int(86400./metInputTimeStep)
+        numberMetInputinDay = int(86400./metInputTimeStep)
+
+        !> Determine the number of physics timesteps that fit in a day
+        shortSteps = numberPhysInMet * numberMetInputinDay
 
         !> Compute the timestep count (both original timestep and the needed one)
         tslongCount = size(metTime)              ! original timesteps
 
-        vcount = tslongCount * numberPhysInMet  ! needed number of timesteps
+        ! needed number of timesteps at the physics timestep
+        vcount = tslongCount * numberPhysInMet
 
         !> Add two extra days to the vcount since we need them for interpolation of the
         !! first and last days of our time period
-        vcountPlus = vcount + 2 * numberPhysInMet * numberMetInput
+        vcountPlus = vcount + 2 * numberPhysInMet * numberMetInputinDay
 
         !> Expand original MET data to physics timestep. This increases the array size
         !! and puts the old values within the larger array. It also duplicates the first
         !! and last days for the interpolation. This also expands the time array (metTime)
         call makebig(vcount,vcountPlus,delt)
 
+        !> Perform the interpolations that are either step (for longwave), linear (for
+        !! for air temperature, specific humidity, wind, pressure), randomly distributed
+        !! over a number of wet timesteps (precip), or diurnally distributed (shortwave)
         call stepInterpolation(metFdl)
         call linearInterpolation(metTa)
         call linearInterpolation(metQa)
@@ -65,7 +82,6 @@ contains
         !> Adjust the met arrays for the timezone relative to Greenwich and also
         !! trim off the added two days.
         call timeShift(timeZone(longitude,delt),vcount,vcountPlus)
-
 
     end subroutine disaggGridCell
 
@@ -103,14 +119,17 @@ contains
 
         !> The remainder of the meteorological variables need to have a couple extra
         !! days pinned on, one at the start and one at the end.
-        timePlusTwoDays = tslongCount + 2 * numberMetInput
+        timePlusTwoDays = tslongCount + 2 * numberMetInputinDay
+
+        !> Now fill the newly expanded arrays with the values you have in the position
+        !! of their timesteps
         do j = 1, timePlusTwoDays
-            if (j < numberMetInput+1) then ! Then copy the first day into that time
+            if (j < numberMetInputinDay+1) then ! Then copy the first day into that time
                 i = j
-            elseif (j > (timePlusTwoDays - numberMetInput)) then ! Copy the last day into that time
-                i = j-(2* numberMetInput)
+            elseif (j > (timePlusTwoDays - numberMetInputinDay)) then ! Copy the last day into that time
+                i = j-(2* numberMetInputinDay)
             else ! use the value for that time
-                i = j - numberMetInput
+                i = j - numberMetInputinDay
             end if
             metFdl ((j-1) * numberPhysInMet + 1) = tmpFdl(i)
             metFss ((j-1) * numberPhysInMet + 1) = tmpFss(i)
@@ -128,14 +147,13 @@ contains
                 metTime((j-1) * numberPhysInMet + 1 + i) = tmpTime(j) + i*delt/86400.
             end do
         end do
-        print*, size(metTime)
 
         deallocate(tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres,tmpTime)
 
     end subroutine makebig
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Step interpolation
+    !> Step interpolation applies the same value across all physics timesteps
     subroutine stepInterpolation(var)
 
         implicit none
@@ -276,8 +294,7 @@ contains
     end subroutine precipDistribution
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    ! Diurnal distribution over the entire timespan
-
+    !> Diurnal distribution over the entire timespan
     subroutine diurnalDistribution(shortWave, latitude,delt)
 
         implicit none
@@ -287,7 +304,7 @@ contains
         real, intent(in)                            :: delt
         real, allocatable                           :: swDiurnalDistributed(:)
         real, allocatable                           :: correction
-        integer                                     :: i,d, start, endpt, vcount, midday
+        integer                                     :: i,d, start, endpt, midday
         real, allocatable                           :: daylightIndYear(:,:)
         real, allocatable                           :: zenithAngYear(:,:)
         real, allocatable                           :: zenithNoon(:)
@@ -295,8 +312,6 @@ contains
         real                                        :: swMean
         real, allocatable, dimension(:)             :: timesteps
 
-        vcount = size(shortWave)
-        shortSteps = numberPhysInMet * numberMetInput
         midday = shortSteps / 2 + 1
 
         allocate(timesteps(shortSteps))
@@ -324,7 +339,7 @@ contains
             start = (i - 1) * shortSteps + 1
             endpt = i * shortSteps
 
-            swMean = sum(shortWave(start:endpt)) / numberMetInput ! Finds the mean of this day's values
+            swMean = sum(shortWave(start:endpt)) / numberMetInputinDay ! Finds the mean of this day's values
 
             shortWave(start:endpt) = distributeDiurnally(zenithAngYear(d,:),daylightIndYear(d,:),zenithNoon(d),swMean,shortSteps)
             d = d+1
@@ -335,8 +350,8 @@ contains
 
     end subroutine diurnalDistribution
 
-        !-----------------------------------------------------------------------------------------------------------------------------------------------------
-
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Find zenith angles depending on day of year and latitude
     function zenithAngles(timesteps, day, latRad, lastDOY,countr)
 
         implicit none
@@ -371,7 +386,7 @@ contains
     end function zenithAngles
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    ! Find day length
+    !> Find day lengths depending on zenith angles
     function daylightIndices(zenithAngles,delt,countr)
 
         implicit none
@@ -401,7 +416,7 @@ contains
     end function daylightIndices
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-
+    !> Determines correction for input values based on daylight indices and zenith angles
     function distributeDiurnally(zenithAngles, daylightIndices, zenithNoon,swMean,countr)
 
         implicit none

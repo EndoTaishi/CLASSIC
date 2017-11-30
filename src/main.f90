@@ -2810,7 +2810,7 @@ contains
 
         !> Now disaggregate the meteorological forcing to the right timestep
         !! for this model run
-        call disaggGridCell(longitude, latitude,delt,lastDOY,nday)
+        call disaggGridCell(longitude, latitude,delt)
 
 !     Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
