@@ -3,7 +3,8 @@ var variants = []
 var groups = []
 var variantsVisited = false;
 
-function Variable(standardName, longName, shortName, units, group, bareGround) {
+function Variable(id, standardName, longName, shortName, units, group, bareGround) {
+	this.id = id;
 	this.standardName = standardName;
 	this.longName = longName;
 	this.shortName = shortName;
@@ -99,8 +100,8 @@ function loadXml() {
 		$('variable', $inputXML)
 				.each(
 						function() {
-							var standardName = $('standardName', this).text()
-									.trim();
+							var id = $(this).attr('id');
+							var standardName = $('standardName', this).text().trim();
 							var longName = $('longName', this).text().trim();
 							var shortName = $('shortName', this).text().trim();
 							var units = $('units', this).text().trim();
@@ -108,7 +109,7 @@ function loadXml() {
 							var bareGround = $(this.attributes['includeBareGround'])[0].value;
 							addGroup(group);
 
-							var variable = new Variable(standardName, longName, shortName, units, group, bareGround);
+							var variable = new Variable(id, standardName, longName, shortName, units, group, bareGround);
 							variables.push(variable);
 						})
 
@@ -244,15 +245,14 @@ function generateVariantsEditor() {
 		for (var i = 0; i < variables.length; i++) {
 			var temp = variables[i];
 			$('#accordion').append($('<h3/>').text(temp.standardName)).append(
-					generateForm(i, temp.shortName, temp.standardName,
+					generateForm(temp.id, temp.shortName, temp.standardName,
 							temp.longName, temp.units, temp.group));
 		}
 
 		// Refresh variants based on existing values
 		for (var i = 0; i < variants.length; i++) {
 			var variant = variants[i];
-			var id = variant.variable * 1000 + variant.frequency * 10
-					+ variant.form;
+			var id = variant.variable * 1000 + variant.frequency * 10 + variant.form;
 			$('input#' + id + '.checkbox').prop('checked', true);
 			$('input#' + id + '.textInput').prop('disabled', false).prop(
 					'value', variant.nic);
@@ -395,7 +395,7 @@ function generateVariants() {
 
 		// Append variables
 		for (var v = 0; v < variables.length; v++) {
-			var $variable = $(xml.createElement('variable')).attr('id', v);
+			var $variable = $(xml.createElement('variable')).attr('id', variables[v].id);
 			var $standardName = $(xml.createElement('standardName')).text(variables[v].standardName);
 			var $longName = $(xml.createElement('longName')).text(variables[v].longName);
 			var $shortName = $(xml.createElement('shortName')).text(variables[v].shortName);
