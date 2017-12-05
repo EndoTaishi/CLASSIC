@@ -79,8 +79,8 @@ function addGroupsToForm() {
 }
 
 function addGroup(group) {
-	if (groups.indexOf(group) < 0)
-		groups.push(group);
+		if (groups.indexOf(group) < 0)
+			groups.push(group);
 }
 
 //Loads an xml file into the input text area
@@ -129,7 +129,7 @@ function loadXml() {
 					case '6 hourly':
 						freq = 3;
 						break;
-					case 'half hourly':
+					case 'halfhourly':
 						freq = 4;
 						break;
 					default:
@@ -171,15 +171,16 @@ function saveTextAsFile() {
 	var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
 	var fileNameToSaveAs = "output.xml";
 
-	var downloadLink = document.createElement("a");
+	var downloadLink = document.getElementById('downloadButton');
+	console.warn(downloadLink);
 	downloadLink.download = fileNameToSaveAs;
-	downloadLink.innerHTML = "Download File";
+	//downloadLink.innerHTML = "Download XML";
 	downloadLink.href = textToSaveAsURL;
-	downloadLink.onclick = destroyClickedElement;
-	downloadLink.style.display = "none";
-	document.body.appendChild(downloadLink);
-
-	downloadLink.click();
+	//downloadLink.onclick = destroyClickedElement;
+	//downloadLink.style.display = "none";
+	//document.body.appendChild(downloadLink);
+	$('#downloadButton').button();
+	//downloadLink.click();
 }
 
 function destroyClickedElement(event) {
@@ -376,8 +377,9 @@ function saveVariants() {
 
 function generateVariants() {
 	$('#outputViewer').empty();
+	$('#outputViewer').append($('<a/>').attr('id', 'downloadButton').text('Download XML'));
 	$('#outputViewer')
-	.append(
+	.prepend(
 			$('<textarea rows="20" cols="100" id="outputXml" readonly></textarea>'));
 
 	if (variants.length > 0) {
@@ -432,7 +434,7 @@ function generateVariants() {
 				$freq.html('6 hourly');
 				break;
 			case 4:
-				$freq.html('half hourly');
+				$freq.html('halfhourly');
 				break;
 			}
 
