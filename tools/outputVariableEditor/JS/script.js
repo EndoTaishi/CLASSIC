@@ -169,23 +169,21 @@ function saveTextAsFile() {
 		type : "text/plain"
 	});
 	var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
-	var fileNameToSaveAs = "output.xml";
 
 	var downloadLink = document.getElementById('downloadButton');
-	console.warn(downloadLink);
-	downloadLink.download = fileNameToSaveAs;
+	//downloadLink.download = $('input#filename')[0].value;
 	//downloadLink.innerHTML = "Download XML";
 	downloadLink.href = textToSaveAsURL;
 	//downloadLink.onclick = destroyClickedElement;
 	//downloadLink.style.display = "none";
 	//document.body.appendChild(downloadLink);
-	$('#downloadButton').button();
+	
 	//downloadLink.click();
 }
 
-function destroyClickedElement(event) {
-	document.body.removeChild(event.target);
-}
+//function destroyClickedElement(event) {
+//	document.body.removeChild(event.target);
+//}
 
 //Adds a variable manually
 function addVariable() {
@@ -377,7 +375,14 @@ function saveVariants() {
 
 function generateVariants() {
 	$('#outputViewer').empty();
-	$('#outputViewer').append($('<a/>').attr('id', 'downloadButton').text('Download XML'));
+	$('#outputViewer').append($('<p/>')
+			.append($('<label for="filename"\>').width('100px').text('File Name:'))
+			.append($('<input type="filename" id="filename">').attr('value', 'output.xml').change(
+					function() {
+						$('#downloadButton').attr('download', $('input#filename')[0].value);
+					}))
+			.append('&nbsp;&nbsp;')
+			.append($('<a/>').attr('id', 'downloadButton').text('Download XML').attr('download', 'output.xml')).button());
 	$('#outputViewer')
 	.prepend(
 			$('<textarea rows="20" cols="100" id="outputXml" readonly></textarea>'));
