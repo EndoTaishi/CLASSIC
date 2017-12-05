@@ -32,3 +32,9 @@ In order to validate the XML Document, navigate to the schema folder and use the
 where schema_1.0.xml is the current version of the schema and path/myFile.xml is the XML Document file of your choosing.
 
 The schema will produce warnings and errors if there is any problem with the XML file, but it will not produce any output at all if everything is alright.
+
+# Manual editing
+There are certain functionalities that the present interface is lacking, like editing existing variable names, removing groups, editing groups and so on.
+These tasks can be easily achieved by manually editing the XML input file.
+
+**Do not manually edit the id fields of the variables, as that can cause serious problems with the variables**
