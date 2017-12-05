@@ -24,8 +24,9 @@ function main() {
 	sceneSetup();
 }
 
-// Configure the scene
+//Configure the scene
 function sceneSetup() {
+	$( document ).tooltip();
 	$('button').button();
 	$('input#inputXmlFile').button();
 	$('button#loadXml').on('click', loadXml);
@@ -82,7 +83,7 @@ function addGroup(group) {
 		groups.push(group);
 }
 
-// Loads an xml file into the input text area
+//Loads an xml file into the input text area
 function loadXml() {
 	variantsVisited = false;
 	var fileToLoad = document.getElementById("inputXmlFile").files[0];
@@ -98,70 +99,70 @@ function loadXml() {
 		var $inputXML = $(temp);
 
 		$('variable', $inputXML)
-				.each(
-						function() {
-							var id = $(this).attr('id');
-							var standardName = $('standardName', this).text().trim();
-							var longName = $('longName', this).text().trim();
-							var shortName = $('shortName', this).text().trim();
-							var units = $('units', this).text().trim();
-							var group = $(this.parentElement.attributes['type'])[0].value;
-							var bareGround = $(this.attributes['includeBareGround'])[0].value;
-							addGroup(group);
+		.each(
+				function() {
+					var id = $(this).attr('id');
+					var standardName = $('standardName', this).text().trim();
+					var longName = $('longName', this).text().trim();
+					var shortName = $('shortName', this).text().trim();
+					var units = $('units', this).text().trim();
+					var group = $(this.parentElement.attributes['type'])[0].value;
+					var bareGround = $(this.attributes['includeBareGround'])[0].value;
+					addGroup(group);
 
-							var variable = new Variable(id, standardName, longName, shortName, units, group, bareGround);
-							variables.push(variable);
-						})
+					var variable = new Variable(id, standardName, longName, shortName, units, group, bareGround);
+					variables.push(variable);
+				})
 
-		$('variant', $inputXML).each(function() {
-			var freq = $('timeFrequency', this).text().trim();
-			switch (freq) {
-			case 'annually':
-				freq = 0;
-				break;
-			case 'monthly':
-				freq = 1;
-				break;
-			case 'daily':
-				freq = 2;
-				break;
-			case '6 hourly':
-				freq = 3;
-				break;
-			case 'half hourly':
-				freq = 4;
-				break;
-			default:
-				freq = 'PROBLEM';
-			}
+				$('variant', $inputXML).each(function() {
+					var freq = $('timeFrequency', this).text().trim();
+					switch (freq) {
+					case 'annually':
+						freq = 0;
+						break;
+					case 'monthly':
+						freq = 1;
+						break;
+					case 'daily':
+						freq = 2;
+						break;
+					case '6 hourly':
+						freq = 3;
+						break;
+					case 'half hourly':
+						freq = 4;
+						break;
+					default:
+						freq = 'PROBLEM';
+					}
 
-			var form = $('outputForm', this).text().trim();
-			switch (form) {
-			case 'grid':
-				form = 0;
-				break;
-			case 'pft':
-				form = 1;
-				break;
-			case 'tile':
-				form = 2;
-				break;
-			case 'layer':
-				form = 3;
-				break;
-			}
+					var form = $('outputForm', this).text().trim();
+					switch (form) {
+					case 'grid':
+						form = 0;
+						break;
+					case 'pft':
+						form = 1;
+						break;
+					case 'tile':
+						form = 2;
+						break;
+					case 'layer':
+						form = 3;
+						break;
+					}
 
-			var nic = $('nameInCode', this).text().trim();
-			var id = $(this.parentElement.attributes['id'])[0].value;
-			
-			var variant = new Variant(id, freq, form, nic);
-			variants.push(variant);
-		})
+					var nic = $('nameInCode', this).text().trim();
+					var id = $(this.parentElement.attributes['id'])[0].value;
+
+					var variant = new Variant(id, freq, form, nic);
+					variants.push(variant);
+				})
 	};
 	fileReader.readAsText(fileToLoad, "UTF-8");
 }
 
-// Save XML file
+//Save XML file
 function saveTextAsFile() {
 	var textToSave = document.getElementById("outputXml").value;
 	var textToSaveAsBlob = new Blob([ textToSave ], {
@@ -185,7 +186,7 @@ function destroyClickedElement(event) {
 	document.body.removeChild(event.target);
 }
 
-// Adds a variable manually
+//Adds a variable manually
 function addVariable() {
 	var standardName = $('#standardName')[0].value;
 	var longName = $('#longName')[0].value;
@@ -206,7 +207,7 @@ function addVariable() {
 			}
 		}
 		if (!found) {
-			var variable = new Variable(standardName, longName, shortName,
+			var variable = new Variable(variables.length, standardName, longName, shortName,
 					units, group, bareGround);
 			variables.push(variable);
 			alert('Successfully added the ' + shortName + ' variable!');
@@ -215,7 +216,7 @@ function addVariable() {
 		alert('Please supply at least the short name for the variable you intend to add!');
 }
 
-// Remove variable
+//Remove variable
 function removeVariable() {
 	var shortName = $('input#removeVariable')[0].value;
 	if (shortName != '') {
@@ -235,14 +236,14 @@ function removeVariable() {
 		alert('Please supply the short name for the variable you intend to remove!');
 }
 
-// Generates a variant editor for a certain variable
+//Generates a variant editor for a certain variable
 function generateVariantsEditor() {
 	$('#accordion').empty();
 	variantsVisited = true;
 
 	if (variables.length > 0) {
 		// Add variables
-		for (var i = 0; i < variables.length; i++) {
+		for (var i = variables.length - 1; i >= 0 ; i--) {
 			var temp = variables[i];
 			$('#accordion').append($('<h3/>').text(temp.standardName)).append(
 					generateForm(temp.id, temp.shortName, temp.standardName,
@@ -264,14 +265,14 @@ function generateVariantsEditor() {
 		alert('Please add some variables first!');
 }
 
-// Build the variant form for a certain variable
+//Build the variant form for a certain variable
 function generateForm(baseId, name, standardName, longName, units, group) {
 	var $variable = $("<div/>").addClass('variable').attr('id', baseId).append(
-			$("<h4/>").text('Standard Name: ' + standardName)).append(
-			$("<p/>").text('Short Name: ' + name)).append(
-			$("<p/>").text('Long Name: ' + longName)).append(
-			$("<p/>").text('Units: ' + units)).append(
-			$("<p/>").text('Group: ' + group));
+			$("<h4/>").text('Short Name: ' + name)).append(
+					$("<p/>").text('Standard Name: ' + standardName)).append(
+							$("<p/>").text('Long Name: ' + longName)).append(
+									$("<p/>").text('Units: ' + units)).append(
+											$("<p/>").text('Group: ' + group));
 
 	baseId *= 1000;
 
@@ -376,8 +377,8 @@ function saveVariants() {
 function generateVariants() {
 	$('#outputViewer').empty();
 	$('#outputViewer')
-			.append(
-					$('<textarea rows="20" cols="100" id="outputXml" readonly></textarea>'));
+	.append(
+			$('<textarea rows="20" cols="100" id="outputXml" readonly></textarea>'));
 
 	if (variants.length > 0) {
 		// Create empty XML document
@@ -386,7 +387,7 @@ function generateVariants() {
 		var d = new Date();
 		var strDate = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
 		$('variableSet', xml).attr('type', 'CLASS').attr('version', '1.0').attr('created', strDate);
-		
+
 		// Append groups
 		for (var g = 0; g < groups.length; g++) {
 			var $group = $(xml.createElement('group')).attr('type', groups[g]);
@@ -400,9 +401,9 @@ function generateVariants() {
 			var $longName = $(xml.createElement('longName')).text(variables[v].longName);
 			var $shortName = $(xml.createElement('shortName')).text(variables[v].shortName);
 			var $units = $(xml.createElement('units')).text(variables[v].units);
-			
+
 			$variable.append($standardName).append($longName)
-					.append($shortName).append($units).attr('includeBareGround', variables[v].bareGround);
+			.append($shortName).append($units).attr('includeBareGround', variables[v].bareGround);
 			$('group[type=' + variables[v].group + ']', xml).append($variable);
 		}
 
@@ -470,12 +471,12 @@ function generateVariants() {
 		alert('You must first add some variants!');
 }
 
-// Console.log replacement for ease of writing
+//Console.log replacement for ease of writing
 function print(text) {
 	console.log(text);
 }
 
-// Upon loading the document
+//Upon loading the document
 $(document).ready(function() {
 	main();
 });

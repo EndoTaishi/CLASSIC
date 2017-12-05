@@ -1,7 +1,12 @@
 body {
-    background-color:	#00bfff;
-    //background-image:	url("../images/background1.jpg");
-    background-size:	cover;
-    color: 				white;
-    width: 				770px;
+	background-color: #00bfff; //
+	background-image: url("../images/background1.jpg");
+	background-size: cover;
+	color: white;
+	width: 770px;
+}
+
+label {
+	display: inline-block;
+	width: 20em;
 }
