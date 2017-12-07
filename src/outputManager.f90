@@ -632,7 +632,7 @@ contains
                 else
                     en = readMetEndYear
                 end if
-                totyrs = (en - st + 1) * metLoop
+                totyrs = (en - st + 1)
                 ! Now determine the total number of timesteps (days) across all years
                 totsteps = 0
                 allocate(timeVect(0))
@@ -675,7 +675,7 @@ contains
                 else
                     en = readMetEndYear
                 end if
-                totyrs = (en - st + 1) * metLoop
+                totyrs = (en - st + 1)
 
                 ! Now determine the total number of timesteps (halfhours) across all years
                 totsteps = 0
@@ -701,6 +701,7 @@ contains
                     end do
                     call move_alloc(temptime,timeVect)
                 end do
+
             case default
                 print*,'addTime says - Unknown timeFreq: ',timeFreq
                 stop

@@ -1,6 +1,5 @@
-!> Performs disaggregation of input meteorological forcing arrays to the model
-!! physics timestep (commonly half-hour)
-
+!
+!> Performs disaggregation of input meteorological forcing arrays to the model physics timestep
 module metDisaggModule
 
     use model_state_drivers, only : metInputTimeStep,metTime,metFss,metFdl,metPre,metTa,metQa,metUv,metPres
@@ -28,8 +27,10 @@ module metDisaggModule
 
 contains
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Main subroutine to disaggregate input meteorology to that of the physics timestep
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_disaggGridCell
+!!@{
+!> Main subroutine to disaggregate input meteorology to that of the physics timestep
     subroutine disaggGridCell(longitude, latitude,delt) ! longitude, latitude
 
         implicit none
@@ -84,12 +85,15 @@ contains
         call timeShift(timeZone(longitude,delt),vcount,vcountPlus)
 
     end subroutine disaggGridCell
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Expands the meteorological variable arrays so they can accomodate the amount of
-    !! timesteps on the physics timestep. Also copies the first day and last day values
-    !! into the array to give a startday -1 and endday + 1 values for the interpolations.
-    !! While we are at it we also expand the time array
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_makebig
+!!@{
+!> Expands the meteorological variable arrays so they can accomodate the amount of
+!! timesteps on the physics timestep. Also copies the first day and last day values
+!! into the array to give a startday -1 and endday + 1 values for the interpolations.
+!! While we are at it we also expand the time array
     subroutine makebig(vcount,vcountPlus,delt)
 
         implicit none
@@ -151,9 +155,12 @@ contains
         deallocate(tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres,tmpTime)
 
     end subroutine makebig
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Step interpolation applies the same value across all physics timesteps
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_stepInterpolation
+!!@{
+!> Step interpolation applies the same value across all physics timesteps
     subroutine stepInterpolation(var)
 
         implicit none
@@ -170,10 +177,12 @@ contains
         enddo
 
     end subroutine stepInterpolation
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Linear interpolation
-    ! This method splits the dataset into intervals and performs linear interpolation of each individual interval
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_linearInterpolation
+!!@{
+!> This method splits the dataset into intervals and performs linear interpolation of each individual interval
     subroutine linearInterpolation(var)
 
         implicit none
@@ -208,9 +217,12 @@ contains
         enddo
 
     end subroutine linearInterpolation
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_precipDistribution
+!!@{
+!> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
     subroutine precipDistribution(var,delt)
 
         implicit none
@@ -300,9 +312,12 @@ contains
         deallocate(random,sort_ind)
 
     end subroutine precipDistribution
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Diurnal distribution over the entire timespan
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_diurnalDistribution
+!!@{
+!> Diurnal distribution over the entire timespan
     subroutine diurnalDistribution(shortWave, latitude,delt)
 
         implicit none
@@ -357,9 +372,12 @@ contains
         deallocate(daylightIndYear,zenithAngYear,zenithNoon)
 
     end subroutine diurnalDistribution
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Find zenith angles depending on day of year and latitude
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_zenithAngles
+!!@{
+!> Find zenith angles depending on day of year and latitude
     function zenithAngles(timesteps, day, latRad, lastDOY,countr)
 
         implicit none
@@ -392,9 +410,12 @@ contains
         enddo
 
     end function zenithAngles
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Find day lengths depending on zenith angles
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_daylightIndices
+!!@{
+!> Find day lengths depending on zenith angles
     function daylightIndices(zenithAngles,delt,countr)
 
         implicit none
@@ -422,9 +443,12 @@ contains
         !print*,'daylength in seconds',dayLength
 
     end function daylightIndices
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Determines correction for input values based on daylight indices and zenith angles
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_distributeDiurnally
+!!@{
+!> Determines correction for input values based on daylight indices and zenith angles
     function distributeDiurnally(zenithAngles, daylightIndices, zenithNoon,swMean,countr)
 
         implicit none
@@ -461,9 +485,12 @@ contains
         deallocate(diurnalDistrib)
 
     end function distributeDiurnally
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Find the local timezone relative to Greenwich.
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_timeZone
+!!@{
+!> Find the local timezone relative to Greenwich.
     real function timeZone(longitude,delt)
 
         implicit none
@@ -475,17 +502,20 @@ contains
         !! timestep into a minutes equivalent.
         timeZone = real(nint(longitude / 15. * 60.)) / (delt / 60.)
 
-        if (longitude >= 180.) then ! The longitudes run from 0 to 360
+        if (longitude >= 180. .or. longitude < 0) then ! The longitudes run from 0 to 360 or from -180 to 180
             timeZone = shortSteps - timezone
-        else if (longitude < 0) then ! The longitudes run from -180 to 180
-            timeZone = -timezone
+        else ! Because of how cshift works, this needs to be negative.
+            timeZone = -timeZone
         end if
 
     end function timeZone
+!!@}
 
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Perform a circular shift on the met arrays to account for the timezone the present cell is in.
-    !! Also trims the met arrays to remove the two extra days added for the interpolations
+!-----------------------------------------------------------------------------------------------------------------------------------------------------
+!>\ingroup metDisaggModule_timeShift
+!!@{
+!> Perform a circular shift on the met arrays to account for the timezone the present cell is in.
+!! Also trims the met arrays to remove the two extra days added for the interpolations
     subroutine timeShift(timeZoneOffset,vcount,vcountPlus)
 
         implicit none
@@ -526,11 +556,9 @@ contains
         deallocate(tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres)
 
     end subroutine timeShift
-
 !!@}
 !>\file
-!> Performs disaggregation of input meteorological forcing arrays to the model
+!! Performs disaggregation of input meteorological forcing arrays to the model
 !! physics timestep (commonly half-hour)
-
 
 end module metDisaggModule

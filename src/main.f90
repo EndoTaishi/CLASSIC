@@ -3892,7 +3892,7 @@ contains
             if (dohhoutput .and.&
                 (runyr >= jhhsty) .and. (runyr <= jhhendy) .and. &
                 (iday >= jhhstd) .and. (iday <= jhhendd) ) then
-                call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,iday,runyr,SBC,DELT,TFREZ)
+                call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,runyr,SBC,DELT,TFREZ)
             end if
 
 !      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR.

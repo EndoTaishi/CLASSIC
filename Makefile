@@ -34,7 +34,7 @@ ifeq ($(mode), parallel)
 	# Parallel compiler
 	COMPILER = mpif90
 	# Parallel Include Flags
-	IFLAGS =  -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
+	IFLAGS =  -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)  # FLAG These need to be changed! OLD
 	# Parallel Library Flags
 	LFLAGS = -DPARALLEL -lnetcdf
 	# Additional flags
@@ -43,9 +43,11 @@ else
 	# Serial compiler
 	COMPILER = gfortran
 	# Serial Include Flags
-	IFLAGS = -I/usr/include -J$(ODIR)
+	IFLAGS = -I/home/rjm/Public/NETCDF/include -J$(ODIR)
+	#IFLAGS = -I/usr/include -J$(ODIR)
 	# Serial Library Flags
-	LFLAGS = -lnetcdff
+	LFLAGS = -L/home/rjm/Public/NETCDF/lib -lnetcdff -L/home/rjm/Public/NETCDF/lib -fPIC -lnetcdf -lnetcdf -L/home/rjm/Public/NETCDF/lib
+	#LFLAGS = -lnetcdff
 	# Additional flags
 	LFLAGS += -O3 -g -ldl -lz -lm -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
 endif
