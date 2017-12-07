@@ -26,13 +26,14 @@ function main() {
 
 //Configure the scene
 function sceneSetup() {
-	$( document ).tooltip();
+	$( document ).tooltip({track: true});
 	$('button').button();
 	$('input#inputXmlFile').button();
 	$('button#loadXml').on('click', loadXml);
 	$('button#addVariable').on('click', addVariable);
 	$('button#removeVariable').on('click', removeVariable);
 	$('button#addGroup').on('click', addGroupFromForm);
+	$( "#clearForm" ).on('click', clearForm)
 	$('#accordion').accordion({
 		collapsible : true
 	});
@@ -59,6 +60,15 @@ function sceneSetup() {
 			}
 		}
 	});
+}
+
+function clearForm() {
+	$('input#shortName')[0].value = '';
+	$('input#standardName')[0].value = '';
+	$('input#longName')[0].value = '';
+	$('input#units')[0].value = '';
+	$('input#bareGround')[0].checked = false;
+	
 }
 
 function addGroupFromForm() {

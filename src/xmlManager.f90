@@ -46,7 +46,7 @@ contains
                 variableSetType = trim(attribs(2,1))
                 variableSetVersion = trim(attribs(2,2));
                 if (variableSetVersion == '') then
-                    stop("The input XML document doesn't feature the required version field");
+                    stop("The input XML document doesn't feature the required version field of the <variableSet> node");
                 else
                     xmlVersion = charToReal(variableSetVersion);
                     if (xmlVersion < 1) stop('Older XML document found, please upgrade to a more recent version');

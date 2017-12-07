@@ -26,12 +26,16 @@
 		</div>
 		<div id="addRemoveVariable">
 			<p>
+				In choosing the short name / unique identifier for a model output, please consult the CMIP6 directory of variable names for the data requests (<a href="http://clipc-services.ceda.ac.uk/dreq/mipVars.html">http://clipc-services.ceda.ac.uk/dreq/mipVars.html</a>) and use the same variable names as much as possible.
+			</p>
+			<p>
 				<label for="shortName">Short name (Unique ID)</label> <input
 					type="text" id="shortName"
 					title="The short name field is used as an unique identifier for the variables">
 			</p>
 			<p>
 				<label for="standardName">Standard name</label> <input type="text" id="standardName" title="The standard name of the variable">
+			</p>
 			<p>
 				<label for="longName">Long name</label> <input type="text" id="longName" title="The detailed name of the variable">
 			</p>
@@ -46,6 +50,7 @@
 			</p>
 			<p>
 				<button id="addVariable">Add Variable</button>
+				<button id="clearForm">Clear Fields</button>
 			</p>
 			<br>
 			<p>
