@@ -56,6 +56,7 @@ contains
         ! pointers
         logical, pointer :: ctem_on              !< True if this run includes the biogeochemistry parameterizations (CTEM)
         logical, pointer :: dopertileoutput      !< Switch for making extra output files that are at the per tile level
+        logical, pointer :: doperpftoutput       !< Switch for making extra output files that are at the per pft level
         real, pointer, dimension(:,:) :: TSFSGAT !<Ground surface temperature over subarea [K]
         real, pointer, dimension(:) :: FG        !< Subarea fractional coverage of modelled area - bare ground [ ]
         real, pointer, dimension(:) :: FC        !< Subarea fractional coverage of modelled area - ground under canopy [ ]
@@ -233,6 +234,7 @@ contains
 
         ctem_on           => c_switch%ctem_on
         dopertileoutput   => c_switch%dopertileoutput
+        doperpftoutput    => c_switch%doperpftoutput
         TSFSGAT => class_gat%TSFSGAT
         FG => class_gat%FG
         FC => class_gat%FC
