@@ -1,7 +1,7 @@
 var variables = []
 var variants = []
 var groups = []
-var variantsVisited = false;
+var variablesChanged = false;
 
 function Variable(id, standardName, longName, shortName, units, group, bareGround) {
 	this.id = id;
@@ -13,11 +13,12 @@ function Variable(id, standardName, longName, shortName, units, group, bareGroun
 	this.bareGround = bareGround;
 }
 
-function Variant(variable, frequency, form, nic) {
+function Variant(variable, frequency, form, nic, units) {
 	this.variable = variable;
 	this.frequency = frequency;
 	this.form = form;
 	this.nic = nic;
+	this.units = units;
 }
 
 function main() {
@@ -26,22 +27,23 @@ function main() {
 
 //Configure the scene
 function sceneSetup() {
-	$( document ).tooltip();
+	$( document ).tooltip({track: true});
 	$('button').button();
 	$('input#inputXmlFile').button();
 	$('button#loadXml').on('click', loadXml);
 	$('button#addVariable').on('click', addVariable);
 	$('button#removeVariable').on('click', removeVariable);
 	$('button#addGroup').on('click', addGroupFromForm);
+	$( "#clearForm" ).on('click', clearForm)
 	$('#accordion').accordion({
 		collapsible : true
 	});
 
 	$('#tabs').tabs({
 		activate : function(event, ui) {
-			if (variantsVisited) {
-				saveVariants();
-				variantsVisited = false;
+			if (variablesChanged) {
+				saveVariableChanges();
+				variablesChanged = false;
 			}
 			switch (event.currentTarget.id) {
 			case 'tab1':
@@ -51,7 +53,8 @@ function sceneSetup() {
 				addGroupsToForm();
 				break;
 			case 'tab3':
-				generateVariantsEditor();
+				buildVariableConfigForms();
+				//generateVariantsEditor();
 				break;
 			case 'tab4':
 				generateVariants();
@@ -59,6 +62,15 @@ function sceneSetup() {
 			}
 		}
 	});
+}
+
+function clearForm() {
+	$('input#shortName')[0].value = '';
+	$('input#standardName')[0].value = '';
+	$('input#longName')[0].value = '';
+	$('input#units')[0].value = '';
+	$('input#bareGround')[0].checked = false;
+	
 }
 
 function addGroupFromForm() {
@@ -85,7 +97,7 @@ function addGroup(group) {
 
 //Loads an xml file into the input text area
 function loadXml() {
-	variantsVisited = false;
+	variablesChanged = false;
 	var fileToLoad = document.getElementById("inputXmlFile").files[0];
 	var fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent) {
@@ -107,7 +119,7 @@ function loadXml() {
 					var shortName = $('shortName', this).text().trim();
 					var units = $('units', this).text().trim();
 					var group = $(this.parentElement.attributes['type'])[0].value;
-					var bareGround = $(this.attributes['includeBareGround'])[0].value;
+					var bareGround = ($(this.attributes['includeBareGround'])[0].value == 'true');
 					addGroup(group);
 
 					var variable = new Variable(id, standardName, longName, shortName, units, group, bareGround);
@@ -153,6 +165,7 @@ function loadXml() {
 					}
 
 					var nic = $('nameInCode', this).text().trim();
+					//var vunits = $('')
 					var id = $(this.parentElement.attributes['id'])[0].value;
 
 					var variant = new Variant(id, freq, form, nic);
@@ -235,138 +248,186 @@ function removeVariable() {
 		alert('Please supply the short name for the variable you intend to remove!');
 }
 
-//Generates a variant editor for a certain variable
-function generateVariantsEditor() {
+// Builds the variable configuration forms
+function buildVariableConfigForms() {
 	$('#accordion').empty();
-	variantsVisited = true;
-
 	if (variables.length > 0) {
-		// Add variables
-		for (var i = variables.length - 1; i >= 0 ; i--) {
-			var temp = variables[i];
-			$('#accordion').append($('<h3/>').text(temp.standardName)).append(
-					generateForm(temp.id, temp.shortName, temp.standardName,
-							temp.longName, temp.units, temp.group));
+		// Add variables and variants to the form
+		for (var v = variables.length - 1; v >= 0 ; v--) {
+			var $line;
+			var currentVariable = variables[v];
+			
+			// Add variable
+			var $variableForm = $('<div/>').addClass('variable').attr('id', currentVariable.id);
+			
+			var $variableTable = $('<table class="variableTable"/>');
+
+			$line = $('<tr/>')
+			.append($('<td/>').text('Short Name: '))
+			.append($('<td/>').append($('<input/>', {
+									type: 'text',
+									id : currentVariable.id,
+									class : 'variableTextInput shortName',
+									value : currentVariable.shortName
+								})));
+			$variableTable.append($line);
+			
+			$line = $('<tr/>')
+			.append($('<td/>').text('Standard Name: '))
+			.append($('<td/>').append($('<input/>', {
+									type: 'text',
+									id : currentVariable.id,
+									class : 'variableTextInput standardName',
+									value : currentVariable.standardName
+								})));
+			$variableTable.append($line);
+			
+			$line = $('<tr/>')
+			.append($('<td/>').text('Long Name: '))
+			.append($('<td/>').append($('<input/>', {
+									type: 'text',
+									id : currentVariable.id,
+									class : 'variableTextInput longName',
+									value : currentVariable.longName
+								})));
+			$variableTable.append($line);
+
+			$line = $('<tr/>')
+			.append($('<td/>').text('Units Name: '))
+			.append($('<td/>').append($('<input/>', {
+									type: 'text',
+									id : currentVariable.id,
+									class : 'variableTextInput units',
+									value : currentVariable.units
+								})));
+			$variableTable.append($line);
+			
+			$line = $('<tr/>')
+			.append($('<td/>').text('Include bare ground: '))
+			.append($('<td/>').append($('<input/>', {
+									type: 'checkbox',
+									id : currentVariable.id,
+									class : 'variableTextInput bareGround',
+									checked : currentVariable.bareGround
+								})));
+			$variableTable.append($line);
+			
+			$variableForm.append($('<div/>').append($variableTable));
+			
+			// Add variants
+			var $variantsTable = $('<table class="variantsTable"/>');
+			var baseId = currentVariable.id * 1000;
+
+			for (var i = 0; i < 5; i++)
+				for (var j = 0; j < 4; j++) {
+					var id = baseId + i * 10 + j;
+					var temp = '';
+
+					var $variant = $('<tr/>')
+						.append($('<td/>')
+								.append($('<input/>', {
+									type : 'checkbox',
+									id : id,
+									class : 'checkbox',
+									click : function() {
+										if (this.checked) enable(this.id)
+										else disable(this.id)
+									}
+								})));
+					
+					switch (i) {
+					case 0: temp = 'Annually'; break;
+					case 1: temp = 'Monthly'; break;
+					case 2: temp = 'Daily'; break;
+					case 3: temp = '6 hourly'; break;
+					case 4: temp = 'Half-hourly'; break;
+					default: temp = 'PROBLEM';
+					}
+
+					$variant.append($('<td/>').text(temp));
+
+					switch (j) {
+					case 0: temp = 'Grid'; break;
+					case 1: temp = 'Per PFT'; break;
+					case 2: temp = 'Per tile'; break;
+					case 3: temp = 'Per layer'; break;
+					default: temp = 'PROBLEM';
+					}
+
+					$variant.append($('<td/>').text(temp));
+					
+					$variant.append($('<td/>').append($('<input/>', {
+						type : 'text',
+						id : id,
+						class : 'nameInCode',
+						placeholder : 'Name in code',
+						disabled : true
+					})));
+					
+					$variant.append($('<td/>').append($('<input/>', {
+						type : 'text',
+						id : id,
+						class : 'variantUnits',
+						placeholder : currentVariable.units,
+						disabled : true
+					})));
+
+					$variantsTable.append($variant);
+					$variableForm.append($('<div/>').append($variantsTable));
+				}
+
+			$('#accordion')
+				.append($('<h3/>').text(currentVariable.shortName + " - " + currentVariable.standardName))
+				.append($variableForm);
 		}
 
-		// Refresh variants based on existing values
+		// Refresh variants data based on existing values
 		for (var i = 0; i < variants.length; i++) {
 			var variant = variants[i];
 			var id = variant.variable * 1000 + variant.frequency * 10 + variant.form;
 			$('input#' + id + '.checkbox').prop('checked', true);
-			$('input#' + id + '.textInput').prop('disabled', false).prop(
-					'value', variant.nic);
+			$('input#' + id + '.nameInCode').prop('disabled', false).prop('value', variant.nic);
+			$('input#' + id + '.variantUnits').prop('disabled', false).prop('value', variant.units);
 		}
-
-		// Refresh structure
+		
+		// Refresh accordion structure
 		$('#accordion').accordion('refresh');
+		variablesChanged = true;
 	} else
 		alert('Please add some variables first!');
 }
 
-//Build the variant form for a certain variable
-function generateForm(baseId, name, standardName, longName, units, group) {
-	var $variable = $("<div/>").addClass('variable').attr('id', baseId).append(
-			$("<h4/>").text('Short Name: ' + name)).append(
-					$("<p/>").text('Standard Name: ' + standardName)).append(
-							$("<p/>").text('Long Name: ' + longName)).append(
-									$("<p/>").text('Units: ' + units)).append(
-											$("<p/>").text('Group: ' + group));
-
-	baseId *= 1000;
-
-	for (var i = 0; i < 5; i++)
-		for (var j = 0; j < 4; j++) {
-			var tempName = '';
-			var id = baseId + i * 10 + j;
-
-			switch (i) {
-			case 0:
-				tempName += 'Annually';
-				break;
-			case 1:
-				tempName += 'Monthly';
-				break;
-			case 2:
-				tempName += 'Daily';
-				break;
-			case 3:
-				tempName += '6 hourly';
-				break;
-			case 4:
-				tempName += 'Half-hourly';
-				break;
-			default:
-				tempName += 'PROBLEM';
-			}
-
-			tempName += ' - ';
-
-			switch (j) {
-			case 0:
-				tempName += 'Grid';
-				break;
-			case 1:
-				tempName += 'Per PFT';
-				break;
-			case 2:
-				tempName += 'Per tile';
-				break;
-			case 3:
-				tempName += 'Per layer';
-				break;
-			default:
-				tempName += 'PROBLEM';
-			}
-
-			var $variant = $('<div/>').append($('<input/>', {
-				type : 'checkbox',
-				id : id,
-				class : 'checkbox',
-				click : function() {
-					if (this.checked) {
-						enable(this.id)
-					} else
-						disable(this.id)
-				}
-			}));
-
-			$variant.append(tempName);
-			$variant.append($('<input/>', {
-				type : 'text',
-				id : id,
-				class : 'textInput',
-				placeholder : 'Name in code',
-				disabled : true
-			}));
-
-			$variable.append($variant);
-		}
-
-	return $variable;
-}
-
 function enable(id) {
-	$('input#' + id + '.textInput')[0].disabled = false;
+	$('input#' + id + '.nameInCode')[0].disabled = false;
+	$('input#' + id + '.variantUnits')[0].disabled = false;
+	//$('input#' + id)[0].disabled = false;
 }
 
 function disable(id) {
-	$('input#' + id + '.textInput')[0].disabled = true;
-	$('input#' + id + '.textInput')[0].value = '';
+	$('input#' + id + '.nameInCode')[0].disabled = true;
+	$('input#' + id + '.nameInCode')[0].value = '';
+	$('input#' + id + '.variantUnits')[0].disabled = true;
+	$('input#' + id + '.variantUnits')[0].value = '';
 }
 
-function saveVariants() {
+function saveVariableChanges() {
 	variants = [];
 	for (var v = 0; v < variables.length; v++) {
+		variables[v].shortName = $('input#' + variables[v].id + '.shortName')[0].value;
+		variables[v].standardName = $('input#' + variables[v].id + '.standardName')[0].value;
+		variables[v].longName = $('input#' + variables[v].id + '.longName')[0].value;
+		variables[v].units = $('input#' + variables[v].id + '.units')[0].value;
+		variables[v].bareGround = $('input#' + variables[v].id + '.bareGround')[0].checked;
+		
 		for (var i = 0; i < 5; i++)
 			for (var j = 0; j < 4; j++) {
-				id = v * 1000 + i * 10 + j;
+				var id = variables[v].id * 1000 + i * 10 + j;
 				if ($('input#' + id + '.checkbox')[0].checked) {
 					var freq = (Math.floor(id / 10)) % 10;
 					var form = id % 10;
-					var nic = $('input#' + id + '.textInput')[0].value;
+					var nic = $('input#' + id + '.nameInCode')[0].value;
 
-					var variant = new Variant(v, freq, form, nic);
+					var variant = new Variant(variables[v].id, freq, form, nic);
 					variants.push(variant);
 				}
 			}
@@ -426,36 +487,18 @@ function generateVariants() {
 			var $nic = $(xml.createElement('nameInCode'));
 
 			switch (freq) {
-			case 0:
-				$freq.html('annually');
-				break;
-			case 1:
-				$freq.html('monthly');
-				break;
-			case 2:
-				$freq.html('daily');
-				break;
-			case 3:
-				$freq.html('6 hourly');
-				break;
-			case 4:
-				$freq.html('halfhourly');
-				break;
+			case 0: $freq.html('annually'); break;
+			case 1: $freq.html('monthly'); break;
+			case 2: $freq.html('daily'); break;
+			case 3: $freq.html('6 hourly'); break;
+			case 4: $freq.html('halfhourly'); break;
 			}
 
 			switch (form) {
-			case 0:
-				$form.html('grid');
-				break;
-			case 1:
-				$form.html('pft');
-				break;
-			case 2:
-				$form.html('tile');
-				break;
-			case 3:
-				$form.html('layer');
-				break;
+			case 0: $form.html('grid'); break;
+			case 1: $form.html('pft'); break;
+			case 2: $form.html('tile'); break;
+			case 3: $form.html('layer'); break;
 			}
 
 			$nic.html(nic);

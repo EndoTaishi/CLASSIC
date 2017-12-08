@@ -13,11 +13,10 @@
 <body>
 	<div id='tabs'>
 		<ul>
-			<li><a href="#inputViewer" id="tab1">Load XML</a></li>
-			<li><a href="#addRemoveVariable" id="tab2">Add/Remove
-					Variable</a></li>
-			<li><a href="#variableEditor" id="tab3">Variants Editor</a></li>
-			<li><a href="#outputViewer" id="tab4">Output XML</a></li>
+			<li><a href="#inputViewer" id="tab1">Import XML</a></li>
+			<li><a href="#addRemoveVariable" id="tab2">Add/Remove Variable</a></li>
+			<li><a href="#configureVariables" id="tab3">Configure Variables</a></li>
+			<li><a href="#outputViewer" id="tab4">Export XML</a></li>
 		</ul>
 		<div id="inputViewer">
 			<textarea rows="20" cols="100" id="inputXml" readonly></textarea>
@@ -25,27 +24,35 @@
 			<button id="loadXml">Load XML</button>
 		</div>
 		<div id="addRemoveVariable">
+			<p>In choosing the short name / unique identifier for a model output, please consult the CMIP6 directory of variable names for the data requests (<a href="http://clipc-services.ceda.ac.uk/dreq/mipVars.html">http://clipc-services.ceda.ac.uk/dreq/mipVars.html</a>) and use the same variable names as much as possible.</p>
 			<p>
-				<label for="shortName">Short name (Unique ID)</label> <input
-					type="text" id="shortName"
+				<label for="shortName">Short name (Unique ID)</label>
+				<input type="text" id="shortName"
 					title="The short name field is used as an unique identifier for the variables">
 			</p>
 			<p>
-				<label for="standardName">Standard name</label> <input type="text" id="standardName" title="The standard name of the variable">
-			<p>
-				<label for="longName">Long name</label> <input type="text" id="longName" title="The detailed name of the variable">
+				<label for="standardName">Standard name</label>
+				<input type="text" id="standardName" title="The standard name of the variable">
 			</p>
 			<p>
-				<label for="units">Units</label> <input type="text" id="units" title="The units of the variable. Latex form accepted">
+				<label for="longName">Long name</label>
+				<input type="text" id="longName" title="The detailed name of the variable">
 			</p>
 			<p>
-				<label for="group">Group</label> <select name="group" id="group" title="Group of variables this one belongs to"></select>
+				<label for="units">Units</label>
+				<input type="text" id="units" title="The units of the variable. Latex form accepted">
 			</p>
 			<p>
-				<label for="bareGround">Include bare ground</label> <input type="checkbox" id="bareGround">
+				<label for="group">Group</label>
+				<select name="group" id="group" title="Group of variables this one belongs to"></select>
+			</p>
+			<p>
+				<label for="bareGround">Include bare ground</label>
+				<input type="checkbox" id="bareGround">
 			</p>
 			<p>
 				<button id="addVariable">Add Variable</button>
+				<button id="clearForm">Clear Fields</button>
 			</p>
 			<br>
 			<p>
@@ -55,12 +62,12 @@
 			</p>
 			<br>
 			<p>
-				<label for="addGroup">Add variable group:</label> <input type="text"
-					id="addGroup"><br>
+				<label for="addGroup">Add variable group:</label>
+				<input type="text" id="addGroup"><br>
 				<button id="addGroup">Add group</button>
 			</p>
 		</div>
-		<div id="variableEditor">
+		<div id="configureVariables">
 			<div id="accordion"></div>
 
 		</div>
