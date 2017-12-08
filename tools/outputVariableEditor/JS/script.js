@@ -46,19 +46,10 @@ function sceneSetup() {
 				variablesChanged = false;
 			}
 			switch (event.currentTarget.id) {
-			case 'tab1':
-
-				break;
-			case 'tab2':
-				addGroupsToForm();
-				break;
-			case 'tab3':
-				buildVariableConfigForms();
-				//generateVariantsEditor();
-				break;
-			case 'tab4':
-				generateVariants();
-				break;
+			case 'tab1': 								break;
+			case 'tab2': addGroupsToForm();				break;
+			case 'tab3': buildVariableConfigForms();	break;
+			case 'tab4': generateVariants();			break;
 			}
 		}
 	});
@@ -110,9 +101,7 @@ function loadXml() {
 		var temp = $.parseXML(textFromFileLoaded);
 		var $inputXML = $(temp);
 
-		$('variable', $inputXML)
-		.each(
-				function() {
+		$('variable', $inputXML).each(function() {
 					var id = $(this).attr('id');
 					var standardName = $('standardName', this).text().trim();
 					var longName = $('longName', this).text().trim();
@@ -124,53 +113,34 @@ function loadXml() {
 
 					var variable = new Variable(id, standardName, longName, shortName, units, group, bareGround);
 					variables.push(variable);
-				})
+				});
 
-				$('variant', $inputXML).each(function() {
+		$('variant', $inputXML).each(function() {
 					var freq = $('timeFrequency', this).text().trim();
 					switch (freq) {
-					case 'annually':
-						freq = 0;
-						break;
-					case 'monthly':
-						freq = 1;
-						break;
-					case 'daily':
-						freq = 2;
-						break;
-					case '6 hourly':
-						freq = 3;
-						break;
-					case 'halfhourly':
-						freq = 4;
-						break;
-					default:
-						freq = 'PROBLEM';
+					case 'annually': freq = 0; break;
+					case 'monthly': freq = 1; break;
+					case 'daily': freq = 2; break;
+					case '6 hourly': freq = 3; break;
+					case 'halfhourly': freq = 4; break;
+					default: freq = 'PROBLEM';
 					}
 
 					var form = $('outputForm', this).text().trim();
 					switch (form) {
-					case 'grid':
-						form = 0;
-						break;
-					case 'pft':
-						form = 1;
-						break;
-					case 'tile':
-						form = 2;
-						break;
-					case 'layer':
-						form = 3;
-						break;
+					case 'grid': form = 0; break;
+					case 'pft': form = 1; break;
+					case 'tile': form = 2; break;
+					case 'layer': form = 3; break;
 					}
 
 					var nic = $('nameInCode', this).text().trim();
-					//var vunits = $('')
+					var units = $('units', this).text().trim();
 					var id = $(this.parentElement.attributes['id'])[0].value;
 
-					var variant = new Variant(id, freq, form, nic);
+					var variant = new Variant(id, freq, form, nic, units);
 					variants.push(variant);
-				})
+				});
 	};
 	fileReader.readAsText(fileToLoad, "UTF-8");
 }
@@ -400,7 +370,6 @@ function buildVariableConfigForms() {
 function enable(id) {
 	$('input#' + id + '.nameInCode')[0].disabled = false;
 	$('input#' + id + '.variantUnits')[0].disabled = false;
-	//$('input#' + id)[0].disabled = false;
 }
 
 function disable(id) {
@@ -426,8 +395,8 @@ function saveVariableChanges() {
 					var freq = (Math.floor(id / 10)) % 10;
 					var form = id % 10;
 					var nic = $('input#' + id + '.nameInCode')[0].value;
-
-					var variant = new Variant(variables[v].id, freq, form, nic);
+					var units = $('input#' + id + '.variantUnits')[0].value;
+					var variant = new Variant(variables[v].id, freq, form, nic, units);
 					variants.push(variant);
 				}
 			}
@@ -481,10 +450,12 @@ function generateVariants() {
 			var freq = variants[i].frequency;
 			var form = variants[i].form;
 			var nic = variants[i].nic;
+			var units = variants[i].units;
 
 			var $freq = $(xml.createElement('timeFrequency'));
 			var $form = $(xml.createElement('outputForm'));
 			var $nic = $(xml.createElement('nameInCode'));
+			var $variantUnits = $(xml.createElement('units'));
 
 			switch (freq) {
 			case 0: $freq.html('annually'); break;
@@ -502,9 +473,10 @@ function generateVariants() {
 			}
 
 			$nic.html(nic);
+			$variantUnits.html(units);
 
 			var $variant = $(xml.createElement('variant'));
-			$variant.append($freq).append($form).append($nic);
+			$variant.append($freq).append($form).append($nic).append($variantUnits);
 
 			$('variable[id=' + variable + ']', xml).append($variant);
 		}
