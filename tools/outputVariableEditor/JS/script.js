@@ -34,15 +34,16 @@ function sceneSetup() {
 	$('button#addVariable').on('click', addVariable);
 	$('button#removeVariable').on('click', removeVariable);
 	$('button#addGroup').on('click', addGroupFromForm);
-	$( "#clearForm" ).on('click', clearForm)
+	$('#clearForm').on('click', clearForm);
+	$('button#search').on('click', search);
+	$('input#search').on('change', search)
 	$('#accordion').accordion({
 		collapsible : true
 	});
-
 	$('#tabs').tabs({
 		activate : function(event, ui) {
 			if (variablesChanged) {
-				saveVariableChanges();
+				updateVariableChanges();
 				variablesChanged = false;
 			}
 			switch (event.currentTarget.id) {
@@ -53,6 +54,26 @@ function sceneSetup() {
 			}
 		}
 	});
+}
+
+function search() {
+	var keyword = $('input#search')[0].value.toLowerCase();
+	buildVariableConfigForms();
+	if ((keyword != '') && (keyword != ' ')) {
+		var first = -1;
+		for (var v = 0; v < variables.length; v++) {
+			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].units;
+			allText = allText.toLowerCase();
+			if (allText.indexOf(keyword) !== -1) {
+				first = v;
+				$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '#AAAAFF');
+			}
+		}
+
+		if (first != -1) {
+			$('#accordion').accordion('option', 'active', variables.length - first - 1);
+		}
+	}
 }
 
 function clearForm() {
@@ -224,127 +245,127 @@ function buildVariableConfigForms() {
 	if (variables.length > 0) {
 		// Add variables and variants to the form
 		for (var v = variables.length - 1; v >= 0 ; v--) {
-			var $line;
-			var currentVariable = variables[v];
-			
-			// Add variable
-			var $variableForm = $('<div/>').addClass('variable').attr('id', currentVariable.id);
-			
-			var $variableTable = $('<table class="variableTable"/>');
-
-			$line = $('<tr/>')
-			.append($('<td/>').text('Short Name: '))
-			.append($('<td/>').append($('<input/>', {
-									type: 'text',
-									id : currentVariable.id,
-									class : 'variableTextInput shortName',
-									value : currentVariable.shortName
-								})));
-			$variableTable.append($line);
-			
-			$line = $('<tr/>')
-			.append($('<td/>').text('Standard Name: '))
-			.append($('<td/>').append($('<input/>', {
-									type: 'text',
-									id : currentVariable.id,
-									class : 'variableTextInput standardName',
-									value : currentVariable.standardName
-								})));
-			$variableTable.append($line);
-			
-			$line = $('<tr/>')
-			.append($('<td/>').text('Long Name: '))
-			.append($('<td/>').append($('<input/>', {
-									type: 'text',
-									id : currentVariable.id,
-									class : 'variableTextInput longName',
-									value : currentVariable.longName
-								})));
-			$variableTable.append($line);
-
-			$line = $('<tr/>')
-			.append($('<td/>').text('Units Name: '))
-			.append($('<td/>').append($('<input/>', {
-									type: 'text',
-									id : currentVariable.id,
-									class : 'variableTextInput units',
-									value : currentVariable.units
-								})));
-			$variableTable.append($line);
-			
-			$line = $('<tr/>')
-			.append($('<td/>').text('Include bare ground: '))
-			.append($('<td/>').append($('<input/>', {
-									type: 'checkbox',
-									id : currentVariable.id,
-									class : 'variableTextInput bareGround',
-									checked : currentVariable.bareGround
-								})));
-			$variableTable.append($line);
-			
-			$variableForm.append($('<div/>').append($variableTable));
-			
-			// Add variants
-			var $variantsTable = $('<table class="variantsTable"/>');
-			var baseId = currentVariable.id * 1000;
-
-			for (var i = 0; i < 5; i++)
-				for (var j = 0; j < 4; j++) {
-					var id = baseId + i * 10 + j;
-					var temp = '';
-
-					var $variant = $('<tr/>')
-						.append($('<td/>')
-								.append($('<input/>', {
-									type : 'checkbox',
-									id : id,
-									class : 'checkbox',
-									click : function() {
-										if (this.checked) enable(this.id)
-										else disable(this.id)
-									}
-								})));
-					
-					switch (i) {
-					case 0: temp = 'Annually'; break;
-					case 1: temp = 'Monthly'; break;
-					case 2: temp = 'Daily'; break;
-					case 3: temp = '6 hourly'; break;
-					case 4: temp = 'Half-hourly'; break;
-					default: temp = 'PROBLEM';
+				var $line;
+				var currentVariable = variables[v];
+				
+				// Add variable
+				var $variableForm = $('<div/>').addClass('variable').attr('id', currentVariable.id);
+				
+				var $variableTable = $('<table class="variableTable"/>');
+	
+				$line = $('<tr/>')
+				.append($('<td/>').text('Short Name: '))
+				.append($('<td/>').append($('<input/>', {
+										type: 'text',
+										id : currentVariable.id,
+										class : 'variableTextInput shortName',
+										value : currentVariable.shortName
+									})));
+				$variableTable.append($line);
+				
+				$line = $('<tr/>')
+				.append($('<td/>').text('Standard Name: '))
+				.append($('<td/>').append($('<input/>', {
+										type: 'text',
+										id : currentVariable.id,
+										class : 'variableTextInput standardName',
+										value : currentVariable.standardName
+									})));
+				$variableTable.append($line);
+				
+				$line = $('<tr/>')
+				.append($('<td/>').text('Long Name: '))
+				.append($('<td/>').append($('<input/>', {
+										type: 'text',
+										id : currentVariable.id,
+										class : 'variableTextInput longName',
+										value : currentVariable.longName
+									})));
+				$variableTable.append($line);
+	
+				$line = $('<tr/>')
+				.append($('<td/>').text('Units Name: '))
+				.append($('<td/>').append($('<input/>', {
+										type: 'text',
+										id : currentVariable.id,
+										class : 'variableTextInput units',
+										value : currentVariable.units
+									})));
+				$variableTable.append($line);
+				
+				$line = $('<tr/>')
+				.append($('<td/>').text('Include bare ground: '))
+				.append($('<td/>').append($('<input/>', {
+										type: 'checkbox',
+										id : currentVariable.id,
+										class : 'variableTextInput bareGround',
+										checked : currentVariable.bareGround
+									})));
+				$variableTable.append($line);
+				
+				$variableForm.append($('<div/>').append($variableTable));
+				
+				// Add variants
+				var $variantsTable = $('<table class="variantsTable"/>');
+				var baseId = currentVariable.id * 1000;
+	
+				for (var i = 0; i < 5; i++)
+					for (var j = 0; j < 4; j++) {
+						var id = baseId + i * 10 + j;
+						var temp = '';
+	
+						var $variant = $('<tr/>')
+							.append($('<td/>')
+									.append($('<input/>', {
+										type : 'checkbox',
+										id : id,
+										class : 'checkbox',
+										click : function() {
+											if (this.checked) enable(this.id)
+											else disable(this.id)
+										}
+									})));
+						
+						switch (i) {
+						case 0: temp = 'Annually'; break;
+						case 1: temp = 'Monthly'; break;
+						case 2: temp = 'Daily'; break;
+						case 3: temp = '6 hourly'; break;
+						case 4: temp = 'Half-hourly'; break;
+						default: temp = 'PROBLEM';
+						}
+	
+						$variant.append($('<td/>').text(temp));
+	
+						switch (j) {
+						case 0: temp = 'Grid'; break;
+						case 1: temp = 'Per PFT'; break;
+						case 2: temp = 'Per tile'; break;
+						case 3: temp = 'Per layer'; break;
+						default: temp = 'PROBLEM';
+						}
+	
+						$variant.append($('<td/>').text(temp));
+						
+						$variant.append($('<td/>').append($('<input/>', {
+							type : 'text',
+							id : id,
+							class : 'nameInCode',
+							placeholder : 'Name in code',
+							disabled : true
+						})));
+						
+						$variant.append($('<td/>').append($('<input/>', {
+							type : 'text',
+							id : id,
+							class : 'variantUnits',
+							placeholder : currentVariable.units,
+							disabled : true
+						})));
+	
+						$variantsTable.append($variant);
+						$variableForm.append($('<div/>').append($variantsTable));
 					}
-
-					$variant.append($('<td/>').text(temp));
-
-					switch (j) {
-					case 0: temp = 'Grid'; break;
-					case 1: temp = 'Per PFT'; break;
-					case 2: temp = 'Per tile'; break;
-					case 3: temp = 'Per layer'; break;
-					default: temp = 'PROBLEM';
-					}
-
-					$variant.append($('<td/>').text(temp));
-					
-					$variant.append($('<td/>').append($('<input/>', {
-						type : 'text',
-						id : id,
-						class : 'nameInCode',
-						placeholder : 'Name in code',
-						disabled : true
-					})));
-					
-					$variant.append($('<td/>').append($('<input/>', {
-						type : 'text',
-						id : id,
-						class : 'variantUnits',
-						placeholder : currentVariable.units,
-						disabled : true
-					})));
-
-					$variantsTable.append($variant);
-					$variableForm.append($('<div/>').append($variantsTable));
-				}
 
 			$('#accordion')
 				.append($('<h3/>').text(currentVariable.shortName + " - " + currentVariable.standardName))
@@ -362,6 +383,7 @@ function buildVariableConfigForms() {
 		
 		// Refresh accordion structure
 		$('#accordion').accordion('refresh');
+		//$('#accordion').accordion('option', 'active', 0);
 		variablesChanged = true;
 	} else
 		alert('Please add some variables first!');
@@ -379,7 +401,7 @@ function disable(id) {
 	$('input#' + id + '.variantUnits')[0].value = '';
 }
 
-function saveVariableChanges() {
+function updateVariableChanges() {
 	variants = [];
 	for (var v = 0; v < variables.length; v++) {
 		variables[v].shortName = $('input#' + variables[v].id + '.shortName')[0].value;
@@ -387,7 +409,7 @@ function saveVariableChanges() {
 		variables[v].longName = $('input#' + variables[v].id + '.longName')[0].value;
 		variables[v].units = $('input#' + variables[v].id + '.units')[0].value;
 		variables[v].bareGround = $('input#' + variables[v].id + '.bareGround')[0].checked;
-		
+
 		for (var i = 0; i < 5; i++)
 			for (var j = 0; j < 4; j++) {
 				var id = variables[v].id * 1000 + i * 10 + j;
@@ -476,7 +498,8 @@ function generateVariants() {
 			$variantUnits.html(units);
 
 			var $variant = $(xml.createElement('variant'));
-			$variant.append($freq).append($form).append($nic).append($variantUnits);
+			$variant.append($freq).append($form).append($nic)
+			if (units != '') $variant.append($variantUnits);
 
 			$('variable[id=' + variable + ']', xml).append($variant);
 		}

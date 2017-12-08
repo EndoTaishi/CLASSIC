@@ -8,7 +8,8 @@ body {
 
 label {
 	display: inline-block;
-	width: 20em;
+	//width: 20em;
+	text-align: right;
 }
 
 td {
@@ -18,4 +19,8 @@ td {
 
 .variableTextInput {
 	width: 400px;
+}
+
+div#filter {
+	text-align: center;
 }
