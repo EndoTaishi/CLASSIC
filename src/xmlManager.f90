@@ -49,7 +49,7 @@ contains
                     stop("The input XML document doesn't feature the required version field of the <variableSet> node");
                 else
                     xmlVersion = charToReal(variableSetVersion);
-                    if (xmlVersion < 1) stop('Older XML document found, please upgrade to a more recent version');
+                    if (xmlVersion < 1.1) stop('Older XML document found, please upgrade to a more recent version');
                 endif
 
                 variableSetDate = trim(attribs(2,3))
@@ -97,7 +97,8 @@ contains
             case( 'standardName' )
                 outputDescriptors(descriptorCount)%standardName = info
             case( 'units' )
-                outputDescriptors(descriptorCount)%units = info
+                !outputDescriptors(descriptorCount)%units = info
+                variants(variantCount)%units = info
             case( 'nameInCode' )
                 variants(variantCount)%nameInCode = info
             case( 'timeFrequency' )
