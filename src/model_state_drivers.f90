@@ -106,6 +106,7 @@ contains
         integer, dimension(1) :: pos
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
+        integer :: lonloc,latloc
 
         ! point pointers:
         init_file               => c_switch%init_file
@@ -144,6 +145,25 @@ contains
 
         myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
         myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+
+        !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
+        !! when the input file expects the opposite.
+        if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+            myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
+            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(1)
+        end if
+        if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+            myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
+            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(2)
+        end if
+        if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
+            myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
+            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(1)
+        end if
+        if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
+            myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
+            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(2)
+        end if
 
         !> Check that our domain is within the longitude and latitude limits of
         !! the input files. Otherwise print a warning. Primarily we are trying to
@@ -231,7 +251,13 @@ contains
         enddo
 
         if (myDomain%LandCellCount == 0) then
-            print*,'=>Your domain is nothing but ocean my friend.'
+            print*,'=>Your domain is not land my friend.'
+            if (myDomain%domainBounds(1) == myDomain%domainBounds(2)) then !point run
+                lonloc = closestCell(initid,'lon',myDomain%domainBounds(1))
+                latloc = closestCell(initid,'lat',myDomain%domainBounds(3))
+                print*,'Closest grid cell is ',myDomain%allLonValues(lonloc),'/',myDomain%allLatValues(latloc)
+                print*,'but that may not be land. Check your input files to be sure'
+            end if
         end if
         
         nlat = 1

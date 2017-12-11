@@ -1,3 +1,66 @@
+var NAVTREE =
+[
+  [ "CLASSIC", "index.html", [
+    [ "The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)", "index.html", [
+      [ "Overview of the Canadian Land Surface Scheme (CLASS)", "index.html#overviewCLASS", [
+        [ "Developmental history of CLASS", "index.html#devHistory", null ]
+      ] ],
+      [ "Overview of the Canadian Terrestrial Ecosystem Model (CTEM)", "index.html#overviewCTEM", null ],
+      [ "Data Requirements", "index.html#dataRequirements", [
+        [ "Forcing Data", "index.html#forcingData", null ],
+        [ "Vegetation Data", "index.html#vegetationData", null ],
+        [ "Soil Data", "index.html#soilData", null ],
+        [ "Initialization of Prognostic Variables", "index.html#initProgVar", null ]
+      ] ],
+      [ "Running CLASSIC", "index.html#runStandAloneMode", [
+        [ "One thing to note about composite versus mosaic running of the model", "index.html#compvsmosaic", null ],
+        [ "The Input Files", "index.html#inputs", [
+          [ "The MET file (Meteorological forcings)", "index.html#MET", null ],
+          [ "The INI file (CLASS's initialization file)", "index.html#INI", null ],
+          [ "Typical values of vegetation-related fields for CLASS-only simulations", "index.html#classvals", null ],
+          [ "CLASS and CTEM PFTs", "index.html#classtoctem", null ]
+        ] ]
+      ] ]
+    ] ],
+    [ "Bibliography", "citelist.html", null ],
+    [ "Modules", null, [
+      [ "Modules List", "namespaces.html", "namespaces" ]
+    ] ],
+    [ "Data Types List", null, [
+      [ "Data Types List", "annotated.html", "annotated" ],
+      [ "Data Types", "classes.html", null ],
+      [ "Data Fields", "functions.html", [
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions/Subroutines", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", "functions_vars" ]
+      ] ]
+    ] ],
+    [ "Files", null, [
+      [ "File List", "files.html", "files" ],
+      [ "File Members", "globals.html", [
+        [ "All", "globals.html", null ],
+        [ "Functions/Subroutines", "globals_func.html", null ]
+      ] ]
+    ] ]
+  ] ]
+];
+
+var NAVTREEINDEX =
+[
+"APREP_8f.html",
+"classctem__params.html#aa6ca3ec331c208058400e470dd6ba9d1",
+"classmodel__state__drivers.html#ab709832a35aef2a1a4d05ada004d976a",
+"structclass__statevars_1_1class__gather.html#a2956b284bc2e5cb4b59b1ef195abb3bd",
+"structclass__statevars_1_1class__gather.html#af4f52670a67b8806cca8561c90ac7df2",
+"structclass__statevars_1_1class__rotated.html#a91af4757d3fe2f587ad0f6ae64767392",
+"structctem__statevars_1_1ctem__gridavg.html#ac4f647aba8c8cd4a0057dde3961ffab1",
+"structctem__statevars_1_1ctem__tile__level.html#ac77654fed38a176a3f02ce52e1b5c172",
+"structctem__statevars_1_1veg__gat.html#aa7a8f8aa3bde4a2877e36d9fad9716f0",
+"structoutputmanager_1_1simulationdomain.html#a227c7f053b40b54ef9eca2941e21ea99"
+];
+
+var SYNCONMSG = 'click to disable panel synchronisation';
+var SYNCOFFMSG = 'click to enable panel synchronisation';
 var navTreeSubIndices = new Array();
 
 function getData(varName)
@@ -105,7 +168,7 @@ function createIndent(o,domNode,node,level)
     node.expandToggle.onclick = function() {
       if (node.expanded) {
         $(node.getChildrenUL()).slideUp("fast");
-        node.plus_img.src = node.relpath+"arrowright.png";
+        node.plus_img.src = node.relpath+"ftv2pnode.png";
         node.expanded = false;
       } else {
         expandNode(o, node, false, false);
@@ -113,7 +176,7 @@ function createIndent(o,domNode,node,level)
     }
     node.expandToggle.appendChild(imgNode);
     domNode.appendChild(node.expandToggle);
-    imgNode.src = node.relpath+"arrowright.png";
+    imgNode.src = node.relpath+"ftv2pnode.png";
   } else {
     var span = document.createElement("span");
     span.style.display = 'inline-block';
@@ -269,9 +332,9 @@ function expandNode(o, node, imm, showRoot)
         $(node.getChildrenUL()).slideDown("fast");
       }
       if (node.isLast) {
-        node.plus_img.src = node.relpath+"arrowdown.png";
+        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
       } else {
-        node.plus_img.src = node.relpath+"arrowdown.png";
+        node.plus_img.src = node.relpath+"ftv2mnode.png";
       }
       node.expanded = true;
     }
@@ -341,7 +404,11 @@ function showNode(o, node, index, hash)
         getNode(o, node);
       }
       $(node.getChildrenUL()).css({'display':'block'});
-      node.plus_img.src = node.relpath+"arrowdown.png";
+      if (node.isLast) {
+        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
+      } else {
+        node.plus_img.src = node.relpath+"ftv2mnode.png";
+      }
       node.expanded = true;
       var n = node.children[o.breadcrumbs[index]];
       if (index+1<o.breadcrumbs.length) {
@@ -479,7 +546,7 @@ function initNavTree(toroot,relpath)
   o.node.expanded = false;
   o.node.isLast = true;
   o.node.plus_img = document.createElement("img");
-  o.node.plus_img.src = relpath+"arrowright.png";
+  o.node.plus_img.src = relpath+"ftv2pnode.png";
   o.node.plus_img.width = 16;
   o.node.plus_img.height = 22;
 

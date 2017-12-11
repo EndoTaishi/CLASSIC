@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.0" created="2017/11/27">
+<variableSet type="CLASS" version="1.0" created="2017/12/6">
     <group type="class">
         <variable id="0" includeBareGround="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -17,9 +17,14 @@
                 <nameInCode>fsstar_mo</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>half hourly</timeFrequency>
+                <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>fsstar_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>fsstar_hh_t</nameInCode>
             </variant>
         </variable>
         <variable id="1" includeBareGround="false">
@@ -37,6 +42,16 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>flstar_mo</nameInCode>
             </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>flstar_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>flstar_hh_t</nameInCode>
+            </variant>
         </variable>
         <variable id="2" includeBareGround="false">
             <standardName>Surface Net Sensible Heat Flux</standardName>
@@ -52,6 +67,16 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>qh_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>qh_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>qh_hh_t</nameInCode>
             </variant>
         </variable>
         <variable id="3" includeBareGround="false">
@@ -69,6 +94,16 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>qe_mo</nameInCode>
             </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>qe_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>qe_hh_t</nameInCode>
+            </variant>
         </variable>
         <variable id="4" includeBareGround="false">
             <standardName>Surface Snow Amount</standardName>
@@ -83,6 +118,16 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>snoacc_mo</nameInCode>
             </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>sno_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>sno_hh</nameInCode>
+            </variant>
         </variable>
         <variable id="5" includeBareGround="false">
             <standardName>Liquid water content of snow pack</standardName>
@@ -95,6 +140,16 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>wsnoacc_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>wsno_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>wsno_hh_t</nameInCode>
             </variant>
         </variable>
         <variable id="6" includeBareGround="false">
@@ -114,12 +169,22 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>rofacc_mo</nameInCode>
             </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rof_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rof_hh_t</nameInCode>
+            </variant>
         </variable>
         <variable id="7" includeBareGround="false">
             <standardName>Precipitation</standardName>
             <longName>Preciptiation, includes both solid and liquid phases</longName>
             <shortName>pr</shortName>
-            <units>mm/year</units>
+            <units>mm/year -fix</units>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -129,6 +194,11 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>preacc_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>pre_hh</nameInCode>
             </variant>
         </variable>
         <variable id="8" includeBareGround="false">
@@ -189,14 +259,19 @@
             </variant>
         </variable>
         <variable id="12" includeBareGround="false">
-            <standardName>Surface Temperature</standardName>
-            <longName>Temperature of the lower boundary of the atmosphere</longName>
-            <shortName>ts</shortName>
+            <standardName>Surface Air Temperature</standardName>
+            <longName>Near-surface air temperature at reference height</longName>
+            <shortName>tas</shortName>
             <units>$\circ$C</units>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>taacc_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ta_hh</nameInCode>
             </variant>
         </variable>
         <variable id="13" includeBareGround="false">
@@ -214,6 +289,16 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>altotacc_mo</nameInCode>
             </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>altot_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>altot_hh_t</nameInCode>
+            </variant>
         </variable>
         <variable id="14" includeBareGround="false">
             <standardName>Temperature of Soil</standardName>
@@ -225,6 +310,16 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>layer</outputForm>
                 <nameInCode>tbaracc_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>tbar_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>tbar_hh_t</nameInCode>
             </variant>
         </variable>
         <variable id="15" includeBareGround="false">
@@ -238,6 +333,16 @@
                 <outputForm>layer</outputForm>
                 <nameInCode>thlqacc_mo</nameInCode>
             </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>thlq_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>thlq_hh_t</nameInCode>
+            </variant>
         </variable>
         <variable id="16" includeBareGround="false">
             <standardName>Frozen water content of soil layer</standardName>
@@ -249,6 +354,16 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>layer</outputForm>
                 <nameInCode>thicacc_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>thic_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>thic_hh_t</nameInCode>
             </variant>
         </variable>
         <variable id="17" includeBareGround="false">
@@ -317,6 +432,355 @@
                 <nameInCode>ftable_min_mo</nameInCode>
             </variant>
         </variable>
+        <variable id="53" includeBareGround="false">
+            <standardName>Snow melt heat flux</standardName>
+            <longName>Energy associated with phase change of water in snow pack</longName>
+            <shortName>snm</shortName>
+            <units>$[W m^{-2} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>snm_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>snm_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="54" includeBareGround="false">
+            <standardName>Snow thickness</standardName>
+            <longName>Snow thickness (snorow/rhosnow)</longName>
+            <shortName>sisnthick</shortName>
+            <units>m</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>sisnthick_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>sisnthick_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="55" includeBareGround="false">
+            <standardName>Vegetation Canopy Temperature</standardName>
+            <longName>Vegetation Canopy Temperature</longName>
+            <shortName>tcs</shortName>
+            <units>degree C</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>tcs_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>tcs_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="56" includeBareGround="false">
+            <standardName>Surface Downwelling Shortwave Radiation</standardName>
+            <longName>Surface Downwelling Shortwave Radiative flux in air</longName>
+            <shortName>rsds</shortName>
+            <units>W/$m^2$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fss_hh</nameInCode>
+            </variant>
+        </variable>
+        <variable id="57" includeBareGround="false">
+            <standardName>Surface Downwelling Longwave Radiation</standardName>
+            <longName>Surface Downwelling Longwave Radiative flux in air</longName>
+            <shortName>rlds</shortName>
+            <units>W/$m^2$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fdl_hh</nameInCode>
+            </variant>
+        </variable>
+        <variable id="58" includeBareGround="false">
+            <standardName>Near surface wind</standardName>
+            <longName>Wind speed at reference height</longName>
+            <shortName>uvas</shortName>
+            <units>m/s</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>uv_hh</nameInCode>
+            </variant>
+        </variable>
+        <variable id="59" includeBareGround="false">
+            <standardName>Specific humidity</standardName>
+            <longName>Specific humidity at reference height</longName>
+            <shortName>huss</shortName>
+            <units>kg/kg</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>qa_hh</nameInCode>
+            </variant>
+        </variable>
+        <variable id="60" includeBareGround="false">
+            <standardName>Air pressure</standardName>
+            <longName>Air pressure at reference height</longName>
+            <shortName>ps</shortName>
+            <units>Pa</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>pres_hh</nameInCode>
+            </variant>
+        </variable>
+        <variable id="61" includeBareGround="false">
+            <standardName>Surface Temperature</standardName>
+            <longName>Surface (skin) temperature</longName>
+            <shortName>ts</shortName>
+            <units>K</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>tsurf_hh</nameInCode>
+            </variant>
+        </variable>
+        <variable id="62" includeBareGround="false">
+            <standardName>Snow on canopy</standardName>
+            <longName>Intercepted frozen water stored on canopy</longName>
+            <shortName>scanopy</shortName>
+            <units>$[kg m^{-2} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>scan_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>scan_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="63" includeBareGround="false">
+            <standardName>Rain on canopy</standardName>
+            <longName>Intercepted liquid water stored on canopy</longName>
+            <shortName>rcanopy</shortName>
+            <units>$[kg m^{-2} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rcan_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rcan_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="64" includeBareGround="false">
+            <standardName>Temperature of snow pack</standardName>
+            <longName>Bulk temperature of the snow, not the surface (skin) temperature</longName>
+            <shortName>tsn</shortName>
+            <units>degree C</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>tsno_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>tsno_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="65" includeBareGround="false">
+            <standardName>Temperature of ponded water</standardName>
+            <longName>Temperature of water ponded on the soil surface</longName>
+            <shortName>tpond</shortName>
+            <units>degree C</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>tpond_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>tpond_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="66" includeBareGround="false">
+            <standardName>Depth of ponded water</standardName>
+            <longName>Depth of water ponded on the soil surface</longName>
+            <shortName>zpond</shortName>
+            <units>m</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>zpond_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>zpond_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="67" includeBareGround="false">
+            <standardName>Surface black-body temperature</standardName>
+            <longName>Diagnosed effective surface black-body temperature</longName>
+            <shortName>tsblack</shortName>
+            <units>degree C</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>gt_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>gt_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="68" includeBareGround="false">
+            <standardName>Snow density</standardName>
+            <longName>Density of snow pack</longName>
+            <shortName>snwdens</shortName>
+            <units>$[kg m^{-3}]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>snodens_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>snodens_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="69" includeBareGround="false">
+            <standardName>Surface Run off</standardName>
+            <longName>The total surface run off leaving the land portion of the grid cell (excluding drainage through the base of the soil model).</longName>
+            <shortName>mrros</shortName>
+            <units>$[kg m^{-2} s^{-1} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rofo_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rofo_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="70" includeBareGround="false">
+            <standardName>Interflow runoff</standardName>
+            <longName>Interflow runoff, not including baseflow or overland flow</longName>
+            <shortName>mrroi</shortName>
+            <units>$[kg m^{-2} s^{-1} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rofs_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rofs_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="71" includeBareGround="false">
+            <standardName>Subsurface runoff</standardName>
+            <longName>Subsurface runoff (baseflow, not including interflow)</longName>
+            <shortName>mrrob</shortName>
+            <units>$[kg m^{-2} s^{-1} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rofb_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rofb_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="72" includeBareGround="false">
+            <standardName>Surface drag coefficient for heat</standardName>
+            <longName>Surface drag coefficient for heat</longName>
+            <shortName>cdh</shortName>
+            <units>Unitless</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>cdh_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>cdh_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="73" includeBareGround="false">
+            <standardName>Surface drag coefficient for momentum</standardName>
+            <longName>Surface drag coefficient for momentum</longName>
+            <shortName>cdm</shortName>
+            <units>Unitless</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>cdm_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>cdm_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="74" includeBareGround="false">
+            <standardName>Heat conduction between soil layers</standardName>
+            <longName>Heat conduction between soil layers</longName>
+            <shortName>gflx</shortName>
+            <units>$[W m^{-2} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>gflx_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>gflx_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="75" includeBareGround="false">
+            <standardName>Total evapotranspiration</standardName>
+            <longName>Total evaporation and transpiration</longName>
+            <shortName>et</shortName>
+            <units>$[kg m^{-2} s^{-1} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>et_hh_t</nameInCode>
+            </variant>
+        </variable>
+        <variable id="76" includeBareGround="false">
+            <standardName>Leaf maintenance respiration</standardName>
+            <longName>Leaf maintenance respiration, does not include growth respiration</longName>
+            <shortName>rmLeaf</shortName>
+            <units>$[kg m^{-2} s^{-1} ]$</units>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>rml_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rml_hh_t</nameInCode>
+            </variant>
+        </variable>
     </group>
     <group type="ctem">
         <variable id="23" includeBareGround="false">
@@ -330,24 +794,24 @@
                 <nameInCode>laimaxg_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>laimaxg_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>laimaxg_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>laimaxg_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>laimaxg_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>laimaxg_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>laimaxg_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -366,24 +830,24 @@
                 <nameInCode>vgbiomas_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>vgbiomas_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>vgbiomas_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>vgbiomas_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>vgbiomas_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>vgbiomas_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>vgbiomas_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -445,16 +909,6 @@
                 <nameInCode>litrmass_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>litrmass_mo_g</nameInCode>
-            </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>litrmass_yr</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litrmass_mo</nameInCode>
@@ -462,12 +916,12 @@
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
-                <nameInCode>litrmass_yr_t</nameInCode>
+                <nameInCode>litrmass_mo_t</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>tile</outputForm>
-                <nameInCode>litrmass_mo_t</nameInCode>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>litrmass_mo_g</nameInCode>
             </variant>
         </variable>
         <variable id="28" includeBareGround="true">
@@ -481,24 +935,24 @@
                 <nameInCode>soilcmas_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>soilcmas_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>soilcmas_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>soilcmas_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>soilcmas_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>soilcmas_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>soilcmas_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -562,19 +1016,9 @@
                 <nameInCode>npp_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>npp_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>npp_yr</nameInCode>
-            </variant>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>npp_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
@@ -583,8 +1027,28 @@
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>npp_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>npp_mo</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>npp_mo_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>npp_hh</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>npp_hh_t</nameInCode>
             </variant>
         </variable>
         <variable id="32" includeBareGround="false">
@@ -600,24 +1064,24 @@
                 <nameInCode>gpp_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>gpp_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>gpp_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>gpp_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>gpp_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>gpp_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>gpp_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -646,24 +1110,24 @@
                 <nameInCode>nep_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>nep_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>nep_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>nep_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>nep_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>nep_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>nep_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -686,24 +1150,24 @@
                 <nameInCode>nbp_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>nbp_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>nbp_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>nbp_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>nbp_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>nbp_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>nbp_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -724,24 +1188,24 @@
                 <nameInCode>hetrores_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>hetrores_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>hetrores_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>hetrores_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>hetrores_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>hetrores_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>hetrores_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -760,24 +1224,24 @@
                 <nameInCode>autores_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>autores_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>autores_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>autores_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>autores_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>autores_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>autores_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -797,24 +1261,24 @@
                 <nameInCode>litres_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>litres_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litres_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>litres_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>litres_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>litres_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>litres_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -834,24 +1298,24 @@
                 <nameInCode>soilcres_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>soilcres_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>soilcres_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>soilcres_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>soilcres_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>soilcres_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>soilcres_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -936,24 +1400,24 @@
                 <nameInCode>emit_co2_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>emit_co2_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>emit_co2_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>emit_co2_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_co2_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_co2_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>emit_co2_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -975,24 +1439,24 @@
                 <nameInCode>emit_ch4_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>emit_ch4_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>emit_ch4_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>emit_ch4_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_ch4_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_ch4_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>emit_ch4_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1013,24 +1477,24 @@
                 <nameInCode>burnfrac_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>burnfrac_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>burnfrac_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>burnfrac_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>burnfrac_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>burnfrac_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>burnfrac_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1053,24 +1517,24 @@
                 <nameInCode>luc_emc_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>luc_emc_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>luc_emc_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>luc_emc_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>luc_emc_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luc_emc_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>luc_emc_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1092,24 +1556,24 @@
                 <nameInCode>lucltrin_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>lucltrin_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucltrin_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>lucltrin_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucltrin_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>lucltrin_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>lucltrin_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1131,24 +1595,24 @@
                 <nameInCode>lucsocin_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>lucsocin_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucsocin_yr</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>lucsocin_mo</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucsocin_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>lucsocin_mo_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>lucsocin_mo</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1190,14 +1654,14 @@
                 <nameInCode>ch4wet1_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>ch4wet1_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>ch4wet1_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4wet1_mo_g</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1217,14 +1681,14 @@
                 <nameInCode>ch4dyn1_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>ch4dyn1_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>ch4dyn1_yr_t</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4dyn1_mo_g</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
@@ -1243,14 +1707,14 @@
                 <nameInCode>ch4soills_yr_g</nameInCode>
             </variant>
             <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>ch4soills_mo_g</nameInCode>
-            </variant>
-            <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>wetfdyn_yr_g</nameInCode>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4soills_mo_g</nameInCode>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>

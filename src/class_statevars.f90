@@ -441,7 +441,7 @@ type class_rotated
     real, allocatable, dimension(:) :: ZDMROW  !<
     real, allocatable, dimension(:) :: ZRFHROW !< Reference height associated with forcing air temperature and humidity [m]
     real, allocatable, dimension(:) :: ZRFMROW !< Reference height associated with forcing wind speed [m]
-    real, allocatable, dimension(:) :: UVROW   !<
+    real, allocatable, dimension(:) :: UVROW   !< Wind speed at reference height \f$[m s^{-1} ]\f$
     real, allocatable, dimension(:) :: XDIFFUS !<
     real, allocatable, dimension(:) :: Z0ORROW !<
     real, allocatable, dimension(:) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
