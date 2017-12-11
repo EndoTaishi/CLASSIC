@@ -130,6 +130,7 @@ function loadXml() {
 					var longName = $('longName', this).text().trim();
 					var shortName = $('shortName', this).text().trim();
 					var defaultUnits = $('defaultUnits', this).text().trim();
+					//var defaultUnits = $('units', this).text().trim(); //use this for code version 1.0
 					var group = $(this.parentElement.attributes['type'])[0].value;
 					var bareGround = ($(this.attributes['includeBareGround'])[0].value == 'true');
 					addGroup(group);
