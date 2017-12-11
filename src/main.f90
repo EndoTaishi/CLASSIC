@@ -57,7 +57,7 @@ contains
         use class_statevars,    only : class_gat,class_rot,resetAccVars,&
             &                          resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-            &                               ctem_daily_aw,class_annual_aw,class_hh_w
+            &                          ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
@@ -3107,20 +3107,12 @@ contains
             !
             call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
-            !if (iday > 110) then
-            !    print*,ihour,imin,iday,iyear,FSSROW(1),FDLROW(1),PREROW(1),TAROW(1),QAROW(1),UVROW(1),PRESROW(1)
-            !    read(*,*)
-            !end if
-!             !FLAG !FLAG temp until Ed's file is fixed!!
-!             i=1  !FLAG temp!!!
-!             if (PREROW(i) < 0.) PREROW(i) = 0.  !FLAG temp!!!
-!             if (QAROW(i) < 0.) QAROW(i) = 0.0012066  !FLAG temp!!!
+                !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
             N=N+1
 
             DO 250 I=1,NLTEST
 
-                !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
                 FSVHROW(I)=0.5*FSSROW(I)
                 FSIHROW(I)=0.5*FSSROW(I)
@@ -3170,6 +3162,7 @@ contains
 
             endif   ! first timestep
 
+            ! FLAG - this section until the 300 continue line should be put into a subroutine.
             DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
 
             DECL=SIN(2.*PI*(284.+DAY)/real(lastDOY))*23.45*PI/180.
@@ -3889,11 +3882,6 @@ contains
 !                 END DO
 ! 440         CONTINUE
 
-            if (dohhoutput .and.&
-                (runyr >= jhhsty) .and. (runyr <= jhhendy) .and. &
-                (iday >= jhhstd) .and. (iday <= jhhendd) ) then
-                call class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,runyr,SBC,DELT,TFREZ)
-            end if
 
 !      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR.
 !     &    (.not. LEAPNOW .AND. IDAY.GE.182 .AND. IDAY.LE.243)) THEN
@@ -4722,15 +4710,32 @@ contains
 !             ENDIF !  IFdodayoutput
 
             !=======================================================================
+
+            ! Half-hourly physics outputs
+            if  (dohhoutput .and.&
+                (runyr >= jhhsty) .and.&
+                (runyr <= jhhendy) .and. &
+                (iday >= jhhstd) .and. &
+                (iday <= jhhendd) ) call class_hh_w(lonLocalIndex,latLocalIndex,nltest,&
+                                                    nmtest,ncount,nday,iday,runyr,SBC,DELT,TFREZ)
+
+            ! Daily physics outputs
+!             if (dodayoutput .and. &
+!                (runyr >= jdsty) .and. &
+!                (runyr <= jdendy) .and. &
+!                (iday  >= jdstd) .and. &
+!                (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,&
+!                                                          iday,nltest,nmtest,sbc,delt,&
+!                                                          ncount,nday,lastDOY,runyr)
+
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
                     IMONTH=NT
-                    !DOM=1 !reset the day of month counter
                 ENDIF
             ENDDO
 
             ! Monthly physics outputs
-            if (domonthoutput .and. (iyear .ge. jmosty)) call class_monthly_aw(lonLocalIndex,&
+            if (domonthoutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex,&
                                                             latLocalIndex,IDAY,runyr,NCOUNT,&
                                                             NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
                                                             ACTLYR,FTABLE,lastDOY)
@@ -4741,11 +4746,14 @@ contains
 
             if (ctem_on .and. (ncount.eq.nday)) then
 
-                if (dodayoutput) then
-                    ! Calculate daily outputs from ctem
-                    call ctem_daily_aw(nltest,nmtest,iday,FAREROT,&
-                    &                      runyr,jdstd,jdsty,jdendd,jdendy,grclarea,&
-                    &                      onetile_perPFT,ipeatlandrow)
+                ! Daily outputs from biogeochem (CTEM)
+                if (dodayoutput .and.&
+                   (runyr >= jdsty).and. &
+                   (runyr <=jdendy) .and. &
+                   (iday   >= jdstd).and.&
+                   (iday   <= jdendd)) call ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,&
+                                                         nmtest,iday,ncount,nday,FAREROT,&
+                                                         runyr,grclarea,ipeatlandrow)
 
                     !-reset peatland accumulators-------------------------------
                     ! Note: these must be reset only at the end of a day. EC Jan 30 2017.
@@ -4755,16 +4763,17 @@ contains
                     gppmossac_t = 0.0
                     G12ACC     = 0.
                     G23ACC     = 0.
-                endif
+
 
                 ! Monthly biogeochem outputs
-                if (domonthoutput .and. (iyear .ge. jmosty)) call ctem_monthly_aw(lonLocalIndex,&
-                                                                latLocalIndex,nltest,nmtest,iday,&
-                                                                FAREROT,runyr,nday,lastDOY)
+                if (domonthoutput .and. &
+                    (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex,latLocalIndex,&
+                                                             nltest,nmtest,iday,FAREROT,&
+                                                             runyr,nday,lastDOY)
 
                 ! Annual biogeochem outputs
                 call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,runyr,nltest,&
-                    &               nmtest,FAREROT,lastDOY)
+                                    nmtest,FAREROT,lastDOY)
             endif
 
             if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then

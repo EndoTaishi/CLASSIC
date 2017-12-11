@@ -240,7 +240,6 @@ contains
 
         implicit none
 
-        !type(projectConfiguration), intent(in)  :: config
         type(outputDescriptor), intent(inout) :: descriptor
         character(*), intent(in)                :: timeFreq
         logical                                 :: valid
@@ -270,7 +269,6 @@ contains
 
         implicit none
 
-        !type(projectConfiguration), intent(in)  :: config
         type(outputDescriptor), intent(in)    :: descriptor
         character(*), intent(in)                :: outputForm
         character(80)                           :: suffix = ''
@@ -396,9 +394,7 @@ contains
         ! The landCoverFrac, while 'grid' so that it will output in all runs
         ! needs to be switched to 'pft' so that it can be properly given the
         ! dimensions needed.
-        if (trim(descriptor%shortName) == 'landCoverFrac') then
-            outputForm = 'pft'
-        end if
+        if (trim(descriptor%shortName) == 'landCoverFrac') outputForm = 'pft'
 
         select case(trim(outputForm))
 
@@ -409,7 +405,6 @@ contains
                 call ncPutAtt(ncid,varid,'long_name',charvalues='tile')
                 call ncPutAtt(ncid,varid,'units',charvalues='tile number')
                 !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
-                !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
             case("pft")         ! Per PFT outputs
 
@@ -423,7 +418,6 @@ contains
                 call ncPutAtt(ncid,varid,'long_name',charvalues='Plant Functional Type')
                 call ncPutAtt(ncid,varid,'units',charvalues='PFT')
                 !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
-                !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
             case ("layer")      ! Per layer outputs
 
@@ -432,7 +426,6 @@ contains
                 call ncPutAtt(ncid,varid,'long_name',charvalues='soil layer')
                 call ncPutAtt(ncid,varid,'units',charvalues='layer')
                 !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
-                !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
         end select
 
@@ -457,7 +450,6 @@ contains
 
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
         !call ncPutAtt(ncid,varid,'_Chunksizes',intvalues=1)
-        !call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
 
         call ncEndDef(ncid)
 

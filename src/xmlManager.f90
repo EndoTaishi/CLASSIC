@@ -65,7 +65,7 @@ contains
                 allocate(tempDescriptors(descriptorCount))
                 tempDescriptors(1 : descriptorCount - 1) = outputDescriptors(1 : descriptorCount - 1)
                 call move_alloc(tempDescriptors, outputDescriptors)
-                attribute = attribs(2,1)
+                attribute = attribs(2,2)
                 outputDescriptors(descriptorCount)%includeBareGround = charToLogical(attribute)
                 outputDescriptors(descriptorCount)%group = currentGroup
             ! If the tag is <variant>, then similar to the above section, extend the array and append a new variant.

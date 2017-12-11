@@ -10,7 +10,7 @@ implicit none
 
 public :: alloc_ctem_vars
 public :: initrowvars
-public :: resetdaily
+!public :: resetdaily
 public :: resetmonthend
 public :: resetyearend
 !public :: resetgridavg
@@ -716,78 +716,78 @@ type ctem_gridavg
 !       real, allocatable, dimension(:) :: QFCLROT_g  !<
 !       real, allocatable, dimension(:) :: QFNROT_g   !<
 !       real, allocatable, dimension(:) :: WTRCROT_g  !<
-      real, allocatable, dimension(:) :: gpp_g      !<
-      real, allocatable, dimension(:) :: npp_g      !<
-      real, allocatable, dimension(:) :: nbp_g      !<
-      real, allocatable, dimension(:) :: socres_g   !<
-      real, allocatable, dimension(:) :: autores_g  !<
-      real, allocatable, dimension(:) :: litres_g   !<
-      real, allocatable, dimension(:) :: dstcemls3_g!<
-      real, allocatable, dimension(:) :: litrfall_g !<
-      real, allocatable, dimension(:) :: rml_g      !<
-      real, allocatable, dimension(:) :: rms_g      !<
-      real, allocatable, dimension(:) :: rg_g       !<
-      real, allocatable, dimension(:) :: leaflitr_g !<
-      real, allocatable, dimension(:) :: tltrstem_g !<
-      real, allocatable, dimension(:) :: tltrroot_g !<
-      real, allocatable, dimension(:) :: nep_g      !<
-      real, allocatable, dimension(:) :: hetrores_g !<
-      real, allocatable, dimension(:) :: dstcemls_g !<
-      real, allocatable, dimension(:) :: humiftrs_g !<
-      real, allocatable, dimension(:) :: rmr_g      !<
-      real, allocatable, dimension(:) :: tltrleaf_g !<
-      real, allocatable, dimension(:) :: gavgltms_g !<
-
-      real, allocatable, dimension(:) :: vgbiomas_g !<
-      real, allocatable, dimension(:) :: gavglai_g  !<
-      real, allocatable, dimension(:) :: gavgscms_g !<
-      real, allocatable, dimension(:) :: gleafmas_g !<
-      real, allocatable, dimension(:) :: bleafmas_g !<
-      real, allocatable, dimension(:) :: stemmass_g !<
-      real, allocatable, dimension(:) :: rootmass_g !<
-      real, allocatable, dimension(:) :: litrmass_g !<
-      real, allocatable, dimension(:) :: soilcmas_g !<
-      real, allocatable, dimension(:) :: slai_g     !<
-      real, allocatable, dimension(:) :: ailcg_g    !<
-      real, allocatable, dimension(:) :: ailcb_g    !<
-      real, allocatable, dimension(:) :: veghght_g  !<
-      real, allocatable, dimension(:) :: rootdpth_g !<
-      real, allocatable, dimension(:) :: roottemp_g !<
-      real, allocatable, dimension(:) :: totcmass_g !<
-      real, allocatable, dimension(:) :: tcanoacc_out_g!<
-      real, allocatable, dimension(:) :: burnfrac_g !<
-      real, allocatable, dimension(:) :: smfuncveg_g!<
-      real, allocatable, dimension(:) :: lucemcom_g !<
-      real, allocatable, dimension(:) :: lucltrin_g !<
-      real, allocatable, dimension(:) :: lucsocin_g !<
-      real, allocatable, dimension(:) :: emit_co2_g !<
-      real, allocatable, dimension(:) :: emit_co_g  !<
-      real, allocatable, dimension(:) :: emit_ch4_g !<
-      real, allocatable, dimension(:) :: emit_nmhc_g!<
-      real, allocatable, dimension(:) :: emit_h2_g  !<
-      real, allocatable, dimension(:) :: emit_nox_g !<
-      real, allocatable, dimension(:) :: emit_n2o_g !<
-      real, allocatable, dimension(:) :: emit_pm25_g!<
-      real, allocatable, dimension(:) :: emit_tpm_g !<
-      real, allocatable, dimension(:) :: emit_tc_g  !<
-      real, allocatable, dimension(:) :: emit_oc_g  !<
-      real, allocatable, dimension(:) :: emit_bc_g  !<
-      real, allocatable, dimension(:) :: bterm_g    !<
-      real, allocatable, dimension(:) :: lterm_g    !<
-      real, allocatable, dimension(:) :: mterm_g    !<
-      real, allocatable, dimension(:) :: ch4wet1_g  !<
-      real, allocatable, dimension(:) :: ch4wet2_g  !<
-      real, allocatable, dimension(:) :: wetfdyn_g  !<
-      real, allocatable, dimension(:) :: ch4dyn1_g  !<
-      real, allocatable, dimension(:) :: ch4dyn2_g  !<
-      real, allocatable, dimension(:) :: ch4_soills_g   !<
-      real, allocatable, dimension(:,:) :: afrleaf_g  !<
-      real, allocatable, dimension(:,:) :: afrstem_g  !<
-      real, allocatable, dimension(:,:) :: afrroot_g  !<
-      real, allocatable, dimension(:,:) :: lfstatus_g !<
-       real, allocatable, dimension(:,:) :: rmlvegrow_g!<
-       real, allocatable, dimension(:,:) :: anvegrow_g !<
-      real, allocatable, dimension(:,:) :: rmatctem_g!<
+!       real, allocatable, dimension(:) :: gpp_g      !<
+!       real, allocatable, dimension(:) :: npp_g      !<
+!       real, allocatable, dimension(:) :: nbp_g      !<
+!       real, allocatable, dimension(:) :: socres_g   !<
+!       real, allocatable, dimension(:) :: autores_g  !<
+!       real, allocatable, dimension(:) :: litres_g   !<
+!       real, allocatable, dimension(:) :: dstcemls3_g!<
+!       real, allocatable, dimension(:) :: litrfall_g !<
+!       real, allocatable, dimension(:) :: rml_g      !<
+!       real, allocatable, dimension(:) :: rms_g      !<
+!       real, allocatable, dimension(:) :: rg_g       !<
+!       real, allocatable, dimension(:) :: leaflitr_g !<
+!       real, allocatable, dimension(:) :: tltrstem_g !<
+!       real, allocatable, dimension(:) :: tltrroot_g !<
+!       real, allocatable, dimension(:) :: nep_g      !<
+!       real, allocatable, dimension(:) :: hetrores_g !<
+!       real, allocatable, dimension(:) :: dstcemls_g !<
+!       real, allocatable, dimension(:) :: humiftrs_g !<
+!       real, allocatable, dimension(:) :: rmr_g      !<
+!       real, allocatable, dimension(:) :: tltrleaf_g !<
+!       real, allocatable, dimension(:) :: gavgltms_g !<
+!
+!       real, allocatable, dimension(:) :: vgbiomas_g !<
+!       real, allocatable, dimension(:) :: gavglai_g  !<
+!       real, allocatable, dimension(:) :: gavgscms_g !<
+!       real, allocatable, dimension(:) :: gleafmas_g !<
+!       real, allocatable, dimension(:) :: bleafmas_g !<
+!       real, allocatable, dimension(:) :: stemmass_g !<
+!       real, allocatable, dimension(:) :: rootmass_g !<
+!       real, allocatable, dimension(:) :: litrmass_g !<
+!       real, allocatable, dimension(:) :: soilcmas_g !<
+!       real, allocatable, dimension(:) :: slai_g     !<
+!       real, allocatable, dimension(:) :: ailcg_g    !<
+!       real, allocatable, dimension(:) :: ailcb_g    !<
+!       real, allocatable, dimension(:) :: veghght_g  !<
+!       real, allocatable, dimension(:) :: rootdpth_g !<
+!       real, allocatable, dimension(:) :: roottemp_g !<
+!       real, allocatable, dimension(:) :: totcmass_g !<
+!       real, allocatable, dimension(:) :: tcanoacc_out_g!<
+!       real, allocatable, dimension(:) :: burnfrac_g !<
+!       real, allocatable, dimension(:) :: smfuncveg_g!<
+!       real, allocatable, dimension(:) :: lucemcom_g !<
+!       real, allocatable, dimension(:) :: lucltrin_g !<
+!       real, allocatable, dimension(:) :: lucsocin_g !<
+!       real, allocatable, dimension(:) :: emit_co2_g !<
+!       real, allocatable, dimension(:) :: emit_co_g  !<
+!       real, allocatable, dimension(:) :: emit_ch4_g !<
+!       real, allocatable, dimension(:) :: emit_nmhc_g!<
+!       real, allocatable, dimension(:) :: emit_h2_g  !<
+!       real, allocatable, dimension(:) :: emit_nox_g !<
+!       real, allocatable, dimension(:) :: emit_n2o_g !<
+!       real, allocatable, dimension(:) :: emit_pm25_g!<
+!       real, allocatable, dimension(:) :: emit_tpm_g !<
+!       real, allocatable, dimension(:) :: emit_tc_g  !<
+!       real, allocatable, dimension(:) :: emit_oc_g  !<
+!       real, allocatable, dimension(:) :: emit_bc_g  !<
+!       real, allocatable, dimension(:) :: bterm_g    !<
+!       real, allocatable, dimension(:) :: lterm_g    !<
+!       real, allocatable, dimension(:) :: mterm_g    !<
+!       real, allocatable, dimension(:) :: ch4wet1_g  !<
+!       real, allocatable, dimension(:) :: ch4wet2_g  !<
+!       real, allocatable, dimension(:) :: wetfdyn_g  !<
+!       real, allocatable, dimension(:) :: ch4dyn1_g  !<
+!       real, allocatable, dimension(:) :: ch4dyn2_g  !<
+!       real, allocatable, dimension(:) :: ch4_soills_g   !<
+!       real, allocatable, dimension(:,:) :: afrleaf_g  !<
+!       real, allocatable, dimension(:,:) :: afrstem_g  !<
+!       real, allocatable, dimension(:,:) :: afrroot_g  !<
+!       real, allocatable, dimension(:,:) :: lfstatus_g !<
+!        real, allocatable, dimension(:,:) :: rmlvegrow_g!<
+!        real, allocatable, dimension(:,:) :: anvegrow_g !<
+!       real, allocatable, dimension(:,:) :: rmatctem_g!<
 
 !       real, allocatable, dimension(:,:) :: HMFGROT_g !<
 !       real, allocatable, dimension(:,:) :: HTCROT_g  !<
@@ -821,42 +821,42 @@ type ctem_tile_level
 !   Tile-level variables (denoted by an ending of "_t")
 
 ! allocated with nlat,nmos:
-      real, allocatable, dimension(:,:) :: leaflitr_t !<
-      real, allocatable, dimension(:,:) :: tltrleaf_t !<
-      real, allocatable, dimension(:,:) :: tltrstem_t !<
-      real, allocatable, dimension(:,:) :: tltrroot_t !<
-      real, allocatable, dimension(:,:) :: ailcg_t    !<
-      real, allocatable, dimension(:,:) :: ailcb_t    !<
-      real, allocatable, dimension(:,:,:) :: rmatctem_t !< nlat,nmos,ignd
-      real, allocatable, dimension(:,:) :: veghght_t  !<
-      real, allocatable, dimension(:,:) :: rootdpth_t !<
-      real, allocatable, dimension(:,:) :: roottemp_t !<
-      real, allocatable, dimension(:,:) :: slai_t     !<
-      real, allocatable, dimension(:,:) :: afrroot_t  !<
-      real, allocatable, dimension(:,:) :: afrleaf_t  !<
-      real, allocatable, dimension(:,:) :: afrstem_t  !<
-      real, allocatable, dimension(:,:) :: laimaxg_t  !<
-      real, allocatable, dimension(:,:) :: stemmass_t !<
-      real, allocatable, dimension(:,:) :: rootmass_t !<
-      real, allocatable, dimension(:,:) :: litrmass_t !<
-      real, allocatable, dimension(:,:) :: gleafmas_t !<
-      real, allocatable, dimension(:,:) :: bleafmas_t !<
-      real, allocatable, dimension(:,:) :: soilcmas_t !<
-      real, allocatable, dimension(:,:) :: emit_co2_t !<
-      real, allocatable, dimension(:,:) :: emit_co_t  !<
-      real, allocatable, dimension(:,:) :: emit_ch4_t !<
-      real, allocatable, dimension(:,:) :: emit_nmhc_t!<
-      real, allocatable, dimension(:,:) :: emit_h2_t  !<
-      real, allocatable, dimension(:,:) :: emit_nox_t !<
-      real, allocatable, dimension(:,:) :: emit_n2o_t !<
-      real, allocatable, dimension(:,:) :: emit_pm25_t!<
-      real, allocatable, dimension(:,:) :: emit_tpm_t !<
-      real, allocatable, dimension(:,:) :: emit_tc_t  !<
-      real, allocatable, dimension(:,:) :: emit_oc_t  !<
-      real, allocatable, dimension(:,:) :: emit_bc_t  !<
-      real, allocatable, dimension(:,:) :: bterm_t    !<
-      real, allocatable, dimension(:,:) :: mterm_t    !<
-      real, allocatable, dimension(:,:) :: smfuncveg_t!<
+!       real, allocatable, dimension(:,:) :: leaflitr_t !<
+!       real, allocatable, dimension(:,:) :: tltrleaf_t !<
+!       real, allocatable, dimension(:,:) :: tltrstem_t !<
+!       real, allocatable, dimension(:,:) :: tltrroot_t !<
+!       real, allocatable, dimension(:,:) :: ailcg_t    !<
+!       real, allocatable, dimension(:,:) :: ailcb_t    !<
+!       real, allocatable, dimension(:,:,:) :: rmatctem_t !< nlat,nmos,ignd
+!       real, allocatable, dimension(:,:) :: veghght_t  !<
+!       real, allocatable, dimension(:,:) :: rootdpth_t !<
+!       real, allocatable, dimension(:,:) :: roottemp_t !<
+!       real, allocatable, dimension(:,:) :: slai_t     !<
+!       real, allocatable, dimension(:,:) :: afrroot_t  !<
+!       real, allocatable, dimension(:,:) :: afrleaf_t  !<
+!       real, allocatable, dimension(:,:) :: afrstem_t  !<
+!       real, allocatable, dimension(:,:) :: laimaxg_t  !<
+!       real, allocatable, dimension(:,:) :: stemmass_t !<
+!       real, allocatable, dimension(:,:) :: rootmass_t !<
+!       real, allocatable, dimension(:,:) :: litrmass_t !<
+!       real, allocatable, dimension(:,:) :: gleafmas_t !<
+!       real, allocatable, dimension(:,:) :: bleafmas_t !<
+!       real, allocatable, dimension(:,:) :: soilcmas_t !<
+!       real, allocatable, dimension(:,:) :: emit_co2_t !<
+!       real, allocatable, dimension(:,:) :: emit_co_t  !<
+!       real, allocatable, dimension(:,:) :: emit_ch4_t !<
+!       real, allocatable, dimension(:,:) :: emit_nmhc_t!<
+!       real, allocatable, dimension(:,:) :: emit_h2_t  !<
+!       real, allocatable, dimension(:,:) :: emit_nox_t !<
+!       real, allocatable, dimension(:,:) :: emit_n2o_t !<
+!       real, allocatable, dimension(:,:) :: emit_pm25_t!<
+!       real, allocatable, dimension(:,:) :: emit_tpm_t !<
+!       real, allocatable, dimension(:,:) :: emit_tc_t  !<
+!       real, allocatable, dimension(:,:) :: emit_oc_t  !<
+!       real, allocatable, dimension(:,:) :: emit_bc_t  !<
+!       real, allocatable, dimension(:,:) :: bterm_t    !<
+!       real, allocatable, dimension(:,:) :: mterm_t    !<
+!       real, allocatable, dimension(:,:) :: smfuncveg_t!<
 
       real, allocatable, dimension(:) :: fsnowacc_t       !<
       real, allocatable, dimension(:) :: tcansacc_t       !<
@@ -1699,77 +1699,77 @@ allocate(vgat%grclarea(ilg),&
 !          ctem_grd%QFCLROT_g (nlat),&
 !          ctem_grd%QFNROT_g (nlat),&
 !          ctem_grd%WTRCROT_g (nlat),&
-         ctem_grd%gpp_g (nlat),&
-         ctem_grd%npp_g (nlat),&
-         ctem_grd%nbp_g (nlat),&
-         ctem_grd%socres_g (nlat),&
-         ctem_grd%autores_g (nlat),&
-         ctem_grd%litres_g (nlat),&
-         ctem_grd%dstcemls3_g (nlat),&
-         ctem_grd%litrfall_g (nlat),&
-         ctem_grd%rml_g (nlat),&
-         ctem_grd%rms_g (nlat),&
-         ctem_grd%rg_g (nlat),&
-         ctem_grd%leaflitr_g (nlat),&
-         ctem_grd%tltrstem_g (nlat),&
-         ctem_grd%tltrroot_g (nlat),&
-         ctem_grd%nep_g (nlat),&
-         ctem_grd%hetrores_g (nlat),&
-         ctem_grd%dstcemls_g (nlat),&
-         ctem_grd%humiftrs_g (nlat),&
-         ctem_grd%rmr_g (nlat),&
-         ctem_grd%tltrleaf_g (nlat),&
-         ctem_grd%gavgltms_g (nlat),&
-         ctem_grd%vgbiomas_g (nlat),&
-         ctem_grd%gavglai_g (nlat),&
-         ctem_grd%gavgscms_g (nlat),&
-         ctem_grd%gleafmas_g (nlat),&
-         ctem_grd%bleafmas_g (nlat),&
-         ctem_grd%stemmass_g (nlat),&
-         ctem_grd%rootmass_g (nlat),&
-         ctem_grd%litrmass_g (nlat),&
-         ctem_grd%soilcmas_g (nlat),&
-         ctem_grd%slai_g (nlat),&
-         ctem_grd%ailcg_g (nlat),&
-         ctem_grd%ailcb_g (nlat),&
-         ctem_grd%veghght_g (nlat),&
-         ctem_grd%rootdpth_g (nlat),&
-         ctem_grd%roottemp_g (nlat),&
-         ctem_grd%totcmass_g (nlat),&
-         ctem_grd%tcanoacc_out_g (nlat),&
-         ctem_grd%burnfrac_g (nlat),&
-         ctem_grd%smfuncveg_g (nlat),&
-         ctem_grd%lucemcom_g (nlat),&
-         ctem_grd%lucltrin_g (nlat),&
-         ctem_grd%lucsocin_g (nlat),&
-         ctem_grd%emit_co2_g (nlat),&
-         ctem_grd%emit_co_g (nlat),&
-         ctem_grd%emit_ch4_g (nlat),&
-         ctem_grd%emit_nmhc_g (nlat),&
-         ctem_grd%emit_h2_g (nlat),&
-         ctem_grd%emit_nox_g (nlat),&
-         ctem_grd%emit_n2o_g (nlat),&
-         ctem_grd%emit_pm25_g (nlat),&
-         ctem_grd%emit_tpm_g (nlat),&
-         ctem_grd%emit_tc_g (nlat),&
-         ctem_grd%emit_oc_g (nlat),&
-         ctem_grd%emit_bc_g (nlat),&
-         ctem_grd%bterm_g (nlat),&
-         ctem_grd%lterm_g (nlat),&
-         ctem_grd%mterm_g (nlat),&
-         ctem_grd%ch4wet1_g (nlat),&
-         ctem_grd%ch4wet2_g (nlat),&
-         ctem_grd%wetfdyn_g (nlat),&
-         ctem_grd%ch4dyn1_g (nlat),&
-         ctem_grd%ch4dyn2_g (nlat),&
-         ctem_grd%ch4_soills_g (nlat),&
-         ctem_grd%afrleaf_g (nlat,icc),&
-         ctem_grd%afrstem_g (nlat,icc),&
-         ctem_grd%afrroot_g (nlat,icc),&
-         ctem_grd%lfstatus_g (nlat,icc),&
-          ctem_grd%rmlvegrow_g (nlat,icc),&
-          ctem_grd%anvegrow_g(nlat,icc),&
-         ctem_grd%rmatctem_g (nlat,ignd),&
+!          ctem_grd%gpp_g (nlat),&
+!          ctem_grd%npp_g (nlat),&
+!          ctem_grd%nbp_g (nlat),&
+!          ctem_grd%socres_g (nlat),&
+!          ctem_grd%autores_g (nlat),&
+!          ctem_grd%litres_g (nlat),&
+!          ctem_grd%dstcemls3_g (nlat),&
+!          ctem_grd%litrfall_g (nlat),&
+!          ctem_grd%rml_g (nlat),&
+!          ctem_grd%rms_g (nlat),&
+!          ctem_grd%rg_g (nlat),&
+!          ctem_grd%leaflitr_g (nlat),&
+!          ctem_grd%tltrstem_g (nlat),&
+!          ctem_grd%tltrroot_g (nlat),&
+!          ctem_grd%nep_g (nlat),&
+!          ctem_grd%hetrores_g (nlat),&
+!          ctem_grd%dstcemls_g (nlat),&
+!          ctem_grd%humiftrs_g (nlat),&
+!          ctem_grd%rmr_g (nlat),&
+!          ctem_grd%tltrleaf_g (nlat),&
+!          ctem_grd%gavgltms_g (nlat),&
+!          ctem_grd%vgbiomas_g (nlat),&
+!          ctem_grd%gavglai_g (nlat),&
+!          ctem_grd%gavgscms_g (nlat),&
+!          ctem_grd%gleafmas_g (nlat),&
+!          ctem_grd%bleafmas_g (nlat),&
+!          ctem_grd%stemmass_g (nlat),&
+!          ctem_grd%rootmass_g (nlat),&
+!          ctem_grd%litrmass_g (nlat),&
+!          ctem_grd%soilcmas_g (nlat),&
+!          ctem_grd%slai_g (nlat),&
+!          ctem_grd%ailcg_g (nlat),&
+!          ctem_grd%ailcb_g (nlat),&
+!          ctem_grd%veghght_g (nlat),&
+!          ctem_grd%rootdpth_g (nlat),&
+!          ctem_grd%roottemp_g (nlat),&
+!          ctem_grd%totcmass_g (nlat),&
+!          ctem_grd%tcanoacc_out_g (nlat),&
+!          ctem_grd%burnfrac_g (nlat),&
+!          ctem_grd%smfuncveg_g (nlat),&
+!          ctem_grd%lucemcom_g (nlat),&
+!          ctem_grd%lucltrin_g (nlat),&
+!          ctem_grd%lucsocin_g (nlat),&
+!          ctem_grd%emit_co2_g (nlat),&
+!          ctem_grd%emit_co_g (nlat),&
+!          ctem_grd%emit_ch4_g (nlat),&
+!          ctem_grd%emit_nmhc_g (nlat),&
+!          ctem_grd%emit_h2_g (nlat),&
+!          ctem_grd%emit_nox_g (nlat),&
+!          ctem_grd%emit_n2o_g (nlat),&
+!          ctem_grd%emit_pm25_g (nlat),&
+!          ctem_grd%emit_tpm_g (nlat),&
+!          ctem_grd%emit_tc_g (nlat),&
+!          ctem_grd%emit_oc_g (nlat),&
+!          ctem_grd%emit_bc_g (nlat),&
+!          ctem_grd%bterm_g (nlat),&
+!          ctem_grd%lterm_g (nlat),&
+!          ctem_grd%mterm_g (nlat),&
+!          ctem_grd%ch4wet1_g (nlat),&
+!          ctem_grd%ch4wet2_g (nlat),&
+!          ctem_grd%wetfdyn_g (nlat),&
+!          ctem_grd%ch4dyn1_g (nlat),&
+!          ctem_grd%ch4dyn2_g (nlat),&
+!          ctem_grd%ch4_soills_g (nlat),&
+!          ctem_grd%afrleaf_g (nlat,icc),&
+!          ctem_grd%afrstem_g (nlat,icc),&
+!          ctem_grd%afrroot_g (nlat,icc),&
+!          ctem_grd%lfstatus_g (nlat,icc),&
+!           ctem_grd%rmlvegrow_g (nlat,icc),&
+!           ctem_grd%anvegrow_g(nlat,icc),&
+!          ctem_grd%rmatctem_g (nlat,ignd),&
 !          ctem_grd%HMFGROT_g (nlat,ignd),&
 !          ctem_grd%HTCROT_g(nlat,ignd),&
 !          ctem_grd%TBARROT_g (nlat,ignd),&
@@ -1789,42 +1789,42 @@ allocate(vgat%grclarea(ilg),&
 !          ctem_grd%tsn_g (nlat),&
 !          ctem_grd%zsn_g (nlat),&
 
-         ctem_tile%leaflitr_t (nlat,nmos),&
-         ctem_tile%tltrleaf_t (nlat,nmos),&
-         ctem_tile%tltrstem_t (nlat,nmos),&
-         ctem_tile%tltrroot_t (nlat,nmos),&
-         ctem_tile%ailcg_t (nlat,nmos),&
-         ctem_tile%ailcb_t (nlat,nmos),&
-         ctem_tile%rmatctem_t (nlat,nmos,ignd),&
-         ctem_tile%veghght_t (nlat,nmos),&
-         ctem_tile%rootdpth_t (nlat,nmos),&
-         ctem_tile%roottemp_t (nlat,nmos),&
-         ctem_tile%slai_t (nlat,nmos),&
-         ctem_tile%afrroot_t (nlat,nmos),&
-         ctem_tile%afrleaf_t (nlat,nmos),&
-         ctem_tile%afrstem_t (nlat,nmos),&
-         ctem_tile%laimaxg_t (nlat,nmos),&
-         ctem_tile%stemmass_t (nlat,nmos),&
-         ctem_tile%rootmass_t (nlat,nmos),&
-         ctem_tile%litrmass_t (nlat,nmos),&
-         ctem_tile%gleafmas_t (nlat,nmos),&
-         ctem_tile%bleafmas_t(nlat,nmos),&
-         ctem_tile%soilcmas_t (nlat,nmos),&
-         ctem_tile%emit_co2_t (nlat,nmos),&
-         ctem_tile%emit_co_t (nlat,nmos),&
-         ctem_tile%emit_ch4_t (nlat,nmos),&
-         ctem_tile%emit_nmhc_t (nlat,nmos),&
-         ctem_tile%emit_h2_t (nlat,nmos),&
-         ctem_tile%emit_nox_t (nlat,nmos),&
-         ctem_tile%emit_n2o_t (nlat,nmos),&
-         ctem_tile%emit_pm25_t (nlat,nmos),&
-         ctem_tile%emit_tpm_t (nlat,nmos),&
-         ctem_tile%emit_tc_t (nlat,nmos),&
-         ctem_tile%emit_oc_t (nlat,nmos),&
-         ctem_tile%emit_bc_t (nlat,nmos),&
-         ctem_tile%bterm_t (nlat,nmos),&
-         ctem_tile%mterm_t (nlat,nmos),&
-         ctem_tile%smfuncveg_t (nlat,nmos),&
+!          ctem_tile%leaflitr_t (nlat,nmos),&
+!          ctem_tile%tltrleaf_t (nlat,nmos),&
+!          ctem_tile%tltrstem_t (nlat,nmos),&
+!          ctem_tile%tltrroot_t (nlat,nmos),&
+!          ctem_tile%ailcg_t (nlat,nmos),&
+!          ctem_tile%ailcb_t (nlat,nmos),&
+!          ctem_tile%rmatctem_t (nlat,nmos,ignd),&
+!          ctem_tile%veghght_t (nlat,nmos),&
+!          ctem_tile%rootdpth_t (nlat,nmos),&
+!          ctem_tile%roottemp_t (nlat,nmos),&
+!          ctem_tile%slai_t (nlat,nmos),&
+!          ctem_tile%afrroot_t (nlat,nmos),&
+!          ctem_tile%afrleaf_t (nlat,nmos),&
+!          ctem_tile%afrstem_t (nlat,nmos),&
+!          ctem_tile%laimaxg_t (nlat,nmos),&
+!          ctem_tile%stemmass_t (nlat,nmos),&
+!          ctem_tile%rootmass_t (nlat,nmos),&
+!          ctem_tile%litrmass_t (nlat,nmos),&
+!          ctem_tile%gleafmas_t (nlat,nmos),&
+!          ctem_tile%bleafmas_t(nlat,nmos),&
+!          ctem_tile%soilcmas_t (nlat,nmos),&
+!          ctem_tile%emit_co2_t (nlat,nmos),&
+!          ctem_tile%emit_co_t (nlat,nmos),&
+!          ctem_tile%emit_ch4_t (nlat,nmos),&
+!          ctem_tile%emit_nmhc_t (nlat,nmos),&
+!          ctem_tile%emit_h2_t (nlat,nmos),&
+!          ctem_tile%emit_nox_t (nlat,nmos),&
+!          ctem_tile%emit_n2o_t (nlat,nmos),&
+!          ctem_tile%emit_pm25_t (nlat,nmos),&
+!          ctem_tile%emit_tpm_t (nlat,nmos),&
+!          ctem_tile%emit_tc_t (nlat,nmos),&
+!          ctem_tile%emit_oc_t (nlat,nmos),&
+!          ctem_tile%emit_bc_t (nlat,nmos),&
+!          ctem_tile%bterm_t (nlat,nmos),&
+!          ctem_tile%mterm_t (nlat,nmos),&
+!          ctem_tile%smfuncveg_t (nlat,nmos),&
          ctem_tile%fsnowacc_t (ilg),&
          ctem_tile%tcansacc_t (ilg),&
          ctem_tile%tcanoaccgat_t (ilg),&
@@ -2278,136 +2278,136 @@ end subroutine initrowvars
 !!@{
 !> Resets daily variables in preparation for next day
 
-subroutine resetdaily(nltest,nmtest)
-
-use ctem_params, only : ignd,icc
-
-implicit none
-
-integer, intent(in) :: nltest
-integer, intent(in) :: nmtest
-
-integer :: i,j,k,m
-
-! First reset the grid average
-do i=1,nltest
-    ctem_grd%gpp_g(i) =0.0
-    ctem_grd%npp_g(i) =0.0
-    ctem_grd%nep_g(i) =0.0
-    ctem_grd%nbp_g(i) =0.0
-    ctem_grd%autores_g(i) =0.0
-    ctem_grd%hetrores_g(i)=0.0
-    ctem_grd%litres_g(i) =0.0
-    ctem_grd%socres_g(i) =0.0
-    ctem_grd%dstcemls_g(i)=0.0
-    ctem_grd%dstcemls3_g(i)=0.0
-    ctem_grd%litrfall_g(i)=0.0
-    ctem_grd%humiftrs_g(i)=0.0
-    ctem_grd%rml_g(i) =0.0
-    ctem_grd%rms_g(i) =0.0
-    ctem_grd%rmr_g(i) =0.0
-    ctem_grd%rg_g(i) =0.0
-    ctem_grd%vgbiomas_g(i) =0.0
-    ctem_grd%totcmass_g(i) =0.0
-    ctem_grd%gavglai_g(i) =0.0
-    ctem_grd%gavgltms_g(i) =0.0
-    ctem_grd%gavgscms_g(i) =0.0
-    ctem_grd%ailcg_g(i)=0.0
-    ctem_grd%ailcb_g(i)=0.0
-    ctem_grd%tcanoacc_out_g(i) =0.0
-    ctem_grd%burnfrac_g(i) =0.0
-    ctem_grd%smfuncveg_g(i) =0.0
-    ctem_grd%lucemcom_g(i) =0.0
-    ctem_grd%lucltrin_g(i) =0.0
-    ctem_grd%lucsocin_g(i) =0.0
-    ctem_grd%emit_co2_g(i) =0.0
-    ctem_grd%emit_co_g(i)  =0.0
-    ctem_grd%emit_ch4_g(i) =0.0
-    ctem_grd%emit_nmhc_g(i) =0.0
-    ctem_grd%emit_h2_g(i) =0.0
-    ctem_grd%emit_nox_g(i) =0.0
-    ctem_grd%emit_n2o_g(i) =0.0
-    ctem_grd%emit_pm25_g(i) =0.0
-    ctem_grd%emit_tpm_g(i) =0.0
-    ctem_grd%emit_tc_g(i) =0.0
-    ctem_grd%emit_oc_g(i) =0.0
-    ctem_grd%emit_bc_g(i) =0.0
-    ctem_grd%bterm_g(i)   =0.0
-    ctem_grd%lterm_g(i)   =0.0
-    ctem_grd%mterm_g(i)   =0.0
-    ctem_grd%leaflitr_g(i)=0.0
-    ctem_grd%tltrleaf_g(i)=0.0
-    ctem_grd%tltrstem_g(i)=0.0
-    ctem_grd%tltrroot_g(i)=0.0
-    ctem_grd%gleafmas_g(i)=0.0
-    ctem_grd%bleafmas_g(i)=0.0
-    ctem_grd%stemmass_g(i)=0.0
-    ctem_grd%rootmass_g(i)=0.0
-    ctem_grd%litrmass_g(i)=0.0
-    ctem_grd%soilcmas_g(i)=0.0
-    ctem_grd%veghght_g(i)=0.0
-    ctem_grd%rootdpth_g(i)=0.0
-    ctem_grd%roottemp_g(i)=0.0
-    ctem_grd%slai_g(i)=0.0
-    ctem_grd%CH4WET1_G(i) = 0.0
-    ctem_grd%CH4WET2_G(i) = 0.0
-    ctem_grd%WETFDYN_G(i) = 0.0
-    ctem_grd%CH4DYN1_G(i) = 0.0
-    ctem_grd%CH4DYN2_G(i) = 0.0
-    ctem_grd%ch4_soills_g(i) = 0.0
-
-    do k=1,ignd
-      ctem_grd%rmatctem_g(i,k)=0.0
-    enddo
-
-    do j=1,icc
-      ctem_grd%afrleaf_g(i,j)=0.0
-      ctem_grd%afrstem_g(i,j)=0.0
-      ctem_grd%afrroot_g(i,j)=0.0
-    enddo
-
-    do m = 1, nmtest
-
-        ctem_tile%leaflitr_t(i,m)=0.0
-        ctem_tile%tltrleaf_t(i,m)=0.0
-        ctem_tile%tltrstem_t(i,m)=0.0
-        ctem_tile%tltrroot_t(i,m)=0.0
-        ctem_tile%ailcg_t(i,m)=0.0
-        ctem_tile%ailcb_t(i,m)=0.0
-        ctem_tile%afrleaf_t(i,m)=0.0
-        ctem_tile%afrstem_t(i,m)=0.0
-        ctem_tile%afrroot_t(i,m)=0.0
-        ctem_tile%veghght_t(i,m)=0.0
-        ctem_tile%rootdpth_t(i,m)=0.0
-        ctem_tile%roottemp_t(i,m)=0.0
-        ctem_tile%slai_t(i,m)=0.0
-        ctem_tile%gleafmas_t(i,m) = 0.0
-        ctem_tile%bleafmas_t(i,m) = 0.0
-        ctem_tile%stemmass_t(i,m) = 0.0
-        ctem_tile%rootmass_t(i,m) = 0.0
-        ctem_tile%litrmass_t(i,m) = 0.0
-        ctem_tile%soilcmas_t(i,m) = 0.0
-        ctem_tile%emit_co2_t(i,m) = 0.0
-        ctem_tile%emit_co_t(i,m) = 0.0
-        ctem_tile%emit_ch4_t(i,m) = 0.0
-        ctem_tile%emit_nmhc_t(i,m) = 0.0
-        ctem_tile%emit_h2_t(i,m) = 0.0
-        ctem_tile%emit_nox_t(i,m) = 0.0
-        ctem_tile%emit_n2o_t(i,m) = 0.0
-        ctem_tile%emit_pm25_t(i,m) = 0.0
-        ctem_tile%emit_tpm_t(i,m) = 0.0
-        ctem_tile%emit_tc_t(i,m) = 0.0
-        ctem_tile%emit_oc_t(i,m) = 0.0
-        ctem_tile%emit_bc_t(i,m) = 0.0
-
-        do k=1,ignd
-            ctem_tile%rmatctem_t(i,m,k)=0.0
-        enddo
-
-    end do !nmtest
-end do !nltest
-
-end subroutine resetdaily
+! subroutine resetdaily(nltest,nmtest)
+!
+! use ctem_params, only : ignd,icc
+!
+! implicit none
+!
+! integer, intent(in) :: nltest
+! integer, intent(in) :: nmtest
+!
+! integer :: i,j,k,m
+!
+! ! ! First reset the grid average
+! ! do i=1,nltest
+! !     ctem_grd%gpp_g(i) =0.0
+! !     ctem_grd%npp_g(i) =0.0
+! !     ctem_grd%nep_g(i) =0.0
+! !     ctem_grd%nbp_g(i) =0.0
+! !     ctem_grd%autores_g(i) =0.0
+! !     ctem_grd%hetrores_g(i)=0.0
+! !     ctem_grd%litres_g(i) =0.0
+! !     ctem_grd%socres_g(i) =0.0
+! !     ctem_grd%dstcemls_g(i)=0.0
+! !     ctem_grd%dstcemls3_g(i)=0.0
+! !     ctem_grd%litrfall_g(i)=0.0
+! !     ctem_grd%humiftrs_g(i)=0.0
+! !     ctem_grd%rml_g(i) =0.0
+! !     ctem_grd%rms_g(i) =0.0
+! !     ctem_grd%rmr_g(i) =0.0
+! !     ctem_grd%rg_g(i) =0.0
+! !     ctem_grd%vgbiomas_g(i) =0.0
+! !     ctem_grd%totcmass_g(i) =0.0
+! !     ctem_grd%gavglai_g(i) =0.0
+! !     ctem_grd%gavgltms_g(i) =0.0
+! !     ctem_grd%gavgscms_g(i) =0.0
+! !     ctem_grd%ailcg_g(i)=0.0
+! !     ctem_grd%ailcb_g(i)=0.0
+! !     ctem_grd%tcanoacc_out_g(i) =0.0
+! !     ctem_grd%burnfrac_g(i) =0.0
+! !     ctem_grd%smfuncveg_g(i) =0.0
+! !     ctem_grd%lucemcom_g(i) =0.0
+! !     ctem_grd%lucltrin_g(i) =0.0
+! !     ctem_grd%lucsocin_g(i) =0.0
+! !     ctem_grd%emit_co2_g(i) =0.0
+! !     ctem_grd%emit_co_g(i)  =0.0
+! !     ctem_grd%emit_ch4_g(i) =0.0
+! !     ctem_grd%emit_nmhc_g(i) =0.0
+! !     ctem_grd%emit_h2_g(i) =0.0
+! !     ctem_grd%emit_nox_g(i) =0.0
+! !     ctem_grd%emit_n2o_g(i) =0.0
+! !     ctem_grd%emit_pm25_g(i) =0.0
+! !     ctem_grd%emit_tpm_g(i) =0.0
+! !     ctem_grd%emit_tc_g(i) =0.0
+! !     ctem_grd%emit_oc_g(i) =0.0
+! !     ctem_grd%emit_bc_g(i) =0.0
+! !     ctem_grd%bterm_g(i)   =0.0
+! !     ctem_grd%lterm_g(i)   =0.0
+! !     ctem_grd%mterm_g(i)   =0.0
+! !     ctem_grd%leaflitr_g(i)=0.0
+! !     ctem_grd%tltrleaf_g(i)=0.0
+! !     ctem_grd%tltrstem_g(i)=0.0
+! !     ctem_grd%tltrroot_g(i)=0.0
+! !     ctem_grd%gleafmas_g(i)=0.0
+! !     ctem_grd%bleafmas_g(i)=0.0
+! !     ctem_grd%stemmass_g(i)=0.0
+! !     ctem_grd%rootmass_g(i)=0.0
+! !     ctem_grd%litrmass_g(i)=0.0
+! !     ctem_grd%soilcmas_g(i)=0.0
+! !     ctem_grd%veghght_g(i)=0.0
+! !     ctem_grd%rootdpth_g(i)=0.0
+! !     ctem_grd%roottemp_g(i)=0.0
+! !     ctem_grd%slai_g(i)=0.0
+! !     ctem_grd%CH4WET1_G(i) = 0.0
+! !     ctem_grd%CH4WET2_G(i) = 0.0
+! !     ctem_grd%WETFDYN_G(i) = 0.0
+! !     ctem_grd%CH4DYN1_G(i) = 0.0
+! !     ctem_grd%CH4DYN2_G(i) = 0.0
+! !     ctem_grd%ch4_soills_g(i) = 0.0
+! !
+! !     do k=1,ignd
+! !       ctem_grd%rmatctem_g(i,k)=0.0
+! !     enddo
+! !
+! !     do j=1,icc
+! !       ctem_grd%afrleaf_g(i,j)=0.0
+! !       ctem_grd%afrstem_g(i,j)=0.0
+! !       ctem_grd%afrroot_g(i,j)=0.0
+! !     enddo
+!
+! !     do m = 1, nmtest
+! !
+! !         ctem_tile%leaflitr_t(i,m)=0.0
+! !         ctem_tile%tltrleaf_t(i,m)=0.0
+! !         ctem_tile%tltrstem_t(i,m)=0.0
+! !         ctem_tile%tltrroot_t(i,m)=0.0
+! !         ctem_tile%ailcg_t(i,m)=0.0
+! !         ctem_tile%ailcb_t(i,m)=0.0
+! !         ctem_tile%afrleaf_t(i,m)=0.0
+! !         ctem_tile%afrstem_t(i,m)=0.0
+! !         ctem_tile%afrroot_t(i,m)=0.0
+! !         ctem_tile%veghght_t(i,m)=0.0
+! !         ctem_tile%rootdpth_t(i,m)=0.0
+! !         ctem_tile%roottemp_t(i,m)=0.0
+! !         ctem_tile%slai_t(i,m)=0.0
+! !         ctem_tile%gleafmas_t(i,m) = 0.0
+! !         ctem_tile%bleafmas_t(i,m) = 0.0
+! !         ctem_tile%stemmass_t(i,m) = 0.0
+! !         ctem_tile%rootmass_t(i,m) = 0.0
+! !         ctem_tile%litrmass_t(i,m) = 0.0
+! !         ctem_tile%soilcmas_t(i,m) = 0.0
+! !         ctem_tile%emit_co2_t(i,m) = 0.0
+! !         ctem_tile%emit_co_t(i,m) = 0.0
+! !         ctem_tile%emit_ch4_t(i,m) = 0.0
+! !         ctem_tile%emit_nmhc_t(i,m) = 0.0
+! !         ctem_tile%emit_h2_t(i,m) = 0.0
+! !         ctem_tile%emit_nox_t(i,m) = 0.0
+! !         ctem_tile%emit_n2o_t(i,m) = 0.0
+! !         ctem_tile%emit_pm25_t(i,m) = 0.0
+! !         ctem_tile%emit_tpm_t(i,m) = 0.0
+! !         ctem_tile%emit_tc_t(i,m) = 0.0
+! !         ctem_tile%emit_oc_t(i,m) = 0.0
+! !         ctem_tile%emit_bc_t(i,m) = 0.0
+! !
+! !         do k=1,ignd
+! !             ctem_tile%rmatctem_t(i,m,k)=0.0
+! !         enddo
+!
+!     end do !nmtest
+! end do !nltest
+!
+! end subroutine resetdaily
 !!@}
 !==================================================
 

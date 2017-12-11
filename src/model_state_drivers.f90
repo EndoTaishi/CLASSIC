@@ -383,7 +383,6 @@ contains
         logical, pointer :: obswetf
         real, pointer, dimension(:,:,:) :: ailcminrow           !
         real, pointer, dimension(:,:,:) :: ailcmaxrow           !
-        !real, pointer, dimension(:,:,:) :: dvdfcanrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -815,7 +814,6 @@ contains
         logical, pointer :: lnduseon
         real, pointer, dimension(:,:,:) :: ailcminrow           !
         real, pointer, dimension(:,:,:) :: ailcmaxrow           !
-        !real, pointer, dimension(:,:,:) :: dvdfcanrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -851,7 +849,6 @@ contains
         lnduseon          => c_switch%lnduseon
         ailcminrow        => vrot%ailcmin
         ailcmaxrow        => vrot%ailcmax
-        !dvdfcanrow        => vrot%dvdfcan
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -1251,7 +1248,7 @@ contains
             i = 1 ! offline nlat is always 1 so just set
             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
             if (nmos > 1) stop('updateInput for LUC only set up for 1 tile at present')
-            nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            nfcancmxrow(i,m,:) = LUCFromFile(arrindex,:)
 
        case('LGHT')
             print*,'LGHT updateInput not ready yet...'
