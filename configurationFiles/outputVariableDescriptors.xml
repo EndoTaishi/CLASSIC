@@ -1033,42 +1033,42 @@
             <standardName>Carbon Mass in Model Soil Pool</standardName>
             <longName>Carbon mass in the full depth of the soil model.</longName>
             <shortName>cSoil</shortName>
-            <defaultUnits>-</defaultUnits>
+            <defaultUnits>kg C/$m^2$​</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>soilcmas_yr_g</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>soilcmas_yr</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>soilcmas_yr_t</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>soilcmas_mo_g</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>soilcmas_mo</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>soilcmas_mo_t</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
         </variable>
         <variable id="29" includeBareGround="true">
@@ -1471,24 +1471,24 @@
             <standardName>Total Carbon Mass Flux from Vegetation to Litter</standardName>
             <longName>Total Carbon Mass Flux from Vegetation to Litter</longName>
             <shortName>fVegLitter</shortName>
-            <defaultUnits>-</defaultUnits>
+            <defaultUnits>kg C/$m^2$​</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>litrfall_mo_g</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litrfallveg_mo</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>litrfall_mo_t</nameInCode>
-                <units>-</units>
+                <units>kg C/$m^2$​</units>
             </variant>
         </variable>
         <variable id="40" includeBareGround="true">

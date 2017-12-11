@@ -414,7 +414,7 @@ function disable(id) {
 	$('input#' + id + '.nameInCode')[0].disabled = true;
 	$('input#' + id + '.nameInCode')[0].value = '';
 	$('input#' + id + '.variantUnits')[0].disabled = true;
-	$('input#' + id + '.variantUnits')[0].value = '';
+	//$('input#' + id + '.variantUnits')[0].value = '';
 }
 
 function updateVariableChanges() {
