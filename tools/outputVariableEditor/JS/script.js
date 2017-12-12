@@ -60,14 +60,21 @@ function sceneSetup() {
 
 function search() {
 	var keyword = $('input#search')[0].value.toLowerCase();
-	buildVariableConfigForms();
+
+	for (var v = 0; v < variables.length; v++) {
+			$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '');
+	}
+		
+	var counter = 0;
 	if ((keyword != '') && (keyword != ' ')) {
+		$('p#status').html("Searching...");
 		var first = -1;
 		for (var v = 0; v < variables.length; v++) {
 			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].defaultUnits;
 			allText = allText.toLowerCase();
 			if (allText.indexOf(keyword) !== -1) {
 				first = v;
+				counter++;
 				$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '#AAAAFF');
 			}
 		}
@@ -75,7 +82,9 @@ function search() {
 		if (first != -1) {
 			$('#accordion').accordion('option', 'active', variables.length - first - 1);
 		}
+		$('p#status').html('Found ' + counter + ' results.');
 	}
+	else $('p#status').html('');
 }
 
 function clearForm() {
