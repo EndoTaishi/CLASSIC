@@ -1024,8 +1024,7 @@ contains
 
             ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
             ! rather than the first day of the next month.
-            timeStamp = (realyr - refyr) * lastDOY + iday
-            print*,'timeStamp from class daily',timeStamp
+            timeStamp = (realyr - refyr) * lastDOY + iday !FLAG this won't quite work with LEAP years since it doesn't know how many in past.
 
             do i = 1,nltest
                 if (altotcntr_d(i) > 0) then
@@ -1040,7 +1039,7 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_d' ,timeStamp,'rls', [FLSTAR])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_d'     ,timeStamp,'hfss', [HFSACC(I)/REAL(NDAY)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/REAL(NDAY)])
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'snomlt_d' ,timeStamp,'snomlt', [HMFNACC(I)]) !name?
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_d' ,timeStamp,'snm', [HMFNACC(I)])
 !                 !                 BEG=FSSTAR+FLSTAR-QH-QE
 !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  !name
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [HMFNACC(I)])

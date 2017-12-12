@@ -2788,7 +2788,7 @@ contains
 
         ! Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
-        
+
         ! Read in the inputs
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
@@ -3133,7 +3133,7 @@ contains
                 daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
 
                 ! Update the lightning if fire is on and transientLGHT is true
-                if (dofire .and. transientLGHT .and. ctem_on) call updateInput('LGHT',iyear,iday)
+                if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday)
 
                 !Check if this is the first day of the year
                 if (iday.eq.1) then
@@ -4718,13 +4718,13 @@ contains
                                                     nmtest,ncount,nday,iday,runyr,SBC,DELT,TFREZ)
 
             ! Daily physics outputs
-!             if (dodayoutput .and. &
-!                (runyr >= jdsty) .and. &
-!                (runyr <= jdendy) .and. &
-!                (iday  >= jdstd) .and. &
-!                (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,&
-!                                                          iday,nltest,nmtest,sbc,delt,&
-!                                                          ncount,nday,lastDOY,runyr)
+            if (dodayoutput .and. &
+               (runyr >= jdsty) .and. &
+               (runyr <= jdendy) .and. &
+               (iday  >= jdstd) .and. &
+               (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,&
+                                                         iday,nltest,nmtest,sbc,delt,&
+                                                         ncount,nday,lastDOY,runyr)
 
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN

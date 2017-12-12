@@ -26,7 +26,7 @@ module model_state_drivers
     real, dimension(:), allocatable :: CH4FromFile          !< The array of CH4 values (ppm) from the CH4File
     integer, dimension(:), allocatable :: POPDTime          !< The time (years) from the population density file
     real, dimension(:), allocatable :: POPDFromFile         !< The array of CH4 values (ppm) from the POPDFile
-    integer, dimension(:), allocatable :: LGHTTime          !< The time from the lightning density file (usually months)
+    real, dimension(:), allocatable :: LGHTTime             !< The time from the lightning density file (usually months)
     real, dimension(:), allocatable :: LGHTFromFile         !< The array of lightning density from the LGHTFile
     integer, dimension(:), allocatable :: LUCTime           !< The time from the LUC file
     real, dimension(:,:), allocatable :: LUCFromFile        !< The array of LUC from the LUCFile
@@ -321,7 +321,7 @@ contains
         integer, intent(in) :: lonIndex,latIndex
 
         ! pointers:
-        real, pointer, dimension(:,:,:) :: FCANROT
+        real, pointer, dimension(:,:,:) :: FCANROT      !<Maximum fractional coverage of modelled
         real, pointer, dimension(:,:)   :: FAREROT
         real, pointer, dimension(:,:,:) :: RSMNROT
         real, pointer, dimension(:,:,:) :: QA50ROT
@@ -986,10 +986,12 @@ contains
         integer, pointer :: fixedYearLUC
 
         real, dimension(5) :: dateTime
+        real :: startLGHTTime
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
+        real, pointer, dimension(:,:,:) :: mlightngrow
 
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
@@ -1005,6 +1007,7 @@ contains
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         fcancmxrow      => vrot%fcancmx
+        mlightngrow       => vrot%mlightng
 
         select case (trim(inputRequested))
 
@@ -1110,28 +1113,33 @@ contains
 
             fileTime = ncGet1DVar(lghtid, 'time', start = [1], count = [lengthOfFile])
 
-            ! The lightning file is monthly
-            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            ! The lightning file is daily (expected format is "day as %Y%m%d.%f")
+            ! We want to retain all except the partial day.
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                LGHTTime(i) = dateTime(1) ! Rewrite putting in the year
+                LGHTTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
             lonloc = closestCell(lghtid,'lon',longitude)
             latloc = closestCell(lghtid,'lat',latitude)
 
+            ! Units expected are "strikes km-2 yr-1"
+
             if (transientLGHT) then
-                ! We read in the whole POPD times series and store it.
+                ! We read in the whole LGHT times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
                 LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
 
             else
                 ! Find the requested day and year in the file.
-                arrindex = checkForTime(lengthOfFile,real(LGHTTime),real(fixedYearLGHT))
+                ! Assume we are grabbing from day 1
+                startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
+                arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
                 if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
 
-                ! We read in only the suggested year
-                i = 1 ! offline nlat is always 1 so just set
-                !mlightngrow(i,:) = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,arrindex,1], count = [1,1,1,12])
+                ! We read in only the suggested year of daily inputs
+                ! FLAG Not presently set up for leap years!
+                allocate(LGHTFromFile(365))
+                LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [arrindex,lonloc,latloc], count = [365,1,1])
 
             end if
 
@@ -1197,10 +1205,10 @@ contains
     !!@{
     !> Update the input field variable based on the present model timestep
 
-    subroutine updateInput(inputRequested,iyear,imonth)
+    subroutine updateInput(inputRequested,iyear,imonth,iday)
 
         use outputManager, only : checkForTime
-        use ctem_statevars, only : vrot
+        use ctem_statevars, only : vrot,c_switch,vgat
         use ctem_params, only : nmos
 
         implicit none
@@ -1208,15 +1216,26 @@ contains
         character(*), intent(in) :: inputRequested
         integer, intent(in) :: iyear
         integer, intent(in), optional :: imonth
+        integer, intent(in), optional :: iday
         integer :: arrindex,lengthTime,i,m
+        real :: LGHTTimeNow
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: nfcancmxrow
+        real, pointer, dimension(:) :: lightng       !<total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
+                                                     !<to ground lightning is some fixed fraction of total lightning.
+
+        logical, pointer :: transientLGHT
+        integer, pointer :: fixedYearLGHT
+
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         nfcancmxrow     => vrot%nfcancmx
+        transientLGHT   => c_switch%transientLGHT
+        fixedYearLGHT   => c_switch%fixedYearLGHT
+        lightng         => vgat%lightng
 
         select case (trim(inputRequested))
 
@@ -1259,15 +1278,28 @@ contains
             nfcancmxrow(i,m,:) = LUCFromFile(arrindex,:)
 
        case('LGHT')
-            print*,'LGHT updateInput not ready yet...'
-!                                 ! pass on mean monthly lightning for the current month to ctem
-!                         ! lightng(i)=mlightng(i,month)
-!                         !
-!
-!
-!
-!                         lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*&
-!                             &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
+
+            ! This file is daily so we need to find the day we are looking for.
+            ! imonth is starting at 0 so add 1 always.
+
+            lengthTime = size(LGHTTime)
+
+            if (transientLGHT) then
+                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(iday)
+            else ! we only draw from the fixedYearLGHT
+                LGHTTimeNow = fixedYearLGHT * 10000. + real(imonth+1) * 100. + real(iday)
+            end if
+
+            ! Find the requested year in the file.
+            arrindex = checkForTime(lengthTime,LGHTTime,LGHTTimeNow)
+
+            lightng(1)= LGHTFromFile(arrindex)
+
+            ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
+            ! can just pass the same values across all ilg.
+            do m = 1, size(lightng)
+                lightng(m) = lightng(1)
+            end do
 
         case default
             stop('specify an input kind for updateInput')
@@ -1281,7 +1313,8 @@ contains
     !>\ingroup model_state_drivers_getMet
     !!@{
     !> Read in the meteorological input from a netcdf file
-
+    !! It is **very** important that the files have time as the fastest varying dimension.
+    !! There is an orders of magnitude slow-up if the dimensions are out of order!
     subroutine getMet(longitude,latitude,nday,delt)
 
         use fileIOModule

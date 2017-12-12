@@ -19,6 +19,12 @@
                 <units>W/$m^2$</units>
             </variant>
             <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fsstar_d</nameInCode>
+                <units>W/$m^2$</units>
+            </variant>
+            <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>fsstar_hh</nameInCode>
@@ -46,6 +52,12 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>flstar_mo</nameInCode>
+                <units>W/$m^2$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>flstar_d</nameInCode>
                 <units>W/$m^2$</units>
             </variant>
             <variant>
@@ -79,6 +91,12 @@
                 <units>W/$m^2$</units>
             </variant>
             <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>qh_d</nameInCode>
+                <units>W/$m^2$</units>
+            </variant>
+            <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>qh_hh</nameInCode>
@@ -106,6 +124,12 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>qe_mo</nameInCode>
+                <units>W/$m^2$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>qe_d</nameInCode>
                 <units>W/$m^2$</units>
             </variant>
             <variant>
@@ -480,6 +504,12 @@
             <longName>Energy associated with phase change of water in snow pack</longName>
             <shortName>snm</shortName>
             <defaultUnits>$[W m^{-2} ]$</defaultUnits>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>snm_d</nameInCode>
+                <units>$[W m^{-2} ]$</units>
+            </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -1161,6 +1191,12 @@
                 <units>kg C/$m^2$</units>
             </variant>
             <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>npp_d_g</nameInCode>
+                <units>g C/$m^2$/day</units>
+            </variant>
+            <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>npp_hh</nameInCode>
@@ -1214,6 +1250,12 @@
                 <nameInCode>gpp_mo_t</nameInCode>
                 <units>kg C/$m^2$</units>
             </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>gpp_d_g</nameInCode>
+                <units>g C/$m^2$/day</units>
+            </variant>
         </variable>
         <variable id="33" includeBareGround="true">
             <standardName>Net Carbon Mass Flux out of Atmosphere due to Net Ecosystem Productivity on Land</standardName>
@@ -1256,6 +1298,12 @@
                 <nameInCode>nep_mo_t</nameInCode>
                 <units>kg C/$m^2$</units>
             </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>nep_d_g</nameInCode>
+                <units>g C/$m^2$/day</units>
+            </variant>
         </variable>
         <variable id="34" includeBareGround="true">
             <standardName>Net Carbon Mass Flux out of Atmosphere due to Net Biospheric Productivity on Land</standardName>
@@ -1297,6 +1345,12 @@
                 <outputForm>tile</outputForm>
                 <nameInCode>nbp_mo_t</nameInCode>
                 <units>kg C/$m^2$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>nbp_d_g</nameInCode>
+                <units>g C/$m^2$/day</units>
             </variant>
         </variable>
         <variable id="35" includeBareGround="true">
@@ -1522,13 +1576,13 @@
             <defaultUnits>fraction</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
-                <outputForm>pft</outputForm>
+                <outputForm>grid</outputForm>
                 <nameInCode>fcancmxrow_yr_g</nameInCode>
                 <units>fraction</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
+                <outputForm>grid</outputForm>
                 <nameInCode>fcancmxrow_mo_g</nameInCode>
                 <units>fraction</units>
             </variant>
