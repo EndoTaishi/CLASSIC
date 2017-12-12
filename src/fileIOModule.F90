@@ -165,7 +165,7 @@ contains
     end subroutine ncPutAtt
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Returns the variable content in the form of a data package
+    !> Returns the variable content
     function ncGetVar(fileId, label, start, count)
         integer, intent(in)                             :: fileId       !< File id
         character(*), intent(in)                        :: label        !< Label
@@ -209,65 +209,6 @@ contains
         end select
 
     end function ncGetVar
-
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Writes the 1D dimension values to a given file
-    subroutine ncPutDimValues(fileId, label, realValues, intValues, start, count)
-        integer, intent(in)                 :: fileId       !< File id
-        character(*), intent(in)            :: label        !< Label
-        real, intent(in), optional       :: realValues(:)!< Array of reals
-        integer, intent(in), optional    :: intValues(:) !< Array of ints
-        integer, intent(in), optional       :: start(1)     !< Start array
-        integer, intent(in), optional       :: count(1)     !< Count array
-        integer                             :: localStart(1) = [1], localCount(1) = [1], varId, counter
-
-        counter = 0
-
-        if (present(start)) localStart = start
-        if (present(count)) localCount = count
-
-        varId = ncGetVarId(fileId, label)
-
-        if (present(realValues)) then
-            counter = counter + 1
-            call checkNC(nf90_put_var(fileId, varId, realValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
-        else if (present(intValues)) then
-            counter = counter + 1
-            call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
-        end if
-
-        if (counter /= 1) then
-            print*,'In function ncPutDimValues, please supply either intValues or realValues; just one ',trim(label)
-            stop
-        end if
-
-    end subroutine ncPutDimValues
-
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Writes a local variable (always 1D input values, either real or int)
-    subroutine ncPutVar(fileId, label, realValues, intValues, start, count)
-        integer, intent(in)                                     :: fileId       !< File id
-        character(*), intent(in)                                :: label        !< Label
-        real, intent(in), optional                           :: realValues(:)!< Array of reals
-        integer, intent(in), optional                        :: intValues(:) !< Array of ints
-        integer, intent(in)                                     :: start(:)     !< Start array
-        integer, intent(in)                                     :: count(:)     !< Count array
-        integer                                                 :: varId, counter
-
-        counter = 0
-        varId = ncGetVarId(fileId, label)
-
-        if (present(realValues)) then
-            counter = counter + 1
-            call checkNC(nf90_put_var(fileId, varId, realValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
-        else
-            counter = counter + 1
-            call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
-        end if
-
-        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
-
-    end subroutine ncPutVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)
@@ -442,6 +383,88 @@ contains
     end function ncGet4DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Writes the 1D dimension values to a given file
+    subroutine ncPutDimValues(fileId, label, realValues, intValues, start, count)
+        integer, intent(in)                 :: fileId       !< File id
+        character(*), intent(in)            :: label        !< Label
+        real, intent(in), optional       :: realValues(:)!< Array of reals
+        integer, intent(in), optional    :: intValues(:) !< Array of ints
+        integer, intent(in), optional       :: start(1)     !< Start array
+        integer, intent(in), optional       :: count(1)     !< Count array
+        integer                             :: localStart(1) = [1], localCount(1) = [1], varId, counter
+
+        counter = 0
+
+        if (present(start)) localStart = start
+        if (present(count)) localCount = count
+
+        varId = ncGetVarId(fileId, label)
+
+        if (present(realValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, realValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
+        else if (present(intValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
+        end if
+
+        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
+
+    end subroutine ncPutDimValues
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Writes a local variable (1D input values, either real or int)
+    subroutine ncPutVar(fileId, label, realValues, intValues, start, count)
+        integer, intent(in)                                     :: fileId           !< File id
+        character(*), intent(in)                                :: label            !< Label
+        real, intent(in), optional                              :: realValues(:)    !< Array of reals
+        integer, intent(in), optional                           :: intValues(:)     !< Array of ints
+        integer, intent(in)                                     :: start(:)         !< Start array
+        integer, intent(in)                                     :: count(:)         !< Count array
+        integer                                                 :: varId, counter
+
+        counter = 0
+        varId = ncGetVarId(fileId, label)
+
+        if (present(realValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, realValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
+        else if (present(intValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
+        end if
+
+        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
+
+    end subroutine ncPutVar
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Writes a local variable of 2D input values
+    subroutine ncPut2DVar(fileId, label, values, start, count)
+        integer, intent(in)                                     :: fileId   !< File id
+        character(*), intent(in)                                :: label    !< Label
+        real, dimension(:,:), intent(in)                        :: values   !< Array of reals
+        integer, dimension(:), intent(in)                       :: start    !< Start array
+        integer, dimension(3), intent(in)                       :: count    !< Count array
+        integer                                                 :: varId
+        varId = ncGetVarId(fileId, label)
+        call checkNC(nf90_put_var(fileId, varId, reshape(values, count), start, count))
+    end subroutine ncPut2DVar
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Writes a local variable of 3D input values
+    subroutine ncPut3DVar(fileId, label, values, start, count)
+        integer, intent(in)                                     :: fileId   !< File id
+        character(*), intent(in)                                :: label    !< Label
+        real, dimension(:,:,:), intent(in)                        :: values   !< Array of reals
+        integer, dimension(:), intent(in)                       :: start    !< Start array
+        integer, dimension(4), intent(in)                       :: count    !< Count array
+        integer                                                 :: varId
+        varId = ncGetVarId(fileId, label)
+        call checkNC(nf90_put_var(fileId, varId, reshape(values, count), start, count))
+    end subroutine ncPut3DVar
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns an estimate count of how many 1s can be collapsed in the array
     integer function estimateOnes(values)
         integer, intent(in)             :: values(:)        !< The input values
@@ -497,81 +520,5 @@ contains
             stop
         end if
     end subroutine checkNC
-
-    ! OLD FUNCTIONS TO BE DELETED
-    !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    ! Write a local 2D variable
-#if PARALLEL
-    subroutine ncPut2DVar(fileId, label, data, start, count)
-        integer, intent(in)                                     :: fileId   !<
-        character(*), intent(in)                                :: label
-        real, dimension(:,:), intent(in)                        :: data
-        integer, dimension(:), intent(in)                       :: start
-        integer, dimension(:), optional, intent(in)             :: count
-        integer                                                 :: varId
-        real, dimension(:,:,:), allocatable                     :: temp3D
-        integer, dimension(3)                                   :: localFormat, localCount
-        if (present(count)) then
-            localCount = count
-        else
-            localCount = [1, 1, 1]
-        endif
-        localFormat = count
-        varId = ncGetVarId(fileId, label)
-        temp3D = reshape(data, localFormat)
-        !call checkNC(nf90mpi_put_var_all(fileId, varId, temp3D, int(start,8), int(localCount,8)))
-    end subroutine ncPut2DVar
-#else
-    subroutine ncPut2DVar(fileId, label, data, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:,:), intent(in)                        :: data
-        integer, dimension(:), intent(in)                       :: start
-        integer, dimension(:), optional, intent(in)             :: count
-        integer                                                 :: varId
-        real, dimension(:,:,:), allocatable                     :: temp3D
-        integer, dimension(3)                                   :: localFormat, localCount
-        if (present(count)) then
-            localCount = count
-        else
-            localCount = [1, 1, 1]
-        endif
-        localFormat = count
-        varId = ncGetVarId(fileId, label)
-        temp3D = reshape(data, localFormat)
-        call checkNC(nf90_put_var(fileId, varId, temp3D, start, localCount))
-    end subroutine ncPut2DVar
-#endif
-
-    ! Write a local 3D variable (4D in NetCDF file)
-#if PARALLEL
-    subroutine ncPut3DVar(fileId, label, data, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:,:,:), intent(in)                      :: data
-        integer, dimension(:), intent(in)                       :: start, count
-        integer                                                 :: varId
-        real, dimension(:,:,:,:), allocatable                   :: temp4D
-        integer, dimension(4)                                   :: format = 0
-        format = count
-        varId = ncGetVarId(fileId, label)
-        temp4D = reshape(data, format)
-        !call checkNC(nf90mpi_put_var_all(fileId, varId, temp4D, int(start,8), int(count,8)))
-    end subroutine ncPut3DVar
-#else
-    subroutine ncPut3DVar(fileId, label, data, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:,:,:), intent(in)                      :: data
-        integer, dimension(:), intent(in)                       :: start, count
-        integer                                                 :: varId
-        real, dimension(:,:,:,:), allocatable                   :: temp4D
-        integer, dimension(4)                                   :: format = 0
-        format = count
-        varId = ncGetVarId(fileId, label)
-        temp4D = reshape(data, format)
-        call checkNC(nf90_put_var(fileId, varId, temp4D, start, count))
-    end subroutine ncPut3DVar
-#endif
 
 end module fileIOModule

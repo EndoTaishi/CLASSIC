@@ -889,12 +889,8 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
-!FLAG WISERNIG
+
         call ncPut2DVar(rsid, 'FARE', FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
-        call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut3DVar(rsid, 'THIC', THICROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut3DVar(rsid, 'TBAR', TBARROT-TFREZ, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
         call ncPut2DVar(rsid, 'TCAN', TCANROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'TSNO', TSNOROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'TPND', TPNDROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
@@ -906,7 +902,16 @@ contains
         call ncPut2DVar(rsid, 'RHOS', RHOSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'GRO', GROROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
+        call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
+        call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut3DVar(rsid, 'THIC', THICROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut3DVar(rsid, 'TBAR', TBARROT-TFREZ, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+
         if (ctem_on) then
+
+            call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+            call ncPut2DVar(rsid, 'litrmsmoss', litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+            call ncPut2DVar(rsid, 'dmoss', dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
             call ncPut3DVar(rsid, 'ailcmin', ailcminrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'ailcmax', ailcmaxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
@@ -919,22 +924,20 @@ contains
             call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'pandays', real(pandaysrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-            call ncPut2DVar(rsid, 'litrmsmoss', litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-            call ncPut2DVar(rsid, 'dmoss', dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
             if (PFTCompetition) then
 
-                call ncPut2DVar(rsid, 'twarmm', twarmm, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'tcoldm', tcoldm, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'gdd5', gdd5, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'aridity', aridity, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'srplsmon', srplsmon, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'defctmon', defctmon, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'anndefct', anndefct, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'annsrpls', annsrpls, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'annpcp', annpcp, start = [lonIndex, latIndex])
-                call ncPut2DVar(rsid, 'dry_season_length', dry_season_length, start = [lonIndex, latIndex])
+                call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm, [1]), start = [lonIndex, latIndex], count = [1, 1])
+! JOE after checking that writing twarmm works as desired, please uncomment the lines below
+!                call ncPutVar(rsid, 'tcoldm', tcoldm, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'gdd5', gdd5, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'aridity', aridity, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'srplsmon', srplsmon, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'defctmon', defctmon, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'anndefct', anndefct, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'annsrpls', annsrpls, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'annpcp', annpcp, start = [lonIndex, latIndex])
+!                call ncPutVar(rsid, 'dry_season_length', dry_season_length, start = [lonIndex, latIndex])
 
             end if ! PFTCompetition
 
