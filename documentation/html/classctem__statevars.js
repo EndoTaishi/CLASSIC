@@ -1,7 +1,6 @@
 var classctem__statevars =
 [
     [ "ctem_annual", "structctem__statevars_1_1ctem__annual.html", "structctem__statevars_1_1ctem__annual" ],
-    [ "ctem_gridavg", "structctem__statevars_1_1ctem__gridavg.html", "structctem__statevars_1_1ctem__gridavg" ],
     [ "ctem_gridavg_annual", "structctem__statevars_1_1ctem__gridavg__annual.html", "structctem__statevars_1_1ctem__gridavg__annual" ],
     [ "ctem_gridavg_monthly", "structctem__statevars_1_1ctem__gridavg__monthly.html", "structctem__statevars_1_1ctem__gridavg__monthly" ],
     [ "ctem_monthly", "structctem__statevars_1_1ctem__monthly.html", "structctem__statevars_1_1ctem__monthly" ],
@@ -13,11 +12,9 @@ var classctem__statevars =
     [ "veg_rot", "structctem__statevars_1_1veg__rot.html", "structctem__statevars_1_1veg__rot" ],
     [ "alloc_ctem_vars", "classctem__statevars.html#ad342e3a360b7b12a40b1c80a251d95b9", null ],
     [ "initrowvars", "classctem__statevars.html#a069aa6fb4b132ef4fe61febb61d40ec1", null ],
-    [ "resetdaily", "classctem__statevars.html#af1d0ff0bbf816233f2b51362f1ccb523", null ],
     [ "resetmonthend", "classctem__statevars.html#afcc1311f7dd0743cf4002b0d2635e824", null ],
     [ "resetyearend", "classctem__statevars.html#a090f13e5df0ad3551010689fcf82a0ac", null ],
     [ "c_switch", "classctem__statevars.html#ae5b8eaa631db6fcf2adc586a8ffdb722", null ],
-    [ "ctem_grd", "classctem__statevars.html#ab8cd13b4bb2133f86012aa72a85253de", null ],
     [ "ctem_grd_mo", "classctem__statevars.html#a0e6e53463d563093cfacf19a1358ec1c", null ],
     [ "ctem_grd_yr", "classctem__statevars.html#a3fe8917df668048f8e960e0c5c8427e3", null ],
     [ "ctem_mo", "classctem__statevars.html#a1935b531e4ef11e55fdaf77f816c9269", null ],

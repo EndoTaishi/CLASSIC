@@ -9,6 +9,8 @@ var searchData=
   ['checknc',['checknc',['../classfileiomodule.html#a038c8900571cf4c568943f36b7b68a09',1,'fileiomodule']]],
   ['chkwat',['chkwat',['../CHKWAT_8f.html#ae24f10ada6d260b942e1b64c3dc5a310',1,'CHKWAT.f']]],
   ['class_5fannual_5faw',['class_annual_aw',['../classio__driver.html#ae58a3ed6b830fa109203ca9f5ff4c7cf',1,'io_driver']]],
+  ['class_5fdaily_5faw',['class_daily_aw',['../classio__driver.html#a5d999fe9fb1ae10b2519bc31d25736a6',1,'io_driver']]],
+  ['class_5fhh_5fw',['class_hh_w',['../classio__driver.html#a1f7f3de220ea0bc217c41549c11140a5',1,'io_driver']]],
   ['class_5fmonthly_5faw',['class_monthly_aw',['../classio__driver.html#a0fb9cfacedc6fd592e0bd1b79f76a02b',1,'io_driver']]],
   ['classa',['classa',['../CLASSA_8f.html#a4ba5845339f63dd223722f0e0593c72e',1,'CLASSA.f']]],
   ['classb',['classb',['../CLASSB_8f.html#abc81628397c097e3244bd460913ec098',1,'CLASSB.f']]],
@@ -23,7 +25,7 @@ var searchData=
   ['competition',['competition',['../classcompetition__scheme.html#a008cbfcefd33aaccb8f2b81cf8326451',1,'competition_scheme']]],
   ['ctem',['ctem',['../ctem_8f90.html#a7f8029ec9ff9872aafc8887387855b94',1,'ctem.f90']]],
   ['ctem_5fannual_5faw',['ctem_annual_aw',['../classio__driver.html#a3775c33b53cdfc295c8a29d6caaa2adb',1,'io_driver']]],
-  ['ctem_5fdaily_5faw',['ctem_daily_aw',['../classio__driver.html#a3337675058e5f3f1c423b7b6941b8cf1',1,'io_driver']]],
+  ['ctem_5fdaily_5faw',['ctem_daily_aw',['../classio__driver.html#a8078e455d2f7f991c19f1df3c90e2d1e',1,'io_driver']]],
   ['ctem_5fmonthly_5faw',['ctem_monthly_aw',['../classio__driver.html#a6b430163add59476ebfc5cebc4560c93',1,'io_driver']]],
   ['cwcalc',['cwcalc',['../CWCALC_8f.html#a1c51886dfe7782b7a65415cc66561efb',1,'CWCALC.f']]]
 ];

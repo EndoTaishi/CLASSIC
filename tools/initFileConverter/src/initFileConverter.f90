@@ -23,6 +23,7 @@ program initFileConverter
     integer                 :: ican = 4
     integer                 :: icc = 9
     real, parameter         :: fillValue = -999.
+    real                    :: grclarea = 100.     !<area of the grid cell, \f$km^2\f$, kind of meaningless at the point scale but needed for run if CTEM and fire on.
 
     ! All variable descriptions are listed in exportData
     real                    :: ZRFHROW
@@ -103,18 +104,17 @@ program initFileConverter
     real, allocatable, dimension(:):: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:):: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
     real, allocatable, dimension(:):: dmoss             !<depth of living moss (m)
-    real, allocatable, dimension(:) :: grclarea         !<area of the grid cell, \f$km^2\f$
 
     !----------
 
     ! Parse the arguments and determine if the input file is INI format or namelist
     call processArguments
 
+    ! Open the INI file, or the namelist file
+    open(unit = 10, file = INIFile, status = 'old', action = 'read')
+
     ! Read the file headers (INI or nml) so we can allocate arrays
     if (fileType == 'ini') then
-        ! Open the INI file, or the namelist file
-        open(unit = 10, file = INIFile, form = 'formatted', status = 'old', action = 'read')
-
         read(10,*) ! Throw out first three lines.
         read(10,*)
         read(10,*)
@@ -169,6 +169,7 @@ contains
             print*,'Expecting only one or two arguments: First in the INI or namelist file'
             print*,'the second file is the CTM file and only required if you want to run with'
             print*,'CTEM on. The possible suffixes of the input files are:.INI, .ini, .CTM, .ctm, .nml, .txt'
+            print*,'Output netcdf is given the same name as the INI/nml file with the suffix .nc'
         endif
 
         ! Parse the INIfile to help decide if it is a namelist or INI file
@@ -240,6 +241,7 @@ contains
         allocate(soilcmasrow(NMTEST,icc+1))
         allocate(lfstatusrow(NMTEST,icc))
         allocate(pandaysrow(NMTEST,icc))
+        allocate(fcancmxrow(nmtest,icc))
         allocate(mlightng(12))
 
     end subroutine setupArrays
@@ -396,7 +398,22 @@ contains
             ALBSROT,&
             RHOSROT,&
             GROROT,&
-            SOCIROT
+            SOCIROT, &
+            ailcminrow,&
+            ailcmaxrow,&
+            dvdfcanrow,&
+            gleafmasrow,&
+            bleafmasrow,&
+            stemmassrow,&
+            rootmassrow,&
+            litrmassrow,&
+            soilcmasrow,&
+            lfstatusrow,&
+            pandaysrow,&
+            mlightng,&
+            extnprob,&
+            prbfrhuc
+
 
         read(unit=10,nml = classicvars)
         !write(*,nml = classicvars)
@@ -418,6 +435,7 @@ contains
         integer :: iccp1(icc+1)
         integer :: months(12)
         integer :: slope(8)
+        integer :: indexend
 
         tile = (/(i, i=1,nmtest, 1)/)
         icp1 = (/(i, i=1,ican+1, 1)/)
@@ -428,15 +446,14 @@ contains
         months = (/(i, i=1,12, 1)/)
         slope = (/(i, i=1,8, 1)/)
 
-        filename = 'initFile.nc'
-
-        ! If the file doesn't already exist, then initialize the file
-        !if (.not.fileExists(trim(filename))) then
-            ! Create the values file
-            fileId = ncCreate(filename, NF90_CLOBBER)
-        !else
-        !    fileId = ncOpen(filename, NF90_WRITE)
-        !end if
+        ! Filename is going to be the INI file name with .nc as a suffix.
+        if (fileType == 'ini') then
+            indexend = max(index(INIFile,'INI'),index(INIFile,'ini'))
+        else
+            indexend = max(index(INIFile,'nml'),index(INIFile,'txt'))
+        end if
+        filename = INIfile(1:indexend-1)//'nc'
+        fileId = ncCreate(filename, NF90_CLOBBER)
 
         ! Add in the metadata for the file
 
@@ -550,7 +567,6 @@ contains
         count = (/1, 1 /)
         call exportVariable('MID',units='-',long_name='Mosaic tile type identifier (1 for land surface, 0 for inland lake)',intvalues=MIDROT)
         call exportVariable('GC',units='-',long_name='GCM surface descriptor - land surfaces (inc. inland water) is -1',intvalues=(/-1/))
-        call exportVariable('Mask',units='-',long_name='Land mask, -1 is land , 2 is lake, 0 is ocean',intvalues=(/-1/))
         call exportVariable('nmtest',units='-',long_name='Number of tiles in each grid cell',intvalues=tile)
         deallocate(dimArray,start,count)
 
@@ -560,165 +576,147 @@ contains
 
     subroutine exportData
 
-    ! icp1 variables:
-    allocate(dimArray(4),start(4),count(4))
-    dimArray = (/lonDimId,latDimId,icp1DimId,tileDimId/)
-    start = (/1, 1, 1 ,1/)
-    count = (/1, 1, ican+1, 1/)
-    call exportVariable('FCAN',units='-',long_name='Annual maximum fractional coverage of modelled area (read in for CLASS only runs)',values2D=FCANROT)
-    call exportVariable('LNZ0',units='-',long_name='Natural logarithm of maximum vegetation roughness length',values2D=LNZ0ROT)
-    call exportVariable('ALIC',units='-',long_name='Average near-IR albedo of vegetation category when fully-leafed',values2D=ALICROT)
-    call exportVariable('ALVC',units='-',long_name='Average visible albedo of vegetation category when fully-leafed',values2D=ALVCROT)
+        integer :: m
 
-
-    ! ic variables:
-    dimArray = (/lonDimId,latDimId,icDimId,tileDimId/)
-    count = (/1, 1, ican, 1/)
-    call exportVariable('PAMX',units='m2/m2',long_name='Annual maximum plant area index of vegetation category',values2D=PAMXROT)
-    call exportVariable('PAMN',units='m2/m2',long_name='Annual minimum plant area index of vegetation category',values2D=PAMNROT)
-    call exportVariable('CMAS',units='$[kg m^{-2} ]$',long_name='Annual maximum canopy mass for vegetation category',values2D=CMASROT)
-    call exportVariable('ROOT',units='m',long_name='Annual maximum rooting depth of vegetation category',values2D=ROOTROT)
-    call exportVariable('RSMN',units='s/m',long_name='Minimum stomatal resistance of vegetation category',values2D=RSMNROT)
-    call exportVariable('QA50',units='W/m2',long_name='Reference value of incoming shortwave radiation (used in stomatal resistance calculation)',values2D=QA50ROT)
-    call exportVariable('VPDA',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDAROT)
-    call exportVariable('VPDB',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDBROT)
-    call exportVariable('PSGA',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGAROT)
-    call exportVariable('PSGB',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGBROT)
-
-    ! ignd variables:
-    dimArray = (/lonDimId,latDimId,layerDimId,tileDimId/)
-    count = (/1, 1, ignd, 1/)
-    call exportVariable('SAND',units='%',long_name='Percentage sand content',values2D=SANDROT)
-    call exportVariable('CLAY',units='%',long_name='Percentage clay content',values2D=CLAYROT)
-    call exportVariable('ORGM',units='%',long_name='Percentage organic matter content',values2D=ORGMROT)
-    call exportVariable('TBAR',units='C',long_name='Temperature of soil layers',values2D=TBARROT)
-    call exportVariable('THIC',units='m3/m3',long_name='Volumetric frozen water content of soil layers',values2D=THICROT)
-    call exportVariable('THLQ',units='m3/m3',long_name='Volumetric liquid water content of soil layers',values2D=THLQROT)
-    call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values2D=DELZ)
-    call exportVariable('ZBOT',units='m',long_name='Depth of bottom of ground layer',values2D=ZBOT)
-
-    deallocate(dimArray,start,count)
-
-    ! nmtest only variables:
-    allocate(dimArray(3),start(3),count(3))
-    dimArray = (/lonDimId,latDimId,tileDimId/)
-    start = (/1, 1, 1 /)
-    count = (/1, 1, nmtest/)
-    call exportVariable('DRN',units='-',long_name='Soil drainage index',values=DRNROT)
-    call exportVariable('FARE',units='fraction',long_name='Tile fractional area of gridcell',values=FAREROT)
-    call exportVariable('SDEP',units='m',long_name='Soil permeable depth',values=SDEPROT)
-    call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
-    call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
-    call exportVariable('WFCI',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFCIROT)
-    call exportVariable('WFSF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFSFROT)
-    call exportVariable('SOCI',units='index',long_name='Soil colour index',intvalues=SOCIROT)
-    call exportVariable('TCAN',units='C',long_name='Vegetation canopy temperature',values=TCANROT)
-    call exportVariable('ALBS',units='-',long_name='Soil drainage index',values=ALBSROT)
-    call exportVariable('GRO',units='-',long_name='Vegetation growth index',values=GROROT)
-    call exportVariable('RCAN',units='-',long_name='Intercepted liquid water stored on canopy',values=RCANROT)
-    call exportVariable('RHOS',units='kg/m3',long_name='Density of snow',values=RHOSROT)
-    call exportVariable('SCAN',units='kg/m2',long_name='Intercepted frozen water stored on canopy',values=SCANROT)
-    call exportVariable('SNO',units='kg/m2',long_name='Mass of snow pack',values=SNOROT)
-    call exportVariable('TPND',units='C',long_name='Temperature of ponded water',values=TPNDROT)
-    call exportVariable('TSNO',units='C',long_name='Snowpack temperature',values=TSNOROT)
-    call exportVariable('ZPND',units='m',long_name='Depth of ponded water on surface',values=ZPNDROT)
-
-    deallocate(dimArray,start,count)
-
-    ! per grid variables
-    allocate(dimArray(2),start(2),count(2))
-    dimArray = (/lonDimId,latDimId/)
-    start = (/1, 1 /)
-    count = (/1, 1 /)
-    call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
-    call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
-    call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
-
-    deallocate(dimArray,start,count)
-
-    if (inclCTEM) then
-
-        ! icc variables
+        ! icp1 variables:
         allocate(dimArray(4),start(4),count(4))
-        dimArray = (/lonDimId,latDimId,icctemDimId,tileDimId/)
+        dimArray = (/lonDimId,latDimId,icp1DimId,tileDimId/)
         start = (/1, 1, 1 ,1/)
-        count = (/1, 1, icc, 1/)
-        call exportVariable('ailcmin',units='m2/m2',long_name='Min. LAI for use with CTEM1 option only. Obsolete',values2D=ailcminrow)
-        call exportVariable('ailcmax',units='m2/m2',long_name='Max. LAI for use with CTEM1 option only. Obsolete',values2D=ailcmaxrow)
-        call exportVariable('bleafmas',units='kgC/m2',long_name='Brown leaf mass',values2D=bleafmasrow)
-        call exportVariable('gleafmas',units='kgC/m2',long_name='Green leaf mass',values2D=gleafmasrow)
-        call exportVariable('stemmass',units='kgC/m2',long_name='Stem mass',values2D=stemmassrow)
-        call exportVariable('rootmass',units='kgC/m2',long_name='Root mass',values2D=rootmassrow)
-        call exportVariable('lfstatus',units='-',long_name='Leaf status, see Phenology',intvalues2D=lfstatusrow)
-        call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
+        count = (/1, 1, ican+1, 1/)
+        call exportVariable('FCAN',units='-',long_name='Annual maximum fractional coverage of modelled area (read in for CLASS only runs)',values2D=FCANROT)
+        call exportVariable('LNZ0',units='-',long_name='Natural logarithm of maximum vegetation roughness length',values2D=LNZ0ROT)
+        call exportVariable('ALIC',units='-',long_name='Average near-IR albedo of vegetation category when fully-leafed',values2D=ALICROT)
+        call exportVariable('ALVC',units='-',long_name='Average visible albedo of vegetation category when fully-leafed',values2D=ALVCROT)
 
-        !read(11,*) (dvdfcanrow(m,j),j=1,icc) !FLAG needed?
 
-        !     float fcancmx(tile, icc, lat, lon) ;
-!         fcancmx:_FillValue = -999.f ;
-!         fcancmx:units = "-" ;
-!         fcancmx:long_name = "PFT fractional coverage per grid cell" ;
-        !call exportVariable('FCAN',units='',long_name='',values2D=row)
+        ! ic variables:
+        dimArray = (/lonDimId,latDimId,icDimId,tileDimId/)
+        count = (/1, 1, ican, 1/)
+        call exportVariable('PAMX',units='m2/m2',long_name='Annual maximum plant area index of vegetation category',values2D=PAMXROT)
+        call exportVariable('PAMN',units='m2/m2',long_name='Annual minimum plant area index of vegetation category',values2D=PAMNROT)
+        call exportVariable('CMAS',units='$[kg m^{-2} ]$',long_name='Annual maximum canopy mass for vegetation category',values2D=CMASROT)
+        call exportVariable('ROOT',units='m',long_name='Annual maximum rooting depth of vegetation category',values2D=ROOTROT)
+        call exportVariable('RSMN',units='s/m',long_name='Minimum stomatal resistance of vegetation category',values2D=RSMNROT)
+        call exportVariable('QA50',units='W/m2',long_name='Reference value of incoming shortwave radiation (used in stomatal resistance calculation)',values2D=QA50ROT)
+        call exportVariable('VPDA',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDAROT)
+        call exportVariable('VPDB',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDBROT)
+        call exportVariable('PSGA',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGAROT)
+        call exportVariable('PSGB',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGBROT)
 
-        ! iccp1 variables
-        dimArray = (/lonDimId,latDimId,iccp1DimId,tileDimId/)
-        count = (/1, 1, icc+1, 1/)
-        call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values2D=litrmassrow)
-        call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values2D=soilcmasrow)
+        ! ignd variables:
+        dimArray = (/lonDimId,latDimId,layerDimId,tileDimId/)
+        count = (/1, 1, ignd, 1/)
+        call exportVariable('SAND',units='%',long_name='Percentage sand content',values2D=SANDROT)
+        call exportVariable('CLAY',units='%',long_name='Percentage clay content',values2D=CLAYROT)
+        call exportVariable('ORGM',units='%',long_name='Percentage organic matter content',values2D=ORGMROT)
+        call exportVariable('TBAR',units='C',long_name='Temperature of soil layers',values2D=TBARROT)
+        call exportVariable('THIC',units='m3/m3',long_name='Volumetric frozen water content of soil layers',values2D=THICROT)
+        call exportVariable('THLQ',units='m3/m3',long_name='Volumetric liquid water content of soil layers',values2D=THLQROT)
+        call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values2D=DELZ)
+        call exportVariable('ZBOT',units='m',long_name='Depth of bottom of ground layer',values2D=ZBOT)
 
         deallocate(dimArray,start,count)
 
-        ! per month vars
+        ! nmtest only variables:
         allocate(dimArray(3),start(3),count(3))
-        dimArray = (/lonDimId,latDimId,monthsDimId/)
+        dimArray = (/lonDimId,latDimId,tileDimId/)
         start = (/1, 1, 1 /)
-        count = (/1, 1, 12/)
-        call exportVariable('mlightng',units='flashes/km2.year',long_name='mean monthly lightning freq. (total flashes)',values=mlightng)
+        count = (/1, 1, nmtest/)
+        call exportVariable('DRN',units='-',long_name='Soil drainage index',values=DRNROT)
+        call exportVariable('FARE',units='fraction',long_name='Tile fractional area of gridcell',values=FAREROT)
+        call exportVariable('SDEP',units='m',long_name='Soil permeable depth',values=SDEPROT)
+        call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
+        call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
+        call exportVariable('WFCI',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFCIROT)
+        call exportVariable('WFSF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFSFROT)
+        call exportVariable('SOCI',units='index',long_name='Soil colour index',intvalues=SOCIROT)
+        call exportVariable('TCAN',units='C',long_name='Vegetation canopy temperature',values=TCANROT)
+        call exportVariable('ALBS',units='-',long_name='Soil drainage index',values=ALBSROT)
+        call exportVariable('GRO',units='-',long_name='Vegetation growth index',values=GROROT)
+        call exportVariable('RCAN',units='-',long_name='Intercepted liquid water stored on canopy',values=RCANROT)
+        call exportVariable('RHOS',units='kg/m3',long_name='Density of snow',values=RHOSROT)
+        call exportVariable('SCAN',units='kg/m2',long_name='Intercepted frozen water stored on canopy',values=SCANROT)
+        call exportVariable('SNO',units='kg/m2',long_name='Mass of snow pack',values=SNOROT)
+        call exportVariable('TPND',units='C',long_name='Temperature of ponded water',values=TPNDROT)
+        call exportVariable('TSNO',units='C',long_name='Snowpack temperature',values=TSNOROT)
+        call exportVariable('ZPND',units='m',long_name='Depth of ponded water on surface',values=ZPNDROT)
 
         deallocate(dimArray,start,count)
 
-           ! read(11,*) extnprob
-           ! read(11,*) prbfrhuc
-!     float extnprob(lat, lon) ;
-!         extnprob:_FillValue = -999.f ;
-!         extnprob:units = "-" ;
-!         extnprob:long_name = "Fire extinguishing probability (overwritten if POPD true)" ;
-!     float prbfrhuc(lat, lon) ;
-!         prbfrhuc:_FillValue = -999.f ;
-!         prbfrhuc:units = "-" ;
-!         prbfrhuc:long_name = "Probability of fire due to human causes (overwritten if POPD true)" ;
+        ! per grid variables
+        allocate(dimArray(2),start(2),count(2))
+        dimArray = (/lonDimId,latDimId/)
+        start = (/1, 1 /)
+        count = (/1, 1 /)
+        call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
+        call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
+        call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
+        call exportVariable('grclarea',units='km2',long_name='Area of grid cell',values=(/grclarea/))
 
-!     float grclarea(lat, lon) ;
-!         grclarea:_FillValue = -999.f ;
-!         grclarea:units = "km2" ;
-!         grclarea:long_name = "Area of grid cell" ;
+        deallocate(dimArray,start,count)
 
-!     float ipeatland(tile, lat, lon) ;
-!         ipeatland:_FillValue = -999.f ;
-!         ipeatland:units = "-" ;
-!         ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
-!     float dmoss(tile, lat, lon) ;
-!         dmoss:_FillValue = -999.f ;
-!         dmoss:units = "m" ;
-!         dmoss:long_name = "Depth of living moss" ;
-!     float litrmsmoss(tile, lat, lon) ;
-!         litrmsmoss:_FillValue = -999.f ;
-!         litrmsmoss:units = "kgC/m2" ;
-!         litrmsmoss:long_name = "Moss litter mass" ;
-!     float rice(months, lat, lon) ;
-!         rice:_FillValue = -999.f ;
-!         rice:units = "-" ;
-!         rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
-!     float slopefrac(slope, tile, lat, lon) ;
-!         slopefrac:_FillValue = -999.f ;
-!         slopefrac:units = "-" ;
-!         slopefrac:long_name = "Slope-based fraction for dynamic wetlands" ;
-!     float Cmossmas(tile, lat, lon) ;
-!         Cmossmas:_FillValue = -999.f ;
-!         Cmossmas:units = "kgC/m2" ;
-!         Cmossmas:long_name = "C in moss biomass" ;
+        if (inclCTEM) then
 
-        end if
+            ! icc variables
+            allocate(dimArray(4),start(4),count(4))
+            dimArray = (/lonDimId,latDimId,icctemDimId,tileDimId/)
+            start = (/1, 1, 1 ,1/)
+            count = (/1, 1, icc, 1/)
+            call exportVariable('ailcmin',units='m2/m2',long_name='Min. LAI for use with CTEM1 option only. Obsolete',values2D=ailcminrow)
+            call exportVariable('ailcmax',units='m2/m2',long_name='Max. LAI for use with CTEM1 option only. Obsolete',values2D=ailcmaxrow)
+            call exportVariable('bleafmas',units='kgC/m2',long_name='Brown leaf mass',values2D=bleafmasrow)
+            call exportVariable('gleafmas',units='kgC/m2',long_name='Green leaf mass',values2D=gleafmasrow)
+            call exportVariable('stemmass',units='kgC/m2',long_name='Stem mass',values2D=stemmassrow)
+            call exportVariable('rootmass',units='kgC/m2',long_name='Root mass',values2D=rootmassrow)
+            call exportVariable('lfstatus',units='-',long_name='Leaf status, see Phenology',intvalues2D=lfstatusrow)
+            call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
+
+            if (fileType == 'ini') then
+                if (icc .ne. 9 .and. ican .ne. 4) print*,'Warning - expected ICC =9 and ICAN = 4'
+                do m = 1,nmtest
+                    fcancmxrow(m,1) = FCANROT(m,1) * dvdfcanrow(m,1)
+                    fcancmxrow(m,2) = FCANROT(m,1) * dvdfcanrow(m,2)
+                    fcancmxrow(m,3) = FCANROT(m,2) * dvdfcanrow(m,3)
+                    fcancmxrow(m,4) = FCANROT(m,2) * dvdfcanrow(m,4)
+                    fcancmxrow(m,5) = FCANROT(m,2) * dvdfcanrow(m,5)
+                    fcancmxrow(m,6) = FCANROT(m,3) * dvdfcanrow(m,6)
+                    fcancmxrow(m,7) = FCANROT(m,3) * dvdfcanrow(m,7)
+                    fcancmxrow(m,8) = FCANROT(m,4) * dvdfcanrow(m,8)
+                    fcancmxrow(m,9) = FCANROT(m,4) * dvdfcanrow(m,9)
+                end do
+            !else - namelist reads in the fcancmx directly without this conversion
+            end if
+            call exportVariable('fcancmx',units='-',long_name='PFT fractional coverage per grid cell',values2D=fcancmxrow)
+
+            ! iccp1 variables
+            dimArray = (/lonDimId,latDimId,iccp1DimId,tileDimId/)
+            count = (/1, 1, icc+1, 1/)
+            call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values2D=litrmassrow)
+            call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values2D=soilcmasrow)
+
+            deallocate(dimArray,start,count)
+
+            ! per month vars
+            allocate(dimArray(3),start(3),count(3))
+            dimArray = (/lonDimId,latDimId,monthsDimId/)
+            start = (/1, 1, 1 /)
+            count = (/1, 1, 12/)
+            call exportVariable('mlightng',units='flashes/km2.year',long_name='mean monthly lightning freq. (total flashes)',values=mlightng)
+
+            deallocate(dimArray,start,count)
+
+            ! read(11,*) extnprob
+            ! read(11,*) prbfrhuc
+    !     float extnprob(lat, lon) ;
+    !         extnprob:_FillValue = -999.f ;
+    !         extnprob:units = "-" ;
+    !         extnprob:long_name = "Fire extinguishing probability (overwritten if POPD true)" ;
+    !     float prbfrhuc(lat, lon) ;
+    !         prbfrhuc:_FillValue = -999.f ;
+    !         prbfrhuc:units = "-" ;
+    !         prbfrhuc:long_name = "Probability of fire due to human causes (overwritten if POPD true)" ;
+
+            end if
 
     end subroutine exportData
 
