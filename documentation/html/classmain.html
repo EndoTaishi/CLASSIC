@@ -117,6 +117,9 @@ $(document).ready(function(){initNavTree('classmain.html','');});
 Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a29ddac21d7ed22408aa3cdcb2e617fa5"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmain.html#a29ddac21d7ed22408aa3cdcb2e617fa5">main_driver</a> (longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)</td></tr>
+<tr class="memdesc:a29ddac21d7ed22408aa3cdcb2e617fa5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><hr/>
+ <h2>Dimension statements.</h2>
+ <a href="#a29ddac21d7ed22408aa3cdcb2e617fa5">More...</a><br /></td></tr>
 <tr class="separator:a29ddac21d7ed22408aa3cdcb2e617fa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -170,71 +173,15 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">longitude</td><td><hr/>
+
+<p><hr/>
  <h2>Dimension statements.</h2>
-</td></tr>
-  </table>
-  </dd>
-</dl>
-<pre class="fragment">### First set of definitions:
-Background variables, and prognostic and diagnostic
-variables normally provided by and/or used by the GCM.
-The suffix "rot" refers to variables existing on the
-mosaic grid on the current latitude circle.  The suffix
-"gat" refers to the same variables after they have undergone
-a "gather" operation in which the two mosaic dimensions
-are collapsed into one.  The suffix "row" refers both to
-grid-constant input variables. and to grid-averaged
-diagnostic variables.
-
-The first dimension element of the "rot" variables
-refers to the number of grid cells on the current
-latitude circle.  In this stand-alone version, this
-number is set to 1, the second dimension
-element of the "rot" variables refers to the maximum
-number of tiles in the mosaic.  The first
-dimension element in the "gat" variables is given by
-the product of the first two dimension elements in the
-"rot" variables.
-
-The majority of CTEM parameters are stored in ctem_params.f90.
-Also the CLASS and CTEM variables are stored in modules that we point to
-in this driver. We access the variables and parameters
-through use statements for modules: </pre> <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">latitude</td><td><hr/>
- <h2>Dimension statements.</h2>
-</td></tr>
-  </table>
-  </dd>
-</dl>
-<pre class="fragment">### First set of definitions:
-Background variables, and prognostic and diagnostic
-variables normally provided by and/or used by the GCM.
-The suffix "rot" refers to variables existing on the
-mosaic grid on the current latitude circle.  The suffix
-"gat" refers to the same variables after they have undergone
-a "gather" operation in which the two mosaic dimensions
-are collapsed into one.  The suffix "row" refers both to
-grid-constant input variables. and to grid-averaged
-diagnostic variables.
-
-The first dimension element of the "rot" variables
-refers to the number of grid cells on the current
-latitude circle.  In this stand-alone version, this
-number is set to 1, the second dimension
-element of the "rot" variables refers to the maximum
-number of tiles in the mosaic.  The first
-dimension element in the "gat" variables is given by
-the product of the first two dimension elements in the
-"rot" variables.
-
-The majority of CTEM parameters are stored in ctem_params.f90.
-Also the CLASS and CTEM variables are stored in modules that we point to
-in this driver. We access the variables and parameters
-through use statements for modules: </pre> <p>NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run. This the driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then of nlat and nmos</p>
+</p>
+<h3>First set of definitions:</h3>
+<p>Background variables, and prognostic and diagnostic variables normally provided by and/or used by the GCM. The suffix "rot" refers to variables existing on the mosaic grid on the current latitude circle. The suffix "gat" refers to the same variables after they have undergone a "gather" operation in which the two mosaic dimensions are collapsed into one. The suffix "row" refers both to grid-constant input variables. and to grid-averaged diagnostic variables.</p>
+<p>The first dimension element of the "rot" variables refers to the number of grid cells on the current latitude circle. In this stand-alone version, this number is set to 1, the second dimension element of the "rot" variables refers to the maximum number of tiles in the mosaic. The first dimension element in the "gat" variables is given by the product of the first two dimension elements in the "rot" variables.</p>
+<p>The majority of CTEM parameters are stored in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>. Also the CLASS and CTEM variables are stored in modules that we point to in this driver. We access the variables and parameters through use statements for modules: </p>
+<p>NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run. This the driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then of nlat and nmos</p>
 <p>The parameter JLAT is calculated from DLATROW as the nearest integer value,</p>
 <p>The timestep counter N for the run is initialized to 0, the daily averaging counter NCOUNT is set to 1, and the total number of timesteps in the day NDAY is calculated as the number of seconds in a day (86400) divided by the timestep length DELT.</p>
 <p>The grid-average height for the momentum diagnostic variables, ZDMROW, and for the energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer height of 10 m and to the screen height of 2 m respectively.</p>
@@ -271,7 +218,7 @@ through use statements for modules: </pre> <p>NLTEST and NMTEST, the number of g
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classmain.html">main</a></li>
-    <li class="footer">Generated on Wed Dec 6 2017 17:10:35 for CLASSIC by
+    <li class="footer">Generated on Mon Dec 11 2017 15:31:01 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -23,7 +23,7 @@ program initFileConverter
     integer                 :: ican = 4
     integer                 :: icc = 9
     real, parameter         :: fillValue = -999.
-    real                    :: grclarea = 100. !?
+    real                    :: grclarea = 100.     !<area of the grid cell, \f$km^2\f$, kind of meaningless at the point scale but needed for run if CTEM and fire on.
 
     ! All variable descriptions are listed in exportData
     real                    :: ZRFHROW
@@ -104,18 +104,17 @@ program initFileConverter
     real, allocatable, dimension(:):: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:):: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
     real, allocatable, dimension(:):: dmoss             !<depth of living moss (m)
-    real, allocatable, dimension(:) :: grclarea         !<area of the grid cell, \f$km^2\f$
 
     !----------
 
     ! Parse the arguments and determine if the input file is INI format or namelist
     call processArguments
 
+    ! Open the INI file, or the namelist file
+    open(unit = 10, file = INIFile, status = 'old', action = 'read')
+
     ! Read the file headers (INI or nml) so we can allocate arrays
     if (fileType == 'ini') then
-        ! Open the INI file, or the namelist file
-        open(unit = 10, file = INIFile, form = 'formatted', status = 'old', action = 'read')
-
         read(10,*) ! Throw out first three lines.
         read(10,*)
         read(10,*)
@@ -399,7 +398,22 @@ contains
             ALBSROT,&
             RHOSROT,&
             GROROT,&
-            SOCIROT
+            SOCIROT, &
+            ailcminrow,&
+            ailcmaxrow,&
+            dvdfcanrow,&
+            gleafmasrow,&
+            bleafmasrow,&
+            stemmassrow,&
+            rootmassrow,&
+            litrmassrow,&
+            soilcmasrow,&
+            lfstatusrow,&
+            pandaysrow,&
+            mlightng,&
+            extnprob,&
+            prbfrhuc
+
 
         read(unit=10,nml = classicvars)
         !write(*,nml = classicvars)
@@ -439,14 +453,7 @@ contains
             indexend = max(index(INIFile,'nml'),index(INIFile,'txt'))
         end if
         filename = INIfile(1:indexend-1)//'nc'
-
-        ! If the file doesn't already exist, then initialize the file
-        !if (.not.fileExists(trim(filename))) then
-            ! Create the values file
-            fileId = ncCreate(filename, NF90_CLOBBER)
-        !else
-        !    fileId = ncOpen(filename, NF90_WRITE)
-        !end if
+        fileId = ncCreate(filename, NF90_CLOBBER)
 
         ! Add in the metadata for the file
 
@@ -644,6 +651,7 @@ contains
         call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
         call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
         call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
+        call exportVariable('grclarea',units='km2',long_name='Area of grid cell',values=(/grclarea/))
 
         deallocate(dimArray,start,count)
 
@@ -664,7 +672,7 @@ contains
             call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
 
             if (fileType == 'ini') then
-                if (icc .ne. 9 and ican .ne. 4) print*,'Warning - expected ICC =9 and ICAN = 4'
+                if (icc .ne. 9 .and. ican .ne. 4) print*,'Warning - expected ICC =9 and ICAN = 4'
                 do m = 1,nmtest
                     fcancmxrow(m,1) = FCANROT(m,1) * dvdfcanrow(m,1)
                     fcancmxrow(m,2) = FCANROT(m,1) * dvdfcanrow(m,2)
@@ -678,7 +686,7 @@ contains
                 end do
             !else - namelist reads in the fcancmx directly without this conversion
             end if
-            call exportVariable('fcancmx',units='-',long_name='PFT fractional coverage per grid cell',intvalues2D=fcancmxrow)
+            call exportVariable('fcancmx',units='-',long_name='PFT fractional coverage per grid cell',values2D=fcancmxrow)
 
             ! iccp1 variables
             dimArray = (/lonDimId,latDimId,iccp1DimId,tileDimId/)
@@ -707,36 +715,6 @@ contains
     !         prbfrhuc:_FillValue = -999.f ;
     !         prbfrhuc:units = "-" ;
     !         prbfrhuc:long_name = "Probability of fire due to human causes (overwritten if POPD true)" ;
-
-    !     float grclarea(lat, lon) ;
-    !         grclarea:_FillValue = -999.f ;
-    !         grclarea:units = "km2" ;
-    !         grclarea:long_name = "Area of grid cell" ;
-
-    !     float ipeatland(tile, lat, lon) ;
-    !         ipeatland:_FillValue = -999.f ;
-    !         ipeatland:units = "-" ;
-    !         ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
-    !     float dmoss(tile, lat, lon) ;
-    !         dmoss:_FillValue = -999.f ;
-    !         dmoss:units = "m" ;
-    !         dmoss:long_name = "Depth of living moss" ;
-    !     float litrmsmoss(tile, lat, lon) ;
-    !         litrmsmoss:_FillValue = -999.f ;
-    !         litrmsmoss:units = "kgC/m2" ;
-    !         litrmsmoss:long_name = "Moss litter mass" ;
-    !     float rice(months, lat, lon) ;
-    !         rice:_FillValue = -999.f ;
-    !         rice:units = "-" ;
-    !         rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
-    !     float slopefrac(slope, tile, lat, lon) ;
-    !         slopefrac:_FillValue = -999.f ;
-    !         slopefrac:units = "-" ;
-    !         slopefrac:long_name = "Slope-based fraction for dynamic wetlands" ;
-    !     float Cmossmas(tile, lat, lon) ;
-    !         Cmossmas:_FillValue = -999.f ;
-    !         Cmossmas:units = "kgC/m2" ;
-    !         Cmossmas:long_name = "C in moss biomass" ;
 
             end if
 

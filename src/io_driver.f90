@@ -1997,44 +1997,7 @@ contains
         real, pointer, dimension(:,:) :: humiftrsrow
         real, pointer, dimension(:,:) :: tcanoaccrow_out
 
-    !     real, pointer, dimension(:,:) :: leaflitr_t
-    !     real, pointer, dimension(:,:) :: tltrleaf_t
-    !     real, pointer, dimension(:,:) :: tltrstem_t
-    !     real, pointer, dimension(:,:) :: tltrroot_t
-    !     real, pointer, dimension(:,:) :: ailcg_t
-    !     real, pointer, dimension(:,:) :: ailcb_t
-    !     real, pointer, dimension(:,:,:) :: rmatctem_t
-    !     real, pointer, dimension(:,:) :: veghght_t
-    !     real, pointer, dimension(:,:) :: rootdpth_t
-    !     real, pointer, dimension(:,:) :: roottemp_t
-    !     real, pointer, dimension(:,:) :: slai_t
-    !     real, pointer, dimension(:,:) :: afrroot_t
-    !     real, pointer, dimension(:,:) :: afrleaf_t
-    !     real, pointer, dimension(:,:) :: afrstem_t
-    !     real, pointer, dimension(:,:) :: laimaxg_t
-    !     real, pointer, dimension(:,:) :: stemmass_t
-    !     real, pointer, dimension(:,:) :: rootmass_t
-    !     real, pointer, dimension(:,:) :: litrmass_t
-    !     real, pointer, dimension(:,:) :: gleafmas_t
-    !     real, pointer, dimension(:,:) :: bleafmas_t
-    !     real, pointer, dimension(:,:) :: soilcmas_t
-    !     real, pointer, dimension(:,:) :: emit_co2_t
-    !     real, pointer, dimension(:,:) :: emit_co_t
-    !     real, pointer, dimension(:,:) :: emit_ch4_t
-    !     real, pointer, dimension(:,:) :: emit_nmhc_t
-    !     real, pointer, dimension(:,:) :: emit_h2_t
-    !     real, pointer, dimension(:,:) :: emit_nox_t
-    !     real, pointer, dimension(:,:) :: emit_n2o_t
-    !     real, pointer, dimension(:,:) :: emit_pm25_t
-    !     real, pointer, dimension(:,:) :: emit_tpm_t
-    !     real, pointer, dimension(:,:) :: emit_tc_t
-    !     real, pointer, dimension(:,:) :: emit_oc_t
-    !     real, pointer, dimension(:,:) :: emit_bc_t
-    !     real, pointer, dimension(:,:) :: bterm_t
-    !     real, pointer, dimension(:,:) :: mterm_t
-    !     real, pointer, dimension(:,:) :: smfuncveg_t
-
-
+        ! local vars
         real, allocatable, dimension(:) :: gpp_g      !<
         real, allocatable, dimension(:) :: npp_g      !<
         real, allocatable, dimension(:) :: nbp_g      !<
@@ -2117,83 +2080,6 @@ contains
         real, allocatable, dimension(:,:) :: emit_co2_t !<
         real, allocatable, dimension(:,:) :: smfuncveg_t!<
 
-    !     real, pointer, dimension(:) :: gpp_g
-    !     real, pointer, dimension(:) :: npp_g
-    !     real, pointer, dimension(:) :: nbp_g
-    !     real, pointer, dimension(:) :: autores_g
-    !     real, pointer, dimension(:) :: socres_g
-    !     real, pointer, dimension(:) :: litres_g
-    !     real, pointer, dimension(:) :: dstcemls3_g
-    !     real, pointer, dimension(:) :: litrfall_g
-    !     real, pointer, dimension(:) :: rml_g
-    !     real, pointer, dimension(:) :: rms_g
-    !     real, pointer, dimension(:) :: rg_g
-    !     real, pointer, dimension(:) :: leaflitr_g
-    !     real, pointer, dimension(:) :: tltrstem_g
-    !     real, pointer, dimension(:) :: tltrroot_g
-    !     real, pointer, dimension(:) :: nep_g
-    !     real, pointer, dimension(:) :: hetrores_g
-    !     real, pointer, dimension(:) :: dstcemls_g
-    !     real, pointer, dimension(:) :: humiftrs_g
-    !     real, pointer, dimension(:) :: rmr_g
-    !     real, pointer, dimension(:) :: tltrleaf_g
-    !     real, pointer, dimension(:) :: gavgltms_g
-    !     real, pointer, dimension(:) :: vgbiomas_g
-    !     real, pointer, dimension(:) :: gavglai_g
-    !     real, pointer, dimension(:) :: gavgscms_g
-    !     real, pointer, dimension(:) :: gleafmas_g
-    !     real, pointer, dimension(:) :: bleafmas_g
-    !     real, pointer, dimension(:) :: stemmass_g
-    !     real, pointer, dimension(:) :: rootmass_g
-    !     real, pointer, dimension(:) :: litrmass_g
-    !     real, pointer, dimension(:) :: soilcmas_g
-    !     real, pointer, dimension(:) :: slai_g
-    !     real, pointer, dimension(:) :: ailcg_g
-    !     real, pointer, dimension(:) :: ailcb_g
-    !     real, pointer, dimension(:) :: veghght_g
-    !     real, pointer, dimension(:) :: rootdpth_g
-    !     real, pointer, dimension(:) :: roottemp_g
-    !     real, pointer, dimension(:) :: totcmass_g
-    !     real, pointer, dimension(:) :: tcanoacc_out_g
-    !     real, pointer, dimension(:) :: burnfrac_g
-    !     real, pointer, dimension(:) :: smfuncveg_g
-    !     real, pointer, dimension(:) :: lucemcom_g
-    !     real, pointer, dimension(:) :: lucltrin_g
-    !     real, pointer, dimension(:) :: lucsocin_g
-    !     real, pointer, dimension(:) :: emit_co2_g
-    !     real, pointer, dimension(:) :: emit_co_g
-    !     real, pointer, dimension(:) :: emit_ch4_g
-    !     real, pointer, dimension(:) :: emit_nmhc_g
-    !     real, pointer, dimension(:) :: emit_h2_g
-    !     real, pointer, dimension(:) :: emit_nox_g
-    !     real, pointer, dimension(:) :: emit_n2o_g
-    !     real, pointer, dimension(:) :: emit_pm25_g
-    !     real, pointer, dimension(:) :: emit_tpm_g
-    !     real, pointer, dimension(:) :: emit_tc_g
-    !     real, pointer, dimension(:) :: emit_oc_g
-    !     real, pointer, dimension(:) :: emit_bc_g
-    !     real, pointer, dimension(:) :: bterm_g
-    !     real, pointer, dimension(:) :: lterm_g
-    !     real, pointer, dimension(:) :: mterm_g
-    !     real, pointer, dimension(:) :: ch4wet1_g
-    !     real, pointer, dimension(:) :: ch4wet2_g
-    !     real, pointer, dimension(:) :: wetfdyn_g
-    !     real, pointer, dimension(:) :: ch4dyn1_g
-    !     real, pointer, dimension(:) :: ch4dyn2_g
-    !     real, pointer, dimension(:) :: ch4soills_g
-    !     real, pointer, dimension(:,:) :: afrleaf_g
-    !     real, pointer, dimension(:,:) :: afrstem_g
-    !     real, pointer, dimension(:,:) :: afrroot_g
-    !     real, pointer, dimension(:,:) :: lfstatus_g
-    !     real, pointer, dimension(:,:) :: rmlvegrow_g
-    !     real, pointer, dimension(:,:) :: anvegrow_g
-    !     real, pointer, dimension(:,:) :: rmatctem_g
-
-        !real, pointer, dimension(:) :: gppmosac_g
-
-
-
-        ! local
         integer :: i,m,j,nt,k
         real :: barefrac
         real :: sumfare
@@ -2259,8 +2145,6 @@ contains
         dstcemls3row      => vrot%dstcemls3
         lfstatusrow       => vrot%lfstatus
 
-        !gppmosac_g        => gppmosac_g
-
         tcanoaccrow_out   => vrot%tcanoaccrow_out
         npprow            => vrot%npp
         neprow            => vrot%nep
@@ -2307,115 +2191,6 @@ contains
         litrfallrow       => vrot%litrfall
         humiftrsrow       => vrot%humiftrs
 
-    !     leaflitr_t        => leaflitr_t
-    !     tltrleaf_t        => tltrleaf_t
-    !     tltrstem_t        => tltrstem_t
-    !     tltrroot_t        => tltrroot_t
-    !     ailcg_t           => ailcg_t
-    !     ailcb_t           => ailcb_t
-    !     rmatctem_t        => rmatctem_t
-    !     veghght_t         => veghght_t
-    !     rootdpth_t        => rootdpth_t
-    !     roottemp_t        => roottemp_t
-    !     slai_t            => slai_t
-    !     afrroot_t         => afrroot_t
-    !     afrleaf_t         => afrleaf_t
-    !     afrstem_t         => afrstem_t
-    !     laimaxg_t         => laimaxg_t
-    !     stemmass_t        => stemmass_t
-    !     rootmass_t        => rootmass_t
-    !     litrmass_t        => litrmass_t
-    !     gleafmas_t        => gleafmas_t
-    !     bleafmas_t        => bleafmas_t
-    !     soilcmas_t        => soilcmas_t
-    !     emit_co2_t        => emit_co2_t
-    !     emit_co_t         => emit_co_t
-    !     emit_ch4_t        => emit_ch4_t
-    !     emit_nmhc_t       => emit_nmhc_t
-    !     emit_h2_t         => emit_h2_t
-    !     emit_nox_t        => emit_nox_t
-    !     emit_n2o_t        => emit_n2o_t
-    !     emit_pm25_t       => emit_pm25_t
-    !     emit_tpm_t        => emit_tpm_t
-    !     emit_tc_t         => emit_tc_t
-    !     emit_oc_t         => emit_oc_t
-    !     emit_bc_t         => emit_bc_t
-    !     bterm_t           => bterm_t
-    !     mterm_t           => mterm_t
-    !     smfuncveg_t       => smfuncveg_t
-
-    !     gpp_g             => gpp_g
-    !     npp_g             => npp_g
-    !     nbp_g             => nbp_g
-    !     autores_g         => autores_g
-    !     socres_g          => socres_g
-    !     litres_g          => litres_g
-    !     dstcemls3_g       => dstcemls3_g
-    !     litrfall_g        => litrfall_g
-    !     rml_g             => rml_g
-    !     rms_g             => rms_g
-    !     rg_g              => rg_g
-    !     leaflitr_g        => leaflitr_g
-    !     tltrstem_g        => tltrstem_g
-    !     tltrroot_g        => tltrroot_g
-    !     nep_g             => nep_g
-    !     hetrores_g        => hetrores_g
-    !     dstcemls_g        => dstcemls_g
-    !     humiftrs_g        => humiftrs_g
-    !     rmr_g             => rmr_g
-    !     tltrleaf_g        => tltrleaf_g
-    !     gavgltms_g        => gavgltms_g
-    !     vgbiomas_g        => vgbiomas_g
-    !     gavglai_g         => gavglai_g
-    !     gavgscms_g        => gavgscms_g
-    !     gleafmas_g        => gleafmas_g
-    !     bleafmas_g        => bleafmas_g
-    !     stemmass_g        => stemmass_g
-    !     rootmass_g        => rootmass_g
-    !     litrmass_g        => litrmass_g
-    !     soilcmas_g        => soilcmas_g
-    !     slai_g            => slai_g
-    !     ailcg_g           => ailcg_g
-    !     ailcb_g           => ailcb_g
-    !     veghght_g         => veghght_g
-    !     rootdpth_g        => rootdpth_g
-    !     roottemp_g        => roottemp_g
-    !     totcmass_g        => totcmass_g
-    !     tcanoacc_out_g    => tcanoacc_out_g
-    !     burnfrac_g        => burnfrac_g
-    !     smfuncveg_g       => smfuncveg_g
-    !     lucemcom_g        => lucemcom_g
-    !     lucltrin_g        => lucltrin_g
-    !     lucsocin_g        => lucsocin_g
-    !     emit_co2_g        => emit_co2_g
-    !     emit_co_g         => emit_co_g
-    !     emit_ch4_g        => emit_ch4_g
-    !     emit_nmhc_g       => emit_nmhc_g
-    !     emit_h2_g         => emit_h2_g
-    !     emit_nox_g        => emit_nox_g
-    !     emit_n2o_g        => emit_n2o_g
-    !     emit_pm25_g       => emit_pm25_g
-    !     emit_tpm_g        => emit_tpm_g
-    !     emit_tc_g         => emit_tc_g
-    !     emit_oc_g         => emit_oc_g
-    !     emit_bc_g         => emit_bc_g
-    !     bterm_g           => bterm_g
-    !     lterm_g           => lterm_g
-    !     mterm_g           => mterm_g
-    !     ch4wet1_g         => ch4wet1_g
-    !     ch4wet2_g         => ch4wet2_g
-    !     wetfdyn_g         => wetfdyn_g
-    !     ch4dyn1_g         => ch4dyn1_g
-    !     ch4dyn2_g         => ch4dyn2_g
-    !     ch4soills_g       => ch4_soills_g
-    !     afrleaf_g         => afrleaf_g
-    !     afrstem_g         => afrstem_g
-    !     afrroot_g         => afrroot_g
-    !     lfstatus_g        => lfstatus_g
-    !     rmlvegrow_g       => rmlvegrow_g
-    !     anvegrow_g        => anvegrow_g
-    !     rmatctem_g        => rmatctem_g
-
         ! Allocate the grid average and tile average structures
         allocate(gpp_g (nltest),npp_g (nltest),nbp_g (nltest),socres_g (nltest),&
                 autores_g (nltest),litres_g (nltest),dstcemls3_g (nltest),litrfall_g (nltest),&
@@ -2440,7 +2215,7 @@ contains
                 soilcmas_t (nltest,nmtest),emit_co2_t (nltest,nmtest),smfuncveg_t (nltest,nmtest) )
 
 
-        ! First set the grid average to 0.
+        ! First set the local variables to 0.
         do i=1,nltest
             gpp_g(i) =0.0 ; npp_g(i) =0.0 ; nep_g(i) =0.0 ; nbp_g(i) =0.0 ; autores_g(i) =0.0
             hetrores_g(i)=0.0 ; litres_g(i) =0.0 ; socres_g(i) =0.0 ; dstcemls_g(i)=0.0
@@ -2476,9 +2251,6 @@ contains
                 enddo
             end do
         end do
-
-        !>Reset the grid and tile average variables.
-        !call resetdaily(nltest,nmtest)
 
         !>First some unit conversions:
 
@@ -2911,21 +2683,7 @@ contains
     !         end if !if write daily
     !     endif !if write daily
 
-    ! 8200 format(1x,i4,i5,11f10.5,2(a6,i2),a8,f5.3)
-    ! 8201 format(1x,i4,i5,3f10.5,80x,2(a6,i2),a8,f5.3)
-    ! 8300 format(1x,i4,i5,8f10.5,2(a6,i2),a8,f5.3)
-    ! 8301 format(1x,i4,i5,4f10.5,40x,2(a6,i2),a8,f5.3)
-    !     !8400       format(1x,i4,i5,11f10.5,2(a6,i2),a6,f5.3)
-    ! 8401 format(1x,i4,i5,2f10.5,6f10.5,2(a6,i2),a8,f5.3)
-    !     !8402       format(1x,i4,i5,10f10.5,2(a6,i2),a6,f5.3)
-    !     ! 8402       format(1x,i4,i5,2f10.5,40x,2f10.5,2(a6,i2))
-    ! 8500 format(1x,i4,i5,9f10.5,2(a6,i2),a8,f5.3)
-    ! 8600 format(1x,i4,i5,4f10.5,i8,2(a6,i2),a8,f5.3)
-    ! 8601 format(1x,i4,i5,4f10.5,8x,2(a6,i2),a8,f5.3)
-    ! 8800 format(1x,i4,i5,20f11.4,2x,f9.2,2(a6,i2),a8,f5.3)
-    ! 8810 format(1x,i4,i5,6f11.4,2(a6,i2),a8,f5.3)
-
-        ! Allocate the grid average and tile average structures
+        ! Deallocate the grid average and tile average structures
         deallocate(gpp_g ,npp_g ,nbp_g ,socres_g ,autores_g ,litres_g ,dstcemls3_g ,litrfall_g ,&
                 rml_g ,rms_g ,rg_g ,leaflitr_g ,tltrstem_g ,tltrroot_g ,nep_g ,hetrores_g ,dstcemls_g ,&
                 humiftrs_g ,rmr_g ,tltrleaf_g ,gavgltms_g ,vgbiomas_g ,gavglai_g ,gavgscms_g ,gleafmas_g ,&

@@ -1,8 +1,85 @@
-&HEADER
- LAT=  12.560000000000000     ,
- LON=  19.690000000000001     ,
- NMTEST=          1,
- IGND=          3,
- ICAN=          4,
- ICC=          9,
+&header
+ LAT=  12.560     ,     ! Latitude of the grid cell in degrees
+ LON=  19.691     ,     ! Longitude of the grid cell in degrees
+ NMTEST=          1,    ! Number of tiles
+ IGND=          3,      ! Number of soil layers
+ ICAN=          4,      ! Number of physics (CLASS) PFTs
+ ICC=          9,       ! Number of biogeochemical (CTEM) PFTs
+ /
+
+&CLASSICVARS
+ ZRFHROW=  40.0     ,
+ ZRFMROW=  40.000     ,
+ ZBLDROW=  50.000     ,
+ 
+ !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
+ GCROW= -1     ,
+
+ ! Annual maximum fractional coverage of modelled area (read in for CLASS only runs)
+ FCANROT=  0.00, 0.063, 0.023, 0.710 , 0.00,
+
+ FAREROT=  1.0000     ,
+ RSMNROT=  200.00,  125.00,  85.000,  100.00,
+ QA50ROT=  30.00,  40.00, 30.00, 30.00,
+ VPDAROT=  0.65, 0.50, 0.50, 0.50,
+ VPDBROT=  1.05, 0.60, 1.00, 1.00,
+ PSGAROT= 4*100.00       ,
+ PSGBROT= 4*5.0000       ,
+ ALVCROT= 5*0.0000       ,
+ ALICROT= 5*0.0000       ,
+ PAMNROT= 4*0.0000       ,
+ PAMXROT= 4*0.0000       ,
+
+ ! Natural logarithm of maximum vegetation roughness length
+ LNZ0ROT= 5*0.0000       ,
+
+ CMASROT= 4*0.0000       ,
+ ROOTROT= 4*0.0000       ,
+ DRNROT= 0.10001     ,
+ SDEPROT=  1.7280     ,
+ XSLPROT=  4.0001E-002,
+ GRKFROT= 0.29999999999999999     ,
+ WFSFROT=  2000.0     ,
+ WFCIROT=  1.0001E-005,
+ MIDROT=   1,
+ SANDROT=  47.70,  46.70,  42.000,
+ CLAYROT=  24.70,  27.20,  31.80,
+ ORGMROT=   1.10,   0.70,   0.30,
+ TBARROT=  20.851,  26.601,  27.820,
+ THLQROT=  0.043, 0.19401, 0.244    ,
+ THICROT=  0.00, 0.00, 0.00,
+ DELZ= 0.10     , 0.25     ,  3.75     ,
+ ZBOT= 0.10     , 0.35     ,  4.10     ,
+ TCANROT=  13.740     ,
+ TSNOROT=  0.0000     ,
+ TPNDROT=  0.0000     ,
+ ZPNDROT=  0.0000     ,
+ RCANROT=  0.0000     ,
+ SCANROT=  0.0000     ,
+ SNOROT=  0.0000     ,
+ ALBSROT=  0.0000     ,
+ RHOSROT=  0.0000     ,
+ GROROT=  1.0000     ,
+ SOCIROT=         10,
+ AILCMINROW= 9*0.0000       ,
+ AILCMAXROW= 9*0.0000       ,
+ DVDFCANROW=  1.0000     , 3*0.0000       ,  1.0000     , 0.42899999999999999     , 0.57099999999999995     ,
+  0.62900     , 0.37100     ,
+ GLEAFMASROW= 4*0.0000       ,  1.2756099999999999E-003,  8.5711999999999997E-002,  1.2745400000000000E-002,  4.1959099999999997E-004,
+   4.6757E-002,
+ BLEAFMASROW= 7*0.0000       ,  4.0998199999999997E-003,  4.9649499999999999E-002,
+ STEMMASSROW= 4*0.0000       ,  9.4727699999999998E-002, 0.18912000000000001     ,  4.1857500000000002E-003, 2*0.0000       ,
+
+ ROOTMASSROW= 4*0.0000       ,  8.0702899999999994E-002,  4.4379599999999998E-002,  2.6639599999999999E-003,  9.2099100000000003E-002,
+   1.2172300000000000     ,
+ LITRMASSROW= 4*0.0000       ,  3.9112500000000001E-002, 0.13283700000000001     ,  1.4308399999999999     ,  8.0109299999999994E-002,
+  0.64515400000000001     ,  0.0000     ,
+ SOILCMASROW= 4*0.0000       , 0.29850399999999999     , 0.11826299999999999     ,  1.1301200000000000     , 0.75036800000000003     ,
+   5.9459099999999996     ,  0.0000     ,
+ LFSTATUSROW= 4*4          ,          1, 2*2          , 2*1          ,
+ PANDAYSROW= 5*0          , 2*7          ,          0,          7,
+ MLIGHTNG= 3*0.0000       ,  8.9999999999999993E-003,  1.2000E-002, 0.11899999999999999     , 2*7.5999999999999998E-002  ,
+   5.1999999999999998E-002,  2.4000E-002, 2*0.0000       ,
+ EXTNPROB= 0.50000     ,
+ PRBFRHUC= 0.12000     ,
  /

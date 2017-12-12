@@ -5,6 +5,6 @@ var classio__driver =
     [ "class_hh_w", "classio__driver.html#a1f7f3de220ea0bc217c41549c11140a5", null ],
     [ "class_monthly_aw", "classio__driver.html#a0fb9cfacedc6fd592e0bd1b79f76a02b", null ],
     [ "ctem_annual_aw", "classio__driver.html#a3775c33b53cdfc295c8a29d6caaa2adb", null ],
-    [ "ctem_daily_aw", "classio__driver.html#a3337675058e5f3f1c423b7b6941b8cf1", null ],
+    [ "ctem_daily_aw", "classio__driver.html#a8078e455d2f7f991c19f1df3c90e2d1e", null ],
     [ "ctem_monthly_aw", "classio__driver.html#a6b430163add59476ebfc5cebc4560c93", null ]
 ];

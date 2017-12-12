@@ -6,7 +6,6 @@ var searchData=
   ['class_5fstatevars',['class_statevars',['../classclass__statevars.html',1,'']]],
   ['competition_5fscheme',['competition_scheme',['../classcompetition__scheme.html',1,'']]],
   ['ctem_5fannual',['ctem_annual',['../structctem__statevars_1_1ctem__annual.html',1,'ctem_statevars']]],
-  ['ctem_5fgridavg',['ctem_gridavg',['../structctem__statevars_1_1ctem__gridavg.html',1,'ctem_statevars']]],
   ['ctem_5fgridavg_5fannual',['ctem_gridavg_annual',['../structctem__statevars_1_1ctem__gridavg__annual.html',1,'ctem_statevars']]],
   ['ctem_5fgridavg_5fmonthly',['ctem_gridavg_monthly',['../structctem__statevars_1_1ctem__gridavg__monthly.html',1,'ctem_statevars']]],
   ['ctem_5fmonthly',['ctem_monthly',['../structctem__statevars_1_1ctem__monthly.html',1,'ctem_statevars']]],

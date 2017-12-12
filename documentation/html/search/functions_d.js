@@ -7,7 +7,6 @@ var searchData=
   ['resetaccvars',['resetaccvars',['../classclass__statevars.html#aa752a04d024ec60a9db6d28868efa545',1,'class_statevars']]],
   ['resetclassmon',['resetclassmon',['../classclass__statevars.html#ac04ce546b04c6158490699149561f6ac',1,'class_statevars']]],
   ['resetclassyr',['resetclassyr',['../classclass__statevars.html#abb53d97cbf716ef97cf48d6b96577a2e',1,'class_statevars']]],
-  ['resetdaily',['resetdaily',['../classctem__statevars.html#af1d0ff0bbf816233f2b51362f1ccb523',1,'ctem_statevars']]],
   ['resetmonthend',['resetmonthend',['../classctem__statevars.html#afcc1311f7dd0743cf4002b0d2635e824',1,'ctem_statevars']]],
   ['resetyearend',['resetyearend',['../classctem__statevars.html#a090f13e5df0ad3551010689fcf82a0ac',1,'ctem_statevars']]]
 ];
