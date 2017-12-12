@@ -70,7 +70,7 @@ function search() {
 		$('p#status').html("Searching...");
 		var first = -1;
 		for (var v = 0; v < variables.length; v++) {
-			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].defaultUnits;
+			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].defaultUnits + ' ' + variables[v].group;
 			allText = allText.toLowerCase();
 			if (allText.indexOf(keyword) !== -1) {
 				first = v;
@@ -82,7 +82,7 @@ function search() {
 		if (first != -1) {
 			$('#accordion').accordion('option', 'active', variables.length - first - 1);
 		}
-		$('p#status').html('Found ' + counter + ' results.');
+		if (counter > 0) $('p#status').html('Found ' + counter + ' results. <br>The first result has been expanded below, please scroll down to visualize it.');
 	}
 	else $('p#status').html('');
 }
@@ -273,6 +273,17 @@ function buildVariableConfigForms() {
 				var $variableTable = $('<table class="variableTable"/>');
 	
 				$line = $('<tr/>')
+				.append($('<td/>').text('Group: '))
+				.append($('<td/>').append($('<input/>', {
+										type	: 'text',
+										id 		: currentVariable.id,
+										value 	: currentVariable.group,
+										class : 'variableTextInput',
+										readonly: true
+									})));
+				$variableTable.append($line);
+				
+				$line = $('<tr/>')
 				.append($('<td/>').text('Short Name: '))
 				.append($('<td/>').append($('<input/>', {
 										type: 'text',
@@ -312,7 +323,7 @@ function buildVariableConfigForms() {
 										title 	: 'If using no units, please use a dash ("-")'
 									})));
 				$variableTable.append($line);
-				
+
 				$line = $('<tr/>')
 				.append($('<td/>').text('Include bare ground: '))
 				.append($('<td/>').append($('<input/>', {
