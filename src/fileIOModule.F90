@@ -414,6 +414,7 @@ contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Writes a local variable (1D input values, either real or int)
+    !! Takes in a 1D array (of either real or int elements) and writes it into a netCDF structure, according to start and count
     subroutine ncPutVar(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                                     :: fileId           !< File id
         character(*), intent(in)                                :: label            !< Label
@@ -440,28 +441,48 @@ contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Writes a local variable of 2D input values
-    subroutine ncPut2DVar(fileId, label, values, start, count)
+    !! Takes in a 2D array (of either real or int elements) and writes it into a netCDF structure, according to start and count
+    subroutine ncPut2DVar(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                                     :: fileId   !< File id
         character(*), intent(in)                                :: label    !< Label
-        real, dimension(:,:), intent(in)                        :: values   !< Array of reals
+        real, intent(in), optional                              :: realValues(:,:)    !< Array of reals
+        integer, intent(in), optional                           :: intValues(:,:)     !< Array of ints
         integer, dimension(:), intent(in)                       :: start    !< Start array
         integer, dimension(3), intent(in)                       :: count    !< Count array
-        integer                                                 :: varId
+        integer                                                 :: varId, counter
         varId = ncGetVarId(fileId, label)
-        call checkNC(nf90_put_var(fileId, varId, reshape(values, count), start, count))
+
+        if (present(realValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, reshape(realValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
+        else if (present(intValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
+        end if
+
+        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
     end subroutine ncPut2DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Writes a local variable of 3D input values
-    subroutine ncPut3DVar(fileId, label, values, start, count)
+    !! Takes in a 3D array (of either real or int elements) and writes it into a netCDF structure, according to start and count
+    subroutine ncPut3DVar(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                                     :: fileId   !< File id
         character(*), intent(in)                                :: label    !< Label
-        real, dimension(:,:,:), intent(in)                        :: values   !< Array of reals
+        real, intent(in), optional                              :: realValues(:,:,:)    !< Array of reals
+        integer, intent(in), optional                           :: intValues(:,:,:)     !< Array of ints
         integer, dimension(:), intent(in)                       :: start    !< Start array
         integer, dimension(4), intent(in)                       :: count    !< Count array
-        integer                                                 :: varId
+        integer                                                 :: varId, counter
         varId = ncGetVarId(fileId, label)
-        call checkNC(nf90_put_var(fileId, varId, reshape(values, count), start, count))
+
+        if (present(realValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, reshape(realValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
+        else if (present(intValues)) then
+            counter = counter + 1
+            call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
+        end if
     end subroutine ncPut3DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
