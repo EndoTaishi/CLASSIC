@@ -20,7 +20,6 @@ module outputManager
     public  :: closeNCFiles
     public :: checkForTime
 
-
     type simulationDomain
         real, dimension(:), allocatable     :: lonLandCell, latLandCell     !< Long/Lat values of only the land cells in our model domain
         integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   !< Indexes of only the land cells in our model domain for our resolution
@@ -41,9 +40,8 @@ module outputManager
     type outputDescriptor
         character(80)   :: group                = ''
         character(30)   :: shortName            = ''
-        character(30)   :: standardName         = ''
+        character(80)   :: standardName         = ''
         character(400)  :: longName             = ''        !< Long name of the variable
-        character(30)   :: units                = ''        !< Units of the variable
         character(30)   :: timeFreq             = ''        !< Time frequency of variable: half-hourly, daily, monthly, annually
         logical         :: includeBareGround    = .false.   !< If true then expand the PFT list for a final position that is the bare ground.
     end type
@@ -56,6 +54,7 @@ module outputManager
         character(80)   :: timeFrequency        = ''
         character(80)   :: outputForm           = ''
         character(80)   :: shortName            = ''
+        character(80)   :: units                = ''        !< Units of the variant
     end type
 
     type(variant), allocatable              :: variants(:)
@@ -91,7 +90,7 @@ contains
 
         do i = 1, variantCount
             call generateNetCDFFile(variants(i)%nameInCode, variants(i)%timeFrequency,&
-                variants(i)%outputForm, variants(i)%shortName)
+                variants(i)%outputForm, variants(i)%units, variants(i)%shortName)
         enddo
 
         return
@@ -104,11 +103,11 @@ contains
     !>\ingroup output_generateNetCDFFile
     !>@{
     !> Generates a new (netcdf) variable
-    subroutine generateNetCDFFile(nameInCode, timeFreq, outputForm, descriptorLabel)
+    subroutine generateNetCDFFile(nameInCode, timeFreq, outputForm, units, descriptorLabel)
 
         implicit none
 
-        character(*), intent(in)                :: nameInCode, timeFreq, descriptorLabel
+        character(*), intent(in)                :: nameInCode, timeFreq, descriptorLabel, units
         character(*), intent(inout)             :: outputForm
         type(outputDescriptor)                  :: descriptor
         character(350)                           :: filename = ''
@@ -134,7 +133,7 @@ contains
             id = addVariable(nameInCode, filename)
 
             ! Make the netcdf file for the new variable (mostly definitions)
-            call createNetCDF(filename, id, outputForm, descriptor, timeFreq)
+            call createNetCDF(filename, id, outputForm, descriptor, timeFreq, units)
 
             ! Now make sure the file was properly created
             fileCreatedOk = checkFileExists(filename)
@@ -305,7 +304,7 @@ contains
                 return
             endif
         enddo
-        print*, "something went awry with the getDescriptor function"
+        print*, "Something went awry with the getDescriptor function"
     end function getDescriptor
 
     !<@}
@@ -334,7 +333,7 @@ contains
     !>\ingroup output_createNetCDF
     !>@{
     ! Create the output netcdf files
-    subroutine createNetCDF(fileName, id, outputForm, descriptor,timeFreq)
+    subroutine createNetCDF(fileName, id, outputForm, descriptor, timeFreq, units)
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
@@ -343,8 +342,8 @@ contains
         implicit none
 
         character(*), intent(in)              :: fileName
-        character(*), intent(inout)              :: outputForm
-        character(*), intent(in)              :: timeFreq
+        character(*), intent(inout)           :: outputForm
+        character(*), intent(in)              :: timeFreq, units
         type(outputDescriptor), intent(in)    :: descriptor
         integer, intent(in)                   :: id
 
@@ -510,7 +509,7 @@ contains
         end select
 
         call ncPutAtt(ncid,varid,'long_name',charvalues=descriptor%longName)
-        call ncPutAtt(ncid,varid,'units',charvalues=descriptor%units)
+        call ncPutAtt(ncid,varid,'units',charvalues=units)
         call ncPutAtt(ncid,varid,'_FillValue',realvalues=fill_value)
         !call ncPutAtt(ncid,varid,'missing_value',realvalues=fill_value)
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")

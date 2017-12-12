@@ -2,13 +2,14 @@ var variables = []
 var variants = []
 var groups = []
 var variablesChanged = false;
+var emptyUnits = false;
 
-function Variable(id, standardName, longName, shortName, units, group, bareGround) {
+function Variable(id, standardName, longName, shortName, defaultUnits, group, bareGround) {
 	this.id = id;
 	this.standardName = standardName;
 	this.longName = longName;
 	this.shortName = shortName;
-	this.units = units;
+	this.defaultUnits = defaultUnits;
 	this.group = group;
 	this.bareGround = bareGround;
 }
@@ -36,7 +37,8 @@ function sceneSetup() {
 	$('button#addGroup').on('click', addGroupFromForm);
 	$('#clearForm').on('click', clearForm);
 	$('button#search').on('click', search);
-	$('input#search').on('change', search)
+	$('input#search').on('change', search);
+	
 	$('#accordion').accordion({
 		collapsible : true
 	});
@@ -62,7 +64,7 @@ function search() {
 	if ((keyword != '') && (keyword != ' ')) {
 		var first = -1;
 		for (var v = 0; v < variables.length; v++) {
-			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].units;
+			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].defaultUnits;
 			allText = allText.toLowerCase();
 			if (allText.indexOf(keyword) !== -1) {
 				first = v;
@@ -80,7 +82,7 @@ function clearForm() {
 	$('input#shortName')[0].value = '';
 	$('input#standardName')[0].value = '';
 	$('input#longName')[0].value = '';
-	$('input#units')[0].value = '';
+	$('input#defaultUnits')[0].value = '';
 	$('input#bareGround')[0].checked = false;
 	
 }
@@ -127,12 +129,13 @@ function loadXml() {
 					var standardName = $('standardName', this).text().trim();
 					var longName = $('longName', this).text().trim();
 					var shortName = $('shortName', this).text().trim();
-					var units = $('units', this).text().trim();
+					var defaultUnits = $('defaultUnits', this).text().trim();
+					//var defaultUnits = $('units', this).text().trim(); //use this for code version 1.0
 					var group = $(this.parentElement.attributes['type'])[0].value;
 					var bareGround = ($(this.attributes['includeBareGround'])[0].value == 'true');
 					addGroup(group);
 
-					var variable = new Variable(id, standardName, longName, shortName, units, group, bareGround);
+					var variable = new Variable(id, standardName, longName, shortName, defaultUnits, group, bareGround);
 					variables.push(variable);
 				});
 
@@ -194,7 +197,7 @@ function addVariable() {
 	var standardName = $('#standardName')[0].value;
 	var longName = $('#longName')[0].value;
 	var shortName = $('#shortName')[0].value;
-	var units = $('#units')[0].value;
+	var defaultUnits = $('#defaultUnits')[0].value;
 	var group = $('#group')[0].value;
 	var bareGround = $('#bareGround')[0].value;
 	if ($('input#bareGround')[0].checked) bareGround = 'true';
@@ -210,13 +213,20 @@ function addVariable() {
 			}
 		}
 		if (!found) {
-			var variable = new Variable(variables.length, standardName, longName, shortName,
-					units, group, bareGround);
-			variables.push(variable);
-			alert('Successfully added the ' + shortName + ' variable!');
+			if (defaultUnits == '') {
+				emptyUnits = true;
+				alert('There seems to be a problem with the units');
+			} else if (group == '') {
+				emptyUnits = true;
+				alert('There seems to be a problem with the group');
+			} else 	{
+				var variable = new Variable(variables.length, standardName, longName, shortName,
+						defaultUnits, group, bareGround);
+				variables.push(variable);
+				alert('Successfully added the ' + shortName + ' variable!');
+			}
 		}
-	} else
-		alert('Please supply at least the short name for the variable you intend to add!');
+	} else alert('Please supply at least the short name for the variable you intend to add!');
 }
 
 //Remove variable
@@ -284,12 +294,13 @@ function buildVariableConfigForms() {
 				$variableTable.append($line);
 	
 				$line = $('<tr/>')
-				.append($('<td/>').text('Units Name: '))
+				.append($('<td/>').text('Default Units: '))
 				.append($('<td/>').append($('<input/>', {
-										type: 'text',
-										id : currentVariable.id,
-										class : 'variableTextInput units',
-										value : currentVariable.units
+										type	: 'text',
+										id 		: currentVariable.id,
+										class 	: 'variableTextInput defaultUnits',
+										value 	: currentVariable.defaultUnits,
+										title 	: 'If using no units, please use a dash ("-")'
 									})));
 				$variableTable.append($line);
 				
@@ -359,8 +370,9 @@ function buildVariableConfigForms() {
 							type : 'text',
 							id : id,
 							class : 'variantUnits',
-							placeholder : currentVariable.units,
-							disabled : true
+							value : currentVariable.defaultUnits,
+							disabled : true,
+							title 	: 'If using no units, please use a dash ("-")'
 						})));
 	
 						$variantsTable.append($variant);
@@ -377,8 +389,12 @@ function buildVariableConfigForms() {
 			var variant = variants[i];
 			var id = variant.variable * 1000 + variant.frequency * 10 + variant.form;
 			$('input#' + id + '.checkbox').prop('checked', true);
-			$('input#' + id + '.nameInCode').prop('disabled', false).prop('value', variant.nic);
-			$('input#' + id + '.variantUnits').prop('disabled', false).prop('value', variant.units);
+			$('input#' + id + '.nameInCode')[0].disabled = false;
+			$('input#' + id + '.nameInCode')[0].value = variant.nic;
+			$('input#' + id + '.variantUnits')[0].disabled = false;
+			if (variant.units != '') {
+				$('input#' + id + '.variantUnits')[0].value = variant.units;
+			}
 		}
 		
 		// Refresh accordion structure
@@ -398,16 +414,22 @@ function disable(id) {
 	$('input#' + id + '.nameInCode')[0].disabled = true;
 	$('input#' + id + '.nameInCode')[0].value = '';
 	$('input#' + id + '.variantUnits')[0].disabled = true;
-	$('input#' + id + '.variantUnits')[0].value = '';
+	//$('input#' + id + '.variantUnits')[0].value = '';
 }
 
 function updateVariableChanges() {
 	variants = [];
+	emptyUnits = false;
 	for (var v = 0; v < variables.length; v++) {
 		variables[v].shortName = $('input#' + variables[v].id + '.shortName')[0].value;
 		variables[v].standardName = $('input#' + variables[v].id + '.standardName')[0].value;
 		variables[v].longName = $('input#' + variables[v].id + '.longName')[0].value;
-		variables[v].units = $('input#' + variables[v].id + '.units')[0].value;
+		variables[v].defaultUnits = $('input#' + variables[v].id + '.defaultUnits')[0].value;
+		if (variables[v].defaultUnits == '') {
+			emptyUnits = true;
+			alert('There seems to be a problem with the units for the variable ' + variables[v].shortName);
+		}
+		
 		variables[v].bareGround = $('input#' + variables[v].id + '.bareGround')[0].checked;
 
 		for (var i = 0; i < 5; i++)
@@ -418,6 +440,10 @@ function updateVariableChanges() {
 					var form = id % 10;
 					var nic = $('input#' + id + '.nameInCode')[0].value;
 					var units = $('input#' + id + '.variantUnits')[0].value;
+					if (units == '') {
+						emptyUnits = true;
+						alert('There seems to be a problem with the variant units for the variable ' + variables[v].shortName);
+					}
 					var variant = new Variant(variables[v].id, freq, form, nic, units);
 					variants.push(variant);
 				}
@@ -433,86 +459,91 @@ function generateVariants() {
 					function() {
 						$('#downloadButton').attr('download', $('input#filename')[0].value);
 					}))
-			.append('&nbsp;&nbsp;')
-			.append($('<a/>').attr('id', 'downloadButton').text('Download XML').attr('download', 'output.xml')).button());
+					.append('&nbsp;&nbsp;')
+					.append($('<a/>').attr('id', 'downloadButton').text('Download XML').attr('download', 'output.xml')).button());
 	$('#outputViewer')
 	.prepend(
 			$('<textarea rows="20" cols="100" id="outputXml" readonly></textarea>'));
 
-	if (variants.length > 0) {
-		// Create empty XML document
-		var xml = $.parseXML('<?xml version="1.0"?><variableSet/>');
+	if (variants.length > 0)
+		if (!emptyUnits) {
+			// Create empty XML document
+			var xml = $.parseXML('<?xml version="1.0"?><variableSet/>');
 
-		var d = new Date();
-		var strDate = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-		$('variableSet', xml).attr('type', 'CLASS').attr('version', '1.0').attr('created', strDate);
+			var d = new Date();
+			var strDate = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
+			$('variableSet', xml).attr('type', 'CLASS').attr('version', '1.1').attr('created', strDate);
 
-		// Append groups
-		for (var g = 0; g < groups.length; g++) {
-			var $group = $(xml.createElement('group')).attr('type', groups[g]);
-			$('variableSet', xml).append($group);
-		}
-
-		// Append variables
-		for (var v = 0; v < variables.length; v++) {
-			var $variable = $(xml.createElement('variable')).attr('id', variables[v].id);
-			var $standardName = $(xml.createElement('standardName')).text(variables[v].standardName);
-			var $longName = $(xml.createElement('longName')).text(variables[v].longName);
-			var $shortName = $(xml.createElement('shortName')).text(variables[v].shortName);
-			var $units = $(xml.createElement('units')).text(variables[v].units);
-
-			$variable.append($standardName).append($longName)
-			.append($shortName).append($units).attr('includeBareGround', variables[v].bareGround);
-			$('group[type=' + variables[v].group + ']', xml).append($variable);
-		}
-
-		// Append variants
-		for (var i = 0; i < variants.length; i++) {
-			var variable = variants[i].variable;
-			var freq = variants[i].frequency;
-			var form = variants[i].form;
-			var nic = variants[i].nic;
-			var units = variants[i].units;
-
-			var $freq = $(xml.createElement('timeFrequency'));
-			var $form = $(xml.createElement('outputForm'));
-			var $nic = $(xml.createElement('nameInCode'));
-			var $variantUnits = $(xml.createElement('units'));
-
-			switch (freq) {
-			case 0: $freq.html('annually'); break;
-			case 1: $freq.html('monthly'); break;
-			case 2: $freq.html('daily'); break;
-			case 3: $freq.html('6 hourly'); break;
-			case 4: $freq.html('halfhourly'); break;
+			// Append groups
+			for (var g = 0; g < groups.length; g++) {
+				var $group = $(xml.createElement('group')).attr('type', groups[g]);
+				$('variableSet', xml).append($group);
 			}
 
-			switch (form) {
-			case 0: $form.html('grid'); break;
-			case 1: $form.html('pft'); break;
-			case 2: $form.html('tile'); break;
-			case 3: $form.html('layer'); break;
+			// Append variables
+			for (var v = 0; v < variables.length; v++) {
+				var $variable = $(xml.createElement('variable')).attr('id', variables[v].id);
+				var $standardName = $(xml.createElement('standardName')).text(variables[v].standardName);
+				var $longName = $(xml.createElement('longName')).text(variables[v].longName);
+				var $shortName = $(xml.createElement('shortName')).text(variables[v].shortName);
+				var $defaultUnits = $(xml.createElement('defaultUnits')).text(variables[v].defaultUnits);
+
+				$variable.append($standardName).append($longName)
+				.append($shortName).append($defaultUnits).attr('includeBareGround', variables[v].bareGround);
+				$('group[type=' + variables[v].group + ']', xml).append($variable);
 			}
 
-			$nic.html(nic);
-			$variantUnits.html(units);
+			// Append variants
+			for (var i = 0; i < variants.length; i++) {
+				var variable = variants[i].variable;
+				var freq = variants[i].frequency;
+				var form = variants[i].form;
+				var nic = variants[i].nic;
+				var units = variants[i].units;
 
-			var $variant = $(xml.createElement('variant'));
-			$variant.append($freq).append($form).append($nic)
-			if (units != '') $variant.append($variantUnits);
+				var $freq = $(xml.createElement('timeFrequency'));
+				var $form = $(xml.createElement('outputForm'));
+				var $nic = $(xml.createElement('nameInCode'));
+				var $variantUnits = $(xml.createElement('units'));
 
-			$('variable[id=' + variable + ']', xml).append($variant);
+				switch (freq) {
+				case 0: $freq.html('annually'); break;
+				case 1: $freq.html('monthly'); break;
+				case 2: $freq.html('daily'); break;
+				case 3: $freq.html('6 hourly'); break;
+				case 4: $freq.html('halfhourly'); break;
+				}
+
+				switch (form) {
+				case 0: $form.html('grid'); break;
+				case 1: $form.html('pft'); break;
+				case 2: $form.html('tile'); break;
+				case 3: $form.html('layer'); break;
+				}
+
+				$nic.html(nic);
+				$variantUnits.html(units);
+
+				var $variant = $(xml.createElement('variant'));
+				$variant.append($freq).append($form).append($nic)
+				if (units != '') $variant.append($variantUnits);
+
+				$('variable[id=' + variable + ']', xml).append($variant);
+			}
+
+			var s = new XMLSerializer();
+			var string = s.serializeToString(xml);
+
+			$('#outputXml').text(string).format({
+				method : 'xml'
+			});
+
+			saveTextAsFile();
 		}
-
-		var s = new XMLSerializer();
-		var string = s.serializeToString(xml);
-
-		$('#outputXml').text(string).format({
-			method : 'xml'
-		});
-
-		saveTextAsFile();
-	} else
+		else {
+			//alert('The units field cannot be left empty, please double check your units!');
+		}
+	else
 		alert('You must first add some variants!');
 }
 
