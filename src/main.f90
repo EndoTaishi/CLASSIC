@@ -4776,7 +4776,7 @@ contains
 
             if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then
 
-                WRITE(*,*)'IYEAR=',IYEAR,'Loop count =',lopcount,'/',metLoop
+                WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
 
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)

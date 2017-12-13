@@ -539,7 +539,7 @@ contains
         character(*), intent(in)              :: timeFreq
         real, allocatable, dimension(:) :: temptime
         integer :: totsteps, totyrs, i, st, en, j, m, cnt
-        integer :: lastDOY, length
+        integer :: lastDOY, length, styr
         logical :: leapnow
 
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
@@ -587,19 +587,24 @@ contains
             case("monthly")
                 ! Monthly may start writing later (after jmosty) so make sure to account for that.
                 ! Also if leap years are on, it changes the timestamps
-                if (readMetStartYear < jmosty) then
-                    totyrs = (readMetEndYear - jmosty + 1) * metLoop
-                else
-                    totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
+                totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
+                styr = readMetStartYear
+
+                if (readMetStartYear < jmosty .and. jmosty <= readMetStartYear + totyrs-1) then
+                    totyrs = readMetStartYear + totyrs - jmosty !(readMetEndYear - jmosty + 1) * metLoop
+                    styr=jmosty
+                else if (jmosty > readMetStartYear + totyrs-1) then
+                    print*,'determineTime says: Warning - jmosty is set to a year beyond the end of the run'
+                    print*,'monthly files will still be made but will include all years'
                 end if
                 totsteps = totyrs*12
                 allocate(timeVect(totsteps))
                 do i = 1, totyrs
                     ! Find out if this year is a leap year. It adjusts the monthend array.
-                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
                     do m = 1, 12
                         j = ((i - 1) * 12) + m
-                        timeVect(j) = (readMetStartYear + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
+                        timeVect(j) = (styr + i - 1 - refyr) * lastDOY + monthend(m+1) - 1
                     end do
                 end do
 
