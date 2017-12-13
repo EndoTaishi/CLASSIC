@@ -932,7 +932,7 @@ contains
 
             if (PFTCompetition) then
 
-                call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm, [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
 ! JOE
 ! After checking that writing twarmm works as desired, please uncomment the lines below
 !                call ncPutVar(rsid, 'tcoldm', tcoldm, start = [lonIndex, latIndex])
