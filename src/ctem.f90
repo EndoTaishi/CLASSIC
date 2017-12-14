@@ -18,7 +18,7 @@
      &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    &
      &                       zbotw,   thliqc,   thliqg,    deltat,&
      &                       uwind,    vwind,  lightng,  prbfrhuc, &
-     &                    extnprob,   stdaln,     tbar,transientPOPD, &
+     &                    extnprob,     tbar,  transientPOPD, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
      &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
@@ -204,9 +204,6 @@ real, dimension(ilg,icc), intent(in) :: nfcancmx        !<next year's fractional
 real, dimension(ilg), intent(in) ::  faregat            !<
 real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
 real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
-integer, dimension(ilg), intent(in) :: stdaln           !< an integer telling if ctem is operated within gcm (=0)
-                                                        !<or in stand alone mode (=1). this is used for fire
-                                                        !<purposes. see comments just above where disturb subroutine is called.
 real, dimension(ilg), intent(in) :: wetfrac             !<
 real, dimension(ilg,8), intent(in) :: slopefrac         !<
 real, intent(in) :: GRAV                                !<Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.

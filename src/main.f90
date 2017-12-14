@@ -952,7 +952,6 @@ contains
         integer, pointer, dimension(:,:,:) :: colddaysrow
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
-        integer, pointer, dimension(:,:) :: stdalnrow
         real, pointer, dimension(:,:) :: tcanrs
         real, pointer, dimension(:,:) :: tsnors
         real, pointer, dimension(:,:) :: tpndrs
@@ -1125,7 +1124,6 @@ contains
         integer, pointer, dimension(:,:) :: colddaysgat
         integer, pointer, dimension(:,:) :: lfstatusgat
         integer, pointer, dimension(:,:) :: pandaysgat
-        integer, pointer, dimension(:) :: stdalngat
         real, pointer, dimension(:) :: lightng
 
         real, pointer, dimension(:,:) :: gleafmasgat        !
@@ -2368,7 +2366,6 @@ contains
         colddaysrow       => vrot%colddays
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
-        stdalnrow         => vrot%stdaln
 
         twarmmrow            => vrot%twarmm
         tcoldmrow            => vrot%tcoldm
@@ -2598,7 +2595,6 @@ contains
         colddaysgat       => vgat%colddays
         lfstatusgat       => vgat%lfstatus
         pandaysgat        => vgat%pandays
-        stdalngat         => vgat%stdaln
 
         ipeatlandgat     => vgat%ipeatland
         anmossgat        => vgat%anmoss
@@ -3261,7 +3257,7 @@ contains
                     sandgat,     claygat,     orgmgat,&
                     anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
                     uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
-                    extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,&
+                    extnprobgat, pfcancmxgat,  nfcancmxgat,&
                     stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
                     bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
                     pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,&
@@ -3306,7 +3302,7 @@ contains
                     SANDROT,     CLAYROT,     ORGMROT,&
                     anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
                     uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
-                    extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,&
+                    extnprobrow, pfcancmxrow,  nfcancmxrow,&
                     stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
                     bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
                     pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,&
@@ -3501,7 +3497,7 @@ contains
                         &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,&
                         &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,&
                         &             uvaccgat_t,  vvaccgat_t,    lightng,prbfrhucgat,&
-                        &            extnprobgat,   stdalngat,tbaraccgat_t,transientPOPD,&
+                        &            extnprobgat,  tbaraccgat_t,transientPOPD,&
                         &               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,&
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
                         &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&

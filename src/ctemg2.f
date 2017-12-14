@@ -13,7 +13,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      7      sandgat,     claygat,     orgmgat,
      8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
      9      uvaccgat_m,  vvaccgat_m,  prbfrhucgat,
-     a      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
+     a      extnprobgat, pfcancmxgat,  nfcancmxgat,
      b      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      c      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
      d      pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,
@@ -59,7 +59,7 @@ c
      2      sandrow,     clayrow,     orgmrow,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
      4      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,
-     5      extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,
+     5      extnprobrow, pfcancmxrow,  nfcancmxrow,
      6      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      7      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
      8      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,
@@ -154,7 +154,7 @@ c
      6      ailcbgat(ilg,icc),        flhrlossgat(ilg,icc)
 c
       integer  pandaysgat(ilg,icc),   lfstatusgat(ilg,icc),
-     1         stdalngat(ilg),       colddaysgat(ilg,2)
+     1         colddaysgat(ilg,2)
      
       logical pftexistgat(ilg,icc)
 c
@@ -243,7 +243,7 @@ c
      6      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc)
 c
       integer pandaysrow(nlat,nmos,icc),  lfstatusrow(nlat,nmos,icc),
-     1      stdalnrow(nlat,nmos),           colddaysrow(nlat,nmos,2)
+     1        colddaysrow(nlat,nmos,2)
 
       logical pftexistrow(nlat,nmos,icc)
 c
@@ -352,7 +352,6 @@ c----------------------------------------------------------------------
           extnprobgat(k)  = extnprobrow(ilmos(k),jlmos(k))
           daylgat(k)      = daylrow(ilmos(k))
           dayl_maxgat(k)  = dayl_maxrow(ilmos(k))
-          stdalngat(k)    = stdalnrow(ilmos(k),jlmos(k))
           tcanoaccgat_m(k)= tcanoaccrow_m(ilmos(k),jlmos(k))
           uvaccgat_m(k)   = uvaccrow_m(ilmos(k),jlmos(k))
           vvaccgat_m(k)   = vvaccrow_m(ilmos(k),jlmos(k))

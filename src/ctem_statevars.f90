@@ -264,9 +264,6 @@ type veg_rot
     
 
 ! allocated with nlat,nmos:   
-    integer, allocatable, dimension(:,:)     :: stdaln         !<an integer telling if ctem is operated within gcm (=0) or in stand
-                                                        !<alone mode (=1). this is used for fire purposes. see comments just
-                                                        !<above where disturb subroutine is called.
     real, allocatable, dimension(:,:) :: gavglai               !<grid averaged green leaf area index
     real, allocatable, dimension(:,:) :: co2conc               !<ATMOS. CO2 CONC. IN PPM
     real, allocatable, dimension(:,:) :: ch4conc               !<
@@ -615,9 +612,6 @@ type veg_gat
     integer, allocatable, dimension(:,:) :: pandays  !<days with positive net photosynthesis (an) for use in
                                                      !<the phenology subroutine
     real, allocatable, dimension(:) :: grclarea      !<area of the grid cell, \f$km^2\f$
-    integer, allocatable, dimension(:)   :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
-                                                     !<alone mode (=1). this is used for fire purposes. see comments just
-                                                     !<above where disturb subroutine is called.
 
     integer, allocatable, dimension(:) :: altotcount_ctm !nlat  !< Counter used for calculating total albedo
     real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)   !<Max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
@@ -1093,7 +1087,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%rmlveg  (nlat,nmos,icc),&
     
 ! allocated with nlat,nmos:   
-         vrot%stdaln(nlat,nmos),&
          vrot%gavglai (nlat,nmos),&
          vrot%co2conc (nlat,nmos),&
          vrot%ch4conc (nlat,nmos),&
@@ -1279,7 +1272,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%defmncur (ilg),&
          vgat%srplscur (ilg),&
          vgat%defctcur (ilg),&
-         vgat%stdaln (ilg),&
          vgat%ipeatland (ilg),&
          vgat%anmoss (ilg),&
          vgat%rmlmoss (ilg),&

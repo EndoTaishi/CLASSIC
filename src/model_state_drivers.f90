@@ -404,7 +404,6 @@ contains
         real, pointer, dimension(:,:) :: prbfrhuc
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
-        integer, pointer, dimension(:,:) :: stdaln      !FLAG can be removed.
         real, pointer, dimension(:,:,:) :: slopefrac
         integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland switch: 0 = not a peatland, 1= bog, 2 = fen
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
@@ -449,7 +448,6 @@ contains
         extnprob          => vrot%extnprob
         prbfrhuc          => vrot%prbfrhuc
         slopefrac         => vrot%slopefrac
-        stdaln            => vrot%stdaln
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
         ipeatlandrow      => vrot%ipeatland
