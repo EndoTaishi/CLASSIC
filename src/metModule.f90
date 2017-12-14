@@ -233,7 +233,7 @@ contains
         real, intent(inout)                         :: var(:)
         real, intent(in)                            :: delt
         integer                                     :: i, j, k, T,start, endpt, countr,wetpds
-        real                                        :: temp
+        real                                        :: temp,startpre
         real, allocatable, dimension(:)             :: random
         integer, allocatable, dimension(:)             :: sort_ind
 
@@ -242,6 +242,11 @@ contains
         countr = size(var)
 
         ! Loop through the metInputTimeStep timesteps (commonly 6 hr)
+
+        ! Adjust the precip from mm/s to mm/6h (or mm/3h). The relationship below is
+        ! derived for mm/6h originally.
+        var = var * metInputTimeStep
+
         do i = 1, countr/numberPhysInMet
 
             start = (i - 1) * numberPhysInMet + 1
@@ -252,7 +257,9 @@ contains
 
             if (var(start) > 0.) then
 
-                ! We expect precipitation to be in kg/m2/s (or mm/s) for all of this
+                startpre = var(start)
+
+                ! We expect precipitation for this relation to be in mm/6h
                 wetpds = nint( &
                                 max( &
                                     min( &
@@ -301,7 +308,8 @@ contains
                 k = 1
                 do j = start,endpt
                     ! Assign this time period its precipitation
-                    var(j) = random(k) * var(start)
+                    var(j) = random(k) * startpre
+                    !print*,j,k,random(k),startpre,var(j)
                     k = k + 1
                 end do
 
@@ -311,6 +319,10 @@ contains
             end if
 
         enddo
+
+        ! So we now have the amount of precip in each physics timestep (mm/delt)
+        ! we now need to then convert back to mm/s
+        var = var / delt
 
         deallocate(random,sort_ind)
 
