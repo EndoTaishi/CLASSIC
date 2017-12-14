@@ -30,7 +30,7 @@
      p      lucsocinrow, nppvegrow,   dstcemls3row,
      q      farerow,     gavgscmsrow, tcanoaccrow_out,
      &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,
-     &      vgbiomas_vegrow,gppvegrow,nepvegrow,ailcminrow,ailcmaxrow,
+     &      vgbiomas_vegrow,gppvegrow,nepvegrow,
      &      fcanrow,      pftexistrow,
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
@@ -77,7 +77,7 @@ c --
      k      lucsocingat, nppveggat,   dstcemls3gat,
      l      faregat,     gavgscmsgat, tcanoaccgat_out,
      &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,
-     &      vgbiomas_veggat,gppveggat,nepveggat, ailcmingat,ailcmaxgat,
+     &      vgbiomas_veggat,gppveggat,nepveggat,
      &      fcangat,      pftexistgat,
      &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
@@ -202,8 +202,7 @@ c
       real  tcanoaccrow_out(nlat,nmos)
 c
       real rmlvegaccrow(nlat,nmos,icc),  rmsvegrow(nlat,nmos,icc),
-     1      rmrvegrow(nlat,nmos,icc),    rgvegrow(nlat,nmos,icc),
-     2      ailcminrow(nlat,nmos,icc),   ailcmaxrow(nlat,nmos,icc)
+     1      rmrvegrow(nlat,nmos,icc),    rgvegrow(nlat,nmos,icc)
 c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
@@ -293,8 +292,7 @@ c
       real  tcanoaccgat_out(ilg)
 c
       real rmlvegaccgat(ilg,icc),     rmsveggat(ilg,icc),
-     1      rmrveggat(ilg,icc),       rgveggat(ilg,icc),
-     2      ailcmingat(ilg,icc),     ailcmaxgat(ilg,icc)
+     1      rmrveggat(ilg,icc),       rgveggat(ilg,icc)
 c
       real vgbiomas_veggat(ilg,icc)
 c
@@ -462,10 +460,7 @@ c
           gppvegrow(ilmos(k),jlmos(k),l)    = gppveggat(k,l)
           vgbiomas_vegrow(ilmos(k),jlmos(k),l)=vgbiomas_veggat(k,l)
           autoresvegrow(ilmos(k),jlmos(k),l) = autoresveggat(k,l)
-          ailcminrow(ilmos(k),jlmos(k),l)=ailcmingat(k,l)
-          ailcmaxrow(ilmos(k),jlmos(k),l)=ailcmaxgat(k,l)
           pftexistrow(ilmos(k),jlmos(k),l)=pftexistgat(k,l)
-
           ancsvegrow(ilmos(k),jlmos(k),l)=ancsveggat(k,l)
           ancgvegrow(ilmos(k),jlmos(k),l)=ancgveggat(k,l)
           rmlcsvegrow(ilmos(k),jlmos(k),l)=rmlcsveggat(k,l)

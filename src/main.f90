@@ -962,8 +962,6 @@ contains
         real, pointer, dimension(:,:) :: uvaccrow_m
         real, pointer, dimension(:,:) :: vvaccrow_m
 
-        real, pointer, dimension(:,:,:) :: ailcminrow         !
-        real, pointer, dimension(:,:,:) :: ailcmaxrow         !
         real, pointer, dimension(:,:,:) :: gleafmasrow        !
         real, pointer, dimension(:,:,:) :: bleafmasrow        !
         real, pointer, dimension(:,:,:) :: stemmassrow        !
@@ -1131,9 +1129,6 @@ contains
         integer, pointer, dimension(:) :: stdalngat
         real, pointer, dimension(:) :: lightng
 
-        real, pointer, dimension(:,:) :: ailcmingat         !
-        real, pointer, dimension(:,:) :: ailcmaxgat         !
-        !real, pointer, dimension(:,:) :: dvdfcangat         !
         real, pointer, dimension(:,:) :: gleafmasgat        !
         real, pointer, dimension(:,:) :: bleafmasgat        !
         real, pointer, dimension(:,:) :: stemmassgat        !
@@ -2225,8 +2220,6 @@ contains
         vvaccrow_m        => vrot%vvaccrow_m
 
         ! ROW:
-        ailcminrow        => vrot%ailcmin
-        ailcmaxrow        => vrot%ailcmax
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
         stemmassrow       => vrot%stemmass
@@ -2410,8 +2403,6 @@ contains
         lightng           => vgat%lightng
         tcanoaccgat_out   => vgat%tcanoaccgat_out
 
-        ailcmingat        => vgat%ailcmin
-        ailcmaxgat        => vgat%ailcmax
         gleafmasgat       => vgat%gleafmas
         bleafmasgat       => vgat%bleafmas
         stemmassgat       => vgat%stemmass
@@ -3292,7 +3283,7 @@ contains
                     lucsocingat, nppveggat,   dstcemls3gat, popdingat,&
                     faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,&
                     rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,&
-                    gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,&
+                    gppveggat,   nepveggat,&
                     emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
                     emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
                     emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,&
@@ -3337,7 +3328,7 @@ contains
                     lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,&
                     FAREROT,     gavgscmsrow, rmlvegaccrow, pftexistrow,&
                     rmsvegrow,   rmrvegrow,   rgvegrow,    vgbiomas_vegrow,&
-                    gppvegrow,   nepvegrow,   ailcminrow,   ailcmaxrow,&
+                    gppvegrow,   nepvegrow,   &
                     emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
                     emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
                     emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,&
@@ -3722,7 +3713,7 @@ contains
                 &      lucsocinrow, nppvegrow,   dstcemls3row,&
                 &      FAREROT,     gavgscmsrow, tcanoaccrow_out,&
                 &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,&
-                &      vgbiomas_vegrow,gppvegrow,nepvegrow,ailcminrow,ailcmaxrow,&
+                &      vgbiomas_vegrow,gppvegrow,nepvegrow,&
                 &      FCANROT,      pftexistrow,&
                 &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
                 &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
@@ -3769,7 +3760,7 @@ contains
                 &      lucsocingat, nppveggat,   dstcemls3gat,&
                 &      faregat,     gavgscmsgat, tcanoaccgat_out,&
                 &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,&
-                &      vgbiomas_veggat,gppveggat,nepveggat,ailcmingat,ailcmaxgat,&
+                &      vgbiomas_veggat,gppveggat,nepveggat,&
                 &      fcangat,      pftexistgat,&
                 &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
                 &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&

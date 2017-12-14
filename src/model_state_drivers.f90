@@ -381,8 +381,6 @@ contains
         logical, pointer :: start_bare
         logical, pointer :: lnduseon
         logical, pointer :: obswetf
-        real, pointer, dimension(:,:,:) :: ailcminrow           !
-        real, pointer, dimension(:,:,:) :: ailcmaxrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -430,8 +428,6 @@ contains
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
         obswetf           => c_switch%obswetf
-        ailcminrow        => vrot%ailcmin
-        ailcmaxrow        => vrot%ailcmax
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -583,17 +579,6 @@ contains
         DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         ipeatlandrow = ncGet2DVar(initid, 'ipeatland', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
 
-!         SCANROT=0. !FLAG test! This is just until we have a 'normal' initfile... JM Oct30 2017.
-!         RCANROT=0.
-!         RHOSROT=0.
-!         ALBSROT = 0.
-!         SNOROT = 0.
-!         TBARROT = 258.
-!         THICROT = 0.
-!         TCANROT = 258.
-!
-!
-
         if (.not. ctem_on) then
             FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
             ! Error check:
@@ -674,8 +659,6 @@ contains
             Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            ailcminrow = ncGet3DVar(initid, 'ailcmin', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])  !FLAG remove
-            ailcmaxrow = ncGet3DVar(initid, 'ailcmax', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])  !FLAG remove
             fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
@@ -748,8 +731,6 @@ contains
 
                         do j = 1,icc
                             if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
-                            ailcminrow(i,m,j)=0.0
-                            ailcmaxrow(i,m,j)=0.0
                             gleafmasrow(i,m,j)=0.0
                             bleafmasrow(i,m,j)=0.0
                             stemmassrow(i,m,j)=0.0
@@ -815,8 +796,6 @@ contains
         logical, pointer :: ctem_on
         logical, pointer :: PFTCompetition
         logical, pointer :: lnduseon
-        real, pointer, dimension(:,:,:) :: ailcminrow           !
-        real, pointer, dimension(:,:,:) :: ailcmaxrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -841,17 +820,12 @@ contains
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
         ! local variables
-        !integer :: i,m,j,k1c,k2c,n
-        !integer, dimension(nlat,nmos) :: icountrow
-        !real, dimension(icc) :: rnded_pft
         real, parameter :: TFREZ = 273.16
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
         PFTCompetition    => c_switch%PFTCompetition
         lnduseon          => c_switch%lnduseon
-        ailcminrow        => vrot%ailcmin
-        ailcmaxrow        => vrot%ailcmax
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -889,7 +863,7 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
-!FLAG WISERNIG
+
         call ncPut2DVar(rsid, 'FARE', FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
         call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
@@ -908,8 +882,6 @@ contains
 
         if (ctem_on) then
 
-            call ncPut3DVar(rsid, 'ailcmin', ailcminrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'ailcmax', ailcmaxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'fcancmx', fcancmxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'gleafmas', gleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'bleafmas', bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
@@ -925,17 +897,18 @@ contains
 
             if (PFTCompetition) then
 
-                !call ncPut2DVar(rsid, 'twarmm', twarmm, start = [lonIndex, latIndex])
+                ! Since these climate related variables are only sensible at the gridcell level, we just write out the
+                ! value for the first tile (nlat is always 1 offline too).
                 call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-!                 call ncPut2DVar(rsid, 'tcoldm', tcoldm, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'gdd5', gdd5, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'aridity', aridity, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'srplsmon', srplsmon, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'defctmon', defctmon, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'anndefct', anndefct, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'annsrpls', annsrpls, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'annpcp', annpcp, start = [lonIndex, latIndex])
-!                 call ncPut2DVar(rsid, 'dry_season_length', dry_season_length, start = [lonIndex, latIndex])
+                call ncPutVar(rsid, 'tcoldm', realValues = reshape(tcoldm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'gdd5', realValues = reshape(gdd5(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'aridity', realValues = reshape(aridity(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'srplsmon', realValues = reshape(srplsmon(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'defctmon', realValues = reshape(defctmon(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'anndefct', realValues = reshape(anndefct(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'annsrpls', realValues = reshape(annsrpls(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'annpcp', realValues = reshape(annpcp(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'dry_season_length', realValues = reshape(dry_season_length(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
 
             end if ! PFTCompetition
 

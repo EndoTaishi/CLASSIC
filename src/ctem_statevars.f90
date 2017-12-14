@@ -186,9 +186,6 @@ type veg_rot
     integer, allocatable, dimension(:,:,:) :: lfstatus  !<leaf phenology status
     integer, allocatable, dimension(:,:,:) :: pandays   !<days with positive net photosynthesis (an) for use in
                                                         !<the phenology subroutine
-    real, allocatable, dimension(:,:,:) :: ailcmin      !<
-    real, allocatable, dimension(:,:,:) :: ailcmax      !<
-    !real, allocatable, dimension(:,:,:) :: dvdfcan      !<
     real, allocatable, dimension(:,:,:) :: gleafmas     !<green leaf mass for each of the ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: bleafmas     !<brown leaf mass for each of the ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: stemmass     !<stem mass for each of the ctem pfts, \f$kg c/m^2\f$
@@ -399,9 +396,6 @@ type veg_gat
     ! This is the basic data structure that contains the state variables
     ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1}
 
-    real, allocatable,dimension(:,:) :: ailcmin     !<
-    real, allocatable, dimension(:,:) :: ailcmax    !<
-    !real, allocatable, dimension(:,:) :: dvdfcan    !<
     real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -1029,9 +1023,6 @@ implicit none
 allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%lfstatus(nlat,nmos,icc),&
          vrot%pandays (nlat,nmos,icc),&
-         vrot%ailcmin (nlat,nmos,icc),&
-         vrot%ailcmax (nlat,nmos,icc),&
-         !vrot%dvdfcan (nlat,nmos,icc),&
          vrot%gleafmas(nlat,nmos,icc),&
          vrot%bleafmas(nlat,nmos,icc),&
          vrot%stemmass(nlat,nmos,icc),&
@@ -1324,9 +1315,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%faregat(ilg),&    ! the ROT is FAREROT
 
 ! allocated with ilg, icc
-         vgat%ailcmin (ilg,icc),&
-         vgat%ailcmax (ilg,icc),&
-         !vgat%dvdfcan (ilg,icc),&
          vgat%gleafmas (ilg,icc),&
          vgat%bleafmas (ilg,icc),&
          vgat%stemmass (ilg,icc),&
@@ -1797,9 +1785,6 @@ integer :: j,k,l,m
         do l = 1,icc
 
             vrot%smfuncveg(j,k,l)         = 0.0
-            vrot%ailcmin(j,k,l) = 0.
-            vrot%ailcmax(j,k,l) = 0.
-            !vrot%dvdfcan(j,k,l) = 0.
             vrot%gleafmas(j,k,l) = 0.
             vrot%bleafmas(j,k,l) = 0.
             vrot%stemmass(j,k,l) = 0.
@@ -1838,8 +1823,6 @@ integer :: j,k,l,m
             vrot%afrroot(j,k,l)      = 0.0
             vrot%wtstatus(j,k,l)     = 0.0
             vrot%ltstatus(j,k,l)     = 0.0
-            vrot%ailcmin(j,k,l)      = 0.0
-            vrot%ailcmax(j,k,l)      = 0.0
             vrot%pfcancmx(j,k,l)     = 0.0
             vrot%nfcancmx(j,k,l)     = 0.0
             vrot%nppveg(j,k,l)       = 0.0

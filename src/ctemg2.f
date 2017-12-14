@@ -31,7 +31,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      p      lucsocingat, nppveggat,   dstcemls3gat, popdingat,
      q      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,
      r      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,
-     s      gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,
+     s      gppveggat,   nepveggat,
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
@@ -77,7 +77,7 @@ c
      k      lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,
      l      farerow,     gavgscmsrow, rmlvegaccrow, pftexistrow,
      &      rmsvegrow,   rmrvegrow,   rgvegrow,   vgbiomas_vegrow,
-     &      gppvegrow,   nepvegrow,  ailcminrow,   ailcmaxrow,
+     &      gppvegrow,   nepvegrow,
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
@@ -202,8 +202,7 @@ c
       real  gavgscmsgat(ilg)
 c
       real rmlvegaccgat(ilg,icc),       rmsveggat(ilg,icc),
-     1      rmrveggat(ilg,icc),         rgveggat(ilg,icc),
-     2      ailcmingat(ilg,icc),        ailcmaxgat(ilg,icc)
+     1      rmrveggat(ilg,icc),         rgveggat(ilg,icc)
 c
       real vgbiomas_veggat(ilg,icc)
 c
@@ -296,8 +295,7 @@ c
       real  gavgscmsrow(nlat,nmos)
 c
       real rmlvegaccrow(nlat,nmos,icc), rmsvegrow(nlat,nmos,icc),
-     1      rmrvegrow(nlat,nmos,icc),   rgvegrow(nlat,nmos,icc),
-     2      ailcminrow(nlat,nmos,icc),  ailcmaxrow(nlat,nmos,icc)
+     1      rmrvegrow(nlat,nmos,icc),   rgvegrow(nlat,nmos,icc)
 c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
@@ -480,8 +478,6 @@ c
           rgveggat(k,l)    = rgvegrow(ilmos(k),jlmos(k),l)
           gppveggat(k,l)   = gppvegrow(ilmos(k),jlmos(k),l)
           autoresveggat(k,l)= autoresvegrow(ilmos(k),jlmos(k),l)
-          ailcmingat(k,l)  = ailcminrow(ilmos(k),jlmos(k),l)
-          ailcmaxgat(k,l)  = ailcmaxrow(ilmos(k),jlmos(k),l)
           vgbiomas_veggat(k,l) = vgbiomas_vegrow(ilmos(k),jlmos(k),l)
           pftexistgat(k,l) = pftexistrow(ilmos(k),jlmos(k),l)
 
