@@ -378,7 +378,6 @@ type veg_rot
                                                         !<temperature threshold for ndl dcd and crop pfts.
     real, allocatable, dimension(:,:,:)  :: slopefrac          !<prescribed fraction of wetlands based on slope
                                                         !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    real, allocatable, dimension(:,:,:) :: mlightng           !<
     real, allocatable, dimension(:,:,:) :: wetfrac_mon        !<
     
 ! allocated with nlat:     
@@ -470,7 +469,6 @@ type veg_gat
 
     real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
-    real, allocatable, dimension(:,:)   :: mlightng   !<
     real, allocatable, dimension(:)     :: dayl_max   !< maximum daylength for that location (hours)
     real, allocatable, dimension(:)     :: dayl       !< daylength for that location (hours)
 
@@ -1201,7 +1199,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
 ! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
          vrot%slopefrac(nlat,nmos,8),&
-         vrot%mlightng(nlat,nmos,12),&
          vrot%wetfrac_mon(nlat,nmos,12),&
     
 ! allocated with nlat:     
@@ -1429,7 +1426,6 @@ allocate(vgat%grclarea(ilg),&
 ! allocated with ilg, icc, {some number}:
          vgat%colddays (ilg,2),&
          vgat%slopefrac (ilg,8),&
-         vgat%mlightng (ilg,12),&
          vgat%wetfrac_mon (ilg,12),&
          vgat%tmonth (12,ilg),&
 

@@ -12,7 +12,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
      8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
-     9      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
+     9      uvaccgat_m,  vvaccgat_m,  prbfrhucgat,
      a      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
      b      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      c      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
@@ -58,7 +58,7 @@ c
      1      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      2      sandrow,     clayrow,     orgmrow,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
-     4      uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,
+     4      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,
      5      extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,
      6      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      7      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
@@ -142,8 +142,6 @@ c
 c
       real   tcanoaccgat_m(ilg),
      1          uvaccgat_m(ilg),      vvaccgat_m(ilg)
-c
-      real   mlightnggat(ilg,12)  !12month
 c
       real  prbfrhucgat(ilg),         extnprobgat(ilg),
      +      daylgat(ilg),             dayl_maxgat(ilg),
@@ -233,8 +231,6 @@ c
 c
       real  tcanoaccrow_m(nlat,nmos),
      1      uvaccrow_m(nlat,nmos),       vvaccrow_m(nlat,nmos)
-c
-      real  mlightngrow(nlat,nmos,12)  !12month
 c
       real  prbfrhucrow(nlat,nmos),       extnprobrow(nlat,nmos),
      +      daylrow(nlat),           dayl_maxrow(nlat),
@@ -412,7 +408,6 @@ c----------------------------------------------------------------------
 
       do 90 j=1,12     !12 months
           wetfrac_mongat(k,j)= wetfrac_monrow(ilmos(k),jlmos(k),j)
-          mlightnggat(k,j)=mlightngrow(ilmos(k),jlmos(k),j)
 90    continue
 
 c  

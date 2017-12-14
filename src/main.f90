@@ -1027,7 +1027,6 @@ contains
 
         real, pointer, dimension(:,:) :: extnprobrow
         real, pointer, dimension(:,:) :: prbfrhucrow
-        real, pointer, dimension(:,:,:) :: mlightngrow
         real, pointer, dimension(:) :: dayl_maxrow
         real, pointer, dimension(:) :: daylrow
         real, pointer, dimension(:) :: grclarea
@@ -1194,7 +1193,6 @@ contains
 
         real, pointer, dimension(:) :: extnprobgat
         real, pointer, dimension(:) :: prbfrhucgat
-        real, pointer, dimension(:,:) :: mlightnggat
         real, pointer, dimension(:) :: dayl_maxgat
         real, pointer, dimension(:) :: daylgat
 
@@ -2288,7 +2286,6 @@ contains
 
         extnprobrow       => vrot%extnprob
         prbfrhucrow       => vrot%prbfrhuc
-        mlightngrow       => vrot%mlightng
         daylrow           => vrot%dayl
         dayl_maxrow       => vrot%dayl_max
 
@@ -2492,7 +2489,6 @@ contains
 
         extnprobgat       => vgat%extnprob
         prbfrhucgat       => vgat%prbfrhuc
-        mlightnggat       => vgat%mlightng
         daylgat           => vgat%dayl
         dayl_maxgat       => vgat%dayl_max
 
@@ -3264,7 +3260,7 @@ contains
                     rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
                     sandgat,     claygat,     orgmgat,&
                     anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
-                    uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,&
+                    uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
                     extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,&
                     stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
                     bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
@@ -3309,7 +3305,7 @@ contains
                     rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
                     SANDROT,     CLAYROT,     ORGMROT,&
                     anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
-                    uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,&
+                    uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
                     extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,&
                     stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
                     bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&

@@ -402,7 +402,6 @@ contains
         real, pointer, dimension(:,:,:) :: soilcmasrow
         real, pointer, dimension(:,:) :: extnprob
         real, pointer, dimension(:,:) :: prbfrhuc
-        real, pointer, dimension(:,:,:) :: mlightng
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         integer, pointer, dimension(:,:) :: stdaln      !FLAG can be removed.
@@ -449,7 +448,6 @@ contains
         soilcmasrow       => vrot%soilcmas
         extnprob          => vrot%extnprob
         prbfrhuc          => vrot%prbfrhuc
-        mlightng          => vrot%mlightng
         slopefrac         => vrot%slopefrac
         stdaln            => vrot%stdaln
         lfstatusrow       => vrot%lfstatus
@@ -647,12 +645,6 @@ contains
                 grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
                 extnprob(:,i) = extnprob(:,1)
                 prbfrhuc(:,i) = prbfrhuc(:,1)
-            end do
-
-            mlightng(:,1,:) = ncGet2DVar(initid, 'mlightng', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])  !FLAG remove
-
-            do i = 1, nmos
-                mlightng(:,i,:) = mlightng(:,1,:)
             end do
 
             slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, nmos, 8], format = [nlat, nmos, 8])
@@ -960,7 +952,6 @@ contains
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
-        real, pointer, dimension(:,:,:) :: mlightngrow
 
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
@@ -976,7 +967,6 @@ contains
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         fcancmxrow      => vrot%fcancmx
-        mlightngrow       => vrot%mlightng
 
         select case (trim(inputRequested))
 
