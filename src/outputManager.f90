@@ -217,6 +217,8 @@ contains
                 validGroup = .true.
             elseif (c_switch%lnduseon .and. trim(descriptor%group) == "land") then
                 validGroup = .true.
+            elseif ((c_switch%lnduseon .or. c_switch%dofire) .and. trim(descriptor%group) == "land+fire") then
+                validGroup = .true.
             elseif (c_switch%dowetlands .and. trim(descriptor%group) == "methane") then
                 validGroup = .true.
             elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
@@ -591,7 +593,7 @@ contains
                 styr = readMetStartYear
 
                 if (readMetStartYear < jmosty .and. jmosty <= readMetStartYear + totyrs-1) then
-                    totyrs = readMetStartYear + totyrs - jmosty !(readMetEndYear - jmosty + 1) * metLoop
+                    totyrs = readMetStartYear + totyrs - jmosty
                     styr=jmosty
                 else if (jmosty > readMetStartYear + totyrs-1) then
                     print*,'determineTime says: Warning - jmosty is set to a year beyond the end of the run'
@@ -611,31 +613,34 @@ contains
             case("daily")
                 ! Daily may start writing later (after jdsty) and end earlier (jdendy) so make sure to account for that.
                 ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps
-                ! First determine the number of years
+
+                ! First guess for total years
+                totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
 
                 ! Sanity check on jdsty and jdendy
-                if (readMetEndYear < jdsty .or. readMetStartYear > jdendy) then
+                if ((readMetStartYear + totyrs - 1) < jdsty .or. readMetStartYear > jdendy) then
                     print*,'**addTime says: Check your daily output file start and end points, they are outside the range of this run'
                     stop
                 end if
+
+                !Take the possible number of years then trim based on jdsty and jdendy
+                styr = readMetStartYear
                 if (readMetStartYear < jdsty) then
-                    st = jdsty
-                else
-                    st = readMetStartYear
+                    totyrs = ((readMetStartYear + totyrs - 1) - jdsty + 1)
+                    styr = jdsty
                 end if
-                if (readMetEndYear > jdendy) then
-                    en = jdendy
-                else
-                    en = readMetEndYear
+
+                if ((readMetStartYear + totyrs - 1) > jdendy) then
+                    totyrs = readMetStartYear + totyrs - jdendy + 1
                 end if
-                totyrs = (en - st + 1)
+
                 ! Now determine the total number of timesteps (days) across all years
                 totsteps = 0
                 allocate(timeVect(0))
                 cnt=0
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
-                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
                     st = max(1, jdstd)
                     en = min(jdendd, lastDOY)
                     totsteps = totsteps + (en - st + 1)
@@ -646,7 +651,7 @@ contains
                     end if
                     do j = st,en
                         cnt=cnt+1
-                        temptime(cnt) = (readMetStartYear + i - 1 - refyr) * lastDOY + j
+                        temptime(cnt) = (styr + i - 1 - refyr) * lastDOY + j
                 end do
                     call move_alloc(temptime,timeVect)
                 end do
@@ -655,23 +660,25 @@ contains
                 ! Similar to daily in that it may start writing later (after jhhsty) and end earlier (jhhendy) so make sure to account for that.
                 ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps
 
+                ! First guess for total years
+                totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
+
                 ! Sanity check on jhhsty and jhhendy
-                if (readMetEndYear < jhhsty .or. readMetStartYear > jhhendy) then
-                    print*,'**addTime says: Check your half-hourly output file start and end points, they are outside the range of this run'
+                if ((readMetStartYear + totyrs - 1) < jhhsty .or. readMetStartYear > jhhendy) then
+                    print*,'**addTime says: Check your daily output file start and end points, they are outside the range of this run'
                     stop
                 end if
 
+                !Take the possible number of years then trim based on jhhsty and jhhendy
+                styr = readMetStartYear
                 if (readMetStartYear < jhhsty) then
-                    st = jhhsty
-                else
-                    st = readMetStartYear
+                    totyrs = ((readMetStartYear + totyrs - 1) - jhhsty + 1)
+                    styr = jhhsty
                 end if
-                if (readMetEndYear > jhhendy) then
-                    en = jhhendy
-                else
-                    en = readMetEndYear
+
+                if ((readMetStartYear + totyrs - 1) > jhhendy) then
+                    totyrs = readMetStartYear + totyrs - jhhendy + 1
                 end if
-                totyrs = (en - st + 1)
 
                 ! Now determine the total number of timesteps (halfhours) across all years
                 totsteps = 0
@@ -679,7 +686,7 @@ contains
                 cnt=0
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
-                    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+                    if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
                     st = max(1, jhhstd)
                     en = min(jhhendd, lastDOY)
                     totsteps = totsteps + (en - st + 1) * 48 ! 48 half hours in a day. !FLAG change this if delt is not half-hour
@@ -692,7 +699,7 @@ contains
                     do j = st,en
                         do m = 1,48
                             cnt=cnt+1
-                            temptime(cnt) = (readMetStartYear + i - 1 - refyr) * lastDOY + j + (m - 1) / 48.
+                            temptime(cnt) = (styr + i - 1 - refyr) * lastDOY + j + (m - 1) / 48.
                         end do
                     end do
                     call move_alloc(temptime,timeVect)
@@ -729,7 +736,6 @@ contains
         real, dimension(:), allocatable :: localData
         real, dimension(1) :: localStamp
         real, allocatable, dimension(:) :: timeWritten
-        character(90) :: errmsg
 
         allocate(localData(size(data)))
         localStamp = timeStamp
@@ -739,8 +745,9 @@ contains
         id= getIdByKey(key)
 
         if (id == 0) then
-            errmsg = 'writeOutput1D says: Your requested key does not exist (' // trim(key) // ') in netcdfVars.'
-            print*,trim(errmsg)
+            print*,'writeOutput1D says: Your requested key does not exist (' // trim(key) // ') in netcdfVars.'
+            print*, 'Possible reasons include '// trim(key) // ' not in xml file so no netcdf created'
+            print*, 'or mismatch between xml group and model switch for this key.'
             stop
         end if
 

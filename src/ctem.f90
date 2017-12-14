@@ -1722,7 +1722,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
      &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
      &                    pstemmass, pgleafmass )  
-
+    
 !    ------------------------------------------------------------------
 !>
 !>Calculate nbp (net biome production) for each pft by taking into account

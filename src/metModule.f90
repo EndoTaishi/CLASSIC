@@ -8,7 +8,7 @@ module metDisaggModule
 
     implicit none
 
-    public :: disaggGridCell
+    public :: disaggMet
     public :: makebig
     public :: stepInterpolation
     public :: linearInterpolation
@@ -28,10 +28,10 @@ module metDisaggModule
 contains
 
 !-----------------------------------------------------------------------------------------------------------------------------------------------------
-!>\ingroup metDisaggModule_disaggGridCell
+!>\ingroup metDisaggModule_disaggMet
 !!@{
 !> Main subroutine to disaggregate input meteorology to that of the physics timestep
-    subroutine disaggGridCell(longitude, latitude,delt) ! longitude, latitude
+    subroutine disaggMet(longitude, latitude,delt) ! longitude, latitude
 
         implicit none
 
@@ -84,7 +84,7 @@ contains
         !! trim off the added two days.
         call timeShift(timeZone(longitude,delt),vcount,vcountPlus)
 
-    end subroutine disaggGridCell
+    end subroutine disaggMet
 !!@}
 
 !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -120,6 +120,9 @@ contains
         !! padding days.
         allocate(metFss(vcountPlus),metFdl(vcountPlus),metPre(vcountPlus),metTa(vcountPlus),&
                  metQa(vcountPlus),metUv(vcountPlus),metPres(vcountPlus),metTime(vcount))
+
+        ! initialize to zero so they are not filled in with random value by the compiler
+        metFdl=0. ; metFss=0. ; metPre=0. ; metTa =0. ; metQa =0. ; metUv =0. ; metPres=0.
 
         !> The remainder of the meteorological variables need to have a couple extra
         !! days pinned on, one at the start and one at the end.

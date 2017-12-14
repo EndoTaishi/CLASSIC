@@ -407,7 +407,7 @@ contains
         real, pointer, dimension(:,:,:) :: mlightng
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
-        integer, pointer, dimension(:,:) :: stdaln
+        integer, pointer, dimension(:,:) :: stdaln      !FLAG can be removed.
         real, pointer, dimension(:,:,:) :: slopefrac
         integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland switch: 0 = not a peatland, 1= bog, 2 = fen
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
@@ -655,8 +655,8 @@ contains
         if (ctem_on) then
 
             grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
-            extnprob(:,1) = ncGet1DVar(initid, 'extnprob', start = [lonIndex, latIndex], count = [1, 1])
-            prbfrhuc(:,1) = ncGet1DVar(initid, 'prbfrhuc', start = [lonIndex, latIndex], count = [1, 1])
+            extnprob(:,1) = ncGet1DVar(initid, 'extnprob', start = [lonIndex, latIndex], count = [1, 1])  !FLAG remove
+            prbfrhuc(:,1) = ncGet1DVar(initid, 'prbfrhuc', start = [lonIndex, latIndex], count = [1, 1])  !FLAG remove
 
             do i = 1,nmos
                 grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
@@ -664,7 +664,7 @@ contains
                 prbfrhuc(:,i) = prbfrhuc(:,1)
             end do
 
-            mlightng(:,1,:) = ncGet2DVar(initid, 'mlightng', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+            mlightng(:,1,:) = ncGet2DVar(initid, 'mlightng', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])  !FLAG remove
 
             do i = 1, nmos
                 mlightng(:,i,:) = mlightng(:,1,:)
@@ -674,14 +674,9 @@ contains
             Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            ailcminrow = ncGet3DVar(initid, 'ailcmin', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            ailcmaxrow = ncGet3DVar(initid, 'ailcmax', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            ailcminrow = ncGet3DVar(initid, 'ailcmin', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])  !FLAG remove
+            ailcmaxrow = ncGet3DVar(initid, 'ailcmax', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])  !FLAG remove
             fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-
-            !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
-            !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
-            !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
-
             gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
@@ -972,7 +967,7 @@ contains
         real, intent(in), optional :: latitude
         integer :: lengthOfFile
         integer :: lonloc,latloc
-        integer :: i,arrindex,m,numPFTsinFile
+        integer :: i,arrindex,m,numPFTsinFile,d
         real, dimension(:), allocatable :: fileTime
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
@@ -1133,6 +1128,7 @@ contains
                 ! Find the requested day and year in the file.
                 ! Assume we are grabbing from day 1
                 startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
+
                 arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
                 if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
 
@@ -1140,6 +1136,13 @@ contains
                 ! FLAG Not presently set up for leap years!
                 allocate(LGHTFromFile(365))
                 LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [arrindex,lonloc,latloc], count = [365,1,1])
+
+                ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
+                deallocate(LGHTTime)
+                allocate(LGHTTime(365))
+                do d = 1,365
+                    LGHTTime(d) = real(d)
+                end do
 
             end if
 
@@ -1205,7 +1208,7 @@ contains
     !!@{
     !> Update the input field variable based on the present model timestep
 
-    subroutine updateInput(inputRequested,iyear,imonth,iday)
+    subroutine updateInput(inputRequested,iyear,imonth,iday,dom)
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
@@ -1217,6 +1220,7 @@ contains
         integer, intent(in) :: iyear
         integer, intent(in), optional :: imonth
         integer, intent(in), optional :: iday
+        integer, intent(in), optional :: dom            ! day of month
         integer :: arrindex,lengthTime,i,m
         real :: LGHTTimeNow
         real, pointer, dimension(:,:) :: co2concrow
@@ -1285,9 +1289,9 @@ contains
             lengthTime = size(LGHTTime)
 
             if (transientLGHT) then
-                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(iday)
-            else ! we only draw from the fixedYearLGHT
-                LGHTTimeNow = fixedYearLGHT * 10000. + real(imonth+1) * 100. + real(iday)
+                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+            else ! we only need the day
+                LGHTTimeNow = real(iday)
             end if
 
             ! Find the requested year in the file.

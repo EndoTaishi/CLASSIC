@@ -62,7 +62,7 @@ contains
         use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
-        use metDisaggModule, only : disaggGridCell
+        use metDisaggModule, only : disaggMet
 
         implicit none
 
@@ -80,6 +80,7 @@ contains
         INTEGER NCOUNT  !<Counter for daily averaging
         INTEGER NDAY    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
         INTEGER :: IMONTH!<Month of the year simulation is in.
+        integer :: DOM  !< Day of month counter
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -2762,7 +2763,7 @@ contains
         metDone = .false.   !< Logical switch when the end of the stored meteorological array is reached.
         run_model = .true.  !< Simple logical switch to either keep run going or finish
         IMONTH = 0          !<Month of the year simulation is in.
-        !DOM = 1             !< Day of month counter
+        DOM = 1             !< Day of month counter
         CUMSNO = 0.0
         lopcount = 1
         leapnow = .false.
@@ -2808,7 +2809,7 @@ contains
 
         !> Now disaggregate the meteorological forcing to the right timestep
         !! for this model run
-        call disaggGridCell(longitude, latitude,delt)
+        call disaggMet(longitude, latitude,delt)
 
 !     Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
@@ -3133,7 +3134,7 @@ contains
                 daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
 
                 ! Update the lightning if fire is on and transientLGHT is true
-                if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday)
+                if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday,dom=DOM)
 
                 !Check if this is the first day of the year
                 if (iday.eq.1) then
@@ -3787,7 +3788,7 @@ contains
 
             if(ncount.eq.nday) then
 
-               ! DOM=DOM + 1 !increment the day of month counter
+                DOM=DOM + 1 !increment the day of month counter
 
                 !     reset mosaic accumulator arrays.
 
@@ -4729,6 +4730,7 @@ contains
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
                     IMONTH=NT
+                    DOM=1 !reset the day of month counter
                 ENDIF
             ENDDO
 
@@ -4783,6 +4785,9 @@ contains
 
                 ! Increment the runyr
                 runyr = runyr + 1
+
+                ! Reset the month
+                imonth = 0
 
             endif !last day of year check
 
