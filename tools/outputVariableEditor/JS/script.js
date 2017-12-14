@@ -4,8 +4,9 @@ var groups = []
 var variablesChanged = false;
 var emptyUnits = false;
 
-function Variable(id, standardName, longName, shortName, defaultUnits, group, bareGround) {
+function Variable(id, standardName, longName, shortName, defaultUnits, group, bareGround, dormant) {
 	this.id = id;
+	this.dormant = dormant;
 	this.standardName = standardName;
 	this.longName = longName;
 	this.shortName = shortName;
@@ -36,9 +37,10 @@ function sceneSetup() {
 	$('button#removeVariable').on('click', removeVariable);
 	$('button#addGroup').on('click', addGroupFromForm);
 	$('#clearForm').on('click', clearForm);
-	$('button#search').on('click', search);
-	$('input#search').on('change', search);
-	
+	$('button#search').on('click', refreshColours);
+	$('input#search').on('change', refreshColours);
+	$('input#search').on('keypress', refreshColours);
+		
 	$('#accordion').accordion({
 		collapsible : true
 	});
@@ -49,40 +51,56 @@ function sceneSetup() {
 				variablesChanged = false;
 			}
 			switch (event.currentTarget.id) {
-			case 'tab1': 								break;
-			case 'tab2': addGroupsToForm();				break;
-			case 'tab3': buildVariableConfigForms();	break;
-			case 'tab4': generateVariants();			break;
+			case 'tab1': 												break;
+			case 'tab2': addGroupsToForm();								break;
+			case 'tab3': buildVariableConfigForms(); refreshDormancy();	break;
+			case 'tab4': generateVariants();							break;
 			}
 		}
 	});
 }
 
-function search() {
+function refreshDormancy() {
+	for (var v = 0; v < variables.length; v++) {
+		if ($('input#' + variables[v].id + '.variableCheckboxInput.dormant')[0].checked) variables[v].dormant = true;
+		else variables[v].dormant = false;
+	}
+	refreshColours();
+}
+
+function refreshColours() {
 	var keyword = $('input#search')[0].value.toLowerCase();
 
-	for (var v = 0; v < variables.length; v++) {
+	for (var v = 0; v < variables.length; v++)
+		if (variables[v].dormant) {
+			$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '#777777');
+			$('div#' + variables[v].id).css('background-color', '#EEEEEE');
+		} else {
 			$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '');
-	}
-		
+			$('div#' + variables[v].id).css('background-color', '');
+		}
+
 	var counter = 0;
 	if ((keyword != '') && (keyword != ' ')) {
 		$('p#status').html("Searching...");
 		var first = -1;
 		for (var v = 0; v < variables.length; v++) {
-			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].defaultUnits;
+			var allText = variables[v].shortName + ' ' + variables[v].standardName + ' ' + variables[v].longName + ' ' + variables[v].defaultUnits + ' ' + variables[v].group;
 			allText = allText.toLowerCase();
 			if (allText.indexOf(keyword) !== -1) {
 				first = v;
 				counter++;
-				$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '#AAAAFF');
+				if (variables[v].dormant)
+					$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '#7777FF');
+				else
+					$('h3[aria-controls=' + variables[v].id + ']').css('background-color', '#AAAAFF');
 			}
 		}
 
 		if (first != -1) {
 			$('#accordion').accordion('option', 'active', variables.length - first - 1);
 		}
-		$('p#status').html('Found ' + counter + ' results.');
+		if (counter > 0) $('p#status').html('Found ' + counter + ' results. <br>The first result has been expanded below, please scroll down to visualize it.');
 	}
 	else $('p#status').html('');
 }
@@ -142,9 +160,10 @@ function loadXml() {
 					//var defaultUnits = $('units', this).text().trim(); //use this for code version 1.0
 					var group = $(this.parentElement.attributes['type'])[0].value;
 					var bareGround = ($(this.attributes['includeBareGround'])[0].value == 'true');
+					var dormant = ($(this.attributes['dormant'])[0].value == 'true');
 					addGroup(group);
 
-					var variable = new Variable(id, standardName, longName, shortName, defaultUnits, group, bareGround);
+					var variable = new Variable(id, standardName, longName, shortName, defaultUnits, group, bareGround, dormant);
 					variables.push(variable);
 				});
 
@@ -208,9 +227,12 @@ function addVariable() {
 	var shortName = $('#shortName')[0].value;
 	var defaultUnits = $('#defaultUnits')[0].value;
 	var group = $('#group')[0].value;
-	var bareGround = $('#bareGround')[0].value;
-	if ($('input#bareGround')[0].checked) bareGround = 'true';
-	else bareGround = 'false';
+	var bareGround;
+	var dormant;
+	if ($('input#bareGround')[0].checked) bareGround = true;
+	else bareGround = false;
+	if ($('input#dormant')[0].checked) dormant = true;
+	else dormant = false;
 
 	if (shortName != '') {
 		var found = false;
@@ -230,7 +252,7 @@ function addVariable() {
 				alert('There seems to be a problem with the group');
 			} else 	{
 				var variable = new Variable(variables.length, standardName, longName, shortName,
-						defaultUnits, group, bareGround);
+						defaultUnits, group, bareGround, dormant);
 				variables.push(variable);
 				alert('Successfully added the ' + shortName + ' variable!');
 			}
@@ -272,6 +294,27 @@ function buildVariableConfigForms() {
 				
 				var $variableTable = $('<table class="variableTable"/>');
 	
+				$line = $('<tr title = "A dormant variable is stored, but the CLASSIC model will ignore it. Use this option if you want to save a variable for later use."/>')
+				.append($('<td/>').text('Dormant (inactive) variable: '))
+				.append($('<td/>').append($('<input/>', {
+										type: 'checkbox',
+										id : currentVariable.id,
+										class : 'variableCheckboxInput dormant',
+										checked : currentVariable.dormant
+									})));
+				$variableTable.append($line);
+				
+				$line = $('<tr/>')
+				.append($('<td/>').text('Group: '))
+				.append($('<td/>').append($('<input/>', {
+										type	: 'text',
+										id 		: currentVariable.id,
+										value 	: currentVariable.group,
+										class : 'variableTextInput',
+										readonly: true
+									})));
+				$variableTable.append($line);
+				
 				$line = $('<tr/>')
 				.append($('<td/>').text('Short Name: '))
 				.append($('<td/>').append($('<input/>', {
@@ -312,13 +355,13 @@ function buildVariableConfigForms() {
 										title 	: 'If using no units, please use a dash ("-")'
 									})));
 				$variableTable.append($line);
-				
+
 				$line = $('<tr/>')
 				.append($('<td/>').text('Include bare ground: '))
 				.append($('<td/>').append($('<input/>', {
 										type: 'checkbox',
 										id : currentVariable.id,
-										class : 'variableTextInput bareGround',
+										class : 'variableCheckboxInput bareGround',
 										checked : currentVariable.bareGround
 									})));
 				$variableTable.append($line);
@@ -408,6 +451,7 @@ function buildVariableConfigForms() {
 		
 		// Refresh accordion structure
 		$('#accordion').accordion('refresh');
+		$('input.variableCheckboxInput.dormant').on('click', refreshDormancy);
 		//$('#accordion').accordion('option', 'active', 0);
 		variablesChanged = true;
 	} else
@@ -481,7 +525,7 @@ function generateVariants() {
 
 			var d = new Date();
 			var strDate = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-			$('variableSet', xml).attr('type', 'CLASS').attr('version', '1.1').attr('created', strDate);
+			$('variableSet', xml).attr('type', 'CLASS').attr('version', '1.2').attr('created', strDate);
 
 			// Append groups
 			for (var g = 0; g < groups.length; g++) {
@@ -498,7 +542,9 @@ function generateVariants() {
 				var $defaultUnits = $(xml.createElement('defaultUnits')).text(variables[v].defaultUnits);
 
 				$variable.append($standardName).append($longName)
-				.append($shortName).append($defaultUnits).attr('includeBareGround', variables[v].bareGround);
+				.append($shortName).append($defaultUnits)
+				.attr('includeBareGround', variables[v].bareGround)
+				.attr('dormant', variables[v].dormant);
 				$('group[type=' + variables[v].group + ']', xml).append($variable);
 			}
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.1" created="2017/12/11">
+<variableSet type="CLASS" version="1.2" created="2017/12/13">
     <group type="class">
-        <variable id="0" includeBareGround="false">
+        <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
             <longName>Net downward shortwave radiation at the surface</longName>
             <shortName>rss</shortName>
@@ -37,7 +37,7 @@
                 <units>W/$m^2$</units>
             </variant>
         </variable>
-        <variable id="1" includeBareGround="false">
+        <variable id="1" includeBareGround="false" dormant="false">
             <standardName>Net longwave surface radiation</standardName>
             <longName>Net longwave radiation at the surface</longName>
             <shortName>rls</shortName>
@@ -73,7 +73,7 @@
                 <units>W/$m^2$</units>
             </variant>
         </variable>
-        <variable id="2" includeBareGround="false">
+        <variable id="2" includeBareGround="false" dormant="false">
             <standardName>Surface Net Sensible Heat Flux</standardName>
             <longName>Surface Net Sensible Heat Flux</longName>
             <shortName>hfss</shortName>
@@ -109,7 +109,7 @@
                 <units>W/$m^2$</units>
             </variant>
         </variable>
-        <variable id="3" includeBareGround="false">
+        <variable id="3" includeBareGround="false" dormant="false">
             <standardName>Surface Net Latent Heat Flux</standardName>
             <longName>Surface Net Latent Heat Flux</longName>
             <shortName>hfls</shortName>
@@ -145,7 +145,7 @@
                 <units>W/$m^2$</units>
             </variant>
         </variable>
-        <variable id="4" includeBareGround="false">
+        <variable id="4" includeBareGround="false" dormant="false">
             <standardName>Surface Snow Amount</standardName>
             <longName>The mass of surface snow on the land portion of the grid cell divided by the land area in the grid cell reported as missing where the land fraction is 0 excludes snow on vegetation canopy or on sea ice.</longName>
             <shortName>snw</shortName>
@@ -169,7 +169,7 @@
                 <units>kg/$m^2$</units>
             </variant>
         </variable>
-        <variable id="5" includeBareGround="false">
+        <variable id="5" includeBareGround="false" dormant="false">
             <standardName>Liquid water content of snow pack</standardName>
             <longName>The total mass of liquid water contained interstitially within the whole depth of the snow pack of the land portion of a grid cell divided by the area of the land portion of the cell.</longName>
             <shortName>wsnw</shortName>
@@ -193,7 +193,7 @@
                 <units>kg/$m^2$</units>
             </variant>
         </variable>
-        <variable id="6" includeBareGround="false">
+        <variable id="6" includeBareGround="false" dormant="false">
             <standardName>Total Run-off</standardName>
             <longName>The total run-off (including drainage through the base of the soil model) per unit area leaving the land portion of the grid cell.</longName>
             <shortName>mrro</shortName>
@@ -223,7 +223,7 @@
                 <units>mm/year</units>
             </variant>
         </variable>
-        <variable id="7" includeBareGround="false">
+        <variable id="7" includeBareGround="false" dormant="false">
             <standardName>Precipitation</standardName>
             <longName>Preciptiation, includes both solid and liquid phases</longName>
             <shortName>pr</shortName>
@@ -247,7 +247,7 @@
                 <units>mm/year -fix</units>
             </variant>
         </variable>
-        <variable id="8" includeBareGround="false">
+        <variable id="8" includeBareGround="false" dormant="false">
             <standardName>Evaporation</standardName>
             <longName>Evaporation at surface: flux of water into the atmosphere due to conversion of both liquid and solid phases to vapor (from    underlying surface and vegetation)</longName>
             <shortName>evspsbl</shortName>
@@ -265,7 +265,7 @@
                 <units>mm/year</units>
             </variant>
         </variable>
-        <variable id="9" includeBareGround="false">
+        <variable id="9" includeBareGround="false" dormant="false">
             <standardName>Water Evaporation from Soil</standardName>
             <longName>Water evaporation from soil (including sublimation)</longName>
             <shortName>evspsblsoi</shortName>
@@ -277,7 +277,7 @@
                 <units>kg/$m^2$</units>
             </variant>
         </variable>
-        <variable id="10" includeBareGround="false">
+        <variable id="10" includeBareGround="false" dormant="false">
             <standardName>Water Evaporation from Canopy</standardName>
             <longName>The canopy evaporation and sublimation; may include dew formation as a negative flux.</longName>
             <shortName>evspsblveg</shortName>
@@ -289,7 +289,7 @@
                 <units>mm/month</units>
             </variant>
         </variable>
-        <variable id="11" includeBareGround="false">
+        <variable id="11" includeBareGround="false" dormant="false">
             <standardName>Transpiration</standardName>
             <longName>Transpiration</longName>
             <shortName>tran</shortName>
@@ -307,7 +307,7 @@
                 <units>mm/year</units>
             </variant>
         </variable>
-        <variable id="12" includeBareGround="false">
+        <variable id="12" includeBareGround="false" dormant="false">
             <standardName>Surface Air Temperature</standardName>
             <longName>Near-surface air temperature at reference height</longName>
             <shortName>tas</shortName>
@@ -325,7 +325,7 @@
                 <units>$\circ$C</units>
             </variant>
         </variable>
-        <variable id="13" includeBareGround="false">
+        <variable id="13" includeBareGround="false" dormant="false">
             <standardName>Surface Albedo</standardName>
             <longName>Grid cell average albedo for all wavelengths.</longName>
             <shortName>albs</shortName>
@@ -355,7 +355,7 @@
                 <units>fraction</units>
             </variant>
         </variable>
-        <variable id="14" includeBareGround="false">
+        <variable id="14" includeBareGround="false" dormant="false">
             <standardName>Temperature of Soil</standardName>
             <longName>Temperature of each soil layer. Reported as missing for grid cells with no land.</longName>
             <shortName>tsl</shortName>
@@ -379,7 +379,7 @@
                 <units>$\circ$C</units>
             </variant>
         </variable>
-        <variable id="15" includeBareGround="false">
+        <variable id="15" includeBareGround="false" dormant="false">
             <standardName>Liquid water content of soil layer</standardName>
             <longName>In each soil layer, the mass of water in liquid phase. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
             <shortName>mrsll</shortName>
@@ -403,7 +403,7 @@
                 <units>$m^3$/$m^3$</units>
             </variant>
         </variable>
-        <variable id="16" includeBareGround="false">
+        <variable id="16" includeBareGround="false" dormant="false">
             <standardName>Frozen water content of soil layer</standardName>
             <longName>In each soil layer, the mass of water in ice phase. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
             <shortName>mrsfl</shortName>
@@ -427,7 +427,7 @@
                 <units>$m^3$/$m^3$</units>
             </variant>
         </variable>
-        <variable id="17" includeBareGround="false">
+        <variable id="17" includeBareGround="false" dormant="false">
             <standardName>Active Layer Depth</standardName>
             <longName>Mean active layer depth</longName>
             <shortName>actlyr</shortName>
@@ -439,7 +439,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="18" includeBareGround="false">
+        <variable id="18" includeBareGround="false" dormant="false">
             <standardName>Maximum Active Layer Depth</standardName>
             <longName>Maximum active layer depth</longName>
             <shortName>actlyrmax</shortName>
@@ -451,7 +451,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="19" includeBareGround="false">
+        <variable id="19" includeBareGround="false" dormant="false">
             <standardName>Minimum Active Layer Depth</standardName>
             <longName>Minimum Active Layer Depth</longName>
             <shortName>actlyrmin</shortName>
@@ -463,7 +463,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="20" includeBareGround="false">
+        <variable id="20" includeBareGround="false" dormant="false">
             <standardName>Mean depth to frozen water table</standardName>
             <longName>Mean depth to frozen water table</longName>
             <shortName>ftable</shortName>
@@ -475,7 +475,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="21" includeBareGround="false">
+        <variable id="21" includeBareGround="false" dormant="false">
             <standardName>Maximum depth to frozen water table</standardName>
             <longName>Maximum depth to frozen water table</longName>
             <shortName>ftablemax</shortName>
@@ -487,7 +487,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="22" includeBareGround="false">
+        <variable id="22" includeBareGround="false" dormant="false">
             <standardName>Minimum depth to frozen water table</standardName>
             <longName>Minimum depth to frozen water table</longName>
             <shortName>ftablemin</shortName>
@@ -499,7 +499,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="53" includeBareGround="false">
+        <variable id="53" includeBareGround="false" dormant="false">
             <standardName>Snow melt heat flux</standardName>
             <longName>Energy associated with phase change of water in snow pack</longName>
             <shortName>snm</shortName>
@@ -523,7 +523,7 @@
                 <units>$[W m^{-2} ]$</units>
             </variant>
         </variable>
-        <variable id="54" includeBareGround="false">
+        <variable id="54" includeBareGround="false" dormant="false">
             <standardName>Snow thickness</standardName>
             <longName>Snow thickness (snorow/rhosnow)</longName>
             <shortName>sisnthick</shortName>
@@ -541,7 +541,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="55" includeBareGround="false">
+        <variable id="55" includeBareGround="false" dormant="false">
             <standardName>Vegetation Canopy Temperature</standardName>
             <longName>Vegetation Canopy Temperature</longName>
             <shortName>tcs</shortName>
@@ -559,7 +559,7 @@
                 <units>degree C</units>
             </variant>
         </variable>
-        <variable id="56" includeBareGround="false">
+        <variable id="56" includeBareGround="false" dormant="false">
             <standardName>Surface Downwelling Shortwave Radiation</standardName>
             <longName>Surface Downwelling Shortwave Radiative flux in air</longName>
             <shortName>rsds</shortName>
@@ -571,7 +571,7 @@
                 <units>W/$m^2$</units>
             </variant>
         </variable>
-        <variable id="57" includeBareGround="false">
+        <variable id="57" includeBareGround="false" dormant="false">
             <standardName>Surface Downwelling Longwave Radiation</standardName>
             <longName>Surface Downwelling Longwave Radiative flux in air</longName>
             <shortName>rlds</shortName>
@@ -583,7 +583,7 @@
                 <units>W/$m^2$</units>
             </variant>
         </variable>
-        <variable id="58" includeBareGround="false">
+        <variable id="58" includeBareGround="false" dormant="false">
             <standardName>Near surface wind</standardName>
             <longName>Wind speed at reference height</longName>
             <shortName>uvas</shortName>
@@ -595,7 +595,7 @@
                 <units>m/s</units>
             </variant>
         </variable>
-        <variable id="59" includeBareGround="false">
+        <variable id="59" includeBareGround="false" dormant="false">
             <standardName>Specific humidity</standardName>
             <longName>Specific humidity at reference height</longName>
             <shortName>huss</shortName>
@@ -607,7 +607,7 @@
                 <units>kg/kg</units>
             </variant>
         </variable>
-        <variable id="60" includeBareGround="false">
+        <variable id="60" includeBareGround="false" dormant="false">
             <standardName>Air pressure</standardName>
             <longName>Air pressure at reference height</longName>
             <shortName>ps</shortName>
@@ -619,7 +619,7 @@
                 <units>Pa</units>
             </variant>
         </variable>
-        <variable id="61" includeBareGround="false">
+        <variable id="61" includeBareGround="false" dormant="false">
             <standardName>Surface Temperature</standardName>
             <longName>Surface (skin) temperature</longName>
             <shortName>ts</shortName>
@@ -631,7 +631,7 @@
                 <units>K</units>
             </variant>
         </variable>
-        <variable id="62" includeBareGround="false">
+        <variable id="62" includeBareGround="false" dormant="false">
             <standardName>Snow on canopy</standardName>
             <longName>Intercepted frozen water stored on canopy</longName>
             <shortName>scanopy</shortName>
@@ -649,7 +649,7 @@
                 <units>$[kg m^{-2} ]$</units>
             </variant>
         </variable>
-        <variable id="63" includeBareGround="false">
+        <variable id="63" includeBareGround="false" dormant="false">
             <standardName>Rain on canopy</standardName>
             <longName>Intercepted liquid water stored on canopy</longName>
             <shortName>rcanopy</shortName>
@@ -667,7 +667,7 @@
                 <units>$[kg m^{-2} ]$</units>
             </variant>
         </variable>
-        <variable id="64" includeBareGround="false">
+        <variable id="64" includeBareGround="false" dormant="false">
             <standardName>Temperature of snow pack</standardName>
             <longName>Bulk temperature of the snow, not the surface (skin) temperature</longName>
             <shortName>tsn</shortName>
@@ -685,7 +685,7 @@
                 <units>degree C</units>
             </variant>
         </variable>
-        <variable id="65" includeBareGround="false">
+        <variable id="65" includeBareGround="false" dormant="false">
             <standardName>Temperature of ponded water</standardName>
             <longName>Temperature of water ponded on the soil surface</longName>
             <shortName>tpond</shortName>
@@ -703,7 +703,7 @@
                 <units>degree C</units>
             </variant>
         </variable>
-        <variable id="66" includeBareGround="false">
+        <variable id="66" includeBareGround="false" dormant="false">
             <standardName>Depth of ponded water</standardName>
             <longName>Depth of water ponded on the soil surface</longName>
             <shortName>zpond</shortName>
@@ -721,7 +721,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="67" includeBareGround="false">
+        <variable id="67" includeBareGround="false" dormant="false">
             <standardName>Surface black-body temperature</standardName>
             <longName>Diagnosed effective surface black-body temperature</longName>
             <shortName>tsblack</shortName>
@@ -739,7 +739,7 @@
                 <units>degree C</units>
             </variant>
         </variable>
-        <variable id="68" includeBareGround="false">
+        <variable id="68" includeBareGround="false" dormant="false">
             <standardName>Snow density</standardName>
             <longName>Density of snow pack</longName>
             <shortName>snwdens</shortName>
@@ -757,7 +757,7 @@
                 <units>$[kg m^{-3}]$</units>
             </variant>
         </variable>
-        <variable id="69" includeBareGround="false">
+        <variable id="69" includeBareGround="false" dormant="false">
             <standardName>Surface Run off</standardName>
             <longName>The total surface run off leaving the land portion of the grid cell (excluding drainage through the base of the soil model).</longName>
             <shortName>mrros</shortName>
@@ -775,7 +775,7 @@
                 <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
-        <variable id="70" includeBareGround="false">
+        <variable id="70" includeBareGround="false" dormant="false">
             <standardName>Interflow runoff</standardName>
             <longName>Interflow runoff, not including baseflow or overland flow</longName>
             <shortName>mrroi</shortName>
@@ -793,7 +793,7 @@
                 <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
-        <variable id="71" includeBareGround="false">
+        <variable id="71" includeBareGround="false" dormant="false">
             <standardName>Subsurface runoff</standardName>
             <longName>Subsurface runoff (baseflow, not including interflow)</longName>
             <shortName>mrrob</shortName>
@@ -811,7 +811,7 @@
                 <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
-        <variable id="72" includeBareGround="false">
+        <variable id="72" includeBareGround="false" dormant="false">
             <standardName>Surface drag coefficient for heat</standardName>
             <longName>Surface drag coefficient for heat</longName>
             <shortName>cdh</shortName>
@@ -829,7 +829,7 @@
                 <units>Unitless</units>
             </variant>
         </variable>
-        <variable id="73" includeBareGround="false">
+        <variable id="73" includeBareGround="false" dormant="false">
             <standardName>Surface drag coefficient for momentum</standardName>
             <longName>Surface drag coefficient for momentum</longName>
             <shortName>cdm</shortName>
@@ -847,7 +847,7 @@
                 <units>Unitless</units>
             </variant>
         </variable>
-        <variable id="74" includeBareGround="false">
+        <variable id="74" includeBareGround="false" dormant="false">
             <standardName>Heat conduction between soil layers</standardName>
             <longName>Heat conduction between soil layers</longName>
             <shortName>gflx</shortName>
@@ -865,7 +865,7 @@
                 <units>$[W m^{-2} ]$</units>
             </variant>
         </variable>
-        <variable id="75" includeBareGround="false">
+        <variable id="75" includeBareGround="false" dormant="false">
             <standardName>Total evapotranspiration</standardName>
             <longName>Total evaporation and transpiration</longName>
             <shortName>et</shortName>
@@ -877,7 +877,7 @@
                 <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
-        <variable id="76" includeBareGround="false">
+        <variable id="76" includeBareGround="false" dormant="false">
             <standardName>Leaf maintenance respiration</standardName>
             <longName>Leaf maintenance respiration, does not include growth respiration</longName>
             <shortName>rmLeaf</shortName>
@@ -897,7 +897,7 @@
         </variable>
     </group>
     <group type="ctem">
-        <variable id="23" includeBareGround="false">
+        <variable id="23" includeBareGround="false" dormant="false">
             <standardName>Leaf area index</standardName>
             <longName>Leaf Area Index</longName>
             <shortName>lai</shortName>
@@ -939,7 +939,7 @@
                 <units>$m^2$/$m^2$</units>
             </variant>
         </variable>
-        <variable id="24" includeBareGround="false">
+        <variable id="24" includeBareGround="false" dormant="false">
             <standardName>Carbon Mass in Vegetation</standardName>
             <longName>Carbon mass per unit area in vegetation</longName>
             <shortName>cVeg</shortName>
@@ -981,7 +981,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="25" includeBareGround="false">
+        <variable id="25" includeBareGround="false" dormant="false">
             <standardName>Carbon Mass in Stem</standardName>
             <longName>Carbon Mass in Stem including sapwood and hardwood.</longName>
             <shortName>cStem</shortName>
@@ -1005,7 +1005,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="26" includeBareGround="false">
+        <variable id="26" includeBareGround="false" dormant="false">
             <standardName>Carbon Mass in Roots</standardName>
             <longName>Carbon mass per unit area in roots, including fine and coarse roots.</longName>
             <shortName>cRoot</shortName>
@@ -1029,7 +1029,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="27" includeBareGround="true">
+        <variable id="27" includeBareGround="true" dormant="false">
             <standardName>Carbon Mass in Litter Pool</standardName>
             <longName>Carbon Mass in Litter Pool</longName>
             <shortName>cLitter</shortName>
@@ -1059,7 +1059,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="28" includeBareGround="true">
+        <variable id="28" includeBareGround="true" dormant="false">
             <standardName>Carbon Mass in Model Soil Pool</standardName>
             <longName>Carbon mass in the full depth of the soil model.</longName>
             <shortName>cSoil</shortName>
@@ -1101,7 +1101,7 @@
                 <units>kg C/$m^2$​</units>
             </variant>
         </variable>
-        <variable id="29" includeBareGround="true">
+        <variable id="29" includeBareGround="true" dormant="false">
             <standardName>Total Carbon in All Terrestrial Carbon Pools</standardName>
             <longName>Report missing data over ocean grid cells. For fractional land report value averaged over the land fraction.</longName>
             <shortName>cLand</shortName>
@@ -1125,7 +1125,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="30" includeBareGround="false">
+        <variable id="30" includeBareGround="false" dormant="false">
             <standardName>Vegetation Height</standardName>
             <longName>Vegetation height over the vegetated fraction of the gridcell.</longName>
             <shortName>vegHeight</shortName>
@@ -1149,7 +1149,7 @@
                 <units>m</units>
             </variant>
         </variable>
-        <variable id="31" includeBareGround="false">
+        <variable id="31" includeBareGround="false" dormant="false">
             <standardName>Net Primary Productivity of Biomass Expressed As Carbon</standardName>
             <longName>Carbon Mass Flux out of Atmosphere due to Net Primary Production on Land</longName>
             <shortName>npp</shortName>
@@ -1209,7 +1209,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="32" includeBareGround="false">
+        <variable id="32" includeBareGround="false" dormant="false">
             <standardName>Gross Primary Productivity of Biomass Expressed As Carbon</standardName>
             <longName>Carbon Mass Flux out of Atmosphere due to Gross Primary Production on Land</longName>
             <shortName>gpp</shortName>
@@ -1257,7 +1257,7 @@
                 <units>g C/$m^2$/day</units>
             </variant>
         </variable>
-        <variable id="33" includeBareGround="true">
+        <variable id="33" includeBareGround="true" dormant="false">
             <standardName>Net Carbon Mass Flux out of Atmosphere due to Net Ecosystem Productivity on Land</standardName>
             <longName>Natural flux of CO2 (expressed as a mass flux of carbon) from the atmosphere to the land calculated as the difference between    uptake associated will photosynthesis and the release of CO2 from    the    sum of plant and soil respiration and fire. Positive flux is into    the    land. emissions from natural fires and human ignition fires as    calculated by the fire module of the dynamic vegetation model, but    excluding any CO2 flux from fire included in fLuc (CO2 Flux to    Atmosphere from Land Use Change).</longName>
             <shortName>nep</shortName>
@@ -1305,7 +1305,7 @@
                 <units>g C/$m^2$/day</units>
             </variant>
         </variable>
-        <variable id="34" includeBareGround="true">
+        <variable id="34" includeBareGround="true" dormant="false">
             <standardName>Net Carbon Mass Flux out of Atmosphere due to Net Biospheric Productivity on Land</standardName>
             <longName>This is the net mass flux of carbon from atmosphere into land, calculated as photosynthesis MINUS the sum of plant and soil    respiration, carbon fluxes from fire, harvest, grazing and land use    change. Positive flux is into the land.</longName>
             <shortName>nbp</shortName>
@@ -1353,7 +1353,7 @@
                 <units>g C/$m^2$/day</units>
             </variant>
         </variable>
-        <variable id="35" includeBareGround="true">
+        <variable id="35" includeBareGround="true" dormant="false">
             <standardName>Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration on Land</standardName>
             <longName>Carbon mass flux per unit area into atmosphere due to heterotrophic respiration on land (respiration by consumers)</longName>
             <shortName>rh</shortName>
@@ -1395,7 +1395,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="36" includeBareGround="false">
+        <variable id="36" includeBareGround="false" dormant="false">
             <standardName>Total autotrophic respiration</standardName>
             <longName>Autotrophic Respiration from All Vegetation Pools</longName>
             <shortName>ra</shortName>
@@ -1437,7 +1437,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="37" includeBareGround="true">
+        <variable id="37" includeBareGround="true" dormant="false">
             <standardName>Litter heterotrophic respiration</standardName>
             <longName>Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration from Litter on Land</longName>
             <shortName>rhLitter</shortName>
@@ -1479,7 +1479,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="38" includeBareGround="true">
+        <variable id="38" includeBareGround="true" dormant="false">
             <standardName>Soil heterotrophic respiration</standardName>
             <longName>Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration from Soil on Land</longName>
             <shortName>rhSoil</shortName>
@@ -1521,7 +1521,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="39" includeBareGround="false">
+        <variable id="39" includeBareGround="false" dormant="false">
             <standardName>Total Carbon Mass Flux from Vegetation to Litter</standardName>
             <longName>Total Carbon Mass Flux from Vegetation to Litter</longName>
             <shortName>fVegLitter</shortName>
@@ -1545,7 +1545,7 @@
                 <units>kg C/$m^2$​</units>
             </variant>
         </variable>
-        <variable id="40" includeBareGround="true">
+        <variable id="40" includeBareGround="true" dormant="false">
             <standardName>Total Carbon Mass Flux from Litter to Soil</standardName>
             <longName>Total Carbon Mass Flux from Litter to Soil</longName>
             <shortName>fLitterSoil</shortName>
@@ -1569,7 +1569,7 @@
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
-        <variable id="41" includeBareGround="true">
+        <variable id="41" includeBareGround="true" dormant="false">
             <standardName>Fraction of Area by Vegetation/Land Cover Category</standardName>
             <longName>Fraction of grid cell area occupied by different model vegetation/land cover categories.</longName>
             <shortName>landCoverFrac</shortName>
@@ -1589,7 +1589,7 @@
         </variable>
     </group>
     <group type="fire">
-        <variable id="42" includeBareGround="false">
+        <variable id="42" includeBareGround="false" dormant="false">
             <standardName>Carbon Mass Flux into Atmosphere due to CO2 Emission from Fire</standardName>
             <longName>CO2 emissions (expressed as a CO2 mass flux per unit area) from natural fires and human ignition fires as calculated by the    fire module of the dynamic vegetation model, but excluding any CO2    flux from fire included in fLuc (CO2 Flux to Atmosphere from Land    Use Change)</longName>
             <shortName>fFire</shortName>
@@ -1631,7 +1631,7 @@
                 <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="43" includeBareGround="false">
+        <variable id="43" includeBareGround="false" dormant="false">
             <standardName>Carbon Mass Flux into Atmosphere due to CH4 Emission from Fire</standardName>
             <longName>CH4 emissions (expressed as a CH4 mass flux per unit area) from natural fires and human ignition fires as calculated by the    fire module of the dynamic vegetation model</longName>
             <shortName>fFireCH4</shortName>
@@ -1673,7 +1673,7 @@
                 <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="44" includeBareGround="false">
+        <variable id="44" includeBareGround="false" dormant="false">
             <standardName>Percentage of Entire Grid cell that is Covered by Burnt Vegetation (All Classes)</standardName>
             <longName>Percentage of grid cell burned due to all fires including natural and anthropogenic fires</longName>
             <shortName>burntFractionAll</shortName>
@@ -1717,7 +1717,7 @@
         </variable>
     </group>
     <group type="land">
-        <variable id="45" includeBareGround="false">
+        <variable id="45" includeBareGround="false" dormant="false">
             <standardName>Deforested biomass that goes into atmosphere as a result of anthropogenic land use change</standardName>
             <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed.</longName>
             <shortName>fDeforestToAtmos</shortName>
@@ -1759,7 +1759,7 @@
                 <units>g C $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="46" includeBareGround="false">
+        <variable id="46" includeBareGround="false" dormant="false">
             <standardName>Deforested biomass that goes into litter as a result of anthropogenic land use change</standardName>
             <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed and    some transferred to litter.</longName>
             <shortName>fDeforestToLitter</shortName>
@@ -1801,7 +1801,7 @@
                 <units>g C $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="47" includeBareGround="false">
+        <variable id="47" includeBareGround="false" dormant="false">
             <standardName>Deforested biomass that goes into soil as a result of anthropogenic land use change</standardName>
             <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed and    some transferred to soil.</longName>
             <shortName>fDeforestToSoil</shortName>
@@ -1845,7 +1845,7 @@
         </variable>
     </group>
     <group type="PFTCompetition">
-        <variable id="48" includeBareGround="false">
+        <variable id="48" includeBareGround="false" dormant="false">
             <standardName>Boolean for existance of Vegetation/Land Cover Category based on bioclimatic indices (1 is exist, 0 is not)</standardName>
             <longName>Boolean for existance of Vegetation/Land Cover Category based on bioclimatic indices</longName>
             <shortName>landCoverExist</shortName>
@@ -1865,7 +1865,7 @@
         </variable>
     </group>
     <group type="methane">
-        <variable id="49" includeBareGround="false">
+        <variable id="49" includeBareGround="false" dormant="false">
             <standardName>Methane emissions from wetlands</standardName>
             <longName>Methane emissions from specified wetland areas based on heterotrophic respiration</longName>
             <shortName>wetlandCH4spec</shortName>
@@ -1895,7 +1895,7 @@
                 <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="50" includeBareGround="false">
+        <variable id="50" includeBareGround="false" dormant="false">
             <standardName>Methane emissions from wetlands</standardName>
             <longName>Methane emissions from dynamically determined wetland areas based on heterotrophic respiration</longName>
             <shortName>wetlandCH4dyn</shortName>
@@ -1925,7 +1925,7 @@
                 <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="51" includeBareGround="false">
+        <variable id="51" includeBareGround="false" dormant="false">
             <standardName>Methane uptake (methanotrophy) by oxic soils</standardName>
             <longName>Methane uptake (methanotrophy) by oxic soils</longName>
             <shortName>soilCH4cons</shortName>
@@ -1955,7 +1955,7 @@
                 <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="52" includeBareGround="false">
+        <variable id="52" includeBareGround="false" dormant="false">
             <standardName>Fraction of a grid cell covered by wetland</standardName>
             <longName>Fraction of a grid cell covered by wetland. Prognostically determined.</longName>
             <shortName>wetlandFrac</shortName>

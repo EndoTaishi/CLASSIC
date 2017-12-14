@@ -14,7 +14,7 @@ module xmlManager
 
     character(len=80), dimension(2,10)      :: attribs
     character(len=400), dimension(100)      :: data
-    logical                                 :: error
+    logical                                 :: error, currentDormant = .true.
     character(len=80)                       :: currentGroup, currentVariableName, variableSetType, variableSetDate, variableSetVersion
     real                                    :: xmlVersion
 
@@ -32,7 +32,7 @@ contains
     !> The startfunc function parses opening tags or start tags. It gets triggered for each and every opening tag of the XML document.
     subroutine startfunc(tag, attribs, error)
         character(len=*)                    :: tag, attribs(:,:)
-        character(len=40)                   :: attribute
+        character(len=40)                   :: attribute, dormant
         integer                             :: id
         logical                             :: error
         type(outputDescriptor), allocatable :: tempDescriptors(:)
@@ -49,7 +49,7 @@ contains
                     stop("The input XML document doesn't feature the required version field of the <variableSet> node");
                 else
                     xmlVersion = charToReal(variableSetVersion);
-                    if (xmlVersion < 1.1) stop('Older XML document found, please upgrade to a more recent version');
+                    if (xmlVersion < 1.2) stop('Older XML document found, please upgrade to a more recent version');
                 endif
 
                 variableSetDate = trim(attribs(2,3))
@@ -61,13 +61,19 @@ contains
             ! If the tag is <variable>, increment the descriptor count and allocate the temporary descriptors.
             ! Then, add a new descriptor to the array, by copying and extending the array, followed by setting some values.
             case( 'variable' )
-                descriptorCount = descriptorCount + 1
-                allocate(tempDescriptors(descriptorCount))
-                tempDescriptors(1 : descriptorCount - 1) = outputDescriptors(1 : descriptorCount - 1)
-                call move_alloc(tempDescriptors, outputDescriptors)
-                attribute = attribs(2,2)
-                outputDescriptors(descriptorCount)%includeBareGround = charToLogical(attribute)
-                outputDescriptors(descriptorCount)%group = currentGroup
+                dormant = trim(attribs(2,3))
+                if (dormant == 'false') then
+                    descriptorCount = descriptorCount + 1
+                    allocate(tempDescriptors(descriptorCount))
+                    tempDescriptors(1 : descriptorCount - 1) = outputDescriptors(1 : descriptorCount - 1)
+                    call move_alloc(tempDescriptors, outputDescriptors)
+                    attribute = attribs(2,2)
+                    outputDescriptors(descriptorCount)%includeBareGround = charToLogical(attribute)
+                    outputDescriptors(descriptorCount)%group = currentGroup
+                    currentDormant = .false.
+                else
+                    currentDormant = .true.
+                endif
             ! If the tag is <variant>, then similar to the above section, extend the array and append a new variant.
             case('variant')
                 variantCount = variantCount + 1
@@ -83,29 +89,30 @@ contains
     subroutine datafunc(tag, data, error)
         character(len=*)               :: tag, data(:)
         character(len=400)             :: info
-        integer                        :: i
         logical                        :: error
 
         info = trim(data(1))
         ! Examine the tag and store the tag content in the descriptors array.
-        select case( tag )
-            case( 'shortName' )
-                outputDescriptors(descriptorCount)%shortName = info
-                currentVariableName = info
-            case( 'longName' )
-                outputDescriptors(descriptorCount)%longName = info
-            case( 'standardName' )
-                outputDescriptors(descriptorCount)%standardName = info
-            case( 'units' )
-                !outputDescriptors(descriptorCount)%units = info
-                variants(variantCount)%units = info
-            case( 'nameInCode' )
-                variants(variantCount)%nameInCode = info
-            case( 'timeFrequency' )
-                variants(variantCount)%timeFrequency = info
-            case( 'outputForm' )
-                variants(variantCount)%outputForm = info
-        end select
+        if (.not. currentDormant) then
+            select case( tag )
+                case( 'shortName' )
+                    outputDescriptors(descriptorCount)%shortName = info
+                    currentVariableName = info
+                case( 'longName' )
+                    outputDescriptors(descriptorCount)%longName = info
+                case( 'standardName' )
+                    outputDescriptors(descriptorCount)%standardName = info
+                case( 'units' )
+                    !outputDescriptors(descriptorCount)%units = info
+                    variants(variantCount)%units = info
+                case( 'nameInCode' )
+                    variants(variantCount)%nameInCode = info
+                case( 'timeFrequency' )
+                    variants(variantCount)%timeFrequency = info
+                case( 'outputForm' )
+                    variants(variantCount)%outputForm = info
+            end select
+        endif
     end subroutine
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
