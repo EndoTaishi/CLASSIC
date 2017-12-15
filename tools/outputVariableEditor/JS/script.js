@@ -306,13 +306,8 @@ function buildVariableConfigForms() {
 				
 				$line = $('<tr/>')
 				.append($('<td/>').text('Group: '))
-				.append($('<td/>').append($('<input/>', {
-										type	: 'text',
-										id 		: currentVariable.id,
-										value 	: currentVariable.group,
-										class : 'variableTextInput',
-										readonly: true
-									})));
+				.append($('<td/>').text(currentVariable.group));
+				
 				$variableTable.append($line);
 				
 				$line = $('<tr/>')
