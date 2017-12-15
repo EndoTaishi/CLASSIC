@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2017/12/13">
+<variableSet type="CLASS" version="1.2" created="2017/12/14">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -1852,13 +1852,13 @@
             <defaultUnits>T/F</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
-                <outputForm>pft</outputForm>
+                <outputForm>grid</outputForm>
                 <nameInCode>pftexistrow_yr_g</nameInCode>
                 <units>T/F</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
+                <outputForm>grid</outputForm>
                 <nameInCode>pftexistrow_mo_g</nameInCode>
                 <units>T/F</units>
             </variant>

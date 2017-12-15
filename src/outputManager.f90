@@ -371,13 +371,14 @@ contains
         call date_and_time(today,now)
 
         call ncPutAtt(ncid,nf90_global,'timestamp',charvalues=today//' '//now(1:4))
-        call ncPutAtt(ncid,nf90_global,'Conventions',charvalues='COARDS')
-        !call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
+        call ncPutAtt(ncid,nf90_global,'Conventions',charvalues='COARDS') !FLAG remove?
+        call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
 
         !----1 - Longitude
 
         lonDimId = ncDefDim(ncid,'lon',myDomain%cntx)
         varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId])
+        call ncPutAtt(ncid,varid,'standard_name',charvalues='Longitude')
         call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
         !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
@@ -388,6 +389,7 @@ contains
         latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
         varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
         call ncPutAtt(ncid,varid,'long_name',charvalues='latitude')
+        call ncPutAtt(ncid,varid,'standard_name',charvalues='Latitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
         !call ncPutAtt(ncid,varid,'actual_range',yrange) #FLAG need to find the xrange from all_lon.
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
@@ -396,6 +398,7 @@ contains
         ! needs to be switched to 'pft' so that it can be properly given the
         ! dimensions needed.
         if (trim(descriptor%shortName) == 'landCoverFrac') outputForm = 'pft'
+        if (trim(descriptor%shortName) == 'landCoverExist') outputForm = 'pft'
 
         select case(trim(outputForm))
 
@@ -641,8 +644,8 @@ contains
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
                     if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
-                    st = max(1, jdstd)
-                    en = min(jdendd, lastDOY)
+                    st = max(1, jdstd)-1  !minus 1 since we are referencing the 01-01 day of refyr
+                    en = min(jdendd, lastDOY)-1 !minus 1 since we are referencing the 01-01 day of refyr
                     totsteps = totsteps + (en - st + 1)
                     allocate(temptime(totsteps))
                     length = size(timeVect)
@@ -687,8 +690,8 @@ contains
                 ! Create the time vector to write to the file
                 do i = 1, totyrs
                     if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
-                    st = max(1, jhhstd)
-                    en = min(jhhendd, lastDOY)
+                    st = max(1, jhhstd)-1  !minus 1 since we are referencing the 01-01 day of refyr
+                    en = min(jhhendd, lastDOY)-1 !minus 1 since we are referencing the 01-01 day of refyr
                     totsteps = totsteps + (en - st + 1) * 48 ! 48 half hours in a day. !FLAG change this if delt is not half-hour
 
                     allocate(temptime(totsteps))

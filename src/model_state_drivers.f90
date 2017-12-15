@@ -657,10 +657,14 @@ contains
 
             !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
             if (dofire .and. PFTCompetition) then
+                do i = 1,nlat
+                    do m = 1,nmos
                         do j =1,icc
                             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
                             pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
                         end do
+                    end do
+                end do
             end if
 
             !litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp1, ignd, nmos], format = [nlat, nmos, iccp1, ignd])

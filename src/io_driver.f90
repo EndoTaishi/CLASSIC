@@ -487,8 +487,8 @@ contains
 
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (realyr - refyr) * 365. + real(iday) + ((real(ncount)-1.) / real(nday))
-
+        timeStamp = (realyr - refyr) * 365. + real(iday-1) + ((real(ncount)-1.) / real(nday))
+        
         ! Now prepare and write out the grid averaged physics variables to output files
         DO I=1,NLTEST
         
@@ -736,7 +736,7 @@ contains
 
     subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,delt,ncount,nday,lastDOY,realyr)
 
-        use class_statevars, only : class_rot
+        use class_statevars, only : class_rot,resetAccVars
         use ctem_params, only : ignd
         use outputManager, only : writeOutput1D,refyr
 
@@ -1022,9 +1022,8 @@ contains
 
             ! Now write to file the grid average values
 
-            ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
-            ! rather than the first day of the next month.
-            timeStamp = (realyr - refyr) * lastDOY + iday !FLAG this won't quite work with LEAP years since it doesn't know how many in past.
+            ! Prepare the timestamp for this month. Take one day off since it referenced to 01-01 of the refyr.
+            timeStamp = (realyr - refyr) * lastDOY + iday - 1 !FLAG this won't quite work with LEAP years since it doesn't know how many in past.
 
             do i = 1,nltest
                 if (altotcntr_d(i) > 0) then
@@ -1241,8 +1240,6 @@ contains
 ! ! 6999    format(1X,I4,I5,10f12.3)
 ! !                 !    ----YW March 23, 2015 --------------------------------------------/
 ! !
-!     !* RESET ACCUMULATOR ARRAYS.
-!     call resetAccVars(nltest,nmos)
 !
 ! !             DO 808 I=1,NLTEST
 ! !                 DO 809 M=1,NMTEST
@@ -1332,6 +1329,10 @@ contains
                        RHOSACC,ROFACC,SCANACC,SNOACC,TAACC,TCANACC,TSNOACC,UVACC, &
                        WSNOACC,WTBLACC,ALTOTACC)
                 ! SNOARE_M,UVACC_M,PRESACC_M,QAACC_M
+
+                !     !* RESET ACCUMULATOR ARRAYS.
+            call resetAccVars(nltest,nmtest)
+
 
         ENDIF ! IF(NCOUNT.EQ.NDAY)
 
@@ -2405,7 +2406,7 @@ contains
         i = 1 ! offline nltest is always 1.
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (realyr - refyr) * 365. + real(iday) !+ ((real(ncount)-1.) / real(nday))
+        timeStamp = (realyr - refyr) * 365. + real(iday) - 1. !+ ((real(ncount)-1.) / real(nday))
 
         !>Write grid average values
 
