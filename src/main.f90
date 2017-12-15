@@ -62,7 +62,7 @@ contains
         use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
-        use metDisaggModule, only : disaggGridCell
+        use metDisaggModule, only : disaggMet
 
         implicit none
 
@@ -80,6 +80,7 @@ contains
         INTEGER NCOUNT  !<Counter for daily averaging
         INTEGER NDAY    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
         INTEGER :: IMONTH!<Month of the year simulation is in.
+        integer :: DOM  !< Day of month counter
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -951,7 +952,6 @@ contains
         integer, pointer, dimension(:,:,:) :: colddaysrow
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
-        integer, pointer, dimension(:,:) :: stdalnrow
         real, pointer, dimension(:,:) :: tcanrs
         real, pointer, dimension(:,:) :: tsnors
         real, pointer, dimension(:,:) :: tpndrs
@@ -961,8 +961,6 @@ contains
         real, pointer, dimension(:,:) :: uvaccrow_m
         real, pointer, dimension(:,:) :: vvaccrow_m
 
-        real, pointer, dimension(:,:,:) :: ailcminrow         !
-        real, pointer, dimension(:,:,:) :: ailcmaxrow         !
         real, pointer, dimension(:,:,:) :: gleafmasrow        !
         real, pointer, dimension(:,:,:) :: bleafmasrow        !
         real, pointer, dimension(:,:,:) :: stemmassrow        !
@@ -1028,7 +1026,6 @@ contains
 
         real, pointer, dimension(:,:) :: extnprobrow
         real, pointer, dimension(:,:) :: prbfrhucrow
-        real, pointer, dimension(:,:,:) :: mlightngrow
         real, pointer, dimension(:) :: dayl_maxrow
         real, pointer, dimension(:) :: daylrow
         real, pointer, dimension(:) :: grclarea
@@ -1127,12 +1124,8 @@ contains
         integer, pointer, dimension(:,:) :: colddaysgat
         integer, pointer, dimension(:,:) :: lfstatusgat
         integer, pointer, dimension(:,:) :: pandaysgat
-        integer, pointer, dimension(:) :: stdalngat
         real, pointer, dimension(:) :: lightng
 
-        real, pointer, dimension(:,:) :: ailcmingat         !
-        real, pointer, dimension(:,:) :: ailcmaxgat         !
-        !real, pointer, dimension(:,:) :: dvdfcangat         !
         real, pointer, dimension(:,:) :: gleafmasgat        !
         real, pointer, dimension(:,:) :: bleafmasgat        !
         real, pointer, dimension(:,:) :: stemmassgat        !
@@ -1198,7 +1191,6 @@ contains
 
         real, pointer, dimension(:) :: extnprobgat
         real, pointer, dimension(:) :: prbfrhucgat
-        real, pointer, dimension(:,:) :: mlightnggat
         real, pointer, dimension(:) :: dayl_maxgat
         real, pointer, dimension(:) :: daylgat
 
@@ -2224,8 +2216,6 @@ contains
         vvaccrow_m        => vrot%vvaccrow_m
 
         ! ROW:
-        ailcminrow        => vrot%ailcmin
-        ailcmaxrow        => vrot%ailcmax
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
         stemmassrow       => vrot%stemmass
@@ -2294,7 +2284,6 @@ contains
 
         extnprobrow       => vrot%extnprob
         prbfrhucrow       => vrot%prbfrhuc
-        mlightngrow       => vrot%mlightng
         daylrow           => vrot%dayl
         dayl_maxrow       => vrot%dayl_max
 
@@ -2377,7 +2366,6 @@ contains
         colddaysrow       => vrot%colddays
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
-        stdalnrow         => vrot%stdaln
 
         twarmmrow            => vrot%twarmm
         tcoldmrow            => vrot%tcoldm
@@ -2409,8 +2397,6 @@ contains
         lightng           => vgat%lightng
         tcanoaccgat_out   => vgat%tcanoaccgat_out
 
-        ailcmingat        => vgat%ailcmin
-        ailcmaxgat        => vgat%ailcmax
         gleafmasgat       => vgat%gleafmas
         bleafmasgat       => vgat%bleafmas
         stemmassgat       => vgat%stemmass
@@ -2500,7 +2486,6 @@ contains
 
         extnprobgat       => vgat%extnprob
         prbfrhucgat       => vgat%prbfrhuc
-        mlightnggat       => vgat%mlightng
         daylgat           => vgat%dayl
         dayl_maxgat       => vgat%dayl_max
 
@@ -2610,7 +2595,6 @@ contains
         colddaysgat       => vgat%colddays
         lfstatusgat       => vgat%lfstatus
         pandaysgat        => vgat%pandays
-        stdalngat         => vgat%stdaln
 
         ipeatlandgat     => vgat%ipeatland
         anmossgat        => vgat%anmoss
@@ -2762,7 +2746,7 @@ contains
         metDone = .false.   !< Logical switch when the end of the stored meteorological array is reached.
         run_model = .true.  !< Simple logical switch to either keep run going or finish
         IMONTH = 0          !<Month of the year simulation is in.
-        !DOM = 1             !< Day of month counter
+        DOM = 1             !< Day of month counter
         CUMSNO = 0.0
         lopcount = 1
         leapnow = .false.
@@ -2808,7 +2792,7 @@ contains
 
         !> Now disaggregate the meteorological forcing to the right timestep
         !! for this model run
-        call disaggGridCell(longitude, latitude,delt)
+        call disaggMet(longitude, latitude,delt)
 
 !     Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
@@ -3133,7 +3117,7 @@ contains
                 daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
 
                 ! Update the lightning if fire is on and transientLGHT is true
-                if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday)
+                if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday,dom=DOM)
 
                 !Check if this is the first day of the year
                 if (iday.eq.1) then
@@ -3272,8 +3256,8 @@ contains
                     rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
                     sandgat,     claygat,     orgmgat,&
                     anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
-                    uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,&
-                    extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,&
+                    uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
+                    extnprobgat, pfcancmxgat,  nfcancmxgat,&
                     stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
                     bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
                     pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,&
@@ -3291,7 +3275,7 @@ contains
                     lucsocingat, nppveggat,   dstcemls3gat, popdingat,&
                     faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,&
                     rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,&
-                    gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,&
+                    gppveggat,   nepveggat,&
                     emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
                     emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
                     emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,&
@@ -3317,8 +3301,8 @@ contains
                     rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
                     SANDROT,     CLAYROT,     ORGMROT,&
                     anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
-                    uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,&
-                    extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,&
+                    uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
+                    extnprobrow, pfcancmxrow,  nfcancmxrow,&
                     stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
                     bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
                     pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,&
@@ -3336,7 +3320,7 @@ contains
                     lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,&
                     FAREROT,     gavgscmsrow, rmlvegaccrow, pftexistrow,&
                     rmsvegrow,   rmrvegrow,   rgvegrow,    vgbiomas_vegrow,&
-                    gppvegrow,   nepvegrow,   ailcminrow,   ailcmaxrow,&
+                    gppvegrow,   nepvegrow,   &
                     emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
                     emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
                     emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,&
@@ -3513,7 +3497,7 @@ contains
                         &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,&
                         &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,&
                         &             uvaccgat_t,  vvaccgat_t,    lightng,prbfrhucgat,&
-                        &            extnprobgat,   stdalngat,tbaraccgat_t,transientPOPD,&
+                        &            extnprobgat,  tbaraccgat_t,transientPOPD,&
                         &               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,&
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
                         &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&
@@ -3721,7 +3705,7 @@ contains
                 &      lucsocinrow, nppvegrow,   dstcemls3row,&
                 &      FAREROT,     gavgscmsrow, tcanoaccrow_out,&
                 &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,&
-                &      vgbiomas_vegrow,gppvegrow,nepvegrow,ailcminrow,ailcmaxrow,&
+                &      vgbiomas_vegrow,gppvegrow,nepvegrow,&
                 &      FCANROT,      pftexistrow,&
                 &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
                 &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
@@ -3768,7 +3752,7 @@ contains
                 &      lucsocingat, nppveggat,   dstcemls3gat,&
                 &      faregat,     gavgscmsgat, tcanoaccgat_out,&
                 &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,&
-                &      vgbiomas_veggat,gppveggat,nepveggat,ailcmingat,ailcmaxgat,&
+                &      vgbiomas_veggat,gppveggat,nepveggat,&
                 &      fcangat,      pftexistgat,&
                 &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
                 &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
@@ -3787,7 +3771,7 @@ contains
 
             if(ncount.eq.nday) then
 
-               ! DOM=DOM + 1 !increment the day of month counter
+                DOM=DOM + 1 !increment the day of month counter
 
                 !     reset mosaic accumulator arrays.
 
@@ -4729,6 +4713,7 @@ contains
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
                     IMONTH=NT
+                    DOM=1 !reset the day of month counter
                 ENDIF
             ENDDO
 
@@ -4776,13 +4761,16 @@ contains
 
             if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then
 
-                WRITE(*,*)'IYEAR=',IYEAR,'Loop count =',lopcount,'/',metLoop
+                WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
 
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
 
                 ! Increment the runyr
                 runyr = runyr + 1
+
+                ! Reset the month
+                imonth = 0
 
             endif !last day of year check
 

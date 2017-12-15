@@ -186,9 +186,6 @@ type veg_rot
     integer, allocatable, dimension(:,:,:) :: lfstatus  !<leaf phenology status
     integer, allocatable, dimension(:,:,:) :: pandays   !<days with positive net photosynthesis (an) for use in
                                                         !<the phenology subroutine
-    real, allocatable, dimension(:,:,:) :: ailcmin      !<
-    real, allocatable, dimension(:,:,:) :: ailcmax      !<
-    !real, allocatable, dimension(:,:,:) :: dvdfcan      !<
     real, allocatable, dimension(:,:,:) :: gleafmas     !<green leaf mass for each of the ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: bleafmas     !<brown leaf mass for each of the ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: stemmass     !<stem mass for each of the ctem pfts, \f$kg c/m^2\f$
@@ -267,9 +264,6 @@ type veg_rot
     
 
 ! allocated with nlat,nmos:   
-    integer, allocatable, dimension(:,:)     :: stdaln         !<an integer telling if ctem is operated within gcm (=0) or in stand
-                                                        !<alone mode (=1). this is used for fire purposes. see comments just
-                                                        !<above where disturb subroutine is called.
     real, allocatable, dimension(:,:) :: gavglai               !<grid averaged green leaf area index
     real, allocatable, dimension(:,:) :: co2conc               !<ATMOS. CO2 CONC. IN PPM
     real, allocatable, dimension(:,:) :: ch4conc               !<
@@ -381,7 +375,6 @@ type veg_rot
                                                         !<temperature threshold for ndl dcd and crop pfts.
     real, allocatable, dimension(:,:,:)  :: slopefrac          !<prescribed fraction of wetlands based on slope
                                                         !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    real, allocatable, dimension(:,:,:) :: mlightng           !<
     real, allocatable, dimension(:,:,:) :: wetfrac_mon        !<
     
 ! allocated with nlat:     
@@ -399,9 +392,6 @@ type veg_gat
     ! This is the basic data structure that contains the state variables
     ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1}
 
-    real, allocatable,dimension(:,:) :: ailcmin     !<
-    real, allocatable, dimension(:,:) :: ailcmax    !<
-    !real, allocatable, dimension(:,:) :: dvdfcan    !<
     real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -476,7 +466,6 @@ type veg_gat
 
     real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
-    real, allocatable, dimension(:,:)   :: mlightng   !<
     real, allocatable, dimension(:)     :: dayl_max   !< maximum daylength for that location (hours)
     real, allocatable, dimension(:)     :: dayl       !< daylength for that location (hours)
 
@@ -623,9 +612,6 @@ type veg_gat
     integer, allocatable, dimension(:,:) :: pandays  !<days with positive net photosynthesis (an) for use in
                                                      !<the phenology subroutine
     real, allocatable, dimension(:) :: grclarea      !<area of the grid cell, \f$km^2\f$
-    integer, allocatable, dimension(:)   :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
-                                                     !<alone mode (=1). this is used for fire purposes. see comments just
-                                                     !<above where disturb subroutine is called.
 
     integer, allocatable, dimension(:) :: altotcount_ctm !nlat  !< Counter used for calculating total albedo
     real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)   !<Max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
@@ -1029,9 +1015,6 @@ implicit none
 allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%lfstatus(nlat,nmos,icc),&
          vrot%pandays (nlat,nmos,icc),&
-         vrot%ailcmin (nlat,nmos,icc),&
-         vrot%ailcmax (nlat,nmos,icc),&
-         !vrot%dvdfcan (nlat,nmos,icc),&
          vrot%gleafmas(nlat,nmos,icc),&
          vrot%bleafmas(nlat,nmos,icc),&
          vrot%stemmass(nlat,nmos,icc),&
@@ -1104,7 +1087,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%rmlveg  (nlat,nmos,icc),&
     
 ! allocated with nlat,nmos:   
-         vrot%stdaln(nlat,nmos),&
          vrot%gavglai (nlat,nmos),&
          vrot%co2conc (nlat,nmos),&
          vrot%ch4conc (nlat,nmos),&
@@ -1210,7 +1192,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
 ! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
          vrot%slopefrac(nlat,nmos,8),&
-         vrot%mlightng(nlat,nmos,12),&
          vrot%wetfrac_mon(nlat,nmos,12),&
     
 ! allocated with nlat:     
@@ -1291,7 +1272,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%defmncur (ilg),&
          vgat%srplscur (ilg),&
          vgat%defctcur (ilg),&
-         vgat%stdaln (ilg),&
          vgat%ipeatland (ilg),&
          vgat%anmoss (ilg),&
          vgat%rmlmoss (ilg),&
@@ -1324,9 +1304,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%faregat(ilg),&    ! the ROT is FAREROT
 
 ! allocated with ilg, icc
-         vgat%ailcmin (ilg,icc),&
-         vgat%ailcmax (ilg,icc),&
-         !vgat%dvdfcan (ilg,icc),&
          vgat%gleafmas (ilg,icc),&
          vgat%bleafmas (ilg,icc),&
          vgat%stemmass (ilg,icc),&
@@ -1441,7 +1418,6 @@ allocate(vgat%grclarea(ilg),&
 ! allocated with ilg, icc, {some number}:
          vgat%colddays (ilg,2),&
          vgat%slopefrac (ilg,8),&
-         vgat%mlightng (ilg,12),&
          vgat%wetfrac_mon (ilg,12),&
          vgat%tmonth (12,ilg),&
 
@@ -1797,9 +1773,6 @@ integer :: j,k,l,m
         do l = 1,icc
 
             vrot%smfuncveg(j,k,l)         = 0.0
-            vrot%ailcmin(j,k,l) = 0.
-            vrot%ailcmax(j,k,l) = 0.
-            !vrot%dvdfcan(j,k,l) = 0.
             vrot%gleafmas(j,k,l) = 0.
             vrot%bleafmas(j,k,l) = 0.
             vrot%stemmass(j,k,l) = 0.
@@ -1838,8 +1811,6 @@ integer :: j,k,l,m
             vrot%afrroot(j,k,l)      = 0.0
             vrot%wtstatus(j,k,l)     = 0.0
             vrot%ltstatus(j,k,l)     = 0.0
-            vrot%ailcmin(j,k,l)      = 0.0
-            vrot%ailcmax(j,k,l)      = 0.0
             vrot%pfcancmx(j,k,l)     = 0.0
             vrot%nfcancmx(j,k,l)     = 0.0
             vrot%nppveg(j,k,l)       = 0.0

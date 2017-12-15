@@ -381,8 +381,6 @@ contains
         logical, pointer :: start_bare
         logical, pointer :: lnduseon
         logical, pointer :: obswetf
-        real, pointer, dimension(:,:,:) :: ailcminrow           !
-        real, pointer, dimension(:,:,:) :: ailcmaxrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -404,10 +402,8 @@ contains
         real, pointer, dimension(:,:,:) :: soilcmasrow
         real, pointer, dimension(:,:) :: extnprob
         real, pointer, dimension(:,:) :: prbfrhuc
-        real, pointer, dimension(:,:,:) :: mlightng
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
-        integer, pointer, dimension(:,:) :: stdaln
         real, pointer, dimension(:,:,:) :: slopefrac
         integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland switch: 0 = not a peatland, 1= bog, 2 = fen
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
@@ -430,8 +426,6 @@ contains
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
         obswetf           => c_switch%obswetf
-        ailcminrow        => vrot%ailcmin
-        ailcmaxrow        => vrot%ailcmax
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -453,9 +447,7 @@ contains
         soilcmasrow       => vrot%soilcmas
         extnprob          => vrot%extnprob
         prbfrhuc          => vrot%prbfrhuc
-        mlightng          => vrot%mlightng
         slopefrac         => vrot%slopefrac
-        stdaln            => vrot%stdaln
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
         ipeatlandrow      => vrot%ipeatland
@@ -583,17 +575,6 @@ contains
         DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         ipeatlandrow = ncGet2DVar(initid, 'ipeatland', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
 
-!         SCANROT=0. !FLAG test! This is just until we have a 'normal' initfile... JM Oct30 2017.
-!         RCANROT=0.
-!         RHOSROT=0.
-!         ALBSROT = 0.
-!         SNOROT = 0.
-!         TBARROT = 258.
-!         THICROT = 0.
-!         TCANROT = 258.
-!
-!
-
         if (.not. ctem_on) then
             FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
             ! Error check:
@@ -655,8 +636,8 @@ contains
         if (ctem_on) then
 
             grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
-            extnprob(:,1) = ncGet1DVar(initid, 'extnprob', start = [lonIndex, latIndex], count = [1, 1])
-            prbfrhuc(:,1) = ncGet1DVar(initid, 'prbfrhuc', start = [lonIndex, latIndex], count = [1, 1])
+            extnprob(:,1) = ncGet1DVar(initid, 'extnprob', start = [lonIndex, latIndex], count = [1, 1])  !FLAG remove
+            prbfrhuc(:,1) = ncGet1DVar(initid, 'prbfrhuc', start = [lonIndex, latIndex], count = [1, 1])  !FLAG remove
 
             do i = 1,nmos
                 grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
@@ -664,24 +645,11 @@ contains
                 prbfrhuc(:,i) = prbfrhuc(:,1)
             end do
 
-            mlightng(:,1,:) = ncGet2DVar(initid, 'mlightng', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-
-            do i = 1, nmos
-                mlightng(:,i,:) = mlightng(:,1,:)
-            end do
-
             slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, nmos, 8], format = [nlat, nmos, 8])
             Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            ailcminrow = ncGet3DVar(initid, 'ailcmin', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            ailcmaxrow = ncGet3DVar(initid, 'ailcmax', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-
-            !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
-            !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
-            !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
-
             gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
@@ -689,10 +657,14 @@ contains
 
             !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
             if (dofire .and. PFTCompetition) then
+                do i = 1,nlat
+                    do m = 1,nmos
                         do j =1,icc
                             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
                             pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
                         end do
+                    end do
+                end do
             end if
 
             !litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp1, ignd, nmos], format = [nlat, nmos, iccp1, ignd])
@@ -753,8 +725,6 @@ contains
 
                         do j = 1,icc
                             if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
-                            ailcminrow(i,m,j)=0.0
-                            ailcmaxrow(i,m,j)=0.0
                             gleafmasrow(i,m,j)=0.0
                             bleafmasrow(i,m,j)=0.0
                             stemmassrow(i,m,j)=0.0
@@ -820,8 +790,6 @@ contains
         logical, pointer :: ctem_on
         logical, pointer :: PFTCompetition
         logical, pointer :: lnduseon
-        real, pointer, dimension(:,:,:) :: ailcminrow           !
-        real, pointer, dimension(:,:,:) :: ailcmaxrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -846,17 +814,12 @@ contains
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
         ! local variables
-        !integer :: i,m,j,k1c,k2c,n
-        !integer, dimension(nlat,nmos) :: icountrow
-        !real, dimension(icc) :: rnded_pft
         real, parameter :: TFREZ = 273.16
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
         PFTCompetition    => c_switch%PFTCompetition
         lnduseon          => c_switch%lnduseon
-        ailcminrow        => vrot%ailcmin
-        ailcmaxrow        => vrot%ailcmax
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -895,55 +858,51 @@ contains
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
 
-        call ncPut2DVar(rsid, 'FARE',   realValues = FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TCAN',   realValues = TCANROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TSNO',   realValues = TSNOROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TPND',   realValues = TPNDROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'ZPND',   realValues = ZPNDROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'RCAN',   realValues = RCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'SCAN',   realValues = SCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'SNO',    realValues = SNOROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'ALBS',   realValues = ALBSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'RHOS',   realValues = RHOSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'GRO',    realValues = GROROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-
-        call ncPut3DVar(rsid, 'FCAN',   realValues = FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
-        call ncPut3DVar(rsid, 'THLQ',   realValues = THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut3DVar(rsid, 'THIC',   realValues = THICROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut3DVar(rsid, 'TBAR',   realValues = TBARROT-TFREZ, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut2DVar(rsid, 'FARE', FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
+        call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut3DVar(rsid, 'THIC', THICROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut3DVar(rsid, 'TBAR', TBARROT-TFREZ, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut2DVar(rsid, 'TCAN', TCANROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'TSNO', TSNOROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'TPND', TPNDROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'ZPND', ZPNDROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'RCAN', RCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'SCAN', SCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'SNO', SNOROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'ALBS', ALBSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'RHOS', RHOSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'GRO', GROROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
         if (ctem_on) then
 
-            call ncPut2DVar(rsid, 'Cmossmas',   realValues = Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-            call ncPut2DVar(rsid, 'litrmsmoss', realValues = litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-            call ncPut2DVar(rsid, 'dmoss',      realValues = dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-
-            call ncPut3DVar(rsid, 'ailcmin',    realValues = ailcminrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'ailcmax',    realValues = ailcmaxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'fcancmx',    realValues = fcancmxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'gleafmas',   realValues = gleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'bleafmas',   realValues = bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'stemmass',   realValues = stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'rootmass',   realValues = rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'litrmass',   realValues = litrmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'soilcmas',   realValues = soilcmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'lfstatus',   intValues = lfstatusrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'pandays',    intValues = pandaysrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'fcancmx', fcancmxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'gleafmas', gleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'bleafmas', bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'rootmass', rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'pandays', real(pandaysrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+            call ncPut2DVar(rsid, 'litrmsmoss', litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+            call ncPut2DVar(rsid, 'dmoss', dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
             if (PFTCompetition) then
 
+                ! Since these climate related variables are only sensible at the gridcell level, we just write out the
+                ! value for the first tile (nlat is always 1 offline too).
                 call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-! JOE
-! After checking that writing twarmm works as desired, please uncomment the lines below
-!                call ncPutVar(rsid, 'tcoldm', tcoldm, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'gdd5', gdd5, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'aridity', aridity, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'srplsmon', srplsmon, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'defctmon', defctmon, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'anndefct', anndefct, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'annsrpls', annsrpls, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'annpcp', annpcp, start = [lonIndex, latIndex])
-!                call ncPutVar(rsid, 'dry_season_length', dry_season_length, start = [lonIndex, latIndex])
+                call ncPutVar(rsid, 'tcoldm', realValues = reshape(tcoldm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'gdd5', realValues = reshape(gdd5(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'aridity', realValues = reshape(aridity(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'srplsmon', realValues = reshape(srplsmon(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'defctmon', realValues = reshape(defctmon(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'anndefct', realValues = reshape(anndefct(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'annsrpls', realValues = reshape(annsrpls(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'annpcp', realValues = reshape(annpcp(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+                call ncPutVar(rsid, 'dry_season_length', realValues = reshape(dry_season_length(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
 
             end if ! PFTCompetition
 
@@ -976,7 +935,7 @@ contains
         real, intent(in), optional :: latitude
         integer :: lengthOfFile
         integer :: lonloc,latloc
-        integer :: i,arrindex,m,numPFTsinFile
+        integer :: i,arrindex,m,numPFTsinFile,d
         real, dimension(:), allocatable :: fileTime
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
@@ -995,7 +954,6 @@ contains
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
-        real, pointer, dimension(:,:,:) :: mlightngrow
 
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
@@ -1011,7 +969,6 @@ contains
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         fcancmxrow      => vrot%fcancmx
-        mlightngrow       => vrot%mlightng
 
         select case (trim(inputRequested))
 
@@ -1137,6 +1094,7 @@ contains
                 ! Find the requested day and year in the file.
                 ! Assume we are grabbing from day 1
                 startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
+
                 arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
                 if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
 
@@ -1144,6 +1102,13 @@ contains
                 ! FLAG Not presently set up for leap years!
                 allocate(LGHTFromFile(365))
                 LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [arrindex,lonloc,latloc], count = [365,1,1])
+
+                ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
+                deallocate(LGHTTime)
+                allocate(LGHTTime(365))
+                do d = 1,365
+                    LGHTTime(d) = real(d)
+                end do
 
             end if
 
@@ -1209,7 +1174,7 @@ contains
     !!@{
     !> Update the input field variable based on the present model timestep
 
-    subroutine updateInput(inputRequested,iyear,imonth,iday)
+    subroutine updateInput(inputRequested,iyear,imonth,iday,dom)
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
@@ -1221,6 +1186,7 @@ contains
         integer, intent(in) :: iyear
         integer, intent(in), optional :: imonth
         integer, intent(in), optional :: iday
+        integer, intent(in), optional :: dom            ! day of month
         integer :: arrindex,lengthTime,i,m
         real :: LGHTTimeNow
         real, pointer, dimension(:,:) :: co2concrow
@@ -1289,9 +1255,9 @@ contains
             lengthTime = size(LGHTTime)
 
             if (transientLGHT) then
-                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(iday)
-            else ! we only draw from the fixedYearLGHT
-                LGHTTimeNow = fixedYearLGHT * 10000. + real(imonth+1) * 100. + real(iday)
+                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+            else ! we only need the day
+                LGHTTimeNow = real(iday)
             end if
 
             ! Find the requested year in the file.

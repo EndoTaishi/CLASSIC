@@ -8,7 +8,7 @@ module metDisaggModule
 
     implicit none
 
-    public :: disaggGridCell
+    public :: disaggMet
     public :: makebig
     public :: stepInterpolation
     public :: linearInterpolation
@@ -28,10 +28,10 @@ module metDisaggModule
 contains
 
 !-----------------------------------------------------------------------------------------------------------------------------------------------------
-!>\ingroup metDisaggModule_disaggGridCell
+!>\ingroup metDisaggModule_disaggMet
 !!@{
 !> Main subroutine to disaggregate input meteorology to that of the physics timestep
-    subroutine disaggGridCell(longitude, latitude,delt) ! longitude, latitude
+    subroutine disaggMet(longitude, latitude,delt) ! longitude, latitude
 
         implicit none
 
@@ -84,7 +84,7 @@ contains
         !! trim off the added two days.
         call timeShift(timeZone(longitude,delt),vcount,vcountPlus)
 
-    end subroutine disaggGridCell
+    end subroutine disaggMet
 !!@}
 
 !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -120,6 +120,9 @@ contains
         !! padding days.
         allocate(metFss(vcountPlus),metFdl(vcountPlus),metPre(vcountPlus),metTa(vcountPlus),&
                  metQa(vcountPlus),metUv(vcountPlus),metPres(vcountPlus),metTime(vcount))
+
+        ! initialize to zero so they are not filled in with random value by the compiler
+        metFdl=0. ; metFss=0. ; metPre=0. ; metTa =0. ; metQa =0. ; metUv =0. ; metPres=0.
 
         !> The remainder of the meteorological variables need to have a couple extra
         !! days pinned on, one at the start and one at the end.
@@ -230,7 +233,7 @@ contains
         real, intent(inout)                         :: var(:)
         real, intent(in)                            :: delt
         integer                                     :: i, j, k, T,start, endpt, countr,wetpds
-        real                                        :: temp
+        real                                        :: temp,startpre
         real, allocatable, dimension(:)             :: random
         integer, allocatable, dimension(:)             :: sort_ind
 
@@ -239,6 +242,11 @@ contains
         countr = size(var)
 
         ! Loop through the metInputTimeStep timesteps (commonly 6 hr)
+
+        ! Adjust the precip from mm/s to mm/6h (or mm/3h). The relationship below is
+        ! derived for mm/6h originally.
+        var = var * metInputTimeStep
+
         do i = 1, countr/numberPhysInMet
 
             start = (i - 1) * numberPhysInMet + 1
@@ -249,7 +257,9 @@ contains
 
             if (var(start) > 0.) then
 
-                ! We expect precipitation to be in kg/m2/s (or mm/s) for all of this
+                startpre = var(start)
+
+                ! We expect precipitation for this relation to be in mm/6h
                 wetpds = nint( &
                                 max( &
                                     min( &
@@ -298,7 +308,8 @@ contains
                 k = 1
                 do j = start,endpt
                     ! Assign this time period its precipitation
-                    var(j) = random(k) * var(start)
+                    var(j) = random(k) * startpre
+                    !print*,j,k,random(k),startpre,var(j)
                     k = k + 1
                 end do
 
@@ -308,6 +319,10 @@ contains
             end if
 
         enddo
+
+        ! So we now have the amount of precip in each physics timestep (mm/delt)
+        ! we now need to then convert back to mm/s
+        var = var / delt
 
         deallocate(random,sort_ind)
 

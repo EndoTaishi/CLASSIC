@@ -12,8 +12,8 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
      8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
-     9      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
-     a      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
+     9      uvaccgat_m,  vvaccgat_m,  prbfrhucgat,
+     a      extnprobgat, pfcancmxgat,  nfcancmxgat,
      b      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      c      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
      d      pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,
@@ -31,7 +31,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      p      lucsocingat, nppveggat,   dstcemls3gat, popdingat,
      q      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,
      r      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,
-     s      gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,
+     s      gppveggat,   nepveggat,
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
@@ -58,8 +58,8 @@ c
      1      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      2      sandrow,     clayrow,     orgmrow,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
-     4      uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,
-     5      extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,
+     4      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,
+     5      extnprobrow, pfcancmxrow,  nfcancmxrow,
      6      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      7      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
      8      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,
@@ -77,7 +77,7 @@ c
      k      lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,
      l      farerow,     gavgscmsrow, rmlvegaccrow, pftexistrow,
      &      rmsvegrow,   rmrvegrow,   rgvegrow,   vgbiomas_vegrow,
-     &      gppvegrow,   nepvegrow,  ailcminrow,   ailcmaxrow,
+     &      gppvegrow,   nepvegrow,
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
@@ -143,8 +143,6 @@ c
       real   tcanoaccgat_m(ilg),
      1          uvaccgat_m(ilg),      vvaccgat_m(ilg)
 c
-      real   mlightnggat(ilg,12)  !12month
-c
       real  prbfrhucgat(ilg),         extnprobgat(ilg),
      +      daylgat(ilg),             dayl_maxgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
@@ -156,7 +154,7 @@ c
      6      ailcbgat(ilg,icc),        flhrlossgat(ilg,icc)
 c
       integer  pandaysgat(ilg,icc),   lfstatusgat(ilg,icc),
-     1         stdalngat(ilg),       colddaysgat(ilg,2)
+     1         colddaysgat(ilg,2)
      
       logical pftexistgat(ilg,icc)
 c
@@ -202,8 +200,7 @@ c
       real  gavgscmsgat(ilg)
 c
       real rmlvegaccgat(ilg,icc),       rmsveggat(ilg,icc),
-     1      rmrveggat(ilg,icc),         rgveggat(ilg,icc),
-     2      ailcmingat(ilg,icc),        ailcmaxgat(ilg,icc)
+     1      rmrveggat(ilg,icc),         rgveggat(ilg,icc)
 c
       real vgbiomas_veggat(ilg,icc)
 c
@@ -235,8 +232,6 @@ c
       real  tcanoaccrow_m(nlat,nmos),
      1      uvaccrow_m(nlat,nmos),       vvaccrow_m(nlat,nmos)
 c
-      real  mlightngrow(nlat,nmos,12)  !12month
-c
       real  prbfrhucrow(nlat,nmos),       extnprobrow(nlat,nmos),
      +      daylrow(nlat),           dayl_maxrow(nlat),
      1      tbaraccrow_m(nlat,nmos,ignd),
@@ -248,7 +243,7 @@ c
      6      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc)
 c
       integer pandaysrow(nlat,nmos,icc),  lfstatusrow(nlat,nmos,icc),
-     1      stdalnrow(nlat,nmos),           colddaysrow(nlat,nmos,2)
+     1        colddaysrow(nlat,nmos,2)
 
       logical pftexistrow(nlat,nmos,icc)
 c
@@ -296,8 +291,7 @@ c
       real  gavgscmsrow(nlat,nmos)
 c
       real rmlvegaccrow(nlat,nmos,icc), rmsvegrow(nlat,nmos,icc),
-     1      rmrvegrow(nlat,nmos,icc),   rgvegrow(nlat,nmos,icc),
-     2      ailcminrow(nlat,nmos,icc),  ailcmaxrow(nlat,nmos,icc)
+     1      rmrvegrow(nlat,nmos,icc),   rgvegrow(nlat,nmos,icc)
 c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
@@ -358,7 +352,6 @@ c----------------------------------------------------------------------
           extnprobgat(k)  = extnprobrow(ilmos(k),jlmos(k))
           daylgat(k)      = daylrow(ilmos(k))
           dayl_maxgat(k)  = dayl_maxrow(ilmos(k))
-          stdalngat(k)    = stdalnrow(ilmos(k),jlmos(k))
           tcanoaccgat_m(k)= tcanoaccrow_m(ilmos(k),jlmos(k))
           uvaccgat_m(k)   = uvaccrow_m(ilmos(k),jlmos(k))
           vvaccgat_m(k)   = vvaccrow_m(ilmos(k),jlmos(k))
@@ -414,7 +407,6 @@ c----------------------------------------------------------------------
 
       do 90 j=1,12     !12 months
           wetfrac_mongat(k,j)= wetfrac_monrow(ilmos(k),jlmos(k),j)
-          mlightnggat(k,j)=mlightngrow(ilmos(k),jlmos(k),j)
 90    continue
 
 c  
@@ -480,8 +472,6 @@ c
           rgveggat(k,l)    = rgvegrow(ilmos(k),jlmos(k),l)
           gppveggat(k,l)   = gppvegrow(ilmos(k),jlmos(k),l)
           autoresveggat(k,l)= autoresvegrow(ilmos(k),jlmos(k),l)
-          ailcmingat(k,l)  = ailcminrow(ilmos(k),jlmos(k),l)
-          ailcmaxgat(k,l)  = ailcmaxrow(ilmos(k),jlmos(k),l)
           vgbiomas_veggat(k,l) = vgbiomas_vegrow(ilmos(k),jlmos(k),l)
           pftexistgat(k,l) = pftexistrow(ilmos(k),jlmos(k),l)
 

@@ -158,11 +158,13 @@ nfcancmxrow(:,:,:) = fcancmxrow(:,:,:)
 !! crop fractions, set rest to seed. If PFTCompetition, but not start bare, then
 !! just make sure you have at least seed for each pft.
 !!
-n=1
-k=1
+!n=1
+!k=1
+    !print*,'nfcancmxrow',nfcancmxrow
 if (PFTCompetition) then
     do i = 1, nlat
         do m = 1, nmos
+            k=1  !reset k for next tile
             do j = 1, icc
                 if (.not. crop(j)) then
                     if (start_bare) then
@@ -171,18 +173,19 @@ if (PFTCompetition) then
                         nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
                     end if
                     barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
-
+!print*,k,i,m,j,nfcancmxrow(i,m,j),seed,barfm(i,m)
                     !> Keep track of the non-crop nfcancmx for use in loop below.
                     !> pftarrays keeps track of the nfcancmxrow for all non-crops
                     !> indexposj and indexposm store the index values of the non-crops
                     !> in a continuous array for use later. n and k are then the indexes used by
                     !> these arrays.
-                    pftarrays(i,n,k) = nfcancmxrow(i,m,j)
-                    indexposj(i,n,k) = j
-                    indexposm(i,n,k) = m
+                    pftarrays(i,m,k) = nfcancmxrow(i,m,j)
+                    indexposj(i,m,k) = j
+! print*,indexposj(i,m,k)
+                    !indexposm(i,m,k) = n
                     n = n+1
                     k = k+1
-                    if (j == icc) k=1
+                    !if (j == icc) k=1  !reset k for next tile
                 end if !crops
             end do !icc
         end do !nmos
@@ -198,6 +201,7 @@ if (PFTCompetition) then
                     bigpft=maxloc(pftarrays(i,m,:))
                     !> j is then the nmos index and m is the icc index of the PFT with the largest area
                     j = indexposj(i,m,bigpft(1))
+                    print*,'big',bigpft,j
                     !>
                     !> Reduce the most dominant PFT by barf and minbare. The extra
                     !! amount is to ensure we don't have trouble later with an extremely
