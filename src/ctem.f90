@@ -18,7 +18,7 @@
      &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    &
      &                       zbotw,   thliqc,   thliqg,    deltat,&
      &                       uwind,    vwind,  lightng,  prbfrhuc, &
-     &                    extnprob,     tbar,  transientPOPD, &
+     &                    extnprob,     tbar, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
      &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
@@ -218,9 +218,6 @@ real, dimension(ilg,ignd), intent(in) :: THLW           !<
 !
 !     updates
 !
-logical, intent(inout) :: transientPOPD                 !< if set true use population density data to calculate fire extinguishing
-                                                        !< probability and probability of fire due to human causes,
-                                                        !< or if false, read directly from .ctm file
 logical, intent(inout) :: pftexist(ilg,icc)             !<
 logical, intent(inout) :: inibioclim                    !<switch telling if bioclimatic parameters are being initialized from scratch (false)
                                                         !<or being initialized from some spun up values(true).
@@ -1705,7 +1702,7 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                      thliqc,    THLW,      THFC,    uwind,&
      &                       vwind,  lightng,  fcancmx, litrmass,&
-     &                    prbfrhuc, rmatctem, extnprob, transientPOPD,&
+     &                    prbfrhuc, rmatctem, extnprob, &
      &                         il1,      il2,     sort, nol2pfts,&
      &                    grclarea,   thicec,   popdin, lucemcom,&
      &                      dofire,  currlat,     iday, fsnow,&

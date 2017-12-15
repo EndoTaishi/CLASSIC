@@ -19,7 +19,7 @@ contains
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                             thliq,   THLW,  THFC,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
-                         prbfrhuc, rmatctem, extnprob, transientPOPD,   &
+                         prbfrhuc, rmatctem, extnprob,   &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
@@ -84,10 +84,6 @@ implicit none
 
 real, dimension(ilg,icc), intent(out) :: pstemmass 
 real, dimension(ilg,icc), intent(out) :: pgleafmass
-
-logical, intent(in) :: transientPOPD !<if set true use population density data to calculate fire extinguishing
-                              !<probability and probability of fire due to human causes, 
-                              !<or if false, read directly from .ctm file
 
 integer :: il1 !<il1=1
 integer :: il2 !<il2=ilg
@@ -456,9 +452,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !>Determine the probability of fire due to human causes
 !!this is based upon the population density from the .popd read-in file
-        if (transientPOPD) then
-            prbfrhuc(i)=min(1.0,(popdin(i)/popdthrshld)**0.43) !From Kloster et al. (2010)
-        end if
+
+        prbfrhuc(i)=min(1.0,(popdin(i)/popdthrshld)**0.43) !From Kloster et al. (2010)
 
         ! account for cultural ignitions in Savanna regions, see below for
         ! reduction in suppression too
@@ -556,17 +551,15 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
           arbn1day_veg(i,j)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
 
 !>fire extinguishing probability as a function of grid-cell averaged population density
-          if (transientPOPD) then
 
-            !> account for low suppression in Savanna regions, see above for
-            !> increase in ignition due to cultural practices
-               extn_par1=-0.015 ! Value based on Vivek's testing. Jul 14 2016. old = -0.025
+          !> account for low suppression in Savanna regions, see above for
+          !> increase in ignition due to cultural practices
+          extn_par1=-0.015 ! Value based on Vivek's testing. Jul 14 2016. old = -0.025
 
-            ! change 0.9 to 1.0 in eqn. A78 of Melton and Arora, 2016, GMD competition paper
-            extnprob(i)=max(0.0,1.0-exp(extn_par1*popdin(i)))
+          ! change 0.9 to 1.0 in eqn. A78 of Melton and Arora, 2016, GMD competition paper
+          extnprob(i)=max(0.0,1.0-exp(extn_par1*popdin(i)))
 
-            extnprob(i)=0.5+extnprob(i)/2.0
-          end if
+          extnprob(i)=0.5+extnprob(i)/2.0
           
 !>area multipler to calculate area burned over the duration of the fire
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              

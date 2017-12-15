@@ -3497,7 +3497,7 @@ contains
                         &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,&
                         &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,&
                         &             uvaccgat_t,  vvaccgat_t,    lightng,prbfrhucgat,&
-                        &            extnprobgat,  tbaraccgat_t,transientPOPD,&
+                        &            extnprobgat,  tbaraccgat_t, &
                         &               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,&
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
                         &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&

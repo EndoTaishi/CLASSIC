@@ -165,23 +165,24 @@ contains
             print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(2)
         end if
 
-        !> Check that our domain is within the longitude and latitude limits of
-        !! the input files. Otherwise print a warning. Primarily we are trying to
-        !! catch instances where the input file runs from 0 to 360 longitude while
-        !! the user expects -180 to 180.
-        if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
-            print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
-                ' the limits of the init_file ',myDomain%allLonValues(1)
-        else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
-            print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
-                ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
-        else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
-            print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
-                ' the limits of the init_file ',myDomain%allLatValues(1)
-        else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
-            print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
-                ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
-        end if
+! FLAG - be good to put in a check here but need to do this better.
+!         !> Check that our domain is within the longitude and latitude limits of
+!         !! the input files. Otherwise print a warning. Primarily we are trying to
+!         !! catch instances where the input file runs from 0 to 360 longitude while
+!         !! the user expects -180 to 180.
+!         if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
+!             print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
+!                 ' the limits of the init_file ',myDomain%allLonValues(1)
+!         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
+!             print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
+!                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
+!         else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
+!             print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
+!                 ' the limits of the init_file ',myDomain%allLatValues(1)
+!         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
+!             print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
+!                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
+!         end if
 
         !> Based on the domainBounds, we make vectors of the cells to be run.
         pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
@@ -400,8 +401,6 @@ contains
         real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
         real, pointer, dimension(:,:,:) :: litrmassrow
         real, pointer, dimension(:,:,:) :: soilcmasrow
-        real, pointer, dimension(:,:) :: extnprob
-        real, pointer, dimension(:,:) :: prbfrhuc
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         real, pointer, dimension(:,:,:) :: slopefrac
@@ -445,8 +444,6 @@ contains
         dry_season_length => vrot%dry_season_length
         litrmassrow       => vrot%litrmass
         soilcmasrow       => vrot%soilcmas
-        extnprob          => vrot%extnprob
-        prbfrhuc          => vrot%prbfrhuc
         slopefrac         => vrot%slopefrac
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
@@ -636,13 +633,9 @@ contains
         if (ctem_on) then
 
             grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
-            extnprob(:,1) = ncGet1DVar(initid, 'extnprob', start = [lonIndex, latIndex], count = [1, 1])  !FLAG remove
-            prbfrhuc(:,1) = ncGet1DVar(initid, 'prbfrhuc', start = [lonIndex, latIndex], count = [1, 1])  !FLAG remove
 
             do i = 1,nmos
                 grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
-                extnprob(:,i) = extnprob(:,1)
-                prbfrhuc(:,i) = prbfrhuc(:,1)
             end do
 
             slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, nmos, 8], format = [nlat, nmos, 8])
