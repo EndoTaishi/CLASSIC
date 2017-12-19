@@ -47,12 +47,12 @@ contains
         character(:), pointer :: LGHTFile
         character(:), pointer :: LUCFile
         integer, pointer :: fixedYearLUC
-        logical, pointer :: dowetlands
-        logical, pointer :: obswetf
+        logical, pointer :: transientOBSWETF
+        character(:), pointer :: OBSWETFFile
+        integer, pointer  :: fixedYearOBSWETF
         logical, pointer :: PFTCompetition
         logical, pointer :: inibioclim
         logical, pointer :: start_bare
-        logical, pointer :: use_netcdf
         character(:), pointer :: met_file
         character(:), pointer :: metFileFss
         character(:), pointer :: metFileFdl
@@ -137,9 +137,9 @@ contains
         transientLGHT, &
         fixedYearLGHT, &
         LGHTFile, &
-        dowetlands, &
-        obswetf, &
-        use_netcdf, &
+        transientOBSWETF, &
+        OBSWETFFile, &
+        fixedYearOBSWETF, &
         met_file, &
         metFileFss, &
         metFileFdl, &
@@ -207,8 +207,9 @@ contains
         fixedYearLGHT   => c_switch%fixedYearLGHT
         transientLGHT   => c_switch%transientLGHT
         LGHTFile        => c_switch%LGHTFile
-        dowetlands      => c_switch%dowetlands
-        obswetf         => c_switch%obswetf
+        transientOBSWETF=> c_switch%transientOBSWETF
+        OBSWETFFile     => c_switch%OBSWETFFile
+        fixedYearOBSWETF=> c_switch%fixedYearOBSWETF
         PFTCompetition  => c_switch%PFTCompetition
         inibioclim      => c_switch%inibioclim
         start_bare      => c_switch%start_bare

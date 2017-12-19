@@ -53,11 +53,11 @@ contains
     end function ncOpen
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> Returns the variable id for a given file id a variable label.
+    !> Returns the variable id for a given variable label.
     integer function ncGetVarId(fileId, label)
         integer, intent(in)         :: fileId   !< File id
         character(*), intent(in)    :: label    !< netCDF variable label
-        call checkNC(nf90_inq_varid(fileId, label, ncGetVarId), tag = 'ncGetVarId(' // trim(label) // ') ')
+        call checkNC(nf90_inq_varid(fileId, label, ncGetVarId), tag = 'ncGetVarId(' // trim(label) // ') hint -check if nameInCode is in the xml file, or perhaps you have a duplicate')
     end function ncGetVarId
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------

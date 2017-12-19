@@ -38,7 +38,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      &      btermgat,     ltermgat,   mtermgat,daylgat,dayl_maxgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      ch4wet1gat, ch4wet2gat, slopefracgat, wetfrac_mongat,
+     &      ch4wet1gat, ch4wet2gat, slopefracgat,
      &       wetfdyngat, ch4dyn1gat, ch4dyn2gat, ch4soillsgat,
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
@@ -84,7 +84,7 @@ c
      &      btermrow,     ltermrow,   mtermrow, daylrow,dayl_maxrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow,
-     &      ch4wet1row, ch4wet2row, slopefracrow, wetfrac_monrow,
+     &      ch4wet1row, ch4wet2row, slopefracrow,
      &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
@@ -301,8 +301,7 @@ c
      3      soilcresvegrow(nlat,nmos,iccp1) 
 
 c   Methane related variables
-        real wetfrac_monrow(nlat,nmos,12),wetfrac_mongat(ilg,12),
-     1       slopefracrow(nlat,nmos,8),      slopefracgat(ilg,8),
+        real slopefracrow(nlat,nmos,8),      slopefracgat(ilg,8),
      2       ch4wet1row(nlat,nmos),         ch4wet1gat(ilg),
      3       ch4wet2row(nlat,nmos),         ch4wet2gat(ilg),
      4       wetfdynrow(nlat,nmos),         wetfdyngat(ilg),
@@ -404,11 +403,6 @@ c----------------------------------------------------------------------
           popdingat(k)    = popdinrow(ilmos(k),jlmos(k))
           dry_season_lengthgat(k) =
      1            dry_season_lengthrow(ilmos(k),jlmos(k))
-
-      do 90 j=1,12     !12 months
-          wetfrac_mongat(k,j)= wetfrac_monrow(ilmos(k),jlmos(k),j)
-90    continue
-
 c  
 100   continue
 c

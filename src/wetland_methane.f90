@@ -3,7 +3,7 @@
 !>
 subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
                        npp, tbar, thliqg, currlat, &
-                        sand,  slopefrac, &! obswetf, &
+                        sand,  slopefrac, &
 !
 !    -------------- inputs above this line, outputs below -------------
                        ch4wet1,    ch4wet2,    wetfdyn,  &
@@ -24,7 +24,6 @@ use ctem_params,        only : wtdryres, ratioch4, factor2,lat_thrshld1, &
 
 implicit none
 
-!logical, intent(in) :: obswetf                 !< if true the observed wetland fraction will be used.
 integer, intent(in) :: il1                      !< il1=1
 integer, intent(in) :: il2                      !< il2=ilg
 real, dimension(ilg), intent(in) :: hetrores    !< heterotrophic respiration from main ctem program calculated as sum of litres + socres
@@ -81,9 +80,10 @@ do 110 i = il1, il2
 !>scaling by the wetland fraction in a grid cell
 !>and set the methane flux to zero when screen temperature (ta) is below or at freezing
 !>this is consistent with recent flux measurements by the university of manitoba at churchill, manitoba
-!>
-!>if (obswetf) then  ! Use the read-in wetland locations as the CH4 producing area
-!>
+
+! FLAG - but not correct if the soil itself is not frozen! JM Dec 2017.
+
+!> First calculate for the specified wetland fractions read in from OBSWETFFile
    do 210 i = il1, il2 
       wetresp(i)=hetrores(i)*wtdryres*wetfrac(i)
       ch4wet1(i)=ratioch4*wetresp(i)
@@ -94,7 +94,7 @@ do 110 i = il1, il2
       endif
 210 continue
 !>
-!>else ! dynamically find the wetland locations
+!>next dynamically find the wetland locations and determine their methane emissions
 !>
    do 310 i = il1, il2
      porosity=(-0.126*sand(i,1)+48.9)/100.0 ! top soil layer porosity
@@ -141,14 +141,12 @@ do 110 i = il1, il2
      wetresp(i)=hetrores(i)*wtdryres*wetfdyn(i)
      ch4dyn1(i)=ratioch4*wetresp(i)
      ch4dyn2(i)=factor2*wetfdyn(i)*max(0.0,npp(i))*(2**((tbar(i,1)-273.2)/10.0))
-     if (ta(i).lt.273.2) then
+     if (ta(i).lt.273.2) then !FLAG!
        ch4dyn1(i)=0.0
        ch4dyn2(i)=0.0
      endif
 
 310 continue
-
-!end if !obswetf
 
 return
 end

@@ -30,6 +30,8 @@ module model_state_drivers
     real, dimension(:), allocatable :: LGHTFromFile         !< The array of lightning density from the LGHTFile
     integer, dimension(:), allocatable :: LUCTime           !< The time from the LUC file
     real, dimension(:,:), allocatable :: LUCFromFile        !< The array of LUC from the LUCFile
+    integer, dimension(:), allocatable :: OBSWETFTime       !< The time from the observed wetland distribution file
+    real, dimension(:), allocatable :: OBSWETFFromFile    !< The array of observed wetland distribution from the OBSWETFFile
 
     real, dimension(:), allocatable :: metTime              !< The time from the Met file
     real, dimension(:), allocatable :: metFss               !< Incoming shortwave radiation from metFile \f$[W m^{-2} ]\f$
@@ -54,6 +56,7 @@ module model_state_drivers
     integer :: popid                                !> netcdf file id for the population density input file
     integer :: lghtid                               !> netcdf file id for the lightning density input file
     integer :: lucid                                !> netcdf file id for the land use change input file
+    integer :: obswetid                             !> netcdf file id for the observed wetland distribution input file
 
     real :: metInputTimeStep                        !> The timestep of the read in meteorology (hours)
 
@@ -87,6 +90,7 @@ contains
         character(350), pointer          :: POPDFile
         character(350), pointer          :: LGHTFile
         character(350), pointer          :: LUCFile
+        character(350), pointer          :: OBSWETFFile
         character(350), pointer          :: metFileFss
         character(350), pointer          :: metFileFdl
         character(350), pointer          :: metFilePre
@@ -98,6 +102,8 @@ contains
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
         integer, pointer                 :: fixedYearLUC
+        logical, pointer                 :: transientOBSWETF
+        integer, pointer                 :: fixedYearOBSWETF
 
         ! Local vars
         integer, allocatable, dimension(:,:) :: mask
@@ -116,10 +122,13 @@ contains
         POPDFile                => c_switch%POPDFile
         LGHTFile                => c_switch%LGHTFile
         LUCFile                 => c_switch%LUCFile
+        OBSWETFFile             => c_switch%OBSWETFFile
         ctem_on                 => c_switch%ctem_on
         dofire                  => c_switch%dofire
         lnduseon                => c_switch%lnduseon
+        transientOBSWETF        => c_switch%transientOBSWETF
         fixedYearLUC            => c_switch%fixedYearLUC
+        fixedYearOBSWETF        => c_switch%fixedYearOBSWETF
         metFileFss              => c_switch%metFileFss
         metFileFdl              => c_switch%metFileFdl
         metFilePre              => c_switch%metFilePre
@@ -287,6 +296,9 @@ contains
             if (lnduseon .or. (fixedYearLUC .ne. -9999)) then
                 lucid = ncOpen(LUCFile, nf90_nowrite)
             end if
+            if (transientOBSWETF .or. (fixedYearOBSWETF .ne. -9999)) then
+                obswetid = ncOpen(OBSWETFFile, nf90_nowrite)
+            end if
         end if
 
         !> Open the meteorological forcing files
@@ -378,10 +390,8 @@ contains
         logical, pointer :: dofire
         logical, pointer :: PFTCompetition
         logical, pointer :: inibioclim
-        logical, pointer :: dowetlands
         logical, pointer :: start_bare
         logical, pointer :: lnduseon
-        logical, pointer :: obswetf
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -421,10 +431,8 @@ contains
         dofire            => c_switch%dofire
         PFTCompetition    => c_switch%PFTCompetition
         inibioclim        => c_switch%inibioclim
-        dowetlands        => c_switch%dowetlands
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
-        obswetf           => c_switch%obswetf
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -940,9 +948,11 @@ contains
         integer, pointer :: fixedYearLGHT
         logical, pointer :: lnduseon
         integer, pointer :: fixedYearLUC
+        logical, pointer :: transientOBSWETF
+        integer, pointer :: fixedYearOBSWETF
 
         real, dimension(5) :: dateTime
-        real :: startLGHTTime
+        real :: startLGHTTime,startWETTime
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
@@ -956,6 +966,8 @@ contains
         fixedYearPOPD   => c_switch%fixedYearPOPD
         transientLGHT   => c_switch%transientLGHT
         fixedYearLGHT   => c_switch%fixedYearLGHT
+        transientOBSWETF=> c_switch%transientOBSWETF
+        fixedYearOBSWETF=> c_switch%fixedYearOBSWETF
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
         co2concrow      => vrot%co2conc
@@ -1146,10 +1158,50 @@ contains
 
         case ('OBSWETF') ! Observed wetland fractions
 
-            stop('Not implemented yet')
-            !wetfrac_monrow(i,m,:
-            !  wetfrac_presgat(i)=wetfrac_mongat(i,month1)+(real(xday)/30.0)*&
-            !            (wetfrac_mongat(i,month2)-wetfrac_mongat(i,month1))
+            lengthOfFile = ncGetDimLen(obswetid, 'time')
+            allocate(fileTime(lengthOfFile))
+            allocate(OBSWETFTime(lengthOfFile))
+
+            fileTime = ncGet1DVar(obswetid, 'time', start = [1], count = [lengthOfFile])
+
+            ! The obswetf file is daily (expected format is "day as %Y%m%d.%f")
+            ! We want to retain all except any partial day info.
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(fileTime(i))
+                OBSWETFTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
+            end do
+
+            lonloc = closestCell(obswetid,'lon',longitude)
+            latloc = closestCell(obswetid,'lat',latitude)
+
+            if (transientOBSWETF) then
+                ! We read in the whole OBSWETF times series and store it.
+                allocate(OBSWETFFromFile(lengthOfFile))
+                OBSWETFFromFile = ncGet1DVar(obswetid, 'wetf', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+
+            else
+
+                ! Find the requested day and year in the file.
+                ! Assume we are grabbing from day 1
+                startWETTime = real(fixedYearOBSWETF) * 10000. + 1. * 100. + 1.
+
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(OBSWETFTime),real(startWETTime))
+                if (arrindex == 0) stop('getInput says: The OBSWETF file does not contain requested year')
+
+                ! We read in only the suggested year's worth of daily data
+                ! FLAG Not presently set up for leap years!
+                allocate(OBSWETFFromFile(365))
+                OBSWETFFromFile = ncGet1DVar(obswetid, 'wetf', start = [arrindex,lonloc,latloc], count = [365,1,1])
+
+                ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
+                deallocate(OBSWETFTime)
+                allocate(OBSWETFTime(365))
+                do d = 1,365
+                    OBSWETFTime(d) = real(d)
+                end do
+
+            end if
 
         case default
             stop('Specify an input kind for getInput')
@@ -1188,7 +1240,7 @@ contains
         real, pointer, dimension(:,:,:) :: nfcancmxrow
         real, pointer, dimension(:) :: lightng       !<total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
                                                      !<to ground lightning is some fixed fraction of total lightning.
-
+        real, pointer, dimension(:) :: wetfrac_presgat
         logical, pointer :: transientLGHT
         integer, pointer :: fixedYearLGHT
 
@@ -1199,6 +1251,7 @@ contains
         transientLGHT   => c_switch%transientLGHT
         fixedYearLGHT   => c_switch%fixedYearLGHT
         lightng         => vgat%lightng
+        wetfrac_presgat => vgat%wetfrac_pres
 
         select case (trim(inputRequested))
 
@@ -1263,6 +1316,11 @@ contains
             do m = 1, size(lightng)
                 lightng(m) = lightng(1)
             end do
+
+        case('OBSWETF')
+
+        !wetfrac_presgat
+         stop('not done')
 
         case default
             stop('specify an input kind for updateInput')

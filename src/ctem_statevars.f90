@@ -60,8 +60,9 @@ type ctem_switches
                                 !<we use the PFT distribution found in the initialization file. Any other year
                                 !<we search for that year in the LUCFile
 
-    logical :: dowetlands   !<if true allow wetland methane emission
-    logical :: obswetf      !<observed wetland fraction
+    logical :: transientOBSWETF    !< use observed wetland fraction time series, otherwise use fixedYearOBSWETF
+    character(350) :: OBSWETFFile  !< Location of the netcdf file containing observed wetland fraction
+    integer :: fixedYearOBSWETF    !< set the year to use for observed wetland fraction if transientOBSWETF is false.
 
     character(350) :: metFileFss        !< location of the incoming shortwave radiation meteorology file
     character(350) :: metFileFdl        !< location of the incoming longwave radiation meteorology file
@@ -375,7 +376,6 @@ type veg_rot
                                                         !<temperature threshold for ndl dcd and crop pfts.
     real, allocatable, dimension(:,:,:)  :: slopefrac          !<prescribed fraction of wetlands based on slope
                                                         !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    real, allocatable, dimension(:,:,:) :: wetfrac_mon        !<
     
 ! allocated with nlat:     
     real, allocatable, dimension(:)    :: dayl_max        !< maximum daylength for that location (hours)
@@ -493,8 +493,7 @@ type veg_gat
 
     real, allocatable, dimension(:,:) :: slopefrac      !<prescribed fraction of wetlands based on slope
                                                         !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    real, allocatable, dimension(:)    :: wetfrac_pres  !<
-    real, allocatable, dimension(:,:)  :: wetfrac_mon   !<
+    real, allocatable, dimension(:)    :: wetfrac_pres  !<Prescribed fraction of wetlands in a grid cell
     real, allocatable, dimension(:)    :: ch4wet1       !<methane flux from wetlands calculated using hetrores (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)    :: ch4wet2       !<methane flux from wetlands calculated using npp (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)    :: wetfdyn       !<dynamic wetland fraction
@@ -1192,7 +1191,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
 ! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
          vrot%slopefrac(nlat,nmos,8),&
-         vrot%wetfrac_mon(nlat,nmos,12),&
     
 ! allocated with nlat:     
          vrot%dayl_max(nlat),&
@@ -1418,7 +1416,6 @@ allocate(vgat%grclarea(ilg),&
 ! allocated with ilg, icc, {some number}:
          vgat%colddays (ilg,2),&
          vgat%slopefrac (ilg,8),&
-         vgat%wetfrac_mon (ilg,12),&
          vgat%tmonth (12,ilg),&
 
 ! allocated with ilg

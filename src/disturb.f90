@@ -285,16 +285,6 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>if not simulating fire, leave the subroutine now.
       if (.not. dofire) goto 600
 
-      do 190 i = il1, il2
-        if(extnprob(i).le.zero) then
-          write(6,*)'fire extinguishing prob. (',i,'= ',extnprob(i)
-          write(6,*)'please use an appropriate value of this paramater'
-          write(6,*)'else the whole grid cell will burn down leading to'
-          write(6,*)'numerical problems.'
-          call xit('disturb',-2)
-        endif
-190   continue
-
 !>initialization ends    
 
 !>Find pft areas before

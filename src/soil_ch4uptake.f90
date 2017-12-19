@@ -5,7 +5,7 @@
 !! Coded up based on \cite Curry2007-du.
 
 subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
-     &                     THIC,PSIS,GRAV,FCAN,obswetf, &
+     &                     THIC,PSIS,GRAV,FCAN, &
      &                     wetfdyn,wetfracgrd,isand,RHOW,RHOICE, &
      &                     atm_CH4,CH4_soills)
 
@@ -31,7 +31,6 @@ real, dimension(nlat), intent(in) :: wetfracgrd   !< Prescribed fraction of wetl
 real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
 real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
 real, intent(in) :: GRAV                          !< Acceleration due to gravity \f$(m s^{-1})\f$
-logical, intent(in) :: obswetf                    !< Switch, if true then use the prescribed wetland cover
 real, intent(in) :: RHOW                          !< Density of water \f$(kg m^{-3})\f$
 real, intent(in) :: RHOICE                        !< Density of ice \f$(kg m^{-3})\f$
 integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
@@ -139,7 +138,7 @@ do 10 i = IL1, IL2
 
     !> Find the flux correction due to wetlands
 
-    if (obswetf) then  !> Use the prescribed wetland fractions
+    if (wetfracgrd(i) > 0.) then  !> Use the prescribed wetland fractions
         r_W = 1.0 - wetfracgrd(i)
     else !> use the dynamically determined wetland area
         r_W = 1.0 - wetfdyn(i)

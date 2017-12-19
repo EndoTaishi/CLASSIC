@@ -835,7 +835,11 @@ contains
         integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
         integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
         integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
-        integer, pointer :: fixedYearLUC
+        integer, pointer :: fixedYearLUC  !<Set the year to use for land cover if lnduseon is false. If set to -9999,
+                                !<we use the PFT distribution found in the initialization file. Any other year
+                                !<we search for that year in the LUCFile
+        integer, pointer :: fixedYearOBSWETF !< set the year to use for observed wetland fraction if transientOBSWETF is false.
+
         integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
                         !< because the atmospheric model considers these to be part
                         !< of the "terrain".
@@ -939,10 +943,9 @@ contains
         logical, pointer :: transientCH4
         logical, pointer :: transientPOPD
         logical, pointer :: transientLGHT
+        logical, pointer :: transientOBSWETF
         logical, pointer :: inibioclim
         logical, pointer :: leap
-        logical, pointer :: dowetlands
-        logical, pointer :: obswetf
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
         logical, pointer :: dohhoutput
@@ -1054,7 +1057,6 @@ contains
         real, pointer, dimension(:,:) :: wetfdynrow
         real, pointer, dimension(:,:) :: ch4dyn1row
         real, pointer, dimension(:,:) :: ch4dyn2row
-        real, pointer, dimension(:,:,:) :: wetfrac_monrow
         real, pointer, dimension(:,:) :: ch4soillsrow
 
         real, pointer, dimension(:,:) :: peatdeprow
@@ -1214,7 +1216,6 @@ contains
 
         real, pointer, dimension(:,:) :: slopefracgat
         real, pointer, dimension(:) :: wetfrac_presgat
-        real, pointer, dimension(:,:) :: wetfrac_mongat
         real, pointer, dimension(:) :: ch4wet1gat
         real, pointer, dimension(:) :: ch4wet2gat
         real, pointer, dimension(:) :: wetfdyngat
@@ -2172,10 +2173,10 @@ contains
         transientPOPD     => c_switch%transientPOPD
         transientLGHT     => c_switch%transientLGHT
         fixedYearLUC      => c_switch%fixedYearLUC
+        transientOBSWETF  => c_switch%transientOBSWETF
+        fixedYearOBSWETF  => c_switch%fixedYearOBSWETF
         inibioclim        => c_switch%inibioclim
-        leap              => c_switch%leap         
-        dowetlands        => c_switch%dowetlands
-        obswetf           => c_switch%obswetf
+        leap              => c_switch%leap
         jhhstd            => c_switch%jhhstd
         jhhendd           => c_switch%jhhendd
         jdstd             => c_switch%jdstd
@@ -2311,7 +2312,6 @@ contains
         wetfdynrow        => vrot%wetfdyn
         ch4dyn1row        => vrot%ch4dyn1
         ch4dyn2row        => vrot%ch4dyn2
-        wetfrac_monrow    => vrot%wetfrac_mon
         ch4soillsrow      => vrot%ch4_soills
 
         peatdeprow            => vrot%peatdep
@@ -2508,11 +2508,10 @@ contains
         rmrgat            => vgat%rmr
 
         slopefracgat      => vgat%slopefrac
-        wetfrac_presgat   => vgat%wetfrac_pres
-        wetfrac_mongat    => vgat%wetfrac_mon
         ch4wet1gat        => vgat%ch4wet1
         ch4wet2gat        => vgat%ch4wet2
         wetfdyngat        => vgat%wetfdyn
+        wetfrac_presgat   => vgat%wetfrac_pres
         ch4dyn1gat        => vgat%ch4dyn1
         ch4dyn2gat        => vgat%ch4dyn2
         ch4soillsgat      => vgat%ch4_soills
@@ -2751,6 +2750,9 @@ contains
         lopcount = 1
         leapnow = .false.
         lastDOY = 365
+        wetfrac_presgat = -9999. !< If transientOBSWETF or fixedYearOBSWETF != -9999 this will be overwritten with
+                                 !! real wetland fractions. Otherwise the negative is used as a switch so the dynamic
+                                 !! wetland extent is used instead of the prescribed.
 
         call initrowvars
         call resetAccVars(nlat,nmos)
@@ -2779,7 +2781,7 @@ contains
             call getInput('CH4') ! CH4 atmospheric concentration
             if (dofire) call getInput('POPD',longitude,latitude) ! Population density
             if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
-            if (obswetf) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
+            if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
             if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
 
             !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
@@ -3142,6 +3144,9 @@ contains
                     end if
                 end if ! first day
 
+                ! Once a month adjust the wetland fractions
+                if (DOM == 1 .and. ctem_on .and. transientOBSWETF) call updateInput('OBSWETF',iyear,imonth=imonth)
+
             endif   ! first timestep
 
             ! FLAG - this section until the 300 continue line should be put into a subroutine.
@@ -3282,7 +3287,7 @@ contains
                     btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,&
                     nbpveggat,    hetroresveggat, autoresveggat,litresveggat,&
                     soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-                    ch4wet1gat, ch4wet2gat,  slopefracgat, wetfrac_mongat,&
+                    ch4wet1gat, ch4wet2gat,  slopefracgat,&
                     wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,&
                     twarmmgat,    tcoldmgat,     gdd5gat,&
                     ariditygat, srplsmongat,  defctmongat, anndefctgat,&
@@ -3327,7 +3332,7 @@ contains
                     btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,&
                     nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,&
                     soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-                    ch4wet1row, ch4wet2row,  slopefracrow, wetfrac_monrow,&
+                    ch4wet1row, ch4wet2row,  slopefracrow,&
                     wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
                     twarmmrow,    tcoldmrow,     gdd5row,&
                     aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
@@ -3501,7 +3506,7 @@ contains
                         &               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,&
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
                         &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&
-                        &              popdingat,  dofire, dowetlands,obswetf, isndgat,&
+                        &              popdingat,  dofire, isndgat,&
                         &          faregat,wetfrac_presgat,slopefracgat,&
                         &                  BIGAT,    THPGAT, thicegacc_t, DLATGAT,&
                         &             ch4concgat,      GRAV, RHOW, RHOICE,&

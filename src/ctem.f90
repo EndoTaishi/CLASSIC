@@ -22,7 +22,7 @@
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
      &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
-     &                    popdin, dofire,  dowetlands,obswetf,isand,  &
+     &                    popdin, dofire,  isand,  &
      &                   faregat, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &
      &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
@@ -147,12 +147,6 @@ implicit none
 logical, intent(in) :: lnduseon                         !<logical switch to run the land use change subroutine or not.
 logical, intent(in) :: PFTCompetition                   !<logical boolean telling if competition between pfts is on or not
 logical, intent(in) :: dofire                           !<boolean, if true allow fire, if false no fire.
-logical, intent(in) :: dowetlands                       !<if true allow wetland methane emission
-logical, intent(in) :: obswetf                          !<if true, use read-in observed wetland fraction
-!logical, intent(in) :: onetile_perPFT                   !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
-                                                        !< how competition is run. Specifically it allows competition between tiles. This
-                                                        !< is not recommended for any case where you don't have one PFT in each tile as it
-                                                        !< has not been tested for that.
 logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
 integer, intent(in) :: iday                             !<day of year
 integer, intent(in) ::  spinfast                        !<spinup factor for soil carbon whose default value is 1. as this factor increases the
@@ -204,7 +198,7 @@ real, dimension(ilg,icc), intent(in) :: nfcancmx        !<next year's fractional
 real, dimension(ilg), intent(in) ::  faregat            !<
 real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
 real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
-real, dimension(ilg), intent(in) :: wetfrac             !<
+real, dimension(ilg), intent(in) :: wetfrac             !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg,8), intent(in) :: slopefrac         !<
 real, intent(in) :: GRAV                                !<Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.
 real, intent(in) :: RHOW                                !<Density of water ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
@@ -1327,23 +1321,18 @@ do 470 j = 1,icc
 !     ------------------------------------------------------------------
 
 !>Find CH4 wetland area (if not prescribed) and emissions:
-
-if (dowetlands .or. obswetf) then
     call  wetland_methane (hetrores, il1, il2, ta, wetfrac,&
      &                        npp, tbar, thliqg, currlat,&  !FLAG consider making this thliqc? JM Aug 2016.
-     &                     sand,  slopefrac, & !obswetf,&
+     &                     sand,  slopefrac, &
      &                  ch4wet1,    ch4wet2,    wetfdyn,&
      &                  ch4dyn1,    ch4dyn2)
-endif
 
 !> Calculate the methane that is oxidized by the soil sink
-if (dowetlands) then
     call soil_ch4uptake(il1,il2,tbar,thpor,bi,thliqg, &
-     &                     thicec,psisat,GRAV,fcan,obswetf, &
+     &                     thicec,psisat,GRAV,fcan, &
      &                     wetfdyn,wetfrac,isand,RHOW, &
      &                     RHOICE,ch4conc,ch4soills)
 
-endif
 !    -------------------------------------------------------------------
 
 !>Estimate allocation fractions for leaf, stem, and root components.

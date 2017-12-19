@@ -133,7 +133,7 @@ contains
             id = addVariable(nameInCode, filename)
 
             ! Make the netcdf file for the new variable (mostly definitions)
-            call createNetCDF(filename, id, outputForm, descriptor, timeFreq, units)
+            call createNetCDF(filename, id, outputForm, descriptor, timeFreq, units, nameInCode)
 
             ! Now make sure the file was properly created
             fileCreatedOk = checkFileExists(filename)
@@ -218,8 +218,6 @@ contains
             elseif (c_switch%lnduseon .and. trim(descriptor%group) == "land") then
                 validGroup = .true.
             elseif ((c_switch%lnduseon .or. c_switch%dofire) .and. trim(descriptor%group) == "land+fire") then
-                validGroup = .true.
-            elseif (c_switch%dowetlands .and. trim(descriptor%group) == "methane") then
                 validGroup = .true.
             elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
                 validGroup = .true.
@@ -335,7 +333,7 @@ contains
     !>\ingroup output_createNetCDF
     !>@{
     ! Create the output netcdf files
-    subroutine createNetCDF(fileName, id, outputForm, descriptor, timeFreq, units)
+    subroutine createNetCDF(fileName, id, outputForm, descriptor, timeFreq, units, nameInCode)
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
@@ -348,6 +346,7 @@ contains
         character(*), intent(in)              :: timeFreq, units
         type(outputDescriptor), intent(in)    :: descriptor
         integer, intent(in)                   :: id
+        character(*), intent(in)              :: nameInCode
 
         character(8)  :: today
         character(10) :: now
@@ -516,7 +515,7 @@ contains
         call ncPutAtt(ncid,varid,'long_name',charvalues=descriptor%longName)
         call ncPutAtt(ncid,varid,'units',charvalues=units)
         call ncPutAtt(ncid,varid,'_FillValue',realvalues=fill_value)
-        !call ncPutAtt(ncid,varid,'missing_value',realvalues=fill_value)
+        call ncPutAtt(ncid,varid,'nameInCode',charvalues=nameInCode)
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
         !call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
         call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
