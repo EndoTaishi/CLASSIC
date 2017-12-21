@@ -1337,8 +1337,6 @@ contains
 
         !      Outputs
 
-        real, pointer, dimension(:,:) :: tcanoaccrow_out
-        real, pointer, dimension(:) :: tcanoaccgat_out
         real, pointer, dimension(:,:) :: qevpacc_m_save
 
         !     -----------------------
@@ -2246,7 +2244,6 @@ contains
         canresrow         => vrot%canres
         flhrlossrow       => vrot%flhrloss
 
-        tcanoaccrow_out   => vrot%tcanoaccrow_out
         qevpacc_m_save    => vrot%qevpacc_m_save
 
         grwtheffrow       => vrot%grwtheff
@@ -2395,7 +2392,6 @@ contains
 
         grclarea          => vgat%grclarea
         lightng           => vgat%lightng
-        tcanoaccgat_out   => vgat%tcanoaccgat_out
 
         gleafmasgat       => vgat%gleafmas
         bleafmasgat       => vgat%bleafmas
@@ -2767,7 +2763,6 @@ contains
                 TCANOACCROW_M(I,M)       = 0.0
                 UVACCROW_M(I,M)          = 0.0
                 VVACCROW_M(I,M)          = 0.0
-                TCANOACCROW_OUT(I,M)     = 0.0
 11          continue
 
         ! Read in the model initial state
@@ -3674,7 +3669,7 @@ contains
                 &      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,&
                 &      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,&
                 &      lucsocinrow, nppvegrow,   dstcemls3row,&
-                &      FAREROT,     gavgscmsrow, tcanoaccrow_out,&
+                &      FAREROT,     gavgscmsrow,&
                 &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,&
                 &      vgbiomas_vegrow,gppvegrow,nepvegrow,&
                 &      FCANROT,      pftexistrow,&
@@ -3721,7 +3716,7 @@ contains
                 &      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,&
                 &      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,&
                 &      lucsocingat, nppveggat,   dstcemls3gat,&
-                &      faregat,     gavgscmsgat, tcanoaccgat_out,&
+                &      faregat,     gavgscmsgat, &
                 &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,&
                 &      vgbiomas_veggat,gppveggat,nepveggat,&
                 &      fcangat,      pftexistgat,&
@@ -3754,7 +3749,6 @@ contains
                         flutacc_gat(i)=0.
                         pregacc_gat(i)=0.
                         fsnowacc_t(i)=0.0
-                        tcanoaccgat_out(i)=tcanoaccgat_t(i)
                         tcanoaccgat_t(i)=0.0
                         tcansacc_t(i)=0.0
                         taaccgat_t(i)=0.0

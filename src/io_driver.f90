@@ -1993,7 +1993,6 @@ contains
         real, pointer, dimension(:,:) :: dstcemlsrow
         real, pointer, dimension(:,:) :: litrfallrow
         real, pointer, dimension(:,:) :: humiftrsrow
-        real, pointer, dimension(:,:) :: tcanoaccrow_out
 
         ! local vars
         real, allocatable, dimension(:) :: gpp_g      !<
@@ -2141,7 +2140,6 @@ contains
         dstcemls3row      => vrot%dstcemls3
         lfstatusrow       => vrot%lfstatus
 
-        tcanoaccrow_out   => vrot%tcanoaccrow_out
         npprow            => vrot%npp
         neprow            => vrot%nep
         nbprow            => vrot%nbp
@@ -2366,7 +2364,6 @@ contains
                 gavglai_g(i) =gavglai_g(i) + gavglairow(i,m)*FAREROT(i,m)
                 gavgltms_g(i) =gavgltms_g(i) + gavgltmsrow(i,m)*FAREROT(i,m)
                 gavgscms_g(i) =gavgscms_g(i) + gavgscmsrow(i,m)*FAREROT(i,m)
-                tcanoacc_out_g(i) =tcanoacc_out_g(i)+tcanoaccrow_out(i,m)*FAREROT(i,m)
                 totcmass_g(i) =vgbiomas_g(i) + gavgltms_g(i) + gavgscms_g(i)
                 gleafmas_g(i) = gleafmas_g(i) + gleafmas_t(i,m)*FAREROT(i,m)
                 bleafmas_g(i) = bleafmas_g(i) + bleafmas_t(i,m)*FAREROT(i,m)
@@ -2490,7 +2487,7 @@ contains
     !                     ! File .CT05D
     !                     !write(76,8600)iday,realyr, afrleafrow(i,m,j),  &
     !                     !afrstemrow(i,m,j),afrrootrow(i,m,j),  &
-    !                     !tcanoaccrow_out(i,m), lfstatusrow(i,m,j), &
+    !                     !, lfstatusrow(i,m,j), &
     !                     !' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
     !
     !                     !>File *.CT06D
@@ -2554,7 +2551,7 @@ contains
     !                 ! File .CT05D
     !                 !write(76,8601)iday,realyr, afrleaf_t(i,m), &
     !                 !    afrstem_t(i,m),afrroot_t(i,m),  &
-    !                 !    tcanoaccrow_out(i,m), -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
+    !                 !    -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
     !                 !    ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
     !
     !                 if (dofire .or. lnduseon) then
@@ -2596,7 +2593,7 @@ contains
     !         ! File .CT05D
     !         !write(76,8601)iday,realyr, afrleaf_t(i,m), &
     !         !    afrstem_t(i,m),afrroot_t(i,m),  &
-    !         !    tcanoaccrow_out(i,m), -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
+    !         !   , -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
     !         !    ' GRDAV'
     !
     !         !>File *.CT06D

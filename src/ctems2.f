@@ -28,7 +28,7 @@
      n      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
      o      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,
      p      lucsocinrow, nppvegrow,   dstcemls3row,
-     q      farerow,     gavgscmsrow, tcanoaccrow_out,
+     q      farerow,     gavgscmsrow,
      &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,
      &      vgbiomas_vegrow,gppvegrow,nepvegrow,
      &      fcanrow,      pftexistrow,
@@ -75,7 +75,7 @@ c --
      i      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
      j      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,
      k      lucsocingat, nppveggat,   dstcemls3gat,
-     l      faregat,     gavgscmsgat, tcanoaccgat_out,
+     l      faregat,     gavgscmsgat,
      &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,
      &      vgbiomas_veggat,gppveggat,nepveggat,
      &      fcangat,      pftexistgat,
@@ -199,7 +199,6 @@ c
 
       real  farerow(nlat,nmos)
       real  gavgscmsrow(nlat,nmos)
-      real  tcanoaccrow_out(nlat,nmos)
 c
       real rmlvegaccrow(nlat,nmos,icc),  rmsvegrow(nlat,nmos,icc),
      1      rmrvegrow(nlat,nmos,icc),    rgvegrow(nlat,nmos,icc)
@@ -289,7 +288,6 @@ c      fire variables
 c
       real  faregat(ilg) 
       real  gavgscmsgat(ilg)  
-      real  tcanoaccgat_out(ilg)
 c
       real rmlvegaccgat(ilg,icc),     rmsveggat(ilg,icc),
      1      rmrveggat(ilg,icc),       rgveggat(ilg,icc)
@@ -380,7 +378,6 @@ c----------------------------------------------------------------------
           dstcemls3row(ilmos(k),jlmos(k))   = dstcemls3gat(k)
           farerow(ilmos(k),jlmos(k))        = faregat(k)
           gavgscmsrow(ilmos(k),jlmos(k))    = gavgscmsgat(k)
-          tcanoaccrow_out(ilmos(k),jlmos(k))= tcanoaccgat_out(k)
 !          wetfracrow(ilmos(k))              = wetfracgat(k)
 !          slopefrac_row(ilmos(k))            = slopefrac_gat(k)
           ch4wet1row(ilmos(k),jlmos(k))     = ch4wet1gat(k)

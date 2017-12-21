@@ -315,7 +315,6 @@ type veg_rot
     real, allocatable, dimension(:,:) :: tcanoaccrow_m         !<
     real, allocatable, dimension(:,:) :: uvaccrow_m            !<
     real, allocatable, dimension(:,:) :: vvaccrow_m            !<
-    real, allocatable, dimension(:,:) :: tcanoaccrow_out       !<
     real, allocatable, dimension(:,:) :: qevpacc_m_save        !<
     real, allocatable, dimension(:,:) :: twarmm                !< temperature of the warmest month (c)
     real, allocatable, dimension(:,:) :: tcoldm                !< temperature of the coldest month (c)
@@ -403,7 +402,6 @@ type veg_gat
     real, allocatable, dimension(:) :: gavglai        !<grid averaged green leaf area index
 
     real, allocatable, dimension(:) :: lightng        !<total lightning frequency, flashes/km2.year
-    real, allocatable, dimension(:) :: tcanoaccgat_out!<
 
     real, allocatable, dimension(:,:) :: zolnc     !<lumped log of roughness length for class' 4 pfts
     real, allocatable, dimension(:,:) :: ailc      !<lumped lai for class' 4 pfts
@@ -1130,7 +1128,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%tcanoaccrow_m(nlat,nmos),&
          vrot%uvaccrow_m(nlat,nmos),&
          vrot%vvaccrow_m (nlat,nmos),&
-         vrot%tcanoaccrow_out (nlat,nmos),&
          vrot%qevpacc_m_save(nlat,nmos),&
          vrot%twarmm  (nlat,nmos),&
          vrot%tcoldm  (nlat,nmos),&
@@ -1202,7 +1199,6 @@ ilg = nlat * nmos
 allocate(vgat%grclarea(ilg),&
          vgat%gavglai (ilg),&
          vgat%lightng (ilg),&
-         vgat%tcanoaccgat_out (ilg),&
          vgat%co2conc (ilg),&
          vgat%ch4conc (ilg),&
          vgat%canres (ilg),&
@@ -2208,7 +2204,6 @@ end subroutine resetyearend
 ! c         competitition related variables added by y. peng //
 ! c
 !           fsnowacc_t(i)=0.0
-!           tcanoaccgat_out(i)=tcanoaccgat_t(i)
 !           tcanoaccgat_t(i)=0.0
 ! c
 !           tcansacc_t(i)=0.0
