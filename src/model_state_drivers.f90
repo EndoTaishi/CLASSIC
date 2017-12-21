@@ -159,19 +159,19 @@ contains
         !! when the input file expects the opposite.
         if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
             myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
-            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(1)
+            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
         end if
         if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
             myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
-            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(2)
+            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
         end if
         if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
             myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
-            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(1)
+            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
         end if
         if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
             myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
-            print *,'Based on init_file, adjusted your domain to',myDomain%domainBounds(2)
+            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
         end if
 
 ! FLAG - be good to put in a check here but need to do this better.

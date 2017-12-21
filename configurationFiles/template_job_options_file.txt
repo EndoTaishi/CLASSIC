@@ -121,17 +121,17 @@
     doperpftoutput = .false. ,   !< Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
 
-    dohhoutput = .true. ,      !< Switch for making half hourly output files (annual are always outputted)
+    dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
     JHHSTD = 166 ,                !< day of the year to start writing the half-hourly output
     JHHENDD = 185 ,             !< day of the year to stop writing the half-hourly output
-    JHHSTY = 1904 ,             !< simulation year (iyear) to start writing the half-hourly output
-    JHHENDY = 1904 ,            !< simulation year (iyear) to stop writing the half-hourly output
+    JHHSTY = 1901 ,             !< simulation year (iyear) to start writing the half-hourly output
+    JHHENDY = 1901 ,            !< simulation year (iyear) to stop writing the half-hourly output
 
-    dodayoutput = .true. ,     !< Switch for making daily output files (annual are always outputted)
+    dodayoutput = .false. ,     !< Switch for making daily output files (annual are always outputted)
     JDSTD = 20 ,                 !< day of the year to start writing the daily output
     JDENDD = 30 ,              !< day of the year to stop writing the daily output
-    JDSTY = 1904 ,              !< simulation year (iyear) to start writing the daily output
-    JDENDY = 1904 ,             !< simulation year (iyear) to stop writing the daily output
+    JDSTY = 1902 ,              !< simulation year (iyear) to start writing the daily output
+    JDENDY = 1903 ,             !< simulation year (iyear) to stop writing the daily output
 
     domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
     JMOSTY = 1901 ,             !< Year to start writing out the monthly output files.

@@ -5,6 +5,7 @@ module generalUtils
 
     public :: abandonCell
     public :: findDaylength
+    public :: findCloudiness
     public :: findLeapYears
     public :: parseTimeStamp
 
@@ -103,6 +104,64 @@ module generalUtils
         end if
 
     end subroutine findLeapYears
+
+    !---------------------------------------------------------------------------------------
+    !> The cosine of the solar zenith angle COSZ is calculated from the day of
+    !> the year, the hour, the minute and the latitude using basic radiation geometry,
+    !> and (avoiding vanishingly small numbers) is assigned to CSZROW.  The fractional
+    !> cloud cover FCLOROW is commonly not available so a rough estimate is
+    !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
+    !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
+    !> is at the horizon, and 0.10 when it is at the zenith).
+
+    subroutine findCloudiness(nltest,imin,ihour,iday,lastDOY)
+
+        use ctem_params, only : pi
+        use class_statevars, only : class_rot
+
+        implicit none
+
+        integer, intent(in) :: nltest
+        integer, intent(in) :: imin
+        integer, intent(in) :: ihour
+        integer, intent(in) :: iday
+        integer, intent(in) :: lastDOY
+
+        real :: day,i
+        real :: decl    !< Declination
+        real :: hour
+        real :: cosz    !< Cosine of the zenith angle
+
+        real, pointer, dimension(:) :: RADJROW !<Latitude of grid cell (positive north of equator) [rad]
+        real, pointer, dimension(:) :: CSZROW  !<Cosine of solar zenith angle [ ]
+        real, pointer, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+        real, pointer, dimension(:) :: XDIFFUS !< Fraction of diffused radiation
+        real, pointer, dimension(:) :: FCLOROW !<Fractional cloud cover [ ]
+
+        RADJROW => class_rot%RADJROW
+        CSZROW => class_rot%CSZROW
+        PREROW => class_rot%PREROW
+        XDIFFUS => class_rot%XDIFFUS
+        FCLOROW => class_rot%FCLOROW
+
+        day=real(iday)+(real(ihour)+real(imin)/60.)/24.
+        decl=sin(2.*pi*(284.+day)/real(lastDOY))*23.45*pi/180.
+        hour=(real(ihour)+real(imin)/60.)*pi/12.-pi
+
+        do i=1,nltest
+
+            cosz=sin(radjrow(i))*sin(decl)+cos(radjrow(i))*cos(decl)*cos(hour)
+
+            cszrow(i)=sign(max(abs(cosz),1.0e-3),cosz)
+            if(prerow(i).gt.0.) then
+                xdiffus(i)=1.0
+            else
+                xdiffus(i)=max(0.0,min(1.0-0.9*cosz,1.0))
+            endif
+            fclorow(i)=xdiffus(i)
+        end do
+
+    end subroutine findCloudiness
 
     !---------------------------------------------------------------------------------------
     !> Parses a time stamp in the expected form "day as %Y%m%d.%f"

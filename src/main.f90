@@ -47,29 +47,31 @@ contains
     subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
 
         use ctem_params,        only : nlat,nmos,ilg,nmon,ican, ignd, icc, &
-            &                               monthend, mmday,modelpft, l2max,&
-            &                                deltat,seed,NBS, readin_params,&
-            &                          nol2pfts
+                                        monthend, mmday,modelpft, l2max,&
+                                        deltat,seed,NBS, readin_params,&
+                                        nol2pfts
         use landuse_change,     only : initializeLandCover
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
-            &                               resetmonthend,resetyearend,&
-            &                               ctem_tile
+                                        resetmonthend,resetyearend,&
+                                        ctem_tile
         use class_statevars,    only : class_gat,class_rot,resetAccVars,&
-            &                          resetclassmon,resetclassyr,initDiagnosticVars
+                                        resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-            &                          ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
+                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
         use model_state_drivers, only : read_initialstate,write_restart
-        use generalUtils, only : findDaylength,findLeapYears,run_model
+        use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
         use metDisaggModule, only : disaggMet
 
         implicit none
 
+        ! Arguments
         real, intent(in) :: longitude, latitude                 !< Longitude/latitude of grid cell (degrees)
         integer, intent(in) :: lonIndex, latIndex               !< Index of grid cell being run on the input files grid
         integer, intent(in) :: lonLocalIndex, latLocalIndex     !< Index of grid cell being run on the output files grid
 
+        ! Local variables
         integer :: lastDOY             !< Initialized to 365 days, can be overwritten later is leap = true and it is a leap year.
         integer :: metTimeIndex        !< Counter used to move through the meteorological input arrays
         logical :: metDone             !< Logical switch when the end of the stored meteorological array is reached.
@@ -109,6 +111,7 @@ contains
         INTEGER NFS        !<
         INTEGER NDRY       !<
 
+        ! Pointers
         integer, pointer :: readMetStartYear    !< First year of meteorological forcing to read in from the met file
 
         ! The following are stored in the data structure: class_gat
@@ -491,10 +494,10 @@ contains
         !real, pointer, dimension(:) :: ALTOTACC!<Broadband albedo [-]
         real, pointer, dimension(:) :: CANARE  !<
         real, pointer, dimension(:) :: SNOARE  !<
-        real, pointer, dimension(:) :: CSZROW  !<
+        real, pointer, dimension(:) :: CSZROW  !<Cosine of solar zenith angle [ ]
         real, pointer, dimension(:) :: DLONROW !<
         real, pointer, dimension(:) :: DLATROW !<
-        real, pointer, dimension(:) :: FCLOROW !<
+        real, pointer, dimension(:) :: FCLOROW !<Fractional cloud cover [ ]
         real, pointer, dimension(:) :: FDLROW  !<
         real, pointer, dimension(:) :: FSIHROW !<
         real, pointer, dimension(:) :: FSVHROW !<
@@ -504,7 +507,7 @@ contains
         real, pointer, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
         real, pointer, dimension(:) :: PRESROW !<
         real, pointer, dimension(:) :: QAROW   !<
-        real, pointer, dimension(:) :: RADJROW !<
+        real, pointer, dimension(:) :: RADJROW !< Latitude of grid cell (positive north of equator) [rad]
         real, pointer, dimension(:) :: RHOAROW !<
         real, pointer, dimension(:) :: RHSIROW !<
         real, pointer, dimension(:) :: RPCPROW !<
@@ -525,7 +528,7 @@ contains
         real, pointer, dimension(:) :: ZRFHROW !<
         real, pointer, dimension(:) :: ZRFMROW !<
         real, pointer, dimension(:) :: UVROW   !<
-        real, pointer, dimension(:) :: XDIFFUS !<
+        real, pointer, dimension(:) :: XDIFFUS !< Fraction of diffused radiation
         real, pointer, dimension(:) :: Z0ORROW !< The orographic roughness length
         real, pointer, dimension(:) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
         real, pointer, dimension(:) :: PRENROW !<
@@ -795,7 +798,7 @@ contains
 
         !     * CONSTANTS AND TEMPORARY VARIABLES.
         !
-        REAL DAY,DECL,HOUR,COSZ,EVAPSUM,ALTOT,&
+        REAL EVAPSUM,ALTOT,& !DECL,DAY,COSZ HOUR,
              FSSTAR,FLSTAR,QH,QE,ZSN,TCN,TSN,TPN,GTOUT,TSURF!,BEG,SNOMLT
 
         real :: CUMSNO
@@ -911,7 +914,6 @@ contains
                                         !< if it is set to 1, the new four-band routines are used.
         integer, pointer, dimension(:) :: altotcount_ctm !nlat
         real, pointer, dimension(:,:)  :: todfrac  !(ilg,icc)
-        real, pointer, dimension(:,:)  :: barf  !(nlat,nmos)
         real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
         real, pointer, dimension(:)    :: flutacc_gat !(ilg)
         real, pointer, dimension(:)    :: flinacc_gat !(ilg)
@@ -2444,7 +2446,6 @@ contains
 
         altotcount_ctm    => vgat%altotcount_ctm
         todfrac           => vgat%todfrac
-        barf              => vgat%barf
         fsinacc_gat       => vgat%fsinacc_gat
         flutacc_gat       => vgat%flutacc_gat
         flinacc_gat       => vgat%flinacc_gat
@@ -2754,18 +2755,19 @@ contains
                                  !! real wetland fractions. Otherwise the negative is used as a switch so the dynamic
                                  !! wetland extent is used instead of the prescribed.
 
-        call initrowvars
-        call resetAccVars(nlat,nmos)
-
         !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
         !> energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
         !> height of 10 m and to the screen height of 2 m respectively.
         ZDMROW(1)=10.0
         ZDHROW(1)=2.0
 
+        !> Initialize variables in preparation for the run
+        call initrowvars
+        call resetAccVars(nlat,nmos)
+
+
         do 11 i=1,nlat
             do 11 m=1,nmos
-                barf(i,m)                = 1.0
                 TCANOACCROW_M(I,M)       = 0.0
                 UVACCROW_M(I,M)          = 0.0
                 VVACCROW_M(I,M)          = 0.0
@@ -2793,10 +2795,10 @@ contains
         call getMet(longitude,latitude,nday,delt)
 
         !> Now disaggregate the meteorological forcing to the right timestep
-        !! for this model run
+        !! for this model run (if needed, it is checked in the subroutine)
         call disaggMet(longitude, latitude,delt)
 
-!     Complete some initial set up work:
+        !> Complete some initial set up work:
     !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
     !> depth, ZSNL, is assigned its operational value of 0.10 m.
 
@@ -2897,23 +2899,6 @@ contains
                     thicegacc_t(i,j)=0.0
 112             continue
 123         continue
-
-            ! if land use change switch is on then read the fractional coverages
-            ! of ctem's 9 pfts for the first year.
-
-!             if (lnduseon .and. transient_run) then
-!
-! !                reach_eof=.false.  !marker for when read to end of luc input file
-!
-!                 call initialize_luc(iyear,nmtest,nltest,&
-!                     &                     nol2pfts,cyclemet,&
-!                     &                     cylucyr,lucyr,FCANROT,FAREROT,nfcancmxrow,&
-!                     &                     pfcancmxrow,fcancmxrow,start_bare,&
-!                     &                     PFTCompetition)
-!
-! !                if (reach_eof) goto 999
-!
-!             endif ! if (lnduseon)
 
             ! with fcancmx calculated above and initialized values of all ctem pools,
             ! find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
@@ -3060,25 +3045,7 @@ contains
       !> The do while loop marks the beginning of the time stepping loop
       !> for the actual run.  N is incremented by 1, and the atmospheric forcing
       !> data for the current time step are updated for each grid cell or modelled
-      !> area (see the section on “Data Requirements”).  In the dataset associated
-      !> with the benchmark run, only the total incoming shortwave radiation FSDOWN
-      !> is available; it is partitioned 50:50 between the incoming visible (FSVHROW)
-      !> and near-infrared (FSIHROW) radiation.  The first two elements of the
-      !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
-      !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
-      !> The air temperature TAROW is converted from degrees C to K.  The zonal
-      !> (ULROW) and meridional (VLROW) components of the wind speed are generally not
-      !> used; only the overall wind speed UVROW is
-      !> measured.  However, CLASS does not require wind direction for its calculations,
-      !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
-      !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
-      !> The cosine of the solar zenith angle COSZ is calculated from the day of
-      !> the year, the hour, the minute and the latitude using basic radiation geometry,
-      !> and (avoiding vanishingly small numbers) is assigned to CSZROW.  The fractional
-      !> cloud cover FCLOROW is commonly not available so a rough estimate is
-      !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
-      !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
-      !> is at the horizon, and 0.10 when it is at the zenith).
+      !> area (see the manual section on “Data Requirements”).
 
         ! start up the main model loop
 
@@ -3094,6 +3061,18 @@ contains
                 !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
             N=N+1
+
+            !>In the dataset associated with the benchmark run, only the total incoming shortwave radiation FSDOWN
+            !> is available; it is partitioned 50:50 between the incoming visible (FSVHROW)
+            !> and near-infrared (FSIHROW) radiation.  The first two elements of the
+            !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
+            !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
+            !> The air temperature TAROW is converted from degrees C to K.  The zonal
+            !> (ULROW) and meridional (VLROW) components of the wind speed are generally not
+            !> used; only the overall wind speed UVROW is
+            !> measured.  However, CLASS does not require wind direction for its calculations,
+            !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
+            !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
 
             DO 250 I=1,NLTEST
 
@@ -3149,22 +3128,15 @@ contains
 
             endif   ! first timestep
 
-            ! FLAG - this section until the 300 continue line should be put into a subroutine.
-            DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
+            !> The cosine of the solar zenith angle COSZ is calculated from the day of
+            !> the year, the hour, the minute and the latitude using basic radiation geometry,
+            !> and (avoiding vanishingly small numbers) is assigned to CSZROW.  The fractional
+            !> cloud cover FCLOROW is commonly not available so a rough estimate is
+            !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
+            !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
+            !> is at the horizon, and 0.10 when it is at the zenith).
 
-            DECL=SIN(2.*PI*(284.+DAY)/real(lastDOY))*23.45*PI/180.
-            HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
-            COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
-
-            DO 300 I=1,NLTEST
-                CSZROW(I)=SIGN(MAX(ABS(COSZ),1.0E-3),COSZ)
-                IF(PREROW(I).GT.0.) THEN
-                    XDIFFUS(I)=1.0
-                ELSE
-                    XDIFFUS(I)=MAX(0.0,MIN(1.0-0.9*COSZ,1.0))
-                ENDIF
-                FCLOROW(I)=XDIFFUS(I)
-300         CONTINUE
+            call findCloudiness(nltest,imin,ihour,iday,lastDOY)
 
             !>CLASSI evaluates a series of derived atmospheric variables
 

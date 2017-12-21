@@ -64,7 +64,7 @@ real, dimension(:,:,:), pointer :: fcancmxrow
 real, dimension(:,:,:), pointer :: nfcancmxrow
 
 ! local variables:
-real, dimension(nlat,nmos) :: barfm
+real, dimension(nlat,nmos) :: barfm  !<bare fraction, used in competition runs to ensure that the bare ground fraction is at least seed.
 integer, dimension(1) :: bigpft
 real, dimension(nlat,nmos,icc-numcrops) :: pftarrays ! temp variable
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposj ! temp var

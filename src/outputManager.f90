@@ -628,12 +628,12 @@ contains
                 !Take the possible number of years then trim based on jdsty and jdendy
                 styr = readMetStartYear
                 if (readMetStartYear < jdsty) then
-                    totyrs = ((readMetStartYear + totyrs - 1) - jdsty + 1)
+                    totyrs = (readMetStartYear + totyrs - 1) - jdsty
                     styr = jdsty
                 end if
 
                 if ((readMetStartYear + totyrs - 1) > jdendy) then
-                    totyrs = readMetStartYear + totyrs - jdendy + 1
+                    totyrs = jdendy -styr + 1
                 end if
 
                 ! Now determine the total number of timesteps (days) across all years
@@ -674,12 +674,12 @@ contains
                 !Take the possible number of years then trim based on jhhsty and jhhendy
                 styr = readMetStartYear
                 if (readMetStartYear < jhhsty) then
-                    totyrs = ((readMetStartYear + totyrs - 1) - jhhsty + 1)
+                    totyrs = (readMetStartYear + totyrs - 1) - jhhsty
                     styr = jhhsty
                 end if
 
                 if ((readMetStartYear + totyrs - 1) > jhhendy) then
-                    totyrs = readMetStartYear + totyrs - jhhendy + 1
+                    totyrs = jhhendy -styr + 1
                 end if
 
                 ! Now determine the total number of timesteps (halfhours) across all years

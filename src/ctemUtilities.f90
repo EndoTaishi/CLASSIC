@@ -5,6 +5,20 @@ implicit none
 public :: dayEndCTEMPreparation
 public :: accumulateForCTEM
 
+contains
+
+! --------------------------------------------------------------------------------------------------------------------
+
+subroutine dayEndCTEMPreparation(nml,nday)
+
+    use ctem_params, only : icc,ignd
+    use ctem_statevars, only : vgat,ctem_tile
+
+    implicit none
+
+    integer, intent(in) :: nml     !<Counter representing number of mosaic tiles on modelled domain that are land
+    integer, intent(in) :: nday    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
+
     integer, pointer, dimension(:) :: altotcount_ctm !nlat  !< Counter used for calculating total albedo
     real, pointer, dimension(:)    :: fsinacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
@@ -40,19 +54,6 @@ public :: accumulateForCTEM
     real, pointer, dimension(:,:) :: rmlcsvga_t
     real, pointer, dimension(:,:) :: rmlcgvga_t
     integer, pointer, dimension(:) :: ipeatlandgat
-
-contains
-
-subroutine dayEndCTEMPreparation(nml,nday)
-
-    use ctem_params, only : icc,ignd
-    use ctem_statevars, only : vgat,ctem_tile
-
-    implicit none
-
-    integer, intent(in) :: nml     !<Counter representing number of mosaic tiles on modelled domain that are land
-    integer, intent(in) :: nday    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
-
 
     integer :: i,j
     real :: fsstar_gat
@@ -232,6 +233,42 @@ subroutine accumulateForCTEM(nml)
     real, pointer, dimension(:) :: FG      !<
     real, pointer, dimension(:) :: FCS     !<
     real, pointer, dimension(:) :: FGS     !<
+    integer, pointer, dimension(:) :: altotcount_ctm !nlat  !< Counter used for calculating total albedo
+    real, pointer, dimension(:)    :: fsinacc_gat !(ilg)    !<
+    real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
+    real, pointer, dimension(:)    :: flinacc_gat !(ilg)    !<
+    real, pointer, dimension(:)    :: altotacc_gat !(ilg)   !<
+    real, pointer, dimension(:)    :: pregacc_gat !(ilg)    !<
+    real, pointer, dimension(:)    :: netrad_gat !(ilg)     !<
+    real, pointer, dimension(:)    :: preacc_gat !(ilg)     !<
+    real, pointer, dimension(:) :: anmossac_t
+    real, pointer, dimension(:) :: rmlmossac_t
+    real, pointer, dimension(:) :: gppmossac_t
+    real, pointer, dimension(:) :: fsnowacc_t       !<
+    real, pointer, dimension(:) :: tcansacc_t       !<
+    real, pointer, dimension(:) :: tcanoaccgat_t    !<
+    real, pointer, dimension(:) :: taaccgat_t       !<
+    real, pointer, dimension(:) :: uvaccgat_t       !<
+    real, pointer, dimension(:) :: vvaccgat_t       !<
+    real, pointer, dimension(:,:) :: tbaraccgat_t!<
+    real, pointer, dimension(:,:) :: tbarcacc_t  !<
+    real, pointer, dimension(:,:) :: tbarcsacc_t !<
+    real, pointer, dimension(:,:) :: tbargacc_t  !<
+    real, pointer, dimension(:,:) :: tbargsacc_t !<
+    real, pointer, dimension(:,:) :: thliqcacc_t !<
+    real, pointer, dimension(:,:) :: thliqgacc_t !<
+    real, pointer, dimension(:,:) :: thliqacc_t  !<
+    real, pointer, dimension(:,:) :: thicecacc_t !<
+    real, pointer, dimension(:,:) :: thicegacc_t !<
+    real, pointer, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+    real, pointer, dimension(:,:) :: ancsvgac_t
+    real, pointer, dimension(:,:) :: ancgvgac_t
+    real, pointer, dimension(:,:) :: rmlcsvga_t
+    real, pointer, dimension(:,:) :: rmlcgvga_t
+    integer, pointer, dimension(:) :: ipeatlandgat
+    real, pointer, dimension(:)    :: alswacc_gat !(ilg)    !<
+    real, pointer, dimension(:)    :: allwacc_gat !(ilg)    !<
+
 
     anmossac_t        => ctem_tile%anmossac_t
     rmlmossac_t       => ctem_tile%rmlmossac_t
