@@ -917,8 +917,6 @@ contains
         real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
         real, pointer, dimension(:)    :: flutacc_gat !(ilg)
         real, pointer, dimension(:)    :: flinacc_gat !(ilg)
-        real, pointer, dimension(:)    :: alswacc_gat !(ilg)
-        real, pointer, dimension(:)    :: allwacc_gat !(ilg)
         real, pointer, dimension(:)    :: pregacc_gat !(ilg)
         real, pointer, dimension(:)    :: altotacc_gat !(ilg)
         real, pointer, dimension(:)    :: netrad_gat !(ilg)
@@ -2449,8 +2447,6 @@ contains
         fsinacc_gat       => vgat%fsinacc_gat
         flutacc_gat       => vgat%flutacc_gat
         flinacc_gat       => vgat%flinacc_gat
-        alswacc_gat       => vgat%alswacc_gat
-        allwacc_gat       => vgat%allwacc_gat
         pregacc_gat       => vgat%pregacc_gat
         altotacc_gat      => vgat%altotacc_gat
         netrad_gat        => vgat%netrad_gat
@@ -2831,8 +2827,6 @@ contains
 100     CONTINUE
 
         altotcount_ctm(:)=0
-        alswacc_gat(:)=0.
-        allwacc_gat(:)=0.
         fsinacc_gat(:)=0.
         flinacc_gat(:)=0.
         flutacc_gat(:)=0.
@@ -3758,8 +3752,6 @@ contains
                         fsinacc_gat(i)=0.
                         flinacc_gat(i)=0.
                         flutacc_gat(i)=0.
-                        alswacc_gat(i)=0.
-                        allwacc_gat(i)=0.
                         pregacc_gat(i)=0.
                         fsnowacc_t(i)=0.0
                         tcanoaccgat_out(i)=tcanoaccgat_t(i)

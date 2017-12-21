@@ -23,8 +23,6 @@ subroutine dayEndCTEMPreparation(nml,nday)
     real, pointer, dimension(:)    :: fsinacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: flinacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: alswacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: allwacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: altotacc_gat !(ilg)   !<
     real, pointer, dimension(:)    :: pregacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: netrad_gat !(ilg)     !<
@@ -66,8 +64,6 @@ subroutine dayEndCTEMPreparation(nml,nday)
     fsinacc_gat       => vgat%fsinacc_gat
     flutacc_gat       => vgat%flutacc_gat
     flinacc_gat       => vgat%flinacc_gat
-    alswacc_gat       => vgat%alswacc_gat
-    allwacc_gat       => vgat%allwacc_gat
     pregacc_gat       => vgat%pregacc_gat
     altotacc_gat      => vgat%altotacc_gat
     netrad_gat        => vgat%netrad_gat
@@ -99,14 +95,6 @@ subroutine dayEndCTEMPreparation(nml,nday)
     do i=1,nml
 
         !net radiation and precipitation estimates for ctem's bioclim
-
-        if(fsinacc_gat(i).gt.0.0) then
-            alswacc_gat(i)=alswacc_gat(i)/(fsinacc_gat(i)*0.5)
-            allwacc_gat(i)=allwacc_gat(i)/(fsinacc_gat(i)*0.5)
-        else
-            alswacc_gat(i)=0.0
-            allwacc_gat(i)=0.0
-        endif
 
         uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
         vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
@@ -266,8 +254,6 @@ subroutine accumulateForCTEM(nml)
     real, pointer, dimension(:,:) :: rmlcsvga_t
     real, pointer, dimension(:,:) :: rmlcgvga_t
     integer, pointer, dimension(:) :: ipeatlandgat
-    real, pointer, dimension(:)    :: alswacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: allwacc_gat !(ilg)    !<
 
 
     anmossac_t        => ctem_tile%anmossac_t
@@ -277,8 +263,6 @@ subroutine accumulateForCTEM(nml)
     fsinacc_gat       => vgat%fsinacc_gat
     flutacc_gat       => vgat%flutacc_gat
     flinacc_gat       => vgat%flinacc_gat
-    alswacc_gat       => vgat%alswacc_gat
-    allwacc_gat       => vgat%allwacc_gat
     pregacc_gat       => vgat%pregacc_gat
     altotacc_gat      => vgat%altotacc_gat
     netrad_gat        => vgat%netrad_gat
@@ -355,8 +339,6 @@ subroutine accumulateForCTEM(nml)
 
     do i = 1, nml
 
-        alswacc_gat(i)=alswacc_gat(i)+alvsgat(i)*fsvhgat(i)
-        allwacc_gat(i)=allwacc_gat(i)+alirgat(i)*fsihgat(i)
         fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(1) ! FLAG! Do this offline only (since all tiles are the same in a gridcell and we run
                                                 ! only one gridcell at a time. JM Feb 42016.
         flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)

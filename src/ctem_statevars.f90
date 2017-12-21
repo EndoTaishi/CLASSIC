@@ -614,12 +614,9 @@ type veg_gat
 
     integer, allocatable, dimension(:) :: altotcount_ctm !nlat  !< Counter used for calculating total albedo
     real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)   !<Max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
-    real, allocatable, dimension(:,:)  :: barf  !(nlat,nmos)    !<bare fraction, used in competition runs to ensure that the bare ground fraction is at least seed.
     real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: flutacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: flinacc_gat !(ilg)    !<
-    real, allocatable, dimension(:)    :: alswacc_gat !(ilg)    !<
-    real, allocatable, dimension(:)    :: allwacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: pregacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: altotacc_gat !(ilg)   !<
     real, allocatable, dimension(:)    :: netrad_gat !(ilg)     !<
@@ -1157,7 +1154,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
 
-         vgat%barf(nlat,nmos),&
          vgat%FTABLE(nlat,nmos),&
          vgat%ACTLYR(nlat,nmos),&
 
@@ -1291,8 +1287,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%fsinacc_gat(ilg),&
          vgat%flutacc_gat(ilg),&
          vgat%flinacc_gat(ilg),&
-         vgat%alswacc_gat(ilg),&
-         vgat%allwacc_gat(ilg),&
          vgat%pregacc_gat(ilg),&
          vgat%altotacc_gat(ilg),&
          vgat%netrad_gat(ilg),&
@@ -2210,8 +2204,6 @@ end subroutine resetyearend
 !           fsinacc_gat(i)=0.
 !           flinacc_gat(i)=0.
 !           flutacc_gat(i)=0.
-!           alswacc_gat(i)=0.
-!           allwacc_gat(i)=0.
 !           pregacc_gat(i)=0.
 ! c         competitition related variables added by y. peng //
 ! c
