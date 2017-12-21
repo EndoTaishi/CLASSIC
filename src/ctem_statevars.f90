@@ -614,12 +614,12 @@ type veg_gat
     real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: flutacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: flinacc_gat !(ilg)    !<
-    real, allocatable, dimension(:)    :: pregacc_gat !(ilg)    !<
+    !real, allocatable, dimension(:)    :: pregacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: altotacc_gat !(ilg)   !<
     real, allocatable, dimension(:)    :: netrad_gat !(ilg)     !<
     real, allocatable, dimension(:)    :: preacc_gat !(ilg)     !<
     real, allocatable, dimension(:)    :: sdepgat !(ilg)        !<
-    real, allocatable, dimension(:,:)  :: rgmgat !(ilg,ignd)    !<
+!     real, allocatable, dimension(:,:)  :: rgmgat !(ilg,ignd)    !<
     real, allocatable, dimension(:,:)  :: sandgat !(ilg,ignd)   !<
     real, allocatable, dimension(:,:)  :: claygat !(ilg,ignd)   !<
     real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)   !<
@@ -1281,7 +1281,7 @@ allocate(vgat%grclarea(ilg),&
          vgat%fsinacc_gat(ilg),&
          vgat%flutacc_gat(ilg),&
          vgat%flinacc_gat(ilg),&
-         vgat%pregacc_gat(ilg),&
+         !vgat%pregacc_gat(ilg),&
          vgat%altotacc_gat(ilg),&
          vgat%netrad_gat(ilg),&
          vgat%preacc_gat(ilg),&
@@ -1390,7 +1390,7 @@ allocate(vgat%grclarea(ilg),&
          vgat%humiftrsveg (ilg,iccp1),&
 
 ! allocated with ilg,ignd:
-         vgat%rgmgat(ilg,ignd),&
+!          vgat%rgmgat(ilg,ignd),&
          vgat%sandgat(ilg,ignd),&
          vgat%claygat(ilg,ignd),&
          vgat%orgmgat(ilg,ignd),&
@@ -2198,7 +2198,6 @@ end subroutine resetyearend
 !           fsinacc_gat(i)=0.
 !           flinacc_gat(i)=0.
 !           flutacc_gat(i)=0.
-!           pregacc_gat(i)=0.
 ! c         competitition related variables added by y. peng //
 ! c
 !           fsnowacc_t(i)=0.0

@@ -917,12 +917,12 @@ contains
         real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
         real, pointer, dimension(:)    :: flutacc_gat !(ilg)
         real, pointer, dimension(:)    :: flinacc_gat !(ilg)
-        real, pointer, dimension(:)    :: pregacc_gat !(ilg)
+!         real, pointer, dimension(:)    :: pregacc_gat !(ilg)
         real, pointer, dimension(:)    :: altotacc_gat !(ilg)
         real, pointer, dimension(:)    :: netrad_gat !(ilg)
         real, pointer, dimension(:)    :: preacc_gat !(ilg)
         real, pointer, dimension(:)    :: sdepgat !(ilg)
-        real, pointer, dimension(:,:)  :: rgmgat !(ilg,ignd)
+!         real, pointer, dimension(:,:)  :: rgmgat !(ilg,ignd)
         real, pointer, dimension(:,:)  :: sandgat !(ilg,ignd)
         real, pointer, dimension(:,:)  :: claygat !(ilg,ignd)
         real, pointer, dimension(:,:)  :: orgmgat !(ilg,ignd)
@@ -931,8 +931,6 @@ contains
         real, pointer, dimension(:,:)  :: FTABLE !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
         real, pointer, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
 !
-         real fsstar_gat, flstar_gat
-
         ! Model switches:
         logical, pointer :: ctem_on
         logical, pointer :: dofire
@@ -960,8 +958,6 @@ contains
         real, pointer, dimension(:,:) :: tpndrs
         real, pointer, dimension(:,:,:) :: csum
         real, pointer, dimension(:,:,:) :: tbaraccrow_m
-        real, pointer, dimension(:,:) :: uvaccrow_m
-        real, pointer, dimension(:,:) :: vvaccrow_m
 
         real, pointer, dimension(:,:,:) :: gleafmasrow        !
         real, pointer, dimension(:,:,:) :: bleafmasrow        !
@@ -2209,8 +2205,6 @@ contains
         tpndrs            => vrot%tpndrs
         csum              => vrot%csum
         tbaraccrow_m      => class_rot%tbaraccrow_m
-        uvaccrow_m        => vrot%uvaccrow_m
-        vvaccrow_m        => vrot%vvaccrow_m
 
         ! ROW:
         gleafmasrow       => vrot%gleafmas
@@ -2441,12 +2435,12 @@ contains
         fsinacc_gat       => vgat%fsinacc_gat
         flutacc_gat       => vgat%flutacc_gat
         flinacc_gat       => vgat%flinacc_gat
-        pregacc_gat       => vgat%pregacc_gat
+!         pregacc_gat       => vgat%pregacc_gat
         altotacc_gat      => vgat%altotacc_gat
         netrad_gat        => vgat%netrad_gat
         preacc_gat        => vgat%preacc_gat
         sdepgat           => vgat%sdepgat
-        rgmgat            => vgat%rgmgat
+!         rgmgat            => vgat%rgmgat
         sandgat           => vgat%sandgat
         claygat           => vgat%claygat
         orgmgat           => vgat%orgmgat
@@ -2755,13 +2749,6 @@ contains
         call initrowvars
         call resetAccVars(nlat,nmos)
 
-
-        do 11 i=1,nlat
-            do 11 m=1,nmos
-                UVACCROW_M(I,M)          = 0.0
-                VVACCROW_M(I,M)          = 0.0
-11          continue
-
         ! Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
 
@@ -2822,7 +2809,8 @@ contains
         fsinacc_gat(:)=0.
         flinacc_gat(:)=0.
         flutacc_gat(:)=0.
-        pregacc_gat(:)=0.
+        preacc_gat(:)=0.
+!         pregacc_gat(:)=0.
         altotacc_gat(:)=0.
 
         ! Initialize accumulated array for monthly & yearly outputs
@@ -3218,8 +3206,7 @@ contains
                     cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
                     rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
                     sandgat,     claygat,     orgmgat,&
-                    anveggat,    rmlveggat,   tbaraccgat_t,&
-                    uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
+                    anveggat,    rmlveggat,   tbaraccgat_t,prbfrhucgat,&
                     extnprobgat, pfcancmxgat,  nfcancmxgat,&
                     stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
                     bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
@@ -3263,8 +3250,7 @@ contains
                     cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
                     rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
                     SANDROT,     CLAYROT,     ORGMROT,&
-                    anvegrow,    rmlvegrow,   tbaraccrow_m,&
-                    uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
+                    anvegrow,    rmlvegrow,   tbaraccrow_m, prbfrhucrow,&
                     extnprobrow, pfcancmxrow,  nfcancmxrow,&
                     stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
                     bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
@@ -3647,8 +3633,7 @@ contains
                 &      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
                 &      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
                 &      SANDROT,     CLAYROT,     ORGMROT,&
-                &      anvegrow,    rmlvegrow,   tbaraccrow_m,&
-                &      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
+                &      anvegrow,    rmlvegrow,   tbaraccrow_m, prbfrhucrow,&
                 &      extnprobrow, pfcancmxrow,  nfcancmxrow,&
                 &      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
                 &      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
@@ -3694,8 +3679,7 @@ contains
                 &      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
                 &      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
                 &      sandgat,     claygat,     orgmgat,&
-                &      anveggat,    rmlveggat,   tbaraccgat_t,&
-                &      uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
+                &      anveggat,    rmlveggat,   tbaraccgat_t, prbfrhucgat,&
                 &      extnprobgat, pfcancmxgat,  nfcancmxgat,&
                 &      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
                 &      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
@@ -3744,7 +3728,8 @@ contains
                         fsinacc_gat(i)=0.
                         flinacc_gat(i)=0.
                         flutacc_gat(i)=0.
-                        pregacc_gat(i)=0.
+                        preacc_gat(i)=0.
+!                         pregacc_gat(i)=0.
                         fsnowacc_t(i)=0.0
                         tcanoaccgat_t(i)=0.0
                         tcansacc_t(i)=0.0

@@ -9,8 +9,7 @@
      5      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
      6      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      7      sandrow,     clayrow,     orgmrow,
-     8      anvegrow,    rmlvegrow,   tbaraccrow_m,
-     9      uvaccrow_m,  vvaccrow_m,  prbfrhucgrd,
+     8      anvegrow,    rmlvegrow,   tbaraccrow_m, prbfrhucgrd,
      a      extnprobgrd, pfcancmxrow,  nfcancmxrow,
      b      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      c      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
@@ -56,8 +55,7 @@ c --
      z      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
      1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
-     3      anveggat,    rmlveggat,   tbaraccgat_m,
-     4      uvaccgat_m,  vvaccgat_m,  prbfrhucgat,
+     3      anveggat,    rmlveggat,   tbaraccgat_m, prbfrhucgat,
      5      extnprobgat, pfcancmxgat,  nfcancmxgat,
      6      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      7      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
@@ -139,8 +137,6 @@ c
      1        orgmrow(nlat,nmos,ignd)
 c
       real  anvegrow(nlat,nmos,icc),    rmlvegrow(nlat,nmos,icc)
-c
-      real  uvaccrow_m(nlat,nmos),      vvaccrow_m(nlat,nmos)
 c
       real  prbfrhucgrd(nlat),       extnprobgrd(nlat),
      1      tbaraccrow_m(nlat,nmos,ignd),
@@ -229,9 +225,6 @@ c
      1        orgmgat(ilg,ignd)
 c
       real  anveggat(ilg,icc),          rmlveggat(ilg,icc)
-c
-      real  uvaccgat_m(ilg),
-     1      vvaccgat_m(ilg)
 c
       real  prbfrhucgat(ilg),           extnprobgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
@@ -346,8 +339,6 @@ c----------------------------------------------------------------------
           xdiffus(ilmos(k))                 = xdiffusgat(k) 
           prbfrhucgrd(ilmos(k))             = prbfrhucgat(k)
           extnprobgrd(ilmos(k))             = extnprobgat(k)
-          uvaccrow_m(ilmos(k),jlmos(k))     = uvaccgat_m(k) 
-          vvaccrow_m(ilmos(k),jlmos(k))     = vvaccgat_m(k) 
           vgbiomasrow(ilmos(k),jlmos(k))    = vgbiomasgat(k)
           gavgltmsrow(ilmos(k),jlmos(k))    = gavgltmsgat(k)
           gavglairow(ilmos(k),jlmos(k))     = gavglaigat(k)

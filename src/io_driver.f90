@@ -3156,7 +3156,7 @@ contains
             ch4dyn2_mo_t(i,m) = ch4dyn2_mo_t(i,m) + ch4dyn2row(i,m)
             ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)
             lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)
-            wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
+            !wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
 
     863     continue ! m
 
@@ -3225,7 +3225,7 @@ contains
                     !> Convert some quantities into per day values
                     wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
                     lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
-                    wind_mo_t(i,m) = wind_mo_t(i,m)*(1./real(monthdays(nt)))
+                    !wind_mo_t(i,m) = wind_mo_t(i,m)*(1./real(monthdays(nt)))
                     do j = 1, icc
                         bterm_mo(i,m,j)=bterm_mo(i,m,j)*(1./real(monthdays(nt)))
                         mterm_mo(i,m,j)=mterm_mo(i,m,j)*(1./real(monthdays(nt)))

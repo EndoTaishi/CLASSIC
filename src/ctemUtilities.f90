@@ -24,9 +24,9 @@ subroutine dayEndCTEMPreparation(nml,nday)
     real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: flinacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: altotacc_gat !(ilg)   !<
-    real, pointer, dimension(:)    :: pregacc_gat !(ilg)    !<
+    !real, pointer, dimension(:)    :: pregacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: netrad_gat !(ilg)     !<
-    real, pointer, dimension(:)    :: preacc_gat !(ilg)     !<
+!     real, pointer, dimension(:)    :: preacc_gat !(ilg)     !<
     real, pointer, dimension(:) :: anmossac_t
     real, pointer, dimension(:) :: rmlmossac_t
     real, pointer, dimension(:) :: gppmossac_t
@@ -64,10 +64,10 @@ subroutine dayEndCTEMPreparation(nml,nday)
     fsinacc_gat       => vgat%fsinacc_gat
     flutacc_gat       => vgat%flutacc_gat
     flinacc_gat       => vgat%flinacc_gat
-    pregacc_gat       => vgat%pregacc_gat
+!     pregacc_gat       => vgat%pregacc_gat
     altotacc_gat      => vgat%altotacc_gat
     netrad_gat        => vgat%netrad_gat
-    preacc_gat        => vgat%preacc_gat
+!     preacc_gat        => vgat%preacc_gat
     ipeatlandgat      => vgat%ipeatland
     tbaraccgat_t      => ctem_tile%tbaraccgat_t
     tbarcacc_t        => ctem_tile%tbarcacc_t
@@ -111,7 +111,7 @@ subroutine dayEndCTEMPreparation(nml,nday)
         fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
         flstar_gat=flinacc_gat(i)-flutacc_gat(i)
         netrad_gat(i)=fsstar_gat+flstar_gat
-        preacc_gat(i)=pregacc_gat(i)
+        !preacc_gat(i)=pregacc_gat(i)
 
         fsnowacc_t(i)=fsnowacc_t(i)/real(nday)
         tcanoaccgat_t(i)=tcanoaccgat_t(i)/real(nday)
@@ -226,7 +226,7 @@ subroutine accumulateForCTEM(nml)
     real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: flinacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: altotacc_gat !(ilg)   !<
-    real, pointer, dimension(:)    :: pregacc_gat !(ilg)    !<
+    !real, pointer, dimension(:)    :: pregacc_gat !(ilg)    !<
     real, pointer, dimension(:)    :: netrad_gat !(ilg)     !<
     real, pointer, dimension(:)    :: preacc_gat !(ilg)     !<
     real, pointer, dimension(:) :: anmossac_t
@@ -263,7 +263,7 @@ subroutine accumulateForCTEM(nml)
     fsinacc_gat       => vgat%fsinacc_gat
     flutacc_gat       => vgat%flutacc_gat
     flinacc_gat       => vgat%flinacc_gat
-    pregacc_gat       => vgat%pregacc_gat
+    !pregacc_gat       => vgat%pregacc_gat
     altotacc_gat      => vgat%altotacc_gat
     netrad_gat        => vgat%netrad_gat
     preacc_gat        => vgat%preacc_gat
@@ -343,7 +343,8 @@ subroutine accumulateForCTEM(nml)
                                                 ! only one gridcell at a time. JM Feb 42016.
         flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)
         flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
-        pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
+        preacc_gat(i)=preacc_gat(i)+pregat(i)*delt
+!         pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
         fsnowacc_t(i)=fsnowacc_t(i)+fsnogat(i)
         tcanoaccgat_t(i)=tcanoaccgat_t(i)+tcano(i)
         tcansacc_t(i)=tcansacc_t(i)+tcans(i)
