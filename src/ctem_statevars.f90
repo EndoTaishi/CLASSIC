@@ -12,6 +12,8 @@ public :: alloc_ctem_vars
 public :: initrowvars
 public :: resetmonthend
 public :: resetyearend
+public :: resetMosaicAccum
+
 
 !=================================================================================
 !>switches for running the model, read from the joboptions file
@@ -2181,53 +2183,38 @@ end do ! nltest
 end subroutine resetyearend
 !!@}
 !==================================================
+!>\ingroup ctem_statevars_resetMosaicAccum
+!!@{
+!> Resets physics accumulator variables (used as input to CTEM) after CTEM has been called
 
+subroutine resetMosaicAccum()
 
-! separate one:
-!
-! c     reset mosaic accumulator arrays.
-! c
-!       do 655 i=1,nml
-!          uvaccgat_t(i)=0.0
-! 655   continue
-! c
-!       if (ctem_on) then
-!         do 705 i = 1, nml
-! c
-! c         competitition related variables added by y. peng \\
-!           fsinacc_gat(i)=0.
-!           flinacc_gat(i)=0.
-!           flutacc_gat(i)=0.
-! c         competitition related variables added by y. peng //
-! c
-!           fsnowacc_t(i)=0.0
-!           tcanoaccgat_t(i)=0.0
-! c
-!           tcansacc_t(i)=0.0
-!           taaccgat_t(i)=0.0
-!           vvaccgat_t(i)=0.0
-! c
-!           do 715 j=1,ignd
-!              tbaraccgat_t(i,j)=0.0
-!              tbarcacc_t(i,j)=0.0
-!              tbarcsacc_t(i,j)=0.0
-!              tbargacc_t(i,j)=0.0
-!              tbargsacc_t(i,j)=0.0
-!              thliqcacc_t(i,j)=0.0
-!              thliqgacc_t(i,j)=0.0
-!              thicecacc_t(i,j)=0.0
-! 715       continue
-! c
-!           do 716 j = 1, icc
-!             ancsvgac_t(i,j)=0.0
-!             ancgvgac_t(i,j)=0.0
-!             rmlcsvga_t(i,j)=0.0
-!             rmlcgvga_t(i,j)=0.0
-! 716       continue
-! c
-! 705     continue
-!       endif  ! if(ctem_on)
-!       endif  ! if(ncount.eq.nday)
+        vgat%fsinacc_gat(:)=0.
+        vgat%flinacc_gat(:)=0.
+        vgat%flutacc_gat(:)=0.
+        vgat%preacc_gat(:)=0.
+        vgat%fsnowacc_t(:)=0.0
+        vgat%tcanoaccgat_t(:)=0.0
+        vgat%tcansacc_t(:)=0.0
+        vgat%taaccgat_t(:)=0.0
+        vgat%altotacc_gat(:) = 0.0
+        vgat%altotcount_ctm(:)=0
+        vgat%tbarcacc_t(:,:)=0.0
+        vgat%tbarcsacc_t(:,:)=0.0
+        vgat%tbargacc_t(:,:)=0.0
+        vgat%tbargsacc_t(:,:)=0.0
+        vgat%thliqcacc_t(:,:)=0.0
+        vgat%thliqgacc_t(:,:)=0.0
+        vgat%thliqacc_t(:,:)=0.0
+        vgat%thiceacc_t(:,:)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+        vgat%thicecacc_t(:,:)=0.0
+        vgat%thicegacc_t(:,:)=0.0
+        vgat%ancsvgac_t(:,:)=0.0
+        vgat%ancgvgac_t(:,:)=0.0
+        vgat%rmlcsvga_t(:,:)=0.0
+        vgat%rmlcgvga_t(:,:)=0.0
+
+end subroutine resetMosaicAccum
 !=================================================================================
 !>@}
 

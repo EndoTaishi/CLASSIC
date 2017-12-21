@@ -53,7 +53,7 @@ contains
         use landuse_change,     only : initializeLandCover
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
                                         resetmonthend,resetyearend,&
-                                        ctem_tile
+                                        ctem_tile,resetMosaicAccum
         use class_statevars,    only : class_gat,class_rot,resetAccVars,&
                                         resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
@@ -3723,40 +3723,41 @@ contains
                 !     reset mosaic accumulator arrays.
 
                 if (ctem_on) then
-                    do 705 i = 1, nml
-
-                        fsinacc_gat(i)=0.
-                        flinacc_gat(i)=0.
-                        flutacc_gat(i)=0.
-                        preacc_gat(i)=0.
-!                         pregacc_gat(i)=0.
-                        fsnowacc_t(i)=0.0
-                        tcanoaccgat_t(i)=0.0
-                        tcansacc_t(i)=0.0
-                        taaccgat_t(i)=0.0
-                        altotacc_gat(i) = 0.0
-                        altotcount_ctm(i)=0
-
-                        do 715 j=1,ignd
-                            tbarcacc_t(i,j)=0.0
-                            tbarcsacc_t(i,j)=0.0
-                            tbargacc_t(i,j)=0.0
-                            tbargsacc_t(i,j)=0.0
-                            thliqcacc_t(i,j)=0.0
-                            thliqgacc_t(i,j)=0.0
-                            thliqacc_t(i,j)=0.0
-                            thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-                            thicecacc_t(i,j)=0.0
-                            thicegacc_t(i,j)=0.0
-715                     continue
-
-                        do 716 j = 1, icc
-                            ancsvgac_t(i,j)=0.0
-                            ancgvgac_t(i,j)=0.0
-                            rmlcsvga_t(i,j)=0.0
-                            rmlcgvga_t(i,j)=0.0
-716                     continue
-705                 continue
+                    call resetMosaicAccum
+!                     do 705 i = 1, nml
+!
+!                         fsinacc_gat(i)=0.
+!                         flinacc_gat(i)=0.
+!                         flutacc_gat(i)=0.
+!                         preacc_gat(i)=0.
+! !                         pregacc_gat(i)=0.
+!                         fsnowacc_t(i)=0.0
+!                         tcanoaccgat_t(i)=0.0
+!                         tcansacc_t(i)=0.0
+!                         taaccgat_t(i)=0.0
+!                         altotacc_gat(i) = 0.0
+!                         altotcount_ctm(i)=0
+!
+!                         do 715 j=1,ignd
+!                             tbarcacc_t(i,j)=0.0
+!                             tbarcsacc_t(i,j)=0.0
+!                             tbargacc_t(i,j)=0.0
+!                             tbargsacc_t(i,j)=0.0
+!                             thliqcacc_t(i,j)=0.0
+!                             thliqgacc_t(i,j)=0.0
+!                             thliqacc_t(i,j)=0.0
+!                             thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+!                             thicecacc_t(i,j)=0.0
+!                             thicegacc_t(i,j)=0.0
+! 715                     continue
+!
+!                         do 716 j = 1, icc
+!                             ancsvgac_t(i,j)=0.0
+!                             ancgvgac_t(i,j)=0.0
+!                             rmlcsvga_t(i,j)=0.0
+!                             rmlcgvga_t(i,j)=0.0
+! 716                     continue
+! 705                 continue
                 endif  ! if(ctem_on)
             end if !ncount eq nday
 
