@@ -312,7 +312,6 @@ type veg_rot
     real, allocatable, dimension(:,:) :: tcanrs                !<
     real, allocatable, dimension(:,:) :: tsnors                !<
     real, allocatable, dimension(:,:) :: tpndrs                !<
-    real, allocatable, dimension(:,:) :: tcanoaccrow_m         !<
     real, allocatable, dimension(:,:) :: uvaccrow_m            !<
     real, allocatable, dimension(:,:) :: vvaccrow_m            !<
     real, allocatable, dimension(:,:) :: qevpacc_m_save        !<
@@ -1125,7 +1124,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%tcanrs  (nlat,nmos),&
          vrot%tsnors  (nlat,nmos),&
          vrot%tpndrs  (nlat,nmos),&
-         vrot%tcanoaccrow_m(nlat,nmos),&
          vrot%uvaccrow_m(nlat,nmos),&
          vrot%vvaccrow_m (nlat,nmos),&
          vrot%qevpacc_m_save(nlat,nmos),&

@@ -960,7 +960,6 @@ contains
         real, pointer, dimension(:,:) :: tpndrs
         real, pointer, dimension(:,:,:) :: csum
         real, pointer, dimension(:,:,:) :: tbaraccrow_m
-        real, pointer, dimension(:,:) :: tcanoaccrow_m
         real, pointer, dimension(:,:) :: uvaccrow_m
         real, pointer, dimension(:,:) :: vvaccrow_m
 
@@ -2210,7 +2209,6 @@ contains
         tpndrs            => vrot%tpndrs
         csum              => vrot%csum
         tbaraccrow_m      => class_rot%tbaraccrow_m
-        tcanoaccrow_m     => vrot%tcanoaccrow_m
         uvaccrow_m        => vrot%uvaccrow_m
         vvaccrow_m        => vrot%vvaccrow_m
 
@@ -2760,7 +2758,6 @@ contains
 
         do 11 i=1,nlat
             do 11 m=1,nmos
-                TCANOACCROW_M(I,M)       = 0.0
                 UVACCROW_M(I,M)          = 0.0
                 VVACCROW_M(I,M)          = 0.0
 11          continue
@@ -3221,7 +3218,7 @@ contains
                     cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
                     rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
                     sandgat,     claygat,     orgmgat,&
-                    anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
+                    anveggat,    rmlveggat,   tbaraccgat_t,&
                     uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
                     extnprobgat, pfcancmxgat,  nfcancmxgat,&
                     stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
@@ -3266,7 +3263,7 @@ contains
                     cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
                     rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
                     SANDROT,     CLAYROT,     ORGMROT,&
-                    anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
+                    anvegrow,    rmlvegrow,   tbaraccrow_m,&
                     uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
                     extnprobrow, pfcancmxrow,  nfcancmxrow,&
                     stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
@@ -3650,7 +3647,7 @@ contains
                 &      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
                 &      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
                 &      SANDROT,     CLAYROT,     ORGMROT,&
-                &      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
+                &      anvegrow,    rmlvegrow,   tbaraccrow_m,&
                 &      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,&
                 &      extnprobrow, pfcancmxrow,  nfcancmxrow,&
                 &      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
@@ -3697,7 +3694,7 @@ contains
                 &      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
                 &      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
                 &      sandgat,     claygat,     orgmgat,&
-                &      anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
+                &      anveggat,    rmlveggat,   tbaraccgat_t,&
                 &      uvaccgat_t,  vvaccgat_t,  prbfrhucgat,&
                 &      extnprobgat, pfcancmxgat,  nfcancmxgat,&
                 &      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&

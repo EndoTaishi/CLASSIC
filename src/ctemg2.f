@@ -11,7 +11,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      5      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
      6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
-     8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
+     8      anveggat,    rmlveggat,   tbaraccgat_m,
      9      uvaccgat_m,  vvaccgat_m,  prbfrhucgat,
      a      extnprobgat, pfcancmxgat,  nfcancmxgat,
      b      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
@@ -57,7 +57,7 @@ c
      z      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
      1      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      2      sandrow,     clayrow,     orgmrow,
-     3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
+     3      anvegrow,    rmlvegrow,   tbaraccrow_m,
      4      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,
      5      extnprobrow, pfcancmxrow,  nfcancmxrow,
      6      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
@@ -140,8 +140,7 @@ c
 c
       real    anveggat(ilg,icc),      rmlveggat(ilg,icc)
 c
-      real   tcanoaccgat_m(ilg),
-     1          uvaccgat_m(ilg),      vvaccgat_m(ilg)
+      real   uvaccgat_m(ilg),      vvaccgat_m(ilg)
 c
       real  prbfrhucgat(ilg),         extnprobgat(ilg),
      +      daylgat(ilg),             dayl_maxgat(ilg),
@@ -229,8 +228,7 @@ c
 c
       real  anvegrow(nlat,nmos,icc),     rmlvegrow(nlat,nmos,icc)
 c
-      real  tcanoaccrow_m(nlat,nmos),
-     1      uvaccrow_m(nlat,nmos),       vvaccrow_m(nlat,nmos)
+      real  uvaccrow_m(nlat,nmos),       vvaccrow_m(nlat,nmos)
 c
       real  prbfrhucrow(nlat,nmos),       extnprobrow(nlat,nmos),
      +      daylrow(nlat),           dayl_maxrow(nlat),
@@ -351,7 +349,6 @@ c----------------------------------------------------------------------
           extnprobgat(k)  = extnprobrow(ilmos(k),jlmos(k))
           daylgat(k)      = daylrow(ilmos(k))
           dayl_maxgat(k)  = dayl_maxrow(ilmos(k))
-          tcanoaccgat_m(k)= tcanoaccrow_m(ilmos(k),jlmos(k))
           uvaccgat_m(k)   = uvaccrow_m(ilmos(k),jlmos(k))
           vvaccgat_m(k)   = vvaccrow_m(ilmos(k),jlmos(k))
           vgbiomasgat(k)  = vgbiomasrow(ilmos(k),jlmos(k))
