@@ -1,14 +1,16 @@
+!> Central module for CTEM (biogeochemical)-related utilities
 module ctemUtilities
 
 implicit none
 
 public :: dayEndCTEMPreparation
 public :: accumulateForCTEM
+public :: ctemInit
 
 contains
 
 ! --------------------------------------------------------------------------------------------------------------------
-
+!> Prepare the CTEM input (physics) variables at the end of the day.
 subroutine dayEndCTEMPreparation(nml,nday)
 
     use ctem_params, only : icc,ignd
@@ -155,7 +157,7 @@ subroutine dayEndCTEMPreparation(nml,nday)
 end subroutine dayEndCTEMPreparation
 
 ! --------------------------------------------------------------------------------------------------------------------
-
+!> Accumulate the CTEM input (physics) variables at the end of each physics timestep
 subroutine accumulateForCTEM(nml)
 
     use ctem_params, only : icc,ignd
@@ -398,4 +400,226 @@ subroutine accumulateForCTEM(nml)
 
 end subroutine accumulateForCTEM
 !
+! --------------------------------------------------------------------------------------------------------------------
+!> Find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
+!! Also initialize additional variables which are used by CTEM (biogeochemical processes).
+subroutine ctemInit(nltest,nmtest)
+
+    use ctem_params, only : icc,ilg
+    use ctem_statevars, only : vrot,ctem_tile,vgat
+    use class_statevars,only : class_rot
+
+    implicit none
+
+    integer, intent(in) :: nltest
+    integer, intent(in) :: nmtest
+
+    integer :: i,m,j
+
+    real, pointer, dimension(:,:,:) :: co2i1cgrow
+    real, pointer, dimension(:,:,:) :: co2i1csrow
+    real, pointer, dimension(:,:,:) :: co2i2cgrow
+    real, pointer, dimension(:,:,:) :: co2i2csrow
+    real, pointer, dimension(:,:,:) :: slairow
+    real, pointer, dimension(:) :: fsnowacc_t
+    real, pointer, dimension(:) :: tcansacc_t
+    real, pointer, dimension(:) :: taaccgat_t
+    real, pointer, dimension(:,:) :: ancsvgac_t
+    real, pointer, dimension(:,:) :: ancgvgac_t
+    real, pointer, dimension(:,:) :: rmlcsvga_t
+    real, pointer, dimension(:,:) :: rmlcgvga_t
+    real, pointer, dimension(:,:)  :: todfrac
+    real, pointer, dimension(:,:) :: tbarcacc_t
+    real, pointer, dimension(:,:) :: tbarcsacc_t
+    real, pointer, dimension(:,:) :: tbargacc_t
+    real, pointer, dimension(:,:) :: tbargsacc_t
+    real, pointer, dimension(:,:) :: thliqcacc_t
+    real, pointer, dimension(:,:) :: thliqgacc_t
+    real, pointer, dimension(:,:) :: thliqacc_t
+    real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+    real, pointer, dimension(:,:) :: thicecacc_t
+    real, pointer, dimension(:,:) :: thicegacc_t
+    real, pointer, dimension(:,:) :: vgbiomasrow
+    real, pointer, dimension(:,:) :: gavgltmsrow
+    real, pointer, dimension(:,:) :: gavgscmsrow
+    real, pointer, dimension(:,:) :: gavglairow
+    real, pointer, dimension(:,:) :: lucemcomrow
+    real, pointer, dimension(:,:) :: lucltrinrow
+    real, pointer, dimension(:,:) :: lucsocinrow
+    integer, pointer, dimension(:,:,:) :: colddaysrow
+    real, pointer, dimension(:,:,:) :: flhrlossrow
+    real, pointer, dimension(:,:,:) :: stmhrlosrow
+    real, pointer, dimension(:,:,:) :: rothrlosrow
+    real, pointer, dimension(:,:,:) :: tymaxlairow
+    real, pointer, dimension(:,:,:) :: grwtheffrow
+    real, pointer, dimension(:,:,:) :: lystmmasrow
+    real, pointer, dimension(:,:,:) :: lyrotmasrow
+    integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
+    real, pointer, dimension(:,:,:) :: fcanrot !<
+    real, pointer, dimension(:,:,:) :: gleafmasrow        !
+    real, pointer, dimension(:,:,:) :: bleafmasrow        !
+    real, pointer, dimension(:,:,:) :: stemmassrow        !
+    real, pointer, dimension(:,:,:) :: rootmassrow        !
+    real, pointer, dimension(:,:,:) :: litrmassrow
+    real, pointer, dimension(:,:,:) :: soilcmasrow
+    real, pointer, dimension(:,:,:) :: fcancmxrow
+    real, pointer, dimension(:,:) :: peatdeprow
+    real, pointer, dimension(:) :: anmossac_t
+    real, pointer, dimension(:) :: rmlmossac_t
+    real, pointer, dimension(:) :: gppmossac_t
+    real, pointer, dimension(:,:) :: litrmsmossrow
+    real, pointer, dimension(:,:) :: Cmossmasrow
+    real, pointer, dimension(:,:) :: sdeprot !<Depth to bedrock in the soil profile
+
+    ipeatlandrow     => vrot%ipeatland
+    co2i1cgrow        => vrot%co2i1cg
+    co2i1csrow        => vrot%co2i1cs
+    co2i2cgrow        => vrot%co2i2cg
+    co2i2csrow        => vrot%co2i2cs
+    slairow           => vrot%slai
+    fsnowacc_t        => ctem_tile%fsnowacc_t
+    tcansacc_t        => ctem_tile%tcansacc_t
+    taaccgat_t        => ctem_tile%taaccgat_t
+    ancsvgac_t        => ctem_tile%ancsvgac_t
+    ancgvgac_t        => ctem_tile%ancgvgac_t
+    rmlcsvga_t        => ctem_tile%rmlcsvga_t
+    rmlcgvga_t        => ctem_tile%rmlcgvga_t
+    todfrac           => vgat%todfrac
+    tbarcacc_t        => ctem_tile%tbarcacc_t
+    tbarcsacc_t       => ctem_tile%tbarcsacc_t
+    tbargacc_t        => ctem_tile%tbargacc_t
+    tbargsacc_t       => ctem_tile%tbargsacc_t
+    thliqcacc_t       => ctem_tile%thliqcacc_t
+    thliqgacc_t       => ctem_tile%thliqgacc_t
+    thliqacc_t        => ctem_tile%thliqacc_t
+    thiceacc_t        => ctem_tile%thiceacc_t
+    thicecacc_t       => ctem_tile%thicecacc_t
+    thicegacc_t       => ctem_tile%thicegacc_t
+    vgbiomasrow       => vrot%vgbiomas
+    gavglairow        => vrot%gavglai
+    gavgltmsrow       => vrot%gavgltms
+    gavgscmsrow       => vrot%gavgscms
+    lucemcomrow       => vrot%lucemcom
+    lucltrinrow       => vrot%lucltrin
+    lucsocinrow       => vrot%lucsocin
+    colddaysrow       => vrot%colddays
+    flhrlossrow       => vrot%flhrloss
+    stmhrlosrow       => vrot%stmhrlos
+    rothrlosrow       => vrot%rothrlos
+    tymaxlairow       => vrot%tymaxlai
+    grwtheffrow       => vrot%grwtheff
+    lystmmasrow       => vrot%lystmmas
+    lyrotmasrow       => vrot%lyrotmas
+    fcanrot           => class_rot%fcanrot
+    gleafmasrow       => vrot%gleafmas
+    bleafmasrow       => vrot%bleafmas
+    stemmassrow       => vrot%stemmass
+    rootmassrow       => vrot%rootmass
+    litrmassrow       => vrot%litrmass
+    soilcmasrow       => vrot%soilcmas
+    fcancmxrow        => vrot%fcancmx
+    peatdeprow        => vrot%peatdep
+    anmossac_t        => ctem_tile%anmossac_t
+    rmlmossac_t       => ctem_tile%rmlmossac_t
+    gppmossac_t       => ctem_tile%gppmossac_t
+    litrmsmossrow    => vrot%litrmsmoss
+    Cmossmasrow      => vrot%Cmossmas
+    sdeprot => class_rot%sdeprot
+    ! ------
+
+    ! Initialize to zero:
+    co2i1csrow(:,:,:)=0.0     !intercellular co2 concentrations
+    co2i1cgrow(:,:,:)=0.0
+    co2i2csrow(:,:,:)=0.0
+    co2i2cgrow(:,:,:)=0.0
+    slairow(:,:,:)=0.0        !if bio2str is not called we need to initialize this to zero
+    fsnowacc_t(:)=0.0         !daily accu. fraction of snow
+    tcansacc_t(:)=0.0         !daily accu. canopy temp. over snow
+    taaccgat_t(:)=0.0
+    ancsvgac_t(:,:)=0.0    !daily accu. net photosyn. for canopy over snow subarea
+    ancgvgac_t(:,:)=0.0    !daily accu. net photosyn. for canopy over ground subarea
+    rmlcsvga_t(:,:)=0.0    !daily accu. leaf respiration for canopy over snow subarea
+    rmlcgvga_t(:,:)=0.0    !daily accu. leaf respiration for canopy over ground subarea
+    todfrac(:,:)=0.0
+    tbarcacc_t (:,:)=0.0
+    tbarcsacc_t(:,:)=0.0
+    tbargacc_t (:,:)=0.0
+    tbargsacc_t(:,:)=0.0
+    thliqcacc_t(:,:)=0.0
+    thliqgacc_t(:,:)=0.0
+    thliqacc_t(:,:)=0.0
+    thiceacc_t(:,:)=0.0
+    thicecacc_t(:,:)=0.0
+    thicegacc_t(:,:)=0.0
+    vgbiomasrow(:,:)=0.0
+    gavglairow(:,:)=0.0
+    gavgltmsrow(:,:)=0.0
+    gavgscmsrow(:,:)=0.0
+    lucemcomrow(:,:)=0.0      !land use change combustion emission losses
+    lucltrinrow(:,:)=0.0      !land use change inputs to litter pool
+    lucsocinrow(:,:)=0.0      !land use change inputs to soil c pool
+    colddaysrow(:,:,:)=0      !cold days counter for ndl dcd and crops
+    flhrlossrow(:,:,:)=0.0     !fall/harvest loss
+    stmhrlosrow(:,:,:)=0.0     !stem harvest loss for crops
+    rothrlosrow(:,:,:)=0.0     !root death for crops
+    tymaxlairow(:,:,:)=0.0
+
+    do 115 i = 1,nltest
+        do 115 m = 1,nmtest
+            do 116 j = 1, icc
+                vgbiomasrow(i,m)=vgbiomasrow(i,m)+fcancmxrow(i,m,j)*&
+                    &        (gleafmasrow(i,m,j)+stemmassrow(i,m,j)+&
+                    &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))
+                gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)*&
+                    &                       litrmassrow(i,m,j)
+                gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)*&
+                    &         soilcmasrow(i,m,j)
+                grwtheffrow(i,m,j)=100.0   !set growth efficiency to some large number
+                                                        !so that no growth related mortality occurs in
+                                                        !first year
+                lystmmasrow(i,m,j)=stemmassrow(i,m,j)
+                lyrotmasrow(i,m,j)=rootmassrow(i,m,j)
+
+116                 continue
+115         continue
+
+    do 117 i = 1,nltest
+        do 117 m = 1,nmtest
+            if (ipeatlandrow(i,m)==0) then ! NON-peatland tile
+                gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
+                        fcanrot(i,m,2)-fcanrot(i,m,3)-&
+                        fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
+                gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
+                        fcanrot(i,m,2)-fcanrot(i,m,3)-&
+                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
+            else !peatland tile
+                gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
+                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth
+                ! The soil carbon on the peatland tiles is assigned based on depth. This
+                ! is the same relation as found in decp subroutine.
+                gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+&
+                            72067.0*peatdeprow(i,m))/1000
+                vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
+            endif
+117         continue
+
+        !    Also initialize the accumulators for moss daily C fluxes.
+        !    FLAG perhaps move? JM.
+        !
+        !    Moved out of 117 loop and ipeatlandrow > 0 block where only 1 to nltest
+        !    elements were actually initialized since the loop is really for row
+        !    variables. Initialization is now done on all elements, which shouldn't be
+        !    a problem. EC - Feb 16, 2016.
+
+        anmossac_t  = 0.0
+        rmlmossac_t = 0.0
+        gppmossac_t = 0.0
+
+            !write(6,6990) 'peatdeprow=', peatdeprow
+            !write(6,6990) 'gavgscms=', gavgscmsrow
+            !write(6,6990) 'vgbiomas=', vgbiomasrow
+            !6990   format(A15,12f6.2)
+        !    ----------------------------YW March 25, 2015 --------------------/
+end subroutine ctemInit
+
 end module ctemUtilities

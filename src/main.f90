@@ -46,23 +46,23 @@ contains
 
     subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
 
-        use ctem_params,        only : nlat,nmos,ilg,nmon,ican, ignd, icc, &
+        use ctem_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, &
                                         monthend, mmday,modelpft, l2max,&
                                         deltat,seed,NBS, readin_params,&
                                         nol2pfts
-        use landuse_change,     only : initializeLandCover
-        use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
+        use landuse_change,      only : initializeLandCover
+        use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&
                                         resetmonthend,resetyearend,&
                                         ctem_tile,resetMosaicAccum
-        use class_statevars,    only : class_gat,class_rot,resetAccVars,&
+        use class_statevars,     only : class_gat,class_rot,resetAccVars,&
                                         resetclassmon,resetclassyr,initDiagnosticVars
-        use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
+        use io_driver,           only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
                                         ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
-        use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
-        use metDisaggModule, only : disaggMet
+        use ctemUtilities,       only : dayEndCTEMPreparation,accumulateForCTEM,ctemInit
+        use metDisaggModule,     only : disaggMet
 
         implicit none
 
@@ -319,7 +319,7 @@ contains
         real, pointer, dimension(:) :: ZOMLNS  !<
         real, pointer, dimension(:) :: ZOELNS  !<
         real, pointer, dimension(:) :: TRSNOWC !<
-        real, pointer, dimension(:) :: CHCAP   !<
+        real, pointer, dimension(:) :: CHCAP   !<Heat capacity of vegetation canopy \f$[J m^{-2} K^{-1} ] (C_c )\f$
         real, pointer, dimension(:) :: CHCAPS  !<
         real, pointer, dimension(:) :: GZEROC  !<
         real, pointer, dimension(:) :: GZEROG  !<
@@ -2303,7 +2303,7 @@ contains
         ch4dyn2row        => vrot%ch4dyn2
         ch4soillsrow      => vrot%ch4_soills
 
-        peatdeprow            => vrot%peatdep
+        peatdeprow        => vrot%peatdep
         lucemcomrow       => vrot%lucemcom
         lucltrinrow       => vrot%lucltrin
         lucsocinrow       => vrot%lucsocin
@@ -2748,6 +2748,7 @@ contains
         !> Initialize variables in preparation for the run
         call initrowvars
         call resetAccVars(nlat,nmos)
+        call resetMosaicAccum
 
         ! Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
@@ -2774,8 +2775,8 @@ contains
         call disaggMet(longitude, latitude,delt)
 
         !> Complete some initial set up work:
-    !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
-    !> depth, ZSNL, is assigned its operational value of 0.10 m.
+        !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
+        !> depth, ZSNL, is assigned its operational value of 0.10 m.
 
         DO 100 I=1,NLTEST
             DO 100 M=1,NMTEST
@@ -2805,13 +2806,13 @@ contains
 75              CONTINUE
 100     CONTINUE
 
-        altotcount_ctm(:)=0
-        fsinacc_gat(:)=0.
-        flinacc_gat(:)=0.
-        flutacc_gat(:)=0.
-        preacc_gat(:)=0.
-!         pregacc_gat(:)=0.
-        altotacc_gat(:)=0.
+!         altotcount_ctm(:)=0
+!         fsinacc_gat(:)=0.
+!         flinacc_gat(:)=0.
+!         flutacc_gat(:)=0.
+!         preacc_gat(:)=0.
+! !         pregacc_gat(:)=0.
+!         altotacc_gat(:)=0.
 
         ! Initialize accumulated array for monthly & yearly outputs
         call resetclassmon(nltest)
@@ -2835,125 +2836,120 @@ contains
 
         !ctem initializations.
         if (ctem_on) then
-
-            do 110 i=1,nltest
-                do 110 m=1,nmtest
-                    do 111 j = 1, icc
-                        co2i1csrow(i,m,j)=0.0     !intercellular co2 concentrations
-                        co2i1cgrow(i,m,j)=0.0
-                        co2i2csrow(i,m,j)=0.0
-                        co2i2cgrow(i,m,j)=0.0
-                        slairow(i,m,j)=0.0        !if bio2str is not called we need to initialize this to zero
-111             continue
-110         continue
-
-            do 123 i =1, ilg
-                fsnowacc_t(i)=0.0         !daily accu. fraction of snow
-                tcansacc_t(i)=0.0         !daily accu. canopy temp. over snow
-                taaccgat_t(i)=0.0
-
-                do 128 j = 1, icc
-                    ancsvgac_t(i,j)=0.0    !daily accu. net photosyn. for canopy over snow subarea
-                    ancgvgac_t(i,j)=0.0    !daily accu. net photosyn. for canopy over ground subarea
-                    rmlcsvga_t(i,j)=0.0    !daily accu. leaf respiration for canopy over snow subarea
-                    rmlcgvga_t(i,j)=0.0    !daily accu. leaf respiration for canopy over ground subarea
-                    todfrac(i,j)=0.0
-128             continue
-
-                do 112 j = 1,ignd       !soil temperature and moisture over different subareas
-                    tbarcacc_t (i,j)=0.0
-                    tbarcsacc_t(i,j)=0.0
-                    tbargacc_t (i,j)=0.0
-                    tbargsacc_t(i,j)=0.0
-                    thliqcacc_t(i,j)=0.0
-                    thliqgacc_t(i,j)=0.0
-                    thliqacc_t(i,j)=0.0
-                    thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-                    thicecacc_t(i,j)=0.0
-                    thicegacc_t(i,j)=0.0
-112             continue
-123         continue
-
-            ! with fcancmx calculated above and initialized values of all ctem pools,
-            ! find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
-            ! also initialize additional variables which are used by ctem.
-
-            do 115 i = 1,nltest
-                do 115 m = 1,nmtest
-                    vgbiomasrow(i,m)=0.0
-                    gavglairow(i,m)=0.0
-                    gavgltmsrow(i,m)=0.0
-                    gavgscmsrow(i,m)=0.0
-                    lucemcomrow(i,m)=0.0      !land use change combustion emission losses
-                    lucltrinrow(i,m)=0.0      !land use change inputs to litter pool
-                    lucsocinrow(i,m)=0.0      !land use change inputs to soil c pool
-                    colddaysrow(i,m,1)=0      !cold days counter for ndl dcd
-                    colddaysrow(i,m,2)=0      !cold days counter for crops
-
-                    do 116 j = 1, icc
-                        vgbiomasrow(i,m)=vgbiomasrow(i,m)+fcancmxrow(i,m,j)*&
-                            &        (gleafmasrow(i,m,j)+stemmassrow(i,m,j)+&
-                            &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))
-                        gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)*&
-                            &                       litrmassrow(i,m,j)
-                        gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)*&
-                            &         soilcmasrow(i,m,j)
-                        grwtheffrow(i,m,j)=100.0   !set growth efficiency to some large number
-                                                              !so that no growth related mortality occurs in
-                                                              !first year
-                        flhrlossrow(i,m,j)=0.0     !fall/harvest loss
-                        stmhrlosrow(i,m,j)=0.0     !stem harvest loss for crops
-                        rothrlosrow(i,m,j)=0.0     !root death for crops
-                        lystmmasrow(i,m,j)=stemmassrow(i,m,j)
-                        lyrotmasrow(i,m,j)=rootmassrow(i,m,j)
-                        tymaxlairow(i,m,j)=0.0
-
-116                 continue
-
-!                     ! initialize accumulated array for monthly and yearly output for ctem
+            call ctemInit(nltest,nmtest)
 !
-!                     call resetmonthend(nltest,nmtest)
-!                     call resetyearend(nltest,nmtest)
-
-115         continue
-
-            do 117 i = 1,nltest
-                do 117 m = 1,nmtest
-                    if (ipeatlandrow(i,m)==0) then ! NON-peatland tile
-                        gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
-                             fcanrot(i,m,2)-fcanrot(i,m,3)-&
-                             fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
-                       gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
-                             fcanrot(i,m,2)-fcanrot(i,m,3)-&
-                             fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
-                    else !peatland tile
-                        gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
-                        peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth
-                        ! The soil carbon on the peatland tiles is assigned based on depth. This
-                        ! is the same relation as found in decp subroutine.
-                        gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+&
-                                   72067.0*peatdeprow(i,m))/1000
-                       vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
-                    endif
-117         continue
-
-            !    Also initialize the accumulators for moss daily C fluxes.
-            !    FLAG perhaps move? JM.
-            !
-            !    Moved out of 117 loop and ipeatlandrow > 0 block where only 1 to nltest
-            !    elements were actually initialized since the loop is really for row
-            !    variables. Initialization is now done on all elements, which shouldn't be
-            !    a problem. EC - Feb 16, 2016.
-
-            anmossac_t  = 0.0
-            rmlmossac_t = 0.0
-            gppmossac_t = 0.0
-
-                !write(6,6990) 'peatdeprow=', peatdeprow
-                !write(6,6990) 'gavgscms=', gavgscmsrow
-                !write(6,6990) 'vgbiomas=', vgbiomasrow
-                !6990   format(A15,12f6.2)
-            !    ----------------------------YW March 25, 2015 --------------------/
+!             do 110 i=1,nltest
+!                 do 110 m=1,nmtest
+!                     do 111 j = 1, icc
+!                         co2i1csrow(i,m,j)=0.0     !intercellular co2 concentrations
+!                         co2i1cgrow(i,m,j)=0.0
+!                         co2i2csrow(i,m,j)=0.0
+!                         co2i2cgrow(i,m,j)=0.0
+!                         slairow(i,m,j)=0.0        !if bio2str is not called we need to initialize this to zero
+! 111             continue
+! 110         continue
+!
+!             do 123 i =1, ilg
+!                 fsnowacc_t(i)=0.0         !daily accu. fraction of snow
+!                 tcansacc_t(i)=0.0         !daily accu. canopy temp. over snow
+!                 taaccgat_t(i)=0.0
+!
+!                 do 128 j = 1, icc
+!                     ancsvgac_t(i,j)=0.0    !daily accu. net photosyn. for canopy over snow subarea
+!                     ancgvgac_t(i,j)=0.0    !daily accu. net photosyn. for canopy over ground subarea
+!                     rmlcsvga_t(i,j)=0.0    !daily accu. leaf respiration for canopy over snow subarea
+!                     rmlcgvga_t(i,j)=0.0    !daily accu. leaf respiration for canopy over ground subarea
+!                     todfrac(i,j)=0.0
+! 128             continue
+!
+!                 do 112 j = 1,ignd       !soil temperature and moisture over different subareas
+!                     tbarcacc_t (i,j)=0.0
+!                     tbarcsacc_t(i,j)=0.0
+!                     tbargacc_t (i,j)=0.0
+!                     tbargsacc_t(i,j)=0.0
+!                     thliqcacc_t(i,j)=0.0
+!                     thliqgacc_t(i,j)=0.0
+!                     thliqacc_t(i,j)=0.0
+!                     thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+!                     thicecacc_t(i,j)=0.0
+!                     thicegacc_t(i,j)=0.0
+! 112             continue
+! 123         continue
+!
+!             ! with fcancmx calculated above and initialized values of all ctem pools,
+!             ! find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
+!             ! also initialize additional variables which are used by ctem.
+!
+!             do 115 i = 1,nltest
+!                 do 115 m = 1,nmtest
+!                     vgbiomasrow(i,m)=0.0
+!                     gavglairow(i,m)=0.0
+!                     gavgltmsrow(i,m)=0.0
+!                     gavgscmsrow(i,m)=0.0
+!                     lucemcomrow(i,m)=0.0      !land use change combustion emission losses
+!                     lucltrinrow(i,m)=0.0      !land use change inputs to litter pool
+!                     lucsocinrow(i,m)=0.0      !land use change inputs to soil c pool
+!                     colddaysrow(i,m,1)=0      !cold days counter for ndl dcd
+!                     colddaysrow(i,m,2)=0      !cold days counter for crops
+!
+!                     do 116 j = 1, icc
+!                         vgbiomasrow(i,m)=vgbiomasrow(i,m)+fcancmxrow(i,m,j)*&
+!                             &        (gleafmasrow(i,m,j)+stemmassrow(i,m,j)+&
+!                             &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))
+!                         gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)*&
+!                             &                       litrmassrow(i,m,j)
+!                         gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)*&
+!                             &         soilcmasrow(i,m,j)
+!                         grwtheffrow(i,m,j)=100.0   !set growth efficiency to some large number
+!                                                               !so that no growth related mortality occurs in
+!                                                               !first year
+!                         flhrlossrow(i,m,j)=0.0     !fall/harvest loss
+!                         stmhrlosrow(i,m,j)=0.0     !stem harvest loss for crops
+!                         rothrlosrow(i,m,j)=0.0     !root death for crops
+!                         lystmmasrow(i,m,j)=stemmassrow(i,m,j)
+!                         lyrotmasrow(i,m,j)=rootmassrow(i,m,j)
+!                         tymaxlairow(i,m,j)=0.0
+!
+! 116                 continue
+! 115         continue
+!
+!             do 117 i = 1,nltest
+!                 do 117 m = 1,nmtest
+!                     if (ipeatlandrow(i,m)==0) then ! NON-peatland tile
+!                         gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
+!                              fcanrot(i,m,2)-fcanrot(i,m,3)-&
+!                              fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
+!                        gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
+!                              fcanrot(i,m,2)-fcanrot(i,m,3)-&
+!                              fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
+!                     else !peatland tile
+!                         gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
+!                         peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth
+!                         ! The soil carbon on the peatland tiles is assigned based on depth. This
+!                         ! is the same relation as found in decp subroutine.
+!                         gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+&
+!                                    72067.0*peatdeprow(i,m))/1000
+!                        vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
+!                     endif
+! 117         continue
+!
+!             !    Also initialize the accumulators for moss daily C fluxes.
+!             !    FLAG perhaps move? JM.
+!             !
+!             !    Moved out of 117 loop and ipeatlandrow > 0 block where only 1 to nltest
+!             !    elements were actually initialized since the loop is really for row
+!             !    variables. Initialization is now done on all elements, which shouldn't be
+!             !    a problem. EC - Feb 16, 2016.
+!
+!             anmossac_t  = 0.0
+!             rmlmossac_t = 0.0
+!             gppmossac_t = 0.0
+!
+!                 !write(6,6990) 'peatdeprow=', peatdeprow
+!                 !write(6,6990) 'gavgscms=', gavgscmsrow
+!                 !write(6,6990) 'vgbiomas=', vgbiomasrow
+!                 !6990   format(A15,12f6.2)
+!             !    ----------------------------YW March 25, 2015 --------------------/
 !
 
             CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,&
@@ -3012,14 +3008,12 @@ contains
 
         !     **** LAUNCH RUN. ****
 
-!200     continue
+        !> The do while loop marks the beginning of the time stepping loop
+        !> for the actual run.  N is incremented by 1, and the atmospheric forcing
+        !> data for the current time step are updated for each grid cell or modelled
+        !> area (see the manual section on “Data Requirements”).
 
         runyr = readMetStartYear
-
-      !> The do while loop marks the beginning of the time stepping loop
-      !> for the actual run.  N is incremented by 1, and the atmospheric forcing
-      !> data for the current time step are updated for each grid cell or modelled
-      !> area (see the manual section on “Data Requirements”).
 
         ! start up the main model loop
 
@@ -3620,7 +3614,7 @@ contains
             DO 430 M=1,50
                 DO 420 L=1,6
                     DO 410 K=1,NML
-                        ITCTROT(ILMOS(K),JLMOS(K),L,M)=ITCTGAT(K,L,M)  !FLAG never used???
+                        ITCTROT(ILMOS(K),JLMOS(K),L,M)=ITCTGAT(K,L,M)
 410                 CONTINUE
 420             CONTINUE
 430         CONTINUE
@@ -3720,10 +3714,12 @@ contains
 
                 DOM=DOM + 1 !increment the day of month counter
 
-                !     reset mosaic accumulator arrays.
-
+                ! Reset mosaic accumulator arrays.
                 if (ctem_on) then
                     call resetMosaicAccum
+                endif  ! if(ctem_on)
+            end if !ncount eq nday
+
 !                     do 705 i = 1, nml
 !
 !                         fsinacc_gat(i)=0.
@@ -3758,8 +3754,8 @@ contains
 !                             rmlcgvga_t(i,j)=0.0
 ! 716                     continue
 ! 705                 continue
-                endif  ! if(ctem_on)
-            end if !ncount eq nday
+!                 endif  ! if(ctem_on)
+!             end if !ncount eq nday
 
 
 !             !  fc,fg,fcs and fgs are one_dimensional in class subroutines

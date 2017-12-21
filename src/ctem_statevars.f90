@@ -2193,26 +2193,26 @@ subroutine resetMosaicAccum()
         vgat%flinacc_gat(:)=0.
         vgat%flutacc_gat(:)=0.
         vgat%preacc_gat(:)=0.
-        vgat%fsnowacc_t(:)=0.0
-        vgat%tcanoaccgat_t(:)=0.0
-        vgat%tcansacc_t(:)=0.0
-        vgat%taaccgat_t(:)=0.0
+        ctem_tile%fsnowacc_t(:)=0.0
+        ctem_tile%tcanoaccgat_t(:)=0.0
+        ctem_tile%tcansacc_t(:)=0.0
+        ctem_tile%taaccgat_t(:)=0.0
         vgat%altotacc_gat(:) = 0.0
         vgat%altotcount_ctm(:)=0
-        vgat%tbarcacc_t(:,:)=0.0
-        vgat%tbarcsacc_t(:,:)=0.0
-        vgat%tbargacc_t(:,:)=0.0
-        vgat%tbargsacc_t(:,:)=0.0
-        vgat%thliqcacc_t(:,:)=0.0
-        vgat%thliqgacc_t(:,:)=0.0
-        vgat%thliqacc_t(:,:)=0.0
-        vgat%thiceacc_t(:,:)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-        vgat%thicecacc_t(:,:)=0.0
-        vgat%thicegacc_t(:,:)=0.0
-        vgat%ancsvgac_t(:,:)=0.0
-        vgat%ancgvgac_t(:,:)=0.0
-        vgat%rmlcsvga_t(:,:)=0.0
-        vgat%rmlcgvga_t(:,:)=0.0
+        ctem_tile%tbarcacc_t(:,:)=0.0
+        ctem_tile%tbarcsacc_t(:,:)=0.0
+        ctem_tile%tbargacc_t(:,:)=0.0
+        ctem_tile%tbargsacc_t(:,:)=0.0
+        ctem_tile%thliqcacc_t(:,:)=0.0
+        ctem_tile%thliqgacc_t(:,:)=0.0
+        ctem_tile%thliqacc_t(:,:)=0.0
+        ctem_tile%thiceacc_t(:,:)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+        ctem_tile%thicecacc_t(:,:)=0.0
+        ctem_tile%thicegacc_t(:,:)=0.0
+        ctem_tile%ancsvgac_t(:,:)=0.0
+        ctem_tile%ancgvgac_t(:,:)=0.0
+        ctem_tile%rmlcsvga_t(:,:)=0.0
+        ctem_tile%rmlcgvga_t(:,:)=0.0
 
 end subroutine resetMosaicAccum
 !=================================================================================
