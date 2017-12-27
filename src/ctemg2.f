@@ -43,9 +43,8 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      2      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
-     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,!thlqaccgat_m,
-     5      ipeatlandgat,pddgat,
-!    5      thicaccgat_m,ipeatlandgat,pddgat,
+     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,
+     5      ipeatlandgat, pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -533,7 +532,7 @@ c
           gppmossgat(k) = gppmossrow(ilmos(k),jlmos(k))
           armossgat(k) =  armossrow(ilmos(k),jlmos(k))
           nppmossgat(k) = nppmossrow(ilmos(k),jlmos(k))
-          peatdepgat(k)    =    peatdeprow(ilmos(k),jlmos(k))
+          peatdepgat(k)    =  peatdeprow(ilmos(k),jlmos(k))
           litrmsmossgat(k) =  litrmsmossrow(ilmos(k),jlmos(k))
           Cmossmasgat(k) = Cmossmasrow(ilmos(k),jlmos(k)) 
           dmossgat(k) = dmossrow(ilmos(k),jlmos(k))

@@ -7,7 +7,9 @@ module generalUtils
     public :: findDaylength
     public :: findCloudiness
     public :: findLeapYears
+    public :: findActiveLayerDepth
     public :: parseTimeStamp
+    public :: closeEnough
 
     logical :: run_model           !< Simple logical switch to either keep run going or finish
 
@@ -199,10 +201,17 @@ module generalUtils
 
     !---------------------------------------------------------------------------------------
 
+    subroutine findActiveLayerDepth
+
+
+    end subroutine findActiveLayerDepth
+
+    !---------------------------------------------------------------------------------------
+
     !> As real numbers are not precise, this is a simple way to compare two reals
-    logical function closeEnough(num1, num2)
+    logical function closeEnough(num1, num2,error)
         real, intent(in)    :: num1, num2
-        real, parameter     :: error = 0.001
+        real, intent(in)     :: error
         if (abs(num1 - num2) < error) then
             closeEnough = .true.
         else

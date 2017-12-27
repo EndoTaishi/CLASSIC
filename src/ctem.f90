@@ -137,7 +137,7 @@ use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
 use disturbance_scheme, only : disturb
 use heterotrophic_respiration, only : hetresg, hetresv
-use peatlands_mod, only : hetres_peat
+use peatlands_mod, only : hetres_peat,peatDayEnd
 
 implicit none
 
@@ -1870,7 +1870,13 @@ do j = 1, icc
         gavglai (i)=gavglai (i)+fcancmx(i,j)*ailcg(i,j)
     enddo
 enddo
-!
+
+!     -----------------------------------------------------------------
+!>
+!> At the end of the day update the degree days for moss photosynthesis and the peat bottom layer depth
+!>
+call peatDayEnd(il2)
+
 !     -----------------------------------------------------------------
 !
       return

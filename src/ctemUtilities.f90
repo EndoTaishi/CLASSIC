@@ -408,6 +408,7 @@ subroutine ctemInit(nltest,nmtest)
     use ctem_params, only : icc,ilg
     use ctem_statevars, only : vrot,ctem_tile,vgat
     use class_statevars,only : class_rot
+    use generalUtils,        only : findDaylength
 
     implicit none
 
@@ -469,9 +470,11 @@ subroutine ctemInit(nltest,nmtest)
     real, pointer, dimension(:) :: gppmossac_t
     real, pointer, dimension(:,:) :: litrmsmossrow
     real, pointer, dimension(:,:) :: Cmossmasrow
-    real, pointer, dimension(:,:) :: sdeprot !<Depth to bedrock in the soil profile
+    real, pointer, dimension(:) :: dayl_maxrow
+    real, pointer, dimension(:,:) :: sdeprot    !<Depth to bedrock in the soil profile
+    real, pointer, dimension(:) :: RADJROW      !< Latitude of grid cell (positive north of equator) [rad]
 
-    ipeatlandrow     => vrot%ipeatland
+    ipeatlandrow      => vrot%ipeatland
     co2i1cgrow        => vrot%co2i1cg
     co2i1csrow        => vrot%co2i1cs
     co2i2cgrow        => vrot%co2i2cg
@@ -522,9 +525,12 @@ subroutine ctemInit(nltest,nmtest)
     anmossac_t        => ctem_tile%anmossac_t
     rmlmossac_t       => ctem_tile%rmlmossac_t
     gppmossac_t       => ctem_tile%gppmossac_t
-    litrmsmossrow    => vrot%litrmsmoss
-    Cmossmasrow      => vrot%Cmossmas
-    sdeprot => class_rot%sdeprot
+    litrmsmossrow     => vrot%litrmsmoss
+    Cmossmasrow       => vrot%Cmossmas
+    dayl_maxrow       => vrot%dayl_max
+    sdeprot           => class_rot%sdeprot
+    RADJROW           => class_rot%RADJROW
+
     ! ------
 
     ! Initialize to zero:
@@ -620,6 +626,16 @@ subroutine ctemInit(nltest,nmtest)
             !write(6,6990) 'vgbiomas=', vgbiomasrow
             !6990   format(A15,12f6.2)
         !    ----------------------------YW March 25, 2015 --------------------/
+
+    ! Lastly,find the maximum daylength at this location for day 172 = June 21st - summer solstice.
+    do i = 1, nltest
+        if (radjrow(i) > 0.) then
+            dayl_maxrow(i) = findDaylength(172.0, radjrow(i)) !following rest of code, radjrow is always given index of 1 offline.
+        else ! S. Hemi so do N.Hemi winter solstice Dec 21
+            dayl_maxrow(i) = findDaylength(355.0, radjrow(i)) !following rest of code, radjrow is always given index of 1 offline.
+        end if
+    end do
+
 end subroutine ctemInit
 
 end module ctemUtilities

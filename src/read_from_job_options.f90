@@ -53,7 +53,6 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: inibioclim
         logical, pointer :: start_bare
-        character(:), pointer :: met_file
         character(:), pointer :: metFileFss
         character(:), pointer :: metFileFdl
         character(:), pointer :: metFilePre
@@ -140,7 +139,6 @@ contains
         transientOBSWETF, &
         OBSWETFFile, &
         fixedYearOBSWETF, &
-        met_file, &
         metFileFss, &
         metFileFdl, &
         metFilePre, &

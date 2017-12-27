@@ -527,6 +527,7 @@ type veg_gat
                                                     !<OR net ecosystem productity for each pft
 
     integer, allocatable, dimension(:) :: ipeatland !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+    real, allocatable, dimension(:) :: peatdep      !<Depth of peat column (m)
     real, allocatable, dimension(:) :: anmoss     !<net photosynthetic rate of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: rmlmoss    !<maintenance respiration rate of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: gppmoss    !<gross primaray production of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
@@ -1272,6 +1273,7 @@ allocate(vgat%grclarea(ilg),&
          vgat%Cmossmas (ilg),&
          vgat%dmoss (ilg),&
          vgat%pdd   (ilg),&
+         vgat%peatdep(ilg),&
          vgat%ancsmoss (ilg),&
          vgat%angsmoss (ilg),&
          vgat%ancmoss (ilg),&
@@ -2213,6 +2215,11 @@ subroutine resetMosaicAccum()
         ctem_tile%ancgvgac_t(:,:)=0.0
         ctem_tile%rmlcsvga_t(:,:)=0.0
         ctem_tile%rmlcgvga_t(:,:)=0.0
+
+        !-reset peatland accumulators-------------------------------
+        ctem_tile%anmossac_t(:)  = 0.0
+        ctem_tile%rmlmossac_t(:) = 0.0
+        ctem_tile%gppmossac_t(:) = 0.0
 
 end subroutine resetMosaicAccum
 !=================================================================================

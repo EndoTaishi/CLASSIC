@@ -37,11 +37,11 @@ contains
 
         real, intent(in)    :: longitude, latitude  !in degrees
         real, intent(in)    :: delt                 !< Simulation physics timestep
-        integer             :: i,vcount,vcountPlus
+        integer             :: vcount,vcountPlus
 
         !> First check that we should be doing the disaggregation. If we are already
         !! at the needed timestep (delt) then we can return to the main.
-        if (closeEnough(metInputTimeStep,delt)) then
+        if (closeEnough(metInputTimeStep,delt,0.001)) then
            return
         end if
 
@@ -340,10 +340,8 @@ contains
         real, intent(inout)                         :: shortWave(:)
         real, intent(in)                            :: latitude
         real, intent(in)                            :: delt
-        real, allocatable                           :: swDiurnalDistributed(:)
-        real, allocatable                           :: correction
         integer                                     :: i,d, start, endpt, midday
-        real, allocatable                           :: daylightIndYear(:,:)
+        integer, allocatable                        :: daylightIndYear(:,:)
         real, allocatable                           :: zenithAngYear(:,:)
         real, allocatable                           :: zenithNoon(:)
         real                                        :: latRad
@@ -436,10 +434,10 @@ contains
         implicit none
 
         integer                         :: i, daylightCount
-        integer, intent(in)              :: countr
+        integer, intent(in)             :: countr
         real,  intent(in)               :: zenithAngles(:)
         real,  intent(in)               :: delt
-        real, allocatable               :: daylightIndices(:)
+        integer, allocatable            :: daylightIndices(:)
         real                            :: zenithCos
         real                            :: dayLength
 
@@ -469,7 +467,8 @@ contains
         implicit none
 
         integer,    intent(in)          :: countr
-        real,       intent(in)          :: zenithAngles(:), daylightIndices(:), zenithNoon, swMean
+        real,       intent(in)          :: zenithAngles(:), zenithNoon, swMean
+        integer,    intent(in)          :: daylightIndices(:)
         real,       allocatable         :: distributeDiurnally(:)
         real,       allocatable         :: diurnalDistrib(:)
         integer                         :: i, daylightIndex
@@ -490,7 +489,7 @@ contains
         enddo
 
         diurnalMean = vsum / countr
-        if (diurnalMean /= 0) then
+        if (closeEnough(diurnalMean,0.,1.E-5)) then
             correction = swMean / diurnalMean
         else
             correction = 0.

@@ -21,7 +21,7 @@ contains
     !>\ingroup io_driver_class_halfhourly_aw
     !>@{
     !> Prepares and writes the CLASS (physics) half hourly file
-    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr,SBC,DELT,TFREZ)!,FAREROT,jdstd,jdsty,jdendd,jdendy)
+    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr,SBC,TFREZ)
 
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
@@ -39,7 +39,6 @@ contains
         integer, intent(in) :: iday
         integer, intent(in) :: realyr
         real, intent(in) :: SBC  !CLASS common block items,
-        real, intent(in) :: DELT !CLASS common block items,
         real, intent(in) :: TFREZ !CLASS common block items,
 
 
@@ -1870,10 +1869,11 @@ contains
     !>@{
     !> Accumulate and write the daily biogeochemical outputs
 
-    subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,nday,FAREROT,realyr,grclarea,ipeatlandrow)
+    subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,nday,realyr,grclarea,ipeatlandrow)
 
         ! J. Melton Feb 2016.
 
+        use class_statevars, only : class_rot
         use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
         use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed
         use outputManager, only : writeOutput1D,refyr
@@ -1887,7 +1887,6 @@ contains
         integer, intent(in) :: iday
         integer, intent(in) :: ncount
         integer, intent(in) :: nday
-        real, intent(in), dimension(:,:) :: FAREROT  !use pointer FLAG
         integer, intent(in) :: realyr
         real, intent(in), dimension(:) :: grclarea !use pointer FLAG
         integer, intent(in), dimension(:,:) :: ipeatlandrow !use pointer FLAG
@@ -1899,6 +1898,8 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: doperpftoutput
         logical, pointer :: dopertileoutput
+
+        real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
         real, pointer, dimension(:,:,:) :: fcancmxrow
         real, pointer, dimension(:,:,:) :: gppvegrow
@@ -2090,6 +2091,8 @@ contains
         doperpftoutput        => c_switch%doperpftoutput
         dopertileoutput       => c_switch%dopertileoutput
 
+        FAREROT => class_rot%FAREROT
+
         fcancmxrow        => vrot%fcancmx
         gppvegrow         => vrot%gppveg
         nepvegrow         => vrot%nepveg
@@ -2246,7 +2249,7 @@ contains
             end do
         end do
 
-        !>First some unit conversions:
+        !>First some unit conversions:  FLAG these are NOT setting to the CMIP6 units we want to move towards!!
 
         do 10 i = 1,nltest
             do 20 m = 1 , nmtest
@@ -2671,7 +2674,7 @@ contains
     ! !                     endif !mosaic/composite
     ! !                 endif !PFTCompetition/lnduseon
 
-    80          continue ! nltest
+    !80          continue ! nltest
 
     !         end if !if write daily
     !     endif !if write daily
@@ -2701,10 +2704,11 @@ contains
     !! this subroutine is called daily and we increment the daily values to produce a monthly value.
     !! The pointer to the monthly data structures (in ctem_statevars) keeps the data between calls.
 
-    subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,realyr,nday,lastDOY)
+    subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr,nday,lastDOY)
 
         ! J. Melton Feb 2016.
 
+        use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
                                     resetmonthend,ctem_mo
         use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
@@ -2717,7 +2721,6 @@ contains
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
         integer, intent(in) :: iday
-        real, intent(in), dimension(:,:) :: FAREROT
         integer, intent(in) :: realyr
         integer, intent(in) :: nday
         integer, intent(in) :: lastDOY
@@ -2729,6 +2732,8 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: doperpftoutput
         logical, pointer :: dopertileoutput
+
+        real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
         real, pointer, dimension(:,:,:) :: fcancmxrow
         real, pointer, dimension(:,:,:) :: laimaxg_mo
@@ -2921,6 +2926,9 @@ contains
         PFTCompetition        => c_switch%PFTCompetition
         doperpftoutput        => c_switch%doperpftoutput
         dopertileoutput       => c_switch%dopertileoutput
+
+        FAREROT => class_rot%FAREROT
+
         pftexistrow           => vrot%pftexist
         fcancmxrow            => vrot%fcancmx
         laimaxg_mo            =>ctem_mo%laimaxg_mo
@@ -3346,8 +3354,8 @@ contains
                     do j=1,icc
                         sumfare=sumfare+fcancmxrow(i,m,j)
                     end do !j
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_mo_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc),1.-sumfare])
                 end do !m
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_mo_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,1,1:icc),1.-sumfare]) !flag only set up for one tile!
 
                 if (dofire) then
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
@@ -3448,12 +3456,12 @@ contains
     !! this subroutine is called daily and we increment the daily values to produce annual values.
     !! The pointer to the annual data structures (in ctem_statevars) keeps the data between calls.
 
-    subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,realyr,nltest,nmtest,FAREROT,lastDOY)
+    subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,lastDOY)
 
+        use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
-        resetyearend
+                                        resetyearend
         use ctem_params, only : icc,iccp1,seed
-        !use fileIOModule
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -3463,8 +3471,6 @@ contains
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
         integer, intent(in) :: iday
-        integer, intent(in) :: imonth
-        real, intent(in), dimension(:,:) :: FAREROT
         integer, intent(in) :: realyr
         integer, intent(in) :: lastDOY
 
@@ -3475,6 +3481,8 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: doperpftoutput
         logical, pointer :: dopertileoutput
+
+        real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
         real, pointer, dimension(:,:,:) :: laimaxg_yr
         real, pointer, dimension(:,:,:) :: stemmass_yr
@@ -3663,6 +3671,8 @@ contains
         PFTCompetition        => c_switch%PFTCompetition
         doperpftoutput        => c_switch%doperpftoutput
         dopertileoutput       => c_switch%dopertileoutput
+
+        FAREROT => class_rot%FAREROT
 
         laimaxg_yr          =>ctem_yr%laimaxg_yr
         stemmass_yr         =>ctem_yr%stemmass_yr
@@ -4055,29 +4065,33 @@ contains
                 do j=1,icc
                     sumfare=sumfare+fcancmxrow(i,m,j)
                 end do !j
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc), 1- sumfare])
             end do !m
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,1,1:icc), 1- sumfare]) !flag only set up for one tile!
 
             if (dofire .or. lnduseon) then
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)*100.])
             end if
 
-            if (PFTCompetition) then
-                pftExist = 0.0
-                do j=1,icc
-                    if (pftexistrow(i,1,j)) then
-                        pftExist(j) = 1.0
-                    end if
+            if (PFTCompetition) then !FLAG this needs to be tested!
+                do m=1,nmtest
+                    pftExist = 0.0
+                    do j=1,icc
+                        if (pftexistrow(i,1,j)) then
+                            pftExist(j) = 1.0
+                        end if
+                    end do
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
                 end do
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
             end if
 
             if (doperpftoutput) then
                 if (nmtest > 1) then
                     print*,'Per PFT and per tile outputs not implemented yet'
                 else
-                    m = 1 !FLAG
+
+                    m = 1 !FLAG only implemented for composite mode, tiles == 1!!!
+
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])

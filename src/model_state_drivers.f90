@@ -7,6 +7,7 @@ module model_state_drivers
     ! Nov 2016
 
     use fileIOModule
+    use generalUtils, only : closeEnough
 
     implicit none
 
@@ -30,7 +31,7 @@ module model_state_drivers
     real, dimension(:), allocatable :: LGHTFromFile         !< The array of lightning density from the LGHTFile
     integer, dimension(:), allocatable :: LUCTime           !< The time from the LUC file
     real, dimension(:,:), allocatable :: LUCFromFile        !< The array of LUC from the LUCFile
-    integer, dimension(:), allocatable :: OBSWETFTime       !< The time from the observed wetland distribution file
+    real, dimension(:), allocatable :: OBSWETFTime       !< The time from the observed wetland distribution file
     real, dimension(:), allocatable :: OBSWETFFromFile    !< The array of observed wetland distribution from the OBSWETFFile
 
     real, dimension(:), allocatable :: metTime              !< The time from the Met file
@@ -262,7 +263,7 @@ contains
 
         if (myDomain%LandCellCount == 0) then
             print*,'=>Your domain is not land my friend.'
-            if (myDomain%domainBounds(1) == myDomain%domainBounds(2)) then !point run
+            if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
                 lonloc = closestCell(initid,'lon',myDomain%domainBounds(1))
                 latloc = closestCell(initid,'lat',myDomain%domainBounds(3))
                 print*,'Closest grid cell is ',myDomain%allLonValues(lonloc),'/',myDomain%allLatValues(latloc)
@@ -326,7 +327,7 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
-        use ctem_params,        only : icc,iccp1,nmos,ignd,ilg,icp1,nlat,ican,abszero,pi,crop
+        use ctem_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop
 
         implicit none
 
@@ -423,8 +424,7 @@ contains
         ! local variables
 
         integer :: i,m,j
-        real, dimension(ilg,2) :: crop_temp_frac
-        real, parameter :: TFREZ = 273.16
+        real, parameter :: TFREZ = 273.16       !FLAG eventually do a use statement with class params.
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -764,7 +764,7 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
-        use ctem_params,        only : icc,nmos,ignd,icp1,nlat,ican,l2max,modelpft
+        use ctem_params,        only : icc,nmos,ignd,icp1,modelpft
 
         implicit none
 
@@ -994,7 +994,7 @@ contains
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                CO2Time(i) = dateTime(1) ! Rewrite putting in the year
+                CO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
 
             if (transientCO2) then
@@ -1022,7 +1022,7 @@ contains
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                CH4Time(i) = dateTime(1) ! Rewrite putting in the year
+                CH4Time(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
 
             if (transientCH4) then
@@ -1050,7 +1050,7 @@ contains
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                POPDTime(i) = dateTime(1) ! Rewrite putting in the year
+                POPDTime(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
             lonloc = closestCell(popid,'lon',longitude)
             latloc = closestCell(popid,'lat',latitude)
@@ -1128,7 +1128,7 @@ contains
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                LUCTime(i) = dateTime(1) ! Rewrite putting in only the year
+                LUCTime(i) = int(dateTime(1)) ! Rewrite putting in only the year
             end do
             lonloc = closestCell(lucid,'lon',longitude)
             latloc = closestCell(lucid,'lat',latitude)
@@ -1186,7 +1186,7 @@ contains
                 startWETTime = real(fixedYearOBSWETF) * 10000. + 1. * 100. + 1.
 
                 ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,real(OBSWETFTime),real(startWETTime))
+                arrindex = checkForTime(lengthOfFile,OBSWETFTime,startWETTime)
                 if (arrindex == 0) stop('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
@@ -1233,7 +1233,7 @@ contains
         integer, intent(in), optional :: iday
         integer, intent(in), optional :: dom            ! day of month
         integer :: arrindex,lengthTime,i,m
-        real :: LGHTTimeNow
+        real :: LGHTTimeNow,OBSWTimeNow
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
@@ -1243,6 +1243,7 @@ contains
         real, pointer, dimension(:) :: wetfrac_presgat
         logical, pointer :: transientLGHT
         integer, pointer :: fixedYearLGHT
+        logical, pointer :: transientOBSWETF
 
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
@@ -1250,6 +1251,7 @@ contains
         nfcancmxrow     => vrot%nfcancmx
         transientLGHT   => c_switch%transientLGHT
         fixedYearLGHT   => c_switch%fixedYearLGHT
+        transientOBSWETF=> c_switch%transientOBSWETF
         lightng         => vgat%lightng
         wetfrac_presgat => vgat%wetfrac_pres
 
@@ -1319,8 +1321,29 @@ contains
 
         case('OBSWETF')
 
-        !wetfrac_presgat
-         stop('not done')
+            print*,'OBSWETF in updateInput has not been fully tested, remove this print statement once it has been'
+
+            ! This file is daily so we need to find the day we are looking for.
+            ! imonth is starting at 0 so add 1 always.
+
+            lengthTime = size(OBSWETFTime)
+
+            if (transientOBSWETF) then
+                OBSWTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+            else ! we only need the day
+                OBSWTimeNow = real(iday)
+            end if
+
+            ! Find the requested year in the file.
+            arrindex = checkForTime(lengthTime,OBSWETFTime,OBSWTimeNow)
+
+            wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
+
+            ! Since wetland area is presently assumed the same for all tiles, and nlat is
+            ! always 1 offline, then we can just pass the same values across all ilg.
+            do m = 1, size(wetfrac_presgat)
+                wetfrac_presgat(m) = wetfrac_presgat(1)
+            end do
 
         case default
             stop('specify an input kind for updateInput')
@@ -1407,7 +1430,7 @@ contains
 
         ! Check that the first day is Jan 1, otherwise warn the user
         firstTime =  parseTimeStamp(metTime(1))
-        if (.not. closeEnough(firstTime(5),1.)) then
+        if (.not. closeEnough(firstTime(5),1.,0.001)) then
             print*,'Warning, your met file does not start on Jan 1.'
         end if
 
@@ -1458,7 +1481,6 @@ contains
 
     subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
-        use ctem_params, only : monthend
         use class_statevars, only : class_rot
         use generalUtils, only : parseTimeStamp
 
@@ -1482,7 +1504,7 @@ contains
 
         integer :: i,numsteps
         real, dimension(5) :: theTime
-        real :: dayfrac, month, dom, hour, minute
+        real :: dayfrac, month, dom, minute
 
         FSSROW => class_rot%FSSROW
         FDLROW => class_rot%FDLROW
@@ -1507,7 +1529,7 @@ contains
         numsteps = nint(dayfrac * 24. / (delt / 3600.))
         ihour = floor(real(numsteps) / 2.)
         minute = mod(numsteps,2)
-        imin = nint(minute) * (delt / 60.)
+        imin = nint(minute) * int((delt / 60.))
 
         !> The meteorological data is then passed to the instantaneous variables
         !! from the larger variables that store the run's met data read in earlier.

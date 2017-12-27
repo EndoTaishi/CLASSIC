@@ -8,6 +8,7 @@ implicit none
 ! Subroutines contained in this module:
 public  :: mosspht
 public  :: hetres_peat
+public  :: peatDayEnd
 
 contains
 
@@ -341,7 +342,7 @@ end subroutine mosspht
 
 ! ---------------------------------------------------------------------------------------------------
 
-!>\ingroup peatlands_mod_mosspht_hetres_peat
+!>\ingroup peatlands_mod_hetres_peat
 !!@{
 !> Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)
 
@@ -609,6 +610,57 @@ end do !i loop
 return
 
 end subroutine hetres_peat
+
+! ---------------------------------------------------------------------------------------------------
+!>\ingroup peatlands_mod_peatDayEnd
+!!@{
+!> At the end of the day update the degree days for moss photosynthesis and the peat bottom layer depth
+subroutine peatDayEnd(nml)
+
+    use ctem_statevars, only : ctem_tile,vgat
+    use class_statevars, only : class_gat
+    use ctem_params,only : ignd
+
+    implicit none
+
+    integer, intent(in) :: nml
+
+    integer :: i
+    real :: tfrez
+
+    real, pointer, dimension(:) :: taaccgat_t       !<Daily mean air temperature [K]
+    real, pointer, dimension(:) :: pddgat           !<peatland degree days above 0 deg C.
+    integer, pointer, dimension(:) :: ipeatlandgat  !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
+    real, pointer, dimension(:,:) :: dlzwgat        !<Permeable thickness of soil layer [m]
+    real, pointer, dimension(:) :: peatdepgat       !<Depth of peat column [m]
+    real, pointer, dimension(:)    :: sdepgat       !>!<Depth to bedrock in the soil profile [m]
+
+    taaccgat_t       => ctem_tile%taaccgat_t
+    pddgat           => vgat%pdd
+    ipeatlandgat     => vgat%ipeatland
+    dlzwgat          => class_gat%dlzwgat
+    peatdepgat       => vgat%peatdep
+    sdepgat          => vgat%sdepgat
+
+    tfrez = 273.16 !FLAG, later when CLASS params are similar to ctem_params, then use the TFREZ from there.
+
+    !> Calculate degree days for mosspht Vmax seasonality (only once per day)
+    do   i = 1, nml
+        if (taaccgat_t(i)>tfrez)           then
+            pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
+        endif
+
+    !>Update peatland bottom layer depth
+        if (ipeatlandgat(i) > 0)         then
+            dlzwgat(i,ignd)= peatdepgat(i)-0.90
+            sdepgat(i) = peatdepgat(i)
+        endif
+    end do
+
+end subroutine peatDayEnd
+
+! ---------------------------------------------------------------------------------------------------
+
 !!@}
 !> \namespace peatlands_mod
 !!

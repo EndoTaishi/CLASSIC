@@ -46,10 +46,8 @@ contains
 
     subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
 
-        use ctem_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, &
-                                        monthend, mmday,modelpft, l2max,&
-                                        deltat,seed,NBS, readin_params,&
-                                        nol2pfts
+        use ctem_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, monthend, &
+                                        modelpft, l2max,deltat,NBS, readin_params,nol2pfts
         use landuse_change,      only : initializeLandCover
         use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&
                                         resetmonthend,resetyearend,&
@@ -99,17 +97,17 @@ contains
         INTEGER I,J,K,L,M,N
         INTEGER NTLD    !<
         INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
-        INTEGER ITA        !<
-        INTEGER ITCAN      !<
-        INTEGER ITD        !<
-        INTEGER ITAC       !<
-        INTEGER ITS        !<
-        INTEGER ITSCR      !<
-        INTEGER ITD2       !<
-        INTEGER ITD3       !<
-        INTEGER ITD4       !<
-        INTEGER NFS        !<
-        INTEGER NDRY       !<
+        !INTEGER ITA        !<
+        !INTEGER ITCAN      !<
+        !INTEGER ITD        !<
+        !INTEGER ITAC       !<
+        !INTEGER ITS        !<
+        !INTEGER ITSCR      !<
+        !INTEGER ITD2       !<
+        !INTEGER ITD3       !<
+        !INTEGER ITD4       !<
+        !INTEGER NFS        !<
+        !INTEGER NDRY       !<
 
         ! Pointers
         integer, pointer :: readMetStartYear    !< First year of meteorological forcing to read in from the met file
@@ -798,8 +796,8 @@ contains
 
         !     * CONSTANTS AND TEMPORARY VARIABLES.
         !
-        REAL EVAPSUM,ALTOT,& !DECL,DAY,COSZ HOUR,
-             FSSTAR,FLSTAR,QH,QE,ZSN,TCN,TSN,TPN,GTOUT,TSURF!,BEG,SNOMLT
+        !REAL EVAPSUM,ALTOT,DECL,DAY,COSZ HOUR,
+             !FSSTAR,FLSTAR,GTOUT,QH,QE,TCN,TPN,TSN,TSURF,ZSN,BEG,SNOMLT
 
         real :: CUMSNO
         !
@@ -813,17 +811,15 @@ contains
         CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,&
         ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
         ANGMAX
-
-
         !
         !================= CTEM array declaration ===============================\
         !
         !     Local variables for coupling CLASS and CTEM
         !
-        integer   month1,month2,xday,lopcount
+        integer   lopcount !xday,month1,month2,
 
         integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
-                                !< soil carbon pool faster
+                                     !< soil carbon pool faster
         integer, pointer :: metLoop !< no. of times the .met file is to be read. this
                                         !< option is useful to see how ctem's c pools
                                         !< equilibrate when driven with same climate data
@@ -1440,11 +1436,11 @@ contains
 
         ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
-        logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
+        !logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
                                                ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
 
         ! If you intend to have LUC BETWEEN tiles then set this to true:
-        logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
+        !logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
                                                      ! running with one PFT on each tile and want them to PFTCompetition for space
                                                      ! across tiles. In general keep this as False. JM Feb 2016.
         !
@@ -1464,7 +1460,7 @@ contains
         !     real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
         !    4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
         !    5      peatdepgat(ilg),
-        real  peatdepgat(ilg),g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
+        !real  g12acc(ilg), g23acc(ilg) !g12grd(ilg), g23grd(ilg),
         !   g12 - energy flux between soil layer 1 and 2 (W/m2)
         !   g23 - energy flux between soil layer 2 and 3 (W/m2)
         !   wiltsm - wilting point for peat soil layers  (m3/m3)
@@ -1475,6 +1471,7 @@ contains
 
         integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
         integer, pointer, dimension(:) :: ipeatlandgat
+        real, pointer, dimension(:) :: peatdepgat
         real, pointer, dimension(:,:) :: anmossrow
         real, pointer, dimension(:) :: anmossgat
         real, pointer, dimension(:,:) :: rmlmossrow
@@ -2581,6 +2578,7 @@ contains
         pandaysgat        => vgat%pandays
 
         ipeatlandgat     => vgat%ipeatland
+        peatdepgat       => vgat%peatdep
         anmossgat        => vgat%anmoss
         rmlmossgat       => vgat%rmlmoss
         gppmossgat       => vgat%gppmoss
@@ -2706,9 +2704,9 @@ contains
 
         !    =================================================================================
 
-        !> NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run.
-        !> This the driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then
-        !> of nlat and nmos
+        !> NLTEST and NMTEST are the number of grid cells and the number of mosaic tiles per grid cell for this test run, respectively.
+        !> This driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then
+        !> of nlat and nmos.
         nltest = nlat
         nmtest = nmos
         NTLD=NMOS
@@ -2735,25 +2733,25 @@ contains
         lopcount = 1
         leapnow = .false.
         lastDOY = 365
-        wetfrac_presgat = -9999. !< If transientOBSWETF or fixedYearOBSWETF != -9999 this will be overwritten with
-                                 !! real wetland fractions. Otherwise the negative is used as a switch so the dynamic
-                                 !! wetland extent is used instead of the prescribed.
+        wetfrac_presgat(:) = -9999. !< If transientOBSWETF or fixedYearOBSWETF != -9999 this variable will be overwritten with
+                                    !! real wetland fractions. Otherwise the negative is used as a switch so the dynamic
+                                    !! wetland extent is used instead of the prescribed.
 
         !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
         !> energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
         !> height of 10 m and to the screen height of 2 m respectively.
-        ZDMROW(1)=10.0
-        ZDHROW(1)=2.0
+        ZDMROW(:)=10.0
+        ZDHROW(:)=2.0
 
         !> Initialize variables in preparation for the run
         call initrowvars
         call resetAccVars(nlat,nmos)
         call resetMosaicAccum
 
-        ! Read in the model initial state
+        !> Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
 
-        ! Read in the inputs
+        !> Read in the inputs for a run with biogeochemical component turned on
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
@@ -2771,8 +2769,8 @@ contains
         call getMet(longitude,latitude,nday,delt)
 
         !> Now disaggregate the meteorological forcing to the right timestep
-        !! for this model run (if needed, it is checked in the subroutine)
-        call disaggMet(longitude, latitude,delt)
+        !! for this model run (if needed; this is checked for in the subroutine)
+        call disaggMet(longitude, latitude, delt)
 
         !> Complete some initial set up work:
         !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
@@ -2994,14 +2992,14 @@ contains
                 rootdpthgat,alvsctmgat,alirctmgat,&
                 paicgat,    slaicgat)
 
-            ! Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
-            do i = 1, nltest
-                if (radjrow(1) > 0.) then
-                    dayl_maxrow(i) = findDaylength(172.0, radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
-                else ! S. Hemi so do N.Hemi winter solstice Dec 21
-                    dayl_maxrow(i) = findDaylength(355.0, radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
-                end if
-            end do
+!             ! Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
+!             do i = 1, nltest
+!                 if (radjrow(1) > 0.) then
+!                     dayl_maxrow(i) = findDaylength(172.0, radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
+!                 else ! S. Hemi so do N.Hemi winter solstice Dec 21
+!                     dayl_maxrow(i) = findDaylength(355.0, radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
+!                 end if
+!             end do
         endif   ! if (ctem_on)
 
         !     ctem initial preparation done
@@ -3013,16 +3011,14 @@ contains
         !> data for the current time step are updated for each grid cell or modelled
         !> area (see the manual section on “Data Requirements”).
 
-        runyr = readMetStartYear
+        runyr = readMetStartYear  !Initialize the runyr as the first year of met forcing.
 
         ! start up the main model loop
 
         do while (run_model)
 
             !
-            !     * Read in meteorological forcing data for current time step;
-            !     * Calculate solar zenith angle and components of incoming short-
-            !     * wave radiation flux; Estimate flux partitions if necessary.
+            !> Update the meteorological forcing data for current time step;
             !
             call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
@@ -3030,8 +3026,8 @@ contains
 
             N=N+1
 
-            !>In the dataset associated with the benchmark run, only the total incoming shortwave radiation FSDOWN
-            !> is available; it is partitioned 50:50 between the incoming visible (FSVHROW)
+            !> Generally only the total incoming shortwave radiation FSDOWN
+            !> is available; so it is partitioned 50:50 between the incoming visible (FSVHROW)
             !> and near-infrared (FSIHROW) radiation.  The first two elements of the
             !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
             !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
@@ -3044,29 +3040,30 @@ contains
 
             DO 250 I=1,NLTEST
 
-
                 FSVHROW(I)=0.5*FSSROW(I)
                 FSIHROW(I)=0.5*FSSROW(I)
                 TAROW(I)=TAROW(I)+TFREZ
                 ULROW(I)=UVROW(I)
                 VLROW(I)=0.0
                 VMODROW(I)=UVROW(I)
-                
-                !In the new four-band albedo calculation for snow, the incoming
-                ! radiation for snow or bare soil is now passed into TSOLVE via this new array:
                 FSSBROL(I,1)=FSVHROW(I)
                 FSSBROL(I,2)=FSIHROW(I)
 
 250         CONTINUE
 
             ! Check if we are on the first timestep of the day
-            if (ihour.eq.0.and.imin.eq.0) then
+            if (ihour .eq. 0 .and. imin .eq. 0) then
 
                 ! Find the daylength of this day
                 daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
 
                 ! Update the lightning if fire is on and transientLGHT is true
                 if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday,dom=DOM)
+
+                ! Update the wetland fractions if we are using read-in wetland fractions
+                if ((transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) .and. ctem_on) then
+                    call updateInput('OBSWETF',iyear,imonth=imonth,iday=iday,dom=DOM)
+                end if
 
                 !Check if this is the first day of the year
                 if (iday.eq.1) then
@@ -3087,12 +3084,11 @@ contains
                             nfcancmxrow=pfcancmxrow
                         end if
 
-                        pddrow=0 ! EC Jan 31 2017. !FLAG put elsewhere...
+                        ! Reset the peatland degree days counter (JM:FLAG is this ok for S. Hemi to be Jan 1?)
+                        pddrow=0
+
                     end if
                 end if ! first day
-
-                ! Once a month adjust the wetland fractions
-                if (DOM == 1 .and. ctem_on .and. transientOBSWETF) call updateInput('OBSWETF',iyear,imonth=imonth)
 
             endif   ! first timestep
 
@@ -3102,7 +3098,8 @@ contains
             !> cloud cover FCLOROW is commonly not available so a rough estimate is
             !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
             !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
-            !> is at the horizon, and 0.10 when it is at the zenith).
+            !> is at the horizon, and 0.10 when it is at the zenith). These calculations are
+            !> done in findCloudiness
 
             call findCloudiness(nltest,imin,ihour,iday,lastDOY)
 
@@ -3494,17 +3491,17 @@ contains
                                     THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,&
                                     nppmossgat, armossgat,peatdepgat)
 
-                    !    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
-                    do   i = 1, nml
-                        if (taaccgat_t(i)>tfrez)           then
-                            pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
-                        endif
-                    !----------------update peatland bottom layer depth--------------------
-                        if (ipeatlandgat(i) > 0)         then
-                            dlzwgat(i,ignd)= peatdepgat(i)-0.90
-                            sdepgat(i) = peatdepgat(i)
-                        endif
-                    end do
+!                     !    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
+!                     do   i = 1, nml
+!                         if (taaccgat_t(i)>tfrez)           then
+!                             pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
+!                         endif
+!                     !----------------update peatland bottom layer depth--------------------
+!                         if (ipeatlandgat(i) > 0)         then
+!                             dlzwgat(i,ignd)= peatdepgat(i)-0.90
+!                             sdepgat(i) = peatdepgat(i)
+!                         endif
+!                     end do
 
                     !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
                     !     to reset here, prior to ctems2.
@@ -4641,7 +4638,7 @@ contains
                 (runyr <= jhhendy) .and. &
                 (iday >= jhhstd) .and. &
                 (iday <= jhhendd) ) call class_hh_w(lonLocalIndex,latLocalIndex,nltest,&
-                                                    nmtest,ncount,nday,iday,runyr,SBC,DELT,TFREZ)
+                                                    nmtest,ncount,nday,iday,runyr,SBC,TFREZ)
 
             ! Daily physics outputs
             if (dodayoutput .and. &
@@ -4677,30 +4674,28 @@ contains
                    (runyr <=jdendy) .and. &
                    (iday   >= jdstd).and.&
                    (iday   <= jdendd)) call ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,&
-                                                         nmtest,iday,ncount,nday,FAREROT,&
+                                                         nmtest,iday,ncount,nday,&
                                                          runyr,grclarea,ipeatlandrow)
 
                     !-reset peatland accumulators-------------------------------
                     ! Note: these must be reset only at the end of a day. EC Jan 30 2017.
                     ! FLAG move these elsewhere.
-                    anmossac_t  = 0.0
-                    rmlmossac_t = 0.0
-                    gppmossac_t = 0.0
-                    G12ACC     = 0.
-                    G23ACC     = 0.
-
+!                     anmossac_t  = 0.0
+!                     rmlmossac_t = 0.0
+!                     gppmossac_t = 0.0
+                    !G12ACC     = 0.
+                    !G23ACC     = 0.
 
                 ! Monthly biogeochem outputs
                 if (domonthoutput .and. &
-                    (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex,latLocalIndex,&
-                                                             nltest,nmtest,iday,FAREROT,&
-                                                             runyr,nday,lastDOY)
+                    (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,&
+                                                            nmtest,iday,runyr,nday,lastDOY)
 
                 ! Annual biogeochem outputs
-                call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,runyr,nltest,&
-                                    nmtest,FAREROT,lastDOY)
+                call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,runyr,nltest,nmtest,lastDOY)
             endif
 
+            ! Check if it is the last timestep of the last day of the year
             if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then
 
                 WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
@@ -4716,6 +4711,7 @@ contains
 
             endif !last day of year check
 
+            ! Increment the counter for timestep of the day, or reset it to 1.
             NCOUNT=NCOUNT+1
             IF(NCOUNT.GT.NDAY) THEN
                 NCOUNT=1
@@ -4726,7 +4722,7 @@ contains
                 !> Increment the metTimeIndex to advance to the next timestep on the next time around
                 metTimeIndex = metTimeIndex + 1
             else if (metDone) then
-                !> End of met array read in reached, decide what to do
+                !> End of met array read-in reached, decide what to do
                 if (lopcount == metLoop) then
                     !> The lopcount is reached so the run must be over
                     run_model = .false.
