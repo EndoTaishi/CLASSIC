@@ -489,7 +489,8 @@ contains
         enddo
 
         diurnalMean = vsum / countr
-        if (closeEnough(diurnalMean,0.,1.E-5)) then
+
+        if (diurnalMean > 0.) then
             correction = swMean / diurnalMean
         else
             correction = 0.
