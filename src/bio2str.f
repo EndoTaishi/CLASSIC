@@ -533,6 +533,7 @@ c
 
               do 416 k=2,kend-1
                 etmp(i,j,k)=exp(-a(i,j)*zbotw(i,k))
+                
                 rmatctem(i,j,k)=(etmp(i,j,k-1)-etmp(i,j,k))/totala(i,j)
 416           continue
 

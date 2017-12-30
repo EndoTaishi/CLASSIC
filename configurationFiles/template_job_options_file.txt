@@ -16,7 +16,7 @@
         metFilePres = 'test6hrmet/ap.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile.nc' ,     !< location of the model initialization file
+    init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters

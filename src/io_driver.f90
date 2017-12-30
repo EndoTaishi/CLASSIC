@@ -918,7 +918,7 @@ contains
         FLUTACC_M   => class_rot%FLUTACC_M
         altotcntr_d => class_rot%altotcntr_d
 
-        ! Accumulate output data for diurnally averaged fields. both grid mean and mosaic mean
+        ! Accumulate output data for diurnally averaged fields. Both grid mean and mosaic mean
         !
         DO 75 I=1,NLTEST
             DO 50 M=1,NMTEST
@@ -1039,6 +1039,9 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/REAL(NDAY)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_d' ,timeStamp,'snm', [HMFNACC(I)])
 !                 !                 BEG=FSSTAR+FLSTAR-QH-QE
+
+! Below are obviously not daily ones but I copy in as a reminder of what likely will be put out daily.
+! after these writeOutput1D statements is the listed daily file variables. It would be good to do those again
 !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  !name
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [HMFNACC(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
@@ -1202,9 +1205,11 @@ contains
 ! !       open(unit=99,file='test.CT17D_G') !peatland water balance
 ! !       open(unit=90,file='test.CT18Y_G') !peatland depth information
 !
-!
-!             ! Find the active layer depth and depth to the frozen water table.
-!             ! FLAG move to daily calcs.
+!------------------------------------------------------------------------------------
+! Find the active layer depth and depth to the frozen water table.
+!             ! FLAG! move into a subroutine and put in ctemUtilities. It should happen
+!               regardless of whether the daily files are outputted since the monthly or
+!               annual files might need this info.
 !             ACTLYR=0.0
 !             FTABLE=0.0
 !             DO 440 J=1,IGND
@@ -1233,7 +1238,7 @@ contains
 !                     END DO
 !                 END DO
 ! 440         CONTINUE
-! !                 !    ----peatland output-----------------------------------------------\
+! !!    ----peatland output-----------------------------------------------\
 ! !
 ! !                 write(99,6999)  IDAY,realyr,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
 ! ! 6999    format(1X,I4,I5,10f12.3)

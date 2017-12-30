@@ -1047,8 +1047,10 @@ C
      &                 *SMSCALE(SORT(M))
            AVE_SM_FUNC(I,M)=AVE_SM_FUNC(I,M)+SM_FUNC2(I,N)*RMAT(I,M,N)
            TOT_RMAT(I,M) = TOT_RMAT(I,M) + RMAT(I,M,N)
+           
           ENDIF
 535      CONTINUE
+
          AVE_SM_FUNC(I,M) = AVE_SM_FUNC(I,M) / TOT_RMAT(I,M)
 
          IF(TOT_RMAT(I,M) .LT. 0.9) THEN

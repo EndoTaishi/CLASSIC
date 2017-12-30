@@ -182,6 +182,7 @@ C
                 ENDIF
                 IF(ALVSG(I).GT.1.0.OR.ALVSG(I).LT.0.0) IPTBAD=I
                 IF(ALIRG(I).GT.1.0.OR.ALIRG(I).LT.0.0) IPTBAD=I
+
             ELSE IF(ISAND(I,1).EQ.-4)                    THEN
                 ALVSG(I)=ALVSI
                 ALIRG(I)=ALIRI

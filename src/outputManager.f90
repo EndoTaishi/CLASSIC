@@ -699,9 +699,9 @@ contains
                         temptime(1 : length) = timeVect
                     end if
                     do j = st,en
-                        do m = 1,48
+                        do m = 1,48 !FLAG change this if delt is not half-hour
                             cnt=cnt+1
-                            temptime(cnt) = (styr + i - 1 - refyr) * lastDOY + j + (m - 1) / 48.
+                            temptime(cnt) = (styr + i - 1 - refyr) * lastDOY + j + (m - 1) / 48. !FLAG change this if delt is not half-hour
                         end do
                     end do
                     call move_alloc(temptime,timeVect)
