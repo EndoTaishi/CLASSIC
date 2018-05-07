@@ -462,6 +462,7 @@ c
 !!also find "a" (parameter determining root profile). this is 
 !!the "a" which depends on time varying root biomass 
 !!
+
             if(rootdpth(i,m).gt.min(soildpth(i),zbotw(i,ignd),
      1                                mxrtdpth(sort(m))))then
               rootdpth(i,m) = min(soildpth(i),zbotw(i,ignd),

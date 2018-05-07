@@ -91,6 +91,7 @@ contains
         do i = 1, variantCount
             call generateNetCDFFile(variants(i)%nameInCode, variants(i)%timeFrequency,&
                 variants(i)%outputForm, variants(i)%units, variants(i)%shortName)
+
         enddo
 
         return
@@ -542,8 +543,8 @@ contains
 
         character(*), intent(in)              :: timeFreq
         real, allocatable, dimension(:) :: temptime
-        integer :: totsteps, totyrs, i, st, en, j, m, cnt
-        integer :: lastDOY, length, styr
+        integer :: totsteps, totyrs, i, st, en, j, m, cnt, totyrs2
+        integer :: lastDOY, length, styr, endyr
         logical :: leapnow
 
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
@@ -627,21 +628,34 @@ contains
 
                 !Take the possible number of years then trim based on jdsty and jdendy
                 styr = readMetStartYear
-                if (readMetStartYear < jdsty) then
-                    totyrs = (readMetStartYear + totyrs - 1) - jdsty
-                    styr = jdsty
-                end if
 
-                if ((readMetStartYear + totyrs - 1) > jdendy) then
-                    totyrs = jdendy -styr + 1
+!                if (readMetStartYear < jdsty) then
+!                    totyrs = (readMetStartYear + totyrs - 1) - jdsty
+!                    styr = jdsty
+!                end if
+!
+!                if ((readMetStartYear + totyrs - 1) > jdendy) then
+!                    totyrs = jdendy -styr + 1
+!                end if
+
+
+                endyr = readMetStartYear + totyrs - 1
+
+                if ( jdsty>endyr .or. jdendy>endyr  .or. jdsty<readMetStartYear .or. jdendy<readMetStartYear)  then
+                   write(*,*)'It seems you are requesting daily output outside the simulated years of'
+                   write(*,*)styr,' and ',endyr
+                   stop
                 end if
+                 
+                totyrs2=jdendy - jdsty + 1
 
                 ! Now determine the total number of timesteps (days) across all years
                 totsteps = 0
                 allocate(timeVect(0))
                 cnt=0
                 ! Create the time vector to write to the file
-                do i = 1, totyrs
+!               do i = 1, totyrs2
+                do i = jdsty+1, totyrs2+jdsty
                     if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
                     st = max(1, jdstd)-1  !minus 1 since we are referencing the 01-01 day of refyr
                     en = min(jdendd, lastDOY)-1 !minus 1 since we are referencing the 01-01 day of refyr
@@ -653,8 +667,8 @@ contains
                     end if
                     do j = st,en
                         cnt=cnt+1
-                        temptime(cnt) = (styr + i - 1 - refyr) * lastDOY + j
-                end do
+                        temptime(cnt) = (i - 1 - refyr) * lastDOY + j
+                    end do
                     call move_alloc(temptime,timeVect)
                 end do
 
@@ -724,6 +738,8 @@ contains
 
         use fileIOModule
 
+
+
         implicit none
 
         integer, intent(in) :: lonLocalIndex,latLocalIndex
@@ -770,7 +786,7 @@ contains
         posTimeWanted = checkForTime(timeIndex,timeWritten,localStamp(1))
 
             if (posTimeWanted == 0) then
-            print*,'missing timestep in output file',key,localStamp
+            print*,'missing timestep in output file ',key,localStamp
                 stop
             else
                 timeIndex = posTimeWanted

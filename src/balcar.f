@@ -104,7 +104,7 @@ c
       real diff1  !<
       real diff2  !<
 c
-      if(icc.ne.12)                            call xit('balcar',-1)  !increase to 12 for peatlands
+      if(icc.ne.9)                            call xit('balcar',-1)  !increase to 12 for peatlands
 c
 !>
 !!to check c budget we go through each pool for each vegetation type.
