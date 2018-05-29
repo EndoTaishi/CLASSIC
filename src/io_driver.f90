@@ -733,7 +733,7 @@ contains
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
     !! The pointer to the daily data structures (in class_statevars) keeps the data between calls.
 
-    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,delt,ncount,nday,lastDOY,realyr)
+    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,delt,ncount,nday,lastDOY,realyr,TFREZ)
 
         use class_statevars, only : class_rot,resetAccVars
         use ctem_params, only : ignd
@@ -752,9 +752,10 @@ contains
         integer, intent(in) :: nday
         integer, intent(in) :: lastDOY
         integer, intent(in) :: realyr
+        real, intent(in) :: TFREZ !CLASS common block items,
 
         ! local variables
-        integer :: i,m,j
+        integer :: i,m,j,k
         real, dimension(1) :: timeStamp
         real :: FSSTAR, FLSTAR
         real, allocatable, dimension(:) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
@@ -854,6 +855,7 @@ contains
         real, pointer, dimension(:,:) :: FLINACC_M      !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$ (accumulated)
         real, pointer, dimension(:,:) :: FLUTACC_M      !< Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$ (accumulated)
         real, pointer, dimension(:,:) :: TAACC_M        !< Air temperature at reference height [K] (accumulated)
+
 
         FSSROW => class_rot%FSSROW
         PREROW  => class_rot%PREROW
@@ -996,6 +998,7 @@ contains
                         TBARACC(I,J)=TBARACC(I,J)+TBARACC_M(I,M,J)*FAREROT(I,M)
                         THLQACC(I,J)=THLQACC(I,J)+THLQACC_M(I,M,J)*FAREROT(I,M)
                         THICACC(I,J)=THICACC(I,J)+THICACC_M(I,M,J)*FAREROT(I,M)
+                        write(*,*)'j=',j,'iday=',iday,'THLQACC=',THLQACC(I,J)/REAL(NDAY),'THLQACC_M(1,1,J) =',THLQACC_M(1,1,J)/REAL(NDAY),'THICACC=',THICACC(I,J)/REAL(NDAY),'TBARACC=',(TBARACC(I,J)/REAL(NDAY))-TFREZ
                     end do
                     ALVSACC(I)=ALVSACC(I)+ALVSACC_M(I,M)*FAREROT(I,M)
                     ALIRACC(I)=ALIRACC(I)+ALIRACC_M(I,M)*FAREROT(I,M)
@@ -1054,10 +1057,12 @@ contains
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
 !
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_d',timeStamp,'tsl', [(TBARACC(I,:)/REAL(NDAY))-TFREZ])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)-TFREZ])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_d',timeStamp,'mrsll', [THLQACC(I,:)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_d',timeStamp,'mrsll', [THLQACC(I,:)/REAL(NDAY)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_d',timeStamp,'mrsfl', [THICACC(I,:)/REAL(NDAY)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])

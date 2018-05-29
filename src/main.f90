@@ -4647,7 +4647,7 @@ contains
                (iday  >= jdstd) .and. &
                (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,&
                                                          iday,nltest,nmtest,sbc,delt,&
-                                                         ncount,nday,lastDOY,runyr)
+                                                         ncount,nday,lastDOY,runyr,TFREZ)
 
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN

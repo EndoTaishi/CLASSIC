@@ -3,6 +3,7 @@
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs
 
+
 module class_statevars
 
 ! J. Melton Nov 2016
@@ -1561,10 +1562,7 @@ allocate(class_rot% FSDBROL  (nlat,nbs),&
 
     ! These will be allocated the dimension: 'nlat,ignd'
 
-allocate(class_rot% TBARACC (nlat,ignd),&
-         class_rot% THALACC (nlat,ignd),&
-         class_rot% THICACC (nlat,ignd),&
-         class_rot% THLQACC (nlat,ignd),&
+allocate(class_rot% TBARACC (nlat,ignd), class_rot% THALACC (nlat,ignd), class_rot% THICACC (nlat,ignd), class_rot% THLQACC (nlat,ignd),&
          class_rot% TBARROW (nlat,ignd),&
          class_rot% THALROW (nlat,ignd),&
          class_rot% THICROW (nlat,ignd),&
