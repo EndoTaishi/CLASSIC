@@ -920,6 +920,14 @@ contains
         FLUTACC_M   => class_rot%FLUTACC_M
         altotcntr_d => class_rot%altotcntr_d
 
+            !write(*,*)'1 THLQACC(1,1) = ',THLQACC(1,1) 
+            !write(*,*)'1 THLQACC(1,2) = ',THLQACC(1,2) 
+            !write(*,*)'1 THLQACC(1,3) = ',THLQACC(1,3) 
+            !write(*,*)'1 TBARACC(1,1) = ',TBARACC(1,1) 
+            !write(*,*)'1 TBARACC(1,2) = ',TBARACC(1,2) 
+            !write(*,*)'1 TBARACC(1,3) = ',TBARACC(1,3) 
+            !write(*,*)
+
         ! Accumulate output data for diurnally averaged fields. Both grid mean and mosaic mean
         !
         DO 75 I=1,NLTEST
@@ -970,6 +978,7 @@ contains
 50                 CONTINUE
 75             CONTINUE
 !
+
         IF(NCOUNT.EQ.NDAY) THEN
 
             allocate(ALIRACC(nltest),ALVSACC(nltest),EVAPACC(nltest),FLINACC(nltest), &
@@ -981,6 +990,42 @@ contains
                 WSNOACC(nltest),WTBLACC(nltest),ALTOTACC(nltest),TBARACC(nltest,ignd),&
                 THLQACC(nltest,ignd),THICACC(nltest,ignd))
                 ! SNOARE_M,UVACC_M,PRESACC_M,QAACC_M
+
+
+            ! Allocating these variables means they just came into existence so need to be
+            ! initialized. Initializing them in reserAccVars doesn't work. Vivek.
+
+            ALIRACC(:)=0.0
+            ALVSACC(:)=0.0
+            EVAPACC(:)=0.0
+            FLINACC(:)=0.0
+            FLUTACC(:)=0.0
+            FSINACC(:)=0.0
+            GROACC(:)=0.0
+            GTACC(:)=0.0
+            HFSACC(:)=0.0
+            HMFNACC(:)=0.0
+            OVRACC(:)=0.0
+            PREACC(:)=0.0
+            PRESACC(:)=0.0
+            QAACC(:)=0.0
+            QEVPACC(:)=0.0
+            RCANACC(:)=0.0
+            RHOSACC(:)=0.0
+            ROFACC(:)=0.0
+            SCANACC(:)=0.0
+            SNOACC(:)=0.0
+            TAACC(:)=0.0
+            TCANACC(:)=0.0
+            TSNOACC(:)=0.0
+            UVACC(:)=0.0
+            WSNOACC(:)=0.0
+            WTBLACC(:)=0.0
+            ALTOTACC(:)=0.0
+
+            THLQACC(:,:)=0.0
+            THICACC(:,:)=0.0
+            TBARACC(:,:)=0.0
 
             DO I=1,NLTEST
                 DO M=1,NMTEST
@@ -998,7 +1043,6 @@ contains
                         TBARACC(I,J)=TBARACC(I,J)+TBARACC_M(I,M,J)*FAREROT(I,M)
                         THLQACC(I,J)=THLQACC(I,J)+THLQACC_M(I,M,J)*FAREROT(I,M)
                         THICACC(I,J)=THICACC(I,J)+THICACC_M(I,M,J)*FAREROT(I,M)
-                        write(*,*)'j=',j,'iday=',iday,'THLQACC=',THLQACC(I,J)/REAL(NDAY),'THLQACC_M(1,1,J) =',THLQACC_M(1,1,J)/REAL(NDAY),'THICACC=',THICACC(I,J)/REAL(NDAY),'TBARACC=',(TBARACC(I,J)/REAL(NDAY))-TFREZ
                     end do
                     ALVSACC(I)=ALVSACC(I)+ALVSACC_M(I,M)*FAREROT(I,M)
                     ALIRACC(I)=ALIRACC(I)+ALIRACC_M(I,M)*FAREROT(I,M)
