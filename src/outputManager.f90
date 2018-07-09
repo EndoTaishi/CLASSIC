@@ -218,7 +218,7 @@ contains
                 validGroup = .true.
             elseif (c_switch%lnduseon .and. trim(descriptor%group) == "land") then
                 validGroup = .true.
-            elseif ((c_switch%lnduseon .or. c_switch%dofire) .and. trim(descriptor%group) == "land+fire") then
+            elseif ((c_switch%lnduseon .or. c_switch%dofire) .and. trim(descriptor%group) == "land_fire") then
                 validGroup = .true.
             elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
                 validGroup = .true.
