@@ -270,7 +270,7 @@ contains
                 print*,'but that may not be land. Check your input files to be sure'
             end if
         end if
-        
+
         nlat = 1
 
         !> To determine nmos, we use the largest number in the input file variable nmtest
@@ -1453,7 +1453,7 @@ contains
         ! Also take care here. If you use ncdump on a file it will show the opposite order for the
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
-        
+
 !         metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 !         metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 !         metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
@@ -1462,13 +1462,13 @@ contains
 !         metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 !         metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
 
-        metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metFdl = ncGet1DVar(metFdlId, 'Incoming_Long_Wave_Radiation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metPre = ncGet1DVar(metPreId, 'Total_Precipitation', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metTa = ncGet1DVar(metTaId, 'Temperature', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metQa = ncGet1DVar(metQaId, 'Air_Specific_Humidity', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metUv = ncGet1DVar(metUvId, 'U_wind_component', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-        metPres = ncGet1DVar(metPresId, 'Pression', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
+        metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFdl = ncGet1DVar(metFdlId, 'Incoming_Long_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPre = ncGet1DVar(metPreId, 'Total_Precipitation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metTa = ncGet1DVar(metTaId, 'Temperature', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metQa = ncGet1DVar(metQaId, 'Air_Specific_Humidity', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metUv = ncGet1DVar(metUvId, 'U_wind_component', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPres = ncGet1DVar(metPresId, 'Pression', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
 
     end subroutine getMet
 
@@ -1542,7 +1542,7 @@ contains
         QAROW(i)    = metQa(metTimeIndex)
         UVROW(i)    = metUv(metTimeIndex)
         PRESROW(i)  = metPres(metTimeIndex)
-        
+
         !> If the end of the timeseries is reached, change the metDone switch to true.
         if (metTimeIndex ==  size(metTime)) metDone = .true.
 
