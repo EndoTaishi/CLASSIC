@@ -8,3 +8,7 @@ tools/outputVariableEditor/.settings
 tools/outputVariableEditor/.project
 tools/outputVariableEditor/.tern-project
 bin/CLASSIC
+oldcode
+outputFiles/*
+journal.md
+inputFiles/*
