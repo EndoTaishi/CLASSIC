@@ -1,47 +1,83 @@
 !>\file
 !! Performs allocation of carbon gained by photosynthesis into plant structural pools
 !!
-!!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to use both specified constant or dynamically calculated allocation fractions for leaves, stems and roots, in practice the dynamic allocation fractions are primarily used. The formulation used in CTEM v. 2.0 differs from that for CTEM v. 1.0 as described in \cite Arora2005-6b1 only in the parameter values.
+!!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
+!!biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a
+!!component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to
+!!use both specified constant or dynamically calculated allocation fractions for leaves, stems and roots, in
+!!practice the dynamic allocation fractions are primarily used. The formulation used in CTEM v. 2.0 differs
+!!from that for CTEM v. 1.0 as described in Arora and Boer (2005) \cite Arora2005-6b1 only in the parameter values.
 !!
-!!The dynamic allocation to the live plant tissues is based on the light, water and leaf phenological status of vegetation. The preferential allocation of carbon to the different tissue pools is based on three assumptions: (i) if soil moisture is limiting, carbon should be preferentially allocated to roots for greater access to water, (ii) if LAI is low, carbon should be allocated to leaves for enhanced photosynthesis and finally (iii) carbon is allocated to the stem to increase vegetation height and lateral spread of vegetation when the increase in LAI results in a decrease in light penetration.
+!!The dynamic allocation to the live plant tissues is based on the light, water and leaf phenological status
+!!of vegetation. The preferential allocation of carbon to the different tissue pools is based on three
+!!assumptions: (i) if soil moisture is limiting, carbon should be preferentially allocated to roots for
+!!greater access to water, (ii) if LAI is low, carbon should be allocated to leaves for enhanced
+!!photosynthesis and finally (iii) carbon is allocated to the stem to increase vegetation height and
+!!lateral spread of vegetation when the increase in LAI results in a decrease in light penetration.
 !!
-!!The vegetation water status, \f$W\f$, is determined as a linear scalar quantity that varies between 0 and 1 for each PFT and calculated by weighting the degree of soil saturation ($\phi_{i}(\theta_{i})$, Eq. \ref{phitheta}) with the fraction of roots in each soil layer
+!!The vegetation water status, \f$W\f$, is determined as a linear scalar quantity that varies between
+!!0 and 1 for each PFT and calculated by weighting the degree of soil saturation (\f$\phi_{i} (\theta_{i} )\f$)
+!!with the fraction of roots in each soil layer
 !!
-!!\f[ \label{degsoilsat} W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i})  r_{i}. \f]
+!!\f[  W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i})  r_{i}. \hspace{10pt}[Eqn 1]\f]
 !!
-!!The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also ctem_params.f90), as
-!!\f[ L = \begin{cases} \exp(-k_\mathrm{n} LAI),  \quad trees and crops \\ \max\left(0,1-\frac{LAI}{4.5}\right),\quad grasses. \end{cases} \f]
+!!The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction
+!!coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also ctem_params.f90), as for trees and crops:
+!!\f[ L = \exp(-k_\mathrm{n} LAI) ;\hspace{10pt}[Eqn 2]\f]
+!! and for grasses:
+!!\f[ L = \max\left(0,1-\frac{LAI}{4.5}\right).  \hspace{10pt}[Eqn 3]\f]
 !!
-!!For PFTs with a stem component (i.e. tree and crop PFTs), the fractions of positive NPP allocated to stem (\f$a_{fS}\f$), leaf (\f$a_{fL}\f$) and root (\f$a_{fR}\f$) components are calculated as
-!!\f[ \label{As} a_{fS}=\frac{\epsilon_\mathrm{S}+\omega_\mathrm{a}(1-L)}{1+\omega_\mathrm{a}(2-L-W)} \vspace*{-4mm} \f]
+!!For PFTs with a stem component (i.e. tree and crop PFTs), the fractions of positive NPP
+!!allocated to stem (\f$a_{fS}\f$), leaf (\f$a_{fL}\f$) and root (\f$a_{fR}\f$) components
+!!are calculated as
+!!\f[ a_{fS}=\frac{\epsilon_\mathrm{S}+\omega_\mathrm{a}(1-L)}{1+\omega_\mathrm{a}(2-L-W)}, \hspace{10pt}[Eqn 4] \f]
 !!
-!!\f[ \label{Ar} a_{fR}=\frac{\epsilon_\mathrm{R}+ \omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(2-L-W)}, \vspace*{-4mm}\f]
+!!\f[ a_{fR}=\frac{\epsilon_\mathrm{R}+ \omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(2-L-W)}, \hspace{10pt}[Eqn 5]\f]
 !!
-!!\f[ \label{Al} a_{fL}=\frac{\epsilon_\mathrm{L}}{1+\omega_\mathrm{a}(2-L-W)}= 1-a_{fS}-a_{fR}. \f]
-!!The base allocation fractions for each component (leaves -- \f$\epsilon_\mathrm{L}\f$, stem -- \f$\epsilon_\mathrm{S}\f$, and roots -- \f$\epsilon_\mathrm{R}\f$) are PFT-dependent (see also ctem_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$. The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also ctem_params.f90), determines the sensitivity of the allocation scheme to changes in \f$W\f$ and \f$L\f$. Larger values of \f$\omega_\mathrm{a}\f$ yield higher sensitivity to changes in \f$L\f$ and \f$W\f$.
+!!\f[ a_{fL}=\frac{\epsilon_\mathrm{L}}{1+\omega_\mathrm{a}(2-L-W)}= 1-a_{fS}-a_{fR}. \hspace{10pt}[Eqn 6]\f]
 !!
-!!Grasses do not have a stem component (i.e. \f$a_{fS}=0\f$) and the allocation fractions for leaf and root components are given by
-!!\f[ a_{fL}=\frac{\epsilon_\mathrm{L}+\omega_\mathrm{a} L}{1+\omega_\mathrm{a}(1+L-W)},\\ a_{fR}=\frac{\epsilon_\mathrm{R}+\omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(1+L-W)}.\f]
+!!The base allocation fractions for each component (leaves -- \f$\epsilon_\mathrm{L}\f$,
+!!stem -- \f$\epsilon_\mathrm{S}\f$, and roots -- \f$\epsilon_\mathrm{R}\f$) are PFT-dependent
+!!(see also ctem_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
+!!The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also ctem_params.f90), determines the sensitivity
+!!of the allocation scheme to changes in \f$W\f$ and \f$L\f$. Larger values of \f$\omega_\mathrm{a}\f$ yield
+!!higher sensitivity to changes in \f$L\f$ and \f$W\f$.
 !!
-!!The above equations ensure that the allocation fractions add up to one (\f$a_{fL} + a_{fR} + a_{fS} = 1\f$).
+!!Grasses do not have a stem component (i.e. \f$a_{fS}=0\f$) and the allocation fractions for leaf
+!!and root components are given by
 !!
-!!The dynamic allocation fractions are superseded under three conditions. First, during the leaf onset for crops and deciduous trees, all carbon must be allocated to leaves (\f$a_{fL} = 1\f$, \f$a_{fS} = a_{fR} = 0\f$). Second, the proportion of stem plus root biomasses to leaf biomass must satisfy the relationship:
-!!\f[ \label{propwoody} C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa},\f]
+!!\f[ a_{fL}=\frac{\epsilon_\mathrm{L}+\omega_\mathrm{a} L}{1+\omega_\mathrm{a}(1+L-W)} ;\hspace{10pt}[Eqn 7]\f]
 !!
-!!where \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$ and \f$C_\mathrm{L}\f$ are the carbon in the stem, root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also ctem_params.f90) and parameter \f$\kappa\f$ has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters are based on the Frankfurt Biosphere Model (FBM) \cite Ludeke1994-px. This constraint (Eq. \ref{propwoody}) is based on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As grasses have no stem component, Eq. (\ref{propwoody}) determines their root to shoot ratio (i.e. the ratio of belowground to aboveground biomass). The final condition ensures that a minimum realistic root to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also ctem_params.f90). Root mass is required for nutrient and water uptake and support for the aboveground biomass. If the minimum root to shoot ratio is not being maintained, carbon is allocated preferentially to roots.
+!!\f[ a_{fR}=\frac{\epsilon_\mathrm{R}+\omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(1+L-W)}. \hspace{10pt}[Eqn 8]\f]
+!!
+!!The above equations (4-8) ensure that the allocation fractions add up to one (\f$a_{fL} + a_{fR} + a_{fS} = 1\f$).
+!!
+!!The dynamic allocation fractions are superseded under three conditions. First, during the leaf
+!!onset for crops and deciduous trees, all carbon must be allocated to leaves (\f$a_{fL} = 1\f$,
+!!\f$a_{fS} = a_{fR} = 0\f$). Second, the proportion of stem plus root biomasses to leaf biomass
+!!must satisfy the relationship:
+!!\f[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\f]
+!!
+!!where \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$ and \f$C_\mathrm{L}\f$ are the carbon in the stem,
+!!root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also ctem_params.f90)
+!!and parameter \f$\kappa\f$ has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters
+!!are based on the Frankfurt Biosphere Model (FBM) Ludeke et al. (1994) \cite Ludeke1994-px. This constraint (Eq. 9) is based
+!!on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As
+!!grasses have no stem component, Eq. 9 determines their root to shoot ratio (i.e. the ratio of
+!!belowground to aboveground biomass). The final condition ensures that a minimum realistic root
+!!to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also ctem_params.f90). Root mass
+!!is required for nutrient and water uptake and support for the aboveground biomass. If the minimum
+!!root to shoot ratio is not being maintained, carbon is allocated preferentially to roots.
 !!
 !!
-
-      subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb, 
-     1                         il1,     il2,     sand,     clay,  
+      subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb,
+     1                         il1,     il2,     sand,     clay,
      2                    rmatctem, gleafmas, stemmass, rootmass,
      4                        sort, nol2pfts, fcancmx, isand,
-c    5 ------------------ inputs above this line ----------------------   
+c    5 ------------------ inputs above this line ----------------------
      6                     afrleaf,  afrstem,  afrroot,
-     7                     wtstatus, ltstatus, THFC, THLW) ! Added missing THFC/THLW, EC Jan 17/2017.
+     7                     wtstatus, ltstatus, THFC, THLW)
 c    8 ------------------outputs  above this line ---------------------
-
-
 
 C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
 C     J. Melton       Fixed that and also brought in isand so that the layers of
@@ -49,7 +85,7 @@ C                     bedrock won't have their rmat used.
 c
 c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
-c   
+c
 c     5   Jul 2013  - Fixed bug with initializing the variables. Brought in
 c     J. Melton       the modules for global parameters
 c

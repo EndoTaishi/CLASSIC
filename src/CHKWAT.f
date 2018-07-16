@@ -62,59 +62,60 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ISFC,IG,ILG,IL1,IL2,JL,I,J,K
+      INTEGER ISFC  !< Type of surface (1 = canopy over snow, 2 = snow covered ground, 3 = canopy over bare ground, 4 = bare ground)
+      INTEGER IG,ILG,IL1,IL2,JL,I,J,K
 C
       INTEGER IPTBAD,JPTBAD,KPTBAD,IPTBDI,JPTBDI,KPTBDI,LPTBDI,
      1        IPTBDJ,JPTBDJ,KPTBDJ,LPTBDJ,N
 C
 C     * INPUT FIELDS.
 
-      REAL PCPR  (ILG)  !<Precipitation rate over modelled subarea \f$[kg m^{-2} s^{-1}]\f$    
-      REAL EVAP  (ILG)  !<Evapotranspiration rate over modelled subarea \f$[kg m^{-2} s^{-1}]\f$  
-      REAL RUNOFF(ILG)  !<Total runoff over modelled subarea [m]  
-      REAL WLOST (ILG)  !<Residual amount of water that cannot be 
+      REAL PCPR  (ILG)  !<Precipitation rate over modelled subarea \f$[kg m^{-2} s^{-1}]\f$
+      REAL EVAP  (ILG)  !<Evapotranspiration rate over modelled subarea \f$[kg m^{-2} s^{-1}]\f$
+      REAL RUNOFF(ILG)  !<Total runoff over modelled subarea [m]
+      REAL WLOST (ILG)  !<Residual amount of water that cannot be
                         !!supplied by surface stores \f$[kg m^{-2}]\f$
-      REAL RAICAN(ILG)  !<Intercepted liquid water on canopy at end of 
+      REAL RAICAN(ILG)  !<Intercepted liquid water on canopy at end of
                         !!time step \f$[kg m^{-2}]\f$
-      REAL SNOCAN(ILG)  !<Intercepted frozen water on canopy at end of 
+      REAL SNOCAN(ILG)  !<Intercepted frozen water on canopy at end of
                         !!time step \f$[kg m^{-2}]\f$
-      REAL RAICNI(ILG)  !<Intercepted liquid water on canopy at beginning 
+      REAL RAICNI(ILG)  !<Intercepted liquid water on canopy at beginning
                         !!of time step \f$[kg m^{-2}]\f$
-      REAL SNOCNI(ILG)  !<Intercepted frozen water on canopy at beginning 
+      REAL SNOCNI(ILG)  !<Intercepted frozen water on canopy at beginning
                         !!of time step \f$[kg m^{-2}]\f$
-      REAL ZPOND (ILG)  !<Depth of ponded water on ground at end of time 
+      REAL ZPOND (ILG)  !<Depth of ponded water on ground at end of time
                         !!step [m]
-      REAL ZPONDI(ILG)  !<Depth of ponded water on ground at beginning of 
+      REAL ZPONDI(ILG)  !<Depth of ponded water on ground at beginning of
                         !!time step [m]
-      REAL ZSNOW (ILG)  !<Depth of snow pack [m]  
-      REAL RHOSNO(ILG)  !<Density of snow pack \f$[kg m^{-3}]\f$ 
-      REAL XSNOW (ILG)  !<Switch to indicate presence of snow cover [ ]  
+      REAL ZSNOW (ILG)  !<Depth of snow pack [m]
+      REAL RHOSNO(ILG)  !<Density of snow pack \f$[kg m^{-3}]\f$
+      REAL XSNOW (ILG)  !<Switch to indicate presence of snow cover [ ]
       REAL SNOWI (ILG)  !<Snow pack mass at beginning of time step \f$[kg m^{-2}]\f$
-      REAL WSNOW (ILG)  !<Liquid water content of snow pack at end of 
+      REAL WSNOW (ILG)  !<Liquid water content of snow pack at end of
                         !!time step \f$[kg m^{-2}]\f$
-      REAL WSNOWI(ILG)  !<Liquid water content of snow pack at beginning 
+      REAL WSNOWI(ILG)  !<Liquid water content of snow pack at beginning
                         !!of time step \f$[kg m^{-2}]\f$
-      REAL FCS   (ILG)  !<Fractional coverage of canopy over snow on 
+      REAL FCS   (ILG)  !<Fractional coverage of canopy over snow on
                         !!modelled area [ ]
-      REAL FGS   (ILG)  !<Fractional coverage of snow over bare ground on 
+      REAL FGS   (ILG)  !<Fractional coverage of snow over bare ground on
                         !!modelled area [ ]
-      REAL FI    (ILG)  !<Fractional coverage of subarea in question on 
+      REAL FI    (ILG)  !<Fractional coverage of subarea in question on
                         !!modelled area [ ]
 
 C
-      REAL THLIQ (ILG,IG)   !<Volumetric liquid water content of soil 
+      REAL THLIQ (ILG,IG)   !<Volumetric liquid water content of soil
                             !!layers at end of time step \f$[m^3 m^{-3}]\f$
-      REAL THICE (ILG,IG)   !<Volumetric frozen water content of soil 
+      REAL THICE (ILG,IG)   !<Volumetric frozen water content of soil
                             !!layers at end of time step \f$[m^3 m^{-3}]\f$
-      REAL THLIQI(ILG,IG)   !<Volumetric frozen water content of soil 
+      REAL THLIQI(ILG,IG)   !<Volumetric frozen water content of soil
                             !!layers at beginning of time step \f$[m^3 m^{-3}]\f$
-      REAL THICEI(ILG,IG)   !<Volumetric frozen water content of soil 
+      REAL THICEI(ILG,IG)   !<Volumetric frozen water content of soil
                             !!layers at beginning of time step \f$[m^3 m^{-3}]\f$
 
 C
 C     * WORK ARRAYS.
 C
-      REAL BAL   (ILG)  
+      REAL BAL   (ILG)
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -342,20 +343,22 @@ C
              ELSE
                 SNOFAC=0.0
              ENDIF
-             BAL(I)=PCPR(I)*DELT-                                               
-     1                 EVAP(I)*RHOW*DELT-RUNOFF(I)*RHOW+WLOST(I)-
-     2                 CANFAC*(RAICAN(I)-RAICNI(I)+SNOCAN(I)-
-     3                 SNOCNI(I))-(ZPOND(I)-ZPONDI(I))*RHOW-                   
-     4                 ZSNOW(I)*RHOSNO(I)+SNOFAC*SNOWI(I)-
-     5                 WSNOW(I)+WSNOWI(I)
+             BAL(I)=PCPR(I)*DELT-                                      !precip
+     1              EVAP(I)*RHOW*DELT-                                 !evap
+     2              RUNOFF(I)*RHOW+WLOST(I)-                           !runoff + wlost
+     3              CANFAC*(RAICAN(I)-RAICNI(I)+SNOCAN(I)-SNOCNI(I))-  !canopy snow and water
+     5              (ZPOND(I)-ZPONDI(I))*RHOW-                         !ponded
+     4              ZSNOW(I)*RHOSNO(I)+SNOFAC*SNOWI(I)-                !snow
+     5              WSNOW(I)+WSNOWI(I)
+
              DO 275 J=1,IG
                  BAL(I)=BAL(I)-
-     1                 (THLIQ(I,J)-THLIQI(I,J))*RHOW*DELZW(I,J)-                       
-     2                 (THICE(I,J)-THICEI(I,J))*RHOICE*DELZW(I,J)                     
+     1                 (THLIQ(I,J)-THLIQI(I,J))*RHOW*DELZW(I,J)-    !change in soil liquid content
+     2                 (THICE(I,J)-THICEI(I,J))*RHOICE*DELZW(I,J)   !change in soil ice content                
   275        CONTINUE
              IF(ABS(BAL(I)).GT.BALLMT)                           THEN
                  IPTBAD=I
-             ENDIF  
+             ENDIF
           ENDIF
   300 CONTINUE
 

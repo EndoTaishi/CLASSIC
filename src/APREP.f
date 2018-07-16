@@ -5,10 +5,10 @@
 !>
 !!This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS
 !!(needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of
-!!vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized 
+!!vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized
 !!to zero, and the liquid water suction in the soil is set to an arbitrarily high value.
 !!
-      SUBROUTINE APREP(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, 
+      SUBROUTINE APREP(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS,
      1            FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN,
      2            SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS,
      3            ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC,
@@ -42,14 +42,14 @@ C     * AUG 04/15 - D.VERSEGHY. SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * SEP 05/12 - J.MELTON.   CHANGED IDAY
 C                               CONVERSION FROM FLOAT TO REAL, REINTEGRATED
-C                               CTEM 
+C                               CTEM
 C     * NOV 15/11 - M.LAZARE.   CTEM ADDED. CALCULATIONS ARE DIFFERENT
 C     *                         IN SEVERAL AREAS, UNDER CONTROL OF
 C     *                         "ICTEMMOD" SWITCH (ICTEMMOD=0 REVERTS
-C     *                         BACK TO APREP4 FORMULATION). THIS 
+C     *                         BACK TO APREP4 FORMULATION). THIS
 C     *                         INCLUDES NEW INPUT "PAIC".
-C     * OCT 07/11 - V.FORTIN/D.VERSEGHY. MAKE THE LIMITING PONDING DEPTH 
-C     *                         CALCULATION OVER ORGANIC SOILS THE SAME 
+C     * OCT 07/11 - V.FORTIN/D.VERSEGHY. MAKE THE LIMITING PONDING DEPTH
+C     *                         CALCULATION OVER ORGANIC SOILS THE SAME
 C     *                         AS OVER MINERAL SOILS (LOOP 175).
 C     * DEC 23/09 - D.VERSEGHY. IN LIMITING PONDING DEPTH CALCULATIONS,
 C     *                         IDENTIFY PEATLANDS WHERE ISAND(I,2)=-2
@@ -74,19 +74,19 @@ C     *                         RAIN AND SNOW, AND NEW FRACTIONAL
 C     *                         CANOPY COVERAGE OF INTERCEPTED RAIN
 C     *                         AND SNOW; DEFINE NEW PARAMETER RBCOEF
 C     *                         FOR RBINV CALCULATION IN TSOLVC.
-C     * NOV 03/04 - D.VERSEGHY. CHANGE RADJ AND DLON TO GATHERED 
+C     * NOV 03/04 - D.VERSEGHY. CHANGE RADJ AND DLON TO GATHERED
 C     *                         VARIABLES AND REMOVE ILAND ARRAY;
 C     *                         ADD "IMPLICIT NONE" COMMAND.
 C     * JUL 05/04 - Y.DELAGE/D.VERSEGHY. PROTECT SENSITIVE CALCULATIONS
 C     *                         AGAINST ROUNDOFF ERRORS.
 C     * JUL 02/03 - D.VERSEGHY. RATIONALIZE ASSIGNMENT OF RESIDUAL
 C     *                         CANOPY MOISTURE TO SOIL LAYERS.
-C     * DEC 05/02 - Y.DELAGE/D.VERSEGHY. ADD PARTS OF CANOPY AIR MASS TO 
+C     * DEC 05/02 - Y.DELAGE/D.VERSEGHY. ADD PARTS OF CANOPY AIR MASS TO
 C     *                         CANOPY MASS ONLY IF IDISP=0 OR IZREF=2.
 C     *                         ALSO, REPLACE LOGARITHMIC AVERAGING OF
 C     *                         ROUGHNESS HEIGHTS WITH BLENDING HEIGHT
 C     *                         AVERAGING.
-C     * JUL 31/02 - D.VERSEGHY. MOVE CALCULATION OF PSIGND AND FULL 
+C     * JUL 31/02 - D.VERSEGHY. MOVE CALCULATION OF PSIGND AND FULL
 C     *                         CALCULATION OF FROOT INTO THIS ROUTINE
 C     *                         FROM TPREP; REMOVE CALCULATION OF RCMIN.
 C     *                         SHORTENED CLASS3 COMMON BLOCK.
@@ -94,22 +94,22 @@ C     * JUL 23/02 - D.VERSEGHY. MOVE ADDITION OF AIR TO CANOPY MASS
 C     *                         INTO THIS ROUTINE; SHORTENED CLASS4
 C     *                         COMMON BLOCK.
 C     * MAR 18/02 - D.VERSEGHY. MOVE CALCULATION OF SOIL PROPERTIES INTO
-C     *                         ROUTINE "CLASSB"; ALLOW FOR ASSIGNMENT 
+C     *                         ROUTINE "CLASSB"; ALLOW FOR ASSIGNMENT
 C     *                         OF SPECIFIED TIME-VARYING VEGETATION
 C     *                         HEIGHT AND LEAF AREA INDEX.
 C     * SEP 19/00 - D.VERSEGHY. ADD CALCULATION OF VEGETATION-DEPENDENT
-C     *                         COEFFICIENTS FOR DETERMINATION OF STOMATAL 
+C     *                         COEFFICIENTS FOR DETERMINATION OF STOMATAL
 C     *                         RESISTANCE.
 C     * APR 12/00 - D.VERSEGHY. RCMIN NOW VARIES WITH VEGETATION TYPE:
 C     *                         PASS IN BACKGROUND ARRAY "RCMINX".
-C     * DEC 16/99 - A.WU/D.VERSEGHY. ADD CALCULATION OF NEW LEAF DIMENSION 
+C     * DEC 16/99 - A.WU/D.VERSEGHY. ADD CALCULATION OF NEW LEAF DIMENSION
 C     *                              PARAMETER FOR REVISED CANOPY TURBULENT
 C     *                              TRANSFER FORMULATION.
 C     * NOV 16/98 - M.LAZARE.   "DLON" NOW PASSED IN AND USED DIRECTLY
-C     *                         (INSTEAD OF INFERRING FROM "LONSL" AND 
+C     *                         (INSTEAD OF INFERRING FROM "LONSL" AND
 C     *                         "ILSL" WHICH USED TO BE PASSED) TO CALCULATE
 C     *                         GROWTH INDEX. THIS IS DONE TO MAKE THE PHYSICS
-C     *                         PLUG COMPATIBLE FOR USE WITH THE RCM WHICH 
+C     *                         PLUG COMPATIBLE FOR USE WITH THE RCM WHICH
 C     *                         DOES NOT HAVE EQUALLY-SPACED LONGITUDES.
 C     * JUN 20/97 - D.VERSEGHY. CLASS - VERSION 2.7.
 C     *                         MODIFICATIONS TO ALLOW FOR VARIABLE
@@ -120,7 +120,7 @@ C     *                         SET CANOPY COVER EQUAL TO 1 IF THE
 C     *                         CALCULATED SUM OF FC AND FCS IS
 C     *                         VERY CLOSE TO 1.
 C     * JAN 02/96 - D.VERSEGHY. CLASS - VERSION 2.5.
-C     *                         COMPLETION OF ENERGY BALANCE 
+C     *                         COMPLETION OF ENERGY BALANCE
 C     *                         DIAGNOSTICS.
 C     *                         ALSO CORRECT BUG IN CALCULATION OF
 C     *                         DEGLON, AND USE IDISP TO DETERMINE
@@ -131,39 +131,39 @@ C     *                         IMPLEMENTED.
 C     * AUG 16/95 - D.VERSEGHY. THREE NEW ARRAYS TO COMPLETE WATER
 C     *                         BALANCE DIAGNOSTICS.
 C     * NOV 22/94 - D.VERSEGHY. CLASS - VERSION 2.3.
-C     *                         RATIONALIZE CALCULATION OF RCMIN. 
+C     *                         RATIONALIZE CALCULATION OF RCMIN.
 C     * NOV 12/94 - D.VERSEGHY. FIX BUGS IN SENESCING LIMB OF CROP
 C     *                         GROWTH INDEX AND IN CANOPY MASS
 C     *                         CALCULATION.
 C     * MAY 06/93 - M.LAZARE/D.VERSEGHY. CLASS - VERSION 2.1.
-C     *                                  USE NEW "CANEXT" CANOPY 
+C     *                                  USE NEW "CANEXT" CANOPY
 C     *                                  EXTINCTION ARRAY TO DEFINE
 C     *                                  SKY-VIEW FACTORS. ALSO, CORRECT
 C     *                                  MINOR BUG WHERE HAD "IF(IN.LE.9)..."
-C     *                                  INSTEAD OF "IF(IN.GT.9)...".  
+C     *                                  INSTEAD OF "IF(IN.GT.9)...".
 C     * DEC 12/92 - M.LAZARE.   MODIFIED FOR MULTIPLE LATITUDES.
-C     * OCT 24/92 - D.VERSEGHY/M.LAZARE. REVISED AND VECTORIZED CODE 
+C     * OCT 24/92 - D.VERSEGHY/M.LAZARE. REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
-C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY 
+C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY
 C     *                         PARAMETERS.
 C
 
       use ctem_params,        only : zolnmoss
 
       IMPLICIT NONE
-C                                                                                 
+C
 C     * INTEGER CONSTANTS.
 C
       INTEGER ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      1        IPAI,IHGT,I,J,K,IN,NL
-C                                                                                 
-C     * OUTPUT ARRAYS USED ELSEWHERE IN CLASS.                                    
-C                                                                                 
+C
+C     * OUTPUT ARRAYS USED ELSEWHERE IN CLASS.
+C
       REAL FC    (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
       REAL FG    (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
       REAL FCS   (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
       REAL FGS   (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
-    
+
       REAL PAICAN(ILG) !<Plant area index of canopy over bare ground (\f$\Lambda_p\f$) [ ]
       REAL PAICNS(ILG) !<Plant area index of canopy over snow (\f$\Lambda_p\f$) [ ]
 
@@ -174,7 +174,7 @@ C
       REAL FRAICS(ILG) !<Fractional coverage of canopy by liquid water over snow-covered subarea [ ]
       REAL FSNOCS(ILG) !<Fractional coverage of canopy by frozen water over snow-covered subarea [ ]
 
-      REAL RAICAN(ILG) !<Intercepted liquid water stored on canopy over bare ground (\f$W_l\f$) [\f$kg m^{-2}\f$] 
+      REAL RAICAN(ILG) !<Intercepted liquid water stored on canopy over bare ground (\f$W_l\f$) [\f$kg m^{-2}\f$]
       REAL RAICNS(ILG) !<Intercepted liquid water stored on canopy over snow (\f$W_l\f$) [\f$kg m^{-2}\f$]
       REAL SNOCAN(ILG) !<Intercepted frozen water stored on canopy over bare soil (\f$W_f\f$) [\f$kg m^{-2}\f$]
       REAL SNOCNS(ILG) !<Intercepted frozen water stored on canopy over snow (\f$W_f\f$) [\f$kg m^{-2}\f$]
@@ -219,9 +219,9 @@ C
       REAL HTC   (ILG,IG) !<Diagnosed internal energy change of soil layer
                           !!due to conduction and/or change in mass [\f$W m^{-2}\f$]
 
-C                                                                                 
-C     * OUTPUT ARRAYS ONLY USED ELSEWHERE IN CLASSA.                              
-C                                                                                 
+C
+C     * OUTPUT ARRAYS ONLY USED ELSEWHERE IN CLASSA.
+C
       REAL PAI   (ILG,IC) !<Plant area index of vegetation category over bare ground [ ]
       REAL PAIS  (ILG,IC) !<Plant area index of vegetation category over snow [ ]
       REAL AIL   (ILG,IC) !<Leaf area index of vegetation category over bare ground [ ]
@@ -229,8 +229,8 @@ C
       REAL FCANS (ILG,IC) !<Fractional coverage of vegetation category over snow (\f$X_i\f$) [ ]
       REAL PSIGND(ILG)    !<Minimum liquid moisture suction in soil layers [m]
 
-C                                                                                 
-C     * INPUT ARRAYS.                                      
+C
+C     * INPUT ARRAYS.
 C
       integer ipeatland (ilg) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
       REAL FCANMX(ILG,ICP1) !<Maximum fractional coverage of modelled area by vegetation category [ ]
@@ -269,8 +269,8 @@ C
       REAL RADJ  (ILG) !<Latitude of grid cell (positive north of equator) [rad]
 
 C
-C     * SOIL PROPERTY ARRAYS.                                     
-C                                                                                 
+C     * SOIL PROPERTY ARRAYS.
+C
       REAL DELZW (ILG,IG) !<Permeable thickness of soil layer [m]
       REAL ZBOTW (ILG,IG) !<Depth to permeable bottom of soil layer [m]
       REAL THPOR (ILG,IG) !<Pore volume in soil layer (\f$\theta\f$ p) [\f$m^3 m^{-3}\f$]
@@ -280,23 +280,23 @@ C
       REAL PSIWLT(ILG,IG) !<Soil moisture suction at wilting point (\f$\Psi\f$ w) [m]
       REAL HCPS  (ILG,IG) !<Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
 
-C                                                                                 
+C
       INTEGER ISAND (ILG,IG) !<Sand content flag
 
-C                                               
+C
 C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
-C                                                                                 
+C
 
       REAL GROWYR(18,4,2) !<
       REAL DELZ  (IG)     !<Soil layer thickness [m]
       REAL ZORAT (4)      !<
       REAL CANEXT(4)      !<
       REAL XLEAF (4)      !<
-C                                                                                 
-C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.                          
-C                                                                                 
-      REAL RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC),                      
-     1     CWCPAV(ILG),     GROWA (ILG),     GROWN (ILG),     
+C
+C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.
+C
+      REAL RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC),
+     1     CWCPAV(ILG),     GROWA (ILG),     GROWN (ILG),
      2     GROWB (ILG),     RRESID(ILG),     SRESID(ILG),
      3     FRTOT (ILG),     FRTOTS(ILG)
 C
@@ -312,7 +312,7 @@ C
       REAL  AILCG(ILG,ICTEM)   !<GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
       REAL  AILCGS (ILG,ICTEM) !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
       REAL  RMATC(ILG,IC,IG)
-      REAL  FCANCMX(ILG,ICTEM)  
+      REAL  FCANCMX(ILG,ICTEM)
       REAL  FCANC(ILG,ICTEM)   !<FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
       REAL  FCANCS (ILG,ICTEM) !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
       REAL  ZOLNC(ILG,IC)
@@ -335,18 +335,18 @@ C
       REAL DELT,TFREZ,TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
      1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,
      2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,
-     3     ZORATG     
+     3     ZORATG
 C
-      COMMON /CLASS1/ DELT,TFREZ                                                  
+      COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
      1                RHOSOL,RHOOM
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG     
+      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
       COMMON /CLASS7/ CANEXT,XLEAF
 
-C-----------------------------------------------------------------------          
+C-----------------------------------------------------------------------
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C
 C     * INITIALIZE DIAGNOSTIC AND OTHER ARRAYS.
@@ -362,26 +362,26 @@ C
           WTRG(I) =0.0
           FRTOT(I)=0.0
           FRTOTS(I)=0.0
-          DISP  (I)=0.                                                            
-          ZOMLNC(I)=0.                                                            
-          ZOELNC(I)=1.                                                            
-          DISPS (I)=0.                                                            
-          ZOMLCS(I)=0.                                                            
-          ZOELCS(I)=1.                                                            
-          ZOMLNG(I)=0.                                                            
-          ZOELNG(I)=0.                                                            
-          ZOMLNS(I)=0.                                                            
-          ZOELNS(I)=0.                                                            
-          CMASSC(I)=0.                                                            
-          CMASCS(I)=0.                                                            
+          DISP  (I)=0.
+          ZOMLNC(I)=0.
+          ZOELNC(I)=1.
+          DISPS (I)=0.
+          ZOMLCS(I)=0.
+          ZOELCS(I)=1.
+          ZOMLNG(I)=0.
+          ZOELNG(I)=0.
+          ZOMLNS(I)=0.
+          ZOELNS(I)=0.
+          CMASSC(I)=0.
+          CMASCS(I)=0.
           PSIGND(I)=1.0E+5
   100 CONTINUE
-C 
+C
 C     * DETERMINE GROWTH INDEX FOR CROPS (VEGETATION TYPE 3).
 C     * MUST USE UN-GATHERED LONGITUDES TO COMPUTE ACTUAL LONGITUDE/
-C     * LATITUDE VALUES.  
-C                                                                                 
-      DAY=REAL(IDAY)                                                             
+C     * LATITUDE VALUES.
+C
+      DAY=REAL(IDAY)
 C
 C     * FOR CTEM, CROP GROWTH IS BUILT IN, SO GROWA=1.
 C
@@ -407,41 +407,41 @@ C
         !!
         DO 120 I=IL1,IL2
           IN = INT( (RADJ(I)+PI/2.0)*18.0/PI ) + 1
-          IF(DLON(I).GT.190. .AND. DLON(I).LT.330.)            THEN           
-              NL=2                                                            
-          ELSE                                                                
-              NL=1                                                            
-          ENDIF                                                               
-          IF(GROWYR(IN,1,NL).LT.0.1)                           THEN           
-              GROWA(I)=1.0                                                    
-          ELSE                                                                
+          IF(DLON(I).GT.190. .AND. DLON(I).LT.330.)            THEN
+              NL=2
+          ELSE
+              NL=1
+          ENDIF
+          IF(GROWYR(IN,1,NL).LT.0.1)                           THEN
+              GROWA(I)=1.0
+          ELSE
               IF(IN.GT.9)                                 THEN
-                IF(DAY.GE.GROWYR(IN,2,NL).AND.DAY.LT.GROWYR(IN,3,NL))           
-     1              GROWA(I)=1.0                                                
-                IF(DAY.GE.GROWYR(IN,4,NL).OR.DAY.LT.GROWYR(IN,1,NL))            
-     1              GROWA(I)=0.0                                
+                IF(DAY.GE.GROWYR(IN,2,NL).AND.DAY.LT.GROWYR(IN,3,NL))
+     1              GROWA(I)=1.0
+                IF(DAY.GE.GROWYR(IN,4,NL).OR.DAY.LT.GROWYR(IN,1,NL))
+     1              GROWA(I)=0.0
               ELSE
-                IF(DAY.GE.GROWYR(IN,2,NL).OR.DAY.LT.GROWYR(IN,3,NL))           
-     1              GROWA(I)=1.0                                                
-                IF(DAY.GE.GROWYR(IN,4,NL).AND.DAY.LT.GROWYR(IN,1,NL))            
-     1              GROWA(I)=0.0                                
-              ENDIF                
-              IF(DAY.GE.GROWYR(IN,1,NL).AND.DAY.LT.GROWYR(IN,2,NL))           
-     1            GROWA(I)=(DAY-GROWYR(IN,1,NL))/(GROWYR(IN,2,NL)-            
-     2                     GROWYR(IN,1,NL))                                   
-              IF(DAY.GE.GROWYR(IN,3,NL).AND.DAY.LT.GROWYR(IN,4,NL))           
-     1            GROWA(I)=(GROWYR(IN,4,NL)-DAY)/(GROWYR(IN,4,NL)-            
-     2                     GROWYR(IN,3,NL))                                   
+                IF(DAY.GE.GROWYR(IN,2,NL).OR.DAY.LT.GROWYR(IN,3,NL))
+     1              GROWA(I)=1.0
+                IF(DAY.GE.GROWYR(IN,4,NL).AND.DAY.LT.GROWYR(IN,1,NL))
+     1              GROWA(I)=0.0
+              ENDIF
+              IF(DAY.GE.GROWYR(IN,1,NL).AND.DAY.LT.GROWYR(IN,2,NL))
+     1            GROWA(I)=(DAY-GROWYR(IN,1,NL))/(GROWYR(IN,2,NL)-
+     2                     GROWYR(IN,1,NL))
+              IF(DAY.GE.GROWYR(IN,3,NL).AND.DAY.LT.GROWYR(IN,4,NL))
+     1            GROWA(I)=(GROWYR(IN,4,NL)-DAY)/(GROWYR(IN,4,NL)-
+     2                     GROWYR(IN,3,NL))
               GROWA(I)=MAX(0.0,MIN(GROWA(I),1.0))
               IF(GROWA(I).LT.1.0E-5) GROWA(I)=0.0
-          ENDIF                                                               
-  120   CONTINUE                                                                
+          ENDIF
+  120   CONTINUE
       ELSE
         DO I=IL1,IL2
           GROWA(I)=1.
         ENDDO
       ENDIF
-C                                                                                 
+C
 C     * DETERMINE GROWTH INDICES FOR NEEDLELEAF TREES, BROADLEAF
 C     * TREES AND GRASS (VEGETATION TYPES 1, 2 AND 4); CALCULATE
 C     * VEGETATION HEIGHT, CORRECTED FOR GROWTH STAGE FOR CROPS
@@ -462,16 +462,16 @@ C
       !!of double the value of GROWTH, with upper and lower limits of 1 and 0. Finally, the growth index of
       !!grasses is set to 1 all year round.
       !!
-      DO 150 I=IL1,IL2    
-                                                    
-          GROWN(I)=ABS(GROWTH(I))                                                 
-          IF(GROWTH(I).GT.0.0)                      THEN                          
-              GROWB(I)=MIN(1.0,GROWTH(I)*2.0)                                   
-          ELSE                                                                    
-              GROWB(I)=MAX(0.0,(ABS(GROWTH(I))*2.0-1.0))                        
-          ENDIF                                                                   
-          GROWG=1.0                                                               
-C                
+      DO 150 I=IL1,IL2
+
+          GROWN(I)=ABS(GROWTH(I))
+          IF(GROWTH(I).GT.0.0)                      THEN
+              GROWB(I)=MIN(1.0,GROWTH(I)*2.0)
+          ELSE
+              GROWB(I)=MAX(0.0,(ABS(GROWTH(I))*2.0-1.0))
+          ENDIF
+          GROWG=1.0
+C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
 
@@ -495,35 +495,34 @@ C
       !!
 
           IF(IHGT.EQ.0) THEN
-              H(I,1)=10.0*EXP(ZOLN(I,1))                                              
-              H(I,2)=10.0*EXP(ZOLN(I,2))                                              
-              H(I,3)=10.0*EXP(ZOLN(I,3))*GROWA(I)                                     
-              H(I,4)=10.0*EXP(ZOLN(I,4))                                              
+              H(I,1)=10.0*EXP(ZOLN(I,1))
+              H(I,2)=10.0*EXP(ZOLN(I,2))
+              H(I,3)=10.0*EXP(ZOLN(I,3))*GROWA(I)
+              H(I,4)=10.0*EXP(ZOLN(I,4))
           ELSE
               H(I,1)=HGTDAT(I,1)
               H(I,2)=HGTDAT(I,2)
               H(I,3)=HGTDAT(I,3)
               H(I,4)=HGTDAT(I,4)
           ENDIF
-          HS(I,1)=H(I,1)                                                          
-          HS(I,2)=H(I,2)                                                          
-          HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)                                       
-          HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)                                       
+          HS(I,1)=H(I,1)
+          HS(I,2)=H(I,2)
+          HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)
+          HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)
 
       !>
-      !!Next a second branch occurs, depending on the value of the
-      !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS or CTEM are used. If CTEM is
-      !!turned on (ICTEMMOD=1), the plant area index values over snow-free ground, PAI, for the four vegetation
-      !!categories are set to the CTEM-generated values.  If not, PAI, is determined for each vegetation category by interpolating
-      !!between the annual maximum and minimum plant area indices using their respective growth index. If IPAI=1, plant
+       !!If CLASS is being run uncoupled to CTEM, a second branch now occurs, depending on the value of the
+      !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS are to be used. For all four
+      !!vegetation categories, the plant area index over snow-free ground, PAI, is determined by interpolating
+      !!between the annual maximum and minimum plant area indices using the growth index. If IPAI=1, plant
       !!area index values specified by the user are utilized instead. For trees, the plant area index over snow-
       !!covered ground, PAIS, is set to PAI. For crops and grass, if H>0, PAIS is set to PAI scaled by the ratio
       !!of HS/H; otherwise, it is set to zero. Lastly, the leaf area indices for the four vegetation categories over
-      !!snow-free ground, AIL, are determined. If CTEM is turned on, these are assigned using the CTEM-generated
-      !!values.  If not, they are calculated on the basis of the PAI values. For needleleaf trees, AIL is estimated as
+      !!snow-free ground, AIL, are determined from the PAI values. For needleleaf trees, AIL is estimated as
       !!0.90 PAI; for broadleaf trees it is estimated as the excess PAI over the annual minimum value. For crops
-      !!and grass AIL is assumed to be equal to PAI.
-      !!    
+      !!and grass AIL is assumed to be equal to PAI. (If CLASS is being run coupled to CTEM, the CTEM-
+      !!generated values of PAI and AIL are used instead.)
+      !!
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
@@ -533,10 +532,10 @@ C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
                 PAI(I,J)=PAIC(I,J)
                END DO
               ELSE
-                PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))                 
-                PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))                 
-                PAI(I,3)=PAIMIN(I,3)+GROWA(I)*(PAIMAX(I,3)-PAIMIN(I,3))                 
-                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4)) 
+                PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))
+                PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))
+                PAI(I,3)=PAIMIN(I,3)+GROWA(I)*(PAIMAX(I,3)-PAIMIN(I,3))
+                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))
               ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
@@ -545,18 +544,18 @@ C
               PAI(I,J)=PAIDAT(I,J)
             END DO
           ENDIF
-          PAIS(I,1)=PAI(I,1)                                                      
-          PAIS(I,2)=PAI(I,2)                                                      
-          IF(H(I,3).GT.0.0) THEN                                                  
-              PAIS(I,3)=PAI(I,3)*HS(I,3)/H(I,3)                                   
-          ELSE                                                                    
-              PAIS(I,3)=0.0                                                       
-          ENDIF                                                                   
-          IF(H(I,4).GT.0.0) THEN                                                  
-              PAIS(I,4)=PAI(I,4)*HS(I,4)/H(I,4)                                   
-          ELSE                                                                    
-              PAIS(I,4)=0.0                                                       
-          ENDIF                                                                   
+          PAIS(I,1)=PAI(I,1)
+          PAIS(I,2)=PAI(I,2)
+          IF(H(I,3).GT.0.0) THEN
+              PAIS(I,3)=PAI(I,3)*HS(I,3)/H(I,3)
+          ELSE
+              PAIS(I,3)=0.0
+          ENDIF
+          IF(H(I,4).GT.0.0) THEN
+              PAIS(I,4)=PAI(I,4)*HS(I,4)/H(I,4)
+          ELSE
+              PAIS(I,4)=0.0
+          ENDIF
 C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C
@@ -603,22 +602,22 @@ C
           ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
-  150 CONTINUE         
+  150 CONTINUE
 C
 C     * ADJUST FRACTIONAL COVERAGE OF GRID CELL FOR CROPS AND
-C     * GRASS IF LAI FALLS BELOW A SET THRESHOLD VALUE DUE TO 
+C     * GRASS IF LAI FALLS BELOW A SET THRESHOLD VALUE DUE TO
 C     * GROWTH STAGE OR SNOW COVER; RESET LAI TO THE THRESHOLD
-C     * VALUE; CALCULATE RESULTANT GRID CELL COVERAGE BY CANOPY, 
+C     * VALUE; CALCULATE RESULTANT GRID CELL COVERAGE BY CANOPY,
 C     * BARE GROUND, CANOPY OVER SNOW AND SNOW OVER BARE GROUND.
-C     * 
+C     *
 C     * ALSO CALCULATE SURFACE DETENTION CAPACITY FOR FOUR
-C     * GRID CELL SUBAREAS BASED ON VALUES SUPPLIED BY 
+C     * GRID CELL SUBAREAS BASED ON VALUES SUPPLIED BY
 C     * U. OF WATERLOO:
 C     *        IMPERMEABLE SURFACES: 0.001 M.
 C     *        BARE SOIL:            0.002 M.
 C     *        LOW VEGETATION:       0.003 M.
 C     *        FOREST:               0.01  M.
-C                                                                                 
+C
       THR_LAI=1.0
       !>
       !!In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is
@@ -626,7 +625,7 @@ C
       !!trees, FCAN is set to the maximum coverage FCANMX of the vegetation category, scaled by the snow-
       !!free fraction of the modelled area, 1-FSNOW. For crops and grass, this calculation is modified for cases
       !!where the plant area index has been calculated as falling below a threshold value owing to growth stage or
-      !!burying by snow. This threshold value is assigned a value of 1.0; otherwise
+      !!burying by snow. (If CLASS is being run coupled to CTEM, this threshold value is set to 0.05; otherwise
       !!it is set to 1.) In such cases the vegetation coverage is assumed to become discontinuous, and so an
       !!additional multiplication by PAI is performed to produce a reduced value of FCAN, and PAI is reset to
       !!the threshold value. An identical procedure is followed to determine the FCANS values.
@@ -653,9 +652,9 @@ C
       !!are assigned.
       !!
 
-      DO 175 I=IL1,IL2                                                            
-          FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))                                    
-          FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))                                    
+      DO 175 I=IL1,IL2
+          FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))
+          FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
           IF(FCAN(I,2).LT.1.0E-5) FCAN(I,2)=0.0
 
@@ -672,9 +671,9 @@ C
           end do
           IF(FCAN(I,3).LT.1.0E-5) FCAN(I,3)=0.0
           IF(FCAN(I,4).LT.1.0E-5) FCAN(I,4)=0.0
-C                                                                                 
-          FCANS(I,1)=FCANMX(I,1)*FSNOW(I)                                         
-          FCANS(I,2)=FCANMX(I,2)*FSNOW(I)                                         
+C
+          FCANS(I,1)=FCANMX(I,1)*FSNOW(I)
+          FCANS(I,2)=FCANMX(I,2)*FSNOW(I)
           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
           do j = 1,4
@@ -687,16 +686,16 @@ C
           end do
           IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
           IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
-C                                                                                 
-          FC (I)=FCAN(I,1)+FCAN(I,2)+FCAN(I,3)+FCAN(I,4)                
-          FG (I)=1.0-FSNOW(I)-FC(I)                                     
-          FCS(I)=FCANS(I,1)+FCANS(I,2)+FCANS(I,3)+FCANS(I,4)            
-          FGS(I)=FSNOW(I)-FCS(I)                                        
+C
+          FC (I)=FCAN(I,1)+FCAN(I,2)+FCAN(I,3)+FCAN(I,4)
+          FG (I)=1.0-FSNOW(I)-FC(I)
+          FCS(I)=FCANS(I,1)+FCANS(I,2)+FCANS(I,3)+FCANS(I,4)
+          FGS(I)=FSNOW(I)-FCS(I)
           IF(ABS(1.0-FCS(I)-FC(I)).LT.8.0E-5) THEN
               IF(FCS(I).LT.1.0E-5) THEN
-                FSNOW (I)=0.0 
+                FSNOW (I)=0.0
               ELSE IF (FC(I).LT.1.0E-5) THEN
-                FSNOW(I)= 1.0  
+                FSNOW(I)= 1.0
               ENDIF
               IF(FCS(I).GT.0.) THEN
                 FCANS(I,1)=FCANS(I,1)*FSNOW(I)/FCS(I)
@@ -725,7 +724,7 @@ C
           FCS(I)=FCS(I)/FSUM
           FGS(I)=FGS(I)/FSUM
 
-          IF(ABS(1.0-FCS(I)-FGS(I)-FC(I)-FG(I)).GT.1.0E-5) 
+          IF(ABS(1.0-FCS(I)-FGS(I)-FC(I)-FG(I)).GT.1.0E-5)
      1                                   CALL XIT('APREP',-1)
 C
           IF(IWF.EQ.0) THEN
@@ -764,14 +763,14 @@ C
               ZPLIMG(I)=ZPLMG0(I)
           ENDIF
   175 CONTINUE
-C                                                                                 
+C
 C     * PARTITION INTERCEPTED LIQUID AND FROZEN MOISTURE BETWEEN
 C     * CANOPY OVERLYING BARE GROUND AND CANOPY OVERLYING SNOW,
 C     * USING DIFFERENT EFFECTIVE LEAF AREAS FOR EACH.  ADD
 C     * RESIDUAL TO SOIL MOISTURE OR SNOW (IF PRESENT); CALCULATE
-C     * RELATIVE FRACTIONS OF LIQUID AND FROZEN INTERCEPTED 
+C     * RELATIVE FRACTIONS OF LIQUID AND FROZEN INTERCEPTED
 C     * MOISTURE ON CANOPY.
-C                    
+C
 
       !>
       !!In loop 200, calculations are done related to the interception of water on vegetation. First, the plant area
@@ -828,23 +827,23 @@ C
       !!added to WTRG, the diagnosed residual water transferred into or out of the soil, and are then set to zero.
       !!
 
-      DO 200 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                                     THEN                
-              PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+                   
-     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)             
-          ELSE                                                                    
-              PAICAN(I)=0.0                                                       
-          ENDIF                                                                   
-          IF(FCS(I).GT.0.)                                    THEN                
-              PAICNS(I)=(FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+               
-     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/              
-     2                   FCS(I)                                                   
-          ELSE                                                                    
-              PAICNS(I)=0.0                                                       
-          ENDIF                                                                   
-C                                                                                 
-          CWLCAP(I)=0.20*PAICAN(I)                                                
-          CWLCPS(I)=0.20*PAICNS(I)                                                
+      DO 200 I=IL1,IL2
+          IF(FC(I).GT.0.)                                     THEN
+              PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
+     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
+          ELSE
+              PAICAN(I)=0.0
+          ENDIF
+          IF(FCS(I).GT.0.)                                    THEN
+              PAICNS(I)=(FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+
+     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/
+     2                   FCS(I)
+          ELSE
+              PAICNS(I)=0.0
+          ENDIF
+C
+          CWLCAP(I)=0.20*PAICAN(I)
+          CWLCPS(I)=0.20*PAICNS(I)
 C
           RRESID(I)=0.0
           IF(RCAN(I).LT.1.0E-5 .OR. (FC(I)+FCS(I)).LT.1.0E-5) THEN
@@ -852,38 +851,38 @@ C
               RCAN(I)=0.0
           ENDIF
 C
-          IF(RCAN(I).GT.0. .AND. (FC(I)+FCS(I)).GT.0.)        THEN                
-              RCAN(I)=RCAN(I)/(FC(I)+FCS(I))                                      
-              IF(PAICAN(I).GT.0.0)                 THEN                           
-                  RAICAN(I)=RCAN(I)*(FC(I)+FCS(I))/(FC(I)+FCS(I)*                 
-     1                      PAICNS(I)/PAICAN(I))                                  
-              ELSE                                                                
-                  RAICAN(I)=0.0                                                   
-              ENDIF                                                               
-              IF(PAICNS(I).GT.0.0)                 THEN                           
-                  RAICNS(I)=RCAN(I)*(FC(I)+FCS(I))/(FCS(I)+FC(I)*                 
-     1                      PAICAN(I)/PAICNS(I))                                  
-              ELSE                                                               
-                  RAICNS(I)=0.0                                                   
-              ENDIF                                                               
-          ELSE                                                                    
-              RAICAN(I)=0.0                                                       
-              RAICNS(I)=0.0                                                       
-          ENDIF                                                                   
-C                                                                                 
-          IF(FC(I).GT.0.)                                     THEN                
-              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+                   
-     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)             
-          ELSE                                                                    
-              PAICAN(I)=0.0                                                       
-          ENDIF                                                                   
-          IF(FCS(I).GT.0.)                                    THEN                
-              PAICNS(I)=(0.7*FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+               
-     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/              
-     2                   FCS(I)                                                   
-          ELSE                                                                    
-              PAICNS(I)=0.0                                                       
-          ENDIF                                                                   
+          IF(RCAN(I).GT.0. .AND. (FC(I)+FCS(I)).GT.0.)        THEN
+              RCAN(I)=RCAN(I)/(FC(I)+FCS(I))
+              IF(PAICAN(I).GT.0.0)                 THEN
+                  RAICAN(I)=RCAN(I)*(FC(I)+FCS(I))/(FC(I)+FCS(I)*
+     1                      PAICNS(I)/PAICAN(I))
+              ELSE
+                  RAICAN(I)=0.0
+              ENDIF
+              IF(PAICNS(I).GT.0.0)                 THEN
+                  RAICNS(I)=RCAN(I)*(FC(I)+FCS(I))/(FCS(I)+FC(I)*
+     1                      PAICAN(I)/PAICNS(I))
+              ELSE
+                  RAICNS(I)=0.0
+              ENDIF
+          ELSE
+              RAICAN(I)=0.0
+              RAICNS(I)=0.0
+          ENDIF
+C
+          IF(FC(I).GT.0.)                                     THEN
+              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
+     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
+          ELSE
+              PAICAN(I)=0.0
+          ENDIF
+          IF(FCS(I).GT.0.)                                    THEN
+              PAICNS(I)=(0.7*FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+
+     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/
+     2                   FCS(I)
+          ELSE
+              PAICNS(I)=0.0
+          ENDIF
 C
           CWFCAP(I)=6.0*PAICAN(I)*(0.27+46.0/RHOSNI(I))
           CWFCPS(I)=6.0*PAICNS(I)*(0.27+46.0/RHOSNI(I))
@@ -894,25 +893,25 @@ C
               SNCAN(I)=0.0
           ENDIF
 C
-          IF(SNCAN(I).GT.0. .AND. (FC(I)+FCS(I)).GT.0.)        THEN                
-              SNCAN(I)=SNCAN(I)/(FC(I)+FCS(I))                                      
-              IF(PAICAN(I).GT.0.0)                 THEN                           
-                  SNOCAN(I)=SNCAN(I)*(FC(I)+FCS(I))/(FC(I)+FCS(I)*                 
-     1                      PAICNS(I)/PAICAN(I))                                  
-              ELSE                                                                
-                  SNOCAN(I)=0.0                                                   
-              ENDIF                                                               
-              IF(PAICNS(I).GT.0.0)                 THEN                           
-                  SNOCNS(I)=SNCAN(I)*(FC(I)+FCS(I))/(FCS(I)+FC(I)*                 
-     1                      PAICAN(I)/PAICNS(I))                                  
-              ELSE                                                                
-                  SNOCNS(I)=0.0                                                   
-              ENDIF                                                               
-          ELSE                                                                    
-              SNOCAN(I)=0.0                                                       
-              SNOCNS(I)=0.0                                                       
-          ENDIF                                                                   
-C                                                                                 
+          IF(SNCAN(I).GT.0. .AND. (FC(I)+FCS(I)).GT.0.)        THEN
+              SNCAN(I)=SNCAN(I)/(FC(I)+FCS(I))
+              IF(PAICAN(I).GT.0.0)                 THEN
+                  SNOCAN(I)=SNCAN(I)*(FC(I)+FCS(I))/(FC(I)+FCS(I)*
+     1                      PAICNS(I)/PAICAN(I))
+              ELSE
+                  SNOCAN(I)=0.0
+              ENDIF
+              IF(PAICNS(I).GT.0.0)                 THEN
+                  SNOCNS(I)=SNCAN(I)*(FC(I)+FCS(I))/(FCS(I)+FC(I)*
+     1                      PAICAN(I)/PAICNS(I))
+              ELSE
+                  SNOCNS(I)=0.0
+              ENDIF
+          ELSE
+              SNOCAN(I)=0.0
+              SNOCNS(I)=0.0
+          ENDIF
+C
           IF(CWFCAP(I).GT.0.0)                                  THEN
               FSNOWC(I)=MIN(SNOCAN(I)/CWFCAP(I),1.0)
           ELSE
@@ -931,12 +930,12 @@ C
           ENDIF
           IF(CWLCPS(I).GT.0.0)                                  THEN
               FRAICS(I)=MIN(RAICNS(I)/CWLCPS(I),1.0)
-          ELSE                                                                    
-              FRAICS(I)=0.0                                                       
-          ENDIF                                                                   
+          ELSE
+              FRAICS(I)=0.0
+          ENDIF
           FRAINC(I)=MAX(0.0,MIN(FRAINC(I)-FSNOWC(I),1.0))
           FRAICS(I)=MAX(0.0,MIN(FRAICS(I)-FSNOCS(I),1.0))
-C                                                                                 
+C
           IF(RAICAN(I).GT.CWLCAP(I))                            THEN
               RRESID(I)=RRESID(I)+FC(I)*(RAICAN(I)-CWLCAP(I))
               RAICAN(I)=CWLCAP(I)
@@ -958,17 +957,17 @@ C
           WTRC (I)=WTRC(I)-(RRESID(I)+SRESID(I))/DELT
           HTCC (I)=HTCC(I)-TCAN(I)*(SPHW*RRESID(I)+SPHICE*SRESID(I))/
      1             DELT
-          IF(FSNOW(I).GT.0.0)                      THEN                           
+          IF(FSNOW(I).GT.0.0)                      THEN
               SNOI=SNO(I)
-              ZSNADD=SRESID(I)/(RHOSNO(I)*FSNOW(I))                               
+              ZSNADD=SRESID(I)/(RHOSNO(I)*FSNOW(I))
               ZSNOW(I)=ZSNOW(I)+ZSNADD
-              SNO(I)=ZSNOW(I)*FSNOW(I)*RHOSNO(I)                                  
+              SNO(I)=ZSNOW(I)*FSNOW(I)*RHOSNO(I)
               TSNOW(I)=(TCAN(I)*SPHICE*SRESID(I)+TSNOW(I)*HCPICE*
      1                 SNOI/RHOICE)/(HCPICE*SNO(I)/RHOICE)
               HTCS (I)=HTCS(I)+TCAN(I)*SPHICE*SRESID(I)/DELT
               WTRS (I)=WTRS(I)+SRESID(I)/DELT
               SRESID(I)=0.0
-          ENDIF                                                                   
+          ENDIF
 C
           DO 190 J=1,IG
               IF(DELZW(I,J).GT.0.0 .AND. (RRESID(I).GT.0.0
@@ -976,12 +975,12 @@ C
                   THSUM=THLIQ(I,J)+THICE(I,J)+
      1                (RRESID(I)+SRESID(I))/(RHOW*DELZW(I,J))
                   IF(THSUM.LT.THPOR(I,J)) THEN
-                      THICEI=THICE(I,J) 
+                      THICEI=THICE(I,J)
                       THLIQI=THLIQ(I,J)
                       THICE(I,J)=THICE(I,J)+SRESID(I)/
-     1                    (RHOICE*DELZW(I,J))                        
+     1                    (RHOICE*DELZW(I,J))
                       THLIQ(I,J)=THLIQ(I,J)+RRESID(I)/
-     1                    (RHOW*DELZW(I,J))                             
+     1                    (RHOW*DELZW(I,J))
                       TBAR(I,J)=(TBAR(I,J)*((DELZ(J)-DELZW(I,J))*
      1                    HCPSND+DELZW(I,J)*(THLIQI*HCPW+THICEI*
      2                    HCPICE+(1.0-THPOR(I,J))*HCPS(I,J)))+TCAN(I)*
@@ -998,12 +997,12 @@ C
               ENDIF
   190     CONTINUE
 C
-  200 CONTINUE                                                                    
-C                                                                                 
+  200 CONTINUE
+C
 C     * CALCULATION OF ROUGHNESS LENGTHS FOR HEAT AND MOMENTUM AND
 C     * ZERO-PLANE DISPLACEMENT FOR CANOPY OVERLYING BARE SOIL AND
 C     * CANOPY OVERLYING SNOW.
-C  
+C
 
 !>
 !!In loops 250 and 275, calculations of the displacement height and the logarithms of the roughness lengths
@@ -1027,45 +1026,45 @@ C
 !!vegetation categories:
 !!\f$z_{0e} z_{0mX} = \Pi ( z_{0i}^{2Xi} )\f$
 !!
-                                                                               
-      DO 250 J=1,IC                                                               
-      DO 250 I=IL1,IL2                                                            
-          IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN             
+
+      DO 250 J=1,IC
+      DO 250 I=IL1,IL2
+          IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN
               IF(IDISP.EQ.1)   DISP(I)=DISP(I)+FCAN (I,J)*
-     1                                 LOG(0.7*H(I,J))                     
+     1                                 LOG(0.7*H(I,J))
               ZOMLNC(I)=ZOMLNC(I)+FCAN (I,J)/
      1                  ((LOG(ZBLEND(I)/(0.1*H(I,J))))**2)
               ZOELNC(I)=ZOELNC(I)*
      1                  (0.01*H(I,J)*H(I,J)/ZORAT(IC))**FCAN(I,J)
-          ENDIF                                                                   
-          IF(FCS(I).GT.0. .AND. HS(I,J).GT.0.)                   THEN             
+          ENDIF
+          IF(FCS(I).GT.0. .AND. HS(I,J).GT.0.)                   THEN
               IF(IDISP.EQ.1)   DISPS(I)=DISPS (I)+FCANS(I,J)*
-     1                         LOG(0.7*HS(I,J))                    
+     1                         LOG(0.7*HS(I,J))
               ZOMLCS(I)=ZOMLCS(I)+FCANS(I,J)/
      1                  ((LOG(ZBLEND(I)/(0.1*HS(I,J))))**2)
               ZOELCS(I)=ZOELCS(I)*
      1                  (0.01*HS(I,J)*HS(I,J)/ZORAT(IC))**FCANS(I,J)
-          ENDIF                                                                   
-  250 CONTINUE                                                                    
-C                                                                                 
-      DO 275 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                                        THEN             
-              IF(IDISP.EQ.1)   DISP(I)=EXP(DISP(I)/FC(I))                                        
-              ZOMLNC(I)=ZBLEND(I)/EXP(SQRT(1.0/(ZOMLNC(I)/FC(I)))) 
+          ENDIF
+  250 CONTINUE
+C
+      DO 275 I=IL1,IL2
+          IF(FC(I).GT.0.)                                        THEN
+              IF(IDISP.EQ.1)   DISP(I)=EXP(DISP(I)/FC(I))
+              ZOMLNC(I)=ZBLEND(I)/EXP(SQRT(1.0/(ZOMLNC(I)/FC(I))))
               ZOELNC(I)=LOG(ZOELNC(I)**(1.0/FC(I))/ZOMLNC(I))
               ZOMLNC(I)=LOG(ZOMLNC(I))
-          ENDIF                                                                   
-          IF(FCS(I).GT.0.)                                       THEN             
-              IF(IDISP.EQ.1)   DISPS(I)=EXP(DISPS(I)/FCS(I))                                      
-              ZOMLCS(I)=ZBLEND(I)/EXP(SQRT(1.0/(ZOMLCS(I)/FCS(I)))) 
+          ENDIF
+          IF(FCS(I).GT.0.)                                       THEN
+              IF(IDISP.EQ.1)   DISPS(I)=EXP(DISPS(I)/FCS(I))
+              ZOMLCS(I)=ZBLEND(I)/EXP(SQRT(1.0/(ZOMLCS(I)/FCS(I))))
               ZOELCS(I)=LOG(ZOELCS(I)**(1.0/FCS(I))/ZOMLCS(I))
               ZOMLCS(I)=LOG(ZOMLCS(I))
-          ENDIF                                                                   
+          ENDIF
   275 CONTINUE
-C                                                                                 
+C
 C     * ADJUST ROUGHNESS LENGTHS OF BARE SOIL AND SNOW-COVERED BARE
 C     * SOIL FOR URBAN ROUGHNESS IF PRESENT.
-C        
+C
 !>
 !!In loop 300, calculations of the logarithms of the roughness lengths for heat and momentum are
 !!performed for the bare ground and snow-covered subareas. Background values of \f$ln(z_{om})\f$ for soil, snow
@@ -1078,28 +1077,28 @@ C
 !! In the same loop the roughness length for peatlands is also calculated assuming
 !! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in ctem_params.f90)
 !!
-      DO 300 I=IL1,IL2                                                            
-          IF(FG(I).GT.0.)                                        THEN             
-              IF(ISAND(I,1).NE.-4)                   THEN                         
-                  ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+            
-     1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
+      DO 300 I=IL1,IL2
+          IF(FG(I).GT.0.)                                        THEN
+              IF(ISAND(I,1).NE.-4)                   THEN
+                  ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+
+     1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)
                   if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
-                      ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
+                      ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))
      1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*
      2               ZOLN(I,5))/FG(I)
                   endif
-              ELSE                                                                
-                  ZOMLNG(I)=ZOLNI                                                 
-              ENDIF                                                               
-              ZOELNG(I)=ZOMLNG(I)-LOG(ZORATG)                                    
-          ENDIF                                                                   
-          IF(FGS(I).GT.0.)                                       THEN             
-              ZOMLNS(I)=((FGS(I)-FCANMX(I,5)*FSNOW(I))*ZOLNS+                     
-     1                  FCANMX(I,5)*FSNOW(I)*ZOLN(I,5))/FGS(I)                    
+              ELSE
+                  ZOMLNG(I)=ZOLNI
+              ENDIF
+              ZOELNG(I)=ZOMLNG(I)-LOG(ZORATG)
+          ENDIF
+          IF(FGS(I).GT.0.)                                       THEN
+              ZOMLNS(I)=((FGS(I)-FCANMX(I,5)*FSNOW(I))*ZOLNS+
+     1                  FCANMX(I,5)*FSNOW(I)*ZOLN(I,5))/FGS(I)
               ZOELNS(I)=ZOMLNS(I)-LOG(ZORATG)
-          ENDIF                                                                   
+          ENDIF
   300 CONTINUE
-C                                                                                 
+C
 C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGHNESS LENGTH
 C
 
@@ -1120,11 +1119,11 @@ C
           ZOMLNG(I)=MAX(ZOMLNG(I),LZ0ORO)
           ZOMLNS(I)=MAX(ZOMLNS(I),LZ0ORO)
   325  CONTINUE
-C     
+C
 C     * CALCULATE HEAT CAPACITY FOR CANOPY OVERLYING BARE SOIL AND
 C     * CANOPY OVERLYING SNOW.
 C     * ALSO CALCULATE INSTANTANEOUS GRID-CELL AVERAGED CANOPY MASS.
-C          
+C
 
 !>
 !!In loop 350, the canopy mass is calculated as a weighted average over the vegetation categories, for
@@ -1140,9 +1139,9 @@ C
 !!CMAI is recalculated, and is used to determine the change in internal energy of the canopy, HTCC, owing
 !!to growth or disappearance of the vegetation.
 !!
-                                                                       
-      DO 350 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                                       THEN                     
+
+      DO 350 I=IL1,IL2
+          IF(FC(I).GT.0.)                                       THEN
 C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
               IF (ctem_on) THEN
@@ -1153,9 +1152,9 @@ C     ---------------- CTEM MODIFICATIONS -----------------------------\
      3                     FCAN(I,4)*CMASVEGC(I,4))/FC (I)
               ELSE
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
-              CMASSC(I)=(FCAN(I,1)*CWGTMX(I,1)+FCAN (I,2)*CWGTMX(I,2)+                   
+              CMASSC(I)=(FCAN(I,1)*CWGTMX(I,1)+FCAN (I,2)*CWGTMX(I,2)+
      1                   FCAN(I,3)*CWGTMX(I,3)*GROWA(I)+
-     2                   FCAN(I,4)*CWGTMX(I,4))/FC (I)           
+     2                   FCAN(I,4)*CWGTMX(I,4))/FC (I)
               ENDIF     !CTEM MODIFICATION
 C
               IF(IDISP.EQ.0) THEN
@@ -1168,8 +1167,8 @@ C
      1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
      2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
               ENDIF
-          ENDIF                                                                          
-          IF(FCS(I).GT.0.)                                      THEN                     
+          ENDIF
+          IF(FCS(I).GT.0.)                                      THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
               IF (ctem_on) THEN
                 CMASCS(I)=FCANS(I,1)*CMASVEGC(I,1)+
@@ -1180,11 +1179,11 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------\
      5                    *HS(I,4)/MAX(H(I,4),HS(I,4))/FCS(I)
               ELSE
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
-              CMASCS(I)=(FCANS(I,1)*CWGTMX(I,1)+FCANS(I,2)*CWGTMX(I,2)+                  
+              CMASCS(I)=(FCANS(I,1)*CWGTMX(I,1)+FCANS(I,2)*CWGTMX(I,2)+
      1                   FCANS(I,3)*CWGTMX(I,3)*GROWA(I)
-     2                  *HS(I,3)/MAX(H(I,3),HS(I,3))+                            
-     3                   FCANS(I,4)*CWGTMX(I,4)                         
-     4                  *HS(I,4)/MAX(H(I,4),HS(I,4)))/FCS(I)                     
+     2                  *HS(I,3)/MAX(H(I,3),HS(I,3))+
+     3                   FCANS(I,4)*CWGTMX(I,4)
+     4                  *HS(I,4)/MAX(H(I,4),HS(I,4)))/FCS(I)
               ENDIF   ! CTEM MODIFICATION
 C
               IF(IDISP.EQ.0) THEN
@@ -1199,10 +1198,10 @@ C
      2                       FCANS(I,3)*HS(I,3)+FCANS(I,4)*HS(I,4))/
      3                       FCS(I)
               ENDIF
-          ENDIF             
-                                                      
-          CHCAP (I)=SPHVEG*CMASSC(I)+SPHW*RAICAN(I)+SPHICE*SNOCAN(I)              
-          CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I)              
+          ENDIF
+
+          CHCAP (I)=SPHVEG*CMASSC(I)+SPHW*RAICAN(I)+SPHICE*SNOCAN(I)
+          CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I)
           HTCC  (I)=HTCC(I)-SPHVEG*CMAI(I)*TCAN(I)/DELT
 C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
@@ -1217,16 +1216,16 @@ C         OVERWRITTEN BY TA FOR THE FIRST TIME STEP. JM JAN 2013
           IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
           CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
-          ENDIF 
+          ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
           HTCC  (I)=HTCC(I)+SPHVEG*CMAI(I)*TCAN(I)/DELT
           RBCOEF(I)=0.0
-  350 CONTINUE                                                                    
-C                                                                                 
-C     * CALCULATE VEGETATION ROOTING DEPTH AND FRACTION OF ROOTS 
+  350 CONTINUE
+C
+C     * CALCULATE VEGETATION ROOTING DEPTH AND FRACTION OF ROOTS
 C     * IN EACH SOIL LAYER (SAME FOR SNOW/BARE SOIL CASES).
 C     * ALSO CALCULATE LEAF BOUNDARY RESISTANCE PARAMETER RBCOEF.
-C                
+C
 
 !>
 !!In the 450 and 500 loops, the fraction of plant roots in each soil layer is calculated. If CLASS is being run
@@ -1252,16 +1251,16 @@ C
 !!\f$C_{rb} = C_l \Lambda_{p,i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p,i}^{0.5} )]\f$
 !!where \f$C_l\f$ is a parameter that varies with the vegetation category. The aggregated value of \f$C_{rb}\f$ is obtained
 !!as a weighted average over the four vegetation categories over bare ground and snow cover.
-!!                                                                 
-      DO 450 J=1,IC                                                               
-      DO 450 I=IL1,IL2                                                            
+!!
+      DO 450 J=1,IC
+      DO 450 I=IL1,IL2
         IF (ctem_on) THEN
          DO K = 1,IG
           RMAT(I,J,K)=RMATC(I,J,K)
          ENDDO
         ELSE
           ZROOT=ZRTMAX(I,J)
-          IF(J.EQ.3) ZROOT=ZRTMAX(I,J)*GROWA(I)                                   
+          IF(J.EQ.3) ZROOT=ZRTMAX(I,J)*GROWA(I)
           ZROOTG=0.0
           DO 375 K=1,IG
               ZROOTG=ZROOTG+DELZW(I,K)
@@ -1270,50 +1269,50 @@ C
           DO 400 K=1,IG
               IF(ZROOT.LE.(ZBOTW(I,K)-DELZW(I,K)+0.0001))          THEN
                   RMAT(I,J,K)=0.0
-              ELSEIF(ZROOT.LE.ZBOTW(I,K))                          THEN             
+              ELSEIF(ZROOT.LE.ZBOTW(I,K))                          THEN
                   RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-
      1                EXP(-3.0*ZROOT))/(1.0-EXP(-3.0*ZROOT))
-              ELSE                                                                    
+              ELSE
                   RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-
      1                EXP(-3.0*ZBOTW(I,K)))/(1.0-EXP(-3.0*ZROOT))
               ENDIF
 400       CONTINUE
         ENDIF
 C
-        IF((FC(I)+FCS(I)).GT.0.)                               THEN             
+        IF((FC(I)+FCS(I)).GT.0.)                               THEN
             RBCOEF(I)=RBCOEF(I)+
      1                (FCAN(I,J)*XLEAF(J)*(SQRT(PAI(I,J))/0.75)*
      2                (1.0-EXP(-0.75*SQRT(PAI(I,J))))+
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
-     5                (FC(I)+FCS(I))    
+     5                (FC(I)+FCS(I))
         ENDIF
-                       
-  450 CONTINUE                                                                    
-C                                                                                 
-      DO 500 J=1,IG                                                               
-      DO 500 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                               THEN             
-              FROOT(I,J)=(FCAN(I,1)*RMAT(I,1,J) +                    
-     1                    FCAN(I,2)*RMAT(I,2,J) +                    
-     2                    FCAN(I,3)*RMAT(I,3,J) +                    
-     3                    FCAN(I,4)*RMAT(I,4,J))/FC(I)                    
-          ELSE                                                                    
-              FROOT(I,J)=0.0                                                      
-          ENDIF                                                                   
-          IF(FCS(I).GT.0.)                              THEN             
-              FROOTS(I,J)=(FCANS(I,1)*RMAT(I,1,J) +                    
-     1                     FCANS(I,2)*RMAT(I,2,J) +                    
-     2                     FCANS(I,3)*RMAT(I,3,J) +                    
-     3                     FCANS(I,4)*RMAT(I,4,J))/FCS(I)    
-          ELSE                                                                    
-              FROOTS(I,J)=0.0                                                      
-          ENDIF                                                                   
-  500 CONTINUE                                                                    
-C                                                                                 
-C     * CALCULATE SKY-VIEW FACTORS FOR BARE GROUND AND SNOW 
-C     * UNDERLYING CANOPY.                                                         
-C            
+
+  450 CONTINUE
+C
+      DO 500 J=1,IG
+      DO 500 I=IL1,IL2
+          IF(FC(I).GT.0.)                               THEN
+              FROOT(I,J)=(FCAN(I,1)*RMAT(I,1,J) +
+     1                    FCAN(I,2)*RMAT(I,2,J) +
+     2                    FCAN(I,3)*RMAT(I,3,J) +
+     3                    FCAN(I,4)*RMAT(I,4,J))/FC(I)
+          ELSE
+              FROOT(I,J)=0.0
+          ENDIF
+          IF(FCS(I).GT.0.)                              THEN
+              FROOTS(I,J)=(FCANS(I,1)*RMAT(I,1,J) +
+     1                     FCANS(I,2)*RMAT(I,2,J) +
+     2                     FCANS(I,3)*RMAT(I,3,J) +
+     3                     FCANS(I,4)*RMAT(I,4,J))/FCS(I)
+          ELSE
+              FROOTS(I,J)=0.0
+          ENDIF
+  500 CONTINUE
+C
+C     * CALCULATE SKY-VIEW FACTORS FOR BARE GROUND AND SNOW
+C     * UNDERLYING CANOPY.
+C
 
 !>
 !!In loop 600, the sky view factor \f$\chi\f$ of the ground underlying the canopy is calculated for the vegetated
@@ -1322,26 +1321,26 @@ C
 !!where c is a constant depending on the vegetation category. The subarea values of \f$\chi\f$ are obtained as
 !!weighted averages over the four vegetation categories.
 !!
-                                                                     
-      DO 600 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                                        THEN             
-              FSVF (I)=(FCAN (I,1)*EXP(CANEXT(1)*PAI (I,1)) +                          
-     1                  FCAN (I,2)*EXP(CANEXT(2)*PAI (I,2)) +                          
-     2                  FCAN (I,3)*EXP(CANEXT(3)*PAI (I,3)) +                          
-     3                  FCAN (I,4)*EXP(CANEXT(4)*PAI (I,4)))/FC (I)                    
-          ELSE                                                                    
-              FSVF (I)=0.                                                         
-          ENDIF                                                                   
-          IF(FCS(I).GT.0.)                                       THEN             
-              FSVFS(I)=(FCANS(I,1)*EXP(CANEXT(1)*PAIS(I,1)) +                          
-     1                  FCANS(I,2)*EXP(CANEXT(2)*PAIS(I,2)) +                          
-     2                  FCANS(I,3)*EXP(CANEXT(3)*PAIS(I,3)) +                          
-     3                  FCANS(I,4)*EXP(CANEXT(4)*PAIS(I,4)))/FCS(I)                    
-          ELSE                                                                    
-              FSVFS(I)=0.                                                         
-          ENDIF                                                                   
-  600 CONTINUE                                       
-C                                                                                  
+
+      DO 600 I=IL1,IL2
+          IF(FC(I).GT.0.)                                        THEN
+              FSVF (I)=(FCAN (I,1)*EXP(CANEXT(1)*PAI (I,1)) +
+     1                  FCAN (I,2)*EXP(CANEXT(2)*PAI (I,2)) +
+     2                  FCAN (I,3)*EXP(CANEXT(3)*PAI (I,3)) +
+     3                  FCAN (I,4)*EXP(CANEXT(4)*PAI (I,4)))/FC (I)
+          ELSE
+              FSVF (I)=0.
+          ENDIF
+          IF(FCS(I).GT.0.)                                       THEN
+              FSVFS(I)=(FCANS(I,1)*EXP(CANEXT(1)*PAIS(I,1)) +
+     1                  FCANS(I,2)*EXP(CANEXT(2)*PAIS(I,2)) +
+     2                  FCANS(I,3)*EXP(CANEXT(3)*PAIS(I,3)) +
+     3                  FCANS(I,4)*EXP(CANEXT(4)*PAIS(I,4)))/FCS(I)
+          ELSE
+              FSVFS(I)=0.
+          ENDIF
+  600 CONTINUE
+C
 C     * CALCULATE BULK SOIL MOISTURE SUCTION FOR STOMATAL RESISTANCE.
 C     * CALCULATE FRACTIONAL TRANSPIRATION EXTRACTED FROM SOIL LAYERS.
 C
@@ -1352,43 +1351,43 @@ C
 !!moisture suction in each layer: \f$( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )\f$
 !!where \f$\Psi_i\f$ , the soil moisture suction in the layer, is obtained as
 !!\f$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}\f$
-!!In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at 
-!!saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore 
+!!In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at
+!!saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore
 !!volume, and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite Clapp1978-898. The layer values of FROOT and FROOTS are then
 !!re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
 !!calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
 !!\f$\Psi_w\f$ over all the soil layers.
 !!
 
-      DO 650 J=1,IG                                                               
-      DO 650 I=IL1,IL2                                                            
-          IF(FCS(I).GT.0.0 .OR. FC(I).GT.0.0)                      THEN          
+      DO 650 J=1,IG
+      DO 650 I=IL1,IL2
+          IF(FCS(I).GT.0.0 .OR. FC(I).GT.0.0)                      THEN
               IF(THLIQ(I,J).GT.(THLMIN(I,J)+0.01))          THEN
                   PSII=PSISAT(I,J)*(THLIQ(I,J)/THPOR(I,J))**(-BI(I,J))
                   PSII=MIN(PSII,PSIWLT(I,J))
                   IF(FROOT(I,J).GT.0.0) PSIGND(I)=MIN(PSIGND(I),PSII)
-                  PSIRAT=(PSIWLT(I,J)-PSII)/(PSIWLT(I,J)-PSISAT(I,J))          
+                  PSIRAT=(PSIWLT(I,J)-PSII)/(PSIWLT(I,J)-PSISAT(I,J))
                   FROOT(I,J)=FROOT(I,J)*PSIRAT
                   FROOTS(I,J)=FROOTS(I,J)*PSIRAT
-                  FRTOT(I)=FRTOT(I)+FROOT(I,J)                                    
-                  FRTOTS(I)=FRTOTS(I)+FROOTS(I,J)                                    
+                  FRTOT(I)=FRTOT(I)+FROOT(I,J)
+                  FRTOTS(I)=FRTOTS(I)+FROOTS(I,J)
               ELSE
                   FROOT(I,J)=0.0
                   FROOTS(I,J)=0.0
-              ENDIF                                                               
-          ENDIF                                                                   
-  650 CONTINUE                                                                    
-C                                                                                 
-      DO 700 J=1,IG                                                               
-      DO 700 I=IL1,IL2                                                            
-          IF(FRTOT(I).GT.0.)                                       THEN           
-              FROOT(I,J)=FROOT(I,J)/FRTOT(I)                                      
-          ENDIF                                                                   
-          IF(FRTOTS(I).GT.0.)                                      THEN           
-              FROOTS(I,J)=FROOTS(I,J)/FRTOTS(I)                                      
-          ENDIF                                                                   
-  700 CONTINUE                                                                    
-C 
+              ENDIF
+          ENDIF
+  650 CONTINUE
+C
+      DO 700 J=1,IG
+      DO 700 I=IL1,IL2
+          IF(FRTOT(I).GT.0.)                                       THEN
+              FROOT(I,J)=FROOT(I,J)/FRTOT(I)
+          ENDIF
+          IF(FRTOTS(I).GT.0.)                                      THEN
+              FROOTS(I,J)=FROOTS(I,J)/FRTOTS(I)
+          ENDIF
+  700 CONTINUE
+C
 C     * CALCULATE EFFECTIVE LEAF AREA INDICES FOR TRANSPIRATION.
 C
 
@@ -1398,20 +1397,20 @@ C
 !!is being run coupled with CTEM, a set of CTEM-related calculations is performed.
 !!
 
-      DO 800 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                                     THEN                
-              PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+                   
-     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)             
-          ELSE                                                                    
-              PAICAN(I)=0.0                                                       
-          ENDIF                                                                   
-          IF(FCS(I).GT.0.)                                    THEN                
-              PAICNS(I)=(FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+               
-     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/              
-     2                   FCS(I)                                                   
-          ELSE                                                                    
-              PAICNS(I)=0.0                                                       
-          ENDIF                                                                   
+      DO 800 I=IL1,IL2
+          IF(FC(I).GT.0.)                                     THEN
+              PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
+     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
+          ELSE
+              PAICAN(I)=0.0
+          ENDIF
+          IF(FCS(I).GT.0.)                                    THEN
+              PAICNS(I)=(FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+
+     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/
+     2                   FCS(I)
+          ELSE
+              PAICNS(I)=0.0
+          ENDIF
   800 CONTINUE
 C
       IF (ctem_on) THEN
@@ -1458,6 +1457,6 @@ C
   850     CONTINUE
   860   CONTINUE
       ENDIF
-C                                                                                 
+C
       RETURN
       END
