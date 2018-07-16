@@ -1141,7 +1141,8 @@ contains
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
                 allocate(LUCFromFile(lengthOfFile,icc))
-                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
+                !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
+                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
@@ -1153,7 +1154,8 @@ contains
 
                 if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
 
-                fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
+                !fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
+                fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
 
             end if
 
