@@ -3636,7 +3636,7 @@ contains
                 &      rmrow,       rgrow,       nbprow,       litresrow,&
                 &      socresrow,   gpprow,      dstcemlsrow,  litrfallrow,&
                 &      humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,&
-                &      litresvegrow, humiftrsvegrow,&
+                &      litrfallvegrow, humiftrsvegrow,&
                 &      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,&
                 &      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,&
                 &      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,&
@@ -3682,7 +3682,7 @@ contains
                 &      rmgat,       rggat,       nbpgat,       litresgat,&
                 &      socresgat,   gppgat,      dstcemlsgat,  litrfallgat,&
                 &      humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,&
-                &      litresveggat, humiftrsveggat,&
+                &      litrfallveggat, humiftrsveggat,&
                 &      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,&
                 &      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,&
                 &      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,&

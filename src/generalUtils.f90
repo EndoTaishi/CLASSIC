@@ -129,7 +129,8 @@ module generalUtils
         integer, intent(in) :: iday
         integer, intent(in) :: lastDOY
 
-        real :: day,i
+        integer :: i
+        real :: day
         real :: decl    !< Declination
         real :: hour
         real :: cosz    !< Cosine of the zenith angle
@@ -220,5 +221,3 @@ module generalUtils
     end function closeEnough
 
 end module generalUtils
-
-

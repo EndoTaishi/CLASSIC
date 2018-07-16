@@ -4,7 +4,7 @@
 !!unless mentioned all pools are in kg c/m2
 !!unless mentioned all fluxes are in units of u-mol co2/m2.sec
 !!
-       subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,      
+       subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,
      1                     litrmass, soilcmas, ntchlveg, ntchsveg,
      2                     ntchrveg, tltrleaf, tltrstem, tltrroot,
      3                     glcaemls, blcaemls, stcaemls, rtcaemls,
@@ -21,7 +21,7 @@
      2              nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss,
      3              ltrestepmoss,humicmosstep)
 
-c     -----------------------------------------------------------------      
+c     -----------------------------------------------------------------
 c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
 c     V. Arora        subroutines were changed for compatibility with class
@@ -33,7 +33,7 @@ c     J. Melton       pfts
 c
 c     27  May 2003  - this subroutine checks if the various c fluxes
 c     V. Arora        between the different pools balance properly to
-c                     make sure that conservation of mass is achieved 
+c                     make sure that conservation of mass is achieved
 c                     with in a specified tolerance.
 c
       use ctem_params,        only : tolrance, icc, ilg, deltat,iccp1
@@ -53,14 +53,14 @@ c
       real ntchlveg(ilg,icc)  !<fluxes for each pft: net change in leaf biomass
       real ntchsveg(ilg,icc)  !<fluxes for each pft: net change in stem biomass
       real ntchrveg(ilg,icc)  !<fluxes for each pft: net change in root biomass the net change is the difference
-                              !<between allocation and autotrophic respiratory fluxes 
+                              !<between allocation and autotrophic respiratory fluxes
       real tltrleaf(ilg,icc)  !<fluxes for each pft: total leaf litter falling rate
       real tltrstem(ilg,icc)  !<fluxes for each pft: total stem litter falling rate
       real tltrroot(ilg,icc)  !<fluxes for each pft: total root litter falling rate
-      real glcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: green leaf carbon emission losses 
-      real blcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: brown leaf carbon emission losses 
-      real stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses 
-      real rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses 
+      real glcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: green leaf carbon emission losses
+      real blcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: brown leaf carbon emission losses
+      real stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses
+      real rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses
       real ltrcemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: litter carbon emission losses
       real ltresveg(ilg,iccp1)!<fluxes for each pft: litter respiration for each pft + bare fraction
       real scresveg(ilg,iccp1)!<fluxes for each pft: soil c respiration for each pft + bare fraction
@@ -71,7 +71,7 @@ c
       real protmass(ilg,icc)  !<pools (before being updated): previous root mass
       real plitmass(ilg,iccp1)!<pools (before being updated): previous litter mass
       real psocmass(ilg,iccp1)!<pools (before being updated): previous soil c mass
-      real npp(ilg)           !<grid averaged flux: net primary productivity 
+      real npp(ilg)           !<grid averaged flux: net primary productivity
       real vgbiomas(ilg)      !<pools (after being updated): grid averaged pools: vegetation biomass
       real pvgbioms(ilg)      !<pools (before being updated): grid average pools: previous vegetation biomass
       real gavgltms(ilg)      !<pools (after being updated): grid averaged pools: litter mass
@@ -81,7 +81,7 @@ c
       real autores(ilg)       !<grid averaged flux: autotrophic respiration
       real hetrores(ilg)      !<grid averaged flux: heterotrophic respiration
       real gpp(ilg)           !<grid averaged flux: gross primary productivity
-      real nep(ilg)           !<grid averaged flux: net primary productivity 
+      real nep(ilg)           !<grid averaged flux: net primary productivity
       real litres(ilg)        !<grid averaged flux: litter respiration
       real socres(ilg)        !<grid averaged flux: soil carbon respiration
       real dstcemls(ilg)      !<grid averaged flux: carbon emission losses due to disturbance, mainly fire
@@ -104,8 +104,6 @@ c
       real diff1  !<
       real diff2  !<
 c
-      if(icc.ne.9)                            call xit('balcar',-1)  !increase to 12 for peatlands
-c
 !>
 !!to check c budget we go through each pool for each vegetation type.
 !!
@@ -115,24 +113,24 @@ c
         do 110 i = il1, il2
           diff1=(gleafmas(i,j)+bleafmas(i,j)- pglfmass(i,j)-
      &     pblfmass(i,j))
-          diff2=(ntchlveg(i,j)- tltrleaf(i,j)- glcaemls(i,j)- 
+          diff2=(ntchlveg(i,j)- tltrleaf(i,j)- glcaemls(i,j)-
      &     blcaemls(i,j))*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2000)i,j,abs(diff1-diff2),tolrance
-2000        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater    
-     & than our tolerance of ',f12.6,' for leaves')  
+2000        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
+     & than our tolerance of ',f12.6,' for leaves')
             call xit('balcar',-2)
           endif
 c         endif
 110     continue
-100   continue     
+100   continue
 !>
 !!stem
 !!
       do 150 j = 1, icc
         do 160 i = il1, il2
           diff1=stemmass(i,j) - pstemass(i,j)
-          diff2=(ntchsveg(i,j)- tltrstem(i,j)- 
+          diff2=(ntchsveg(i,j)- tltrstem(i,j)-
      &     stcaemls(i,j))*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2001)i,j,abs(diff1-diff2),tolrance
@@ -142,14 +140,14 @@ c         endif
           endif
 c         endif
 160     continue
-150   continue    
+150   continue
 !>
 !!root
 !!
       do 200 j = 1, icc
         do 210 i = il1, il2
           diff1=rootmass(i,j) - protmass(i,j)
-          diff2=(ntchrveg(i,j)- tltrroot(i,j)- 
+          diff2=(ntchrveg(i,j)- tltrroot(i,j)-
      &     rtcaemls(i,j))*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2002)i,j,abs(diff1-diff2),tolrance
@@ -159,7 +157,7 @@ c         endif
           endif
 c         endif
 210     continue
-200   continue    
+200   continue
 !>
 !!litter over all pfts
 !!
@@ -168,7 +166,7 @@ c         endif
           diff1=litrmass(i,j) - plitmass(i,j)
           diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j)-
      &      ltresveg(i,j)-humtrsvg(i,j)-ltrcemls(i,j)
-     &      + repro_cost(i,j))*(deltat/963.62)   
+     &      + repro_cost(i,j))*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,j,abs(diff1-diff2),tolrance
 2003        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
@@ -177,7 +175,7 @@ c         endif
           endif
 c         endif
 260     continue
-250   continue    
+250   continue
 !>
 !!litter over the bare fraction
 !!
@@ -185,7 +183,7 @@ c         endif
            if (ipeatland(i)==0) then !Over the non-peatland areas.
           diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
           diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
-     &          ( deltat/963.62 )  
+     &          ( deltat/963.62 )
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,icc+1,abs(diff1-diff2),tolrance
             call xit('balcar',-6)
@@ -199,7 +197,7 @@ c         endif
         do 310 i = il1, il2
          if (ipeatland(i)==0) then !Over the non-peatland regions
           diff1=soilcmas(i,j) - psocmass(i,j)
-          diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)  
+          diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,3001)'soilCmas(',i,')=',soilcmas(i,j)
             write(6,3001)'psocmass(',i,')=',psocmass(i,j)
@@ -212,7 +210,7 @@ c         endif
           endif
          endif
 310     continue
-300   continue   
+300   continue
 
 !>
 !! Moss C balance
@@ -268,7 +266,7 @@ c         endif
           write(6,3001)'litrfall(',i,')=',litrfall(i)
           write(6,3001)'dstcemls(',i,')=',dstcemls(i)
           write(6,3001)'repro_cost_g(',i,')=',repro_cost_g(i)
-3001      format(a9,i2,a2,f14.9) 
+3001      format(a9,i2,a2,f14.9)
           write(6,2005)i,abs(diff1-diff2),tolrance
 2005      format('at (i)= (',i3,'),',f12.6,' is greater
      & than our tolerance of ',f12.6,' for vegetation biomass')
@@ -284,8 +282,8 @@ c         endif
         diff2=(litrfall(i)-litres(i)-humiftrs(i)-galtcels(i)
      &   +repro_cost_g(i))*
      &   (deltat/963.62)
-        if((abs(diff1-diff2)).gt.(tolrance+0.00003))then    !YW the difference for moss litter 
-                                                            !and biomass can go a bit over the tolerance 
+        if((abs(diff1-diff2)).gt.(tolrance+0.00003))then    !YW the difference for moss litter
+                                                            !and biomass can go a bit over the tolerance
           write(6,3001)'pgavltms(',i,')=',pgavltms(i)
           write(6,3001)'gavgltms(',i,')=',gavgltms(i)
           write(6,3001)'litrfall(',i,')=',litrfall(i)
