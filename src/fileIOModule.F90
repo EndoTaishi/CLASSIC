@@ -8,6 +8,36 @@ module fileIOModule
     implicit none
 contains
 
+public  :: ncCreate           !> Creates a new netCDF file and returns the file id.
+public  :: ncOpen             !> Opens an existing netCDF file and returns the file id.
+public  :: ncGetVarId         !> Returns the variable id for a given variable label.
+public  :: ncGetVarDimensions !> Returns the variable dimensions.
+public  :: ncGetVarName       !> Returns the variable name.
+public  :: ncGetDimId         !> Returns the dimension ID.
+public  :: ncGetDimLen        !> Returns the dimension length for a given dimension
+public  :: ncDefDim           !> Defines a new dimension and returns the dimension id
+public  :: ncDefVar           !> Defines a new variable and returns the variable id
+public  :: ncEndDef           !> Ends the definition mode.
+public  :: ncReDef            !> Enters definition mode.
+public  :: ncClose            !> Closes a given file.
+public  :: ncPutAtt           !> Writes an attribute to a file. Can take in attributes of the char/int/real types. Only one type can be used at a time.
+public  :: ncGetVar           !> Returns the variable content
+public  :: ncGetDimValues     !> Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)
+public  :: ncGet1DVar         !> Returns a 1D array from a variable, based on file id, label and coordinates
+public  :: ncGet2DVar         !> Returns a 2D array from a variable, based on file id, label and coordinates
+public  :: ncGet3DVar         !> Returns a 3D array from a variable, based on file id, label and coordinates
+public  :: ncGet4DVar         !> Writes the 1D dimension values to a given file
+public  :: ncPutDimValues     !> Writes the 1D dimension values to a given file
+public  :: ncPutVar           !> Writes a local variable (1D input values, either real or int). Takes in a 1D array (of
+                              !! either real or int elements) and writes it into a netCDF structure, according to start and count
+public  :: ncPut2DVar         !> Writes a local variable of 2D input values. Takes in a 2D array (of either real
+                              !! or int elements) and writes it into a netCDF structure, according to start and count
+public  :: ncPut3DVar         !> Writes a local variable of 3D input values. Takes in a 3D array (of either real
+                              !! or int elements) and writes it into a netCDF structure, according to start and count
+public  :: estimateOnes       !> Returns an estimate count of how many 1s can be collapsed in the array
+public  :: collapseOnes       !> Returns an array that keeps only the values not equal to one.
+public  :: checkNC            !> Checks for errors in the NetCDF access process
+
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Creates a new netCDF file and returns the file id.
     integer function ncCreate(fileName, cmode)
@@ -67,6 +97,21 @@ contains
         integer, intent(in)         :: varId    !< Variable id
         call checkNC(nf90_inquire_variable(fileId, varId, ndims = ncGetVarDimensions), tag = 'ncGetVarDimensions() ')
     end function ncGetVarDimensions
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Returns the variable name.
+    function ncGetVarName(fileId)
+        integer, intent(in)         :: fileId   !< File id
+        integer                     :: varId    !< Variable id
+        character(80)               :: ncGetVarName !< variable name
+        ! Cycle through the variables in the file skipping over the lon, lat, and time variables. This assumes
+        ! that the input has no other variables than the one of interest.
+        varId = 1
+        do while (trim(ncGetVarName) .eq. 'lat' .or. trim(ncGetVarName) .eq. 'lon' .or. trim(ncGetVarName) .eq. 'time')
+          call checkNC(nf90_inquire_variable(fileId, varId), tag = 'ncGetVarName() ')
+          varId=varId+1
+        end do
+    end function ncGetVarName
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns the dimension ID.
