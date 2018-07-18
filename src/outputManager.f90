@@ -465,7 +465,7 @@ contains
 
         call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
         call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
-        
+
         select case(trim(outputForm))
             case ("tile")       ! Per tile outputs
                 allocate(intArray(nmos))
@@ -502,7 +502,7 @@ contains
 
                 allocate(intArray(ignd))
                 intArray=identityVector(ignd)
-                call ncPutDimValues(ncid, 'layer',intValues=intArray, count=(/ignd/)) 
+                call ncPutDimValues(ncid, 'layer',intValues=intArray, count=(/ignd/))
                 call ncReDef(ncid)
                 varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,layerDimId,timeDimId])
 
@@ -588,7 +588,7 @@ contains
                     if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
                     timeVect(i) = (readMetStartYear + i - 1 - refyr) * lastDOY
                 end do
- 
+
             case("monthly")
                 ! Monthly may start writing later (after jmosty) so make sure to account for that.
                 ! Also if leap years are on, it changes the timestamps
@@ -646,7 +646,7 @@ contains
                    write(*,*)styr,' and ',endyr
                    stop
                 end if
-                 
+
                 totyrs2=jdendy - jdsty + 1
 
                 ! Now determine the total number of timesteps (days) across all years
@@ -765,8 +765,10 @@ contains
         if (id == 0) then
             print*,'writeOutput1D says: Your requested key does not exist (' // trim(key) // ') in netcdfVars.'
             print*, 'Possible reasons include '// trim(key) // ' not in xml file so no netcdf created'
-            print*, 'or mismatch between xml group and model switch for this key.'
-            stop
+            print*, 'or mismatch between xml group and model switch for this key. Model run will continue'
+            print*, 'without writing this variable.'
+            !stop
+            return
         end if
 
         ncid = netcdfVars(id)%ncid

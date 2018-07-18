@@ -17,7 +17,7 @@ program ghgASCIILoader
     close(unit = 10)
 contains
     subroutine processArguments
-        if (iargc() .ne. 1) then
+        if (iargc() .ne. 2) then
             stop('Usage is: ghgASCIILoader [ghg name, e.g. CO2] [input file]')
         endif
         call getarg(1, ghgName)
@@ -28,7 +28,7 @@ contains
         integer                 :: fileSize
 
         inquire(file = inputFile, size = fileSize)
-        timesteps = (fileSize + 1) / 91;
+        timesteps = (fileSize + 1) / 91; ! FLAG check on this. why 91?
         print*,timesteps
         allocate(year(timesteps))
         allocate(moleFrac(timesteps))

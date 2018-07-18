@@ -7,13 +7,13 @@
     leap = .false. ,         !< True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
-        metFileFss = 'test6hrmet/sw.nc',        !< location of the incoming shortwave radiation meteorology file
-        metFileFdl = 'test6hrmet/lw.nc',        !< location of the incoming longwave radiation meteorology file
-        metFilePre = 'test6hrmet/pr.nc',        !< location of the precipitation meteorology file
-        metFileTa = 'test6hrmet/ta.nc',         !< location of the air temperature meteorology file
-        metFileQa = 'test6hrmet/qa.nc',         !< location of the specific humidity meteorology file
-        metFileUv = 'test6hrmet/wi.nc',         !< location of the wind speed meteorology file
-        metFilePres = 'test6hrmet/ap.nc',       !< location of the atmospheric pressure meteorology file
+        metFileFss = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1850_2017.nc',        !< location of the incoming shortwave radiation meteorology file
+        metFileFdl = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dlwrf_T63_chunked_1850_2017.nc',        !< location of the incoming longwave radiation meteorology file
+        metFilePre = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pre_T63_chunked_1850_2017.nc',        !< location of the precipitation meteorology file
+        metFileTa = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/tmp_T63_chunked_1850_2017.nc',         !< location of the air temperature meteorology file
+        metFileQa = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/spfh_T63_chunked_1850_2017.nc',         !< location of the specific humidity meteorology file
+        metFileUv = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/wind_T63_chunked_1850_2017.nc',         !< location of the wind speed meteorology file
+        metFilePres = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1850_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
     init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
@@ -40,7 +40,7 @@
         fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
     !Fire switches
-        dofire = .false. ,               !< If true the fire disturbance parameterization is turned on.
+        dofire = .true. ,               !< If true the fire disturbance parameterization is turned on.
 
             transientPOPD = .true. ,    !< Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
             POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc' ,
@@ -65,7 +65,7 @@
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is
         ! not used at all.
         lnduseon = .true. ,
-        LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_Aug_2017.nc' ,
+        LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
         fixedYearLUC = 1901 ,
 
     ! Wetland switches:
@@ -141,5 +141,3 @@
  /
 
 This area can be used for comments about the run.
-
-

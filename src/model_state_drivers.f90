@@ -44,20 +44,33 @@ module model_state_drivers
     real, dimension(:), allocatable :: metPres              !< Atmospheric pressure from metFile
 
     integer :: metFssId                             !> netcdf file id for the incoming shortwave radiation meteorology file
+    character(80) :: metFssVarName                  !> Name of variable in file
     integer :: metFdlId                             !> netcdf file id for the incoming longwave radiation meteorology file
+    character(80) :: metFdlVarName                  !> Name of variable in file
     integer :: metPreId                             !> netcdf file id for the precipitation meteorology file
+    character(80) :: metPreVarName                  !> Name of variable in file
     integer :: metTaId                              !> netcdf file id for the air temperature meteorology file
+    character(80) :: metTaVarName                  !> Name of variable in file
     integer :: metQaId                              !> netcdf file id for the specific humidity meteorology file
+    character(80) :: metQaVarName                  !> Name of variable in file
     integer :: metUvId                              !> netcdf file id for the wind speed meteorology file
+    character(80) :: metUvVarName                  !> Name of variable in file
     integer :: metPresId                            !> netcdf file id for the atmospheric pressure meteorology file
+    character(80) :: metPresVarName                  !> Name of variable in file
     integer :: initid                               !> netcdf file id for the model initialization file
     integer :: rsid                                 !> netcdf file id for the model restart file
     integer :: co2id                                !> netcdf file id for the CO2 input file
+    character(80) :: co2VarName                  !> Name of variable in file
     integer :: ch4id                                !> netcdf file id for the CH4 input file
+    character(80) :: ch4VarName                  !> Name of variable in file
     integer :: popid                                !> netcdf file id for the population density input file
+    character(80) :: popVarName                  !> Name of variable in file
     integer :: lghtid                               !> netcdf file id for the lightning density input file
+    character(80) :: lghtVarName                  !> Name of variable in file
     integer :: lucid                                !> netcdf file id for the land use change input file
+    character(80) :: lucVarName                  !> Name of variable in file
     integer :: obswetid                             !> netcdf file id for the observed wetland distribution input file
+    character(80) :: obswetVarName                  !> Name of variable in file
 
     real :: metInputTimeStep                        !> The timestep of the read in meteorology (hours)
 
@@ -289,27 +302,40 @@ contains
 
         if (ctem_on) then
             co2id = ncOpen(CO2File, nf90_nowrite)
+            co2VarName = ncGetVarName(co2id)
             ch4id = ncOpen(CH4File, nf90_nowrite)
+            ch4VarName = ncGetVarName(ch4id)
             if (dofire) then
                 popid = ncOpen(POPDFile, nf90_nowrite)
+                popVarName = ncGetVarName(popid)
                 lghtid = ncOpen(LGHTFile, nf90_nowrite)
+                lghtVarName = ncGetVarName(lghtid)
             end if
             if (lnduseon .or. (fixedYearLUC .ne. -9999)) then
                 lucid = ncOpen(LUCFile, nf90_nowrite)
+                lucVarName = ncGetVarName(lucid)
             end if
             if (transientOBSWETF .or. (fixedYearOBSWETF .ne. -9999)) then
                 obswetid = ncOpen(OBSWETFFile, nf90_nowrite)
+                obswetVarName = ncGetVarName(obswetid)
             end if
         end if
 
-        !> Open the meteorological forcing files
+        !> Open the meteorological forcing files and find the variable name in the file
         metFssId    = ncOpen(metFileFss, nf90_nowrite)
+        metFssVarName = ncGetVarName(metFssId)
         metFdlId    = ncOpen(metFileFdl, nf90_nowrite)
+        metFdlVarName = ncGetVarName(metFdlId)
         metPreId    = ncOpen(metFilePre, nf90_nowrite)
+        metPreVarName = ncGetVarName(metPreId)
         metTaId     = ncOpen(metFileTa, nf90_nowrite)
+        metTaVarName = ncGetVarName(metTaId)
         metQaId     = ncOpen(metFileQa, nf90_nowrite)
+        metQaVarName = ncGetVarName(metQaId)
         metUvId     = ncOpen(metFileUv, nf90_nowrite)
+        metUvVarName = ncGetVarName(metUvId)
         metPresId   = ncOpen(metFilePres, nf90_nowrite)
+        metPresVarName = ncGetVarName(metPresId)
 
     end subroutine read_modelsetup
 
@@ -765,7 +791,7 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
-        use ctem_params,        only : icc,nmos,ignd,icp1,modelpft
+        use ctem_params,        only : icc,nmos,ignd,icp1,modelpft,iccp1
 
         implicit none
 
@@ -1001,7 +1027,7 @@ contains
             if (transientCO2) then
                 ! We read in the whole CO2 times series and store it.
                 allocate(CO2FromFile(lengthOfFile))
-                CO2FromFile = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [1], count = [lengthOfFile])
+                CO2FromFile = ncGet1DVar(CO2id, trim(co2VarName), start = [1], count = [lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
@@ -1009,7 +1035,7 @@ contains
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                co2concrow(i,:) = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [arrindex], count = [1])
+                co2concrow(i,:) = ncGet1DVar(CO2id, trim(co2VarName), start = [arrindex], count = [1])
             end if
 
         case ('CH4') ! Methane concentration
@@ -1029,7 +1055,7 @@ contains
             if (transientCH4) then
                 ! We read in the whole CH3 times series and store it.
                 allocate(CH4FromFile(lengthOfFile))
-                CH4FromFile = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [1], count = [lengthOfFile])
+                CH4FromFile = ncGet1DVar(ch4id, trim(ch4VarName), start = [1], count = [lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
@@ -1037,7 +1063,7 @@ contains
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                ch4concrow(i,:) = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [arrindex], count = [1])
+                ch4concrow(i,:) = ncGet1DVar(ch4id, trim(ch4VarName), start = [arrindex], count = [1])
             end if
 
         case ('POPD') ! Population density
@@ -1059,7 +1085,7 @@ contains
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
                 allocate(POPDFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(popid, 'popd', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
 
             else
                 ! Find the requested year in the file.
@@ -1068,7 +1094,7 @@ contains
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                popdinrow(i,:) = ncGet1DVar(popid, 'popd', start = [arrindex,lonloc,latloc], count = [1,1,1])
+                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [arrindex,lonloc,latloc], count = [1,1,1])
 
             end if
 
@@ -1094,7 +1120,7 @@ contains
             if (transientLGHT) then
                 ! We read in the whole LGHT times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
-                LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
 
             else
                 ! Find the requested day and year in the file.
@@ -1107,7 +1133,7 @@ contains
                 ! We read in only the suggested year of daily inputs
                 ! FLAG Not presently set up for leap years!
                 allocate(LGHTFromFile(365))
-                LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [arrindex,lonloc,latloc], count = [365,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(LGHTTime)
@@ -1142,7 +1168,7 @@ contains
                 ! We read in the whole LUC times series and store it.
                 allocate(LUCFromFile(lengthOfFile,icc))
                 !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
-                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
+                LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
@@ -1155,7 +1181,7 @@ contains
                 if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
 
                 !fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
-                fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
+                fcancmxrow(i,m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
 
             end if
 
@@ -1180,7 +1206,7 @@ contains
             if (transientOBSWETF) then
                 ! We read in the whole OBSWETF times series and store it.
                 allocate(OBSWETFFromFile(lengthOfFile))
-                OBSWETFFromFile = ncGet1DVar(obswetid, 'wetf', start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
 
             else
 
@@ -1195,7 +1221,7 @@ contains
                 ! We read in only the suggested year's worth of daily data
                 ! FLAG Not presently set up for leap years!
                 allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, 'wetf', start = [arrindex,lonloc,latloc], count = [365,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
@@ -1296,7 +1322,7 @@ contains
             i = 1 ! offline nlat is always 1 so just set
             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
             if (nmos > 1) stop('updateInput for LUC only set up for 1 tile at present')
-            nfcancmxrow(i,m,:) = LUCFromFile(arrindex,:)
+            nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
 
        case('LGHT')
 
@@ -1456,21 +1482,14 @@ contains
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
 
-!         metFss = ncGet1DVar(metFssId, 'sw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-!         metFdl = ncGet1DVar(metFdlId, 'lw', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-!         metPre = ncGet1DVar(metPreId, 'pr', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-!         metTa = ncGet1DVar(metTaId, 'ta', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-!         metQa = ncGet1DVar(metQaId, 'qa', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-!         metUv = ncGet1DVar(metUvId, 'wi', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-!         metPres = ncGet1DVar(metPresId, 'ap', start = [firstIndex,lonloc,latloc], count = [validTimestep,1,1])
-
-        metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metFdl = ncGet1DVar(metFdlId, 'Incoming_Long_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metPre = ncGet1DVar(metPreId, 'Total_Precipitation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metTa = ncGet1DVar(metTaId, 'Temperature', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metQa = ncGet1DVar(metQaId, 'Air_Specific_Humidity', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metUv = ncGet1DVar(metUvId, 'U_wind_component', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metPres = ncGet1DVar(metPresId, 'Pression', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        !metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metTa = ncGet1DVar(metTaId, trim(metTaVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metQa = ncGet1DVar(metQaId, trim(metQaVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metUv = ncGet1DVar(metUvId, trim(metUvVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPres = ncGet1DVar(metPresId, trim(metPresVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
 
     end subroutine getMet
 
