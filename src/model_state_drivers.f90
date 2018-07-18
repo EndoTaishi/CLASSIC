@@ -113,6 +113,7 @@ contains
         character(350), pointer          :: metFileUv
         character(350), pointer          :: metFilePres
         logical, pointer                 :: ctem_on
+        logical, pointer                 :: projectedGrid
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
         integer, pointer                 :: fixedYearLUC
@@ -126,7 +127,7 @@ contains
         integer, dimension(1) :: pos
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
-        integer :: lonloc,latloc
+        integer :: lonloc,latloc,flattenedIndex
 
         ! point pointers:
         init_file               => c_switch%init_file
@@ -138,6 +139,7 @@ contains
         LUCFile                 => c_switch%LUCFile
         OBSWETFFile             => c_switch%OBSWETFFile
         ctem_on                 => c_switch%ctem_on
+        projectedGrid           => c_switch%projectedGrid
         dofire                  => c_switch%dofire
         lnduseon                => c_switch%lnduseon
         transientOBSWETF        => c_switch%transientOBSWETF
@@ -157,79 +159,125 @@ contains
 
         initid = ncOpen(init_file, NF90_NOWRITE)
 
-        !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
-        !! names of longitude and latitude.
+        if (.not. projectedGrid) then
 
-        totlon = ncGetDimLen(initid,'lon')
-        totlat = ncGetDimLen(initid,'lat')
+            !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
+            !! names of longitude and latitude.
 
-        !>calculate the number and indices of the pixels to be calculated
-        allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
+            totlon = ncGetDimLen(initid,'lon')
+            totlat = ncGetDimLen(initid,'lat')
 
-        myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
-        myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+            !>calculate the number and indices of the pixels to be calculated
+            allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
 
-        !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
-        !! when the input file expects the opposite.
-        if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
+            myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+
+            !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
+            !! when the input file expects the opposite.
+            if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
+            if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
+
+    ! FLAG - be good to put in a check here but need to do this better.
+    !         !> Check that our domain is within the longitude and latitude limits of
+    !         !! the input files. Otherwise print a warning. Primarily we are trying to
+    !         !! catch instances where the input file runs from 0 to 360 longitude while
+    !         !! the user expects -180 to 180.
+    !         if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLonValues(1)
+    !         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
+    !         else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLatValues(1)
+    !         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
+    !         end if
+
+            !> Based on the domainBounds, we make vectors of the cells to be run.
+            pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
+            xpos(1) = pos(1)
+
+            pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
+            xpos(2) = pos(1)
+
+            pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
+            ypos(1) = pos(1)
+
+            pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
+            ypos(2) = pos(1)
+
+            myDomain%srtx = minval(xpos)
+            myDomain%srty = minval(ypos)
+
+            if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
+                myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
+            myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+
+            if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
+                myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
+            myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
+
+        else ! projected grid
+
+          !> On a projected grid we have to use the grid cell indexes to delineate our domain to run
+          !! over. We then use the indexes to determine the values of longitude and latitude for
+          !! each grid cell.
+
+          !> Retrieve dimensions. We assume the file has 'lon' and 'lat' for
+          !! names of longitude and latitude.
+
+          totlon = ncGetDimLen(initid,'lon')
+          totlat = ncGetDimLen(initid,'lat')
+
+          !>calculate the number and indices of the pixels to be calculated
+          allocate(myDomain%allLonValues(totlat*totlon), myDomain%allLatValues(totlat*totlon))
+
+          !> This will get all lon and lat grids as flattened vectors.
+          myDomain%allLonValues = ncGetDimValues(initid, 'lon', count2D = (/totlon,totlat/))
+          myDomain%allLatValues = ncGetDimValues(initid, 'lat', count2D = (/totlon,totlat/))
+
+          !> Since the domainBounds are indexes, and not coordinates, we can use them directly.
+          xpos(1) = myDomain%domainBounds(1)
+          xpos(2) = myDomain%domainBounds(2)
+          ypos(1) = myDomain%domainBounds(3)
+          ypos(2) = myDomain%domainBounds(4)
+
+          !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
+          if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
+              myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+              print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
+              xpos(1) = 1
+              xpos(2) = totlon
+              ypos(1) = 1
+              ypos(2) = totlat
+          end if
+
+          myDomain%srtx = minval(xpos)
+          myDomain%srty = minval(ypos)
+
+          myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+          myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
         end if
-        if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
-        if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
-        end if
-        if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
-
-! FLAG - be good to put in a check here but need to do this better.
-!         !> Check that our domain is within the longitude and latitude limits of
-!         !! the input files. Otherwise print a warning. Primarily we are trying to
-!         !! catch instances where the input file runs from 0 to 360 longitude while
-!         !! the user expects -180 to 180.
-!         if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
-!             print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLonValues(1)
-!         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
-!             print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
-!         else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
-!             print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLatValues(1)
-!         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
-!             print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
-!         end if
-
-        !> Based on the domainBounds, we make vectors of the cells to be run.
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
-        xpos(1) = pos(1)
-
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
-        xpos(2) = pos(1)
-
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
-        ypos(1) = pos(1)
-
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
-        ypos(2) = pos(1)
-
-        myDomain%srtx = minval(xpos)
-        myDomain%srty = minval(ypos)
-
-        if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
-            myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
-        myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
-
-        if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
-            myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
-        myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
 
         !> Save the longitudes and latitudes over the region of interest for making the
         !! output files.
@@ -259,28 +307,43 @@ contains
                     !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
                     !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
                     myDomain%LandCellCount = myDomain%LandCellCount + 1
-                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
                     myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
                     myDomain%lonLocalIndex(myDomain%LandCellCount) = i
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
                     myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
                     myDomain%latLocalIndex(myDomain%LandCellCount) = j
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                    if (.not. projectedGrid) then
+                      myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                      myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                      myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
+                      myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                    else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                      flattenedIndex = (j + myDomain%srty - 1) * (i + myDomain%srtx - 1)
+                      myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
+                      myDomain%lonUnique(i) = myDomain%allLonValues(flattenedIndex)
+                      myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
+                      myDomain%latUnique(j) = myDomain%allLatValues(flattenedIndex)
+                    end if
                 else !keep track of the non-land too for the making of the output files.
+                  if (.not. projectedGrid) then
                     myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
                     myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                  else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                    flattenedIndex = (j + myDomain%srty - 1) * (i + myDomain%srtx - 1)
+                    myDomain%lonUnique(i) = myDomain%allLonValues(flattenedIndex)
+                    myDomain%latUnique(j) = myDomain%allLatValues(flattenedIndex)
                 endif
             enddo
         enddo
 
         if (myDomain%LandCellCount == 0) then
             print*,'=>Your domain is not land my friend.'
-            if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
+            if (.not. projectedGrid) then
+             if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
                 lonloc = closestCell(initid,'lon',myDomain%domainBounds(1))
                 latloc = closestCell(initid,'lat',myDomain%domainBounds(3))
                 print*,'Closest grid cell is ',myDomain%allLonValues(lonloc),'/',myDomain%allLatValues(latloc)
                 print*,'but that may not be land. Check your input files to be sure'
+              end if
             end if
         end if
 

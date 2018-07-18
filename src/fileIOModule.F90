@@ -1,5 +1,9 @@
 !> The File IO Module contains wrappers for accessing netCDF files.
-!! It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF.
+!! It uses precompile directives to determine if a compilation should be serial or parallel.
+!! Instead of including netcdf function calls and the netcdf module in the code,
+!! one is encouraged to use the fileIOModule. The main advantage of using wrapper
+!! functions is that the code can be easily written for either parallel or serial
+!! execution without having to worry about the necessary different function calls.
 module fileIOModule
 #if PARALLEL
     use mpi
@@ -51,7 +55,7 @@ contains
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call MPI_INFO_CREATE(info, status)
         call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status)
-        mode = 0
+        mode = 0 ! not needed?
         mode = ior(NF90_MPIIO, NF90_CLOBBER)
         mode = ior(mode, NF90_NETCDF4)
         call checkNC(nf90_create_par(trim(fileName), mode, MPI_COMM_WORLD, info, ncCreate), tag = 'ncCreate(' // trim(filename) // ') ')
@@ -73,7 +77,7 @@ contains
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call MPI_INFO_CREATE(info, status)
         call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status)
-        mode = 0
+        mode = 0 ! not needed?
         mode = ior(NF90_MPIIO, omode)
         mode = ior(mode, NF90_NETCDF4)
         call checkNC(nf90_open_par(trim(fileName), mode, MPI_COMM_WORLD, info, ncOpen), tag = 'ncOpen(' // trim(filename) // ') ')
@@ -217,7 +221,7 @@ contains
             counter = counter + 1
             call checkNC(nf90_put_att(fileId, varId, label, realValues), tag = 'ncPutAtt(' // trim(label) // ') ')
         end if
-        if (counter /= 1) stop('In function ncPutAtt, please supply either charValues, intValue or realValues; just one')
+        if (counter /= 1) stop('In function ncPutAtt, please supply either charValues, intValue or realValues. Just one')
     end subroutine ncPutAtt
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -268,17 +272,33 @@ contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)
-    function ncGetDimValues(fileId, label, start, count)
+    function ncGetDimValues(fileId, label, start, count, start2D, count2D)
         integer, intent(in)                         :: fileId   !< File id
         character(*), intent(in)                    :: label    !< Label
+        integer                                     :: varId, ndims
         integer, intent(in), optional               :: start(1), count(1)
+        integer, intent(in), optional               :: start2D(2), count2D(2)
         real, allocatable                           :: ncGetDimValues(:)
         integer                                     :: localCount(1) = [1], localStart(1) = [1]
+        integer                                     :: localCount2D(2) = [1,1], localStart2D(2) = [1,1]
 
-        if (present(start)) localStart = start
-        if (present(count)) localCount = count
-        allocate(ncGetDimValues(count(1)))
-        ncGetDimValues = ncGetVar(fileId, label, localStart, localCount)
+        varId = ncGetVarId(fileId, label)
+        ndims = ncGetVarDimensions(fileId, varId)
+          
+        select case(ndims)
+        case(1)
+          if (present(start)) localStart = start
+          if (present(count)) localCount = count
+          allocate(ncGetDimValues(count(1)))
+          ncGetDimValues = ncGetVar(fileId, label, localStart, localCount)
+        case(2)
+          if (present(start2D)) localStart2D = start2D
+          if (present(count2D)) localCount2D = count2D
+          allocate(ncGetDimValues(count2D(1)*count2D(2)))
+          ncGetDimValues = ncGetVar(fileId, label, localStart2D, localCount2D)
+        case default
+            stop("Only up to 2 dimensions have been implemented in ncGetDimValues")
+        end select
 
     end function ncGetDimValues
 

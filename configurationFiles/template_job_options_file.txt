@@ -1,5 +1,9 @@
 &joboptions
 
+! Model grid description
+    projectedGrid = .true. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                            !! regions referenced by the indexs, not coordinates, when running a sub-region
+
 ! Meteorological options:
     readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
     readMetEndYear = 1902    !< Last year of meteorological forcing to read in from the met file
@@ -16,7 +20,8 @@
         metFilePres = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1850_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
+    init_file = 'inputFiles/tair_1850_1876_can.nc' ,     !< this file is for testing- projectedGrid
+    !init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters

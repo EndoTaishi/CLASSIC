@@ -416,4 +416,85 @@ While CLASS models all physical processes related to energy and water balance fo
 Or can be done via the markdown syntax (http://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_toc) which is a bit easier.
 
 end ignore -->
+# **ALL of BELOW NEEDS REWRITING**
 
+# Running The Model
+There are two ways one can run the model: in an immediate environment or using a provided container.
+
+## Immediate environment
+Running in an immediate environment means compiling on one's machine environment. As such, one has to have software libraries existing on the machine necessary for compilation and linking. For example, since the model is using the serial version of NetCDF, the NetCDF library has to be available at compile time.
+
+Minimum requirements include:
+  - NetCDF library 4+ (either serial or parallel, downloaded binary or compiled from source code)
+  - GNU Fortran 4.8+
+
+On Linux, the easiest way to install the necessary libraries is to use the aptitude software manager.
+From command line one can use the following commands:
+
+`sudo apt update`
+
+`sudo apt install -y libnetcdff-dev build-essential gfortran`
+
+The above commands require the user to have administrative rights and access to the internet, and any typical non-institutional user should have that. If a user cannot obtain administrative rights, then please contact the appropriate system administrator to install the missing libraries.
+
+## Using a Singularity Container
+For more information on Singularity containers, please check out the dedicated Containers page of the current documentation bundle.
+
+## How to use the model
+In order to successfully use the model one has to use the following steps:
+1. Unpack the model from the code repository
+2. Obtain the input files and the default configuration file (job_options file)
+3. Compile the model
+4. Run the model
+5. Use NetCDF specific tools for visualization purposes
+
+### 1. Unpack the model from the code repository
+Download the code at:
+
+!JOE!
+
+### 2. Obtain the input files and the default configuration file
+Download the input files at:
+
+!JOE!
+
+And start by using a provided token configuration file at:
+
+!JOE!
+
+
+### 3. Compile the model
+Then, move to the CLASSIC directory.
+
+`cd [path/]CLASSIC`
+
+Clean the directory (best to play it safe).
+
+`make clean`
+
+And compile the project.
+
+`make`
+
+### 4. Run the model
+
+The current version of the model does allow for running either an individual grid cell or a range. If one needs to run a certain range of cells, then they will be processed sequentially.
+After the compilation is finished, use the following command to run the model:
+
+`bin/CLASSIC configurationFiles/job_options.txt 270/45`
+
+### 5. Use netCDF specific tools for visualization purposes
+
+!JOE!
+
+Note. The model can also be run in parallel on the supercomputer. For detailed instrcutions on how to achieve that, please consult the person responsible for providing access to the server.
+
+# Support Tools
+
+Outside of the core CLASSIC model, we have developed a few supporting applications intended to ease the use of the model:
+
+1. The init file converter (Fortran)
+2. The ASCII Meteorological file converter to NetCDF (Fortran)
+3. The output variable editor (Web application - HTML, JavaScript)
+
+These applications can be found in the `tools` folder in the root directory of the model package. Each has its own individual folder including a detailed README.md file.
