@@ -284,7 +284,7 @@ contains
 
         varId = ncGetVarId(fileId, label)
         ndims = ncGetVarDimensions(fileId, varId)
-          
+
         select case(ndims)
         case(1)
           if (present(start)) localStart = start
@@ -484,7 +484,7 @@ contains
             call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
+        if (counter /= 1) stop('In function ncPutDimValues, please supply either intValues or realValues. Just one')
 
     end subroutine ncPutDimValues
 
@@ -511,7 +511,7 @@ contains
             call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
+        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues. Just one')
 
     end subroutine ncPutVar
 
@@ -536,7 +536,7 @@ contains
             call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
+        if (counter /= 1) stop('In function ncPut2DVar, please supply either intValues or realValues. Just one')
     end subroutine ncPut2DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------

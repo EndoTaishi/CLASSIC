@@ -2,7 +2,7 @@
 
 ! Model grid description
     projectedGrid = .true. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
-                            !! regions referenced by the indexs, not coordinates, when running a sub-region
+                            !! regions referenced by the indexes, not coordinates, when running a sub-region
 
 ! Meteorological options:
     readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
@@ -127,7 +127,7 @@
     dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
 
     dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
-    JHHSTD = 166 ,                !< day of the year to start writing the half-hourly output
+    JHHSTD = 166 ,              !< day of the year to start writing the half-hourly output
     JHHENDD = 185 ,             !< day of the year to stop writing the half-hourly output
     JHHSTY = 1901 ,             !< simulation year (iyear) to start writing the half-hourly output
     JHHENDY = 1901 ,            !< simulation year (iyear) to stop writing the half-hourly output

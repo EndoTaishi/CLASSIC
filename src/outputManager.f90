@@ -465,15 +465,13 @@ contains
 
         ! Fill in the dimension variables and define the model output vars
         if (.not. projectedGrid) then
-
           call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
           call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
-
         else ! projected grid
-          !FLAG not changed yet
-          print*,'NOT DONE YET'
-          call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
-          call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
+          ! Since these are flattened arrays we will use the ncPutVar function which will reshape them
+          !FLAG need testing!!
+          call ncPutVar(ncid, 'lon', realValues = myDomain%lonUnique,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
+          call ncPutVar(ncid, 'lat', realValues = myDomain%latUnique,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
         end if
 
         select case(trim(outputForm))

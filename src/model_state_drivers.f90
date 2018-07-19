@@ -127,7 +127,7 @@ contains
         integer, dimension(1) :: pos
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
-        integer :: lonloc,latloc,flattenedIndex
+        integer :: lonloc,latloc,flattenedIndex,tempIndex
 
         ! point pointers:
         init_file               => c_switch%init_file
@@ -211,18 +211,28 @@ contains
     !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
     !         end if
 
-            !> Based on the domainBounds, we make vectors of the cells to be run.
-            pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
-            xpos(1) = pos(1)
+            !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
+            if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
+                myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+                print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
+                xpos(1) = 1
+                xpos(2) = totlon
+                ypos(1) = 1
+                ypos(2) = totlat
+            else ! Use the domain as given
+              !> Based on the domainBounds, we make vectors of the cells to be run.
+              pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
+              xpos(1) = pos(1)
 
-            pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
-            xpos(2) = pos(1)
+              pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
+              xpos(2) = pos(1)
 
-            pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
-            ypos(1) = pos(1)
+              pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
+              ypos(1) = pos(1)
 
-            pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
-            ypos(2) = pos(1)
+              pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
+              ypos(2) = pos(1)
+            end if
 
             myDomain%srtx = minval(xpos)
             myDomain%srty = minval(ypos)
@@ -287,9 +297,14 @@ contains
                  myDomain%latLandIndex(totsize),&
                  myDomain%lonLandIndex(totsize),&
                  myDomain%latLocalIndex(totsize),&
-                 myDomain%lonLocalIndex(totsize),&
-                 myDomain%latUnique(myDomain%cnty),&
-                 myDomain%lonUnique(myDomain%cntx))
+                 myDomain%lonLocalIndex(totsize))
+        if (.not. projectedGrid) then
+          allocate(myDomain%latUnique(myDomain%cnty),&
+                   myDomain%lonUnique(myDomain%cntx))
+        else
+          allocate(myDomain%latUnique(myDomain%cnty*myDomain%cntx),&
+                   myDomain%lonUnique(myDomain%cnty*myDomain%cntx))
+        end if
 
         !> Retrieve the number of soil layers (set ignd!)
         ignd = ncGetDimLen(initid, 'layer')
@@ -304,33 +319,34 @@ contains
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
                 if (mask(i,j) .eq. -1) then
+                  if (projectedGrid) flattenedIndex = (i + myDomain%srtx - 2) * totlon + (j + myDomain%srty - 1)  !FLAG this needs to be checked when I have a file!!
                     !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
                     !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
-                    myDomain%LandCellCount = myDomain%LandCellCount + 1
-                    myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
-                    myDomain%lonLocalIndex(myDomain%LandCellCount) = i
-                    myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
-                    myDomain%latLocalIndex(myDomain%LandCellCount) = j
-                    if (.not. projectedGrid) then
-                      myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                      myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                      myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
-                      myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                    else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
-                      flattenedIndex = (j + myDomain%srty - 1) * (i + myDomain%srtx - 1)
-                      myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
-                      myDomain%lonUnique(i) = myDomain%allLonValues(flattenedIndex)
-                      myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
-                      myDomain%latUnique(j) = myDomain%allLatValues(flattenedIndex)
-                    end if
+                  myDomain%LandCellCount = myDomain%LandCellCount + 1
+                  myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
+                  myDomain%lonLocalIndex(myDomain%LandCellCount) = i
+                  myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
+                  myDomain%latLocalIndex(myDomain%LandCellCount) = j
+                  if (.not. projectedGrid) then
+                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
+                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                  else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
+                    myDomain%lonUnique(i) = myDomain%allLonValues(flattenedIndex)
+                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
+                    myDomain%latUnique(j) = myDomain%allLatValues(flattenedIndex)
+                  end if
                 else !keep track of the non-land too for the making of the output files.
                   if (.not. projectedGrid) then
                     myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
                     myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
                   else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
-                    flattenedIndex = (j + myDomain%srty - 1) * (i + myDomain%srtx - 1)
-                    myDomain%lonUnique(i) = myDomain%allLonValues(flattenedIndex)
-                    myDomain%latUnique(j) = myDomain%allLatValues(flattenedIndex)
+                    tempIndex = (i - 1) * myDomain%cntx + j !FLAG this needs to be checked when I have a
+                    myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                    myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                  end if
                 endif
             enddo
         enddo
