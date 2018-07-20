@@ -72,7 +72,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 
 
 use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
-                        iccp1, standreplace, tolrance, bmasthrs_fire, &
+                        iccp2, standreplace, tolrance, bmasthrs_fire, &
                         lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, & 
                         f0, maxsprd, frco2glf, frco2blf, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
@@ -109,7 +109,7 @@ real :: vwind(ilg)         !<wind speed, \f$m/s\f$
 real :: fcancmx(ilg,icc)   !<fractional coverages of ctem's 9 pfts
 real :: lightng(ilg)       !<total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
                            !<to ground lightning is some fixed fraction of total lightning.
-real :: litrmass(ilg,iccp1)!<litter mass for each of the 9 pfts
+real :: litrmass(ilg,iccp2)!<litter mass for each of the 9 pfts
 real :: prbfrhuc(ilg)      !<probability of fire due to human causes
 real :: extnprob(ilg)      !<fire extinguishing probability
 real :: rmatctem(ilg,icc,ignd) !<fraction of roots in each soil layer for each pft
@@ -309,6 +309,9 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>Root biomass is not used to initiate fire. For example if
 !>the last fire burned all grass leaves, and some of the roots
 !>were left, its unlikely these roots could catch fire. 
+!>          Here we ignore the LUC litrmass on iccp2. We only consider the litrmass
+!>          on layer 1 as the rest are buried.
+
            biomass(i,j)=gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+ &
                       litrmass(i,j)
 
@@ -705,7 +708,7 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
 !     J. Melton. Mar 26 2014  - Create subroutine
 
 use ctem_params, only : crop, icc, seed, standreplace, grass, zero, &
-                        iccp1, tolrance, numcrops
+                        iccp1, tolrance, numcrops, iccp2, ignd
 
 implicit none
 
@@ -724,8 +727,8 @@ real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf carbon mas
 real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(inout) :: rootmass    !< roots carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for individual pfts,  \f$u-mol co_2/m^2.sec\f$
-real, dimension(nilg,iccp1), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-real, dimension(nilg,iccp1), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
 

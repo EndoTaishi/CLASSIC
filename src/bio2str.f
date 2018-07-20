@@ -130,7 +130,7 @@ c
                                  !<mass as an input, and this is now provided by ctem. kg/m2.
       real sai(ilg,icc)          !< 
       real saic(ilg,ican)        !< 
-      real sfcancmx(ilg,ican)    !< 
+      real sfcancmx(ilg,ican)    !<sum of fcancmxs
       real alvisc(ilg,ican)      !<output: albedo for 4 class pfts simulated by ctem, visible 
       real alnirc(ilg,ican)      !<output: albedo for 4 class pfts simulated by ctem, near ir
       real pai(ilg,icc)          !< 
@@ -172,22 +172,30 @@ c     ---------------------------------------------------------------
 c
 c     initialization
 c
-      do 30 j = 1,icc
-        do 40 k = 1,ignd
-          do 50 i = il1,il2
-            rmatctem(i,j,k)=0.0
-            etmp(i,j,k)    =0.0
-50        continue
-40      continue
-30    continue
-c
-      do 31 j = 1,ican
-        do 41 k = 1,ignd
-          do 51 i = il1,il2
-            rmatc(i,j,k)=0.0
-51        continue
-41      continue
-31    continue
+         rmatctem(:,:,:)=0.0 !il1:il2,icc,ignd
+        etmp(:,:,:)    =0.0 !il1:il2,icc,ignd
+        rmatc(:,:,:)   =0.0 !il1:il2,ican,ignd
+        ailc(:,:)=0.0       !il1:il2,ican
+        saic(:,:)=0.0       !il1:il2,ican
+        paic(:,:)=0.0       !il1:il2,ican
+        slaic(:,:)=0.0      !il1:il2,ican
+        zolnc(:,:)=0.0      !il1:il2,ican
+        averough(:,:)=0.0   !il1:il2,ican
+        alvisc(:,:)=0.0     !il1:il2,ican
+        alnirc(:,:)=0.0     !il1:il2,ican
+        cmasvegc(:,:)=0.0   !il1:il2,ican
+        sfcancmx(:,:)=0.0   !il1:il2,ican
+        sla(:)=0.0          !icc
+        useb(:,:)=0.0       !il1:il2,icc
+        ailcg(:,:)=0.0      !il1:il2,icc
+        ailcb(:,:)=0.0      !il1:il2,icc
+        veghght(:,:)=0.0    !il1:il2,icc
+        lnrghlth(:,:)=0.0   !il1:il2,icc
+        a(:,:)=0.0          !il1:il2,icc
+        slai(:,:)=0.0       !il1:il2,icc
+        sai(:,:)=0.0        !il1:il2,icc
+        bmasveg(:,:)=0.0    !il1:il2,icc
+        pai(:,:)=0.0        !il1:il2,icc
 c
       icount=0
       do 52 j = 1, ican
@@ -197,39 +205,13 @@ c
           sort(icount)=n
 53      continue
 52    continue
-c
-      do 60 j = 1,ican
-        do 70 i =  il1, il2
-          ailc(i,j)=0.0
-          saic(i,j)=0.0
-          paic(i,j)=0.0
-          slaic(i,j)=0.0
-          zolnc(i,j)=0.0
-          averough(i,j)=0.0
-          alvisc(i,j)=0.0
-          alnirc(i,j)=0.0
-          cmasvegc(i,j)=0.0
-          sfcancmx(i,j)=0.0    ! sum of fcancmxs
 
-70      continue
-60    continue
-c
       do 80 j = 1,icc
-        sla(j)=0.0
         do 90 i =  il1, il2
-          usealpha(i,j)=alpha(sort(j))
-          useb(i,j)=0.0
-          ailcg(i,j)=0.0
-          ailcb(i,j)=0.0
-          veghght(i,j)=0.0
-          lnrghlth(i,j)=0.0
-          a(i,j)=0.0
-          slai(i,j)=0.0
-          sai(i,j)=0.0
-          bmasveg(i,j)=0.0
-          pai(i,j)=0.0
+            usealpha(i,j)=alpha(sort(j))
 90      continue
 80    continue
+c
 !>
 !!------ 1. conversion of leaf biomass into leaf area index -------
 !!

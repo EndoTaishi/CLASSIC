@@ -511,7 +511,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolrance, crop, grass, grass_ind
+                        tolrance, crop, grass, grass_ind,iccp2,ignd
 
 use disturbance_scheme, only : burntobare
 
@@ -544,8 +544,8 @@ real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for e
 real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(nilg,iccp1), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(nilg,iccp1), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
 real, dimension(nilg,ican), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
 real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2

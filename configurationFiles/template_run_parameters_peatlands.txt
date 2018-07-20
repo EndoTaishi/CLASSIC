@@ -236,6 +236,10 @@ kn(16:20)  =0.46, 0.44, 0.46, 0.00, 0.00,
     humicfac(11:15)   = 0.10, 0.10, 0.00, 0.00, 0.00,
     humicfac(16:20)   = 0.42, 0.42, 0.42, 0.00, 0.00,
 
+    !> Humification factor - used for transferring carbon from litter into soil c pool. This is the
+    !! value used for bare ground or LUC pools.
+    humicfac_bg = 0.45,
+
     !> Minimum lai below which a pft doesn't expand
     laimin(1:5)     = 1.0,   1.0,  0.0, 0.0, 0.0,
     laimin(6:10)    = 1.5,   1.0,  1.0, 1.0, 1.0,
@@ -950,4 +954,3 @@ kn(16:20)  =0.46, 0.44, 0.46, 0.00, 0.00,
       gamma_m = 0.95,
 
 /
-
