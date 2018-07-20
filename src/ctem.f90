@@ -73,8 +73,8 @@
      &                nppmoss,armoss,peatdep)
 
 !
-!             Canadian Terrestrial Ecosystem Model (CTEM) 
-!             Main Ctem Subroutine Compatible With CLASS 
+!             Canadian Terrestrial Ecosystem Model (CTEM)
+!             Main Ctem Subroutine Compatible With CLASS
 
 !     14  Mar 2016  - Remove grid cell area calculation to the driver. This will
 !     J. Melton       harmonize this subroutine with the coupled code.
@@ -99,7 +99,7 @@
 !     J. Melton      composite and mosaic modes.
 !
 !     sep 25  2012   Add competition_map and competition_unmap
-!     Y. Peng   
+!     Y. Peng
 !
 !     Sep 12  2012
 !     J. Melton     Add in bottom limit to bleafmas to ensure it does no
@@ -109,23 +109,23 @@
 !     J. Melton     Pass in isand to ensure soil levels are properly
 !                   labelled as bedrock if assigned so in classb
 !
-!     Jan 10  2012 
+!     Jan 10  2012
 !     Yiran         Re-test bioclim and existence for competition
 !
 !     19  Sep. 2001 - This is the main terrestrial carbon model subrouti
-!     V. Arora        
+!     V. Arora
 !                     all primary ctem subroutines are called from here,
 !                     except phtsyn which is called from tsolvc
 !
 !     08 June  2001 - Add calls to three new subroutines (bioclim,
 !     V. Arora        existence, and competition) to add dynamic
-!                     competition between pfts. changes are also made 
+!                     competition between pfts. changes are also made
 !                     to land use change (luc) subroutine and the manner
 !                     in which distrubance is handles. fire now creates
 !                     bare ground which is subsequently available for
 !                     colonization. other changes are also made to keep
 !                     everything consistent with changing vegetation
-!                     fractions. 
+!                     fractions.
 !    -----------------------------------------------------------------
 
 use ctem_params,        only : kk, pi, zero,&
@@ -499,8 +499,8 @@ real hetr_for_w(ilg)                    !< Heterotrophic respiration to be used 
 real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
 integer :: botlyr                       !< bottom layer of the unfrozen soil column
 real :: frznrtlit                       !< fraction of root distribution in frozen layers
-real ltrsbrluc(ilg,ignd) !<
-real scrsbrluc(ilg,ignd) !<
+real ltrsbrluc(ilg) !<
+real scrsbrluc(ilg) !<
 !
 real tbarccs(ilg,ignd) !<
 real rootlitr(ilg,icc) !<
@@ -872,7 +872,7 @@ do 100 i = il1, il2
     nepveg(i,iccp1:iccp2) = 0.0  !<net ecosystem productity for bare fraction
     !        expnbaln(i)=0.0        !amount of c related to spatial expansion !Not used JM Jun 2014
     repro_cost_g(i)=0.0    !<amount of C for production of reproductive tissues
-100   continue 
+100   continue
 !
 do 110 j = 1,icc
     do 120 i = il1, il2
@@ -987,8 +987,8 @@ do 150 j = 1, icc
         fcanc(i,j)  = fcancmx(i,j)*(1.-fsnow(i))
         fcs(i) = fcs(i) + fcancs(i,j)
         fc(i)  = fc(i)  + fcanc(i,j)
-160     continue 
-150   continue 
+160     continue
+150   continue
 
 do 170 i = il1, il2
     fgs(i)=(1.0-fcs(i)-fc(i))*fsnow(i)
@@ -1086,8 +1086,8 @@ do 270 j = 1, icc
         rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
         nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
 
-280     continue 
-270   continue 
+280     continue
+270   continue
 !>
 !>Now that we know maintenance respiration from leaf, stem, and root
 !>and gpp, we can find growth respiration for each vegetation
@@ -1133,7 +1133,7 @@ do 335 i = il1, il2
         gpp(i)= gpp(i) + gppmoss(i)
         autores(i) = autores(i) + armoss(i)
     endif
-335   continue       
+335   continue
 !
 !     autotrophic respiration part ends
 !
@@ -1180,13 +1180,12 @@ call  hetresg  (litrmass(:,iccp1), soilcmas(:,iccp1),    delzw, thpor, &
 !
 !     find heterotrophic respiration rates for the LUC litter and soilc pools
 !
-call  hetresg  (litrmass(:,iccp2), soilcmas(:,iccp2),thpor, &
+call  hetresg  (litrmass(:,iccp2), soilcmas(:,iccp2),    delzw, thpor, &
      &                      il1, il2,  tbargs, psisat, bi,  &
-     &                   thliqg,     thiceg, &
+     &                   thliqg,      zbotw,  thiceg, &
      &                      fgs,        1,&
-     &                     isand, delzw,&
+     &                     isand,&
      &                   ltrsbrluc, scrsbrluc)
-
 !>
 !! When peatlands are simulated find the peat heterotrophic respiration
 
@@ -1214,8 +1213,8 @@ do 340 j = 1, icc
     endif
     nepveg(i,j)=nppveg(i,j)-hetrsveg(i,j)
 
-350     continue 
-340   continue 
+350     continue
+340   continue
 !>
 !!Find litter and soil c respiration rates averaged over the bare
 !!fraction of the grid cell using values from ground and snow over ground sub-areas.
@@ -1272,8 +1271,8 @@ do 360 j = 1,icc
 
 
             ! Now add in the LUC pools (which are kept in the first layer)
-            litres(i)=litres(i) + ltresveg(i,iccp2,1)
-            socres(i)=socres(i)+ scresveg(i,iccp2,1)
+            litres(i)=litres(i) + ltresveg(i,iccp2)
+            socres(i)=socres(i)+ scresveg(i,iccp2)
 
           else  ! peatlands
               litres(i) = litres(i)+ litresmoss(i) !add the moss litter, which is assumed to cover whole tile.
@@ -1283,7 +1282,7 @@ do 360 j = 1,icc
               nep(i)=npp(i)-hetrores(i)
 380   continue
 !>
-!!Update the litter and soil c pools based on litter and soil c respiration rates 
+!!Update the litter and soil c pools based on litter and soil c respiration rates
 !!found above. also transfer humidified litter to the soil c pool.
 !!
 do 420 j = 1, iccp2 !FLAG
@@ -1356,7 +1355,7 @@ do 470 i = il1, il2
 !    calculate moss time step C fluxes, '/365*deltat' convert year-1
 !    to time step-1, 'deltat/963.62' convert umol CO2/m2/s to kgC/m2/deltat.
 !    note that hutrstep_g aggregation for icc was done in loop 480
-! 
+!
               litrfallmoss(i)= Cmossmas(i)*rmortmoss/365*deltat !kgC/m2/day(dt)
               ltrestepmoss(i)= litresmoss(i)*(1.0/963.62)*deltat   !kgC/m2/dt
               nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
@@ -1456,8 +1455,8 @@ endif !PFTCompetition
         do 610 i = il1, il2
 !>
 !!Convert npp and maintenance respiration from different components
-!!from units of u mol co2/m2.sec -> \f$kg c/m^2\f$ sequestered or respired over the model time step (deltat)    
-      
+!!from units of u mol co2/m2.sec -> \f$kg c/m^2\f$ sequestered or respired over the model time step (deltat)
+
           gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
 
 !>Remove the cost of making reproductive tissues. This cost can only be removed when NPP is positive.
@@ -1472,7 +1471,7 @@ endif !PFTCompetition
 !         Amount of c related to horizontal expansion
 !         Not in use. JM Jun 2014
 !         expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)+ add2allo(i,j)*(963.62/1.0)
-!        
+!
           rmlvgstp(i,j)=rmlveg(i,j)*(1.0/963.62)*deltat
           rmsvgstp(i,j)=rmsveg(i,j)*(1.0/963.62)*deltat
           rmrvgstp(i,j)=rmrveg(i,j)*(1.0/963.62)*deltat
@@ -1489,9 +1488,9 @@ endif !PFTCompetition
             endif
           else  !>i.e. if lfstatus.eq.4
 !>and since we do not have any real leaves on then we do not take into account co2 uptake by imaginary leaves in carbon budget.
-!!rmlvgstp(i,j) should be zero because we set maintenance respiration from storage/imaginary leaves equal to zero. in loop 180 
+!!rmlvgstp(i,j) should be zero because we set maintenance respiration from storage/imaginary leaves equal to zero. in loop 180
 !!
-            ntchlveg(i,j)=-rmlvgstp(i,j) 
+            ntchlveg(i,j)=-rmlvgstp(i,j)
             ntchsveg(i,j)=-rmsvgstp(i,j)
             ntchrveg(i,j)=-rmrvgstp(i,j)
 !>
@@ -1507,7 +1506,7 @@ endif !PFTCompetition
           rootmass(i,j)=rootmass(i,j)+ntchrveg(i,j)
 !
           if(gleafmas(i,j).lt.0.0)then
-            write(6,1900)'gleafmas lt zero at i=',i,' for pft=',j,''   
+            write(6,1900)'gleafmas lt zero at i=',i,' for pft=',j,''
             write(6,1901)'gleafmas = ',gleafmas(i,j)
             write(6,1901)'ntchlveg = ',ntchlveg(i,j)
             write(6,1902)'lfstatus = ',lfstatus(i,j)
@@ -1519,7 +1518,7 @@ endif !PFTCompetition
           endif
 !
           if(stemmass(i,j).lt.0.0)then
-            write(6,1900)'stemmass lt zero at i=(',i,') for pft=',j,')' 
+            write(6,1900)'stemmass lt zero at i=(',i,') for pft=',j,')'
             write(6,1901)'stemmass = ',stemmass(i,j)
             write(6,1901)'ntchsveg = ',ntchsveg(i,j)
             write(6,1902)'lfstatus = ',lfstatus(i,j)
@@ -1533,17 +1532,17 @@ endif !PFTCompetition
           endif
 !
           if(rootmass(i,j).lt.0.0)then
-            write(6,1900)'rootmass lt zero at i=(',i,') for pft=',j,')' 
+            write(6,1900)'rootmass lt zero at i=(',i,') for pft=',j,')'
             write(6,1901)'rootmass = ',rootmass(i,j)
             call xit ('ctem',-8)
           endif
 !>
-!!convert net change in leaf, stem, and root biomass into 
+!!convert net change in leaf, stem, and root biomass into
 !!u-mol co2/m2.sec for use in balcar subroutine
-!!         
-          ntchlveg(i,j)=ntchlveg(i,j)*(963.62/deltat)         
-          ntchsveg(i,j)=ntchsveg(i,j)*(963.62/deltat)         
-          ntchrveg(i,j)=ntchrveg(i,j)*(963.62/deltat)         
+!!
+          ntchlveg(i,j)=ntchlveg(i,j)*(963.62/deltat)
+          ntchsveg(i,j)=ntchsveg(i,j)*(963.62/deltat)
+          ntchrveg(i,j)=ntchrveg(i,j)*(963.62/deltat)
 !>
 !!to avoid over/underflow problems set gleafmas, stemmass, and
 !!rootmass to zero if they get too small
@@ -1555,7 +1554,7 @@ endif !PFTCompetition
 !
 610     continue
 600   continue
-!>  
+!>
 !>calculate grid averaged value of C related to spatial expansion
 !>
       do 620 j = 1,icc
@@ -1563,7 +1562,7 @@ endif !PFTCompetition
          !if (PFTCompetition .or. lnduseon) then
 !           Not in use. We now use the constant reproductive cost below. JM Jun 2014
 !           expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
-            repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j) 
+            repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j)
          !endif
 621     continue
 620   continue
@@ -1573,9 +1572,9 @@ endif !PFTCompetition
 !>Phenology part starts
 !!
 !!the phenology subroutine determines leaf status for each pft and calculates leaf litter.
-!!the phenology subroutine uses soil temperature (tbar) and root temperature. however, 
-!!since ctem doesn't make the distinction between canopy over ground, and canopy over 
-!!snow sub-areas for phenology purposes (for  example, leaf onset is not assumed to occur 
+!!the phenology subroutine uses soil temperature (tbar) and root temperature. however,
+!!since ctem doesn't make the distinction between canopy over ground, and canopy over
+!!snow sub-areas for phenology purposes (for  example, leaf onset is not assumed to occur
 !!at different times over these sub-areas) we use average soil and root temperature in the phenology subroutine.
 !!
 !!calculate average soil temperature and root temperature using values for canopy over ground and canopy over snow sub-areas, for each vegetation type.
@@ -1703,11 +1702,11 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
      &                     grwtheff, stemltrm,     rootltrm, glealtrm,&
      &                     geremort, intrmort)
 !>
-!>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the 
+!>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
 !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
 !!
       k1=0
-      do 830 j = 1, ican 
+      do 830 j = 1, ican
        if(j.eq.1) then
          k1 = k1 + 1
        else
@@ -1719,7 +1718,7 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 !
           stemmass(i,m)=stemmass(i,m)-stemltrm(i,m)
           rootmass(i,m)=rootmass(i,m)-rootltrm(i,m)
-          litrmass(i,m)=litrmass(i,m)+stemltrm(i,m)+rootltrm(i,m)  
+          litrmass(i,m)=litrmass(i,m)+stemltrm(i,m)+rootltrm(i,m)
 !
           if(j.eq.4)then    ! grasses
             gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
@@ -1731,8 +1730,8 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
           litrmass(i,m)=litrmass(i,m)+glealtrm(i,m)
 !
 840     continue
-835    continue 
-830   continue 
+835    continue
+830   continue
 
 !    ------------------------------------------------------------------
 !>
@@ -1740,9 +1739,9 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 !>the primary output from from disturbance subroutine is litter generated, c emissions due to fire
 !!and area burned, which may be used to estimate change in fractional coverages.
 !!
-!!disturbance is spatial and requires area of gcm grid cell and areas of different pfts present in 
-!!a given grid cell. however, when ctem is operated at a point scale then it is assumed that the 
-!!spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating 
+!!disturbance is spatial and requires area of gcm grid cell and areas of different pfts present in
+!!a given grid cell. however, when ctem is operated at a point scale then it is assumed that the
+!!spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating
 !!any fire by specifying fire extingushing probability equal to 1.
 !!
 call disturb (stemmass, rootmass, gleafmas, bleafmas,&
@@ -1753,7 +1752,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                    grclarea,   thicec,   popdin, lucemcom,&
      &                      dofire,  currlat,     iday, fsnow,&
      &                       isand,  &
-!    in above, out below 
+!    in above, out below
      &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
      &                    glcaemls, rtcaemls, stcaemls,&
      &                    blcaemls, ltrcemls, burnfrac,smfunc_veg,&
@@ -1761,8 +1760,8 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
      &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
      &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
-     &                    pstemmass, pgleafmass )  
-    
+     &                    pstemmass, pgleafmass )
+
 !    ------------------------------------------------------------------
 !>
 !>Calculate nbp (net biome production) for each pft by taking into account
@@ -1776,19 +1775,19 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
       do 1000 i = il1, il2
         do 1010 j = 1, icc
           dscemlv1(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +&
-     &                  rtcaemls(i,j) 
+     &                  rtcaemls(i,j)
           dscemlv2(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +&
      &                  rtcaemls(i,j) + ltrcemls(i,j)
 
 !         convert \f$kg c/m^2\f$ emitted in one day into u mol co2/m2.sec before
-!         subtracting emission losses from nep. 
+!         subtracting emission losses from nep.
           nbpveg(i,j)  =nepveg(i,j)   - dscemlv2(i,j)*(963.62/deltat)
 
 1010    continue
 
 !       For accounting purposes, we also need to account for the bare fraction
 !       and LUC pool NBP. Since there is no fire on the bare, we use 0.
-          nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0. 
+          nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0.
           nbpveg(i,iccp2)  =nepveg(i,iccp2)   - 0.  !FLAG
 
 1000  continue
@@ -1823,13 +1822,13 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !!
       do 1050 j = 1,icc
         do 1060 i = il1, il2
-!>    
+!>
 !>units here are \f$kg c/m^2 .day\f$
          tltrleaf(i,j)=leaflitr(i,j)+glealtrm(i,j)+glfltrdt(i,j)+&
      &                 blfltrdt(i,j)
          tltrstem(i,j)=stemlitr(i,j)+stemltrm(i,j)+stemltdt(i,j)
          tltrroot(i,j)=rootlitr(i,j)+rootltrm(i,j)+rootltdt(i,j)
-!>       
+!>
 !>convert units to u-mol co2/m2.sec
          leaflitr(i,j)=leaflitr(i,j)*(963.62/deltat)
          tltrleaf(i,j)=tltrleaf(i,j)*(963.62/deltat)
@@ -1871,10 +1870,10 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
           ! and the LUC dead C
-          gavgltms(i)=gavgltms(i) + litrmass(i,iccp2,k) !FLAG
-          gavgscms(i)=gavgscms(i) + soilcmas(i,iccp2,k) !FLAG
+          gavgltms(i)=gavgltms(i) + litrmass(i,iccp2) !FLAG
+          gavgscms(i)=gavgscms(i) + soilcmas(i,iccp2) !FLAG
 
-          else                      
+          else
              litrmsmoss(i)= litrmsmoss(i)+litrfallmoss(i)-&
       &                     ltrestepmoss(i)-humstepmoss(i)     !kg/m2
              Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallmoss(i)
@@ -1885,12 +1884,12 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              ! Calculate the peat depth based on equation 18 in Wu, Verseghy, Melton 2016 GMD.
              peatdep(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
      &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
-          endif          
+          endif
 1020  continue
 !     -----------------------------------------------------------------
 !>
-!>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145) 
-!!and updated sizes of all pools (in \f$kg c/m^2\f$). Now we call the balcar subroutine and make sure 
+!>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145)
+!!and updated sizes of all pools (in \f$kg c/m^2\f$). Now we call the balcar subroutine and make sure
 !!that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
 !!
 if(spinfast.eq.1)then
@@ -1915,7 +1914,7 @@ endif
 
 !     -----------------------------------------------------------------
 !>
-!>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass. 
+!>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass.
 !>
 call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
      &                            il1,      il2, fcancmx,    zbotw,&
@@ -1944,4 +1943,3 @@ call peatDayEnd(il2)
 !
       return
       end
-

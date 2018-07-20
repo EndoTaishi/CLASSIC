@@ -204,8 +204,8 @@ c
           littempor=0.
           litrestemp=0.
           do k = 1, ignd
-            littempor = littempor + litrmass(i,iccp2,k)
-            litrestemp = litrestemp + ltresveg(i,iccp2,k)
+            littempor = littempor + litrmass(i,iccp2)
+            litrestemp = litrestemp + ltresveg(i,iccp2)
           end do
           diff1=littempor - plitmass(i,iccp2)
           diff2=( -litrestemp-humtrsvg(i,iccp2))*
