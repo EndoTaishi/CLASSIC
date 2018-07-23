@@ -1031,7 +1031,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
-                if (arrindex == 0) stop('getInput says: The CO2 file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1059,7 +1059,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
-                if (arrindex == 0) stop('getInput says: The CH4 file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The CH4 file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1090,7 +1090,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
-                if (arrindex == 0) stop('getInput says: The POPD file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The POPD file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1128,7 +1128,7 @@ contains
                 startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
 
                 arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
-                if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
                 ! We read in only the suggested year of daily inputs
                 ! FLAG Not presently set up for leap years!
@@ -1162,7 +1162,7 @@ contains
 
             ! Ensure the file has the expected number of PFTs
             numPFTsinFile = ncGetDimLen(lucid, 'lev')
-            if (numPFTsinFile .ne. icc) stop('getInput says: LUC file does not have expected number of PFTs')
+            if (numPFTsinFile .ne. icc) stop ('getInput says: LUC file does not have expected number of PFTs')
 
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
@@ -1172,13 +1172,13 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
-                if (arrindex == 0) stop('getInput says: The LUC file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The LUC file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
 
-                if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
+                if (nmos .ne. 1) stop ('getInput for LUC is not setup for more than one tile at present!')
 
                 !fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
                 fcancmxrow(i,m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
@@ -1216,7 +1216,7 @@ contains
 
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,OBSWETFTime,startWETTime)
-                if (arrindex == 0) stop('getInput says: The OBSWETF file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
                 ! FLAG Not presently set up for leap years!
@@ -1233,7 +1233,7 @@ contains
             end if
 
         case default
-            stop('Specify an input kind for getInput')
+            stop ('Specify an input kind for getInput')
 
         end select
 
@@ -1321,7 +1321,7 @@ contains
             arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
             i = 1 ! offline nlat is always 1 so just set
             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
-            if (nmos > 1) stop('updateInput for LUC only set up for 1 tile at present')
+            if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
             nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
 
        case('LGHT')
@@ -1375,7 +1375,7 @@ contains
             end do
 
         case default
-            stop('specify an input kind for updateInput')
+            stop ('specify an input kind for updateInput')
         end select
 
     end subroutine updateInput
