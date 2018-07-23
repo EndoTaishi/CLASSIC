@@ -12,7 +12,6 @@ var searchData=
   ['classd_2ef',['CLASSD.f',['../CLASSD_8f.html',1,'']]],
   ['classg_2ef',['CLASSG.f',['../CLASSG_8f.html',1,'']]],
   ['classi_2ef',['CLASSI.f',['../CLASSI_8f.html',1,'']]],
-  ['classic_2ef90',['CLASSIC.F90',['../CLASSIC_8F90.html',1,'']]],
   ['classs_2ef',['CLASSS.f',['../CLASSS_8f.html',1,'']]],
   ['classt_2ef',['CLASST.f',['../CLASST_8f.html',1,'']]],
   ['classw_2ef',['CLASSW.f',['../CLASSW_8f.html',1,'']]],

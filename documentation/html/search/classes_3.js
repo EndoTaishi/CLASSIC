@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['generalutils',['generalutils',['../classgeneralutils.html',1,'']]]
+  ['simulationdomain',['simulationdomain',['../structoutputmanager_1_1simulationdomain.html',1,'outputmanager']]]
 ];
