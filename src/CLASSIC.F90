@@ -120,6 +120,9 @@ contains
 
     subroutine initializeParallelEnvironment
         implicit none
+
+        size=1
+        rank=0
 #if PARALLEL
         call MPI_INIT(ierr)
         time = MPI_WTIME()

@@ -7,13 +7,13 @@
     leap = .false. ,         !< True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
-        metFileFss = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1850_2017.nc',        !< location of the incoming shortwave radiation meteorology file
-        metFileFdl = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dlwrf_T63_chunked_1850_2017.nc',        !< location of the incoming longwave radiation meteorology file
-        metFilePre = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pre_T63_chunked_1850_2017.nc',        !< location of the precipitation meteorology file
-        metFileTa = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/tmp_T63_chunked_1850_2017.nc',         !< location of the air temperature meteorology file
-        metFileQa = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/spfh_T63_chunked_1850_2017.nc',         !< location of the specific humidity meteorology file
-        metFileUv = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/wind_T63_chunked_1850_2017.nc',         !< location of the wind speed meteorology file
-        metFilePres = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1850_2017.nc',       !< location of the atmospheric pressure meteorology file
+        metFileFss = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1700_2017.nc',        !< location of the incoming shortwave radiation meteorology file
+        metFileFdl = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dlwrf_T63_chunked_1700_2017.nc',        !< location of the incoming longwave radiation meteorology file
+        metFilePre = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pre_T63_chunked_1700_2017.nc',        !< location of the precipitation meteorology file
+        metFileTa = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/tmp_T63_chunked_1700_2017.nc',         !< location of the air temperature meteorology file
+        metFileQa = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/spfh_T63_chunked_1700_2017.nc',         !< location of the specific humidity meteorology file
+        metFileUv = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/wind_T63_chunked_1700_2017.nc',         !< location of the wind speed meteorology file
+        metFilePres = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
     init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
