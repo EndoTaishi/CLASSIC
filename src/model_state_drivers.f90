@@ -1482,7 +1482,6 @@ contains
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
 
-        !metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
