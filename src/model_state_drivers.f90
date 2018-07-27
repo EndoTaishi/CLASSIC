@@ -1085,8 +1085,7 @@ contains
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
                 allocate(POPDFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
-
+                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
@@ -1094,7 +1093,7 @@ contains
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [arrindex,lonloc,latloc], count = [1,1,1])
+                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,arrindex], count = [1,1,1])
 
             end if
 
@@ -1120,7 +1119,7 @@ contains
             if (transientLGHT) then
                 ! We read in the whole LGHT times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
                 ! Find the requested day and year in the file.
@@ -1133,7 +1132,7 @@ contains
                 ! We read in only the suggested year of daily inputs
                 ! FLAG Not presently set up for leap years!
                 allocate(LGHTFromFile(365))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(LGHTTime)
@@ -1166,8 +1165,7 @@ contains
 
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
-                allocate(LUCFromFile(lengthOfFile,icc))
-                !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
+                allocate(LUCFromFile(icc,lengthOfFile))
                 LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
             else
                 ! Find the requested year in the file.
@@ -1180,7 +1178,6 @@ contains
 
                 if (nmos .ne. 1) stop ('getInput for LUC is not setup for more than one tile at present!')
 
-                !fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
                 fcancmxrow(i,m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
 
             end if
@@ -1206,7 +1203,7 @@ contains
             if (transientOBSWETF) then
                 ! We read in the whole OBSWETF times series and store it.
                 allocate(OBSWETFFromFile(lengthOfFile))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
 
@@ -1221,7 +1218,7 @@ contains
                 ! We read in only the suggested year's worth of daily data
                 ! FLAG Not presently set up for leap years!
                 allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,lengthOfFile], count = [1,1,365])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
@@ -1386,8 +1383,8 @@ contains
     !>\ingroup model_state_drivers_getMet
     !!@{
     !> Read in the meteorological input from a netcdf file
-    !! It is **very** important that the files have time as the fastest varying dimension.
-    !! There is an orders of magnitude slow-up if the dimensions are out of order!
+    !! It is **very** important that the files are chunked correctly (for global and regional runs).
+    !! There is an orders of magnitude slow-up otherwise!
     subroutine getMet(longitude,latitude,nday,delt)
 
         use fileIOModule
@@ -1482,7 +1479,6 @@ contains
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
 
-        !metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
