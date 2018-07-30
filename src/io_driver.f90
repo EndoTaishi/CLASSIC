@@ -4128,7 +4128,11 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)])
             end if
-
+            if (lnduseon) then
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_g' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
+            end if
             if (PFTCompetition) then !FLAG this needs to be tested!
                 do m=1,nmtest
                     pftExist = 0.0
@@ -4172,11 +4176,6 @@ contains
                     end if
     !                            smfuncveg_yr(i,m,j), &
     !                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
-                    if (lnduseon) then
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_g(i)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_g' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_g(i)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
-                    end if
                 end if
             end if
 
