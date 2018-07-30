@@ -241,6 +241,12 @@ contains
         allocate(soilcmasrow(NMTEST,icc+1))
         allocate(lfstatusrow(NMTEST,icc))
         allocate(pandaysrow(NMTEST,icc))
+        allocate(slopefrac(NMTEST,8))
+        allocate(ipeatlandrow(NMTEST))
+        allocate(Cmossmas(NMTEST))
+        allocate(litrmsmoss(NMTEST))
+        allocate(dmoss(NMTEST))
+
         allocate(fcancmxrow(nmtest,icc))
         allocate(mlightng(12))
 
@@ -329,6 +335,12 @@ contains
             !read(11,*) twarmm(i,1), tcoldm(i,1), gdd5(i,1), aridity(i,1),srplsmon(i,1)
             !read(11,*) defctmon(i,1), anndefct(i,1), annsrpls(i,1), annpcp(i,1), dry_season_length(i,1)
 
+            ! The peatland stuff should not be in any files so put in dummy vals
+            slopefrac(:,:) = 0.
+            ipeatlandrow(:) = 0
+            Cmossmas(:) = 0.
+            litrmsmoss(:) = 0.
+            dmoss(:) = 0.
 
     end subroutine loadCTMData
 
@@ -411,8 +423,15 @@ contains
             lfstatusrow,&
             pandaysrow,&
             mlightng,&
+            pandaysrow,&
             extnprob,&
-            prbfrhuc
+            prbfrhuc,&
+            slopefrac,&
+            ipeatlandrow,&
+            Cmossmas,&
+            litrmsmoss,&
+            dmoss
+
 
 
         read(unit=10,nml = classicvars)
@@ -670,6 +689,11 @@ contains
             call exportVariable('rootmass',units='kgC/m2',long_name='Root mass',values2D=rootmassrow)
             call exportVariable('lfstatus',units='-',long_name='Leaf status, see Phenology',intvalues2D=lfstatusrow)
             call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
+            call exportVariable('ipeatland',units='-',long_name='Peatland flag: 0 = not a peatland, 1= bog, 2 = fen',intvalues=ipeatlandrow)
+            call exportVariable('slopefrac',units='-',long_name='Slope-based fraction for dynamic wetlands',values2D=slopefrac)
+            call exportVariable('Cmossmas',units='kgC/m2',long_name='C in moss biomass',values=Cmossmas)
+            call exportVariable('litrmsmoss',units='kgC/m2',long_name='Moss litter mass',values=litrmsmoss)
+            call exportVariable('dmoss',units='m',long_name='Depth of living moss',values=dmoss)
 
             if (fileType == 'ini') then
                 if (icc .ne. 9 .and. ican .ne. 4) print*,'Warning - expected ICC =9 and ICAN = 4'
