@@ -4169,10 +4169,14 @@ contains
 
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)])
+                    end if
     !                            smfuncveg_yr(i,m,j), &
     !                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
+                    if (lnduseon) then
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_g(i)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_g' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_g(i)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
                     end if
-
                 end if
             end if
 
@@ -4206,6 +4210,11 @@ contains
                     if (dofire .or. lnduseon) then
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)])
+                    end if
+                    if (lnduseon) then
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_t' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_t' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_t(i,:)])
                     end if
                 end if
             end if
