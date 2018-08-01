@@ -1896,19 +1896,19 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>luc_emc_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>luc_emc_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>luc_emc_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
         </variable>
         <variable id="46" includeBareGround="false" dormant="false">
@@ -1938,19 +1938,19 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucltrin_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucltrin_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucltrin_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
         </variable>
         <variable id="47" includeBareGround="false" dormant="false">
@@ -1980,19 +1980,49 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucsocin_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucsocin_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucsocin_mo_t</nameInCode>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="77" includeBareGround="false" dormant="false">
+            <standardName>Sum of fDeforestToAtmo,  fDeforestToLitter, fDeforestToSoil</standardName>
+            <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed. This is the total amount of C </longName>
+            <shortName>fDeforestTotal</shortName>
+            <defaultUnits>g C $m^{-2}$ year$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luctot_yr_g</nameInCode>
                 <units>g C $m^{-2}$ year$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>luctot_yr_t</nameInCode>
+                <units>g C $m^{-2}$ year$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luctot_mo_g</nameInCode>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>luctot_mo_t</nameInCode>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
         </variable>
     </group>
