@@ -949,6 +949,30 @@
                 <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
+        <variable id="78" includeBareGround="false" dormant="false">
+            <standardName>Total Soil Moisture Content</standardName>
+            <longName>the mass per unit area (summed over all soil layers) of water in all phases</longName>
+            <shortName>mrso</shortName>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>mrso_mo</nameInCode>
+                <units>kg$m^{-2}$</units>
+            </variant>
+        </variable>
+        <variable id="79" includeBareGround="false" dormant="false">
+            <standardName>Total water content of soil layer</standardName>
+            <longName>in each soil layer, the mass of water in all phases, including ice. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
+            <shortName>mrsol</shortName>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>mrsol_mo</nameInCode>
+                <units>kg$m^{-2}$</units>
+            </variant>
+        </variable>
     </group>
     <group type="ctem">
         <variable id="23" includeBareGround="false" dormant="false">

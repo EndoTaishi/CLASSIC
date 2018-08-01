@@ -775,6 +775,8 @@ type class_moyr_output
     real, allocatable, dimension(:) :: ACTLYR_MAX_MO
     real, allocatable, dimension(:) :: FTABLE_MIN_MO
     real, allocatable, dimension(:) :: FTABLE_MAX_MO
+    real, allocatable, dimension(:) :: MRSO_MO      !< Total Soil Moisture Content [kg $m^{-2}$]
+    real, allocatable, dimension(:,:):: MRSOL_MO     !< Total water content of soil layer [kg $m^{-2}$]
     real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo
     real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
     real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
@@ -1332,6 +1334,7 @@ allocate(class_rot% ALIRACC (nlat),&
          class_out%FTABLE_MIN_MO (nlat),&
          class_out%FTABLE_MAX_MO (nlat),&
          class_out%ALTOTACC_MO (nlat),&
+         class_out%MRSO_MO (nlat),&
          class_out%GROUNDEVAP (nlat),&
          class_out%CANOPYEVAP (nlat),&
          class_out%altotcntr_m (nlat),&
@@ -1340,6 +1343,8 @@ allocate(class_rot% ALIRACC (nlat),&
          class_out%TBARACC_MO (nlat,ignd),&
          class_out%THLQACC_MO (nlat,ignd),&
          class_out%THICACC_MO (nlat,ignd),&
+         class_out%MRSOL_MO (nlat,ignd),&         
+
          class_out%ALVSACC_YR (nlat),&
          class_out%ALIRACC_YR (nlat),&
          class_out%FLUTACC_YR (nlat),&
@@ -1625,12 +1630,13 @@ do i=1,nltest
     class_out%GROUNDEVAP(I)=0.
     class_out%ALTOTACC_MO(I)=0.
     class_out%altotcntr_m(i)=0
-
+    class_out%MRSO_MO(i) = 0.
 
     DO J=1,IGND
         class_out%TBARACC_MO(I,J)=0.
         class_out%THLQACC_MO(I,J)=0.
         class_out%THICACC_MO(I,J)=0.
+        class_out%MRSOL_MO(i,j) = 0.
     end do
 end do
 

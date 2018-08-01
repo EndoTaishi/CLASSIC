@@ -1421,7 +1421,7 @@ contains
         real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
         real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
         real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
-
+        real, pointer, dimension(:,:,:) :: dlzwrot    !<Permeable thickness of soil layer [m]
         real, pointer, dimension(:) :: ALVSACC_MO
         real, pointer, dimension(:) :: ALIRACC_MO
         real, pointer, dimension(:) :: FLUTACC_MO
@@ -1448,6 +1448,8 @@ contains
         real, pointer, dimension(:,:) :: TBARACC_MO
         real, pointer, dimension(:,:) :: THLQACC_MO
         real, pointer, dimension(:,:) :: THICACC_MO
+        real, pointer, dimension(:) :: MRSO_MO
+        real, pointer, dimension(:,:) :: MRSOL_MO
         integer, pointer, dimension(:) :: altotcntr_m
 
         ! local
@@ -1496,6 +1498,7 @@ contains
         PREROW          => class_rot%PREROW
         ftable          => class_rot%ftable
         actlyr          => class_rot%actlyr
+        dlzwrot         => class_rot%dlzwrot
         ALVSACC_MO        => class_out%ALVSACC_MO
         ALIRACC_MO        => class_out%ALIRACC_MO
         FLUTACC_MO        => class_out%FLUTACC_MO
@@ -1523,6 +1526,8 @@ contains
         CANOPYEVAP        => class_out%CANOPYEVAP
         ALTOTACC_MO       => class_out%ALTOTACC_MO
         altotcntr_m       => class_out%altotcntr_m
+        MRSO_MO           => class_out%MRSO_MO
+        MRSOL_MO           => class_out%MRSOL_MO
 
         ! ------------
 
@@ -1574,6 +1579,10 @@ contains
                 TBARACC_MO(I,J)=TBARACC_MO(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
                 THLQACC_MO(I,J)=THLQACC_MO(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
                 THICACC_MO(I,J)=THICACC_MO(I,J)+THICROT(I,M,J)*FAREROT(I,M)
+                ! Find the total soil moisture content
+                ! Add up each soil layers moisture and convert from m3/m3 to kg/m2
+                MRSO_MO(I) = MRSO_MO(I) + (THLQROT(I,M,J)*FAREROT(I,M) + THICROT(I,M,J)*FAREROT(I,M)) * 1000. * DLZWROT(I,M,J)
+                MRSOL_MO(I,J) = MRSOL_MO(I,J) + (THLQROT(I,M,J)*FAREROT(I,M) + THICROT(I,M,J)*FAREROT(I,M)) * 1000. * DLZWROT(I,M,J)
                 TRANSPACC_MO(I)=TRANSPACC_MO(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
 823          CONTINUE
 
@@ -1619,13 +1628,15 @@ contains
 
                 ACTLYR_MO(I) = ACTLYR_MO(I)/REAL(NDMONTH)
                 FTABLE_MO(I) = FTABLE_MO(I)/REAL(NDMONTH)
-                ! The accumulated quantities don't change.
-                !ROFACC_MO,PREACC_MO(I),EVAPACC_MO(I),TRANSPACC_MO(I),GROUNDEVAP,CANOPYEVAP
+                MRSO_MO(I) = MRSO_MO(I)/REAL(NDMONTH)
                 DO J=1,IGND
                     TBARACC_MO(I,J)=TBARACC_MO(I,J)/REAL(NDMONTH)
                     THLQACC_MO(I,J)=THLQACC_MO(I,J)/REAL(NDMONTH)
                     THICACC_MO(I,J)=THICACC_MO(I,J)/REAL(NDMONTH)
+                    MRSOL_MO(I,J) = MRSOL_MO(I,J)/REAL(NDMONTH)
                 ENDDO
+                ! The accumulated quantities don't change.
+                !ROFACC_MO,PREACC_MO(I),EVAPACC_MO(I),TRANSPACC_MO(I),GROUNDEVAP,CANOPYEVAP
 
                 FSSTAR_MO=FSINACC_MO(I)*(1.-ALTOTACC_MO(I))
                 FLSTAR_MO=FLINACC_MO(I)-FLUTACC_MO(I)
@@ -1656,11 +1667,12 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
-
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)-TFREZ])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'mrso_mo',timeStamp,'mrso', [MRSO_MO(I)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'mrsol_mo',timeStamp,'mrsol', [MRSOL_MO(I,:)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
