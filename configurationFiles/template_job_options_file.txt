@@ -118,9 +118,9 @@
 ! Output options:
 
     output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
-    xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
+    xmlFile = 'configurationFiles/outputVariableDescriptors_v1.2.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
-    doperpftoutput = .false. ,   !< Switch for making extra output files that are at the per PFT level
+    doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
 
     dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
