@@ -624,14 +624,16 @@ type class_rotated
     real, allocatable, dimension(:,:) :: WTRSROT !<
     real, allocatable, dimension(:,:) :: SFRHROT !<
     real, allocatable, dimension(:,:) :: wtableROT !<
+    real, allocatable, dimension(:,:)  :: FTABLE !<Depth to frozen water table (m)
+    real, allocatable, dimension(:,:)  :: ACTLYR !<Active layer depth (m)
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
-    integer, allocatable, dimension(:,:,:) :: ISNDROT !<
+    integer, allocatable, dimension(:,:,:) :: ISNDROT !<Sand content flag, used to delineate non-soils.
     real, allocatable, dimension(:,:,:) :: TBARROT !< Temperature of soil layers [K]
     real, allocatable, dimension(:,:,:) :: THICROT !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: THLQROT !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: BIROT   !<
-    real, allocatable, dimension(:,:,:) :: DLZWROT !<
+    real, allocatable, dimension(:,:,:) :: DLZWROT !<Permeable thickness of soil layer [m]
     real, allocatable, dimension(:,:,:) :: GRKSROT !<
     real, allocatable, dimension(:,:,:) :: HCPSROT !<
     real, allocatable, dimension(:,:,:) :: SANDROT !<Percentage sand content of soil
@@ -641,7 +643,7 @@ type class_rotated
     real, allocatable, dimension(:,:,:) :: PSIWROT !<
     real, allocatable, dimension(:,:,:) :: TCSROT  !<
     real, allocatable, dimension(:,:,:) :: THFCROT !<
-    real, allocatable, dimension(:,:,:) :: THMROT  !<
+    real, allocatable, dimension(:,:,:) :: THMROT  !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: THPROT  !<
     real, allocatable, dimension(:,:,:) :: THRROT  !<
     real, allocatable, dimension(:,:,:) :: THRAROT !<
@@ -1468,6 +1470,8 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot% WTRSROT (nlat,nmos),&
          class_rot% SFRHROT (nlat,nmos),&
          class_rot% wtableROT(nlat,nmos),&
+         class_rot% ACTLYR(nlat,nmos),&
+         class_rot% FTABLE(nlat,nmos),&
          class_rot%PREACC_M(nlat,nmos),&
          class_rot%GTACC_M (nlat,nmos),&
          class_rot%QEVPACC_M (nlat,nmos),&

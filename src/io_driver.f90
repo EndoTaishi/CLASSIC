@@ -1,4 +1,4 @@
-!>Central module that handles all CTEM preparation and writing of output files
+!>Central module that handles all preparation and writing to output files
 module io_driver
 
 ! J. Melton Mar 30 2015
@@ -1256,39 +1256,6 @@ contains
 ! !       open(unit=99,file='test.CT17D_G') !peatland water balance
 ! !       open(unit=90,file='test.CT18Y_G') !peatland depth information
 !
-!------------------------------------------------------------------------------------
-! Find the active layer depth and depth to the frozen water table.
-!             ! FLAG! move into a subroutine and put in ctemUtilities. It should happen
-!               regardless of whether the daily files are outputted since the monthly or
-!               annual files might need this info.
-!             ACTLYR=0.0
-!             FTABLE=0.0
-!             DO 440 J=1,IGND
-!                 DO I = 1, NLTEST
-!                     DO M = 1,NMTEST
-!                         IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
-!                             IF(ISNDROT(I,M,J).GT.-3) THEN
-!                                 ACTLYR(I,M)=ACTLYR(I,M)+(THLQROT(I,M,J)/(THLQROT(I,M,J)+&
-!                                     &               THICROT(I,M,J)))*DLZWROT(I,M,J)
-!                                 !ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
-!                                 !    ACTLYR=ACTLYR+DELZ(J)
-!                             ENDIF
-!                         ELSEIF(TBARROT(I,M,J).GT.TFREZ) THEN
-!                             ACTLYR(I,M)=ACTLYR(I,M)+DELZ(J)
-!                         ENDIF
-!                         IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
-!                             IF(ISNDROT(I,M,J).GT.-3) THEN
-!                                 FTABLE(I,M)=FTABLE(I,M)+(THICROT(I,M,J)/(THLQROT(I,M,J)+&
-!                                     &              THICROT(I,M,J)-THMROT(I,M,J)))*DLZWROT(I,M,J)
-!                                 !ELSE
-!                                 !    FTABLE=FTABLE+DELZ(J)
-!                             ENDIF
-!                         ELSEIF(TBARROT(I,M,J).LT.TFREZ) THEN
-!                             FTABLE(I,M)=FTABLE(I,M)+DELZ(J)
-!                         ENDIF
-!                     END DO
-!                 END DO
-! 440         CONTINUE
 ! !!    ----peatland output-----------------------------------------------\
 ! !
 ! !                 write(99,6999)  IDAY,realyr,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
@@ -1403,7 +1370,7 @@ contains
     !! The pointer to the monthly data structures (in class_statevars) keeps the data between calls.
 
     subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
-                                ACTLYR,FTABLE,lastDOY)
+                                lastDOY)
 
         use class_statevars, only : class_out,resetclassmon,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
@@ -1423,8 +1390,6 @@ contains
         real, intent(in) :: SBC  !CLASS common block items,
         real, intent(in) :: DELT !CLASS common block items,
         real, intent(in) :: TFREZ !CLASS common block items,
-        real, dimension(:,:), intent(in) :: ACTLYR          ! Active layer depth (m)  !FLAG why arguments?
-        real, dimension(:,:), intent(in) :: FTABLE          ! Depth to frozen water table (m)  !FLAG why arguments?
 
         ! pointers
         real, dimension(:,:,:), pointer :: TBARROT
@@ -1454,6 +1419,9 @@ contains
         real, dimension(:,:), pointer :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
         real, dimension(:,:), pointer :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
         real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
+        real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
+        real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+
         real, pointer, dimension(:) :: ALVSACC_MO
         real, pointer, dimension(:) :: ALIRACC_MO
         real, pointer, dimension(:) :: FLUTACC_MO
@@ -1526,6 +1494,8 @@ contains
         FSIHROW         => class_rot%FSIHROW
         TAROW           => class_rot%TAROW
         PREROW          => class_rot%PREROW
+        ftable          => class_rot%ftable
+        actlyr          => class_rot%actlyr
         ALVSACC_MO        => class_out%ALVSACC_MO
         ALIRACC_MO        => class_out%ALIRACC_MO
         FLUTACC_MO        => class_out%FLUTACC_MO
@@ -1609,7 +1579,7 @@ contains
 
 821     CONTINUE
 
-        ! Check if the active layer has become more shallow or deepended.
+        ! Check if the active layer has become more shallow or deepened.
         ACTLYR_MAX_MO(I) = max(ACTLYR_MAX_MO(I), ACTLYR_tmp(I))
         ACTLYR_MIN_MO(I) = min(ACTLYR_MIN_MO(I), ACTLYR_tmp(I))
         FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp(I))
@@ -1716,7 +1686,7 @@ contains
     !! The pointer to the annual data structures (in class_statevars) keeps the data between calls.
 
     subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,DELT, &
-                                nltest,nmtest,ACTLYR,FTABLE,lastDOY)
+                                nltest,nmtest,lastDOY)
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
@@ -1735,8 +1705,6 @@ contains
         integer, intent(in) :: lastDOY
         real, intent(in) :: SBC
         real, intent(in) :: DELT
-        real, dimension(:,:), intent(in) :: ACTLYR          ! Active layer depth (m)
-        real, dimension(:,:), intent(in) :: FTABLE          ! Depth to frozen water table (m)
 
         ! pointers
         real, dimension(:), pointer :: FSSROW
@@ -1757,6 +1725,9 @@ contains
         real, dimension(:,:), pointer :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
         real, dimension(:,:), pointer :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
         real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
+        real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
+        real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+
         integer, pointer, dimension(:) :: altotcntr_yr
         real, pointer, dimension(:) :: ALVSACC_YR
         real, pointer, dimension(:) :: ALIRACC_YR
@@ -1802,6 +1773,8 @@ contains
         FSIHROW         => class_rot%FSIHROW
         TAROW           => class_rot%TAROW
         PREROW          => class_rot%PREROW
+        ftable          => class_rot%ftable
+        actlyr          => class_rot%actlyr
         ALVSACC_YR        => class_out%ALVSACC_YR
         ALIRACC_YR        => class_out%ALIRACC_YR
         FLUTACC_YR        => class_out%FLUTACC_YR

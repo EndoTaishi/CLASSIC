@@ -7,7 +7,7 @@ module generalUtils
     public :: findDaylength
     public :: findCloudiness
     public :: findLeapYears
-    public :: findActiveLayerDepth
+    public :: findPermafrostVars
     public :: parseTimeStamp
     public :: closeEnough
 
@@ -201,11 +201,68 @@ module generalUtils
     end function parseTimeStamp
 
     !---------------------------------------------------------------------------------------
+    !> Finds the active layer depth and depth to the frozen water table.
+    subroutine findPermafrostVars(nltest,nmtest,tfrez)
 
-    subroutine findActiveLayerDepth
+      use ctem_params, only : ignd
+      use class_statevars, only : class_rot,class_gat
+
+      implicit none
+
+      integer, intent(in) :: nmtest
+      integer, intent(in) :: nltest
+      real, intent(in)    :: tfrez                  !<Freezing point of water [K]
+      real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
+      real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+      real, pointer, dimension(:,:,:) :: tbarrot    !<Temperature of soil layers [K]
+      integer, pointer, dimension(:,:,:) :: isndrot !<Sand content flag, used to delineate non-soils.
+      real, pointer, dimension(:,:,:) :: thicrot    !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+      real, pointer, dimension(:,:,:) :: thlqrot    !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+      real, pointer, dimension(:,:,:) :: dlzwrot    !<Permeable thickness of soil layer [m]
+      real, pointer, dimension(:) :: delz           !<Overall thickness of soil layer [m]
+      real, pointer, dimension(:,:,:) :: thmrot     !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
+      integer :: i, j, m
+
+      ftable  => class_rot%ftable
+      actlyr  => class_rot%actlyr
+      tbarrot => class_rot%tbarrot
+      thlqrot => class_rot%thlqrot
+      thicrot => class_rot%thicrot
+      isndrot => class_rot%isndrot
+      dlzwrot => class_rot%dlzwrot
+      delz    => class_gat%delz
+      thmrot => class_rot%thmrot
+      !---
+
+      actlyr=0.0
+      ftable=0.0
+      do j=1,ignd
+        do i = 1, nltest
+          do m = 1,nmtest
+            if(abs(tbarrot(i,m,j)-tfrez).lt.0.0001) then
+              if(isndrot(i,m,j).gt.-3) then
+                actlyr(i,m)=actlyr(i,m)+(thlqrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)))*dlzwrot(i,m,j)
+                  !elseif(isndgat(1,j).eq.-3) then
+                  !    actlyr=actlyr+delz(j)
+              endif
+            elseif(tbarrot(i,m,j).gt.tfrez) then
+              actlyr(i,m)=actlyr(i,m)+delz(j)
+            endif
+            if(abs(tbarrot(i,m,j)-tfrez).lt.0.0001) then
+              if(isndrot(i,m,j).gt.-3) then
+                ftable(i,m)=ftable(i,m)+(thicrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)-thmrot(i,m,j)))*dlzwrot(i,m,j)
+                !else
+                !    ftable=ftable+delz(j)
+              endif
+            elseif(tbarrot(i,m,j).lt.tfrez) then
+              ftable(i,m)=ftable(i,m)+delz(j)
+            endif
+          end do
+        end do
+      end do
 
 
-    end subroutine findActiveLayerDepth
+    end subroutine findPermafrostVars
 
     !---------------------------------------------------------------------------------------
 
