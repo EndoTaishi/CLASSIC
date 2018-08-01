@@ -54,7 +54,7 @@ contains
                                         ctem_tile,resetMosaicAccum
         use class_statevars,     only : class_gat,class_rot,resetAccVars,&
                                         resetclassmon,resetclassyr,initDiagnosticVars
-        use io_driver,           only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
+        use prepareOutputs,      only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
                                         ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness,&

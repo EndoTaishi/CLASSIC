@@ -1,5 +1,5 @@
 !>Central module that handles all preparation and writing to output files
-module io_driver
+module prepareOutputs
 
 ! J. Melton Mar 30 2015
 
@@ -4201,4 +4201,4 @@ contains
 !>\file
 !>Central module that handles all CTEM preparation and writing of output files
 
-end module io_driver
+end module prepareOutputs

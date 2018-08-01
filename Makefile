@@ -8,7 +8,7 @@ OBJ = fileIOModule.o ctem_params.o ctem_statevars.o class_statevars.o peatlands_
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
 	TNPOST.o WEND.o balcar.o ORDLEG.o mainres.o allocate.o phenolgy.o turnover.o mortality.o \
 	disturb.o ctems2.o landuse_change_mod.o soil_ch4uptake.o \
-	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o io_driver.o  \
+	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o prepareOutputs.o  \
 	model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o xmlManager.o CLASSIC.o
 
 # This is the directory our .o and .mod files will be put into. (except for supercomputer runs where they are just dumped in
@@ -21,6 +21,9 @@ ODIR = objectFiles
 # For a serial run, use the command "make mode=serial" or just "make"
 
 ifeq ($(mode), supercomputer)
+  # Note: These settings are particular to the ECCC supercomputers. Other users
+	# likely will want to find their own recipe or use the parallel option below
+	# which is more general.
 	# Reset the object directory only for the supercomputer
 	ODIR =.
 	# Supercomputer compiler
@@ -34,7 +37,7 @@ ifeq ($(mode), parallel)
 	# Parallel compiler
 	COMPILER = mpif90
 	# Parallel Include Flags
-	IFLAGS =  -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)  # FLAG These need to be changed! OLD
+	IFLAGS =  -I/usr/include -J$(ODIR)  # FLAG These need to be checked REVIEW
 	# Parallel Library Flags
 	LFLAGS = -DPARALLEL -lnetcdf
 	# Additional flags

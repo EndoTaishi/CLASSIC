@@ -35,6 +35,8 @@
         fixedYearCO2 = 1850 ,   !< If transientCO2 = .true., this is ignored.
 
     !CH4 switches:
+        ! If you don't care about running with methane, you can just copy your CO2 file (cp CO2file.nc fakeCH4file.nc) and point to it here.
+        ! It won't affect the rest of your run. However you do need to have a file specified if CTEM is on.
         transientCH4 = .true. , !< Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
         CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
         fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
@@ -43,11 +45,11 @@
         dofire = .true. ,               !< If true the fire disturbance parameterization is turned on.
 
             transientPOPD = .true. ,    !< Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
-            POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc' ,
+            POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017_chunked.nc' ,
             fixedYearPOPD = 1850 ,      !< If transientPOPD = .true., this is ignored.
 
             transientLGHT= .true.      !<use lightning strike time series, otherwise use fixedYearLGHT
-            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050.nc' , !< Location of the netcdf file containing lightning strike values
+            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , !< Location of the netcdf file containing lightning strike values
             fixedYearLGHT = 1850 ,    !< set the year to use for lightning strikes if transientLGHT is false.
 
     ! Competition switches:
