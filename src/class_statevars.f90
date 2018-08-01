@@ -1665,6 +1665,13 @@ do i=1,nltest
           class_out%TAACC_YR(I)=0.
           class_out%ALTOTACC_YR(I)=0.
           class_out%altotcntr_yr(i)=0
+          class_out%ACTLYR_yr(I)=0.
+          class_out%FTABLE_yr(I)=0.
+          class_out%ACTLYR_MIN_yr(I)=100000.
+          class_out%FTABLE_MIN_yr(I)=100000.
+          class_out%ACTLYR_MAX_yr(I)=0.
+          class_out%FTABLE_MAX_yr(I)=0.
+
 end do
 
 end subroutine resetclassyr

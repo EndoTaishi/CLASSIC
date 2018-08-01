@@ -451,6 +451,12 @@
             <shortName>actlyr</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>actlyr_mo</nameInCode>
@@ -462,6 +468,12 @@
             <longName>Maximum active layer depth</longName>
             <shortName>actlyrmax</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_max_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -475,6 +487,12 @@
             <shortName>actlyrmin</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_min_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>actlyr_min_mo</nameInCode>
@@ -486,6 +504,12 @@
             <longName>Mean depth to frozen water table</longName>
             <shortName>ftable</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -499,6 +523,12 @@
             <shortName>ftablemax</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_max_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ftable_max_mo</nameInCode>
@@ -510,6 +540,12 @@
             <longName>Minimum depth to frozen water table</longName>
             <shortName>ftablemin</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_min_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -1997,7 +2033,7 @@
         </variable>
         <variable id="77" includeBareGround="false" dormant="false">
             <standardName>Sum of fDeforestToAtmo,  fDeforestToLitter, fDeforestToSoil</standardName>
-            <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed. This is the total amount of C </longName>
+            <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed. This is the total amount of C</longName>
             <shortName>fDeforestTotal</shortName>
             <defaultUnits>g C $m^{-2}$ year$^{-1}$</defaultUnits>
             <variant>

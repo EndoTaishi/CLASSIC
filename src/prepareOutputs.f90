@@ -1458,8 +1458,8 @@ contains
         integer :: i,m,j
         integer :: IMONTH
         real :: tovere
-        real, dimension(nltest) :: ACTLYR_tmp
-        real, dimension(nltest) :: FTABLE_tmp
+        real :: ACTLYR_tmp
+        real :: FTABLE_tmp
         real :: FSSTAR_MO
         real :: FLSTAR_MO
         real :: QH_MO
@@ -1551,8 +1551,8 @@ contains
             TAACC_MO(I)=TAACC_MO(I)+TAROW(I)*FAREROT(I,M)
             ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
             FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
-            ACTLYR_tmp(I) = ACTLYR_tmp(I) + ACTLYR(I,M) * FAREROT(I,M)
-            FTABLE_tmp(I) = FTABLE_tmp(I) + FTABLE(I,M) * FAREROT(I,M)
+            ACTLYR_tmp = ACTLYR_tmp + ACTLYR(I,M) * FAREROT(I,M)
+            FTABLE_tmp = FTABLE_tmp + FTABLE(I,M) * FAREROT(I,M)
             GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M)*DELT !ground evap includes both evap and sublimation from snow
             CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M)*DELT !canopy evap includes both evap and sublimation
 
@@ -1580,10 +1580,10 @@ contains
 821     CONTINUE
 
         ! Check if the active layer has become more shallow or deepened.
-        ACTLYR_MAX_MO(I) = max(ACTLYR_MAX_MO(I), ACTLYR_tmp(I))
-        ACTLYR_MIN_MO(I) = min(ACTLYR_MIN_MO(I), ACTLYR_tmp(I))
-        FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp(I))
-        FTABLE_MIN_MO(I) = min(FTABLE_MIN_MO(I), FTABLE_tmp(I))
+        ACTLYR_MAX_MO(I) = max(ACTLYR_MAX_MO(I), ACTLYR_tmp)
+        ACTLYR_MIN_MO(I) = min(ACTLYR_MIN_MO(I), ACTLYR_tmp)
+        FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp)
+        FTABLE_MIN_MO(I) = min(FTABLE_MIN_MO(I), FTABLE_tmp)
 
         DO NT=1,NMON
             IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
@@ -1742,7 +1742,11 @@ contains
         real, pointer, dimension(:) :: TRANSPACC_YR
         real, pointer, dimension(:) :: TAACC_YR
         real, pointer, dimension(:) :: ACTLYR_YR
+        real, pointer, dimension(:) :: ACTLYR_MIN_YR
+        real, pointer, dimension(:) :: ACTLYR_MAX_YR
         real, pointer, dimension(:) :: FTABLE_YR
+        real, pointer, dimension(:) :: FTABLE_MIN_YR
+        real, pointer, dimension(:) :: FTABLE_MAX_YR
         real, pointer, dimension(:) :: ALTOTACC_YR
 
         !local
@@ -1752,6 +1756,8 @@ contains
         real :: FLSTAR_YR
         real :: QH_YR
         real :: QE_YR
+        real :: ACTLYR_tmp
+        real :: FTABLE_tmp
         real, dimension(1) :: timeStamp
 
         !point pointers
@@ -1788,7 +1794,11 @@ contains
         TRANSPACC_YR      => class_out%TRANSPACC_YR
         TAACC_YR          => class_out%TAACC_YR
         ACTLYR_YR         => class_out%ACTLYR_YR
+        ACTLYR_MIN_YR     => class_out%ACTLYR_MIN_YR
+        ACTLYR_MAX_YR     => class_out%ACTLYR_MAX_YR
         FTABLE_YR         => class_out%FTABLE_YR
+        FTABLE_MIN_YR     => class_out%FTABLE_MIN_YR
+        FTABLE_MAX_YR     => class_out%FTABLE_MAX_YR
         ALTOTACC_YR       => class_out%ALTOTACC_YR
         altotcntr_yr      => class_out%altotcntr_yr
 
@@ -1798,6 +1808,8 @@ contains
         FLSTAR_YR   =0.0
         QH_YR       =0.0
         QE_YR       =0.0
+        ACTLYR_tmp  =0.0
+        FTABLE_tmp  =0.0
 
         i = 1 ! offline nlat is always 1 so this array position is always 1.
         DO 828 M=1,NMTEST
@@ -1815,18 +1827,27 @@ contains
             ROFACC_YR(I) =ROFACC_YR(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
             PREACC_YR(I) =PREACC_YR(I)+PREROW(I)*FAREROT(I,M)*DELT
             EVAPACC_YR(I)=EVAPACC_YR(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
+            ACTLYR_YR(I) = ACTLYR_YR(I) + ACTLYR(I,M) * FAREROT(I,M)
+            FTABLE_YR(I) = FTABLE_YR(I) + FTABLE(I,M) * FAREROT(I,M)
+            ACTLYR_TMP = ACTLYR_TMP + ACTLYR(I,M) * FAREROT(I,M)
+            FTABLE_TMP = FTABLE_TMP + FTABLE(I,M) * FAREROT(I,M)
+
             DO J = 1,IGND
                 TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
             END DO
-
-            !ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
-            !FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
 
             IF(FSSROW(I).GT.0.0) THEN
                 ALTOTACC_YR(I)=ALTOTACC_YR(I) + ((FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
                 /FSSROW(I) )*FAREROT(I,M)
                 altotcntr_yr(i) = altotcntr_yr(i) + 1
             ENDIF
+
+            ! Check if the active layer has become more shallow or deepened.
+            ACTLYR_MAX_YR(I) = max(ACTLYR_MAX_YR(I), ACTLYR_tmp)
+            ACTLYR_MIN_YR(I) = min(ACTLYR_MIN_YR(I), ACTLYR_tmp)
+            FTABLE_MAX_YR(I) = max(FTABLE_MAX_YR(I), FTABLE_tmp)
+            FTABLE_MIN_YR(I) = min(FTABLE_MIN_YR(I), FTABLE_tmp)
+
 
     828     CONTINUE
 
@@ -1851,6 +1872,8 @@ contains
             EVAPACC_YR(I)=EVAPACC_YR(I)
             TRANSPACC_YR(I)=TRANSPACC_YR(I)
             TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*real(lastDOY))
+            ACTLYR_YR(I) = ACTLYR_YR(I)/(REAL(NDAY)*real(lastDOY))
+            FTABLE_YR(I) = FTABLE_YR(I)/(REAL(NDAY)*real(lastDOY))
 
             ! Albedo is only counted when sun is above horizon so it uses its own counter.
             if (altotcntr_yr(i) > 0) then
@@ -1882,6 +1905,13 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_yr' ,timeStamp,'evspsbl', [EVAPACC_YR(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_yr' ,timeStamp,'tran', [TRANSPACC_YR(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_yr' ,timeStamp,'albs', [ALTOTACC_YR(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_yr' ,timeStamp,'actlyr', [actlyr_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_yr' ,timeStamp,'ftable', [ftable_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_yr' ,timeStamp,'actlyrmax', [actlyr_max_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_max_yr' ,timeStamp,'ftablemax', [ftable_max_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_yr' ,timeStamp,'actlyrmin', [actlyr_min_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_min_yr' ,timeStamp,'ftablemin', [ftable_min_yr(i)])
+
             ! tovere
 
             !> ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS

@@ -242,19 +242,13 @@ module generalUtils
             if(abs(tbarrot(i,m,j)-tfrez).lt.0.0001) then
               if(isndrot(i,m,j).gt.-3) then
                 actlyr(i,m)=actlyr(i,m)+(thlqrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)))*dlzwrot(i,m,j)
+                ftable(i,m)=ftable(i,m)+(thicrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)-thmrot(i,m,j)))*dlzwrot(i,m,j)
                   !elseif(isndgat(1,j).eq.-3) then
                   !    actlyr=actlyr+delz(j)
+                  !    ftable=ftable+delz(j)
               endif
             elseif(tbarrot(i,m,j).gt.tfrez) then
               actlyr(i,m)=actlyr(i,m)+delz(j)
-            endif
-            if(abs(tbarrot(i,m,j)-tfrez).lt.0.0001) then
-              if(isndrot(i,m,j).gt.-3) then
-                ftable(i,m)=ftable(i,m)+(thicrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)-thmrot(i,m,j)))*dlzwrot(i,m,j)
-                !else
-                !    ftable=ftable+delz(j)
-              endif
-            elseif(tbarrot(i,m,j).lt.tfrez) then
               ftable(i,m)=ftable(i,m)+delz(j)
             endif
           end do
