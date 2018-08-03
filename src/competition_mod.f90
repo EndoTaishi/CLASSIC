@@ -23,7 +23,7 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                          surmncur,  defmncur, srplscur,  defctcur, &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,  dry_season_length)    
+                           annpcp,  dry_season_length)
 
 !
 !     10  Jun 2014  - Add in new dry_season_length variable
@@ -39,9 +39,9 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
 !
 !     25  May 2004  - This subroutine calculates the bioclimatic
 !     V. Arora        parameters that are required for determining
-!                     existence of pfts. the bioclimatic parameters 
+!                     existence of pfts. the bioclimatic parameters
 !                     are the mean monthly temperature of the warmest
-!                     and the coldest months, growing degree days 
+!                     and the coldest months, growing degree days
 !                     above 5 c, annual precipitation and potential
 !                     evaporation and some aridity parameters that are
 !                     function of potential evaporation and precipitation.
@@ -62,7 +62,7 @@ implicit none
 
 integer, intent(in) :: iday      !>\var integer, intent(in) :: iday
 !>day of the year
-integer, intent(in) :: nilg      !< no. of grid cells in latitude circle (this is passed in 
+integer, intent(in) :: nilg      !< no. of grid cells in latitude circle (this is passed in
                                  !< as either ilg or nlat depending on mos/comp)
 integer, intent(in) :: il1       !< il1=1
 integer, intent(in) :: il2       !< il2=nilg
@@ -96,20 +96,20 @@ real, dimension(nilg), intent(inout) :: srplsmon  !< number of months in a year 
                                                   !< precipitation more than potential evaporation
 real, dimension(nilg), intent(inout) :: defctmon  !< number of months in a year with water deficit i.e.
                                                   !< precipitation less than potential evaporation
-real, dimension(nilg), intent(inout) :: anndefct  !< annual water deficit (mm) 
+real, dimension(nilg), intent(inout) :: anndefct  !< annual water deficit (mm)
 real, dimension(nilg), intent(inout) :: annsrpls  !< annual water surplus (mm)
 real, dimension(nilg), intent(inout) :: annpcp    !< annual precipitation (mm)
 real, dimension(nilg), intent(inout) :: dry_season_length !< annual maximum dry month length (months)
- 
+
 ! local variables
 real, dimension(nilg) :: tccuryr
 real, dimension(nilg) :: twcuryr
 real, dimension(nilg) :: aridcur
 real :: wtrbal
 integer :: month, atmonthend, temp, nmax, i, j, k, curmonth, m, n, l
-integer, save, dimension(:,:), allocatable :: wet_dry_mon_index   
-integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2  
-real, dimension(:), allocatable, save :: dry_season_length_curyr !<current year's maximum dry month length 
+integer, save, dimension(:,:), allocatable :: wet_dry_mon_index
+integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2
+real, dimension(:), allocatable, save :: dry_season_length_curyr !<current year's maximum dry month length
 
 ! local parameters
 real, parameter :: eftime = 25.00 !< e-folding time scale for updating bioclimatic parameters (years)
@@ -138,12 +138,12 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           tcurm(i)=0.0      !< temperature of current month
           srplscur(i)=0.0   !< current month's water surplus
           defctcur(i)=0.0   !< current month's water deficit
-          dry_season_length_curyr(i) = 0.   !<current year's maximum dry month length  
+          dry_season_length_curyr(i) = 0.   !<current year's maximum dry month length
 
          do month = 1,12
           tmonth(month,i)=0.0
          end do
-100     continue      
+100     continue
       endif
 
 !>Find current month
@@ -154,7 +154,7 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           curmonth=k-1
         endif
 220   continue
-        
+
       if(curmonth.eq.0)then
         call xit('bioclim',-1)
       endif
@@ -166,7 +166,7 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
       endif
 !>
 !>Update monthly temperature for the current month, and other
-!!variables. at the end of the month we will have average of 
+!!variables. at the end of the month we will have average of
 !!all daily temperatures for the current month.
 !!
       do 240 i = il1, il2
@@ -174,13 +174,13 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           gdd5cur(i)=gdd5cur(i)+max(0.0, (ta(i)-273.16-5.0))
           anpcpcur(i)=anpcpcur(i) + precip(i)
 !         net radiation (W/m2) x 12.87 = potential evap (mm)
-          if (leapnow) then 
+          if (leapnow) then
             anpecur(i)=anpecur(i) + netrad(i)*12.87*(1.0/366.0)
             wtrbal=precip(i)-(netrad(i)*12.87*(1.0/366.0))
           else
             anpecur(i)=anpecur(i) + netrad(i)*12.87*(1.0/365.0)
             wtrbal=precip(i)-(netrad(i)*12.87*(1.0/365.0))
-          endif 
+          endif
           if(wtrbal.ge.0.0)then
             srplscur(i)=srplscur(i)+wtrbal
           else if(wtrbal.lt.0.0)then
@@ -188,7 +188,7 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           endif
 240   continue
 !>
-!!If its the end of the month then store the monthly temperature 
+!!If its the end of the month then store the monthly temperature
 !!and set tcurm equal to zero. also check if this month had water
 !!deficit or surplus
 !!
@@ -197,10 +197,10 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           tmonth(curmonth,i)=tcurm(i)
           if( srplscur(i).ge.defctcur(i) )then
             surmncur(i) = surmncur(i) + 1.
-            wet_dry_mon_index(i,curmonth) = 1   
+            wet_dry_mon_index(i,curmonth) = 1
           else if(srplscur(i).lt.defctcur(i) )then
             defmncur(i) = defmncur(i) + 1.
-            wet_dry_mon_index(i,curmonth) = -1  
+            wet_dry_mon_index(i,curmonth) = -1
           endif
           srpcuryr(i)=srpcuryr(i)+srplscur(i)
           dftcuryr(i)=dftcuryr(i)+defctcur(i)
@@ -211,8 +211,8 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
 
         endif
 
-        if ((.not. leapnow .and. iday.eq.365) .or. & 
-            (leapnow .and. iday.eq.366)) then 
+        if ((.not. leapnow .and. iday.eq.365) .or. &
+            (leapnow .and. iday.eq.366)) then
           twcuryr(i)=-9000.0
           tccuryr(i)=9000.0
           if(anpcpcur(i).gt.zero)then
@@ -220,9 +220,9 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           else
             aridcur(i)=100.0
           endif
-                             
-         !>this loop doubles up the size of the "wet_dry_mon_index" matrix 
-            do j = 1,12          
+
+         !>this loop doubles up the size of the "wet_dry_mon_index" matrix
+            do j = 1,12
                 do k = 1,2
                    m = (k-1)*12 + j
                    wet_dry_mon_index2(i,m) = wet_dry_mon_index(i,j)
@@ -232,14 +232,14 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
             n = 0       !number of dry month
             nmax = 0    !maximum length of dry month
                do l = 1, 24
-                   temp = wet_dry_mon_index2(i,l) 
+                   temp = wet_dry_mon_index2(i,l)
                    if(temp.eq.-1)then
                       n = n+1
-                      nmax = max(nmax, n) 
-                   else 
+                      nmax = max(nmax, n)
+                   else
                       n = 0
-                   end if 
-                end do 
+                   end if
+                end do
             nmax = min(nmax, 12)
             dry_season_length_curyr(i) = real(nmax)
 
@@ -250,15 +250,15 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
 !!If its the end of year, then find the temperature of the warmest
 !!and the coldest month
 
-      if ((.not. leapnow .and. iday.eq.365) .or. & 
-          (leapnow .and. iday.eq.366)) then 
+      if ((.not. leapnow .and. iday.eq.365) .or. &
+          (leapnow .and. iday.eq.366)) then
 
           do 270 i = il1, il2
               twcuryr(i)=maxval(tmonth(:,i))
               tccuryr(i)=minval(tmonth(:,i))
 270       continue
 !>
-!!Update long term moving average of bioclimatic parameters in an 
+!!Update long term moving average of bioclimatic parameters in an
 !!e-folding sense
           if(.not. inibioclim)then
             do i = il1, il2
@@ -309,7 +309,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
                              sort,  nol2pfts,                 &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,pftexist,dry_season_length) 
+                           annpcp,pftexist,dry_season_length)
 
 !
 !     12  Jun 2014  - Broadleaf cold deciduous now have a tcolmin constraint
@@ -323,12 +323,12 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !     J. Melton
 !
 !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
-!     J. Melton         
+!     J. Melton
 
 !     27  May 2004  - This subroutine calculates the existence of
 !     V. Arora        pfts in grid cells based on a set of bioclimatic
 !                     parameters that are estimated in a running average
-!                     sense using some specified timescale. 
+!                     sense using some specified timescale.
 !
 !                     If long term averaged bioclimatic parameters
 !                     indicate non-existence of a pft then an additional
@@ -339,7 +339,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !                -->  Note that since the fractional coverage of c3 and
 !                -->  c4 crops is going to be prescribed, the model
 !                -->  assumes that these pfts can always exist. But, of
-!                     course the prescribed fractional coverage of these 
+!                     course the prescribed fractional coverage of these
 !                     pfts will decide if they are present in a grid cell or
 !                     not.
 
@@ -351,7 +351,7 @@ implicit none
 ! arguments
 
 integer, intent(in) :: iday      !< day of the year
-integer, intent(in) :: nilg      !< no. of grid cells in latitude circle 
+integer, intent(in) :: nilg      !< no. of grid cells in latitude circle
                                  !<(this is passed in as either ilg or nlat depending on mos/comp)
 integer, intent(in) :: il1       !< il1=1
 integer, intent(in) :: il2       !< il2=nilg
@@ -367,7 +367,7 @@ real, dimension(nilg), intent(in) :: srplsmon  !< number of months in a year wit
                                                !< precipitation more than potential evaporation
 real, dimension(nilg), intent(in) :: defctmon  !< number of months in a year with water deficit i.e.
                                                !< precipitation less than potential evaporation
-real, dimension(nilg), intent(in) :: anndefct  !< annual water deficit (mm) 
+real, dimension(nilg), intent(in) :: anndefct  !< annual water deficit (mm)
 real, dimension(nilg), intent(in) :: annsrpls  !< annual water surplus (mm)
 real, dimension(nilg), intent(in) :: annpcp    !< annual precipitation (mm)
 real, dimension(nilg), intent(in) :: dry_season_length !< length of dry season (months)
@@ -382,7 +382,7 @@ integer :: i,j
 !> ----------------------------------------------------------------------
 
 !>go through all grid cells and based on bioclimatic parameters
-!>decide if a given pft should exist or not. 
+!>decide if a given pft should exist or not.
 
       do 100 i = il1, il2
 
@@ -415,7 +415,7 @@ integer :: i,j
 !>broadleaf deciduous cold  (see note below pft 5 too)
         j=4
         if(tcoldm(i).le.tcoldmax(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)).and. tcoldm(i).ge.tcoldmin &  
+           gdd5(i).ge.gdd5lmt(sort(j)).and. tcoldm(i).ge.tcoldmin &
            (sort(j)))then
            pftexist(i,j)=.true.
         else
@@ -428,7 +428,7 @@ integer :: i,j
            .and.dry_season_length(i).ge.dryseasonlmt(sort(j)))then
            pftexist(i,j)=.true.
 !>We don't want both broadleaf species co-existing so if it has PFT 5
-!>remove PFT 4. 
+!>remove PFT 4.
            pftexist(i,j-1)=.false.
         else
            pftexist(i,j)=.false.
@@ -456,7 +456,7 @@ integer :: i,j
 
 
 100   continue
-       
+
       return
 
 end subroutine existence
@@ -478,7 +478,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
                           gavgscms,  bmasveg,   &
                           add2allo,        colrate,        mortrate)
 
-!     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We 
+!     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We
 !     J. Melton       now have a constant reproductive cost
 !
 !     26  Mar 2014  - Move disturbance adjustments back via a subroutine called
@@ -492,8 +492,8 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 
 !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
 !     J. Melton
- 
-!     17  Oct 2012  - Adapt subroutine to any number of crops or grass 
+
+!     17  Oct 2012  - Adapt subroutine to any number of crops or grass
 !     J. Melton       pfts
 !
 !     1   Oct 2012  - Update subroutine and implement for running with
@@ -506,12 +506,12 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !                     PFTs that may exist are allowed to PFTCompetition for
 !                     available space in a grid cell. pfts that can't
 !                     exist based on long term bioclimatic parameters
-!                     are slowly killed by increasing their mortality.               
+!                     are slowly killed by increasing their mortality.
 !
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolrance, crop, grass, grass_ind
+                        tolrance, crop, grass, numgrass
 
 use disturbance_scheme, only : burntobare
 
@@ -521,7 +521,7 @@ implicit none
 ! arguments
 
 integer, intent(in) :: iday                             !< day of the year
-integer, intent(in) :: nilg                             !< no. of grid cells in latitude circle 
+integer, intent(in) :: nilg                             !< no. of grid cells in latitude circle
                                                         !<(this is passed in as either ilg or nlat depending on mos/comp)
 integer, intent(in) :: il1                              !< il1=1
 integer, intent(in) :: il2                              !< il2=nilg
@@ -552,9 +552,9 @@ real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetat
 real, dimension(nilg),     intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
 real, dimension(nilg),     intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
 real, dimension(nilg,icc), intent(out) :: add2allo      !< npp kg c/m2.day that is used for expansion and
-                                                        !< subsequently allocated to leaves, stem, and root via 
+                                                        !< subsequently allocated to leaves, stem, and root via
                                                         !< the allocation part of the model.
-real, dimension(nilg,icc), intent(out) :: colrate       !< colonization rate (1/day)    
+real, dimension(nilg,icc), intent(out) :: colrate       !< colonization rate (1/day)
 real, dimension(nilg,icc), intent(out) :: mortrate      !< mortality rate
 
 ! local variables
@@ -568,10 +568,10 @@ integer, dimension(nilg,icc-numcrops) :: rank
 integer, dimension(nilg,icc-numcrops) :: exist1
 integer, dimension(nilg,icc-numcrops) :: useexist
 integer, dimension(nilg,icc) :: fraciord
-integer, dimension(nilg) :: bareiord  
+integer, dimension(nilg) :: bareiord
 
 real :: befrmass, aftrmass
-real :: sum1, sum2, sum3,term,sum4 
+real :: sum1, sum2, sum3,term,sum4
 real :: colmult
 real, dimension(nilg,icc) :: mrtboclm
 real, dimension(nilg,icc) :: usenppvg
@@ -582,34 +582,34 @@ real, dimension(nilg,icc-numcrops) :: c1
 real, dimension(nilg,icc-numcrops) :: m1
 real, dimension(nilg,icc-numcrops) :: term2, term3, term4, colterm, deathterm
 real, dimension(nilg,icc-numcrops) :: delfrac
-real, dimension(nilg) :: cropfrac, vegfrac    
+real, dimension(nilg) :: cropfrac, vegfrac
 real, dimension(nilg,icc) :: chngfrac
-real, dimension(nilg,icc) :: expnterm, mortterm  
-real, dimension(nilg,icc) :: pglfmass  
+real, dimension(nilg,icc) :: expnterm, mortterm
+real, dimension(nilg,icc) :: pglfmass
 real, dimension(nilg,icc) :: pblfmass
 real, dimension(nilg,icc) :: protmass
-real, dimension(nilg,icc) :: pstmmass 
+real, dimension(nilg,icc) :: pstmmass
 real, dimension(nilg,icc) :: pfcancmx
-real, dimension(nilg) :: mincfrac  
+real, dimension(nilg) :: mincfrac
 real, dimension(nilg,icc) :: pbiomasvg, biomasvg
 real, dimension(nilg,icc) :: putaside
-real, dimension(nilg,icc) :: nppvegar 
+real, dimension(nilg,icc) :: nppvegar
 real, dimension(nilg,iccp1) :: pltrmass
 real, dimension(nilg,iccp1) :: psocmass
-real, dimension(nilg,iccp1) :: deadmass 
+real, dimension(nilg,iccp1) :: deadmass
 real, dimension(nilg,iccp1) :: pdeadmas
-real, dimension(nilg) :: barefrac   
-real, dimension(nilg,icc) :: usebmsvg  
+real, dimension(nilg) :: barefrac
+real, dimension(nilg,icc) :: usebmsvg
 real, dimension(nilg,iccp1) ::ownsolc, ownlitr
 real, dimension(nilg,icc) :: baresolc
-real, dimension(nilg,icc) :: barelitr, baresoilc                
+real, dimension(nilg,icc) :: barelitr, baresoilc
 real, dimension(nilg,iccp1) :: incrlitr, incrsolc
 real, dimension(nilg) :: pvgbioms
 real, dimension(nilg) :: pgavltms
 real, dimension(nilg) :: pgavscms
 real, dimension(nilg) :: add2dead
 real, dimension(nilg) :: gavgputa
-real, dimension(nilg) :: gavgnpp       
+real, dimension(nilg) :: gavgnpp
 real, dimension(nilg) :: pbarefra
 real, dimension(nilg) :: grsumlit, grsumsoc
 
@@ -673,7 +673,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
 !>Do our usual initialization
 
-      do 150 i = il1, il2 
+      do 150 i = il1, il2
         do 160 j = 1, icc
           pglfmass(i,j)=gleafmas(i,j) ! save all biomasses before making
           pblfmass(i,j)=bleafmas(i,j) ! changes so that we can make sure
@@ -685,7 +685,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
           colrate(i,j)=0.0         ! colonization rate
           mortrate(i,j)=0.0        ! mortality rate
-          mrtboclm(i,j)=0.0 ! mortality rate if long-term bioclimatic 
+          mrtboclm(i,j)=0.0 ! mortality rate if long-term bioclimatic
 !                           ! conditions become unfavourable
           usenppvg(i,j)=0.0
           chngfrac(i,j)=0.0
@@ -754,16 +754,16 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
 150   continue
 !>
-!!initial rank/superiority order for simulating competition. since crops 
+!!initial rank/superiority order for simulating competition. since crops
 !!are not in competition their rank doesn't matter and
-!!therefore we only have icc-2 ranks corresponding to the remaining pfts. 
+!!therefore we only have icc-2 ranks corresponding to the remaining pfts.
 !!the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.
       do j = 1,icc-numcrops
          inirank(j)=j
          do 180 i = il1, il2
            rank(i,j)=inirank(j)
 180      continue
-      end do 
+      end do
 !>
 !!Estimate colonization and mortality rate for each pft, except for
 !!crops whose fractional coverage is prescribed.
@@ -787,9 +787,9 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !!
           if(.not. pftexist(i,j))then
 
-            if (leapnow) then 
+            if (leapnow) then
               mrtboclm(i,j)=bioclimrt/366.0
-            else 
+            else
               mrtboclm(i,j)=bioclimrt/365.0
             endif
 
@@ -804,7 +804,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !!---> from here on we assume that we only have icc-numcrops pfts <----
 !!since crops are not part of the competition.
 !!
-!!based on npp for each pft find the competition ranks / superiority 
+!!based on npp for each pft find the competition ranks / superiority
 !!order for simulating competition. note that crops
 !!are not in competition, so the competition is between the
 !!remaining pfts. in addition pfts which shouldn't exist in the
@@ -819,7 +819,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
            cropfrac(i)=cropfrac(i)+fcancmx(i,j)
          endif
 
-!        prepare to rank the tree pfts according to their colonization rates 
+!        prepare to rank the tree pfts according to their colonization rates
          if (pftexist(i,j)) then
            usenppvg(i,j)=colrate(i,j)
          end if
@@ -827,8 +827,8 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 221     continue
 220   continue
 !>
-!!bubble sort according to colonization rates NOTE - this only works if no tree species are 
-!!indexed at positions > numtreepfts, i.e. the trees must be a contiguous 
+!!bubble sort according to colonization rates NOTE - this only works if no tree species are
+!!indexed at positions > numtreepfts, i.e. the trees must be a contiguous
 !!unit at the start of the indexes. JM Jun 2014
       do 270 j = 1, numtreepfts
         do 280 n = 1, numtreepfts
@@ -848,15 +848,40 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !!the rank of c3 and c4 grass is also determined on the basis of
 !!their npp but grasses are always assumed to be inferior to tree pfts
 !!
-      do 310 i = il1, il2 
-        if(usenppvg(i,grass_ind(1)).ge.usenppvg(i,grass_ind(2)))then 
-          rank(i,grass_ind(1)-numcrops)=grass_ind(1)-numcrops
-          rank(i,grass_ind(2)-numcrops)=grass_ind(2)-numcrops
-        elseif(usenppvg(i,grass_ind(1)).lt.usenppvg(i,grass_ind(2)))then
-          rank(i,grass_ind(1)-numcrops)=grass_ind(2)-numcrops
-          rank(i,grass_ind(2)-numcrops)=grass_ind(1)-numcrops
-        endif
-310   continue
+! Find index of the first grass pft and give it to the temp variable, k.
+do j = 1,icc
+  if (grass(j)) then
+    k=j
+    exit
+  end if
+end do
+
+! Also now bubble sort the grass. WARNING:Again this assumes, like the trees, that all grass are
+! contiguous in the arrays. Additionally it assumes that crops are specified before grass!
+do 300 j = k, k+numgrass-1
+  do 305 n = k, k+numgrass-1
+    do 310 i = il1, il2
+      if(usenppvg(i,n).lt.usenppvg(i,j))then
+        temp(i)=usenppvg(i,n)
+        usenppvg(i,n)=usenppvg(i,j)
+        usenppvg(i,j)=temp(i)
+        t1(i)=rank(i,n-numcrops)
+        rank(i,n-numcrops)=rank(i,j-numcrops)
+        rank(i,j-numcrops)=t1(i)
+      endif
+310       continue
+305     continue
+300   continue
+        ! Removing grass_ind as it is duplicating the grass var. Replace below
+        ! with bubble sort above. It is more flexible. JM.
+        ! if(usenppvg(i,grass_ind(1)).ge.usenppvg(i,grass_ind(2)))then
+        !   rank(i,grass_ind(1)-numcrops)=grass_ind(1)-numcrops
+        !   rank(i,grass_ind(2)-numcrops)=grass_ind(2)-numcrops
+        ! elseif(usenppvg(i,grass_ind(1)).lt.usenppvg(i,grass_ind(2)))then
+        !   rank(i,grass_ind(1)-numcrops)=grass_ind(2)-numcrops
+        !   rank(i,grass_ind(2)-numcrops)=grass_ind(1)-numcrops
+        ! endif
+!310   continue
 !>
 !!with the ranks of all pfts in all grid cells we can now simulate
 !!competition between them. for lotka-volterra eqns we need a
@@ -867,9 +892,9 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
           n=j
         else
           n=j+numcrops
-        endif 
+        endif
         do 340 i = il1, il2
-          frac(i,j)=max(seed,fcancmx(i,n)) 
+          frac(i,j)=max(seed,fcancmx(i,n))
           if (pftexist(i,n)) then
            exist1(i,j)=1
            c1(i,j)=colrate(i,n)
@@ -900,7 +925,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
           sum1 = cropfrac(i)+seed !minbare
           do 420 k = 1, n-1, 1
             sum1 = sum1 + usefrac(i,k)
-420       continue          
+420       continue
 
           term2(i,n)=usec(i,n)*(usefrac(i,n)**a)*(sum1+(usefrac(i,n)**b)) ! self & expansion thinning
           term3(i,n)=usem(i,n)*usefrac(i,n) ! mortality term
@@ -926,7 +951,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 410     continue
 400   continue
 
-!>update fractions and check if all fractions are +ve 
+!>update fractions and check if all fractions are +ve
 
       do 500 n = 1, icc-numcrops
         do 510 i = il1, il2
@@ -954,7 +979,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
           vegfrac(i)=vegfrac(i)+usefrac(i,n)
           if(abs(usefrac(i,n)-seed).le.zero) then
             mincfrac(i)= mincfrac(i)+ usefrac(i,n)
-          endif 
+          endif
 541     continue
 540   continue
 
@@ -962,7 +987,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
         do 551 i = il1, il2
           if(vegfrac(i).gt.1.0.and. &
           abs(usefrac(i,n)-seed).gt.zero) then
-            term =(1.-mincfrac(i))/(vegfrac(i)-mincfrac(i)) 
+            term =(1.-mincfrac(i))/(vegfrac(i)-mincfrac(i))
             usefrac(i,n)=usefrac(i,n)*term
           endif
 551     continue
@@ -983,7 +1008,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
       do 580 i = il1, il2
         if(vegfrac(i).gt.1.0+1e-5)then
           write(6,*)'vegetation fraction in cell ',i,' greater than'
-          write(6,*)'1.0 and equal to ',vegfrac(i) 
+          write(6,*)'1.0 and equal to ',vegfrac(i)
           call xit('competition',-6)
         endif
 580   continue
@@ -998,7 +1023,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
             k=rank(i,j)
           else
             k=rank(i,j)+2
-          endif 
+          endif
           expnterm(i,k)=colterm(i,j)
           mortterm(i,k)=deathterm(i,j)
           fcancmx(i,k)=usefrac(i,j)
@@ -1051,15 +1076,15 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !!
 !!three things can happen here
 !!
-!!1. fraciord = 0, which means all npp that was used for expansion 
+!!1. fraciord = 0, which means all npp that was used for expansion
 !!becomes litter, due to self/expansion thinning and mortality.
 !!
 !!2. fraciord = 1, which means a part of or full npp is used for
-!!expansion but some litter may also be generated. the part of 
+!!expansion but some litter may also be generated. the part of
 !!npp that is used for expansion needs to be allocated to leaves,
 !!stem, and root. rather than doing this here we will let the
 !!allocation part handle this. so allocation module will allocate
-!!not only the npp that is used for pure vertical expansion but 
+!!not only the npp that is used for pure vertical expansion but
 !!also this npp. but we will do our part here and spread the
 !!vegetation biomass over the new increased fraction.
 !!
@@ -1102,12 +1127,12 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
 !            add2allo(i,j)=(1.-term)
 
-!           the factor (deltat/963.62) converts npp from u-mol co2-c/m2.sec 
+!           the factor (deltat/963.62) converts npp from u-mol co2-c/m2.sec
 !           -> kg c/m2.deltat
 
             ! Not in use. JM Jun 2014.
-            !incrlitr(i,j) = term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j) 
-            incrlitr(i,j) = 0. 
+            !incrlitr(i,j) = term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
+            incrlitr(i,j) = 0.
             grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
 !           ! Not in use. JM Jun 2014. -rest put aside for allocation
@@ -1117,30 +1142,30 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
           else if(fraciord(i,j).eq.-1)then ! Contract
 !>
-!!All npp used for expansion becomes litter plus there is additional mortality of the standing biomass. the npp that 
-!!becomes litter is now spread over the whole grid cell. all biomass from fraction that dies due to mortality is 
+!!All npp used for expansion becomes litter plus there is additional mortality of the standing biomass. the npp that
+!!becomes litter is now spread over the whole grid cell. all biomass from fraction that dies due to mortality is
 !!also distributed over the litter pool of whole grid cell.
 !!
-            incrlitr(i,j) = abs(chngfrac(i,j))*(gleafmas(i,j)+ &  
+            incrlitr(i,j) = abs(chngfrac(i,j))*(gleafmas(i,j)+ &
                bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
 
             ! Not in use. JM Jun 2014.
-            !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)  
-            incrlitr(i,j) = incrlitr(i,j) 
+            !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
+            incrlitr(i,j) = incrlitr(i,j)
             grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
 !           Chop off soil c from the fraction that goes down and
 !           spread it uniformly over the soil c pool of entire grid cell
 
-            incrsolc(i,j)=abs(chngfrac(i,j))*soilcmas(i,j)  
+            incrsolc(i,j)=abs(chngfrac(i,j))*soilcmas(i,j)
             grsumsoc(i)=grsumsoc(i)+incrsolc(i,j)
 
           else if(fraciord(i,j).eq.0)then
 
             ! Not in use. JM Jun 2014.
 !           all npp used for expansion becomes litter
-            !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j) 
-            incrlitr(i,j) =0. 
+            !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j)
+            incrlitr(i,j) =0.
             grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
           endif
@@ -1162,7 +1187,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
           incrsolc(i,iccp1) = (pbarefra(i)-barefrac(i))*soilcmas(i,iccp1)
           grsumsoc(i)=grsumsoc(i)+incrsolc(i,iccp1)
- 
+
         else if(bareiord(i).eq.1)then ! increase in bare area
 
           term = pbarefra(i)/barefrac(i)
@@ -1172,7 +1197,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
         endif
 680   continue
 !>
-!!if a pft is not supposed to exist as indicated by pftexist and its 
+!!if a pft is not supposed to exist as indicated by pftexist and its
 !!fractional coverage is really small then get rid of the pft all
 !!together and spread its live and dead biomass over the grid cell.
 !!
@@ -1196,7 +1221,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
             litrmass(i,iccp1) = litrmass(i,iccp1)*term
             soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
 
-            fcancmx(i,j)=0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27 
+            fcancmx(i,j)=0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27
 
           endif
 691     continue
@@ -1206,7 +1231,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
       do 700 j = 1, icc
         do 701 i = il1, il2
-          if(fcancmx(i,j).gt.zero)then  
+          if(fcancmx(i,j).gt.zero)then
             litrmass(i,j)=litrmass(i,j)+grsumlit(i)
             soilcmas(i,j)=soilcmas(i,j)+grsumsoc(i)
           else
@@ -1271,31 +1296,31 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !>
 !>and finally we check the c balance. we were supposed to use a
 !!fraction of npp for competition. some of it is used for expansion
-!!(this is what we save for allocation), and the rest becomes litter. 
+!!(this is what we save for allocation), and the rest becomes litter.
 !!so for each pft the total c mass in vegetation and litter pools
 !!must all add up to the same value as before competition.
 !!
       do 830 j = 1, icc
-       if (.not. crop(j)) then  
+       if (.not. crop(j)) then
         do 831 i = il1, il2
 
-          biomasvg(i,j)=fcancmx(i,j)* & 
-           (gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)) 
-          pbiomasvg(i,j)=pfcancmx(i,j)* & 
-           (pglfmass(i,j)+pblfmass(i,j)+protmass(i,j)+pstmmass(i,j)) 
+          biomasvg(i,j)=fcancmx(i,j)* &
+           (gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
+          pbiomasvg(i,j)=pfcancmx(i,j)* &
+           (pglfmass(i,j)+pblfmass(i,j)+protmass(i,j)+pstmmass(i,j))
 
 !         part of npp that we will use later for allocation
-          putaside(i,j)=add2allo(i,j)*fcancmx(i,j) 
+          putaside(i,j)=add2allo(i,j)*fcancmx(i,j)
 
           gavgputa(i) = gavgputa(i) + putaside(i,j)
 
 !         litter added to bare
-          barelitr(i,j)=grsumlit(i)*fcancmx(i,j) 
-          ownlitr(i,j)=incrlitr(i,j) 
+          barelitr(i,j)=grsumlit(i)*fcancmx(i,j)
+          ownlitr(i,j)=incrlitr(i,j)
 
 !         soil c added to bare
-          baresolc(i,j)=grsumsoc(i)*fcancmx(i,j) 
-          ownsolc(i,j)=incrsolc(i,j) 
+          baresolc(i,j)=grsumsoc(i)*fcancmx(i,j)
+          ownsolc(i,j)=incrsolc(i,j)
 
           add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
 
@@ -1306,8 +1331,8 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
           gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
-          deadmass(i,j)=fcancmx(i,j)*(litrmass(i,j)+soilcmas(i,j)) 
-          pdeadmas(i,j)=pfcancmx(i,j)*(pltrmass(i,j)+psocmass(i,j)) 
+          deadmass(i,j)=fcancmx(i,j)*(litrmass(i,j)+soilcmas(i,j))
+          pdeadmas(i,j)=pfcancmx(i,j)*(pltrmass(i,j)+psocmass(i,j))
 
 !!total mass before competition
           befrmass=pbiomasvg(i,j)+nppvegar(i,j)+pdeadmas(i,j)
@@ -1317,7 +1342,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
                   barelitr(i,j)-baresolc(i,j)+ownlitr(i,j)+ownsolc(i,j)
 
           if(abs(befrmass-aftrmass).gt.tolrance)then
-            write(6,*)'total biomass for pft',j,', and grid cell =',i 
+            write(6,*)'total biomass for pft',j,', and grid cell =',i
             write(6,*)'does not balance before and after competition'
             write(6,*)' '
             write(6,*)'chngfrac(',i,',',j,')=',chngfrac(i,j)
@@ -1359,16 +1384,16 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
           deadmass(i,j)=barefrac(i)*(litrmass(i,j)+soilcmas(i,j))
           pdeadmas(i,j)=pbarefra(i)*(pltrmass(i,j)+psocmass(i,j))
 
-          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i) 
+          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i)
 
-          ownlitr(i,j)=incrlitr(i,j) 
-          ownsolc(i,j)=incrsolc(i,j) 
+          ownlitr(i,j)=incrlitr(i,j)
+          ownsolc(i,j)=incrsolc(i,j)
 
           befrmass=pdeadmas(i,j)+add2dead(i)
           aftrmass=deadmass(i,j)+ownlitr(i,j)+ownsolc(i,j)
 
           if(abs(befrmass-aftrmass).gt.tolrance)then
-            write(6,*)'total dead mass for grid cell =',i,'does not balance over bare' 
+            write(6,*)'total dead mass for grid cell =',i,'does not balance over bare'
             write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
             write(6,*)'add2dead(',i,') term=',add2dead(i)
             write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
@@ -1650,5 +1675,3 @@ end subroutine competition
 !!
 
 end module
-
-

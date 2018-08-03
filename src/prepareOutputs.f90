@@ -3447,7 +3447,7 @@ contains
                             pftExist(j) = 1.0
                         end if
                     end do
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_mo_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
                 end if
 
                 if (doperpftoutput) then
@@ -3739,6 +3739,7 @@ contains
         real :: sumfare
         real, dimension(1) :: timeStamp
         real, dimension(icc) :: pftExist
+        real, dimension(icc) :: fcancmxNoSeed
 
         ! point pointers
 
@@ -4136,13 +4137,31 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
-            do m=1,nmtest
-                sumfare = 0.0
-                do j=1,icc
-                    sumfare=sumfare+fcancmxrow(i,m,j)
-                end do !j
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc), 1- sumfare])
-            end do !m
+            ! We only want to record the fraction of the PFTs that are actually in existance.
+            if (PFTCompetition) then !FLAG this needs to be tested!
+                do m=1,nmtest
+                    sumfare = 0.0
+                    fcancmxNoSeed = 0.0
+                    pftExist = 0.0
+                    do j=1,icc
+                        if (pftexistrow(i,1,j)) then
+                            pftExist(j) = 1.0
+                            sumfare=sumfare+fcancmxrow(i,m,j)
+                            fcancmxNoSeed(j)=fcancmxrow(i,m,j)
+                        end if
+                    end do
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxNoSeed(1:icc), 1- sumfare])
+                end do
+            else
+              do m=1,nmtest
+                   sumfare = 0.0
+                  do j=1,icc
+                      sumfare=sumfare+fcancmxrow(i,m,j)
+                  end do !j
+                  call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc), 1- sumfare])
+              end do !m
+            end if
 
             if (dofire .or. lnduseon) then
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
@@ -4154,17 +4173,6 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_yr_g' ,timeStamp,'fDeforestTotal',&
                                   [lucsocin_yr_g(i)+lucltrin_yr_g(i)+luc_emc_yr_g(i)])
-            end if
-            if (PFTCompetition) then !FLAG this needs to be tested!
-                do m=1,nmtest
-                    pftExist = 0.0
-                    do j=1,icc
-                        if (pftexistrow(i,1,j)) then
-                            pftExist(j) = 1.0
-                        end if
-                    end do
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
-                end do
             end if
 
             if (doperpftoutput) then

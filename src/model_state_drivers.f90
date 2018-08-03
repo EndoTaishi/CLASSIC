@@ -1289,6 +1289,7 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
+            if (arrindex == 0) stop ('updateInput says: The CO2 file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             co2concrow(i,:) = CO2FromFile(arrindex)
 
@@ -1298,6 +1299,7 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(CH4Time),real(iyear))
+            if (arrindex == 0) stop ('updateInput says: The CH4 file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             ch4concrow(i,:) = CH4FromFile(arrindex)
 
@@ -1307,6 +1309,7 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(POPDTime),real(iyear))
+            if (arrindex == 0) stop ('updateInput says: The POPD file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             popdinrow(i,:) = POPDFromFile(arrindex)
 
@@ -1316,6 +1319,7 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
+            if (arrindex == 0) stop ('updateInput says: The LUC file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
             if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
@@ -1336,6 +1340,7 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,LGHTTime,LGHTTimeNow)
+            if (arrindex == 0) stop ('updateInput says: The LGHT file does not contain requested year')
 
             lightng(1)= LGHTFromFile(arrindex)
 
@@ -1362,6 +1367,7 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,OBSWETFTime,OBSWTimeNow)
+            if (arrindex == 0) stop ('updateInput says: The OBSWETF file does not contain requested year')
 
             wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
 

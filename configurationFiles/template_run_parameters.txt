@@ -20,6 +20,8 @@ modelpft(10:12)= 1,     1,   0,   ! CLASS PFT 4 GRASS
 
 pftlist = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ',
 
+! Note: for competition, tree and grass should be placed in a contiguous block. So don't put
+! {trees, crops, tree, grass, tree, grass} as that will break the logic.
 vegtype = 'Tree',      'Tree',     'Tree',    'Tree',     'Tree',    'Crop',    'Crop',    'Grass',   'Grass',
 
 ! Array telling which vegetation type is c4
@@ -944,9 +946,8 @@ kn(10:12)  =0.46, 0.44, 0.00,
       chi(10:12) = -0.30, -0.30, 0.00,
 
     ! photosynthesis down regulation parameters equivalent co2 fertilization effect that we want model to yield
-      gamma_w = 0.17,
+      gamma_w = 0.35,
 
     ! equivalent co2 fertilization effect that model actually gives without any photosynthesis down-regulation
       gamma_m = 0.95,
 /
-
