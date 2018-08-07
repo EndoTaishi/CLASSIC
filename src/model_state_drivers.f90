@@ -1481,7 +1481,7 @@ contains
 
         ! NOTE: Carefully check that your incoming inputs are in the expected units!
 
-        ! Also take care here. If you use ncdump on a file it will show the opposite order for the
+        ! WARNING. If you use ncdump on a file it will show the opposite order for the
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2018/8/1">
+<variableSet type="CLASS" version="1.2" created="2018/8/7">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -617,12 +617,18 @@
             <standardName>Surface Downwelling Shortwave Radiation</standardName>
             <longName>Surface Downwelling Shortwave Radiative flux in air</longName>
             <shortName>rsds</shortName>
-            <defaultUnits>W/$m^2$</defaultUnits>
+            <defaultUnits>W $m^2$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fsinacc_mo</nameInCode>
+                <units>W $m^2$</units>
+            </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>fss_hh</nameInCode>
-                <units>W/$m^2$</units>
+                <units>W $m^2$</units>
             </variant>
         </variable>
         <variable id="57" includeBareGround="false" dormant="false">

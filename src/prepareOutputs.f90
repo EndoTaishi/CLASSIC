@@ -1425,7 +1425,7 @@ contains
         real, pointer, dimension(:) :: ALVSACC_MO
         real, pointer, dimension(:) :: ALIRACC_MO
         real, pointer, dimension(:) :: FLUTACC_MO
-        real, pointer, dimension(:) :: FSINACC_MO
+        real, pointer, dimension(:) :: FSINACC_MO     !<Surface Downwelling Shortwave Radiative flux in air [$W m^{-2}$]
         real, pointer, dimension(:) :: FLINACC_MO
         real, pointer, dimension(:) :: HFSACC_MO
         real, pointer, dimension(:) :: QEVPACC_MO
@@ -1654,6 +1654,7 @@ contains
                 ! rather than the first day of the next month.
                 timeStamp = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
 
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_mo'     ,timeStamp,'hfss', [QH_MO])

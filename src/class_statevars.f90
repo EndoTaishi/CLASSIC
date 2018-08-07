@@ -758,7 +758,7 @@ type class_moyr_output
     real, allocatable, dimension(:) :: ALVSACC_MO   !<
     real, allocatable, dimension(:) :: ALIRACC_MO   !<
     real, allocatable, dimension(:) :: FLUTACC_MO   !<
-    real, allocatable, dimension(:) :: FSINACC_MO   !<
+    real, allocatable, dimension(:) :: FSINACC_MO   !<Surface Downwelling Shortwave Radiative flux in air [$W m^{-2}$]
     real, allocatable, dimension(:) :: FLINACC_MO   !<
     real, allocatable, dimension(:) :: HFSACC_MO    !<
     real, allocatable, dimension(:) :: QEVPACC_MO   !<
@@ -1343,7 +1343,7 @@ allocate(class_rot% ALIRACC (nlat),&
          class_out%TBARACC_MO (nlat,ignd),&
          class_out%THLQACC_MO (nlat,ignd),&
          class_out%THICACC_MO (nlat,ignd),&
-         class_out%MRSOL_MO (nlat,ignd),&         
+         class_out%MRSOL_MO (nlat,ignd),&
 
          class_out%ALVSACC_YR (nlat),&
          class_out%ALIRACC_YR (nlat),&
