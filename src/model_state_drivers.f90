@@ -1245,7 +1245,7 @@ contains
     !!@{
     !> Update the input field variable based on the present model timestep
 
-    subroutine updateInput(inputRequested,iyear,imonth,iday,dom)
+    subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
@@ -1254,7 +1254,7 @@ contains
         implicit none
 
         character(*), intent(in) :: inputRequested
-        integer, intent(in) :: iyear
+        integer, intent(in) :: yearNeeded
         integer, intent(in), optional :: imonth
         integer, intent(in), optional :: iday
         integer, intent(in), optional :: dom            ! day of month
@@ -1288,7 +1288,7 @@ contains
             lengthTime = size(CO2Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
+            arrindex = checkForTime(lengthTime,real(CO2Time),real(yearNeeded))
             if (arrindex == 0) stop ('updateInput says: The CO2 file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             co2concrow(i,:) = CO2FromFile(arrindex)
@@ -1298,7 +1298,7 @@ contains
             lengthTime = size(CH4Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CH4Time),real(iyear))
+            arrindex = checkForTime(lengthTime,real(CH4Time),real(yearNeeded))
             if (arrindex == 0) stop ('updateInput says: The CH4 file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             ch4concrow(i,:) = CH4FromFile(arrindex)
@@ -1308,7 +1308,7 @@ contains
             lengthTime = size(POPDTime)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(POPDTime),real(iyear))
+            arrindex = checkForTime(lengthTime,real(POPDTime),real(yearNeeded))
             if (arrindex == 0) stop ('updateInput says: The POPD file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             popdinrow(i,:) = POPDFromFile(arrindex)
@@ -1318,7 +1318,7 @@ contains
             lengthTime = size(LUCTime)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
+            arrindex = checkForTime(lengthTime,real(LUCTime),real(yearNeeded))
             if (arrindex == 0) stop ('updateInput says: The LUC file does not contain requested year')
             i = 1 ! offline nlat is always 1 so just set
             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
@@ -1333,7 +1333,7 @@ contains
             lengthTime = size(LGHTTime)
 
             if (transientLGHT) then
-                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+                LGHTTimeNow = real(yearNeeded) * 10000. + real(imonth+1) * 100. + real(dom)
             else ! we only need the day
                 LGHTTimeNow = real(iday)
             end if
@@ -1360,7 +1360,7 @@ contains
             lengthTime = size(OBSWETFTime)
 
             if (transientOBSWETF) then
-                OBSWTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+                OBSWTimeNow = real(yearNeeded) * 10000. + real(imonth+1) * 100. + real(dom)
             else ! we only need the day
                 OBSWTimeNow = real(iday)
             end if

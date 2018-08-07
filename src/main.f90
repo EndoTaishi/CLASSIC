@@ -734,10 +734,10 @@ contains
         integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
         integer, pointer :: jdstd   !< day of the year to start writing the daily output
         integer, pointer :: jdendd  !< day of the year to stop writing the daily output
-        integer, pointer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
-        integer, pointer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
-        integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
-        integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
+        integer, pointer :: jhhsty  !< simulation year (runyr) to start writing the half-hourly output
+        integer, pointer :: jhhendy !< simulation year (runyr) to stop writing the half-hourly output
+        integer, pointer :: jdsty   !< simulation year (runyr) to start writing the daily output
+        integer, pointer :: jdendy  !< simulation year (runyr) to stop writing the daily output
         integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
         integer, pointer :: fixedYearLUC  !<Set the year to use for land cover if lnduseon is false. If set to -9999,
                                 !<we use the PFT distribution found in the initialization file. Any other year
@@ -2540,11 +2540,11 @@ contains
                 daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
 
                 ! Update the lightning if fire is on and transientLGHT is true
-                if (dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth=imonth,iday=iday,dom=DOM)
+                if (dofire .and. ctem_on) call updateInput('LGHT',runyr,imonth=imonth,iday=iday,dom=DOM)
 
                 ! Update the wetland fractions if we are using read-in wetland fractions
                 if ((transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) .and. ctem_on) then
-                    call updateInput('OBSWETF',iyear,imonth=imonth,iday=iday,dom=DOM)
+                    call updateInput('OBSWETF',runyr,imonth=imonth,iday=iday,dom=DOM)
                 end if
 
                 !Check if this is the first day of the year
@@ -2556,11 +2556,11 @@ contains
                     ! If needed, update values that were read in from the accessory input files (popd, wetlands, lightning...)
                     if (ctem_on) then
 
-                        if (transientCO2) call updateInput('CO2',iyear)
-                        if (transientCH4) call updateInput('CH4',iyear)
-                        if (dofire .and. transientPOPD) call updateInput('POPD',iyear)
+                        if (transientCO2) call updateInput('CO2',runyr)
+                        if (transientCH4) call updateInput('CH4',runyr)
+                        if (dofire .and. transientPOPD) call updateInput('POPD',runyr)
                         if (lnduseon) then
-                            call updateInput('LUC',iyear)
+                            call updateInput('LUC',runyr)
                         else ! If landuse change is not on, then set the next years landcover to be
                              ! the same as this years.
                             nfcancmxrow=pfcancmxrow
