@@ -16,12 +16,17 @@ module generalUtils
     contains
 
     !---------------------------------------------------------------------------------------
-
-    subroutine abandonCell
+    !> Used to stop running a model grid cell. For errors that need to be caught early in a run,
+    !! the fortran intrinsic 'stop' is preferred but for errors later in a run or simple fails on
+    !! single grid cells, abandonCell is best since it allows the netcdf files to continue to
+    !! written to and won't disrupt the MPI processes (as stop does)
+    subroutine abandonCell(errmsg)
 
         use class_statevars,    only : class_rot
 
         implicit none
+
+        character(*), intent(in), optional :: errmsg
 
         real, pointer, dimension(:) :: DLONROW !<
         real, pointer, dimension(:) :: DLATROW !<
@@ -30,6 +35,10 @@ module generalUtils
         DLONROW => class_rot%DLONROW
 
         run_model = .false.
+        if (present(errmsg)) then
+          print*,errmsg
+          print*,'exiting cell: ',DLONROW,DLATROW
+        end if
         print*,'died on',DLONROW,DLATROW
         return
 

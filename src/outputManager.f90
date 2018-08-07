@@ -767,7 +767,6 @@ contains
             print*, 'Possible reasons include '// trim(key) // ' not in xml file so no netcdf created'
             print*, 'or mismatch between xml group and model switch for this key. Model run will continue'
             print*, 'without writing this variable.'
-            !stop
             return
         end if
 

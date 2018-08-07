@@ -1250,6 +1250,7 @@ contains
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
         use ctem_params, only : nmos
+        use generalUtils, only : abandonCell
 
         implicit none
 
@@ -1270,6 +1271,7 @@ contains
         logical, pointer :: transientLGHT
         integer, pointer :: fixedYearLGHT
         logical, pointer :: transientOBSWETF
+        character(4) :: seqstring
 
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
@@ -1289,9 +1291,13 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(CO2Time),real(yearNeeded))
-            if (arrindex == 0) stop ('updateInput says: The CO2 file does not contain requested year')
-            i = 1 ! offline nlat is always 1 so just set
-            co2concrow(i,:) = CO2FromFile(arrindex)
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The CO2 file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              co2concrow(i,:) = CO2FromFile(arrindex)
+            end if
 
         case ('CH4')
 
@@ -1299,9 +1305,13 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(CH4Time),real(yearNeeded))
-            if (arrindex == 0) stop ('updateInput says: The CH4 file does not contain requested year')
-            i = 1 ! offline nlat is always 1 so just set
-            ch4concrow(i,:) = CH4FromFile(arrindex)
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The CH4 file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              ch4concrow(i,:) = CH4FromFile(arrindex)
+            end if
 
         case ('POPD')
 
@@ -1309,9 +1319,13 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(POPDTime),real(yearNeeded))
-            if (arrindex == 0) stop ('updateInput says: The POPD file does not contain requested year')
-            i = 1 ! offline nlat is always 1 so just set
-            popdinrow(i,:) = POPDFromFile(arrindex)
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The POPD file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              popdinrow(i,:) = POPDFromFile(arrindex)
+            end if
 
         case ('LUC')
 
@@ -1319,11 +1333,15 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,real(LUCTime),real(yearNeeded))
-            if (arrindex == 0) stop ('updateInput says: The LUC file does not contain requested year')
-            i = 1 ! offline nlat is always 1 so just set
-            m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
-            if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
-            nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The LUC file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
+              if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
+              nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            end if
 
        case('LGHT')
 
@@ -1340,15 +1358,17 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,LGHTTime,LGHTTimeNow)
-            if (arrindex == 0) stop ('updateInput says: The LGHT file does not contain requested year')
-
-            lightng(1)= LGHTFromFile(arrindex)
-
-            ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
-            ! can just pass the same values across all ilg.
-            do m = 1, size(lightng)
-                lightng(m) = lightng(1)
-            end do
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The LGHT file does not contain requested year: '//seqstring)
+            else
+              lightng(1)= LGHTFromFile(arrindex)
+              ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
+              ! can just pass the same values across all ilg.
+              do m = 1, size(lightng)
+                  lightng(m) = lightng(1)
+              end do
+            end if
 
         case('OBSWETF')
 
@@ -1367,15 +1387,18 @@ contains
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,OBSWETFTime,OBSWTimeNow)
-            if (arrindex == 0) stop ('updateInput says: The OBSWETF file does not contain requested year')
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The OBSWETF file does not contain requested year: '//seqstring)
+            else
+              wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
 
-            wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
-
-            ! Since wetland area is presently assumed the same for all tiles, and nlat is
-            ! always 1 offline, then we can just pass the same values across all ilg.
-            do m = 1, size(wetfrac_presgat)
-                wetfrac_presgat(m) = wetfrac_presgat(1)
-            end do
+              ! Since wetland area is presently assumed the same for all tiles, and nlat is
+              ! always 1 offline, then we can just pass the same values across all ilg.
+              do m = 1, size(wetfrac_presgat)
+                  wetfrac_presgat(m) = wetfrac_presgat(1)
+              end do
+            end if
 
         case default
             stop ('specify an input kind for updateInput')
