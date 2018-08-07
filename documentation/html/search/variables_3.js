@@ -14,6 +14,7 @@ var searchData=
   ['dlatgat',['dlatgat',['../structclass__statevars_1_1class__gather.html#a57cd1abe118c38f32f02d1da15ce0e20',1,'class_statevars::class_gather']]],
   ['dlongat',['dlongat',['../structclass__statevars_1_1class__gather.html#ac3693733f8e0f9b72867e48f5e690ef3',1,'class_statevars::class_gather']]],
   ['dlzwgat',['dlzwgat',['../structclass__statevars_1_1class__gather.html#a1147d8eb647136e8ef05f8ebbe0a1430',1,'class_statevars::class_gather']]],
+  ['dlzwrot',['dlzwrot',['../structclass__statevars_1_1class__rotated.html#a4311b314ce05cfb4847629485afc26d5',1,'class_statevars::class_rotated']]],
   ['dmoss',['dmoss',['../structctem__statevars_1_1veg__gat.html#a05858c9032f521bdebc866c7e0bea762',1,'ctem_statevars::veg_gat']]],
   ['dodayoutput',['dodayoutput',['../structctem__statevars_1_1ctem__switches.html#ae21ffc34732c1e7a342885f8b2f7ad01',1,'ctem_statevars::ctem_switches']]],
   ['dofire',['dofire',['../structctem__statevars_1_1ctem__switches.html#acd44b6d02549e9b4605b67e9d677c53a',1,'ctem_statevars::ctem_switches']]],

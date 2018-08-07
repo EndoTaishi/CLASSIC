@@ -1,6 +1,5 @@
 var structctem__statevars_1_1veg__gat =
 [
-    [ "actlyr", "structctem__statevars_1_1veg__gat.html#a45bd2d0c4ba48ef40227bf70bbfc556e", null ],
     [ "afrleaf", "structctem__statevars_1_1veg__gat.html#aa78bfdc1d005c92664ed2fafb724ef67", null ],
     [ "afrroot", "structctem__statevars_1_1veg__gat.html#a761d02e761e0451993829ecbfaca4250", null ],
     [ "afrstem", "structctem__statevars_1_1veg__gat.html#a194883b004cfcfd925d7e7c2688b29c5", null ],
@@ -84,7 +83,6 @@ var structctem__statevars_1_1veg__gat =
     [ "flinacc_gat", "structctem__statevars_1_1veg__gat.html#ae25c7106e8650af2956ecc35c6961a2c", null ],
     [ "flutacc_gat", "structctem__statevars_1_1veg__gat.html#acd757b45b4ae7400f63db7925beb0a3e", null ],
     [ "fsinacc_gat", "structctem__statevars_1_1veg__gat.html#abcde675be23dd7f4816f7e33a80d9341", null ],
-    [ "ftable", "structctem__statevars_1_1veg__gat.html#abefa110277276bf76a9120f526fe4ce9", null ],
     [ "gavglai", "structctem__statevars_1_1veg__gat.html#ac1dd257ff4997aaa914c15bde7110ce9", null ],
     [ "gavgltms", "structctem__statevars_1_1veg__gat.html#a191a120cb8571265716e71f6b943f547", null ],
     [ "gavgscms", "structctem__statevars_1_1veg__gat.html#a33e9dd968fe676f019aa910c99118d99", null ],

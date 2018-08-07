@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['l2max',['l2max',['../namespacectem__params.html#a7fb1effc3cb34b617a53f8a1105352af',1,'ctem_params']]],
   ['laimax',['laimax',['../namespacectem__params.html#a5f1d357569ec65010a0af2cc4867c1b3',1,'ctem_params']]],
   ['laimin',['laimin',['../namespacectem__params.html#aa5921437e997678010428577c648b01a',1,'ctem_params']]],
   ['lambda',['lambda',['../structctem__statevars_1_1veg__gat.html#abbccacdea04d42346d27951d422a7ddb',1,'ctem_statevars::veg_gat']]],

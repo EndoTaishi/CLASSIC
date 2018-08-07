@@ -30,6 +30,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CLASSIC
    </div>
+   <div id="projectbrief">Canadian Land Surface Scheme including Biogeochemical Cycles</div>
   </td>
  </tr>
  </tbody>
@@ -109,13 +110,13 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <tr class="memdesc:a3965f305f082ec630c8e7762d7e22122"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in a model input from a netcdf file and store the file's time array as well as the input values into memory.  <a href="#a3965f305f082ec630c8e7762d7e22122">More...</a><br /></td></tr>
 <tr class="separator:a3965f305f082ec630c8e7762d7e22122"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:aa9b5305927aad587b8e26f16d3798482"><td class="memItemLeft" align="right" valign="top"><a id="aa9b5305927aad587b8e26f16d3798482"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aa9b5305927aad587b8e26f16d3798482">updateinput</a> (inputRequested, iyear, imonth, iday, dom)</td></tr>
-<tr class="memdesc:aa9b5305927aad587b8e26f16d3798482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the input field variable based on the present model timestep. <br /></td></tr>
-<tr class="separator:aa9b5305927aad587b8e26f16d3798482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a566c0005f80027365025af9f6b17d1fe"><td class="memItemLeft" align="right" valign="top"><a id="a566c0005f80027365025af9f6b17d1fe"></a>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a566c0005f80027365025af9f6b17d1fe">updateinput</a> (inputRequested, yearNeeded, imonth, iday, dom)</td></tr>
+<tr class="memdesc:a566c0005f80027365025af9f6b17d1fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the input field variable based on the present model timestep. <br /></td></tr>
+<tr class="separator:a566c0005f80027365025af9f6b17d1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:aa1f54e07c9b953fa76892cde43cd0395"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aa1f54e07c9b953fa76892cde43cd0395">getmet</a> (longitude, latitude, nday, delt)</td></tr>
-<tr class="memdesc:aa1f54e07c9b953fa76892cde43cd0395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the meteorological input from a netcdf file It is <b>very</b> important that the files have time as the fastest varying dimension. There is an orders of magnitude slow-up if the dimensions are out of order!  <a href="#aa1f54e07c9b953fa76892cde43cd0395">More...</a><br /></td></tr>
+<tr class="memdesc:aa1f54e07c9b953fa76892cde43cd0395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the meteorological input from a netcdf file It is <b>very</b> important that the files are chunked correctly (for global and regional runs). There is an orders of magnitude slow-up otherwise!  <a href="#aa1f54e07c9b953fa76892cde43cd0395">More...</a><br /></td></tr>
 <tr class="separator:aa1f54e07c9b953fa76892cde43cd0395"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a250e1a4a9a115535075497adede17f46"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a250e1a4a9a115535075497adede17f46">updatemet</a> (metTimeIndex, delt, iyear, iday, ihour, imin, metDone)</td></tr>
@@ -496,7 +497,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Read in the meteorological input from a netcdf file It is <b>very</b> important that the files have time as the fastest varying dimension. There is an orders of magnitude slow-up if the dimensions are out of order! </p>
+<p>Read in the meteorological input from a netcdf file It is <b>very</b> important that the files are chunked correctly (for global and regional runs). There is an orders of magnitude slow-up otherwise! </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">longitude</td><td>Longitude of grid cell of interest</td></tr>
@@ -657,7 +658,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Fri Jul 20 2018 16:59:10 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 7 2018 16:30:33 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

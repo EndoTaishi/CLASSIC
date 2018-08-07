@@ -30,6 +30,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CLASSIC
    </div>
+   <div id="projectbrief">Canadian Land Surface Scheme including Biogeochemical Cycles</div>
   </td>
  </tr>
  </tbody>
@@ -170,8 +171,14 @@ Files</h2></td></tr>
 <tr class="memitem:CWCALC_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CWCALC_8f.html">CWCALC.f</a></td></tr>
 <tr class="memdesc:CWCALC_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for freezing or thawing of liquid or frozen water on the vegetation canopy, and adjust canopy temperature and intercepted water stores accordingly. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:DIASURFZ_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="DIASURFZ_8f.html">DIASURFZ.f</a></td></tr>
+<tr class="memdesc:DIASURFZ_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the diagnostic values of U, V, T, Q near the surface (ZU and ZT) <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:DRCOEF_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="DRCOEF_8f.html">DRCOEF.f</a></td></tr>
 <tr class="memdesc:DRCOEF_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates drag coefficients and related variables. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:FLXSURFZ_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="FLXSURFZ_8f.html">FLXSURFZ.f</a></td></tr>
+<tr class="memdesc:FLXSURFZ_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates surface layer transfer coefficients and fluxes FLXSURFZ is a variant of FLXSURF3 that permits to input wind and temperature (humidity) at different levels. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:GATPREP_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="GATPREP_8f.html">GATPREP.f</a></td></tr>
 <tr class="memdesc:GATPREP_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns values to pointer vectors relating the location of elements on the "gathered" variable vectors to elements on the original two-dimensional arrays (latitude circle x mosaic tiles) for land grid cells. <br /></td></tr>
@@ -187,9 +194,6 @@ Files</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ICEBAL_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ICEBAL_8f.html">ICEBAL.f</a></td></tr>
 <tr class="memdesc:ICEBAL_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs temperature stepping and surface runoff calculations over ice sheets. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:io__driver_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="io__driver_8f90.html">io_driver.f90</a></td></tr>
-<tr class="memdesc:io__driver_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central module that handles all CTEM preparation and writing of output files. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:main_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8f90.html">main.f90</a></td></tr>
 <tr class="memdesc:main_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric forcing. <br /></td></tr>
@@ -217,6 +221,9 @@ Files</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:PHTSYN3_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="PHTSYN3_8f.html">PHTSYN3.f</a></td></tr>
 <tr class="memdesc:PHTSYN3_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Photosynthesis and canopy conductance. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:prepareOutputs_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="prepareOutputs_8f90.html">prepareOutputs.f90</a></td></tr>
+<tr class="memdesc:prepareOutputs_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central module that handles all CTEM preparation and writing of output files. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:SCREENRH_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="SCREENRH_8f.html">SCREENRH.f</a></td></tr>
 <tr class="memdesc:SCREENRH_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates screen relative humidity based on input screen temperature, screen specific humidity and surface pressure. <br /></td></tr>
@@ -303,7 +310,7 @@ Files</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>
-    <li class="footer">Generated on Fri Jul 20 2018 16:59:10 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 7 2018 16:30:33 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

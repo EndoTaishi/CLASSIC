@@ -30,6 +30,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CLASSIC
    </div>
+   <div id="projectbrief">Canadian Land Surface Scheme including Biogeochemical Cycles</div>
   </td>
  </tr>
  </tbody>
@@ -129,7 +130,7 @@ Functions/Subroutines</h2></td></tr>
 <p>The dynamic allocation fractions are superseded under three conditions. First, during the leaf onset for crops and deciduous trees, all carbon must be allocated to leaves ( <img class="formulaInl" alt="$a_{fL} = 1$" src="form_19.png"/>, <img class="formulaInl" alt="$a_{fS} = a_{fR} = 0$" src="form_20.png"/>). Second, the proportion of stem plus root biomasses to leaf biomass must satisfy the relationship: </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\]" src="form_1525.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_22.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_23.png"/> and <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_24.png"/> are the carbon in the stem, root and leaves, respectively. The parameter <img class="formulaInl" alt="$\eta$" src="form_25.png"/> is PFT-specific (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>) and parameter <img class="formulaInl" alt="$\kappa$" src="form_26.png"/> has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters are based on the Frankfurt Biosphere Model (FBM) Ludeke et al. (1994) <a class="el" href="citelist.html#CITEREF_Ludeke1994-px">[58]</a>. This constraint (Eq. 9) is based on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As grasses have no stem component, Eq. 9 determines their root to shoot ratio (i.e. the ratio of belowground to aboveground biomass). The final condition ensures that a minimum realistic root to shoot ratio is maintained for all PFTs ( <img class="formulaInl" alt="${lr}_{min}$" src="form_27.png"/>, see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). Root mass is required for nutrient and water uptake and support for the aboveground biomass. If the minimum root to shoot ratio is not being maintained, carbon is allocated preferentially to roots. </p>
+<p>where <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_22.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_23.png"/> and <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_24.png"/> are the carbon in the stem, root and leaves, respectively. The parameter <img class="formulaInl" alt="$\eta$" src="form_25.png"/> is PFT-specific (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>) and parameter <img class="formulaInl" alt="$\kappa$" src="form_26.png"/> has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters are based on the Frankfurt Biosphere Model (FBM) Ludeke et al. (1994) <a class="el" href="citelist.html#CITEREF_Ludeke1994-px">[59]</a>. This constraint (Eq. 9) is based on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As grasses have no stem component, Eq. 9 determines their root to shoot ratio (i.e. the ratio of belowground to aboveground biomass). The final condition ensures that a minimum realistic root to shoot ratio is maintained for all PFTs ( <img class="formulaInl" alt="${lr}_{min}$" src="form_27.png"/>, see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). Root mass is required for nutrient and water uptake and support for the aboveground biomass. If the minimum root to shoot ratio is not being maintained, carbon is allocated preferentially to roots. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a id="ac0ca89fb52b50245b0c781a7dadb2d71"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac0ca89fb52b50245b0c781a7dadb2d71">&#9670;&nbsp;</a></span>allocate()</h2>
@@ -331,7 +332,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="allocate_8f.html">allocate.f</a></li>
-    <li class="footer">Generated on Fri Jul 20 2018 16:59:09 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 7 2018 16:30:32 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

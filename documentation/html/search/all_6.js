@@ -29,7 +29,6 @@ var searchData=
   ['gralb',['gralb',['../GRALB_8f.html#a99502ab3789165086e450da1aef1ecd5',1,'GRALB.f']]],
   ['gralb_2ef',['GRALB.f',['../GRALB_8f.html',1,'']]],
   ['grass',['grass',['../namespacectem__params.html#a2cd58ed3cdb5717d73c119b314292095',1,'ctem_params']]],
-  ['grass_5find',['grass_ind',['../namespacectem__params.html#ad876b804c75b0655addbc8fe6b18df17',1,'ctem_params']]],
   ['grclarea',['grclarea',['../structctem__statevars_1_1veg__gat.html#a91f5c7f28b46c39b9caa9a4b07431aa7',1,'ctem_statevars::veg_gat']]],
   ['grdran',['grdran',['../GRDRAN_8f.html#a9d02aa9115635af052981eec146b1042',1,'GRDRAN.f']]],
   ['grdran_2ef',['GRDRAN.f',['../GRDRAN_8f.html',1,'']]],

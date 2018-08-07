@@ -1,7 +1,9 @@
 var searchData=
 [
+  ['notes_20about_20composite_20versus_20mosaic_20running_20of_20the_20model',['Notes about composite versus mosaic running of the model',['../compvsmosaic.html',1,'']]],
   ['nbp',['nbp',['../structctem__statevars_1_1veg__rot.html#aa30c8da63cfcbd31b3ab76f43983e7e9',1,'ctem_statevars::veg_rot::nbp()'],['../structctem__statevars_1_1veg__gat.html#a1f1b1b1b3cdc359416b8c6b0fe021a5b',1,'ctem_statevars::veg_gat::nbp()']]],
   ['nbpveg',['nbpveg',['../structctem__statevars_1_1veg__rot.html#a9dedd91b3c3052ae9bbba7d9e4e609f2',1,'ctem_statevars::veg_rot::nbpveg()'],['../structctem__statevars_1_1veg__gat.html#aeea0970f5288e4b7bfced83715d5b8e5',1,'ctem_statevars::veg_gat::nbpveg()']]],
+  ['nbs',['nbs',['../namespacectem__params.html#a1e8ba7b501ad6afcb7260b6b4711ae86',1,'ctem_params']]],
   ['nep',['nep',['../structctem__statevars_1_1veg__rot.html#a1b8dada944cba901cde3e99fc29b1d26',1,'ctem_statevars::veg_rot::nep()'],['../structctem__statevars_1_1veg__gat.html#a1cc723b7a9e952e3382eea75cd06bbdf',1,'ctem_statevars::veg_gat::nep()']]],
   ['nepveg',['nepveg',['../structctem__statevars_1_1veg__rot.html#a4d7796e1822fe39d383fb6199fa1b611',1,'ctem_statevars::veg_rot::nepveg()'],['../structctem__statevars_1_1veg__gat.html#ae439221581c0d86ffc4f15f9040ee021',1,'ctem_statevars::veg_gat::nepveg()']]],
   ['netcdfvar',['netcdfvar',['../structoutputmanager_1_1netcdfvar.html',1,'outputmanager']]],
@@ -9,6 +11,7 @@ var searchData=
   ['nlat',['nlat',['../namespacectem__params.html#a1ec48278b053d539920e6226a28bd5de',1,'ctem_params']]],
   ['nmon',['nmon',['../namespacectem__params.html#a7d9aa770be284cd553a5356105ce73fb',1,'ctem_params']]],
   ['nmos',['nmos',['../namespacectem__params.html#a709bce69d7f5723c5fd993cde63d6c28',1,'ctem_params']]],
+  ['nol2pfts',['nol2pfts',['../namespacectem__params.html#a18faf2e6f0ef39bd30cbabeb0b496566',1,'ctem_params']]],
   ['npp',['npp',['../structctem__statevars_1_1veg__rot.html#a57027cc54547a5f80ef02e6a1b8384fc',1,'ctem_statevars::veg_rot::npp()'],['../structctem__statevars_1_1veg__gat.html#a501f510a904f3a3e4caefc7a4887944f',1,'ctem_statevars::veg_gat::npp()']]],
   ['nppmoss',['nppmoss',['../structctem__statevars_1_1veg__gat.html#aa0546dc918fa34774425531a61c2f7bf',1,'ctem_statevars::veg_gat']]],
   ['nppveg',['nppveg',['../structctem__statevars_1_1veg__rot.html#a7e983701cb360c5de010aa816379970f',1,'ctem_statevars::veg_rot::nppveg()'],['../structctem__statevars_1_1veg__gat.html#a5e36a186d9a6518e2caac836c949c246',1,'ctem_statevars::veg_gat::nppveg()']]],

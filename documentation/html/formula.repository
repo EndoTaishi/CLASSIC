@@ -1525,3 +1525,19 @@
 \form#1524:\[ a_{fR}=\frac{\epsilon_\mathrm{R}+\omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(1+L-W)}. \hspace{10pt}[Eqn 8]\]
 \form#1525:\[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\]
 \form#1526:$(kg c/m^2)$
+\form#1527:$\theta_p = (-0.126 X_{sand} +48.9)/100.0$
+\form#1528:$b = 0.159 X_{clay} + 2.91$
+\form#1529:$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)$
+\form#1530:$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)$
+\form#1531:$K = K_{sat} (\theta_l / \theta_p ) (2b + 3)$
+\form#1532:$f_{inf} = 0.5 1/(2b+3)$
+\form#1533:$\theta_{min}$
+\form#1534:$C_g = \Sigma (C_{sand} \theta_{sand} + C_{fine} \theta_{fine} + C_{org} \theta_{org} )/(1 - \theta_p )$
+\form#1535:$\tau_g$
+\form#1536:$\tau_g = \Sigma (\tau_{sand} \theta_{sand} + \tau_{fine} \theta_{fine} + \tau_{org} \theta_{org} )/(1 - \theta_p )$
+\form#1537:$d^{-1}$
+\form#1538:$\theta_{fc} = \theta_p (1.157 x 10^{-9} /K_{sat} )^{1/(2b + 3)}$
+\form#1539:$\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]$
+\form#1540:$\Psi_{wilt}$
+\form#1541:$ \theta_{wilt} $
+\form#1542:$ \theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} $

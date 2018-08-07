@@ -1,6 +1,7 @@
 var structclass__statevars_1_1class__rotated =
 [
     [ "acidrot", "structclass__statevars_1_1class__rotated.html#af19254de40161b7cec3e0291dde3590e", null ],
+    [ "actlyr", "structclass__statevars_1_1class__rotated.html#ad8a01437993556cd096386d02b10301d", null ],
     [ "acvdrot", "structclass__statevars_1_1class__rotated.html#afadf950c2df1ebbd453cad7717f6c56e", null ],
     [ "agidrot", "structclass__statevars_1_1class__rotated.html#a91acd392145ff4e440c9bc1b38b01410", null ],
     [ "agvdrot", "structclass__statevars_1_1class__rotated.html#abdca374967cf11aa5f25ee9cbcb7cd73", null ],
@@ -83,6 +84,7 @@ var structclass__statevars_1_1class__rotated =
     [ "fssbrol", "structclass__statevars_1_1class__rotated.html#a6c69f91ca323ab9d0c8b78b8ba6c378f", null ],
     [ "fssrow", "structclass__statevars_1_1class__rotated.html#a4bb3a7931670ddba2bc95071abc8fd69", null ],
     [ "fsvhrow", "structclass__statevars_1_1class__rotated.html#a2ebf0a695ba62fe1528193cce1e3a199", null ],
+    [ "ftable", "structclass__statevars_1_1class__rotated.html#a020e6d84ef6c58347c0f534709764d6c", null ],
     [ "garot", "structclass__statevars_1_1class__rotated.html#ae3035bcd30a5bc70fa610df50b1cbe12", null ],
     [ "garow", "structclass__statevars_1_1class__rotated.html#a8188f5d0f9b869204fe30489a2a42ca6", null ],
     [ "gcrow", "structclass__statevars_1_1class__rotated.html#a9eda78bafa090fe83cc29bd7ff0df294", null ],

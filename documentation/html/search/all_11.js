@@ -72,5 +72,6 @@ var searchData=
   ['rsmngat',['rsmngat',['../structclass__statevars_1_1class__gather.html#a0d8afc36b879ca7133de3fd7cbea78af',1,'class_statevars::class_gather']]],
   ['rtsrmin',['rtsrmin',['../namespacectem__params.html#a744d2534f841efc654c33d61d12559b5',1,'ctem_params']]],
   ['run_5fmodel',['run_model',['../namespacegeneralutils.html#ae570b209b33a4e6370bc54146e21b1a0',1,'generalutils']]],
-  ['runparams_5ffile',['runparams_file',['../structctem__statevars_1_1ctem__switches.html#ab8fea46fcc551ace6e446abe8005f1f5',1,'ctem_statevars::ctem_switches']]]
+  ['runparams_5ffile',['runparams_file',['../structctem__statevars_1_1ctem__switches.html#ab8fea46fcc551ace6e446abe8005f1f5',1,'ctem_statevars::ctem_switches']]],
+  ['running_20classic',['Running CLASSIC',['../runStandAloneMode.html',1,'']]]
 ];

@@ -20,7 +20,6 @@ var searchData=
   ['gppmossac_5ft',['gppmossac_t',['../structctem__statevars_1_1ctem__tile__level.html#ad0493f7f4e08ae0b8bfb0a5168a3490c',1,'ctem_statevars::ctem_tile_level']]],
   ['gppveg',['gppveg',['../structctem__statevars_1_1veg__rot.html#af86d546ecf8bb8d6a110cb3bb74c6708',1,'ctem_statevars::veg_rot::gppveg()'],['../structctem__statevars_1_1veg__gat.html#a04ee0ffdae22e33d02dfc6bb9c9f99cf',1,'ctem_statevars::veg_gat::gppveg()']]],
   ['grass',['grass',['../namespacectem__params.html#a2cd58ed3cdb5717d73c119b314292095',1,'ctem_params']]],
-  ['grass_5find',['grass_ind',['../namespacectem__params.html#ad876b804c75b0655addbc8fe6b18df17',1,'ctem_params']]],
   ['grclarea',['grclarea',['../structctem__statevars_1_1veg__gat.html#a91f5c7f28b46c39b9caa9a4b07431aa7',1,'ctem_statevars::veg_gat']]],
   ['grescoef',['grescoef',['../namespacectem__params.html#ae9a195cf00b41d0ff3d51949d9636f18',1,'ctem_params']]],
   ['grescoefmoss',['grescoefmoss',['../namespacectem__params.html#ab81d40d45c446f0354132a51770591b5',1,'ctem_params']]],

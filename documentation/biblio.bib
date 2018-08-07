@@ -3069,3 +3069,94 @@
 }
 
 
+@ARTICLE{Shrestha2016-do,
+  title    = "The sensitivity of simulated competition between different plant
+              functional types to sub-grid-scale representation of vegetation
+              in a land surface model",
+  author   = "Shrestha, R K and Arora, V K and Melton, J R",
+  abstract = "The Canadian Land Surface Scheme (CLASS) coupled to the Canadian
+              Terrestrial Ecosystem Model (CTEM) is used to simulate
+              competition between the model's seven non-crop plant functional
+              types (PFTs) for available space. Our objective is to assess if
+              the model is successfully able to reproduce the observed mix of
+              PFTs and their fractional coverages, and to what extent the
+              simulated competition is affected by the manner in which the
+              sub-grid scale variability of vegetation is represented. The
+              model can be run either in a composite (single tile)
+              configuration, where structural vegetation attributes of PFTs are
+              aggregated for use in grid-averaged energy and water balance
+              calculations, or a mosaic (multiple tiles) configuration, where
+              separate energy and water balance calculations are performed for
+              each PFT. The model realistically simulates the fractional
+              coverages of trees, grasses and bare ground, as well as that of
+              individual tree and grass PFTs and their succession patterns. Our
+              results show that the model is not overly sensitive to the manner
+              in which sub-grid scale variability of vegetation is represented.
+              Of the seven sites chosen across the globe to illustrate the
+              difference between the two configurations, the simulated
+              fractional coverage of PFTs are generally very similar (root mean
+              square difference, RMSD, 5 \%).",
+  journal  = "J. Geophys. Res. Biogeosci.",
+  pages    = "2015JG003234",
+  month    =  jan,
+  year     =  2016,
+  keywords = "Competition; Land surface model; Terrestrial ecosystem model;
+              Sub-grid scale vegetation variability; 0439 Ecosystems: structure
+              and dynamics; 0428 Carbon cycling; 0414 Biogeochemical cycles,
+              processes, and modeling",
+  issn     = "2169-8961",
+  doi      = "10.1002/2015JG003234"
+}
+
+
+@ARTICLE{Melton2017-gp,
+  title     = "Tiling soil textures for terrestrial ecosystem modelling via
+               clustering analysis: a case study with {CLASS-CTEM} (version
+               2.1)",
+  author    = "Melton, Joe R and Sospedra-Alfonso, Reinel and McCusker, Kelly E",
+  abstract  = "We investigate the application of clustering algorithms to
+               represent sub-grid scale variability in soil texture for use in
+               a global-scale terrestrial ecosystem model. Our model, the
+               coupled Canadian Land Surface Scheme – Canadian Terrestrial
+               Ecosystem Model (CLASS-CTEM), is typically implemented at a
+               coarse spatial resolution (approximately 2. 8° × 2. 8°) due to
+               its use as the land surface component of the Canadian Earth
+               System Model (CanESM). CLASS-CTEM can, however, be run with
+               tiling of the land surface as a means to represent sub-grid
+               heterogeneity. We first determined that the model was sensitive
+               to tiling of the soil textures via an idealized test case before
+               attempting to cluster soil textures globally. To cluster a
+               high-resolution soil texture dataset onto our coarse model grid,
+               we use two linked algorithms – the Ordering Points to Identify
+               the Clustering Structure (OPTICS) algorithm (Ankerst et al.,
+               1999; Daszykowski et al., 2002) and the algorithm of Sander et
+               al. (2003) – to provide tiles of representative soil textures
+               for use as CLASS-CTEM inputs. The clustering process results in,
+               on average, about three tiles per CLASS-CTEM grid cell with most
+               cells having four or less tiles. Results from CLASS-CTEM
+               simulations conducted with the tiled inputs (Cluster) versus
+               those using a simple grid-mean soil texture (Gridmean) show
+               CLASS-CTEM, at least on a global scale, is relatively
+               insensitive to the tiled soil textures; however, differences can
+               be large in arid or peatland regions. The Cluster simulation has
+               generally lower soil moisture and lower overall vegetation
+               productivity than the Gridmean simulation except in arid regions
+               where plant productivity increases. In these dry regions, the
+               influence of the tiling is stronger due to the general state of
+               vegetation moisture stress which allows a single tile, whose
+               soil texture retains more plant-available water, to yield much
+               higher productivity. Although the use of clustering analysis
+               appears promising as a means to represent sub-grid
+               heterogeneity, soil textures appear to be reasonably represented
+               for global-scale simulations using a simple grid-mean value.",
+  journal   = "Geoscientific Model Development",
+  publisher = "Copernicus GmbH",
+  volume    =  10,
+  number    =  7,
+  pages     = "2761--2783",
+  month     =  jul,
+  year      =  2017,
+  language  = "en",
+  issn      = "1991-959X",
+  doi       = "10.5194/gmd-10-2761-2017"
+}

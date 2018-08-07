@@ -30,6 +30,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CLASSIC
    </div>
+   <div id="projectbrief">Canadian Land Surface Scheme including Biogeochemical Cycles</div>
   </td>
  </tr>
  </tbody>
@@ -106,11 +107,11 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]" src="form_869.png"/>
 </p>
-<p>Grasses and crops have <img class="formulaInl" alt="$m_{intr} = 0$" src="form_870.png"/>. The annual growth-related mortality <img class="formulaInl" alt="$m_{ge}$" src="form_865.png"/> is calculated using growth efficiency of a PFT over the course of the previous year following <a class="el" href="citelist.html#CITEREF_Prentice1993-xn">[22]</a> and <a class="el" href="citelist.html#CITEREF_Sitch2003-847">[75]</a> as</p>
+<p>Grasses and crops have <img class="formulaInl" alt="$m_{intr} = 0$" src="form_870.png"/>. The annual growth-related mortality <img class="formulaInl" alt="$m_{ge}$" src="form_865.png"/> is calculated using growth efficiency of a PFT over the course of the previous year following <a class="el" href="citelist.html#CITEREF_Prentice1993-xn">[22]</a> and <a class="el" href="citelist.html#CITEREF_Sitch2003-847">[78]</a> as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]" src="form_871.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$m_{{ge},max}$" src="form_872.png"/> represents the PFT-specific maximum mortality rate when no growth occurs (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). <img class="formulaInl" alt="$k_{m}$" src="form_873.png"/> is a parameter set to <img class="formulaInl" alt="$0.3\,m^{2}\,(g\,C)^{-1}$" src="form_874.png"/>. <img class="formulaInl" alt="$g_\mathrm{e}$" src="form_875.png"/> is the growth efficiency of the PFT ( <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_678.png"/>) calculated based on the maximum LAI ( <img class="formulaInl" alt="$L_{\alpha,max}$" src="form_876.png"/>; <img class="formulaInl" alt="$m^{2}\,m^{-2}$" src="form_877.png"/>) and the increment in stem and root mass over the course of the previous year ( <img class="formulaInl" alt="$\Delta C_\mathrm{S}$" src="form_878.png"/> and <img class="formulaInl" alt="$\Delta C_\mathrm{R}$" src="form_879.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>, respectively) <a class="el" href="citelist.html#CITEREF_Waring1983-wc">[83]</a> </p><p class="formulaDsp">
+<p>where <img class="formulaInl" alt="$m_{{ge},max}$" src="form_872.png"/> represents the PFT-specific maximum mortality rate when no growth occurs (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). <img class="formulaInl" alt="$k_{m}$" src="form_873.png"/> is a parameter set to <img class="formulaInl" alt="$0.3\,m^{2}\,(g\,C)^{-1}$" src="form_874.png"/>. <img class="formulaInl" alt="$g_\mathrm{e}$" src="form_875.png"/> is the growth efficiency of the PFT ( <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_678.png"/>) calculated based on the maximum LAI ( <img class="formulaInl" alt="$L_{\alpha,max}$" src="form_876.png"/>; <img class="formulaInl" alt="$m^{2}\,m^{-2}$" src="form_877.png"/>) and the increment in stem and root mass over the course of the previous year ( <img class="formulaInl" alt="$\Delta C_\mathrm{S}$" src="form_878.png"/> and <img class="formulaInl" alt="$\Delta C_\mathrm{R}$" src="form_879.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>, respectively) <a class="el" href="citelist.html#CITEREF_Waring1983-wc">[86]</a> </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]" src="form_880.png"/>
 </p>
 <p>Mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_505.png"/> ( <img class="formulaInl" alt="$0.25\,yr^{-1}$" src="form_881.png"/>), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in the next section.</p>
@@ -292,7 +293,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="mortality_8f.html">mortality.f</a></li>
-    <li class="footer">Generated on Fri Jul 20 2018 16:59:09 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 7 2018 16:30:32 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

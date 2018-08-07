@@ -30,6 +30,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CLASSIC
    </div>
+   <div id="projectbrief">Canadian Land Surface Scheme including Biogeochemical Cycles</div>
   </td>
  </tr>
  </tbody>
@@ -904,8 +905,17 @@ real, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bot
 <tr class="memitem:a43b2bc727e1d03c63278785fea08c190"><td class="memItemLeft" align="right" valign="top"><a id="a43b2bc727e1d03c63278785fea08c190"></a>
 real, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>wtablerot</b></td></tr>
 <tr class="separator:a43b2bc727e1d03c63278785fea08c190"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a020e6d84ef6c58347c0f534709764d6c"><td class="memItemLeft" align="right" valign="top"><a id="a020e6d84ef6c58347c0f534709764d6c"></a>
+real, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html#a020e6d84ef6c58347c0f534709764d6c">ftable</a></td></tr>
+<tr class="memdesc:a020e6d84ef6c58347c0f534709764d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth to frozen water table (m) <br /></td></tr>
+<tr class="separator:a020e6d84ef6c58347c0f534709764d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a01437993556cd096386d02b10301d"><td class="memItemLeft" align="right" valign="top"><a id="ad8a01437993556cd096386d02b10301d"></a>
+real, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html#ad8a01437993556cd096386d02b10301d">actlyr</a></td></tr>
+<tr class="memdesc:ad8a01437993556cd096386d02b10301d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active layer depth (m) <br /></td></tr>
+<tr class="separator:ad8a01437993556cd096386d02b10301d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a9941aeb151d1c7817384cf6501a6e4"><td class="memItemLeft" align="right" valign="top"><a id="a2a9941aeb151d1c7817384cf6501a6e4"></a>
-integer, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>isndrot</b></td></tr>
+integer, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html#a2a9941aeb151d1c7817384cf6501a6e4">isndrot</a></td></tr>
+<tr class="memdesc:a2a9941aeb151d1c7817384cf6501a6e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sand content flag, used to delineate non-soils. <br /></td></tr>
 <tr class="separator:a2a9941aeb151d1c7817384cf6501a6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad699d89fe2c5cafdab46a80313a23b7a"><td class="memItemLeft" align="right" valign="top"><a id="ad699d89fe2c5cafdab46a80313a23b7a"></a>
 real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html#ad699d89fe2c5cafdab46a80313a23b7a">tbarrot</a></td></tr>
@@ -923,7 +933,8 @@ real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="b
 real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>birot</b></td></tr>
 <tr class="separator:a72f68f68ddaa2e546e46f88e329692d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4311b314ce05cfb4847629485afc26d5"><td class="memItemLeft" align="right" valign="top"><a id="a4311b314ce05cfb4847629485afc26d5"></a>
-real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>dlzwrot</b></td></tr>
+real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html#a4311b314ce05cfb4847629485afc26d5">dlzwrot</a></td></tr>
+<tr class="memdesc:a4311b314ce05cfb4847629485afc26d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Permeable thickness of soil layer [m]. <br /></td></tr>
 <tr class="separator:a4311b314ce05cfb4847629485afc26d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91af4757d3fe2f587ad0f6ae64767392"><td class="memItemLeft" align="right" valign="top"><a id="a91af4757d3fe2f587ad0f6ae64767392"></a>
 real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>grksrot</b></td></tr>
@@ -956,7 +967,8 @@ real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="b
 real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>thfcrot</b></td></tr>
 <tr class="separator:a0fb4888ba163392837f091bc77d60566"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01f9f1cb1b549fda730057a84b455c14"><td class="memItemLeft" align="right" valign="top"><a id="a01f9f1cb1b549fda730057a84b455c14"></a>
-real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>thmrot</b></td></tr>
+real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html#a01f9f1cb1b549fda730057a84b455c14">thmrot</a></td></tr>
+<tr class="memdesc:a01f9f1cb1b549fda730057a84b455c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Residual soil liquid water content remaining after freezing or evaporation <img class="formulaInl" alt="$[m^3 m^{-3} ]$" src="form_239.png"/>. <br /></td></tr>
 <tr class="separator:a01f9f1cb1b549fda730057a84b455c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b9a8ae343f2c8e5b725a1d90098f51c"><td class="memItemLeft" align="right" valign="top"><a id="a8b9a8ae343f2c8e5b725a1d90098f51c"></a>
 real, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>thprot</b></td></tr>
@@ -1217,7 +1229,7 @@ real, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bot
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceclass__statevars.html">class_statevars</a></li><li class="navelem"><a class="el" href="structclass__statevars_1_1class__rotated.html">class_rotated</a></li>
-    <li class="footer">Generated on Fri Jul 20 2018 16:59:09 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 7 2018 16:30:33 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

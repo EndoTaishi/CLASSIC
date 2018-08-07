@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['the_20canadian_20land_20surface_20scheme_20including_20biogeochemical_20cycles_20_28classic_29',['The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)',['../index.html',1,'']]],
   ['taacc',['taacc',['../structclass__statevars_1_1class__rotated.html#a5700d3be82b21f99aaf68016dbc9dd16',1,'class_statevars::class_rotated']]],
   ['tacgat',['tacgat',['../structclass__statevars_1_1class__gather.html#ac72504cca8e992b8350bf11cfa4c350f',1,'class_statevars::class_gather']]],
   ['tadpgat',['tadpgat',['../structclass__statevars_1_1class__gather.html#acbf5ead0239fae80f14169148226f62c',1,'class_statevars::class_gather']]],
@@ -41,6 +40,7 @@ var searchData=
   ['thlwrot',['thlwrot',['../structclass__statevars_1_1class__rotated.html#a6835ab46d661688dec79a0582a95d460',1,'class_statevars::class_rotated']]],
   ['thmgat',['thmgat',['../structclass__statevars_1_1class__gather.html#acec95abae46bf5f94d79dc7be65d4e49',1,'class_statevars::class_gather']]],
   ['thmmoss',['thmmoss',['../namespacectem__params.html#a1ec880bc9f809448914c2f7cf94d4493',1,'ctem_params']]],
+  ['thmrot',['thmrot',['../structclass__statevars_1_1class__rotated.html#a01f9f1cb1b549fda730057a84b455c14',1,'class_statevars::class_rotated']]],
   ['thpgat',['thpgat',['../structclass__statevars_1_1class__gather.html#a10b4d1962686992146a558f8c2aaab3e',1,'class_statevars::class_gather']]],
   ['thpmoss',['thpmoss',['../namespacectem__params.html#a1f10073e9d589f7bc3240bec9f3d6516',1,'ctem_params']]],
   ['thragat',['thragat',['../structclass__statevars_1_1class__gather.html#a546488daa03e3703e14f356e56f225e0',1,'class_statevars::class_gather']]],

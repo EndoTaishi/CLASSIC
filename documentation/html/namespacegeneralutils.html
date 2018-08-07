@@ -30,6 +30,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CLASSIC
    </div>
+   <div id="projectbrief">Canadian Land Surface Scheme including Biogeochemical Cycles</div>
   </td>
  </tr>
  </tbody>
@@ -92,9 +93,10 @@ $(document).ready(function(){initNavTree('namespacegeneralutils.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ab9c0a0477fe01e4d71b08987f7fa4122"><td class="memItemLeft" align="right" valign="top"><a id="ab9c0a0477fe01e4d71b08987f7fa4122"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>abandoncell</b></td></tr>
-<tr class="separator:ab9c0a0477fe01e4d71b08987f7fa4122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa44642b1117d4309ceee18d8984f0c0"><td class="memItemLeft" align="right" valign="top"><a id="afa44642b1117d4309ceee18d8984f0c0"></a>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegeneralutils.html#afa44642b1117d4309ceee18d8984f0c0">abandoncell</a> (errmsg)</td></tr>
+<tr class="memdesc:afa44642b1117d4309ceee18d8984f0c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to stop running a model grid cell. For errors that need to be caught early in a run, the fortran intrinsic 'stop' is preferred but for errors later in a run or simple fails on single grid cells, abandonCell is best since it allows the netcdf files to continue to written to and won't disrupt the MPI processes (as stop does) <br /></td></tr>
+<tr class="separator:afa44642b1117d4309ceee18d8984f0c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f0d5c05665ea3d3ce31ecb4ae0dc2ee"><td class="memItemLeft" align="right" valign="top"><a id="a6f0d5c05665ea3d3ce31ecb4ae0dc2ee"></a>
 real function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegeneralutils.html#a6f0d5c05665ea3d3ce31ecb4ae0dc2ee">finddaylength</a> (solday, radl)</td></tr>
 <tr class="memdesc:a6f0d5c05665ea3d3ce31ecb4ae0dc2ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the daylength based on the latitude and day of year. <br /></td></tr>
@@ -109,9 +111,9 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 real function, dimension(5), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegeneralutils.html#ae8c06112b9b31ccffe032bbf463403b6">parsetimestamp</a> (timeStamp)</td></tr>
 <tr class="memdesc:ae8c06112b9b31ccffe032bbf463403b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a time stamp in the expected form "day as %Y%m%d.%f" Returns an array with 1) year, 2) month, 3) day, 4) fraction of day 5) day of year. <br /></td></tr>
 <tr class="separator:ae8c06112b9b31ccffe032bbf463403b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83c4ec67b3dff6844a315fbf81179c97"><td class="memItemLeft" align="right" valign="top"><a id="a83c4ec67b3dff6844a315fbf81179c97"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>findactivelayerdepth</b></td></tr>
-<tr class="separator:a83c4ec67b3dff6844a315fbf81179c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e7b1db0d9757f9311fcd1f111851cc4"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegeneralutils.html#a2e7b1db0d9757f9311fcd1f111851cc4">findpermafrostvars</a> (nltest, nmtest, tfrez)</td></tr>
+<tr class="memdesc:a2e7b1db0d9757f9311fcd1f111851cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the active layer depth and depth to the frozen water table.  <a href="#a2e7b1db0d9757f9311fcd1f111851cc4">More...</a><br /></td></tr>
+<tr class="separator:a2e7b1db0d9757f9311fcd1f111851cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4476b8a9d08db5d4c498d3f6c3d57364"><td class="memItemLeft" align="right" valign="top"><a id="a4476b8a9d08db5d4c498d3f6c3d57364"></a>
 logical function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegeneralutils.html#a4476b8a9d08db5d4c498d3f6c3d57364">closeenough</a> (num1, num2, error)</td></tr>
 <tr class="memdesc:a4476b8a9d08db5d4c498d3f6c3d57364"><td class="mdescLeft">&#160;</td><td class="mdescRight">As real numbers are not precise, this is a simple way to compare two reals. <br /></td></tr>
@@ -169,13 +171,55 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="n
 
 </div>
 </div>
+<a id="a2e7b1db0d9757f9311fcd1f111851cc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e7b1db0d9757f9311fcd1f111851cc4">&#9670;&nbsp;</a></span>findpermafrostvars()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine, public generalutils::findpermafrostvars </td>
+          <td>(</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>nltest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>nmtest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, intent(in)&#160;</td>
+          <td class="paramname"><em>tfrez</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds the active layer depth and depth to the frozen water table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">tfrez</td><td>Freezing point of water [K] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacegeneralutils.html">generalutils</a></li>
-    <li class="footer">Generated on Fri Jul 20 2018 16:59:10 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 7 2018 16:30:33 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
