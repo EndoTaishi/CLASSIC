@@ -85,7 +85,10 @@ $(document).ready(function(){initNavTree('namespaceheterotrophic__respiration.ht
 </div><!--header-->
 <div class="contents">
 
-<p>Central module for all heterotrophic respiration-related operations.  
+<p>FLAG This needs to be edited for the peatland changes! Heterotrophic respiration, <img class="formulaInl" alt="$R_\mathrm{h}$" src="form_765.png"/> ( <img class="formulaInl" alt="$mol\,CO_2\,m^{-2}\,s^{-1}$" src="form_766.png"/>), in CTEM is based on respiration from the litter (which includes contributions from the stem, leaf and root components), <img class="formulaInl" alt="$R_{h,D}$" src="form_767.png"/>, and soil carbon, <img class="formulaInl" alt="$R_{h,H}$" src="form_768.png"/>, pools, </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \]" src="form_769.png"/>
+</p>
+<p>.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -100,11 +103,10 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:a6015e31f90a97392aab943cb6f320202"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Central module for all heterotrophic respiration-related operations. </p>
-<p>FLAG This needs to be edited for the peatland changes! Heterotrophic respiration, <img class="formulaInl" alt="$R_\mathrm{h}$" src="form_765.png"/> ( <img class="formulaInl" alt="$mol\,CO_2\,m^{-2}\,s^{-1}$" src="form_766.png"/>), in CTEM is based on respiration from the litter (which includes contributions from the stem, leaf and root components), <img class="formulaInl" alt="$R_{h,D}$" src="form_767.png"/>, and soil carbon, <img class="formulaInl" alt="$R_{h,H}$" src="form_768.png"/>, pools, </p><p class="formulaDsp">
+<div class="textblock"><p>FLAG This needs to be edited for the peatland changes! Heterotrophic respiration, <img class="formulaInl" alt="$R_\mathrm{h}$" src="form_765.png"/> ( <img class="formulaInl" alt="$mol\,CO_2\,m^{-2}\,s^{-1}$" src="form_766.png"/>), in CTEM is based on respiration from the litter (which includes contributions from the stem, leaf and root components), <img class="formulaInl" alt="$R_{h,D}$" src="form_767.png"/>, and soil carbon, <img class="formulaInl" alt="$R_{h,H}$" src="form_768.png"/>, pools, </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \]" src="form_769.png"/>
 </p>
-<p>.</p>
+<p>. </p>
 <p>Heterotrophic respiration is regulated by soil temperature and moisture and is calculated on a daily time step. The original heterotrophic respiration scheme is described in <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[13]</a> while the modified parametrization used in CTEM v. 2.0 is detailed in <a class="el" href="citelist.html#CITEREF_Melton2014-xy">[61]</a> and is briefly described here. Respiration from the litter and soil carbon pools takes the following basic form </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i, \nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \]" src="form_770.png"/>
 </p>
@@ -253,6 +255,7 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Heterotrophic respiration subroutine for bare ground fraction. </p>
+<dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">il1</td><td>il1=1</td></tr>
@@ -414,6 +417,7 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Heterotrophic Respiration Subroutine For Vegetated Fraction. </p>
+<dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">il1</td><td>il1=1</td></tr>
@@ -445,7 +449,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceheterotrophic__respiration.html">heterotrophic_respiration</a></li>
-    <li class="footer">Generated on Tue Aug 7 2018 16:30:33 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 9 2018 14:12:18 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

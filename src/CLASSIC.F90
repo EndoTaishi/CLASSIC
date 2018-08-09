@@ -4,9 +4,10 @@
 !! program will either run in MPI mode for use on parallel computing environments or
 !! in serial mode for use in running at single sites.
 !!
-program CLASSIC
+!>@author
+!> Joe Melton and Ed Wisernig
 
-    ! Joe Melton and Ed Wisernig @ 2017
+program CLASSIC
 
 #if PARALLEL
     use mpi

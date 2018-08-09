@@ -80,8 +80,6 @@ $(document).ready(function(){initNavTree('CGROW_8f.html','');});
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#func-members">Functions/Subroutines</a>  </div>
   <div class="headertitle">
 <div class="title">CGROW.f File Reference</div>  </div>
 </div><!--header-->
@@ -89,88 +87,13 @@ $(document).ready(function(){initNavTree('CGROW_8f.html','');});
 
 <p>Evaluates growth index used in calculating vegetation parameters for forests.  
 <a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a476f55ba9cd1d2939cea5ed9c6fd710a"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CGROW_8f.html#a476f55ba9cd1d2939cea5ed9c6fd710a">cgrow</a> (GROWTH, TBAR, TA, FC, FCS, ILG, IG, IL1, IL2, JL)</td></tr>
-<tr class="separator:a476f55ba9cd1d2939cea5ed9c6fd710a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Evaluates growth index used in calculating vegetation parameters for forests. </p>
-</div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="a476f55ba9cd1d2939cea5ed9c6fd710a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a476f55ba9cd1d2939cea5ed9c6fd710a">&#9670;&nbsp;</a></span>cgrow()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">subroutine cgrow </td>
-          <td>(</td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>GROWTH</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension  (ilg,ig)&#160;</td>
-          <td class="paramname"><em>TBAR</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>TA</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>FC</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>FCS</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>ILG</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IG</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IL1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IL2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>JL</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<dl class="section author"><dt>Author</dt><dd>D. Verseghy, M. Lazare, V. Arora</dd></dl>
+<p>The growth index that is calculated here varies from a value of 1 for periods when the trees are mature and fully leaved, to 0 for dormant and leafless periods, with a linear transition between the two. The transition periods are assumed to last for sixty days; therefore during these periods the growth index is incremented by <img class="formulaInl" alt="$ \Delta t /5.184x10^6 $" src="form_229.png"/> where <img class="formulaInl" alt="$\Delta t$" src="form_145.png"/> is the time step in seconds.</p>
+<p>The transition period from dormant to fully leafed is triggered when both the air temperature and the temperature of the first soil layer are above 2 C. If one of these conditions is not met afterwards, the growth index is reset back to 0. Increments are added continuously thereafter until the index reaches 1.</p>
+<p>The transition from fully leafed to dormant is triggered when either the air temperature or the temperature of the first soil layer falls below 2 C. When this first happens at the end of the fully-leafed period, the growth index is set instantaneously to -1 and increments are continuously added from that point until the index reaches 0.</p>
+<p>The absolute value of this growth index is utilized for performing calculations of various forest vegetation parameters in subroutine APREP; thus its shape as used there is that of a symmetrical trapezoidal function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">growth</td><td>Tree growth index [ ]</td></tr>
@@ -181,20 +104,13 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>The growth index that is calculated here varies from a value of 1 for periods when the trees are mature and fully leaved, to 0 for dormant and leafless periods, with a linear transition between the two. The transition periods are assumed to last for sixty days; therefore during these periods the growth index is incremented by <img class="formulaInl" alt="$ \Delta t /5.184x10^6 $" src="form_229.png"/> where <img class="formulaInl" alt="$\Delta t$" src="form_145.png"/> is the time step in seconds.</p>
-<p>The transition period from dormant to fully leafed is triggered when both the air temperature and the temperature of the first soil layer are above 2 C. If one of these conditions is not met afterwards, the growth index is reset back to 0. Increments are added continuously thereafter until the index reaches 1.</p>
-<p>The transition from fully leafed to dormant is triggered when either the air temperature or the temperature of the first soil layer falls below 2 C. When this first happens at the end of the fully-leafed period, the growth index is set instantaneously to -1 and increments are continuously added from that point until the index reaches 0.</p>
-<p>The absolute value of this growth index is utilized for performing calculations of various forest vegetation parameters in subroutine APREP; thus its shape as used there is that of a symmetrical trapezoidal function.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CGROW_8f.html">CGROW.f</a></li>
-    <li class="footer">Generated on Tue Aug 7 2018 16:30:32 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 9 2018 14:12:17 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

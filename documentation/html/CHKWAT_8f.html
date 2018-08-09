@@ -80,8 +80,6 @@ $(document).ready(function(){initNavTree('CHKWAT_8f.html','');});
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#func-members">Functions/Subroutines</a>  </div>
   <div class="headertitle">
 <div class="title">CHKWAT.f File Reference</div>  </div>
 </div><!--header-->
@@ -89,238 +87,9 @@ $(document).ready(function(){initNavTree('CHKWAT_8f.html','');});
 
 <p>Checks for closure of surface water budget, and for unphysical values of certain variables.  
 <a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ae24f10ada6d260b942e1b64c3dc5a310"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CHKWAT_8f.html#ae24f10ada6d260b942e1b64c3dc5a310">chkwat</a> (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, RAICNI, SNOCNI, ZPOND, ZPONDI, THLIQ, THICE, THLIQI, THICEI, ZSNOW, RHOSNO, XSNOW, SNOWI, WSNOW, WSNOWI, FCS, FGS, FI, BAL, THPOR, THLMIN, DELZW, ISAND, IG, ILG, IL1, IL2, JL, N)</td></tr>
-<tr class="separator:ae24f10ada6d260b942e1b64c3dc5a310"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Checks for closure of surface water budget, and for unphysical values of certain variables. </p>
-</div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="ae24f10ada6d260b942e1b64c3dc5a310"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae24f10ada6d260b942e1b64c3dc5a310">&#9670;&nbsp;</a></span>chkwat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">subroutine chkwat </td>
-          <td>(</td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>ISFC</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension  (ilg)&#160;</td>
-          <td class="paramname"><em>PCPR</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension  (ilg)&#160;</td>
-          <td class="paramname"><em>EVAP</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>RUNOFF</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg)&#160;</td>
-          <td class="paramname"><em>WLOST</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>RAICAN</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>SNOCAN</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>RAICNI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>SNOCNI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg)&#160;</td>
-          <td class="paramname"><em>ZPOND</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>ZPONDI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg,ig)&#160;</td>
-          <td class="paramname"><em>THLIQ</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg,ig)&#160;</td>
-          <td class="paramname"><em>THICE</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ig)&#160;</td>
-          <td class="paramname"><em>THLIQI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ig)&#160;</td>
-          <td class="paramname"><em>THICEI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg)&#160;</td>
-          <td class="paramname"><em>ZSNOW</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>RHOSNO</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg)&#160;</td>
-          <td class="paramname"><em>XSNOW</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg)&#160;</td>
-          <td class="paramname"><em>SNOWI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg)&#160;</td>
-          <td class="paramname"><em>WSNOW</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>WSNOWI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension   (ilg)&#160;</td>
-          <td class="paramname"><em>FCS</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension   (ilg)&#160;</td>
-          <td class="paramname"><em>FGS</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension    (ilg)&#160;</td>
-          <td class="paramname"><em>FI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension   (ilg)&#160;</td>
-          <td class="paramname"><em>BAL</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg,ig)&#160;</td>
-          <td class="paramname"><em>THPOR</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ig)&#160;</td>
-          <td class="paramname"><em>THLMIN</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension (ilg,ig)&#160;</td>
-          <td class="paramname"><em>DELZW</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, dimension (ilg,ig)&#160;</td>
-          <td class="paramname"><em>ISAND</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IG</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>ILG</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IL1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IL2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>JL</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>N</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<dl class="section author"><dt>Author</dt><dd>D. Verseghy, M. Lazare, B. Dugas</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">isfc</td><td>Type of surface (1 = canopy over snow, 2 = snow covered ground, 3 = canopy over bare ground, 4 = bare ground)</td></tr>
@@ -353,20 +122,13 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>This subroutine is called from CLASSW to perform water balance checks for each of the four subareas. The flag ISFC indicates which subarea is being addressed: ISFC=1 for vegetation over snow, ISFC=2 for snow over bare ground, ISFC=3 for vegetation over bare ground, and ISFC=4 for bare ground. If a problem is discovered, a flag is set to the index of the modelled area, and a call to XIT is performed with an error message. Checks for unphysical values of certain water balance variables are performed against an accuracy limit ACCLMT, currently set to <img class="formulaInl" alt="$1x10^{-3} kg m^{-2}$" src="form_230.png"/> or <img class="formulaInl" alt="$m^3 m^{-3}$" src="form_41.png"/>. The overall water balance of the subarea is checked against an accuracy limit BALLMT, currently set to <img class="formulaInl" alt="$1x10^{-1} kg m^{-2}$" src="form_231.png"/>. (These values reflect expected roundoff errors associated with 32-bit computation.)</p>
-<p>In loop 100, for canopy-covered subareas, the intercepted rain RAICAN and snow SNOCAN are checked to ensure that if they are negative, they are vanishingly small. A similar check is done for the runoff.</p>
-<p>In the 150 loop, for all areas that are not continental ice sheets (ISAND=-4), the liquid water content in each soil layer is checked to ensure that it is not larger than the pore volume and that it is not smaller than the minimum liquid water content (except for rock layers). The ice content is similarly checked to ensure that the sum of it, converted to an equivalent liquid water content, plus the minimum water content, is not greater than the pore volume (except for rock layers). It is also checked to ensure that if it is negative, it is vanishingly small.</p>
-<p>Finally, in loop 300, the overall water balance BAL is calculated and compared to BALLMT. BAL is evaluated as the residual of the precipitation, the evaporation, the runoff, the water loss term WLOST, the change in canopy intercepted liquid and frozen water (for vegetation-covered areas), the change in surface ponded water, the change in snow pack and snow liquid water content (for snow-covered areas), and the changes in the soil layer liquid and frozen water contents. If the absolute value of BAL is greater than BALLMT, a flag is set, all of the terms entering BAL are printed out, and a call to XIT is performed.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CHKWAT_8f.html">CHKWAT.f</a></li>
-    <li class="footer">Generated on Tue Aug 7 2018 16:30:32 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 9 2018 14:12:17 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

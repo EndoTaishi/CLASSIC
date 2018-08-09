@@ -1,4 +1,9 @@
+!>\file
 !>Central module for all netcdf output file operations
+!!
+!>@author
+!> Joe Melton and Ed Wisernig
+
 module outputManager
 
     use ctem_statevars, only : c_switch
@@ -20,6 +25,7 @@ module outputManager
     public  :: closeNCFiles
     public :: checkForTime
 
+    !> Stores geographic information about the total domain and the region to be simulated
     type simulationDomain
         real, dimension(:), allocatable     :: lonLandCell, latLandCell     !< Long/Lat values of only the land cells in our model domain
         integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   !< Indexes of only the land cells in our model domain for our resolution
@@ -36,7 +42,7 @@ module outputManager
 
     type(simulationDomain) :: myDomain
 
-    !> This data structure is used to set up the output netcdf files.
+    !> Used to set up the output netcdf files.
     type outputDescriptor
         character(80)   :: group                = ''
         character(30)   :: shortName            = ''
@@ -71,10 +77,10 @@ module outputManager
 
     integer :: variableCount = 0, descriptorCount = 0, variantCount = 0 !< Initializes the counter variables
 
-    integer         :: refyr = 1850                     !< Time reference for netcdf output files
-    character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
-    real   :: fill_value = 1.E38             !< Default fill value for missing values in netcdf output files
-    real, dimension(:), allocatable :: timeVect  !< Array of the timesteps in days since refyr for this model run and output file
+    integer         :: refyr = 1850                              !< Default time reference for netcdf output files
+    character(30)   :: timestart = "days since 1850-01-01 00:00" !< Default time reference for netcdf output files
+    real   :: fill_value = 1.E38                                 !< Default fill value for missing values in netcdf output files
+    real, dimension(:), allocatable :: timeVect                  !< Array of the timesteps in days since refyr for this model run and output file
 
 contains
 
@@ -235,7 +241,7 @@ contains
 
     !>\ingroup output_validTime
     !>@{
-    !> Determines wether the current variable matches the project configuration
+    !> Determines whether the current variable matches the project configuration
     logical function validTime(timeFreq, descriptor)
 
         implicit none
@@ -291,7 +297,7 @@ contains
 
     !>\ingroup output_getDescriptor
     !>@{
-    !> Retrieve a variable descriptor based on a given key (e.g. shortName)
+    !> Retrieves a variable descriptor based on a given key (e.g. shortName)
     type (outputDescriptor) function getDescriptor(key)
 
         implicit none
@@ -313,7 +319,7 @@ contains
 
     !>\ingroup output_getIdByKey
     !>@{
-    !> Find the id of the variable with the following key
+    !> Finds the id of the variable with the following key
     integer function getIdByKey(key)
 
         implicit none
@@ -333,7 +339,7 @@ contains
 
     !>\ingroup output_createNetCDF
     !>@{
-    ! Create the output netcdf files
+    !> Creates the output netcdf files
     subroutine createNetCDF(fileName, id, outputForm, descriptor, timeFreq, units, nameInCode)
 
         use fileIOModule
@@ -529,7 +535,7 @@ contains
     !---------------------------------------------------------------------------------------
     !>\ingroup output_determineTime
     !>@{
-    !> Determine the time vector for this run. This implictly
+    !> Determines the time vector for this run. This implictly
     !! assumes that leap year meteorological forcing is used for runs with metLoop = 1, otherwise
     !! the timing of the leap years will be off in the output files.
     subroutine determineTime(timeFreq)
@@ -733,7 +739,7 @@ contains
 
     !>\ingroup output_writeOutput1D
     !>@{
-    ! Write model outputs to already created netcdf files
+    !> Write model outputs to already created netcdf files
     subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
 
         use fileIOModule
@@ -806,7 +812,7 @@ contains
 
     !>\ingroup output_checkForTime
     !>@{
-    ! Find if a time period is already in the timeIndex of the file
+    !> Find if a time period is already in the timeIndex of the file
     integer function checkForTime(timeIndex,timeWritten,timeStamp)
 
         implicit none
@@ -829,7 +835,7 @@ contains
 
     !>\ingroup output_closeNCFiles
     !>@{
-    ! Close all output netcdfs or just a select file
+    !> Close all output netcdfs or just a select file
     subroutine closeNCFiles(incid)
 
         use fileIOModule
@@ -867,5 +873,5 @@ contains
     !---------------------------------------------------------------------------------------
 
 !>\namespace output
-
+!>\file
 end module outputManager

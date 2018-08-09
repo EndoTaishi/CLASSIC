@@ -87,7 +87,7 @@ $(document).ready(function(){initNavTree('namespacepeatlands__mod.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Peatland specific parameterizations (photosynthesis and heterotrophic respiration)  
+<p>The peatland module is published in Geoscientific Model Development (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[89]</a>. A copy of the paper is in the Documentation folder of this git repository.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -104,8 +104,7 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:a74c6ae528153d57336622db389f4bdd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Peatland specific parameterizations (photosynthesis and heterotrophic respiration) </p>
-<p>The peatland module is published in Geoscientific Model Development (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[87]</a>. A copy of the paper is in the Documentation folder of this git repository.</p>
+<div class="textblock"><p>The peatland module is published in Geoscientific Model Development (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[89]</a>. A copy of the paper is in the Documentation folder of this git repository. </p>
 <p>To account for the eco-hydrological and biogeochemical interactions among vegetation, atmosphere and soil in peatlands, the following modifications were made to the coupled CLASS3.6&ndash;CTEM2.0 modelling framework:</p>
 <ol type="1">
 <li>The top soil layer was characterized as a moss layer with a higher heat and hydraulic capacity than a mineral soil layer. The moss layer buffers the exchange of energy and water at the soil surface and regulates the soil temperature and moisture (Turetsky et al. 2012) <a class="el" href="citelist.html#CITEREF_Turetsky2012-qh">[81]</a>.</li>
@@ -133,7 +132,7 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$ f_{m,rd} = 0.01 \theta_{m} +0.942$" src="form_924.png"/> for <img class="formulaInl" alt="$5.8&lt;\theta _{m} $" src="form_925.png"/></p>
 <p>Photosynthetic photon flux density (PPFD) is measured by the photosynthetically active radiation (PAR), which is defined as the solar radiation between 0.4 to 0.7 <img class="formulaInl" alt="$\mu $" src="form_905.png"/> mol that can be used by plants via photosynthesis. In the coupled CLASS&ndash;CTEM system, the PAR received by the moss (PAR <img class="formulaInl" alt="$_m$" src="form_926.png"/>, unit <img class="formulaInl" alt="$\mu $" src="form_905.png"/>mol photons m <img class="formulaInl" alt="$^-2$" src="form_927.png"/>/s is converted from the visible short-wave radiation reaching the ground ( <img class="formulaInl" alt="$K_{\ast g}$" src="form_928.png"/>, unit W/m <img class="formulaInl" alt="$^2$" src="form_929.png"/>) in CLASS by a factor of 4.6 <img class="formulaInl" alt="$\mu$" src="form_930.png"/> mol /m <img class="formulaInl" alt="$^2$" src="form_929.png"/>/s per W/m <img class="formulaInl" alt="$^2$" src="form_929.png"/> (McCree, 1972). <img class="formulaInl" alt="$K_{\ast g}$" src="form_928.png"/> is a function of the incoming short-wave radiation ( <img class="formulaInl" alt="$K\downarrow $" src="form_931.png"/>, unit: W/m <img class="formulaInl" alt="$^2$" src="form_929.png"/>), the surface albedo ( <img class="formulaInl" alt="$\alpha_g$" src="form_932.png"/>), and the canopy transmissivity ( <img class="formulaInl" alt="$\tau _c$" src="form_933.png"/>):</p>
 <p><img class="formulaInl" alt="$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$" src="form_934.png"/></p>
-<p>The energy uptake by the moss layer is thus a function of the total incoming short-wave radiation, the aggregated LAI of the PFTs present, the snow depth, the fractional vegetation cover, and the soil water content (Verseghy, 2012). In peatland C models that do not consider vegetation dynamics, the transmissivity of the vegetation canopy is usually assumed to be constant (e.g. St-Hilaire et al., 2010) <a class="el" href="citelist.html#CITEREF_St-Hilaire2010-5e9">[79]</a>. Compared with such models, CLASS enables a more detailed representation of light incident on the moss surface since it includes partitioning of direct/diffuse and visible/near-IR radiation, PFT-specific transmissivities, and time-varying LAI and fractional PFT coverages (Verseghy, 2012) <a class="el" href="citelist.html#CITEREF_Verseghy2012-c0e">[82]</a>.</p>
+<p>The energy uptake by the moss layer is thus a function of the total incoming short-wave radiation, the aggregated LAI of the PFTs present, the snow depth, the fractional vegetation cover, and the soil water content (Verseghy, 2012). In peatland C models that do not consider vegetation dynamics, the transmissivity of the vegetation canopy is usually assumed to be constant (e.g. St-Hilaire et al., 2010) <a class="el" href="citelist.html#CITEREF_St-Hilaire2010-5e9">[79]</a>. Compared with such models, CLASS enables a more detailed representation of light incident on the moss surface since it includes partitioning of direct/diffuse and visible/near-IR radiation, PFT-specific transmissivities, and time-varying LAI and fractional PFT coverages (Verseghy, 2012) <a class="el" href="citelist.html#CITEREF_Verseghy2012-c0e">[84]</a>.</p>
 <p>Peatland soil heterotrophic respiration</p>
 <p>Over the non-peatland fraction, HR is calculated as the sum of the respiration from litter and soil carbon pools as in the original version of CTEM (Arora, 2003). The soil C pool over the non-peatland areas is assumed to be exponentially distributed with depth (Arora, 2003). In peatlands a large amount of humic soil is generally located in the permanently saturated zone and the bulk density increases with soil depth (Loisel and Garneau, 2010). Thus, the assumption of exponentially decreasing distribution of C content with increasing soil depth is not valid in peatlands. We used a quadratic equation to calculate the distribution of soil C content over depth based on an empirically determined bulk density profile (Frolking et al., 2001).</p>
 <p>HR over the peatland fraction of a grid cell is modelled using a two-pool approach with a flexible boundary between the pools that depends on the depth of the water table:</p>
@@ -153,7 +152,7 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$" src="form_965.png"/> for <img class="formulaInl" alt="$ z_{wt}\ge 0.3 $" src="form_960.png"/></p>
 <p><img class="formulaInl" alt="$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $" src="form_966.png"/></p>
 <p><img class="formulaInl" alt="$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $" src="form_967.png"/></p>
-<p>where 0.487 is a parameter that converts from soil mass to soil C content. The variation of <img class="formulaInl" alt="$k_{o}$" src="form_968.png"/> and <img class="formulaInl" alt="$k_{a}$" src="form_969.png"/> with water table depth for bogs and fens is shown in Fig. 2 of (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[87]</a>. It will be noted that there is a sharp transition in decomposition rate at a depth of 0.3 m, reflecting the work of Frolking et al. (2001). As noted above, this value is widely accepted as a representative estimate of the depth dividing the acrotelm and catotelm. In reality, of course, this depth will vary among peatlands.</p>
+<p>where 0.487 is a parameter that converts from soil mass to soil C content. The variation of <img class="formulaInl" alt="$k_{o}$" src="form_968.png"/> and <img class="formulaInl" alt="$k_{a}$" src="form_969.png"/> with water table depth for bogs and fens is shown in Fig. 2 of (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[89]</a>. It will be noted that there is a sharp transition in decomposition rate at a depth of 0.3 m, reflecting the work of Frolking et al. (2001). As noted above, this value is widely accepted as a representative estimate of the depth dividing the acrotelm and catotelm. In reality, of course, this depth will vary among peatlands.</p>
 <p>As only organic soil is considered in peatlands, the peat soil C is updated from the humification (C <img class="formulaInl" alt="$_{hum}$" src="form_970.png"/>, kg C/ m <img class="formulaInl" alt="$^2$" src="form_929.png"/> / day) and soil respiration from the oxic ( <img class="formulaInl" alt="$R_o$" src="form_971.png"/> in kg C/ m <img class="formulaInl" alt="$^2$" src="form_929.png"/> / day) and anoxic ( <img class="formulaInl" alt="$R_a$" src="form_972.png"/> in kg C/ m <img class="formulaInl" alt="$^2$" src="form_929.png"/> / day) components during the time step:</p>
 <p><img class="formulaInl" alt="$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $" src="form_973.png"/></p>
 <p><img class="formulaInl" alt="$C_{hum}$" src="form_974.png"/> is calculated as a PFT-dependent fraction of the decomposition rate. At the end of each time step, the peat depth (i.e. the depth of the organic soil) <img class="formulaInl" alt="$z_p$" src="form_949.png"/> is updated from the updated peat C mass (C <img class="formulaInl" alt="$_{SOM}$" src="form_975.png"/> in kg) by solving the quadratic equation</p>
@@ -291,6 +290,7 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description) </p>
+<dl class="section author"><dt>Author</dt><dd>Yuanqiao Wu</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ipeatland</td><td>peatland flag, 0 = not peatland, 1 = bog, 2 = fen</td></tr>
@@ -440,6 +440,7 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Moss photosynthesis subroutine (equations are in module-level description) </p>
+<dl class="section author"><dt>Author</dt><dd>Yuanqiao Wu</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">qswnv</td><td>visible short wave radiation = qswnv in TSOLVE and qswnvg in TSOLVC (W/m2)</td></tr>
@@ -474,6 +475,7 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 
 <p>At the end of the day update the degree days for moss photosynthesis and the peat bottom layer depth. </p>
+<dl class="section author"><dt>Author</dt><dd>Yuanqiao Wu </dd></dl>
 <p>Calculate degree days for mosspht Vmax seasonality (only once per day)</p>
 <p>Update peatland bottom layer depth </p>
 
@@ -485,7 +487,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacepeatlands__mod.html">peatlands_mod</a></li>
-    <li class="footer">Generated on Tue Aug 7 2018 16:30:33 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 9 2018 14:12:18 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

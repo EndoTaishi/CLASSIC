@@ -1,3 +1,4 @@
+!>\file
 !> Performs competition between PFTs for space
 module competition_scheme
 
@@ -1673,5 +1674,5 @@ end subroutine competition
 !!of the change is reflected in \f$2T\f$ years \f$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86)
 !!\f$.
 !!
-
+!>\file
 end module

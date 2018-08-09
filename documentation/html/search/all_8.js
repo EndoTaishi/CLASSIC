@@ -40,5 +40,6 @@ var searchData=
   ['iwf',['iwf',['../structctem__statevars_1_1ctem__switches.html#a8152a56134a193df9f102157ae7031cd',1,'ctem_statevars::ctem_switches']]],
   ['iwmos',['iwmos',['../structclass__statevars_1_1class__gather.html#afac5cf0cccc50c9e867ce8cd6f2ad76b',1,'class_statevars::class_gather']]],
   ['izref',['izref',['../structctem__statevars_1_1ctem__switches.html#a052e23204e34e46209a60f005e615f29',1,'ctem_statevars::ctem_switches']]],
+  ['input_20soil_20data',['Input Soil Data',['../soilData.html',1,'']]],
   ['input_20vegetation_20data',['Input Vegetation Data',['../vegetationData.html',1,'']]]
 ];

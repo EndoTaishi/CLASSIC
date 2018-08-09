@@ -1,5 +1,9 @@
+!>\file
 !> The XML Manager Module handles the loading of variable descriptors and variable variants from an XML file.
 !! Once the variables are generated, corresponding NetCDF output files are created.
+!>@author
+!> Ed Wisernig
+
 module xmlManager
     use outputManager,  only : outputDescriptor, outputDescriptors, descriptorCount, &
                                 variant, variants, variantCount
@@ -147,4 +151,5 @@ contains
         character(len=*), intent(in)    :: input    !< Char input
         read(input,*) charToReal
     end function charToReal
+!>\file
 end module xmlManager

@@ -85,7 +85,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1>The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)</h1>
-<p>The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simulates the exchanges of energy, water, carbon, and momentum at the earth's surface. CLASSIC is formed by the coupling of the Canadian Land Surface Scheme (CLASS) and the Canadian Terrestrial Ecosystem Model (CTEM).</p>
+<p>The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simulates the exchanges of energy, water, carbon, and momentum at the earth's surface. CLASSIC is formed by the coupling of the Canadian Land Surface Scheme (CLASS) and the Canadian Terrestrial Ecosystem Model (CTEM). CLASS handles the model physics including fluxes of energy, water and momentum. CTEM simulates biogeochemical cycles including fluxes of carbon.</p>
 <ol type="1">
 <li><a class="el" href="overviewCLASS.html">Overview of the Canadian Land Surface Scheme (CLASS)</a><ul>
 <li><a class="el" href="overviewCLASS.html#devHistory">Development history of CLASS</a></li>
@@ -93,14 +93,14 @@ $(document).ready(function(){initNavTree('index.html','');});
 </li>
 <li><a class="el" href="overviewCLASS.html#overviewCTEM">Overview of the Canadian Terrestrial Ecosystem Model (CTEM)</a></li>
 <li><a class="el" href="compvsmosaic.html">Notes about composite versus mosaic running of the model</a></li>
-<li>There are four types of data that are required to run CLASSIC: atmospheric forcing data, surface vegetation, soil data, and initial values for the prognostic variables.<ul>
+<li>There are a basic four types of data that are required to run CLASSIC: atmospheric forcing data, surface vegetation, soil data, and initial values for the prognostic variables.<ul>
 <li><a class="el" href="forcingData.html">Atmospheric Forcing Data</a></li>
 <li><a class="el" href="vegetationData.html">Input Vegetation Data</a><ul>
 <li><a class="el" href="vegetationData.html#vegCLASSonly">Required vegetation data for a physics only simulation (CLASS alone)</a></li>
 <li><a class="el" href="vegetationData.html#vegCTEMtoo">Required vegetation data for a biogeochemical simulation (CTEM)</a></li>
 </ul>
 </li>
-<li><a class="el" href="soilData.html">Soil Data</a></li>
+<li><a class="el" href="soilData.html">Input Soil Data</a></li>
 <li><a class="el" href="initProgVar.html">Initialization of Prognostic Variables</a><ul>
 <li><a class="el" href="initProgVar.html#initPhysProgVar">Initialization of Physics Prognostic Variables</a></li>
 <li><a class="el" href="initProgVar.html#initCTEMProgVar">Initialization of Biogeochemical Prognostic Variables</a></li>
@@ -108,7 +108,14 @@ $(document).ready(function(){initNavTree('index.html','');});
 </li>
 </ul>
 </li>
-<li><a class="el" href="runStandAloneMode.html#inputs">Creation and formatting of model input files</a></li>
+<li><a class="el" href="CTEMaddInputs.html">Additional input files that may be required dependong on model options</a></li>
+<li>Creation and formatting of model input files<ul>
+<li>Meteorological inputs</li>
+<li>The model initialization and restart files</li>
+<li>Greenhouse gas inputs</li>
+<li>Other inputs</li>
+</ul>
+</li>
 <li><a class="el" href="runStandAloneMode.html">Running CLASSIC for a single location</a></li>
 <li><a class="el" href="runStandAloneMode.html">Running CLASSIC over a grid (regional,global)</a> </li>
 </ol>
@@ -117,7 +124,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Aug 7 2018 16:30:39 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 9 2018 14:12:18 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
