@@ -108,18 +108,16 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a8370ff5a658ed743f387580d7ee9ec1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)  <a href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">More...</a><br /></td></tr>
 <tr class="separator:a8370ff5a658ed743f387580d7ee9ec1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a0864e6b6afaeae951a26d12fef4d2f42"><td class="memItemLeft" align="right" valign="top"><a id="a0864e6b6afaeae951a26d12fef4d2f42"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a0864e6b6afaeae951a26d12fef4d2f42">model_state_drivers::write_restart</a> (lonIndex, latIndex)</td></tr>
-<tr class="memdesc:a0864e6b6afaeae951a26d12fef4d2f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write out the model restart file to netcdf. We only write out the variables that the model influences. This overwrites a pre-existing netcdf file. <br /></td></tr>
+<tr class="memitem:a0864e6b6afaeae951a26d12fef4d2f42"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a0864e6b6afaeae951a26d12fef4d2f42">model_state_drivers::write_restart</a> (lonIndex, latIndex)</td></tr>
+<tr class="memdesc:a0864e6b6afaeae951a26d12fef4d2f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write out the model restart file to netcdf. We only write out the variables that the model influences. This overwrites a pre-existing netcdf file.  <a href="namespacemodel__state__drivers.html#a0864e6b6afaeae951a26d12fef4d2f42">More...</a><br /></td></tr>
 <tr class="separator:a0864e6b6afaeae951a26d12fef4d2f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a3965f305f082ec630c8e7762d7e22122"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a3965f305f082ec630c8e7762d7e22122">model_state_drivers::getinput</a> (inputRequested, longitude, latitude)</td></tr>
 <tr class="memdesc:a3965f305f082ec630c8e7762d7e22122"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in a model input from a netcdf file and store the file's time array as well as the input values into memory.  <a href="namespacemodel__state__drivers.html#a3965f305f082ec630c8e7762d7e22122">More...</a><br /></td></tr>
 <tr class="separator:a3965f305f082ec630c8e7762d7e22122"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a566c0005f80027365025af9f6b17d1fe"><td class="memItemLeft" align="right" valign="top"><a id="a566c0005f80027365025af9f6b17d1fe"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a566c0005f80027365025af9f6b17d1fe">model_state_drivers::updateinput</a> (inputRequested, yearNeeded, imonth, iday, dom)</td></tr>
-<tr class="memdesc:a566c0005f80027365025af9f6b17d1fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the input field variable based on the present model timestep. <br /></td></tr>
+<tr class="memitem:a566c0005f80027365025af9f6b17d1fe"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a566c0005f80027365025af9f6b17d1fe">model_state_drivers::updateinput</a> (inputRequested, yearNeeded, imonth, iday, dom)</td></tr>
+<tr class="memdesc:a566c0005f80027365025af9f6b17d1fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the input field variable based on the present model timestep.  <a href="namespacemodel__state__drivers.html#a566c0005f80027365025af9f6b17d1fe">More...</a><br /></td></tr>
 <tr class="separator:a566c0005f80027365025af9f6b17d1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:aa1f54e07c9b953fa76892cde43cd0395"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aa1f54e07c9b953fa76892cde43cd0395">model_state_drivers::getmet</a> (longitude, latitude, nday, delt)</td></tr>
@@ -131,9 +129,8 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <tr class="separator:a250e1a4a9a115535075497adede17f46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:aaf94fac699883c97781af896554f4bbf"><td class="memItemLeft" align="right" valign="top"><a id="aaf94fac699883c97781af896554f4bbf"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aaf94fac699883c97781af896554f4bbf">model_state_drivers::deallocinput</a></td></tr>
-<tr class="memdesc:aaf94fac699883c97781af896554f4bbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates the input files arrays. <br /></td></tr>
+<tr class="memitem:aaf94fac699883c97781af896554f4bbf"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aaf94fac699883c97781af896554f4bbf">model_state_drivers::deallocinput</a></td></tr>
+<tr class="memdesc:aaf94fac699883c97781af896554f4bbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates the input files arrays.  <a href="namespacemodel__state__drivers.html#aaf94fac699883c97781af896554f4bbf">More...</a><br /></td></tr>
 <tr class="separator:aaf94fac699883c97781af896554f4bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -434,7 +431,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>model_state_drivers::
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="model__state__drivers_8f90.html">model_state_drivers.f90</a></li>
-    <li class="footer">Generated on Thu Aug 9 2018 16:27:38 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 10 2018 14:49:11 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -1,5 +1,11 @@
 var namespacemembers_dup =
 [
+    [ "The Input Files", "runStandAloneMode.html#inputs", [
+      [ "The MET file (Meteorological forcings)", "runStandAloneMode.html#MET", null ],
+      [ "The INI file (CLASS's initialization file)", "runStandAloneMode.html#INI", null ],
+      [ "Typical values of vegetation-related fields for CLASS-only simulations", "runStandAloneMode.html#classvals", null ],
+      [ "CLASS and CTEM PFTs", "runStandAloneMode.html#classtoctem", null ]
+    ] ],
     [ "a", "namespacemembers.html", null ],
     [ "b", "namespacemembers_b.html", null ],
     [ "c", "namespacemembers_c.html", null ],

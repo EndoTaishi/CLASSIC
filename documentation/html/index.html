@@ -93,11 +93,11 @@ $(document).ready(function(){initNavTree('index.html','');});
 </li>
 <li><a class="el" href="overviewCLASS.html#overviewCTEM">Overview of the Canadian Terrestrial Ecosystem Model (CTEM)</a></li>
 <li><a class="el" href="compvsmosaic.html">Notes about composite versus mosaic running of the model</a></li>
-<li>There are a basic four types of data that are required to run CLASSIC: atmospheric forcing data, surface vegetation, soil data, and initial values for the prognostic variables.<ul>
+<li>There are a basic four types of data that are required to run CLASSIC:<ul>
 <li><a class="el" href="forcingData.html">Atmospheric Forcing Data</a></li>
 <li><a class="el" href="vegetationData.html">Input Vegetation Data</a><ul>
-<li><a class="el" href="vegetationData.html#vegCLASSonly">Required vegetation data for a physics only simulation (CLASS alone)</a></li>
-<li><a class="el" href="vegetationData.html#vegCTEMtoo">Required vegetation data for a biogeochemical simulation (CTEM)</a></li>
+<li><a class="el" href="vegetationData.html#vegCLASSonly">Required vegetation data</a></li>
+<li><a class="el" href="vegetationData.html#vegCTEMtoo">Required vegetation data for a biogeochemical simulation (CLASS+CTEM)</a></li>
 </ul>
 </li>
 <li><a class="el" href="soilData.html">Input Soil Data</a></li>
@@ -108,7 +108,14 @@ $(document).ready(function(){initNavTree('index.html','');});
 </li>
 </ul>
 </li>
-<li><a class="el" href="CTEMaddInputs.html">Additional input files that may be required dependong on model options</a></li>
+<li><a class="el" href="CTEMaddInputs.html">Additional inputs depending on model configuration</a><ul>
+<li><a class="el" href="CTEMaddInputs.html#initClimComp">Climatic variables for PFT competition simulations</a></li>
+<li><a class="el" href="CTEMaddInputs.html#initLightFire">Lightning frequency for fire ignition</a></li>
+<li>initRice</li>
+<li><a class="el" href="CTEMaddInputs.html#initWetSlope">Dynamic wetland area determination</a></li>
+<li><a class="el" href="CTEMaddInputs.html#initPeat">Peatland variables</a></li>
+</ul>
+</li>
 <li>Creation and formatting of model input files<ul>
 <li>Meteorological inputs</li>
 <li>The model initialization and restart files</li>
@@ -116,15 +123,20 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Other inputs</li>
 </ul>
 </li>
-<li><a class="el" href="runStandAloneMode.html">Running CLASSIC for a single location</a></li>
-<li><a class="el" href="runStandAloneMode.html">Running CLASSIC over a grid (regional,global)</a> </li>
+<li>Running CLASSIC<ul>
+<li><a class="el" href="setupJobOpts.html">Setting up the joboptions file</a></li>
+<li>xmlSystem</li>
+<li>[Running CLASSIC for a single location](<a class="el" href="runStandAloneMode.html">Running CLASSIC</a>)</li>
+<li>[Running CLASSIC over a grid (regional,global)](runGrid) </li>
+</ul>
+</li>
 </ol>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Aug 9 2018 16:27:39 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 10 2018 14:49:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

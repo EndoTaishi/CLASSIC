@@ -1,5 +1,6 @@
 !>\file
 !! Performs allocation of carbon gained by photosynthesis into plant structural pools
+!!@author Vivek Arora, Joe Melton
 !!
 !!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
 !!biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a
@@ -98,9 +99,9 @@ c     24  Sep 2012  - Add in checks to prevent calculation of non-present
 c     J. Melton       pfts
 c
 c     05  May 2003  - This subroutine calculates the allocation fractions
-c     V. Arora        for leaf, stem, and root components for ctem's pfts 
+c     V. Arora        for leaf, stem, and root components for ctem's pfts
 c
-c     inputs 
+c     inputs
 c     icc       - no. of ctem plant function types, currently 9
 c     ignd        - no. of soil layers (currently 3)
 c     ilg       - no. of grid cells in latitude circle
@@ -116,7 +117,7 @@ c
       integer il1 !<input: il1=1
       integer il2 !<input: il2=ilg
       integer i, j, k
-      integer lfstatus(ilg,icc) !<input: leaf status. an integer indicating if leaves are  
+      integer lfstatus(ilg,icc) !<input: leaf status. an integer indicating if leaves are
                                 !<in "max. growth", "normal growth", "fall/harvest",
                                 !<or "no leaves" mode. see phenolgy subroutine for more details.
       integer n, k1,  k2,   m
@@ -183,14 +184,14 @@ c                             !<will have n cycle in the model
 c
           mnstrtms(i,j)=0.0   !<min. (stem+root) biomass needed to
 c                             !<support leaves
-150     continue                  
+150     continue
 140   continue
 c
-c     initialization ends    
+c     initialization ends
 c
 c     ------------------------------------------------------------------
 !>
-!!Calculate liquid soil moisture content, and wilting and field capacity 
+!!Calculate liquid soil moisture content, and wilting and field capacity
 !!soil moisture contents averaged over the root zone. note that while
 !!the soil moisture content is same under the entire gcm grid cell,
 !!soil moisture averaged over the rooting depth is different for each
@@ -198,7 +199,7 @@ c     ------------------------------------------------------------------
 !!
       do 200 j = 1, icc
         do 210 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           do 215 n = 1, ignd
            if (isand(i,n) .ne. -3) then !Only for non-bedrock
             avTHLW(i,j) = avTHLW(i,j) + THLW(i,n)*rmatctem(i,j,n)
@@ -215,7 +216,7 @@ c     ------------------------------------------------------------------
 200   continue
 
 !>
-!!Using liquid soil moisture content together with wilting and field 
+!!Using liquid soil moisture content together with wilting and field
 !!capacity soil moisture contents averaged over the root zone, find
 !!soil water status.
 !!
@@ -232,12 +233,12 @@ c     ------------------------------------------------------------------
           else
             wtstatus(i,j)=1.0
           endif
-         endif                
+         endif
 240     continue
 230   continue
 !>
 !!Calculate light status as a function of lai and light extinction
-!!parameter. for now set nitrogen status equal to 1, which means 
+!!parameter. for now set nitrogen status equal to 1, which means
 !!nitrogen is non-limiting.
 !!
       k1=0
@@ -256,7 +257,7 @@ c     ------------------------------------------------------------------
             ltstatus(i,m)=exp(-kn(sort(m))*ailcg(i,m))
           endif
           nstatus(i,m) =1.0
-260     continue 
+260     continue
 255    continue
 250   continue
 !>
@@ -265,7 +266,7 @@ c     ------------------------------------------------------------------
 !!
       do 380 j = 1,icc
         do 390 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           wnstatus(i,j)=min(nstatus(i,j),wtstatus(i,j))
          endif
 390     continue
@@ -274,7 +275,7 @@ c     ------------------------------------------------------------------
 !!now that we know water, light, and nitrogen status we can find
 !!allocation fractions for leaves, stem, and root components. note
 !!that allocation formulae for grasses are different from those
-!!for trees and crops, since there is no stem component in grasses. 
+!!for trees and crops, since there is no stem component in grasses.
 !!
       k1=0
       do 400 j = 1, ican
@@ -288,17 +289,17 @@ c     ------------------------------------------------------------------
         do 410 i = il1, il2
           n = sort(m)
           if(j.le.3)then           !trees and crops
-            denom = 1.0 + (omega(n)*( 2.0-ltstatus(i,m)-wnstatus(i,m) ))    
+            denom = 1.0 + (omega(n)*( 2.0-ltstatus(i,m)-wnstatus(i,m) ))
             afrstem(i,m)=( epsilons(n)+omega(n)*(1.0-ltstatus(i,m)) )/
-     &                     denom  
+     &                     denom
             afrroot(i,m)=( epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)) )/
-     &                     denom  
-            afrleaf(i,m)=  epsilonl(n)/denom 
+     &                     denom
+            afrleaf(i,m)=  epsilonl(n)/denom
           else if (j.eq.4) then     !grasses
             denom = 1.0 + (omega(n)*( 1.0+ltstatus(i,m)-wnstatus(i,m) ))
-            afrleaf(i,m)=( epsilonl(n) + omega(n)*ltstatus(i,m) ) /denom  
+            afrleaf(i,m)=( epsilonl(n) + omega(n)*ltstatus(i,m) ) /denom
             afrroot(i,m)=( epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)) )/
-     &                     denom  
+     &                     denom
             afrstem(i,m)= 0.0
           endif
 410     continue
@@ -311,7 +312,7 @@ c     ------------------------------------------------------------------
       if(consallo)then
         do 420 j = 1, icc
           do 421 i = il1, il2
-           if (fcancmx(i,j).gt.0.0) then 
+           if (fcancmx(i,j).gt.0.0) then
             afrleaf(i,j)=caleaf(sort(j))
             afrstem(i,j)=castem(sort(j))
             afrroot(i,j)=caroot(sort(j))
@@ -325,10 +326,10 @@ c     ------------------------------------------------------------------
 
 
       do 430 j = 1, icc
-        do 440 i = il1, il2 
+        do 440 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
-          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero) 
-     &    then  
+          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero)
+     &    then
            write(6,2000) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2000       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',e12.7)
@@ -339,11 +340,11 @@ c     ------------------------------------------------------------------
 430   continue
 !>
 !!the allocation fractions calculated above are overridden by two
-!!rules. 
+!!rules.
 !!
-!!rule 1 which states that at the time of leaf onset which corresponds 
-!!to leaf status equal to 1, more c is allocated to leaves so 
-!!that they can grow asap. in addition when leaf status is 
+!!rule 1 which states that at the time of leaf onset which corresponds
+!!to leaf status equal to 1, more c is allocated to leaves so
+!!that they can grow asap. in addition when leaf status is
 !!"fall/harvest" then nothing is allocated to leaves.
 !!
       k1=0
@@ -356,7 +357,7 @@ c     ------------------------------------------------------------------
        k2 = k1 + nol2pfts(j) - 1
        do 505 m = k1, k2
         do 510 i = il1, il2
-         if (fcancmx(i,m).gt.0.0) then 
+         if (fcancmx(i,m).gt.0.0) then
           if(lfstatus(i,m).eq.1) then
             aleaf(i,m)=aldrlfon(sort(m))
 !>
@@ -367,13 +368,13 @@ c     ------------------------------------------------------------------
             endif
 c
             diff  = afrleaf(i,m)-aleaf(i,m)
-            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then 
+            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then
               term1 = afrstem(i,m)/(afrstem(i,m)+afrroot(i,m))
               term2 = afrroot(i,m)/(afrstem(i,m)+afrroot(i,m))
             else
               term1 = 0.0
               term2 = 0.0
-            endif 
+            endif
             astem(i,m) = afrstem(i,m) + diff*term1
             aroot(i,m) = afrroot(i,m) + diff*term2
             afrleaf(i,m)=aleaf(i,m)
@@ -382,13 +383,13 @@ c
           else if(lfstatus(i,m).eq.3)then
             aleaf(i,m)=0.0
             diff  = afrleaf(i,m)-aleaf(i,m)
-            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then 
+            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then
               term1 = afrstem(i,m)/(afrstem(i,m)+afrroot(i,m))
               term2 = afrroot(i,m)/(afrstem(i,m)+afrroot(i,m))
             else
               term1 = 0.0
               term2 = 0.0
-            endif 
+            endif
             astem(i,m) = afrstem(i,m) + diff*term1
             aroot(i,m) = afrroot(i,m) + diff*term2
             afrleaf(i,m)=aleaf(i,m)
@@ -401,24 +402,24 @@ c
 500   continue
 
 !>
-!!rule 2 overrides rule 1 above and makes sure that we do not allow the 
-!!amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed 
-!!an amount such that the remaining woody biomass cannot support. 
-!!if this happens, allocation to leaves is reduced and most npp 
-!!is allocated to stem and roots, in a proportion based on calculated 
-!!afrstem and afrroot. for grasses this rule essentially constrains 
-!!the root:shoot ratio, meaning that the model grasses can't have 
+!!rule 2 overrides rule 1 above and makes sure that we do not allow the
+!!amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed
+!!an amount such that the remaining woody biomass cannot support.
+!!if this happens, allocation to leaves is reduced and most npp
+!!is allocated to stem and roots, in a proportion based on calculated
+!!afrstem and afrroot. for grasses this rule essentially constrains
+!!the root:shoot ratio, meaning that the model grasses can't have
 !!lots of leaves without having a reasonable amount of roots.
 !!
       do 530 j = 1, icc
         n=sort(j)
         do 540 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
-c         find min. stem+root biomass needed to support the green leaf 
+         if (fcancmx(i,j).gt.0.0) then
+c         find min. stem+root biomass needed to support the green leaf
 c         biomass.
           mnstrtms(i,j)=eta(n)*(gleafmas(i,j)**kappa(n))
 c
-          if( (stemmass(i,j)+rootmass(i,j)).lt.mnstrtms(i,j)) then   
+          if( (stemmass(i,j)+rootmass(i,j)).lt.mnstrtms(i,j)) then
             if( (afrstem(i,j)+afrroot(i,j)).gt.abszero ) then
               aleaf(i,j)=min(0.05,afrleaf(i,j))
               diff  = afrleaf(i,j)-aleaf(i,j)
@@ -447,10 +448,10 @@ c
       do 541 j = 1, icc
         n=sort(j)
         do 542 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           if( (stemmass(i,j)+gleafmas(i,j)).gt.0.05)then
             if( (rootmass(i,j)/(stemmass(i,j)+gleafmas(i,j))).
-     &      lt.rtsrmin(n) ) then  
+     &      lt.rtsrmin(n) ) then
               astem(i,j)=min(0.05,afrstem(i,j))
               diff = afrstem(i,j)-astem(i,j)
               afrstem(i,j)=afrstem(i,j)-diff
@@ -466,12 +467,12 @@ c
 !!
       do 550 j = 1, icc
         do 560 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           if( (afrleaf(i,j).lt.0.0).or.(afrstem(i,j).lt.0.0).or.
      &    (afrroot(i,j).lt.0.0))then
            write(6,2200) i,j
-2200       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions 
-     & negative') 
+2200       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
+     & negative')
            write(6,2100)afrleaf(i,j),afrstem(i,j),afrroot(i,j)
 2100       format(' aleaf = ',f12.9,' astem = ',f12.9,' aroot = ',f12.9)
            call xit('allocate',-3)
@@ -482,9 +483,9 @@ c
 c
       do 580 j = 1, icc
         do 590 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
-          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero) 
-     &    then  
+         if (fcancmx(i,j).gt.0.0) then
+          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero)
+     &    then
            write(6,2300) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2300       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',f12.7)
@@ -496,4 +497,3 @@ c
 c
       return
       end
-

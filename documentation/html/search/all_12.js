@@ -9,6 +9,7 @@ var searchData=
   ['screenrh_2ef',['SCREENRH.f',['../SCREENRH_8f.html',1,'']]],
   ['sdeprot',['sdeprot',['../structclass__statevars_1_1class__rotated.html#ac5abc074e63eb08da5b605a81d778c41',1,'class_statevars::class_rotated']]],
   ['seed',['seed',['../namespacectem__params.html#ac9f4780ce317911fbf6daa45a90a8dad',1,'ctem_params']]],
+  ['setting_20up_20the_20joboptions_20file',['Setting up the joboptions file',['../setupJobOpts.html',1,'index']]],
   ['sfcqgat',['sfcqgat',['../structclass__statevars_1_1class__gather.html#a392226f5396f6645e37bc801e8c9cc95',1,'class_statevars::class_gather']]],
   ['sfctgat',['sfctgat',['../structclass__statevars_1_1class__gather.html#a1c3c306712049d895178b11dd86f5a88',1,'class_statevars::class_gather']]],
   ['sfcugat',['sfcugat',['../structclass__statevars_1_1class__gather.html#a629f5b29ad807f8763f1e8eccae4d665',1,'class_statevars::class_gather']]],

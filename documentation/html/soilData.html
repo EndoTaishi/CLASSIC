@@ -87,7 +87,6 @@ $(document).ready(function(){initNavTree('soilData.html','');});
 <div class="textblock"><p>The following specifications are required for each modelled soil layer:</p>
 <ul>
 <li>DELZ Layer thickness [m]</li>
-<li>ZBOT Depth of bottom [m]</li>
 </ul>
 <p>The standard operational configuration for CLASS consists of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. CLASSIC supports other options: the second and third soil layers may be replaced with a larger number of thinner layers, and/or the bottom of the soil profile may be extended below 4.10 m. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems. As a rule of thumb, the thicknesses of layers should be limited to <img class="formulaInl" alt="$\geq$" src="form_272.png"/> 0.10 m.</p>
 <p>For each of the modelled soil layers on each of the mosaic tiles, the following texture data are required:</p>
@@ -105,11 +104,11 @@ Percent Sand</div></div>
 <li>If the layer consists of rock, SANDROT is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, CLAYROT and ORGMROT are not used and are set to zero.</li>
 <li>Highly organic soils have different behaviour if the area is being modelled as a peatland:<ul>
 <li>If the peatland flag is 0, that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one, SANDROT, CLAYROT and ORGMROT are used differently. The sand content is assigned a flag value of -2, and the organic matter content may be assigned a flag value of 1, 2 or 3 depending on whether the peat texture is fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[54]</a>). The current default is for the first layer to be assumed as fibric, the second as hemic and any lower layers as sapric. CLAYROT is not used and is set to zero.</li>
-<li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[89]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see <a class="el" href="CLASSB_8f.html" title="Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. ">src/CLASSB.f</a>)</li>
+<li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[90]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see <a class="el" href="CLASSB_8f.html">CLASSB.f</a>)</li>
 </ul>
 </li>
 </ul>
-<p>SANDROT, CLAYROT and ORGMROT are utilized in the calculation of the soil layer thermal and hydraulic properties in <a class="el" href="CLASSB_8f.html" title="Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. ">src/CLASSB.f</a>. If measured values of these properties are available, they could be used instead (with modificiations to the code).</p>
+<p>SANDROT, CLAYROT and ORGMROT are utilized in the calculation of the soil layer thermal and hydraulic properties in <a class="el" href="CLASSB_8f.html">CLASSB.f</a>. If measured values of these properties are available, they could be used instead (with modificiations to the code).</p>
 <p>For each of the mosaic tiles over the modelled area, the following surface parameters must be specified:</p>
 <ul>
 <li>DRNROT Soil drainage index<ul>
@@ -123,7 +122,7 @@ Percent Sand</div></div>
 </ul>
 </li>
 <li>SOCIROT Soil colour index<ul>
-<li>The soil colour index is used to assign the soil albedo. It ranges from 1 to 20; low values indicate bright soils and high values indicate dark (see Lawrence and Chase (2007) <a class="el" href="citelist.html#CITEREF_Lawrence2007-bc">[52]</a>). The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in <a class="el" href="CLASSB_8f.html" title="Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. ">src/CLASSB.f</a>.</li>
+<li>The soil colour index is used to assign the soil albedo. It ranges from 1 to 20; low values indicate bright soils and high values indicate dark (see Lawrence and Chase (2007) <a class="el" href="citelist.html#CITEREF_Lawrence2007-bc">[52]</a>). The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in <a class="el" href="CLASSB_8f.html">CLASSB.f</a>.</li>
 </ul>
 </li>
 </ul>
@@ -131,21 +130,25 @@ Percent Sand</div></div>
 <p>Two variables, assumed to be constant over the grid cell, are provided if required for atmospheric model runs:</p>
 <ul>
 <li>GGEOROW Geothermal heat flux <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/><ul>
-<li>Unless the soil depth is very large and/or the run is very long, the geothermal heat flux can be set to zero.</li>
+<li>Unless the soil depth is very large and/or the run is very long, the geothermal heat flux can be set to zero. Since this is rarely used, this is not presently read in from the initialization file.</li>
 </ul>
 </li>
 <li>Z0ORROW Orographic roughness length [m]<ul>
-<li>Z0ORROW is the surface roughness length representing the contribution of orography or other terrain effects to the overall roughness, which becomes important when the modelled grid cell is very large (e.g. in a GCM). For field studies it can be set to zero.</li>
+<li>Z0ORROW is the surface roughness length representing the contribution of orography or other terrain effects to the overall roughness, which becomes important when the modelled grid cell is very large (e.g. in a GCM). For field studies it can be set to zero. It is presently not required as input for a model run and is set to zero in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a></li>
 </ul>
 </li>
 </ul>
-<p>Finally, four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used. </p>
+<p>Four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used.</p>
+<ul>
+<li>grclarea Area of grid cell <img class="formulaInl" alt="$[km^{2} ]$" src="form_1567.png"/></li>
+</ul>
+<p>Area of the grid cell is required if CTEM is on. It is used for calculations relating to fire (<a class="el" href="namespacedisturbance__scheme.html#a4fbb45b47771e3842034ad39b92e565b">disturbance_scheme::disturb</a>) and land use change (<a class="el" href="namespacelanduse__change.html#a242419d727f14ffc4a8681914054ad62">landuse_change::luc</a>). Both of those subroutines are not generally used (or meaningful) at the point scale so the grclarea can be set to an arbitrary number like 100 <img class="formulaInl" alt="$km^{2}$" src="form_1568.png"/>. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Aug 9 2018 16:27:38 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 10 2018 14:49:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

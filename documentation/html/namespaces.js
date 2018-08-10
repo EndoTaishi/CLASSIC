@@ -1,11 +1,5 @@
 var namespaces =
 [
-    [ "The Input Files", "runStandAloneMode.html#inputs", [
-      [ "The MET file (Meteorological forcings)", "runStandAloneMode.html#MET", null ],
-      [ "The INI file (CLASS's initialization file)", "runStandAloneMode.html#INI", null ],
-      [ "Typical values of vegetation-related fields for CLASS-only simulations", "runStandAloneMode.html#classvals", null ],
-      [ "CLASS and CTEM PFTs", "runStandAloneMode.html#classtoctem", null ]
-    ] ],
     [ "class_statevars", "namespaceclass__statevars.html", null ],
     [ "competition_scheme", "namespacecompetition__scheme.html", null ],
     [ "ctem_params", "namespacectem__params.html", null ],

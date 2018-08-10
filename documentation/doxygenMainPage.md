@@ -9,7 +9,7 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
    - @subpage devHistory
 2. @ref overviewCTEM
 3. @ref compvsmosaic
-4. There are a basic four types of data that are required to run CLASSIC: atmospheric forcing data, surface vegetation, soil data, and initial values for the prognostic variables.
+4. There are a basic four types of data that are required to run CLASSIC:
   - @ref forcingData
   - @ref vegetationData
     - @subpage vegCLASSonly
@@ -18,11 +18,20 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
   - @ref initProgVar
     - @subpage initPhysProgVar
     - @subpage initCTEMProgVar
-5. [Additional input files that may be required dependong on model options](@ref CTEMaddInputs)
+5. @ref CTEMaddInputs
+  - @subpage initClimComp
+  - @subpage initLightFire
+  - @subpage initRice
+  - @subpage initWetSlope
+  - @subpage initPeat
 6. [Creation and formatting of model input files] (@ref makeInputFile)
   - Meteorological inputs
   - The model initialization and restart files
   - Greenhouse gas inputs
   - Other inputs
-7. [Running CLASSIC for a single location](@ref runStandAloneMode)
-8. [Running CLASSIC over a grid (regional,global)](@ref runStandAloneMode)
+7. Running CLASSIC
+  - @subpage compilingMod
+  - @subpage setupJobOpts
+  - @subpage xmlSystem
+  - [Running CLASSIC for a single location](@subpage runStandAloneMode)
+  - [Running CLASSIC over a grid (regional,global)](@subpage runGrid)

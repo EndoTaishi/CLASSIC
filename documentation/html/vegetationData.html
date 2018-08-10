@@ -84,15 +84,18 @@ $(document).ready(function(){initNavTree('vegetationData.html','');});
 <div class="title">Input Vegetation Data </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>CLASSIC can be run with either dynamic vegetation (CTEM is turned on) or a physics only simulation (CLASS). The model inputs differ between the two simulations with some input vegetation data for a CLASS only run ignored when the CTEM is turned on. As well CTEM requires some additional inputs as described below.</p>
+<div class="textblock"><p>CLASSIC can be run with either dynamic vegetation (CTEM+CLASS) or a physics only simulation (CLASS). The model inputs differ between the two configurations with some input vegetation data for a CLASS-only run ignored when CTEM is turned on. As well CTEM requires some additional inputs not needed for CLASS-only runs as described below.</p>
 <h1><a class="anchor" id="vegCLASSonly"></a>
-Required vegetation data for a physics only simulation (CLASS alone)</h1>
-<p>The four main vegetation categories for the physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass. Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a third dimension of 5 rather than 4. For each of those the following data are required for each mosaic tile over each grid cell or modelled area (<b>NOTE</b>: When CTEM is turned on, i.e. dynamic vegetation is desired, the variables indicated in bold font are overwritten by CTEM during model run. FCANROT may be overwritten if land use change or if competition between PFTs is turned on.)</p>
+Required vegetation data</h1>
+<p>The typical four main vegetation categories for the model physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass (ican = 4). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a larger dimension of 5 rather than 4 (ican + 1). For each of the CLASS PFTs the following data are required for each mosaic tile over each grid cell or modelled area (<b>NOTE</b>: When CTEM is turned on, i.e. dynamic vegetation is desired and the variables indicated in bold font are overwritten by CTEM during model run (specifically in <a class="el" href="APREP_8f.html">APREP.f</a>). FCANROT may be overwritten if land use change or competition between PFTs is turned on.)</p>
 <ol type="1">
 <li>ALICROT Average near-IR albedo of vegetation category when fully-leafed [ ]</li>
 <li>ALVCROT Average visible albedo of vegetation category when fully-leafed [ ]</li>
 <li><b>CMASROT</b> Annual maximum canopy mass for vegetation category <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
-<li><b>FCANROT</b> Annual maximum fractional coverage of modelled area [ ]</li>
+<li><b>FCANROT</b> Annual maximum fractional coverage of modelled area [ ]<ul>
+<li>This variable is only read-in when CTEM is off.</li>
+</ul>
+</li>
 <li><b>LNZ0ROT</b> Natural logarithm of maximum vegetation roughness length [ ]</li>
 <li><b>PAMNROT</b> Annual minimum plant area index of vegetation category [ ]</li>
 <li><b>PAMXROT</b> Annual maximum plant area index of vegetation category [ ]</li>
@@ -104,7 +107,8 @@ Required vegetation data for a physics only simulation (CLASS alone)</h1>
 <li>VPDAROT Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]</li>
 <li>VPDBROT Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]</li>
 </ol>
-<p>In physics only runs (CLASS only), the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine <a class="el" href="APREP_8f.html" title="Calculates various land surface parameters. ">src/APREP.f</a>):</p><ul>
+<p>In physics only runs (CLASS only), the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine <a class="el" href="APREP_8f.html">APREP.f</a>):</p>
+<ul>
 <li>CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by PAMXROT and PAMNROT.</li>
 <li>The areal coverage of crops varies from zero in the winter to FCANROT at the height of the growing season, and their physiological characteristics undergo a corresponding cycle.</li>
 <li>Grasses remain constant year-round.</li>
@@ -118,15 +122,18 @@ Required vegetation data for a physics only simulation (CLASS alone)</h1>
 <img class="formulaDsp" alt="\[ \begin{tabular}{ | l | c | c | c | c | c | c | } &amp; RSMN &amp; QA50 &amp; VPDA &amp; VPDB &amp; PSGA &amp; PSGB \\ Needleleaf trees &amp; 200.0 &amp; 30.0 &amp; 0.65 &amp; 1.05 &amp; 100.0 &amp; 5.0 \\ Broadleaf trees &amp; 125.0 &amp; 40.0 &amp; 0.50 &amp; 0.60 &amp; 100.0 &amp; 5.0 \\ Crops &amp; 85.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ Grass &amp; 100.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ \end{tabular} \]" src="form_1512.png"/>
 </p>
 <h1><a class="anchor" id="vegCTEMtoo"></a>
-Required vegetation data for a biogeochemical simulation (CTEM)</h1>
-<p>In addition to the CLASS variables described above, CTEM requires the following further variables:</p>
-<p>COMBAK </p>
+Required vegetation data for a biogeochemical simulation (CLASS+CTEM)</h1>
+<p>In addition to the CLASS variables described above, CTEM requires the following further information about the vegetation:</p>
+<ul>
+<li>fcancmx Fractional coverage of CTEM PFTs per grid cell []</li>
+</ul>
+<p>If land use is being simulated this value will come from a land use change file (see <a class="el" href="CTEMaddInputs.html#inputLUC">LUC</a>) otherwise it is taken from the model initialization file and kept constant thoughout a run (provided competition between PFTs is not turned on). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Aug 9 2018 16:27:38 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 10 2018 14:49:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

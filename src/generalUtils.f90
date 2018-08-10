@@ -1,6 +1,4 @@
-!>\file
-!>Central module for all general utilities
-
+!Central module for all general utilities
 module generalUtils
 
     implicit none
@@ -307,4 +305,6 @@ module generalUtils
     !!@}
 
 !>\file
+!>Central module for all general utilities
+
 end module generalUtils

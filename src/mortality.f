@@ -1,6 +1,7 @@
 !>\file
 !>Calculates the litter generated from leaves, stem, and root components after
 !! vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality)
+!!@author Vivek Arora, Joe Melton
 !!
 !!Mortality
 !!
@@ -28,7 +29,7 @@
       subroutine mortalty (stemmass, rootmass,    ailcg, gleafmas,
      1                     bleafmas,     il1,  il2, leapnow,
      2                     iday, sort,  fcancmx,
-c    + ------------------ inputs above this line ----------------------   
+c    + ------------------ inputs above this line ----------------------
      4                     lystmmas, lyrotmas, tymaxlai, grwtheff,
 c    + -------------- inputs updated above this line ------------------
      5                     stemltrm, rootltrm, glealtrm, geremort,
@@ -47,14 +48,14 @@ c
 c     07  may 2003  - this subroutine calculates the litter generated
 c     V. Arora        from leaves, stem, and root components after
 c                     vegetation dies due to reduced growth efficiency
-c                     or due to aging (the intrinsic mortality)  
+c                     or due to aging (the intrinsic mortality)
 c
-c     inputs 
+c     inputs
 c
 c     icc       - no. of ctem plant function types, currently 8
 c     ilg       - no. of grid cells in latitude circle
 c
-      use ctem_params,        only : icc, ilg, kk, zero, mxmortge, 
+      use ctem_params,        only : icc, ilg, kk, zero, mxmortge,
      1                               kmort1, maxage
 c
       implicit none
@@ -93,15 +94,15 @@ c
 !!
       do 140 j = 1,icc
         do 150 i = il1, il2
-          stemltrm(i,j)=0.0    
-          rootltrm(i,j)=0.0   
-          glealtrm(i,j)=0.0   
-          geremort(i,j)=0.0    
-          intrmort(i,j)=0.0  
-150     continue                  
+          stemltrm(i,j)=0.0
+          rootltrm(i,j)=0.0
+          glealtrm(i,j)=0.0
+          geremort(i,j)=0.0
+          intrmort(i,j)=0.0
+150     continue
 140   continue
 !>
-!>initialization ends    
+!>initialization ends
 !!
 !!------------------------------------------------------------------
 !!
@@ -126,7 +127,7 @@ c
      &        (leapnow.and.iday.eq.366)) then
             if(tymaxlai(i,j).gt.zero)then
               grwtheff(i,j)= ( (stemmass(i,j)+rootmass(i,j))-
-     &         (lystmmas(i,j)+lyrotmas(i,j)) )/tymaxlai(i,j) 
+     &         (lystmmas(i,j)+lyrotmas(i,j)) )/tymaxlai(i,j)
             else
               grwtheff(i,j)= 0.0
             endif
@@ -141,19 +142,19 @@ c
 !!
           geremort(i,j)=mxmortge(n)/(1.0+kmort1*grwtheff(i,j))
 c
-!>convert (1/year) rate into (1/day) rate 
-          if (leapnow) then 
+!>convert (1/year) rate into (1/day) rate
+          if (leapnow) then
             geremort(i,j)=geremort(i,j)/366.0
-          else 
+          else
             geremort(i,j)=geremort(i,j)/365.0
-          endif 
+          endif
          endif
 210     continue
 200   continue
 !>
-!>calculate intrinsic mortality rate due to aging which implicity includes effects of frost, 
-!!hail, wind throw etc. it is assumed that only 1% of the plants exceed maximum age (which is 
-!!a pft-dependent parameter). to achieve this some fraction of the plants need to be killed every year. 
+!>calculate intrinsic mortality rate due to aging which implicity includes effects of frost,
+!!hail, wind throw etc. it is assumed that only 1% of the plants exceed maximum age (which is
+!!a pft-dependent parameter). to achieve this some fraction of the plants need to be killed every year.
 !!
       do 250 j = 1, icc
         n = sort(j)
@@ -166,15 +167,15 @@ c
               intrmort(i,j)=0.0
            endif
 
-!>convert (1/year) rate into (1/day) rate   
-          if (leapnow) then 
+!>convert (1/year) rate into (1/day) rate
+          if (leapnow) then
             intrmort(i,j)=intrmort(i,j)/366.0
-          else 
+          else
             intrmort(i,j)=intrmort(i,j)/365.0
           endif
          endif
 260     continue
-250   continue 
+250   continue
 !>
 !!now that we have both growth related and intrinsic mortality rates,
 !!lets combine these rates for every pft and estimate litter generated
@@ -194,4 +195,3 @@ c
 c
       return
       end
-

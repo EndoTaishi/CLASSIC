@@ -1564,3 +1564,6 @@
 \form#1563:\[ \frac{\mathrm{d}C_\mathrm{D}}{\mathrm{d}t} = D_\mathrm{L} + D_\mathrm{S} + D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} -C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D}\\ \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} = C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,H} \]
 \form#1564:$H_\mathrm{D}$
 \form#1565:\begin{eqnarray*} \frac{\mathrm{d}C_\mathrm{D}}{\mathrm{d}t} &=& D_\mathrm{L} + D_\mathrm{S} + D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} -C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D} \\ \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} &=& C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,H} \end{eqnarray*}
+\form#1566:$[kg C m^{-2} ]$
+\form#1567:$[km^{2} ]$
+\form#1568:$km^{2}$

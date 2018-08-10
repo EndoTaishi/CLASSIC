@@ -1,10 +1,10 @@
 # Input Vegetation Data {#vegetationData}
 
-CLASSIC can be run with either dynamic vegetation (CTEM is turned on) or a physics only simulation (CLASS). The model inputs differ between the two simulations with some input vegetation data for a CLASS only run ignored when the CTEM is turned on. As well CTEM requires some additional inputs as described below.
+CLASSIC can be run with either dynamic vegetation (CTEM+CLASS) or a physics only simulation (CLASS). The model inputs differ between the two configurations with some input vegetation data for a CLASS-only run ignored when CTEM is turned on. As well CTEM requires some additional inputs not needed for CLASS-only runs as described below.
 
-# Required vegetation data for a physics only simulation (CLASS alone) {#vegCLASSonly}
+# Required vegetation data {#vegCLASSonly}
 
-The four main vegetation categories for the physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass. Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a third dimension of 5 rather than 4. For each of those the following data are required for each mosaic tile over each grid cell or modelled area (**NOTE**: When CTEM is turned on, i.e. dynamic vegetation is desired, the variables indicated in bold font are overwritten by CTEM during model run. FCANROT may be overwritten if land use change or if competition between PFTs is turned on.)
+The typical four main vegetation categories for the model physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass (ican = 4). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a larger dimension of 5 rather than 4 (ican + 1). For each of the CLASS PFTs the following data are required for each mosaic tile over each grid cell or modelled area (**NOTE**: When CTEM is turned on, i.e. dynamic vegetation is desired and the variables indicated in bold font are overwritten by CTEM during model run (specifically in @ref APREP.f). FCANROT may be overwritten if land use change or competition between PFTs is turned on.)
 
  1. ALICROT Average near-IR albedo of vegetation category when fully-leafed [ ]
  2. ALVCROT Average visible albedo of vegetation category when fully-leafed [ ]
@@ -22,7 +22,8 @@ The four main vegetation categories for the physics (CLASS) are needleleaf trees
  13. VPDAROT Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]
  14. VPDBROT Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]
 
-In physics only runs (CLASS only), the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine src/APREP.f):
+In physics only runs (CLASS only), the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine @ref APREP.f):
+
 - CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by PAMXROT and PAMNROT.
 - The areal coverage of crops varies from zero in the winter to FCANROT at the height of the growing season, and their physiological characteristics undergo a corresponding cycle.
 - Grasses remain constant year-round.
@@ -44,23 +45,10 @@ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
 \end{tabular}
 \f]
 
-# Required vegetation data for a biogeochemical simulation (CTEM) {#vegCTEMtoo}
+# Required vegetation data for a biogeochemical simulation (CLASS+CTEM) {#vegCTEMtoo}
 
-In addition to the CLASS variables described above, CTEM requires the following further variables:
+In addition to the CLASS variables described above, CTEM requires the following further information about the vegetation:
 
-COMBAK
+- fcancmx Fractional coverage of CTEM PFTs per grid cell []
 
-float rice(months, lat, lon) ;
-  rice:_FillValue = -999.f ;
-  rice:units = "-" ;
-  rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
-
-  float ipeatland(tile, lat, lon) ;
-    ipeatland:_FillValue = -999.f ;
-    ipeatland:units = "-" ;
-    ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
-
-    float fcancmx(tile, icc, lat, lon) ;
-      fcancmx:_FillValue = -999.f ;
-      fcancmx:units = "-" ;
-      fcancmx:long_name = "PFT fractional coverage per grid cell" ;
+If land use is being simulated this value will come from a land use change file (see @ref inputLUC) otherwise it is taken from the model initialization file and kept constant thoughout a run (provided competition between PFTs is not turned on).

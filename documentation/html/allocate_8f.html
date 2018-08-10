@@ -97,6 +97,7 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Performs allocation of carbon gained by photosynthesis into plant structural pools. </p>
+<dl class="section author"><dt>Author</dt><dd>Vivek Arora, Joe Melton</dd></dl>
 <p>Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to use both specified constant or dynamically calculated allocation fractions for leaves, stems and roots, in practice the dynamic allocation fractions are primarily used. The formulation used in CTEM v. 2.0 differs from that for CTEM v. 1.0 as described in Arora and Boer (2005) <a class="el" href="citelist.html#CITEREF_Arora2005-6b1">[7]</a> only in the parameter values.</p>
 <p>The dynamic allocation to the live plant tissues is based on the light, water and leaf phenological status of vegetation. The preferential allocation of carbon to the different tissue pools is based on three assumptions: (i) if soil moisture is limiting, carbon should be preferentially allocated to roots for greater access to water, (ii) if LAI is low, carbon should be allocated to leaves for enhanced photosynthesis and finally (iii) carbon is allocated to the stem to increase vegetation height and lateral spread of vegetation when the increase in LAI results in a decrease in light penetration.</p>
 <p>The vegetation water status, <img class="formulaInl" alt="$W$" src="form_0.png"/>, is determined as a linear scalar quantity that varies between 0 and 1 for each PFT and calculated by weighting the degree of soil saturation ( <img class="formulaInl" alt="$\phi_{i} (\theta_{i} )$" src="form_1516.png"/>) with the fraction of roots in each soil layer</p>
@@ -332,7 +333,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="allocate_8f.html">allocate.f</a></li>
-    <li class="footer">Generated on Thu Aug 9 2018 16:27:37 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 10 2018 14:49:11 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
