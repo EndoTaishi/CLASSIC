@@ -32,6 +32,9 @@ At each physics time step, for each grid cell or modelled area, the following at
 - ZRFMROW Reference height associated with forcing wind speed [m]
   - In atmospheric models the forcing wind speed, air temperature and specific humidity are obtained from the lowest modelled atmospheric layer, and thus the reference height will be the height above the “surface” (i.e. the location where the wind speed is zero and the pressure is equal to the surface pressure Pa) corresponding to that lowest layer. Some atmospheric models use a vertical co-ordinate system in which the momentum and thermodynamic levels are staggered, and if so, ZFRMROW and ZRFHROW will have different values. If that is the case, the switch ISLFD in the job options file should be set to 2, so that the subroutines src/FLXSURFZ.f and src/DIASURFZ.f are called, since the other options do not support different reference heights. In the case of field data, the reference height is the height above the ground surface at which the variables are measured. If the measurement height for wind speed is different from that for the air temperature and specific humidity, again the ISLFD switch in the job options file should be set to 2.
   - **Note** that neither ZRFHROW nor ZRFMROW may be smaller than the vegetation canopy height, as this will cause the model run to crash.
+- GC GCM surface descriptor
+  - For land surfaces (inc. inland water) set to -1
+
 
 ## Advisement regarding the physics timestep
 

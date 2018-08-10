@@ -84,11 +84,9 @@ contains
     !> The number of latitudes is always 1 offline while the maximum number of
     !> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
     !> ilg is then calculated from nlat and nmos.
+    !>@author Joe Melton
 
     subroutine read_modelsetup
-
-        ! J. Melton
-        ! Feb 2017
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
@@ -345,6 +343,7 @@ contains
     !>\ingroup model_state_drivers_read_initialstate
     !!@{
     !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
+    !>@author Joe Melton
 
     subroutine read_initialstate(lonIndex,latIndex)
 
@@ -375,6 +374,7 @@ contains
         real, pointer, dimension(:,:,:) :: PAMXROT
         real, pointer, dimension(:,:,:) :: LNZ0ROT
         real, pointer, dimension(:,:,:) :: CMASROT
+        real, pointer, dimension(:,:) :: CMAIROT !<
         real, pointer, dimension(:,:,:) :: ROOTROT
         real, pointer, dimension(:,:)   :: DRNROT
         real, pointer, dimension(:,:)   :: SDEPROT
@@ -383,6 +383,7 @@ contains
         real, pointer, dimension(:,:)   :: WFSFROT
         real, pointer, dimension(:,:)   :: WFCIROT
         integer, pointer, dimension(:,:)   :: MIDROT
+        real, pointer, dimension(:,:)   :: WSNOROT !<
         real, pointer, dimension(:,:,:) :: SANDROT
         real, pointer, dimension(:,:,:) :: CLAYROT
         real, pointer, dimension(:,:,:) :: ORGMROT
@@ -411,8 +412,12 @@ contains
         real, pointer, dimension(:)     :: Z0ORROW !<
         real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:)   :: SOCIROT
-
         real, pointer, dimension(:,:)   :: TBASROT !<
+        real, pointer, dimension(:,:) :: ZSNLROT !< Limiting snow depth (m)
+        real, pointer, dimension(:,:,:)  :: TSFSROT !<Ground surface temperature over subarea [K]
+        real, pointer, dimension(:,:) :: TACROT  !<Temperature of air within vegetation canopy \f$[K] (T_{ac} )\f$
+        real, pointer, dimension(:,:) :: QACROT  !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ] (q_{ac} )\f$
+        integer, pointer, dimension(:,:,:,:) :: ITCTROT !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
         logical, pointer :: ctem_on
         logical, pointer :: dofire
         logical, pointer :: PFTCompetition
@@ -539,7 +544,13 @@ contains
         GGEOROW           => class_rot%GGEOROW
         SOCIROT           => class_rot%SOCIROT
         TBASROT           => class_rot%TBASROT
-
+        CMAIROT           => class_rot%CMAIROT
+        WSNOROT           => class_rot%WSNOROT
+        ZSNLROT           => class_rot%ZSNLROT
+        TSFSROT           => class_rot%TSFSROT
+        TACROT            => class_rot%TACROT
+        QACROT            => class_rot%QACROT
+        ITCTROT           => class_rot%ITCTROT
         ! ----------------------------
 
         do i = 1, nlat
@@ -620,8 +631,8 @@ contains
             !else fcancmx is read in instead and fcanrot is derived later.
         end if
 
-!     Complete some initial set up work:
-
+!     Complete some initial set up work. The limiting snow
+!> depth, ZSNL, is assigned its operational value of 0.10 m.
         DO 100 I=1,nlat
             DO 100 M=1,nmos
 
@@ -633,22 +644,20 @@ contains
 
                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
                 TBASROT(I,M)=TBARROT(I,M,IGND)
-                !CMAIROT(I,M)=0.
-                !WSNOROT(I,M)=0.
-                !ZSNLROT(I,M)=0.10
-                !TSFSROT(I,M,1)=TFREZ
-                !TSFSROT(I,M,2)=TFREZ
+                CMAIROT(I,M)=0.
+                WSNOROT(I,M)=0.
+                ZSNLROT(I,M)=0.10
+                TSFSROT(I,M,1)=TFREZ
+                TSFSROT(I,M,2)=TFREZ
+                TSFSROT(I,M,3)=TBARROT(I,M,1)
+                TSFSROT(I,M,4)=TBARROT(I,M,1)
+                TACROT (I,M)=TCANROT(I,M)
+                QACROT (I,M)=0.5E-2
 
-                !TSFSROT(I,M,3)=TBARROT(I,M,1)
-                !TSFSROT(I,M,4)=TBARROT(I,M,1)
-                !TACROT (I,M)=TCANROT(I,M)
-                !QACROT (I,M)=0.5E-2
-
-                !DO 75 K=1,6
-                !    DO 75 L=1,50
-                !        ITCTROT(I,M,K,L)=0
-!75              CONTINUE
 100     CONTINUE
+
+        ! Set the counter for the number of iterations required to solve surface energy balance for the elements of the four subareas to zero.
+        ITCTROT=0
 
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
@@ -783,11 +792,9 @@ contains
     !!@{
     !> Write out the model restart file to netcdf. We only write out the variables that the model
     !! influences. This overwrites a pre-existing netcdf file.
+    !>@author Joe Melton
 
     subroutine write_restart(lonIndex,latIndex)
-
-        ! J. Melton
-        ! Jun 2017
 
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
@@ -945,10 +952,9 @@ contains
     !!@{
     !>  Read in a model input from a netcdf file and store the file's time array
     !! as well as the input values into memory.
+    !>@author Joe Melton
 
     subroutine getInput(inputRequested,longitude,latitude)
-
-
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp
@@ -1244,6 +1250,7 @@ contains
     !>\ingroup model_state_drivers_updateInput
     !!@{
     !> Update the input field variable based on the present model timestep
+    !>@author Joe Melton
 
     subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
 
@@ -1414,6 +1421,8 @@ contains
     !> Read in the meteorological input from a netcdf file
     !! It is **very** important that the files are chunked correctly (for global and regional runs).
     !! There is an orders of magnitude slow-up otherwise!
+    !>@author Joe Melton
+
     subroutine getMet(longitude,latitude,nday,delt)
 
         use fileIOModule
@@ -1525,6 +1534,7 @@ contains
     !!@{
     !> This transfers the met data of this time step from the read-in array to the
     !! instantaneous variables. This also sets iyear to the present year of MET being read in.
+    !>@author Joe Melton
 
     subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
@@ -1602,6 +1612,7 @@ contains
     !>\ingroup model_state_drivers_closestCell
     !!@{
     !> Finds the closest grid cell in the file
+    !>@author Joe Melton
 
     integer function closestCell(ncid,label,gridPoint)
 
@@ -1630,6 +1641,7 @@ contains
     !>\ingroup model_state_drivers_deallocInput
     !!@{
     !> Deallocates the input files arrays
+    !>@author Joe Melton
 
     subroutine deallocInput
 

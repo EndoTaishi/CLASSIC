@@ -53,8 +53,8 @@ Version 1 of the CTEM is the terrestrial carbon cycle component of the second ge
 |:---------------:|:---------:|----------------|----------------------|:----------------:|------------------|
 | Needleleaf tree | Evergreen | Deciduous |  |  |  |
 | Broadleaf tree | Evergreen | Cold Deciduous | Drought/Dry Decidous | Evergreen Shrubs | Deciduous Shrubs |
-| Crop | C\f$_3\f$ | C$_4$ |  |  |  |
-| Grass | C$_3$ | C$_4$ |  | Sedges |  |
+| Crop | \f$C_3\f$ | \f$C_4\f$ |  |  |  |
+| Grass | \f$C_3\f$ | \f$C_4\f$ |  | Sedges |  |
 <!-- \f[
 \begin{table}[]
 \caption{CTEM and peatland PFTs and their mapping to the CLASS PFTs}

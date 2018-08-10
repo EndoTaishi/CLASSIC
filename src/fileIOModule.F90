@@ -3,7 +3,7 @@
 !! It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF.
 !!
 !>@author
-!> Joe Melton and Ed Wisernig
+!> Ed Wisernig, Joe Melton
 
 module fileIOModule
 #if PARALLEL

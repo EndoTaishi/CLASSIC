@@ -2376,46 +2376,6 @@ contains
         !! for this model run (if needed; this is checked for in the subroutine)
         call disaggMet(longitude, latitude, delt)
 
-        !> Complete some initial set up work:
-        !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
-        !> depth, ZSNL, is assigned its operational value of 0.10 m.
-
-        DO 100 I=1,NLTEST
-            DO 100 M=1,NMTEST
-
-!                 DO J=1,IGND
-!                     TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
-!                 ENDDO
-!                 TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
-!                 TCANROT(I,M)=TCANROT(I,M)+TFREZ
-!
-!                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
-!                 TBASROT(I,M)=TBARROT(I,M,IGND)
-                CMAIROT(I,M)=0.
-                WSNOROT(I,M)=0.
-                ZSNLROT(I,M)=0.10
-                TSFSROT(I,M,1)=TFREZ
-                TSFSROT(I,M,2)=TFREZ
-
-                TSFSROT(I,M,3)=TBARROT(I,M,1)
-                TSFSROT(I,M,4)=TBARROT(I,M,1)
-                TACROT (I,M)=TCANROT(I,M)
-                QACROT (I,M)=0.5E-2
-
-                DO 75 K=1,6
-                    DO 75 L=1,50
-                        ITCTROT(I,M,K,L)=0
-75              CONTINUE
-100     CONTINUE
-
-!         altotcount_ctm(:)=0
-!         fsinacc_gat(:)=0.
-!         flinacc_gat(:)=0.
-!         flutacc_gat(:)=0.
-!         preacc_gat(:)=0.
-! !         pregacc_gat(:)=0.
-!         altotacc_gat(:)=0.
-
         ! Initialize accumulated array for monthly & yearly outputs
         call resetclassmon(nltest)
         call resetclassyr(nltest)

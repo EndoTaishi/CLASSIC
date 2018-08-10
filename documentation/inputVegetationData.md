@@ -10,6 +10,7 @@ The four main vegetation categories for the physics (CLASS) are needleleaf trees
  2. ALVCROT Average visible albedo of vegetation category when fully-leafed [ ]
  3. **CMASROT** Annual maximum canopy mass for vegetation category \f$[kg m^{-2} ]\f$
  4. **FCANROT** Annual maximum fractional coverage of modelled area [ ]
+   - This variable is only read-in when CTEM is off.
  5. **LNZ0ROT** Natural logarithm of maximum vegetation roughness length [ ]
  6. **PAMNROT** Annual minimum plant area index of vegetation category [ ]
  7. **PAMXROT** Annual maximum plant area index of vegetation category [ ]
@@ -48,3 +49,18 @@ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
 In addition to the CLASS variables described above, CTEM requires the following further variables:
 
 COMBAK
+
+float rice(months, lat, lon) ;
+  rice:_FillValue = -999.f ;
+  rice:units = "-" ;
+  rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
+
+  float ipeatland(tile, lat, lon) ;
+    ipeatland:_FillValue = -999.f ;
+    ipeatland:units = "-" ;
+    ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
+
+    float fcancmx(tile, icc, lat, lon) ;
+      fcancmx:_FillValue = -999.f ;
+      fcancmx:units = "-" ;
+      fcancmx:long_name = "PFT fractional coverage per grid cell" ;

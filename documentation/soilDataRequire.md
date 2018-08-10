@@ -41,8 +41,27 @@ CLASS provides a means of accounting for the possibility of the depth to bedrock
 Two variables, assumed to be constant over the grid cell, are provided if required for atmospheric model runs:
 
 - GGEOROW Geothermal heat flux \f$[W m^{-2} ]\f$
-  - Unless the soil depth is very large and/or the run is very long, the geothermal heat flux can be set to zero.
+  - Unless the soil depth is very large and/or the run is very long, the geothermal heat flux can be set to zero. Since this is rarely used, this is not presently read in from the initialization file.
 - Z0ORROW Orographic roughness length [m]
-  - Z0ORROW is the surface roughness length representing the contribution of orography or other terrain effects to the overall roughness, which becomes important when the modelled grid cell is very large (e.g. in a GCM). For field studies it can be set to zero.
+  - Z0ORROW is the surface roughness length representing the contribution of orography or other terrain effects to the overall roughness, which becomes important when the modelled grid cell is very large (e.g. in a GCM). For field studies it can be set to zero. FIXME: Not presently in initfile!
 
 Finally, four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used.
+
+
+## CTEM
+FIXME
+float grclarea(lat, lon) ;
+  grclarea:_FillValue = -999.f ;
+  grclarea:units = "km2" ;
+  grclarea:long_name = "Area of grid cell" ;
+
+## Orographic information for dynamic wetland scheme
+
+FIXME
+
+double slope(slope) ;
+  slope:long_name = "wetland slope fractions for 0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope threshold" ;
+float slopefrac(slope, tile, lat, lon) ;
+  slopefrac:_FillValue = -999.f ;
+  slopefrac:units = "-" ;
+  slopefrac:long_name = "Slope-based fraction for dynamic wetlands" ;
