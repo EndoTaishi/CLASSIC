@@ -12,9 +12,10 @@ This will generate the binary executable in the *bin* folder.
 
 To run the program, use the following command:
 
-`bin/metASCIILoader [file.MET] [longitude] [latitude]`
+`bin/metASCIILoader [file.MET] [longitude] [latitude] [containsLeaps]`
 
-Where *longitude* and *latitude* are the desired real values for the local file and the *file.MET* is your local met file.
+Where *longitude* and *latitude* are the desired real values for the local file and the *file.MET* is your local met file. *containsLeaps* is a logical switch. True if your input file contains leap years, i.e. years that contain Feb 29th, false if not. It is expecting either 'true' or 'false'.
+
 The provided longitude and latitude values will be written as a property in the netcdf file.
 
 # Structure
