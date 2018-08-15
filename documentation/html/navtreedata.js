@@ -3,14 +3,19 @@ var NAVTREE =
   [ "CLASSIC", "index.html", [
     [ "CLASSIC main page", "index.html", "index" ],
     [ "Atmospheric Forcing Data", "forcingData.html", null ],
-    [ "Notes about composite versus mosaic running of the model", "compvsmosaic.html", null ],
+    [ "Composite vs. mosaic representation", "compvsmosaic.html", null ],
     [ "Singularity Containers", "Containers.html", null ],
     [ "Additional inputs depending on model configuration", "CTEMaddInputs.html", [
-      [ "Climatic variables for PFT competition simulations", "CTEMaddInputs.html#initClimComp", null ],
+      [ "Atmospheric carbon dioxide concentration", "CTEMaddInputs.html#initCO2", null ],
+      [ "Atmospheric methane concentration", "CTEMaddInputs.html#initCH4", null ],
       [ "Lightning frequency for fire ignition", "CTEMaddInputs.html#initLightFire", null ],
-      [ "Dynamic wetland area determination", "CTEMaddInputs.html#initWetSlope", null ],
+      [ "Population density for fire ignition/suppresion", "CTEMaddInputs.html#initPopd", null ],
+      [ "Climatic variables for PFT competition simulations", "CTEMaddInputs.html#initClimComp", null ],
+      [ "Rice agriculature", "CTEMaddInputs.html#initRice", null ],
+      [ "Orographic information for dynamic wetland scheme", "CTEMaddInputs.html#initWetSlope", null ],
+      [ "Prescribed wetland area", "CTEMaddInputs.html#initWetArea", null ],
       [ "Peatland variables", "CTEMaddInputs.html#initPeat", [
-        [ "LUC", "CTEMaddInputs.html#inputLUC", null ]
+        [ "Land use change (LUC)", "CTEMaddInputs.html#inputLUC", null ]
       ] ]
     ] ],
     [ "Initialization of Prognostic Variables", "initProgVar.html", [
@@ -58,15 +63,15 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"ctem__params_8f90.html#a7b752f1c106cb0814573dee26cfa2586",
-"metModule_8f90.html#aae58a77b683658de67c4f1fc7a5f1f37",
-"structclass__statevars_1_1class__gather.html#a0bd3d7f727a8d5f623c584497b9d6533",
-"structclass__statevars_1_1class__gather.html#adde51684f1d879c9336425d250abb073",
-"structclass__statevars_1_1class__rotated.html#a73fe243fa4523cdb0fd0bd50a2cdf2f9",
-"structctem__statevars_1_1ctem__gridavg__annual.html#aa9dcb797ecb545375aa7fbb7d4d99256",
-"structctem__statevars_1_1ctem__tileavg__monthly.html#a2342be28657577f60a741bcb018a2ee2",
-"structctem__statevars_1_1veg__rot.html#a20a5f7579519e734df69398aa3f0debd",
-"xmlParser_8f90.html#a22c02cab8cb6cc2490787fa2951fc785"
+"ctem__params_8f90.html#a766b351a6a0cf14bfa75068e43a300da",
+"metModule_8f90.html#a5c2ab07ab98818a94db165c0eee29dd5",
+"structclass__statevars_1_1class__gather.html#a0a45c3cfdc1b2e8cccb6312cdd616648",
+"structclass__statevars_1_1class__gather.html#adb39a90e09a3f4d14717f029d34b57d5",
+"structclass__statevars_1_1class__rotated.html#a724195fbb982c5ad5ca5e2fff403c079",
+"structctem__statevars_1_1ctem__gridavg__annual.html#a983bc8b7e216c83a277e51ce00f67cdd",
+"structctem__statevars_1_1ctem__tileavg__monthly.html#a0e8d99deb9bb26189039143b9297cd02",
+"structctem__statevars_1_1veg__rot.html#a1a70f3ea4ed92c898b82529321a628da",
+"xmlParser_8f90.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,4 +1,4 @@
-# Notes about composite versus mosaic running of the model {#compvsmosaic}
+# Composite vs. mosaic representation {#compvsmosaic}
 
 CLASSIC can be run in two different configurations: composite or mosaic (see figure below)
 

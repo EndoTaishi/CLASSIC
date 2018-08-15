@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['notes_20about_20composite_20versus_20mosaic_20running_20of_20the_20model',['Notes about composite versus mosaic running of the model',['../compvsmosaic.html',1,'']]],
   ['nbp',['nbp',['../structctem__statevars_1_1veg__rot.html#aa30c8da63cfcbd31b3ab76f43983e7e9',1,'ctem_statevars::veg_rot::nbp()'],['../structctem__statevars_1_1veg__gat.html#a1f1b1b1b3cdc359416b8c6b0fe021a5b',1,'ctem_statevars::veg_gat::nbp()']]],
   ['nbpveg',['nbpveg',['../structctem__statevars_1_1veg__rot.html#a9dedd91b3c3052ae9bbba7d9e4e609f2',1,'ctem_statevars::veg_rot::nbpveg()'],['../structctem__statevars_1_1veg__gat.html#aeea0970f5288e4b7bfced83715d5b8e5',1,'ctem_statevars::veg_gat::nbpveg()']]],
   ['nbs',['nbs',['../namespacectem__params.html#a1e8ba7b501ad6afcb7260b6b4711ae86',1,'ctem_params']]],

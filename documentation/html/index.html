@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 </ul>
 </li>
 <li><a class="el" href="overviewCLASS.html#overviewCTEM">Overview of the Canadian Terrestrial Ecosystem Model (CTEM)</a></li>
-<li><a class="el" href="compvsmosaic.html">Notes about composite versus mosaic running of the model</a></li>
+<li><a class="el" href="compvsmosaic.html">Composite vs. mosaic representation</a></li>
 <li>There are a basic four types of data that are required to run CLASSIC:<ul>
 <li><a class="el" href="forcingData.html">Atmospheric Forcing Data</a></li>
 <li><a class="el" href="vegetationData.html">Input Vegetation Data</a><ul>
@@ -109,11 +109,25 @@ $(document).ready(function(){initNavTree('index.html','');});
 </ul>
 </li>
 <li><a class="el" href="CTEMaddInputs.html">Additional inputs depending on model configuration</a><ul>
-<li><a class="el" href="CTEMaddInputs.html#initClimComp">Climatic variables for PFT competition simulations</a></li>
+<li>Greenhouse gases<ul>
+<li><a class="el" href="CTEMaddInputs.html#initCO2">Atmospheric carbon dioxide concentration</a></li>
+<li><a class="el" href="CTEMaddInputs.html#initCH4">Atmospheric methane concentration</a></li>
+</ul>
+</li>
+<li>Disturbrance (fire) inputs<ul>
 <li><a class="el" href="CTEMaddInputs.html#initLightFire">Lightning frequency for fire ignition</a></li>
-<li>initRice</li>
-<li><a class="el" href="CTEMaddInputs.html#initWetSlope">Dynamic wetland area determination</a></li>
-<li><a class="el" href="CTEMaddInputs.html#initPeat">Peatland variables</a></li>
+<li><a class="el" href="CTEMaddInputs.html#initPopd">Population density for fire ignition/suppresion</a></li>
+</ul>
+</li>
+<li>[Competition for space between PFTs](<a class="el" href="CTEMaddInputs.html#initClimComp">Climatic variables for PFT competition simulations</a>)</li>
+<li>Prognostic simulation of methane emissions<ul>
+<li>[Rice agriculture](<a class="el" href="CTEMaddInputs.html#initRice">Rice agriculature</a>)</li>
+<li>[Dynamically-determined wetlands](<a class="el" href="CTEMaddInputs.html#initWetSlope">Orographic information for dynamic wetland scheme</a>)</li>
+<li><a class="el" href="CTEMaddInputs.html#initWetArea">Prescribed wetland area</a></li>
+</ul>
+</li>
+<li>[Peatlands](<a class="el" href="CTEMaddInputs.html#initPeat">Peatland variables</a>)</li>
+<li><a class="el" href="CTEMaddInputs.html#inputLUC">Land use change (LUC)</a></li>
 </ul>
 </li>
 <li>Creation and formatting of model input files<ul>
@@ -124,6 +138,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 </ul>
 </li>
 <li>Running CLASSIC<ul>
+<li>compilingMod</li>
 <li><a class="el" href="setupJobOpts.html">Setting up the joboptions file</a></li>
 <li>xmlSystem</li>
 <li>[Running CLASSIC for a single location](<a class="el" href="runStandAloneMode.html">Running CLASSIC</a>)</li>
@@ -136,7 +151,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Aug 10 2018 14:49:12 for CLASSIC by
+    <li class="footer">Generated on Tue Aug 14 2018 13:19:32 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

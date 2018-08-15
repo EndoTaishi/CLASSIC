@@ -6,14 +6,9 @@ Some points:
 3. The file containing meteorological data (SITENAME.MET). Also provided in the Benchmarks folder.
 4. A Makefile is included which compiles all .f and .f90 files and generates an executable called CLASS36CTEM. The standard Makefile, currently set up for pgf90 (but can also be setup for xlf and gfortran) may not be suitable for your Unix station and might require modification. You may need your system administrator’s help to do this. Note that when the code is compiled it generates .mod files that corresponds to the Fortran modules.
 
-Other than the .INI, .CTM  and .MET files which are mandatory, some other CTEM related files are also required depending on which CTEM functionality is switched on. These required files are discussed further down in this user guide.
 
 
 ## The Input Files {#inputs}
-
-### The MET file (Meteorological forcings) {#MET}
-
-The .MET files contain (usually) half-hourly values of all seven variables that are needed to drive the CLASS land surface scheme. Please see the Benchmarks folder for an example .MET file.  The format of the .MET file cannot be changed since CLASS reads in these data using a fixed FORTRAN format (1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,F9.4).
 
 ### The INI file (CLASS's initialization file) {#INI}
 

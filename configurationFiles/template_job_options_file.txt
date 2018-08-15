@@ -1,8 +1,8 @@
 &joboptions
 
 ! Meteorological options:
-    readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
-    readMetEndYear = 1920    !< Last year of meteorological forcing to read in from the met file
+    readMetStartYear = 1850  !< First year of meteorological forcing to read in from the met file
+    readMetEndYear = 2010    !< Last year of meteorological forcing to read in from the met file
     metLoop = 1 ,            !< no. of times to cycle over the read-in meteorology
     leap = .false. ,         !< True if your meteorological forcing includes leap years
 
@@ -16,7 +16,7 @@
         metFilePres = '/raid/ra40/data/rjm/CRUNCEP_MET_data/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
+    init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow_ShangguanSDEP.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters
@@ -24,7 +24,7 @@
 
 ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
-                        !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
+                        !< lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
     icc = 9 ,           !< Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
     l2max = 3 ,         !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
     spinfast = 3 ,      !< Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
@@ -61,7 +61,7 @@
                                         !< (while setting all pools to zero)
 
     ! Land Use switches:
-        ! If you wish to use your own PFT fractional covers, set fixedYearLUC to -9999, otherwise set it
+        ! If you wish to use your own PFT fractional covers (specified in the init_file), set fixedYearLUC to -9999, otherwise set it
         ! to the year of land cover you want to use. If you wish to have transient land cover changes, set
         ! lnduseon to true, it will update the fractional coverages from LUCFile. When lnduseon is false it is
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is

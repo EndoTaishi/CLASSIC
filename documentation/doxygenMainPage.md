@@ -19,11 +19,19 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
     - @subpage initPhysProgVar
     - @subpage initCTEMProgVar
 5. @ref CTEMaddInputs
-  - @subpage initClimComp
-  - @subpage initLightFire
-  - @subpage initRice
-  - @subpage initWetSlope
-  - @subpage initPeat
+  - Greenhouse gases
+    - @subpage initCO2
+    - @subpage initCH4
+  - Disturbrance (fire) inputs
+    - @subpage initLightFire
+    - @subpage initPopd
+  - [Competition for space between PFTs](@subpage initClimComp)
+  - Prognostic simulation of methane emissions
+    - [Rice agriculture](@subpage initRice)
+    - [Dynamically-determined wetlands](@subpage initWetSlope)
+    - @ref initWetArea
+  - [Peatlands](@subpage initPeat)
+  - @subpage inputLUC
 6. [Creation and formatting of model input files] (@ref makeInputFile)
   - Meteorological inputs
   - The model initialization and restart files

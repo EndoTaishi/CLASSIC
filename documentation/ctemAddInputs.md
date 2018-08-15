@@ -2,14 +2,132 @@
 
 CLASSIC can be run in several different configurations, some of which require additional model inputs including:
 
-1. [Competition for space between PFTs](@ref initClimComp)
-2. [Disturbance in the form of Fire](@ref initLightFire)
-3. Prognostic simulation of methane emissions
+1. Greenhouse gases
+  1. @ref initCO2
+  2. @ref initCH4
+2. Disturbrance (fire) inputs
+  1. @ref initLightFire
+  2. @ref initPopd
+3. [Competition for space between PFTs](@ref initClimComp)
+4. Prognostic simulation of methane emissions
   1. [Rice agriculture](@ref initRice)
-  2. [Wetlands](@ref initWetSlope)
-4. [Peatlands](@ref initPeat)
+  2. [Dynamically-determined wetlands](@ref initWetSlope)
+  3.  @ref initWetArea
+5. [Peatlands](@ref initPeat)
+6. @ref inputLUC
 
 ---
+
+# Atmospheric carbon dioxide concentration {#initCO2}
+
+Annual atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and 'ncdump -hs' on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units.
+
+        dimensions:
+            time = 318 ;
+        variables:
+            float mole_fraction_of_carbon_dioxide_in_air(time) ;
+                mole_fraction_of_carbon_dioxide_in_air:long_name = "mole" ;
+                mole_fraction_of_carbon_dioxide_in_air:units = "1.e-6" ;
+                mole_fraction_of_carbon_dioxide_in_air:_FillValue = 1.e+20f ;
+                mole_fraction_of_carbon_dioxide_in_air:missing_value = 1.e+20f ;
+                mole_fraction_of_carbon_dioxide_in_air:cell_methods = "time: mean area: mean" ;
+                mole_fraction_of_carbon_dioxide_in_air:_Storage = "contiguous" ;
+                mole_fraction_of_carbon_dioxide_in_air:_Endianness = "little" ;
+            double time(time) ;
+                time:standard_name = "time" ;
+                time:units = "**day as %Y%m%d.%f**" ;
+                time:calendar = "proleptic_gregorian" ;
+                time:axis = "T" ;
+                time:_Storage = "contiguous" ;
+                time:_Endianness = "little" ;
+
+ The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.
+
+# Atmospheric methane concentration {#initCH4}
+
+Annual atmospheric methane concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.
+
+# Lightning frequency for fire ignition {#initLightFire}
+
+Mean monthly cloud-to-ground lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use mean monthly lightning frequency and interpolates daily values using these monthly values. It is unlikely anyone will have a daily observation-based time series of lightning data for a grid cell. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
+
+        netcdf lisotd_1995_2014_climtlgl_lghtng_as_ts_1700_2050_chunked {
+        dimensions:
+        	lat = 64 ;
+        	time = UNLIMITED ; // (128535 currently)
+        	lon = 128 ;
+        variables:
+        	double lat(lat) ;
+        		lat:standard_name = "latitude" ;
+        		lat:long_name = "latitude" ;
+        		lat:units = "degrees_north" ;
+        		lat:axis = "Y" ;
+        		lat:_Storage = "contiguous" ;
+        		lat:_Endianness = "little" ;
+        	float lght_lisotd(time, lat, lon) ;
+        		lght_lisotd:long_name = "Combined C2G (see Other_info in global attributes) Flash Rate Annual Climatology (1995-2014)" ;
+        		lght_lisotd:units = "**strikes km-2 yr-1**" ;
+        		lght_lisotd:grid_type = "gaussian" ;
+        		lght_lisotd:_FillValue = -1.e+38f ;
+        		lght_lisotd:missing_value = -1.e+38f ;
+        		lght_lisotd:_Storage = "chunked" ;
+        		lght_lisotd:_ChunkSizes = 128535, 8, 16 ;
+        		lght_lisotd:_Endianness = "little" ;
+        	double lon(lon) ;
+        		lon:standard_name = "longitude" ;
+        		lon:long_name = "longitude" ;
+        		lon:units = "degrees_east" ;
+        		lon:axis = "X" ;
+        		lon:_Storage = "contiguous" ;
+        		lon:_Endianness = "little" ;
+        	double time(time) ;
+        		time:standard_name = "time" ;
+        		time:units = "**day as %Y%m%d.%f**" ;
+        		time:calendar = "standard" ;
+        		time:_Storage = "chunked" ;
+        		time:_ChunkSizes = 128535 ;
+        		time:_Endianness = "little" ;
+
+
+# Population density for fire ignition/suppresion {#initPopd}
+
+Fire uses a time series of annually varying population density for fire suppression and ignition. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
+
+          netcdf POPD_annual_1700_2017_T63_chunked {
+          dimensions:
+          	lat = 64 ;
+          	lon = 128 ;
+          	time = UNLIMITED ; // (318 currently)
+          variables:
+          	double lat(lat) ;
+          		lat:standard_name = "latitude" ;
+          		lat:long_name = "latitude" ;
+          		lat:units = "degrees_north" ;
+          		lat:axis = "Y" ;
+          		lat:_Storage = "contiguous" ;
+          		lat:_Endianness = "little" ;
+          	double lon(lon) ;
+          		lon:standard_name = "longitude" ;
+          		lon:long_name = "longitude" ;
+          		lon:units = "degrees_east" ;
+          		lon:axis = "X" ;
+          		lon:_Storage = "contiguous" ;
+          		lon:_Endianness = "little" ;
+          	float popd(time, lat, lon) ;
+          		popd:grid_type = "gaussian" ;
+              popd:units = **"Number of people / km2"** ;
+          		popd:_FillValue = -9999.f ;
+          		popd:missing_value = -9999.f ;
+          		popd:_Storage = "chunked" ;
+          		popd:_ChunkSizes = 318, 8, 16 ;
+          		popd:_Endianness = "little" ;
+          	double time(time) ;
+          		time:standard_name = "time" ;
+          		time:units = "**day as %Y%m%d.%f**" ;
+          		time:calendar = "proleptic_gregorian" ;
+          		time:_Storage = "chunked" ;
+          		time:_ChunkSizes = 318 ;
+          		time:_Endianness = "little" ;
 
 # Climatic variables for PFT competition simulations {#initClimComp}
 
@@ -27,134 +145,109 @@ The PFT competition scheme (@ref competition_scheme) uses bioclimatic variables 
 - twarmm Temperature of the warmest month [deg C]
 
 
-# Lightning frequency for fire ignition {#initLightFire}
+# Rice agriculature {#initRice}
 
-  Mean monthly lightning frequency (flashes/km2.year) for the 12 months for use in the
-  disturbance subroutine for fire. The code at present is set to use mean monthly lightning
-  frequency and interpolates daily values using these monthly values. It is unlikely anyone will have a daily observation-based time series of lightning data for a grid cell. If some one does have this data they may want to modify the code to read in daily lightning frequency straight away. Of course, when both lightning frequency and probability of fire due to human causes  are set to zero then fire will not occur.
+COMBAK
 
-
-  6th last line
-  Fire extinguishing probability varies between 0 and 1.0. A default value of 0.5 is suggested.
-  Setting this to 1.0 will lead to no area burned at all. Setting this to 0.0 is not allowed and setting this to a very small number will lead to the entire grid cell being burned when the fire occurs. When POPDON is set to TRUE (as explained later, which implies population density file is being read in) then population density is used to calculate fire extinguishing probability and this overwrites the value read from the .CTM file.
-
-
-  5th last line
-  Probability of fire due to human causes also varies between 0 and 1. Setting this to 0 implies that only lightning governs ignition. Setting this to 1 implies that an ignition source is always present regardless of lightning. Values between 1 and 0 represent the probability of ignition provided enough fuel is available and it is sufficiently dry to catch fire. When POPDON is set to TRUE (as explained later, which implies population density file is being read in) then population density is used to calculate probability of fire due to human causes and this overwrites the value read from the .CTM file.
+float rice(months, lat, lon) ;
+  rice:_FillValue = -999.f ;
+  rice:units = "-" ;
+  rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
 
 
 
-  QUESTION Just like fire, mortality is also a spatial process. For example, in CTEM approximately 1-2% of trees are killed to account for age related mortality. Clearly, trees in a small plot do not die 1% every year, but on a landscape scale on average 1% of trees may die. So when comparing model simulated biomass to point scale observations it is desirable to switch off mortality. For now, mortality is switched on only when competition is switched on (through the COMPETE switch in the job options file explained next).
+# Orographic information for dynamic wetland scheme {#initWetSlope}
 
-# Dynamic wetland area determination {#initWetSlope}
+Eight slope based fractions a read in from the model initialization file for calculating dynamic wetland fractions. As the soil moisture in a grid cell increases above specified thresholds then the really flat portions of the grid cell are assumed to gradually turn into wetlands. The eight slope based fractions correspond to the fraction of the grid cell that have slope less than 0.025%, 0.05%, 0.1%, 0.15%, 0.20%, 0.25%, 0.3% and 0.35% . The numbers used by CTEM are based on 1/60th degree (1 minute) resolution digital elevation data. The relevant variables in the initialization file are shown below. In the file, slope is a dimension and slopefrac is a variable.
 
-  ## Orographic information for dynamic wetland scheme
+        double slope(slope) ;
+          slope:long_name = "wetland slope fractions for 0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope threshold" ;
+          ...
+        float slopefrac(slope, tile, lat, lon) ;
+          slopefrac:_FillValue = -999.f ;
+          slopefrac:units = "-" ;
+          slopefrac:long_name = "Slope-based fraction for dynamic wetlands" ;
 
-  FIXME
+# Prescribed wetland area {#initWetArea}
 
-  double slope(slope) ;
-    slope:long_name = "wetland slope fractions for 0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope threshold" ;
-  float slopefrac(slope, tile, lat, lon) ;
-    slopefrac:_FillValue = -999.f ;
-    slopefrac:units = "-" ;
-    slopefrac:long_name = "Slope-based fraction for dynamic wetlands" ;
+Monthly values of wetland fraction are used for modelling methane emissions from wetlands.
 
-
-  Last line
-Eight slope based fractions for calculating dynamic wetland fractions. CTEM can now calculate dynamic fraction of wetland in each grid cell and its methane emissions. However, this calculation is purely diagnostic. As the soil moisture in a grid cell increases above specified thresholds then the really flat portions of the grid cell are assumed to gradually turn into wetlands. The eight slope based fractions correspond to the fraction of the grid cell that have slope less than 0.025%, 0.05%, 0.1%, 0.15%, 0.20%, 0.25%, 0.3% and 0.35% . The numbers used by CTEM are based on 1/60th degree (1 minute) resolution digital elevation data.
+COMBAK
 
 
 # Peatland variables {#initPeat}
 
-  int nmtest(lat, lon) ;
-    nmtest:_FillValue = -999 ;
-    nmtest:long_name = "Number of tiles in each grid cell" ;
+Peatlands are simulated following the parameterization of \cite Wu2016-zt. The peatland areas are specified by a ipeatland flag in the initialization file:
 
-  float Cmossmas(tile, lat, lon) ;
-		Cmossmas:_FillValue = -999.f ;
-		Cmossmas:units = "kgC/m2" ;
-		Cmossmas:long_name = "C in moss biomass" ;
+        float ipeatland(tile, lat, lon) ;
+          ipeatland:_FillValue = -999.f ;
+          ipeatland:units = "-" ;
+          ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
 
-    float litrmsmoss(tile, lat, lon) ;
-      litrmsmoss:_FillValue = -999.f ;
-      litrmsmoss:units = "kgC/m2" ;
-      litrmsmoss:long_name = "Moss litter mass" ;
+There are several prognostic variables that are associated with the peatland areas of the gridcell. These may be initialized to zero prior to a spinup.
 
-      float dmoss(tile, lat, lon) ;
-        dmoss:_FillValue = -999.f ;
-        dmoss:units = "m" ;
-        dmoss:long_name = "Depth of living moss" ;
+        float Cmossmas(tile, lat, lon) ;
+          Cmossmas:_FillValue = -999.f ;
+          Cmossmas:units = "kgC/m2" ;
+          Cmossmas:long_name = "C in moss biomass" ;
 
+        float litrmsmoss(tile, lat, lon) ;
+          litrmsmoss:_FillValue = -999.f ;
+          litrmsmoss:units = "kgC/m2" ;
+          litrmsmoss:long_name = "Moss litter mass" ;
 
-        8. The .LUC file
+        float dmoss(tile, lat, lon) ;
+          dmoss:_FillValue = -999.f ;
+          dmoss:units = "m" ;
+          dmoss:long_name = "Depth of living moss" ;
 
-        CTEM LAND USE CHANGE FILE CONTAINING FRACTIONAL COVERAGES OF ITS 9 PFTs
-                 NDL    NDL    BDL    BDL     BDL   CROP   CROP   GRASS  GRASS
-         YEAR    EVG    DCD    EVG  DCD-CLD DCD-DRY  C3     C4     C3     C4
-         1901    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1902    0.00   0.00   0.50   0.00   0.00   0.00   0.00   0.00   0.00
-         1903    0.00   0.00   0.50   0.00   0.00   0.00   0.00   0.00   0.00
-         1904    0.00   0.00   0.50   0.00   0.00   0.00   0.00   0.00   0.00
-         1905    0.00   0.00   0.50   0.00   0.00   0.00   0.00   0.00   0.00
-         1906    0.00   0.00   0.50   0.00   0.00   0.00   0.00   0.00   0.00
-         1907    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1908    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1909    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1910    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1911    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1912    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
-         1913    0.00   0.00   1.00   0.00   0.00   0.00   0.00   0.00   0.00
+If you are running a single site peatland then the peatland tile is the whole grid cell. If you are running large regions you may wish to have the peatlands as a separate tile. This is done by having an nmtest > 1.
 
-## LUC {#inputLUC}
-        The .LUC file contains the time series of fractional coverage of PFTs if you want to implement land use change. Read the land use change section of the full CTEM documentation that explains how land use change related carbon emissions are handled in CTEM. This .LUC file is required only when LNDUSEON boolean is set to .TRUE. in the job options file. Of course, when fractional coverage’s of CTEM’s nine PFTs are read from this file they overwrite values specified in the .INI and .CTM files. Please retain the first 3 lines of comments in the .LUC file.
-        9. The .CO2 file
+          int nmtest(lat, lon) ;
+            nmtest:_FillValue = -999 ;
+            nmtest:long_name = "Number of tiles in each grid cell" ;
 
-        1850 2.847248E+02
-        1851 2.848717E+02
-        1852 2.849998E+02
-        1853 2.851279E+02
-        1854 2.852748E+02
-        1855 2.854248E+02
-        1856 2.855748E+02
-        1857 2.857279E+02
-        1858 2.858998E+02
-        1859 2.860717E+02
+## Land use change (LUC) {#inputLUC}
 
-        The .CO2 file as the name implies contain annual values of atmospheric CO2 concentration (ppm) in two column free format. This file is required when doing a transient, historical or future, simulation with changing CO2 and when CO2ON is set to TRUE. Note the absence of any header lines.
-        10. The .POPD file
+The LUC file contains a time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, **lev** and time.
 
-        POPULATION DENSITY FILE CONTAINING YEAR AND POPULATION DENSITY (PEOPLE/KM2)
-             	POPULATION
-         YEAR	DENSITY
-         1850	0.0066
-         1851	0.0069
-         1852	0.0072
-         1853	0.0074
-         1854	0.0077
-         1855	0.0080
-         1856	0.0083
-
-        The .POPD file as the name implies contain annual values of atmospheric population density (people/km2)  in two column free format. This file is required when doing a transient, historical or future, simulation in which the effect of changing population on fire is desired to be modelled and when POPDON is set to TRUE. Note the presence of three header lines.
-
-        11. The .WET file
-
-        Year Jan  	 Feb  	 Mar  	Apr  	May      Jun     Jul       Aug      Sep      Oct      Nov      Dec
-        2000 0.013362 0.000146 0.000054 0.003080 0.004506 0.000084 0.000200 0.000164 0.000227 0.003142 0.025016 0.061943
-        2001 0.138360 0.010948 0.006004 0.000329 0.000827 0.000455 0.000124 0.000068 0.000529 0.005567 0.007090 0.007770
-        2002 0.028793 0.000655 0.001766 0.001731 0.000804 0.000225 0.000075 0.000000 0.000111 0.001886 0.033335 0.039703
-        2003 0.042680 0.004999 0.001145 0.000488 0.001296 0.000237 0.000119 0.000000 0.000091 0.005933 0.044722 0.030185
-        2004 0.010988 0.002563 0.000505 0.000805 0.000370 0.000204 0.000131 0.000000 0.000187 0.002955 0.008429 0.002831
-        2005 0.001586 0.000170 0.000513 0.000251 0.003515 0.000384 0.000446 0.000402 0.000894 0.012717 0.035744 0.013106
-
-        The .WET file contain monthly values of wetland fraction for a given grid cell for specified years (12 values in a single line after year) in a free format. This file is required when doing a transient simulation in which observation-based based specified wetland fraction is desired to be used for modelling methane emissions from wetlands and when OBSWETF is set to TRUE. Note the presence of one header line.
-
-
-        float rice(months, lat, lon) ;
-          rice:_FillValue = -999.f ;
-          rice:units = "-" ;
-          rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
-
-          float ipeatland(tile, lat, lon) ;
-            ipeatland:_FillValue = -999.f ;
-            ipeatland:units = "-" ;
-            ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
+        netcdf GCP_2018_land_cover_CTEM_fractions_1700_2018_T63_chunked {
+        dimensions:
+        	time = UNLIMITED ; // (319 currently)
+        	**lev = 9** ;
+        	lat = 64 ;
+        	lon = 128 ;
+        variables:
+        	float frac(time, lev, lat, lon) ;
+        		frac:grid_type = "gaussian" ;
+            frac:units = **"fraction"** ;
+        		frac:_FillValue = -9999.f ;
+        		frac:missing_value = -9999.f ;
+        		frac:_Storage = "chunked" ;
+        		frac:_ChunkSizes = 319, 9, 8, 16 ;
+        		frac:_Endianness = "little" ;
+        	double lat(lat) ;
+        		lat:standard_name = "latitude" ;
+        		lat:long_name = "latitude" ;
+        		lat:units = "degrees_north" ;
+        		lat:axis = "Y" ;
+        		lat:_Storage = "contiguous" ;
+        		lat:_Endianness = "little" ;
+        	double lev(lev) ;
+        		lev:axis = "Z" ;
+        		lev:_Storage = "contiguous" ;
+        		lev:_Endianness = "little" ;
+        	double lon(lon) ;
+        		lon:standard_name = "longitude" ;
+        		lon:long_name = "longitude" ;
+        		lon:units = "degrees_east" ;
+        		lon:axis = "X" ;
+        		lon:_Storage = "contiguous" ;
+        		lon:_Endianness = "little" ;
+        	double time(time) ;
+        		time:standard_name = "time" ;
+        		time:units = **"day as %Y%m%d.%f"** ;
+        		time:calendar = "proleptic_gregorian" ;
+        		time:_Storage = "chunked" ;
+        		time:_ChunkSizes = 319 ;
+        		time:_Endianness = "little" ;

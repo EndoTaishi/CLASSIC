@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['notes_20about_20composite_20versus_20mosaic_20running_20of_20the_20model',['Notes about composite versus mosaic running of the model',['../compvsmosaic.html',1,'']]]
+  ['overview_20of_20the_20canadian_20land_20surface_20scheme_20_28class_29',['Overview of the Canadian Land Surface Scheme (CLASS)',['../overviewCLASS.html',1,'']]]
 ];

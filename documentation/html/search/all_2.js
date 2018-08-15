@@ -84,6 +84,7 @@ var searchData=
   ['competition',['competition',['../namespacecompetition__scheme.html#a008cbfcefd33aaccb8f2b81cf8326451',1,'competition_scheme']]],
   ['competition_5fmod_2ef90',['competition_mod.f90',['../competition__mod_8f90.html',1,'']]],
   ['competition_5fscheme',['competition_scheme',['../namespacecompetition__scheme.html',1,'']]],
+  ['composite_20vs_2e_20mosaic_20representation',['Composite vs. mosaic representation',['../compvsmosaic.html',1,'']]],
   ['consallo',['consallo',['../namespacectem__params.html#a7fc44574a63fd52e0b2556ba693de814',1,'ctem_params']]],
   ['createnetcdf',['createnetcdf',['../outputManager_8f90.html#a2d775ba3b9be4c16daf56275072404fe',1,'outputmanager']]],
   ['crop',['crop',['../namespacectem__params.html#a4445cb96e591be6bcd975ffc60daa0c8',1,'ctem_params']]],
