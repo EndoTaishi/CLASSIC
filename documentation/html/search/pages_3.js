@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['initialization_20of_20prognostic_20variables',['Initialization of Prognostic Variables',['../initProgVar.html',1,'index']]],
-  ['input_20soil_20data',['Input Soil Data',['../soilData.html',1,'index']]],
-  ['input_20vegetation_20data',['Input Vegetation Data',['../vegetationData.html',1,'index']]]
+  ['modify_20netcdf_20model_20initialization_20files_20for_20whole_20fields_20or_20point_20locations',['Modify netcdf model initialization files for whole fields or point locations',['../modifyRS.html',1,'']]]
 ];

@@ -6,15 +6,18 @@ var index =
       [ "Rate change equations for carbon pools", "overviewCTEM.html#CTEMRateChgEqns", null ]
     ] ],
     [ "Composite vs. mosaic representation", "compvsmosaic.html", null ],
-    [ "Atmospheric Forcing Data", "forcingData.html", null ],
-    [ "Input Vegetation Data", "vegetationData.html", [
-      [ "Required vegetation data", "vegetationData.html#vegCLASSonly", null ],
-      [ "Required vegetation data for a biogeochemical simulation (CLASS+CTEM)", "vegetationData.html#vegCTEMtoo", null ]
-    ] ],
-    [ "Input Soil Data", "soilData.html", null ],
-    [ "Initialization of Prognostic Variables", "initProgVar.html", [
-      [ "Initialization of Physics Prognostic Variables", "initProgVar.html#initPhysProgVar", null ],
-      [ "Initialization of Biogeochemical Prognostic Variables", "initProgVar.html#initCTEMProgVar", null ]
+    [ "Basic model inputs to run CLASSIC", "basicInputs.html", [
+      [ "Atmospheric Forcing Data", "basicInputs.html#forcingData", null ],
+      [ "Input Vegetation Data", "basicInputs.html#vegetationData", [
+        [ "Development history of CLASS", "overviewCLASS.html#devHistory", null ],
+        [ "Required vegetation data", "basicInputs.html#vegCLASSonly", null ],
+        [ "Required vegetation data for a biogeochemical simulation (CLASS+CTEM)", "basicInputs.html#vegCTEMtoo", null ]
+      ] ],
+      [ "Input Soil Data", "basicInputs.html#soilData", null ],
+      [ "Initialization of Prognostic Variables", "basicInputs.html#initProgVar", [
+        [ "Initialization of Physics Prognostic Variables", "basicInputs.html#initPhysProgVar", null ],
+        [ "Initialization of Biogeochemical Prognostic Variables", "basicInputs.html#initCTEMProgVar", null ]
+      ] ]
     ] ],
     [ "Additional inputs depending on model configuration", "CTEMaddInputs.html", [
       [ "Atmospheric carbon dioxide concentration", "CTEMaddInputs.html#initCO2", null ],
@@ -34,11 +37,16 @@ var index =
       [ "Making input files for other input variables", "makeInputFiles.html#makeOther", null ]
     ] ],
     [ "Preparing a CLASSIC run", "runPrep.html", [
+      [ "Running CLASSIC in a Singularity Container", "runPrep.html#Containers", null ],
       [ "Compiling CLASSIC for serial and parallel simulations", "runPrep.html#compilingMod", null ],
       [ "Setting up the joboptions file", "runPrep.html#setupJobOpts", null ]
     ] ],
     [ "Configuring the model outputs via the CLASSIC code and Output Variable Editor (OVE)", "xmlSystem.html", [
       [ "The XML Document Structure", "xmlSystem.html#xmlStruct", null ],
       [ "Editing the CLASSIC code to write the output variable", "xmlSystem.html#writeOutput", null ]
+    ] ],
+    [ "Running CLASSIC", "runCLASSIC.html", [
+      [ "Running CLASSIC for a point location", "runCLASSIC.html#runStandAloneMode", null ],
+      [ "Running CLASSIC over a grid (Global or Regional)", "runCLASSIC.html#runGrid", null ]
     ] ]
 ];

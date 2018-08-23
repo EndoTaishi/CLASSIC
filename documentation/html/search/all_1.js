@@ -2,6 +2,7 @@ var searchData=
 [
   ['balcar',['balcar',['../balcar_8f.html#a922db81c881d66b3cf76a5a72ea4586a',1,'balcar.f']]],
   ['balcar_2ef',['balcar.f',['../balcar_8f.html',1,'']]],
+  ['basic_20model_20inputs_20to_20run_20classic',['Basic model inputs to run CLASSIC',['../basicInputs.html',1,'index']]],
   ['bb',['bb',['../namespacectem__params.html#a0ccea29a9ccfcb8f563699bcf2d33221',1,'ctem_params']]],
   ['beta2',['beta2',['../namespacectem__params.html#aecdbd2f35c2376e4b2980a3802020dfb',1,'ctem_params']]],
   ['bigat',['bigat',['../structclass__statevars_1_1class__gather.html#aec72f9a82bc6d8223f15c8dbfa83f3e8',1,'class_statevars::class_gather']]],

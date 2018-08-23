@@ -22,7 +22,6 @@ var searchData=
   ['init_5ffile',['init_file',['../structctem__statevars_1_1ctem__switches.html#a74d588073a6a640b2387583381e752fd',1,'ctem_statevars::ctem_switches']]],
   ['initdiagnosticvars',['initdiagnosticvars',['../namespaceclass__statevars.html#a4bc9734eb31b2cdd6e9087d5f05bbccf',1,'class_statevars']]],
   ['initializelandcover',['initializelandcover',['../namespacelanduse__change.html#abd34dc6a8785098e4bdfd731a6f8e7d2',1,'landuse_change']]],
-  ['initialization_20of_20prognostic_20variables',['Initialization of Prognostic Variables',['../initProgVar.html',1,'index']]],
   ['initrowvars',['initrowvars',['../namespaceclass__statevars.html#a826301f8800a21d3df2db19d58f6cae2',1,'class_statevars::initrowvars()'],['../namespacectem__statevars.html#a069aa6fb4b132ef4fe61febb61d40ec1',1,'ctem_statevars::initrowvars()']]],
   ['intrmort',['intrmort',['../structctem__statevars_1_1veg__gat.html#acc2d305d85a52c0db34f26fd0f52afb5',1,'ctem_statevars::veg_gat']]],
   ['ipai',['ipai',['../structctem__statevars_1_1ctem__switches.html#aee2479d5348ac55b7a91de5fd5ab9e98',1,'ctem_statevars::ctem_switches']]],
@@ -39,7 +38,5 @@ var searchData=
   ['itg',['itg',['../structctem__statevars_1_1ctem__switches.html#a9375ef96f339629b2d18c24bb4fa1978',1,'ctem_statevars::ctem_switches']]],
   ['iwf',['iwf',['../structctem__statevars_1_1ctem__switches.html#a8152a56134a193df9f102157ae7031cd',1,'ctem_statevars::ctem_switches']]],
   ['iwmos',['iwmos',['../structclass__statevars_1_1class__gather.html#afac5cf0cccc50c9e867ce8cd6f2ad76b',1,'class_statevars::class_gather']]],
-  ['izref',['izref',['../structctem__statevars_1_1ctem__switches.html#a052e23204e34e46209a60f005e615f29',1,'ctem_statevars::ctem_switches']]],
-  ['input_20soil_20data',['Input Soil Data',['../soilData.html',1,'index']]],
-  ['input_20vegetation_20data',['Input Vegetation Data',['../vegetationData.html',1,'index']]]
+  ['izref',['izref',['../structctem__statevars_1_1ctem__switches.html#a052e23204e34e46209a60f005e615f29',1,'ctem_statevars::ctem_switches']]]
 ];

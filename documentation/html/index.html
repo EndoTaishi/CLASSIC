@@ -87,24 +87,28 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="textblock"><h1><a class="anchor" id="main"></a>
 The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)</h1>
 <p>The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simulates the exchanges of energy, water, carbon, and momentum at the earth's surface. CLASSIC is formed by the coupling of the Canadian Land Surface Scheme (CLASS) and the Canadian Terrestrial Ecosystem Model (CTEM). CLASS handles the model physics including fluxes of energy, water and momentum. CTEM simulates biogeochemical cycles including fluxes of carbon.</p>
-<ol type="1">
+<div class="image">
+<object type="image/svg+xml" data="modelflow.md.svg" width="850px">modelflow.md.svg</object>
+<div class="caption">
+CLASSIC code structure</div></div>
+ <ol type="1">
 <li><a class="el" href="overviewCLASS.html">Overview of the Canadian Land Surface Scheme (CLASS)</a><ul>
 <li><a class="el" href="overviewCLASS.html#devHistory">Development history of CLASS</a></li>
 </ul>
 </li>
 <li><a class="el" href="overviewCTEM.html">Overview of the Canadian Terrestrial Ecosystem Model (CTEM)</a></li>
 <li><a class="el" href="compvsmosaic.html">Composite vs. mosaic representation</a></li>
-<li>There are a basic four types of data that are required to run CLASSIC:<ul>
-<li><a class="el" href="forcingData.html">Atmospheric Forcing Data</a></li>
-<li><a class="el" href="vegetationData.html">Input Vegetation Data</a><ul>
-<li><a class="el" href="vegetationData.html#vegCLASSonly">Required vegetation data</a></li>
-<li><a class="el" href="vegetationData.html#vegCTEMtoo">Required vegetation data for a biogeochemical simulation (CLASS+CTEM)</a></li>
+<li><a class="el" href="basicInputs.html">There are a basic four types of data that are required to run CLASSIC</a><ul>
+<li><a class="el" href="basicInputs.html#forcingData">Atmospheric Forcing Data</a></li>
+<li><a class="el" href="basicInputs.html#vegetationData">Input Vegetation Data</a><ul>
+<li><a class="el" href="basicInputs.html#vegCLASSonly">Required vegetation data</a></li>
+<li><a class="el" href="basicInputs.html#vegCTEMtoo">Required vegetation data for a biogeochemical simulation (CLASS+CTEM)</a></li>
 </ul>
 </li>
-<li><a class="el" href="soilData.html">Input Soil Data</a></li>
-<li><a class="el" href="initProgVar.html">Initialization of Prognostic Variables</a><ul>
-<li><a class="el" href="initProgVar.html#initPhysProgVar">Initialization of Physics Prognostic Variables</a></li>
-<li><a class="el" href="initProgVar.html#initCTEMProgVar">Initialization of Biogeochemical Prognostic Variables</a></li>
+<li><a class="el" href="basicInputs.html#soilData">Input Soil Data</a></li>
+<li><a class="el" href="basicInputs.html#initProgVar">Initialization of Prognostic Variables</a><ul>
+<li><a class="el" href="basicInputs.html#initPhysProgVar">Initialization of Physics Prognostic Variables</a></li>
+<li><a class="el" href="basicInputs.html#initCTEMProgVar">Initialization of Biogeochemical Prognostic Variables</a></li>
 </ul>
 </li>
 </ul>
@@ -139,14 +143,15 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)</h1>
 </ul>
 </li>
 <li><a class="el" href="runPrep.html">Preparing a CLASSIC run</a><ul>
+<li><a class="el" href="runPrep.html#Containers">Running CLASSIC in a Singularity Container</a></li>
 <li><a class="el" href="runPrep.html#compilingMod">Compiling CLASSIC for serial and parallel simulations</a></li>
 <li><a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a></li>
 <li><a class="el" href="xmlSystem.html">Configuring the model outputs</a></li>
 </ul>
 </li>
-<li>Running CLASSIC<ul>
-<li><a class="el" href="md_documentation_runningCLASSIC.html#runStandAloneMode">Running CLASSIC for a point location</a></li>
-<li>Running CLASSIC over a grid (regional,global) </li>
+<li><a class="el" href="runCLASSIC.html">Running CLASSIC</a><ul>
+<li><a class="el" href="runCLASSIC.html#runStandAloneMode">Running CLASSIC for a point location</a></li>
+<li><a class="el" href="runCLASSIC.html#runGrid">Running CLASSIC over a grid (regional,global)</a> </li>
 </ul>
 </li>
 </ol>
@@ -155,7 +160,7 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Aug 23 2018 14:22:51 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 23 2018 16:55:08 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

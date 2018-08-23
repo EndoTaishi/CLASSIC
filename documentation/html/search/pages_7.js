@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['runningclassic',['runningCLASSIC',['../md_documentation_runningCLASSIC.html',1,'']]]
+  ['running_20classic',['Running CLASSIC',['../runCLASSIC.html',1,'index']]]
 ];

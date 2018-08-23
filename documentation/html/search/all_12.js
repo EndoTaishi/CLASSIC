@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['singularity_20containers',['Singularity Containers',['../Containers.html',1,'']]],
   ['sandrot',['sandrot',['../structclass__statevars_1_1class__rotated.html#aaaa772e313129c032d03051ffc8072a3',1,'class_statevars::class_rotated']]],
   ['scanacc',['scanacc',['../structclass__statevars_1_1class__rotated.html#a28f8597b119fcdd76a3fb196963f17bc',1,'class_statevars::class_rotated']]],
   ['scangat',['scangat',['../structclass__statevars_1_1class__gather.html#aacd8b7a137f569cc620532a63e5d365f',1,'class_statevars::class_gather']]],

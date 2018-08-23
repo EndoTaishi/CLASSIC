@@ -85,11 +85,48 @@ $(document).ready(function(){initNavTree('runPrep.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><ol type="1">
+<li><a class="el" href="runPrep.html#Containers">Running CLASSIC in a Singularity Container</a></li>
+</ol>
+<ol type="1">
 <li><a class="el" href="runPrep.html#compilingMod">Compiling CLASSIC for serial and parallel simulations</a></li>
 <li><a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a></li>
 <li><a class="el" href="xmlSystem.html">Configuring the model outputs via the CLASSIC code and Output Variable Editor (OVE)</a> <hr/>
 </li>
 </ol>
+<h1><a class="anchor" id="Containers"></a>
+Running CLASSIC in a Singularity Container</h1>
+<h2>What are containers?</h2>
+<p>A recent journal paper describes containers as "a software-based packaging and distribution tool that collects all elements and dependencies of a Linux-based application. Containers store the runtime environment together with one or more applications for ease of transportation, installation, and execution across a variety of operating systems (Linux, Mac, Windows)." (for more information, please see the References section) Docker is the container type we will be using. Singularity is the platform that will allow us to build, run or shell into one of these Docker containers.</p>
+<p>For example, in order to run CLASSIC model, we need several specific tools such as compilers (GNU, Intel etc.), libraries (MPI, NetCDF etc.) that have to be present on our machine to be able to run the model. If, however, we use containers instead, then we simply access the model through a container, a process that eliminates the cumbersome and time consuming process of installing all of these compilers and libraries locally.</p>
+<p>Another significant advantage is that the version of these libraries is "frozen" in the container. For example, we could have a container with the library versions at the time of a major model release version. So, even several years later, we can run the model with the original intended library versions.</p>
+<h2>How to use Singularity containers?</h2>
+<p>In order to use Singularity containers, one must first make certain that a local installation of Singularity is available.</p>
+<p>On a Linux machine (Ubuntu in our particular case) one may use the following command to install singularity.</p>
+<p><code>sudo apt install singularity-container</code></p>
+<p>Please see this link for more detailed instructions on how to set up Singularity on Mac and Windows:</p>
+<p><a href="http://singularity.lbl.gov/singularity-tutorial">http://singularity.lbl.gov/singularity-tutorial</a></p>
+<h2>Hello World</h2>
+<p>Once singularity has been installed, let's try out a simple hello world example:</p>
+<p><code>singularity run shub://vsoch/hello-world</code></p>
+<p>As we can see in the above example,</p>
+<h2>Creating Singularity containers</h2>
+<p>On Linux, the easiest way to install singularity is by using the standard repo:</p>
+<p><code>sudo apt-get install -y singularity-container</code></p>
+<p>Then, download our container: <b>FLAG need to make our own</b></p>
+<p><code>singularity pull shub://eduardwisernig/testSingularity</code></p>
+<p>And shell into it:</p>
+<p><code>singularity shell eduardwisernig-testSingularity-master.simg</code></p>
+<p>One can successfully set up singularity on a macOS platform using vagrant using the method described below:</p>
+<p><code><a href="http://singularity.lbl.gov/install-mac#option-1-singularityware-vagrant-box">http://singularity.lbl.gov/install-mac#option-1-singularityware-vagrant-box</a></code></p>
+<p>For more information about Virtualbox, please visit:</p>
+<p><code><a href="https://www.virtualbox.org/wiki/VirtualBox">https://www.virtualbox.org/wiki/VirtualBox</a></code></p>
+<p>For more information about Vagrant, please visit:</p>
+<p><code><a href="https://www.vagrantup.com/intro/index.html">https://www.vagrantup.com/intro/index.html</a></code></p>
+<p>Regardless of wether you have your own immediate environment set up or if you are shelled into our container, now you can get ready to start using the model.</p>
+<h2>Github</h2>
+<h2>Singularity-hub</h2>
+<h1>References</h1>
+<p><code><a href="http://journals.ametsoc.org/doi/pdf/10.1175/BAMS-D-15-00255.1">http://journals.ametsoc.org/doi/pdf/10.1175/BAMS-D-15-00255.1</a></code></p>
 <h1><a class="anchor" id="compilingMod"></a>
 Compiling CLASSIC for serial and parallel simulations</h1>
 <p>CLASSIC's Makefile (yourpath/CLASSIC/Makefile) is setup to allow easy compilation for serial or parallel model running.</p>
@@ -242,7 +279,7 @@ Setting up the joboptions file</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Thu Aug 23 2018 14:22:51 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 23 2018 16:55:07 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
