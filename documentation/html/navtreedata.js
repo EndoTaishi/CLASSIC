@@ -2,37 +2,20 @@ var NAVTREE =
 [
   [ "CLASSIC", "index.html", [
     [ "CLASSIC main page", "index.html", "index" ],
-    [ "Atmospheric Forcing Data", "forcingData.html", null ],
-    [ "Composite vs. mosaic representation", "compvsmosaic.html", null ],
     [ "Singularity Containers", "Containers.html", null ],
-    [ "Additional inputs depending on model configuration", "CTEMaddInputs.html", [
-      [ "Atmospheric carbon dioxide concentration", "CTEMaddInputs.html#initCO2", null ],
-      [ "Atmospheric methane concentration", "CTEMaddInputs.html#initCH4", null ],
-      [ "Lightning frequency for fire ignition", "CTEMaddInputs.html#initLightFire", null ],
-      [ "Population density for fire ignition/suppresion", "CTEMaddInputs.html#initPopd", null ],
-      [ "Climatic variables for PFT competition simulations", "CTEMaddInputs.html#initClimComp", null ],
-      [ "Rice agriculature", "CTEMaddInputs.html#initRice", null ],
-      [ "Orographic information for dynamic wetland scheme", "CTEMaddInputs.html#initWetSlope", null ],
-      [ "Prescribed wetland area", "CTEMaddInputs.html#initWetArea", null ],
-      [ "Peatland variables", "CTEMaddInputs.html#initPeat", [
-        [ "Land use change (LUC)", "CTEMaddInputs.html#inputLUC", null ]
+    [ "runningCLASSIC", "md_documentation_runningCLASSIC.html", [
+      [ "Running CLASSIC", "md_documentation_runningCLASSIC.html#runStandAloneMode", [
+        [ "The Input Files", "md_documentation_runningCLASSIC.html#inputs", [
+          [ "Development history of CLASS", "overviewCLASS.html#devHistory", null ],
+          [ "The INI file (CLASS's initialization file)", "md_documentation_runningCLASSIC.html#INI", null ],
+          [ "Typical values of vegetation-related fields for CLASS-only simulations", "md_documentation_runningCLASSIC.html#classvals", null ],
+          [ "CLASS and CTEM PFTs", "md_documentation_runningCLASSIC.html#classtoctem", null ]
+        ] ]
       ] ]
     ] ],
-    [ "Initialization of Prognostic Variables", "initProgVar.html", [
-      [ "Initialization of Physics Prognostic Variables", "initProgVar.html#initPhysProgVar", null ],
-      [ "Initialization of Biogeochemical Prognostic Variables", "initProgVar.html#initCTEMProgVar", null ]
-    ] ],
-    [ "Input Vegetation Data", "vegetationData.html", [
-      [ "Required vegetation data", "vegetationData.html#vegCLASSonly", null ],
-      [ "Required vegetation data for a biogeochemical simulation (CLASS+CTEM)", "vegetationData.html#vegCTEMtoo", null ]
-    ] ],
-    [ "Overview of the Canadian Land Surface Scheme (CLASS)", "overviewCLASS.html", [
-      [ "Overview of the Canadian Terrestrial Ecosystem Model (CTEM)", "overviewCLASS.html#overviewCTEM", [
-        [ "Development history of CLASS", "overviewCLASS.html#devHistory", null ],
-        [ "Rate change equations for carbon pools", "overviewCLASS.html#CTEMRateChgEqns", null ]
-      ] ]
-    ] ],
-    [ "Input Soil Data", "soilData.html", null ],
+    [ "ASCII to NetCDF met file loader", "asciiMet.html", null ],
+    [ "Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists", "initTool.html", null ],
+    [ "Modify netcdf model initialization files for whole fields or point locations", "modifyRS.html", null ],
     [ "Bibliography", "citelist.html", null ],
     [ "Modules", null, [
       [ "Modules List", "namespaces.html", "namespaces" ],
@@ -63,15 +46,15 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"ctem__params_8f90.html#a766b351a6a0cf14bfa75068e43a300da",
-"metModule_8f90.html#a5c2ab07ab98818a94db165c0eee29dd5",
-"structclass__statevars_1_1class__gather.html#a0a45c3cfdc1b2e8cccb6312cdd616648",
-"structclass__statevars_1_1class__gather.html#adb39a90e09a3f4d14717f029d34b57d5",
-"structclass__statevars_1_1class__rotated.html#a724195fbb982c5ad5ca5e2fff403c079",
-"structctem__statevars_1_1ctem__gridavg__annual.html#a983bc8b7e216c83a277e51ce00f67cdd",
-"structctem__statevars_1_1ctem__tileavg__monthly.html#a0e8d99deb9bb26189039143b9297cd02",
-"structctem__statevars_1_1veg__rot.html#a1a70f3ea4ed92c898b82529321a628da",
-"xmlParser_8f90.html"
+"ctem__params_8f90.html#a7593a0421e56a2e1d5b1583a077b9a32",
+"makeInputFiles.html#makeInit",
+"structclass__statevars_1_1class__gather.html#a02cd8e5894dcb71ff342a363d7142047",
+"structclass__statevars_1_1class__gather.html#acf1f6f6f8211b36eaa51dce7a7e2ad05",
+"structclass__statevars_1_1class__rotated.html#a6887ed3ad874ea37fbf4935c2c4e189c",
+"structctem__statevars_1_1ctem__gridavg__annual.html#a407c5145b70282fd23328db089b46830",
+"structctem__statevars_1_1ctem__tileavg__annual.html#ad81c4caa181e28b5ceb94aec7d635c72",
+"structctem__statevars_1_1veg__rot.html#a0607e84fdde5dd7a352ed1fa1d27a6d0",
+"xmlManager_8f90.html#a4b24d4723996d745939b9312de144416"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

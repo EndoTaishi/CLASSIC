@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['runningclassic',['runningCLASSIC',['../md_documentation_runningCLASSIC.html',1,'']]],
   ['radjgat',['radjgat',['../structclass__statevars_1_1class__gather.html#ad0c5d49599e2221e925f46ab8cf3237d',1,'class_statevars::class_gather']]],
   ['ratioch4',['ratioch4',['../namespacectem__params.html#a34074497065d6cb2b9177c3fc400dcf3',1,'ctem_params']]],
   ['rcanacc',['rcanacc',['../structclass__statevars_1_1class__rotated.html#a3a6a84b18f6ca8cdd51a59910571645b',1,'class_statevars::class_rotated']]],
@@ -73,6 +74,5 @@ var searchData=
   ['rsmngat',['rsmngat',['../structclass__statevars_1_1class__gather.html#a0d8afc36b879ca7133de3fd7cbea78af',1,'class_statevars::class_gather']]],
   ['rtsrmin',['rtsrmin',['../namespacectem__params.html#a744d2534f841efc654c33d61d12559b5',1,'ctem_params']]],
   ['run_5fmodel',['run_model',['../generalUtils_8f90.html#ae570b209b33a4e6370bc54146e21b1a0',1,'generalutils']]],
-  ['runparams_5ffile',['runparams_file',['../structctem__statevars_1_1ctem__switches.html#ab8fea46fcc551ace6e446abe8005f1f5',1,'ctem_statevars::ctem_switches']]],
-  ['running_20classic',['Running CLASSIC',['../runStandAloneMode.html',1,'index']]]
+  ['runparams_5ffile',['runparams_file',['../structctem__statevars_1_1ctem__switches.html#ab8fea46fcc551ace6e446abe8005f1f5',1,'ctem_statevars::ctem_switches']]]
 ];

@@ -190,7 +190,7 @@ $(document).ready(function(){initNavTree('setupJobOpts.html','');});
         IALC = 0 ,  !&lt; Canopy albedo
         IALS = 0 ,  !&lt; Snow albedo
         IALG = 0 ,  !&lt; Soil albedo
-</pre><p>Model outputs are in netcdf format. The outputs metadata is read in from an xmlFile (see xmlSystem). Outputs can be grid-cell average (default), per PFT, or per tile. In all cases the output has to be specified in the xmlFile and also properly handled in <a class="el" href="prepareOutputs_8f90.html" title="Central module that handles all CTEM preparation and writing of output files. ">prepareOutputs.f90</a>. Temporal resolution of output files are half-hourly (for physics variables as well as photosynthesis and canopy conductance only), daily, monthly and annually. For half-hourly and daily outputs the start and end days as well as start and end years can be specified. Monthly file can specify the year to start writing the outputs. </p><pre class="fragment">    ! Output options:
+</pre><p>Model outputs are in netcdf format. The outputs metadata is read in from an xmlFile (see <a class="el" href="xmlSystem.html">Configuring the model outputs via the CLASSIC code and Output Variable Editor (OVE)</a>). Outputs can be grid-cell average (default), per PFT, or per tile. In all cases the output has to be specified in the xmlFile and also properly handled in <a class="el" href="prepareOutputs_8f90.html" title="Central module that handles all CTEM preparation and writing of output files. ">prepareOutputs.f90</a>. Temporal resolution of output files are half-hourly (for physics variables as well as photosynthesis and canopy conductance only), daily, monthly and annually. For half-hourly and daily outputs the start and end days as well as start and end years can be specified. Monthly file can specify the year to start writing the outputs. </p><pre class="fragment">    ! Output options:
 
         output_directory = 'outputFiles' ,        !&lt; Directory where the output netcdfs will be placed
         xmlFile = 'configurationFiles/outputVariableDescriptors_v1.2.xml' ,  !&lt; location of the xml file that outlines the possible netcdf output files
@@ -222,7 +222,7 @@ $(document).ready(function(){initNavTree('setupJobOpts.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Tue Aug 14 2018 13:19:31 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 23 2018 14:20:42 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -1,4 +1,4 @@
-Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists
+Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists {#initTool}
 ========
 
 The initFileConverter program takes in ASCII CLASS initialization files (.INI) and, if required,
@@ -71,4 +71,3 @@ To run the program, use the following command:
 `bin/initFileConverter [file.INI or file.nml] [file.CTM]
 
 The suffixes are case-insensitive. The namelist can have the suffix .txt or .nml.
-

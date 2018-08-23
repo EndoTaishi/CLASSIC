@@ -88,7 +88,7 @@ $(document).ready(function(){initNavTree('forcingData.html','');});
 <p><b>Required</b>:</p><ul>
 <li>FDLROW Downwelling longwave sky radiation <img class="formulaInl" alt="$[ W m^{-2} ]$" src="form_1509.png"/></li>
 <li>PREROW Surface precipitation rate <img class="formulaInl" alt="$[kg m^{-2} s^{-1} ]$" src="form_219.png"/><ul>
-<li>CLASSIC is able to run with total incoming precipitation, partitioning it into rainfall and snowfall on the basis of empirically-derived equations. If the rainfall rate (RPREROW) and snowfall rate (SPREROW) are available, they could be used instead. The model_state_driver.getMet and model_state_drivers.updateMet subroutines should be modified accordingly, and the job options switch IPCP should be set to 4 (more on this in <a class="el" href="setupJobOpts.html">Setting up the joboptions file</a>).</li>
+<li>CLASSIC is able to run with total incoming precipitation, partitioning it into rainfall and snowfall on the basis of empirically-derived equations. If the rainfall rate (RPREROW) and snowfall rate (SPREROW) are available, they could be used instead. The model_state_driver.getMet and model_state_drivers.updateMet subroutines should be modified accordingly, and the job options switch IPCP should be set to 4 (more on this in <a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a>).</li>
 </ul>
 </li>
 <li>PRESROW Surface air pressure <img class="formulaInl" alt="$[P_a ]$" src="form_1510.png"/></li>
@@ -136,7 +136,8 @@ $(document).ready(function(){initNavTree('forcingData.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Aug 14 2018 13:19:31 for CLASSIC by
+    <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
+    <li class="footer">Generated on Thu Aug 23 2018 14:22:51 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

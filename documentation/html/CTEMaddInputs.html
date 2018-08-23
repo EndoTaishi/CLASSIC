@@ -261,8 +261,8 @@ Peatland variables</h1>
 </pre><p>If you are running a single site peatland then the peatland tile is the whole grid cell. If you are running large regions you may wish to have the peatlands as a separate tile. This is done by having an nmtest &gt; 1. </p><pre class="fragment">      int nmtest(lat, lon) ;
         nmtest:_FillValue = -999 ;
         nmtest:long_name = "Number of tiles in each grid cell" ;
-</pre><h2><a class="anchor" id="inputLUC"></a>
-Land use change (LUC)</h2>
+</pre><h1><a class="anchor" id="inputLUC"></a>
+Land use change (LUC)</h1>
 <p>The LUC file contains a time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, <b>lev</b> and time. </p><pre class="fragment">    netcdf GCP_2018_land_cover_CTEM_fractions_1700_2018_T63_chunked {
     dimensions:
         time = UNLIMITED ; // (319 currently)
@@ -307,7 +307,8 @@ Land use change (LUC)</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Aug 14 2018 13:19:31 for CLASSIC by
+    <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
+    <li class="footer">Generated on Thu Aug 23 2018 14:22:51 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -53,5 +53,6 @@ var searchData=
   ['psisgat',['psisgat',['../structclass__statevars_1_1class__gather.html#a576e568950e46fb0e6a30f32a7a1a4aa',1,'class_statevars::class_gather']]],
   ['psismoss',['psismoss',['../namespacectem__params.html#a01402bac0f2145c50c4b89642cb58a80',1,'ctem_params']]],
   ['psiwgat',['psiwgat',['../structclass__statevars_1_1class__gather.html#a0d1e41d8ca74f17680c5894afdd7980b',1,'class_statevars::class_gather']]],
-  ['pstemmass',['pstemmass',['../structctem__statevars_1_1veg__rot.html#a4393c7525d9bc6bd2f6ee0b715c66d3f',1,'ctem_statevars::veg_rot::pstemmass()'],['../structctem__statevars_1_1veg__gat.html#a0ae762376124ff7672a145cead19f404',1,'ctem_statevars::veg_gat::pstemmass()']]]
+  ['pstemmass',['pstemmass',['../structctem__statevars_1_1veg__rot.html#a4393c7525d9bc6bd2f6ee0b715c66d3f',1,'ctem_statevars::veg_rot::pstemmass()'],['../structctem__statevars_1_1veg__gat.html#a0ae762376124ff7672a145cead19f404',1,'ctem_statevars::veg_gat::pstemmass()']]],
+  ['preparing_20a_20classic_20run',['Preparing a CLASSIC run',['../runPrep.html',1,'index']]]
 ];

@@ -84,14 +84,15 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">CLASSIC main page </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1>The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)</h1>
+<div class="textblock"><h1><a class="anchor" id="main"></a>
+The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)</h1>
 <p>The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simulates the exchanges of energy, water, carbon, and momentum at the earth's surface. CLASSIC is formed by the coupling of the Canadian Land Surface Scheme (CLASS) and the Canadian Terrestrial Ecosystem Model (CTEM). CLASS handles the model physics including fluxes of energy, water and momentum. CTEM simulates biogeochemical cycles including fluxes of carbon.</p>
 <ol type="1">
 <li><a class="el" href="overviewCLASS.html">Overview of the Canadian Land Surface Scheme (CLASS)</a><ul>
 <li><a class="el" href="overviewCLASS.html#devHistory">Development history of CLASS</a></li>
 </ul>
 </li>
-<li><a class="el" href="overviewCLASS.html#overviewCTEM">Overview of the Canadian Terrestrial Ecosystem Model (CTEM)</a></li>
+<li><a class="el" href="overviewCTEM.html">Overview of the Canadian Terrestrial Ecosystem Model (CTEM)</a></li>
 <li><a class="el" href="compvsmosaic.html">Composite vs. mosaic representation</a></li>
 <li>There are a basic four types of data that are required to run CLASSIC:<ul>
 <li><a class="el" href="forcingData.html">Atmospheric Forcing Data</a></li>
@@ -119,30 +120,33 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li><a class="el" href="CTEMaddInputs.html#initPopd">Population density for fire ignition/suppresion</a></li>
 </ul>
 </li>
-<li>[Competition for space between PFTs](<a class="el" href="CTEMaddInputs.html#initClimComp">Climatic variables for PFT competition simulations</a>)</li>
+<li><a class="el" href="CTEMaddInputs.html#initClimComp">Competition for space between PFTs</a></li>
 <li>Prognostic simulation of methane emissions<ul>
-<li>[Rice agriculture](<a class="el" href="CTEMaddInputs.html#initRice">Rice agriculature</a>)</li>
-<li>[Dynamically-determined wetlands](<a class="el" href="CTEMaddInputs.html#initWetSlope">Orographic information for dynamic wetland scheme</a>)</li>
+<li><a class="el" href="CTEMaddInputs.html#initRice">Rice agriculture</a></li>
+<li><a class="el" href="CTEMaddInputs.html#initWetSlope">Dynamically-determined wetlands</a></li>
 <li><a class="el" href="CTEMaddInputs.html#initWetArea">Prescribed wetland area</a></li>
 </ul>
 </li>
-<li>[Peatlands](<a class="el" href="CTEMaddInputs.html#initPeat">Peatland variables</a>)</li>
+<li><a class="el" href="CTEMaddInputs.html#initPeat">Peatlands</a></li>
 <li><a class="el" href="CTEMaddInputs.html#inputLUC">Land use change (LUC)</a></li>
 </ul>
 </li>
-<li>Creation and formatting of model input files<ul>
-<li>Meteorological inputs</li>
-<li>The model initialization and restart files</li>
+<li><a class="el" href="makeInputFiles.html">Creation and formatting of model input files</a><ul>
+<li><a class="el" href="makeInputFiles.html#makeMet">Meteorological inputs</a></li>
+<li><a class="el" href="makeInputFiles.html#makeInit">The model initialization and restart files</a></li>
 <li>Greenhouse gas inputs</li>
-<li>Other inputs</li>
+<li><a class="el" href="makeInputFiles.html#makeOther">Other inputs</a></li>
+</ul>
+</li>
+<li><a class="el" href="runPrep.html">Preparing a CLASSIC run</a><ul>
+<li><a class="el" href="runPrep.html#compilingMod">Compiling CLASSIC for serial and parallel simulations</a></li>
+<li><a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a></li>
+<li><a class="el" href="xmlSystem.html">Configuring the model outputs</a></li>
 </ul>
 </li>
 <li>Running CLASSIC<ul>
-<li>compilingMod</li>
-<li><a class="el" href="setupJobOpts.html">Setting up the joboptions file</a></li>
-<li>xmlSystem</li>
-<li>[Running CLASSIC for a single location](<a class="el" href="runStandAloneMode.html">Running CLASSIC</a>)</li>
-<li>[Running CLASSIC over a grid (regional,global)](runGrid) </li>
+<li><a class="el" href="md_documentation_runningCLASSIC.html#runStandAloneMode">Running CLASSIC for a point location</a></li>
+<li>Running CLASSIC over a grid (regional,global) </li>
 </ul>
 </li>
 </ol>
@@ -151,7 +155,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Aug 14 2018 13:19:32 for CLASSIC by
+    <li class="footer">Generated on Thu Aug 23 2018 14:22:51 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

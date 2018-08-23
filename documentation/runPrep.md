@@ -1,3 +1,28 @@
+
+# Preparing a CLASSIC run {#runPrep}
+
+1. @ref compilingMod
+2. @ref setupJobOpts
+3. @ref xmlSystem
+
+----
+
+# Compiling CLASSIC for serial and parallel simulations {#compilingMod}
+
+CLASSIC's Makefile (yourpath/CLASSIC/Makefile) is setup to allow easy compilation for serial or parallel model running.
+
+There are three options when compiling:
+
+- For a serial run, use the command "make mode=serial" or just "make"
+- For a parallel run, use either the command "make mode=parallel"
+- For a supercomputer run, use the command "make mode=supercomputer"
+
+The serial compilation is presently set to use the GNU compiler (gfortran). Parallel compilation uses the GNU MPI compiler mpif90. The supercomputer compilation is setup for the ECCC supercomputer environment and is unlikely to be useful for non-ECCC users.
+
+Upon compilation all object (.o) and module (.mod) files are placed in the objectFiles folder. The executable in placed in the bin folder.
+
+A useful command is 'make clean', which removes all *.o *.mod and the model binary. This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make.
+
 # Setting up the joboptions file {#setupJobOpts}
 
 The joboptions file controls the model configuration, inputs files used, and model outputs. The template joboptions file is located in the configurationFiles folder. Use this as your starting point.

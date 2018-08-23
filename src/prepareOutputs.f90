@@ -18,7 +18,7 @@ public  :: ctem_annual_aw       ! Accumulates and writes the CTEM (biogeochemist
 
 contains
 
-    !>\ingroup io_driver_class_halfhourly_aw
+    !>\ingroup prepareOutputs_class_halfhourly_aw
     !>@{
     !> Prepares and writes the CLASS (physics) half hourly file
     subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr,SBC,TFREZ)
@@ -727,7 +727,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_class_daily_aw
+    !>\ingroup prepareOutputs_class_daily_aw
     !>@{
     !>Accumaltes and writes the daily physics variables. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
@@ -1363,7 +1363,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_class_monthly_aw
+    !>\ingroup prepareOutputs_class_monthly_aw
     !>@{
     !>Accumulate and write out the monthly physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a monthly value.
@@ -1692,7 +1692,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_class_annual_aw
+    !>\ingroup prepareOutputs_class_annual_aw
     !>@{
     !>Accumulate and write out the annual physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce annuals values.
@@ -1937,7 +1937,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_ctem_daily_aw
+    !>\ingroup prepareOutputs_ctem_daily_aw
     !>@{
     !> Accumulate and write the daily biogeochemical outputs
 
@@ -2770,7 +2770,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_ctem_monthly_aw
+    !>\ingroup prepareOutputs_ctem_monthly_aw
     !>@{
     !> Accumulate and write out the monthly CTEM outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce a monthly value.
@@ -3527,7 +3527,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_ctem_annual_aw
+    !>\ingroup prepareOutputs_ctem_annual_aw
     !>@{
     !> Accumulate and write out the annual biogeochemical (CTEM) outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce annual values.

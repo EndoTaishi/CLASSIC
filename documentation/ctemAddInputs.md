@@ -207,7 +207,7 @@ If you are running a single site peatland then the peatland tile is the whole gr
             nmtest:_FillValue = -999 ;
             nmtest:long_name = "Number of tiles in each grid cell" ;
 
-## Land use change (LUC) {#inputLUC}
+# Land use change (LUC) {#inputLUC}
 
 The LUC file contains a time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, **lev** and time.
 
