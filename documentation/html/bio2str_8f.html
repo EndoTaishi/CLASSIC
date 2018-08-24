@@ -107,11 +107,11 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$ H = (C_S + C_L)^{0.385} $" src="form_103.png"/> for crops</p>
 <p><img class="formulaInl" alt="$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $" src="form_104.png"/> for grasses</p>
 <p>where <img class="formulaInl" alt="$C_{L,g}$" src="form_105.png"/> is the green leaf biomass and <img class="formulaInl" alt="$C_{L,b}$" src="form_106.png"/> is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly <img class="formulaInl" alt="$(\tau_{L,b} = 0.1\,\tau_L$" src="form_107.png"/>).</p>
-<p>In peatlands the vegetation height is calculated as (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[90]</a></p>
+<p>In peatlands the vegetation height is calculated as (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[91]</a></p>
 <p><img class="formulaInl" alt="$ H = \min(10.0,3.0C_S^{0.385}) $" src="form_108.png"/> for trees</p>
 <p><img class="formulaInl" alt="$ H = \min(1.0, 0.25(C_S^{0.2})) $" src="form_109.png"/> for shrubs</p>
 <p><img class="formulaInl" alt="$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $" src="form_110.png"/> for grasses and sedges</p>
-<p>CTEM dynamically simulates root distribution and depth in soil following (Arora and Boer, 2003) <a class="el" href="citelist.html#CITEREF_Arora2003838">[5]</a>. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth <img class="formulaInl" alt="$z$" src="form_111.png"/> is given by</p>
+<p>CTEM dynamically simulates root distribution and depth in soil following (Arora and Boer, 2003) <a class="el" href="citelist.html#CITEREF_Arora2003838">[4]</a>. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth <img class="formulaInl" alt="$z$" src="form_111.png"/> is given by</p>
 <p><img class="formulaInl" alt="$ f_R(z) = 1 - \exp(-\iota z) $" src="form_112.png"/></p>
 <p>Rooting depth ( <img class="formulaInl" alt="$d_R$" src="form_113.png"/>; <img class="formulaInl" alt="$m$" src="form_101.png"/>), which is defined to be the depth containing <img class="formulaInl" alt="$99\,{\%}$" src="form_114.png"/> of the root mass, is found by setting <img class="formulaInl" alt="$z$" src="form_111.png"/> equal to <img class="formulaInl" alt="$d_R$" src="form_113.png"/> and <img class="formulaInl" alt="$f_R = 0.99$" src="form_115.png"/>, which yields</p>
 <p class="formulaDsp">
@@ -375,7 +375,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="bio2str_8f.html">bio2str.f</a></li>
-    <li class="footer">Generated on Thu Aug 23 2018 16:55:06 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 24 2018 12:46:19 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

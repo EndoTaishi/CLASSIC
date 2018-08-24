@@ -920,31 +920,33 @@ end subroutine burntobare
 !>\namespace disturbance_scheme
 !! Calculates disturbance as both natural and human-influenced fires.
 !!
-!!CTEM v. 2.0 represents disturbance as both natural and human-influenced fires.
+!!CTEM represents disturbance as both natural and human-influenced fires.
 !! The original fire parametrization corresponding to CTEM v. 1.0 is described
-!! in \cite Arora20052ac. The parametrization has since been adapted and used
-!! in several other DGVMs \cite Kloster2010-633 \cite Kloster2012-c79
-!! \cite Migliavacca2013-eh \cite Li20121c2. CTEM v. 2.0 incorporates changes
-!! suggested in these studies as well as several new improvements.
+!! in Arora and Boer (2005) \cite Arora20052ac. The parametrization has since been adapted and used
+!! in several other DGVMs (Kloster et al. 2010 \cite Kloster2010-633, Kloster et al. 2012 \cite Kloster2012-c79,
+!! Migliavacca et al. 2013 \cite Migliavacca2013-eh, and Li et al. 2012 \cite Li20121c2).
+!!  CTEM v. 2.0 incorporates changes suggested in these studies as well as several new improvements.
 !!
 !!Fire in CTEM is simulated using a process-based scheme of intermediate complexity
 !! that accounts for all elements of the fire triangle: fuel load, combustibility
 !! of fuel, and an ignition source. CTEM represents the probability of a fire
 !!occurrence (\f$P_\mathrm{f}\f$), for a representative area of \f$500\,km^2\f$
 !! (\f$a_{rep}\f$), as
-!!\f[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\f]
+!!
+!!\f[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\qquad (Eqn 1)\f]
+!!
 !!where the right hand side terms represent the fire probabilities that are
 !!conditioned on (i) the availability of biomass as a fuel source
 !!(\f$P_\mathrm{b}\f$), (ii) the combustibility of the fuel based on its moisture
 !! content (\f$P_\mathrm{m}\f$), and (iii) the presence of an ignition source
 !! (\f$P_\mathrm{i}\f$). The probability of fire and the subsequent calculations
 !! are performed for each PFT present in a grid cell (but the PFT index
-!! \f$\alpha\f$ is omitted for clarity in Eq. \ref{fieya}). Since the CTEM
+!! \f$\alpha\f$ is omitted for clarity in Eqn 1). Since the CTEM
 !! parametrization is based on one fire per day per representative area, the
 !! representative area has to be sufficiently small that the requirement of only
 !! one fire per day is reasonable, yet sufficiently large such that it is not
 !! possible to burn the entire representative area in 1 day. Based on MODIS observed
-!! fire counts in Fig. 1 of \cite Li20121c2, \f$500\,km^2\f$ is an appropriate size
+!! fire counts in Fig. 1 of Li et al. (2012) \cite Li20121c2, \f$500\,km^2\f$ is an appropriate size
 !! to not have more than one fire per day and still be a large enough area to be
 !! assumed representative of the grid cell as a whole.
 !!
@@ -952,68 +954,78 @@ end subroutine burntobare
 !! available for sustaining a fire (which includes the green and brown leaf mass,
 !! stem mass and litter mass, \f$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}\f$).
 !! Below a lower threshold of aboveground biomass (\f$B_{low}\f$; \f$0.2\, kg\,C\,m^{-2}\f$;
-!! similar to \cite Moorcroft2001-co, and \cite Kucharik2000-xk), fire is not
+!! similar to Moorcroft et al. (2001) \cite Moorcroft2001-co, and Kucharik et al. (2000) \cite Kucharik2000-xk), fire is not
 !!sustained and thus has a probability of 0. Above a biomass of
 !!\f$1.0\, kg\,C\,m^{-2}\f$ (\f$B_{high}\f$), \f$P_\mathrm{b}\f$ is set to 1 as the
 !! amount of fuel available is assumed sufficient for fire. \f$P_\mathrm{b}\f$ is
 !! then calculated using the aboveground biomass, \f$B_{ag}\f$ (\f$kg\,C\,m^{-2}\f$)
 !! with a linear variation between the upper and lower thresholds as
+!!
 !!\f[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}}
-!!{B_{high} - B_{low}}\right)\right]. \f]
+!!{B_{high} - B_{low}}\right)\right]. \qquad (Eqn 2)\f]
 !!
 !!The linear decrease of \f$P_\mathrm{b}\f$ from \f$B_{high}\f$ to \f$B_{low}\f$
 !! reflects the fragmentation of fuel that occurs as biomass decreases. Fuel
-!!fragmentation impacts upon area burned as it impedes the fire spread rate
+!!fragmentation impacts upon area burned as it impedes the fire spread rate (Guyette et al. 2002)
 !!\cite Guyette2002-rc.
 !!
 !!The probability of fire based on the presence of ignition sources (\f$P_\mathrm{i}\f$)
 !! is influenced by both natural (lightning) and anthropogenic agents (either
 !!intentional or accidental). An initial lightning scalar, \f$\vartheta_F\f$,
 !! that varies between 0 and 1 is found as
+!!
 !!\f[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high}
-!!- F_{low}} \right)\right],\f]
+!!- F_{low}} \right)\right], \qquad (Eqn 3)\f]
+!!
 !!where \f$F_{low}\f$ and \f$F_{high}\f$ represent lower and upper thresholds of
 !! cloud-to-ground lightning strikes (\f$F_c2g\f$, \f$flashes\,km^{-2}\,month^{-1}\f$)
-!!, respectively. Similar to Eq. (\ref{eqn:Pb}), below the lower threshold
+!!, respectively. Similar to Eqn 2, below the lower threshold
 !!(\f$F_{low}\f$; \f$0.25\,flashes\,km^{-2}\,month^{-1}\f$), \f$\vartheta_F\f$
 !! is 0 implying lightning strikes are not sufficient to cause fire ignition,
 !!above the upper threshold (\f$F_{high}\f$; \f$10.0\,flashes\,km^{-2}\,month^{-1}\f$)
 !! \f$\vartheta_F\f$ is 1, as ignition sources now do not pose a constraint on fire.
 !! The amount of cloud-to-ground lightning, \f$F_c2g\f$, is a fraction of the total
-!! lightning based on the relationship derived by \cite Price1993-fm (approximation
+!! lightning based on the relationship derived by Price and Rind (1993) \cite Price1993-fm (approximation
 !! of their Eqs. 1 and 2) as
-!!\f[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\f]
+!!
+!!\f[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\qquad (Eqn 4)\f]
 !!
 !!where \f$\Phi\f$ is the grid cell latitude in degrees and \f$F_{tot}\f$ is the
 !! total number of lightning \f$flashes\,km^{-2}\,month^{-1}\f$ (both cloud-to-cloud
 !! and cloud-to-ground). The probability of fire due to natural ignition,
 !!\f$P_i,n\f$, depends on the lightning scalar, \f$\vartheta_F\f$, as
+!!
 !!\f[ P_i,n = y(\vartheta_F) - y(0)(1 -  \vartheta_F) + \vartheta_F[1-y(1)]
-!!\nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \f]
+!!\nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \qquad (Eqn 5)\f]
 !!
 !!Fire probability due to ignition caused by humans, \f$P_i,h\f$, is parametrized
-!! following \cite Kloster2010-633 with a dependence on population density,
+!! following Kloster et al. (2010) \cite Kloster2010-633 with a dependence on population density,
 !! \f$p_\mathrm{d}\f$ (\f$number of people\,km^{-2}\f$)
-!!\f[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \f]
+!!
+!!\f[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \qquad (Eqn 6)\f]
+!!
 !!where \f$p_{thres}\f$ is a population threshold (\f$300\,people\,km^{-2}\f$) above which \f$P_{i,h}\f$
 !! is 1. The probability of fire conditioned on ignition, \f$P_\mathrm{i}\f$, is then
 !! the total contribution from both natural and human ignition sources
-!!\f[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}]. \f]
+!!
+!!\f[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}].\qquad (Eqn 7) \f]
 !!
 !!The population data used to calculate probability of fire ignition caused by humans
 !! and anthropogenic fire suppression (discussed further down in this section) is
-!! based on the HYDE 3.1 data set \cite Klein_Goldewijk2010-lh
+!! read in as a model geophysical field.
 !!
 !!The probability of fire due to the combustibility of the fuel, \f$P_\mathrm{m}\f$,
 !! is dependent on the soil moisture in vegetation's root zone and in the litter
-!! layer. The root-zone soil wetness (\f$\phi_{root}\f$, Eq. \ref{degsoilsat})
+!! layer. The root-zone soil wetness (\f$\phi_{root}\f$, allocate.f Eqn. 1)
 !! is used as a surrogate for the vegetation moisture content and the soil wetness
 !! of the top soil layer as a surrogate for the litter moisture content. If a grid
 !! cell is covered by snow, \f$P_\mathrm{m}\f$ is set to zero. The probability of
 !! fire conditioned on soil wetness in vegetation's rooting zone, \f$P_{m,V}\f$,
 !! is then
+!!
 !!\f[ P_{m,V} = 1-\tanh
-!!\left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\f]
+!!\left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\qquad (Eqn 8)\f]
+!!
 !!where \f$E_\mathrm{V}\f$ is the extinction soil wetness above which \f$P_{f,V}\f$
 !! is reduced to near zero and is set to 0.30.
 !!
@@ -1021,20 +1033,25 @@ end subroutine burntobare
 !! layer, \f$P_{m,D}\f$, which includes the brown leaf mass (grasses only) and
 !!litter mass (\f$B_{duff} = C_{L,b} + C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$), is
 !! calculated in a similar way but uses the soil wetness of the first soil layer,
-!! (\f$\phi_1\f$, Eq. \ref{phitheta}), as a surrogate for the moisture in the duff
+!! (\f$\phi_1\f$, PHTSYN3.f Eqn. 7), as a surrogate for the moisture in the duff
 !! layer itself as
-!!\f[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \f]
+!!
+!!\f[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \qquad (Eqn 9)\f]
+!!
 !!where the extinction soil wetness for the litter layer, \f$E_{\mathrm{D}}\f$,
 !! is set to 0.50, which yields a higher probability of fire for the litter layer
 !! than for the vegetation for the same soil wetness. \f$P_\mathrm{m}\f$ is then
 !! the weighted average of \f$P_{m,V}\f$ and \f$P_{m,D}\f$ given by
+!!
 !!\f[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff}
-!!\nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\f]
+!!\nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\qquad (Eqn 10)\f]
+!!
 !!where \f$f_{duff}\f$ is the duff fraction of aboveground combustible biomass.
 !!
 !!The area burned (\f$a\f$) is assumed to be elliptical in shape for fires based
 !! upon the wind speed and properties of an ellipse
-!!\f[ a(t)=\pi \frac{l}{2}\frac{w}{2}= \frac{\pi}{2} (v_\mathrm{d}+v_\mathrm{u})v_\mathrm{p}t^2,\f]
+!!
+!!\f[ a(t)=\pi \frac{l}{2}\frac{w}{2}= \frac{\pi}{2} (v_\mathrm{d}+v_\mathrm{u})v_\mathrm{p}t^2,\qquad (Eqn 11)\f]
 !!
 !!where \f$l\f$ (\f$m\f$) and \f$w\f$ (\f$m\f$) are the lengths of major and minor
 !! axes of the elliptical area burnt; \f$v_\mathrm{d}\f$ (\f$km\,h^{-1}\f$) and
@@ -1045,10 +1062,11 @@ end subroutine burntobare
 !!
 !!The fire spread rate in the downwind direction (\f$v_\mathrm{d}\f$) is represented
 !! as
-!!\f[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\f]
+!!
+!!\f[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\qquad (Eqn 12)\f]
 !!
 !!where \f$v_{d,max}\f$ (\f$km\,h^{-1}\f$) is the PFT-specific maximum fire spread
-!! rate from \cite Li20121c2, which is set to zero for crop PFTs (see also
+!! rate from Li et al. (2012)\cite Li20121c2, which is set to zero for crop PFTs (see also
 !! ctem_params.f90). The functions \f$g(u)\f$ accounts for the effect of wind
 !! speed and \f$ h(\phi_{r, d})\f$ accounts for the effect of rooting zone and
 !!  duff soil wetness on the fire spread rate, as discussed below.
@@ -1056,19 +1074,24 @@ end subroutine burntobare
 !!The wind speed (\f$u\f$; \f$km\,h^{-1}\f$) is used to determine the length
 !!(\f$l\f$) to breadth (\f$w\f$) ratio, \f$L_\mathrm{b}\f$, of the elliptical area
 !! burned by fire
+!!
 !!\f[ \label{lb} L_\mathrm{b}= \frac{l}{w} = \frac{v_\mathrm{d} + v_\mathrm{u}}{2v_\mathrm{p}}
-!! = 1 + 10 [1 -\exp(-0.06 u)] \f]
-!!and its head to back ratio, \f$H_\mathrm{b}\f$, following \cite Li20121c2, as
+!! = 1 + 10 [1 -\exp(-0.06 u)] \qquad (Eqn 13)\f]
+!!
+!!and its head to back ratio, \f$H_\mathrm{b}\f$, following Li et al. (2012) \cite Li20121c2, as
+!!
 !!\f[ \label{hb} H_\mathrm{b} = \frac{v_\mathrm{d}}{v_\mathrm{u}} =
 !!\frac{L_\mathrm{b} + (L_\mathrm{b}^2 - 1)^{0.5}}{L_\mathrm{b} -
 !!(L_\mathrm{b}^2 - 1)^{0.5}},
-!!\f]
+!!\qquad (Eqn 14)\f]
+!!
 !!which help determine the fire spread rate in the direction perpendicular to
-!! the wind speed and in the downward direction. Equations (\ref{lb}) and
-!!(\ref{hb}) are combined to estimate the wind scalar \f$g(u)\f$ as
+!! the wind speed and in the downward direction. Equations 13 and
+!!14 are combined to estimate the wind scalar \f$g(u)\f$ as
+!!
 !!\f[ g(u)= g(0) \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})} \nonumber\\
 !! \frac{g(u)}{g(0)}=\frac{v_\mathrm{d}}{v_\mathrm{p}} = \frac{2.0 L_\mathrm{b}}
-!! {(1 + 1/H_\mathrm{b})},
+!! {(1 + 1/H_\mathrm{b})},\qquad (Eqn 15)
 !!\f]
 !!
 !!which varies between 0.05 and 1. The lower limit is imposed by the \f$g(0)\f$ term,
@@ -1084,10 +1107,11 @@ end subroutine burntobare
 !!
 !!The dependence of fire spread rate on the rooting zone and duff soil wetness,
 !! \f$h(\phi_{r, d})\f$ is represented as
+!!
 !!\f[ h(\phi_{r, d})= h(\phi_{root})(1-f_{duff}) + h(\phi_{1})f_{duff}\nonumber
 !! \\ h(\phi_{root})= \left(1-min \left(1,\frac{\phi_{root}}{E_\mathrm{V}} \right)
 !! \right)^2\nonumber \\ h(\phi_{1})= \left(1-min \left(1,\frac{\phi_{1}}{E_\mathrm{D}} \right) \right)^2.
-!!\f]
+!!\qquad (Eqn 16)\f]
 !!
 !!Both \f$h(\phi_{root})\f$ and \f$h(\phi_{1})\f$ gradually decrease from 1
 !!(when soil wetness is 0 and soil moisture does not constrain fire spread rate)
@@ -1096,19 +1120,23 @@ end subroutine burntobare
 !!
 !!With fire spread rate determined, and the geometry of the burned area defined,
 !! the area burned in 1 day, \f$a_{1{\mathrm{d}}}\f$ (\f$km^2\,day^{-1}\f$),
-!!following \cite Li20121c2, is calculated as
+!!following Li et al. (2012) \cite Li20121c2, is calculated as
+!!
 !!\f[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 +
 !!\frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)}
 !! {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned}
-!!\f]
+!!\qquad (Eqn 17)\f]
+!!
 !!by setting \f$t\f$ equal to \f$24\,h\f$.
 !!
 !!The fire extinguishing probability, \f$q\f$, is used to calculate the duration
 !! (\f$\tau\f$, \f$days\f$) of the fire, which in turn is used to calculated the
 !! area burned over the duration of the fire, \f${a_{\tau d}}\f$. \f$q\f$ is
-!! represented following \cite Kloster2010-633 as
-!!\f[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},
+!! represented following Kloster et al. (2010) \cite Kloster2010-633 as
+!!
+!!\f[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},\qquad (Eqn 18)
 !!\f]
+!!
 !!which yields a value of \f$q\f$ that varies from 0.5 to 0.95 as population density,
 !!\f$p_\mathrm{d}\f$ (\f$number of people\,km^{-2}\f$), increases from zero to
 !! infinity. Higher population density thus implies a higher probability of fire
@@ -1123,28 +1151,33 @@ end subroutine burntobare
 !!duration whose expected value is
 !!
 !!\f[ \overline{\tau} = E(\tau) = \sum_{\tau=0}^\infty\,\tau\,q(1-q)^{\tau}
-!!= \frac{1-q}{q}.
+!!= \frac{1-q}{q}.\qquad (Eqn 19)
 !!\f]
-!!Based on this fire duration and the area burned in 1 day (Eq. \ref{aburned}),
+!!
+!!Based on this fire duration and the area burned in 1 day (Eqn. 17),
 !! the area burned over the duration of the fire (\f$a_{\tau \mathrm{d}}\f$)
 !!(but still implemented in 1 day since the model does not track individual fires
 !! over their duration, \f$km^2\,day^{-1}\f$) is calculated as
+!!
 !!\f[ a_{\tau \mathrm{d}} =E(a_{1{\mathrm{d}}} \tau^2)=\sum_{\tau=0}^
 !! \infty\,a_{1{\mathrm{d}}}\,\tau^2  q(1-q)^{\tau} \\ = a_{1{\mathrm{d}}}\,
-!!\frac{(1-q) (2-q)}{q^2}.\nonumber
+!!\frac{(1-q) (2-q)}{q^2}.\nonumber\qquad (Eqn 20)
 !!\f]
 !!
 !!Finally, and reintroducing the PFT index \f$\alpha\f$, the area burned
 !!is extrapolated for a PFT \f$\alpha\f$ (\f$A_{\mathrm{b},\alpha}\f$,\f$km^2\,
 !! day^{-1}\f$) to the whole grid cell as
+!!
 !!\f[A_{\mathrm{b},\alpha}=P_{f,\alpha}\,a_{\tau \mathrm{d},\alpha}
-!! \frac{A_\mathrm{g}f_\alpha}{a_{rep}}, \f]
+!! \frac{A_\mathrm{g}f_\alpha}{a_{rep}},\qquad (Eqn 21) \f]
+!!
 !!where \f$A_\mathrm{g}\f$ is area of a grid cell (\f$km^2\f$), \f$f_\alpha\f$
 !!the fractional coverage of PFT \f$\alpha\f$ and \f$a_{rep}\f$ the representative
 !! area of \f$500\,km^2\f$, as mentioned earlier. Area burned over the whole grid
 !! cell (\f$A_\mathrm{b}\f$, \f$km^2\,day^{-1}\f$) is then calculated as the sum
 !! of area burned for individual PFTs,
-!!\f[ A_\mathrm{b}=\sum_{\alpha=1}^{N}A_{\mathrm{b},\alpha}.\f]
+!!
+!!\f[ A_\mathrm{b}=\sum_{\alpha=1}^{N}A_{\mathrm{b},\alpha}.\qquad (Eqn 22)\f]
 !!
 !!Fire emits \f$CO_2\f$, other trace gases, and aerosols as biomass is burned while
 !! plant mortality and damage due to fire contribute to the litter pool. The
@@ -1163,18 +1196,20 @@ end subroutine burntobare
 !!The dot product of \f$\vec{C}_{\alpha}\f$, \f$\Upsilon_{j}\f$ and \f$mho_{\alpha}
 !!\f$ thus yields emissions per unit grid cell area of species \f$j\f$ from PFT
 !!\f$\alpha\f$,
+!!
 !!\f[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha}
-!!)\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450},
+!!)\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450},\qquad (Eqn 23)
 !!\f]
 !!
 !!where the constant 1000 converts \f$\vec{C}_\alpha\f$ from \f$kg\,C\,m^{-2}\f$
 !! to \f$g\,C\,m^{-2}\f$ and the constant 450 (\f$g\,C\,(kg dry organic matter)^{-1}
-!!\f$) converts biomass from carbon units to dry organic matter \cite Li20121c2.
+!!\f$) converts biomass from carbon units to dry organic matter (Li et al. 2012)\cite Li20121c2.
 !! The corresponding loss of carbon (\f$kg\,C\,m^{-2}\,day^{-1}\f$) from the three
 !! live vegetation components (L, S, R) and the litter pool (D) of PFT \f$\alpha\f$
 !! is given by
+!!
 !!\f[ \label{emiss_combust_loss} H_{\alpha, i}= C_{\alpha, i}
-!! mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}.
+!! mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}.\qquad (Eqn 24)
 !!\f]
 !!
 !!The PFT-specific combustion factors for leaf (\f$mho_\mathrm{L}\f$), stem
@@ -1183,27 +1218,28 @@ end subroutine burntobare
 !! Emission factors for all species of trace gases and aerosols
 !!(\f$CO_2\f$, \f$CO\f$, \f$CH_4\f$, \f$H_2\f$, \f$NHMC\f$, \f$NO_x\f$,
 !! \f$N_2O\f$, total particulate matter, particulate matter less than \f$2.5\,
-!!\mu m\f$ in diameter, and black and organic carbon) are based on an updated
-!!set by \cite Andreae2001-e04 listed in Tables 3 and 4 of \cite Li20121c2.
+!!\mu m\f$ in diameter, and black and organic carbon) are read in from the CLASSIC parameters namelist file.
 !!
 !!Litter generated by fire is based on similar mortality factors, which reflect
 !! a PFT's susceptibility to damage due to fire \f$\vec{\Theta}_{\alpha} =
 !! (\Theta_\mathrm{L}, \Theta_\mathrm{S}, \Theta_\mathrm{R})_\alpha\f$ (fraction).
 !! The contribution to litter pool of each PFT due to plant mortality associated
 !!with fire (\f$kg\,C\,m^{-2}\,day^{-1}\f$) is calculated as
+!!
 !!\f[ \label{eqn_using_mort_factors} {M_{\alpha}}= (\vec{C}_\alpha \cdot
-!!\Theta_{\alpha} ) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}},
+!!\Theta_{\alpha} ) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}},\qquad (Eqn 25)
 !!\f]
+!!
 !!which is the sum of contribution from individual live vegetation pools
+!!
 !!\f[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i}
 !! \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right)
-!!\quad i={L, S, R}.
+!!\quad i={L, S, R}.\qquad (Eqn 26)
 !!\f]
 !!
 !!The carbon loss terms associated with combustion of vegetation components and
 !! litter (\f$H_{\alpha, i}, i={L, S, R, D}\f$) and mortality of vegetation components
-!! (\f$M_{\alpha, i}, i={L, S, R}\f$) due to fire are used in Eqs. (
-!!\ref{rate_change_eqns_live_pools}) and (\ref{rate_change_eqns_dead_pools}), which
+!! (\f$M_{\alpha, i}, i={L, S, R}\f$) due to fire are used in \ref CTEMRateChgEqns Eqns 1 and 3, which
 !! describe the rate of change of carbon in model's five pools (however, listed
 !! there without the PFT subscript \f$\alpha\f$). The PFT-specific mortality factors
 !! for leaf (\f$\Theta_\mathrm{L}\f$), stem (\f$\Theta_{\mathrm{S}}\f$) and root
@@ -1217,9 +1253,10 @@ end subroutine burntobare
 !! colonization. The creation of bare ground depends on the susceptibility of each
 !! PFT to stand replacing fire (\f$\zeta_\mathrm{r}\f$, fraction) (see also
 !!ctem_params.f90) and the PFT area burned. The fire-related mortality rate,
-!!\f$m_{dist}\f$ (\f$day^{-1}\f$), used in Eq. (\ref{mortality}), is then
+!!\f$m_{dist}\f$ (\f$day^{-1}\f$), used in mortality.f Eqn. 1, is then
+!!
 !!\f[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha}
-!!\frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}.
+!!\frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}.\qquad (Eqn 27)
 !!\f]
 !!
 !!After bare ground generation associated with fire, the thinned biomass

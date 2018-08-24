@@ -41,7 +41,8 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
   - Greenhouse gas inputs
   - @subpage makeOther "Other inputs"
 7. @subpage runPrep "Preparing a CLASSIC run"
-  - @subpage Containers
+  - @subpage Environ
+      - @subpage Containers
   - @subpage compilingMod
   - @subpage setupJobOpts
   - @subpage xmlSystem "Configuring the model outputs"

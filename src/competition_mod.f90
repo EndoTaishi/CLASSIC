@@ -1419,50 +1419,50 @@ end subroutine competition
 !>\namespace competition_scheme
 !! Performs competition between PFTs for space
 !!
-!!Competition between PFTs in CTEM is based upon modified L--V equations \cite Arora2006-pp
-!!\cite Arora2006-ax. The L--V equations \cite lotka1925elements \cite Volterra1926-iz have
+!! # Competition parameterization
+!!
+!!Competition between PFTs in CTEM is based upon modified L--V equations (Arora and Boer, 2006a,b) \cite Arora2006-pp
+!!\cite Arora2006-ax. The L--V equations (Lotka 1925 \cite Lotka1925-dg , Volterra 1926 \cite Volterra1926-iz ) have
 !! been adapted from their initial application for simulating predator--prey interactions
 !! in ecosystem models as described below.
-!!
-!!Competition parametrization
 !!
 !!The change in fractional coverage (\f$f\f$) of a PFT \f$\alpha\f$ through time,
 !!\f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}\f$, is expressed as the result of mortality,
 !!and competition and colonization (CC) interactions with the other PFTs present in a
 !! grid cell and bare ground, collectively represented as \f$B\f$ where \f$\alpha \notin B\f$:
 !!\f[
-!!\label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.
+!!\label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.\qquad (Eqn 1)
 !!\f]
 !!
 !!The CC interactions are represented symbolically by the \f$g(f_\alpha, f_B)\f$ function.
 !! Mortality is assumed to be proportional to the number density of plants and represented
 !!by the mortality term, \f$m_{\alpha} f_\alpha\f$. The PFT-dependent mortality rate
-!!(\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in Sect. \ref{mort}) produces bare
+!!(\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in mortality.f) produces bare
 !! ground via a number of processes, and that bare ground is subsequently available for colonization.
 !! We consider the fractional coverage for \f$N\f$ PFTs plus bare ground (\f$f_{N+1}\f$ =
 !! \f$f_{bare}\f$) where \f$\sum_{j=1}^{N+1} f_{j}=1\f$. For competition between unequal
 !! competitors, the PFTs are ranked in terms of their dominance. If PFT \f$\alpha\f$ is the
 !! most dominant, it will invade the area of other PFTs and the bare ground (\f$f_B\f$,
 !! \f$\alpha \notin B\f$). Woody PFTs are all more dominant than grass PFTs since trees
-!! can successfully invade grasses by overshading them \cite Siemann2003-jl and thus are
+!! can successfully invade grasses by overshading them (Siemann and Rogers, 2003)\cite Siemann2003-jl and thus are
 !! ranked higher. Within tree or grass PFTs the dominance rank of a PFT is calculated
 !!based upon its colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) with higher colonization
 !! rates giving a higher dominance ranking. For the general case of PFT \f$\alpha\f$ with a
 !! dominance rank of \f$i\f$, we describe the ranking from most dominant to least as 1,
 !!2, \f${\ldots}\f$, \f$i-1\f$, \f$i\f$, \f$i+1\f$, \f${\ldots}\f$, \f$N\f$.
-!!Equation (\ref{concepteqn}) can then be reformulated following a phenomenological
+!!Equation 1 can then be reformulated following a phenomenological
 !! approach as
 !!
 !!\f[
 !!\frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1}
 !! +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\
 !!- f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1),
-!!\alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}
+!!\alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}\qquad (Eqn 2)
 !!\f]
 !!
 !!where the exponent \f$b\f$ is an empirical parameter, which controls the behaviour
 !! of the L--V equations. In the original L--V formulation, \f$b\f$ is 1, but we
-!! modify the L--V relations by using \f$b = 0\f$ following \cite Arora2006-pp
+!! modify the L--V relations by using \f$b = 0\f$ following Arora and Boer (2006a,b) \cite Arora2006-pp
 !!\cite Arora2006-ax (implications of this choice are expanded upon below). The
 !!fractional cover of PFT \f$\alpha\f$ then changes depending on the gains it makes
 !! into the area of less dominant PFTs and the losses it suffers due to mortality
@@ -1471,7 +1471,7 @@ end subroutine competition
 !!
 !!\f[
 !!\label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N}
-!!(m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}).
+!!(m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}).\qquad (Eqn 3)
 !!\f]
 !!
 !!The rate at which PFT \f$\alpha\f$ invades another PFT \f$\beta\f$ is given by
@@ -1479,7 +1479,7 @@ end subroutine competition
 !!\f[
 !!\label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha
 !!\left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta}
-!!= c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.
+!!= c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.\qquad (Eqn 4)
 !!\f]
 !!
 !!A PFT invading bare ground has an unimpeded \f$\textit{invasion}\f$ rate, \f$c_\alpha\f$.
@@ -1490,17 +1490,17 @@ end subroutine competition
 !! bare ground and 1 for tree PFT invasion into grass PFTs. If a PFT \f$\beta\f$ has
 !! a lower dominance ranking than another PFT \f$\alpha\f$ then \f$\delta_{\beta,\alpha}
 !!=0\f$ implying that sub-dominant PFTs do not invade dominant PFTs, but get invaded
-!! by them, i.e. \f$\delta_{\alpha,\beta}=1\f$.  Equation (\ref{full}) can then
+!! by them, i.e. \f$\delta_{\alpha,\beta}=1\f$.  Equation 2 can then
 !!be written more succinctly for each PFT as
 !!
 !!\f[
 !!\label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1}
 !! (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta}
-!! \delta_{\beta,\alpha} f_\alpha f^b_\beta) -  m_{\alpha} f_\alpha.
+!! \delta_{\beta,\alpha} f_\alpha f^b_\beta) -  m_{\alpha} f_\alpha.\qquad (Eqn 5)
 !!\f]
 !!
 !!The value of parameter \f$b\f$ is related to the manner in which two PFTs interact,
-!! represented by \f$f_{\alpha}^b f_{\beta}\f$, in Eqs. (\ref{full})--(\ref{coloniz}).
+!! represented by \f$f_{\alpha}^b f_{\beta}\f$, in Eqns. 2 -- 4.
 !! As a result, the value of \f$b\f$ affects the equilibrium solution for fractional
 !! coverage of PFTs as well as how \f$f_i\f$ evolves over time.
 !!
@@ -1511,23 +1511,23 @@ end subroutine competition
 !!\frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1
 !!\nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}}
 !! {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\
-!!= c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2},
+!!= c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2},\qquad (Eqn 6)
 !!\f]
 !!
 !!where the dominant PFT 1 invades PFT 2 and the bare fraction, and PFT 2 invades
 !! only the bare fraction. The equilibrium solutions for $f_1$ and $f_2$ in this case are
 !!
 !!\f[
-!!f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}
+!!f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}\qquad (Eqn 7)
 !!\f]
 !!
 !!\f[
 !!f_2 = max \left[  \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0   \right]
 !! \nonumber \\ = max \left[  \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0
-!!   \right],\label{f2_eq_b_eq_1}
+!!   \right],\label{f2_eq_b_eq_1}\qquad (Eqn 8)
 !!\f]
 !!
-!!In Eq. (\ref{f2_eq_b_eq_1}), as long as \f$(c_1 - m_1)\f$ > \f$(c_2 - m_2)\f$
+!!In Eqn. 8, as long as \f$(c_1 - m_1)\f$ > \f$(c_2 - m_2)\f$
 !! the equilibrium solution for \f$f_2\f$ will always be zero and coexistence is not possible.
 !!
 !!For \f$b=0\f$ and \f$\delta=1\f$, the competition--colonization equations are
@@ -1535,25 +1535,24 @@ end subroutine competition
 !!\f[
 !!\frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\
 !!= c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare}
-!! - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1}
+!! - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1}\qquad (Eqn 9)
 !!\f]
 !!
 !!and the corresponding equilibrium fractions are
 !!
 !!\f[
-!!\label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}
+!!\label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}\qquad (Eqn 10)
 !!\f]
 !!
 !!\f[
-!!\label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.
+!!\label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.\qquad (Eqn 11)
 !!\f]
 !!
-!!In Eqs. (\ref{f_equil_b_eq_0_1}) and (\ref{f_equil_b_eq_0_2}), as long as
+!!In Eqs. 10 and 11, as long as
 !! \f$m_1> 0\f$ and \f$c_2 > 0\f$, then PFT 2 will always exist and
 !! equilibrium coexistence is possible. Values of parameter \f$b\f$
 !! between 1 and 0 yield equilibrium values of \f$f_2\f$ that vary
-!!between 0 (Eq. \ref{f2_eq_b_eq_1}) and those obtained using Eq.
-!!(\ref{f_equil_b_eq_0_2}). \f$b=0\f$ yields a maximum value of
+!!between 0 (Eq. 8) and those obtained using Eq. 11. \f$b=0\f$ yields a maximum value of
 !!equilibrium \f$f_2\f$ allowing PFT 2 to coexist maximally.
 !!
 !!In the standard L--V equations for predator--prey interactions coexistence
@@ -1563,11 +1562,11 @@ end subroutine competition
 !! where the dominant PFT does not depend on sub-dominant PFTs for its existence
 !! and is thus able to exclude them completely. The PFTs interact with each other
 !! through the invasion term \f$(-c_{\beta} \delta_{\beta,\alpha}
-!!f_\alpha f^b_\beta)\f$ in Eq. (\ref{compact}), where \f$\delta_{\alpha,\beta}
+!!f_\alpha f^b_\beta)\f$ in Eq. 1, where \f$\delta_{\alpha,\beta}
 !! = 1\f$ or \f$0\f$ depending on whether PFT \f$\alpha\f$ can or cannot
 !!invade PFT \f$\beta\f$, respectively, as mentioned earlier. This interaction
-!!through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq.( \ref{cc_eq_b_eq_1_2})
-!! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. (\ref{cc_eq_b_eq_0_1}) (for \f$b=0\f$).
+!!through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq. 6
+!! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. 9 (for \f$b=0\f$).
 !! The magnitude of this interaction thus depends on the value of parameter $b$.
 !! When $b=1$ the interaction is proportional to the product of the fractional
 !! coverage of the two PFTs (\f$f_1 f_2\f$). When \f$b=0\f$, the interaction is
@@ -1589,7 +1588,7 @@ end subroutine competition
 !! the fractional coverage of the dominant PFT \f$\alpha\f$.
 !!
 !!
-!!Colonization rate
+!! # Colonization rate
 !!
 !!
 !!The PFT-dependent colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) is calculated based
@@ -1597,7 +1596,7 @@ end subroutine competition
 !!that is used for spatial expansion
 !!
 !!\f[
-!!\label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}},
+!!\label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}},\qquad (Eqn 12)
 !!\f]
 !!
 !!where \f$\xi_{\alpha}\f$ (\f$(kg\,C)^{-1}\,m^{2}\f$) is the inverse sapling density
@@ -1605,14 +1604,14 @@ end subroutine competition
 !! multiplied by a PFT-dependent constant (\f$S_{sap,\alpha}\f$; unitless; see also ctem_params.f90)
 !!
 !!\f[
-!!\label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}.
+!!\label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}.\qquad (Eqn 13)
 !!\f]
 !!
 !!The fraction of NPP used for spatial expansion, \f$\Lambda_\alpha\f$, is calculated using the
 !! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\,leaf\,(m^{2}\,ground)^{-1}\f$) of a PFT
 !!
 !!\f[
-!!\Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}
+!!\Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}\qquad (Eqn 14)
 !!\f]
 !!
 !!\f[
@@ -1620,16 +1619,16 @@ end subroutine competition
 !!if   LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad  \lambda_{1,\alpha}
 !! =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max}
 !! \nonumber \\ if   LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha}
-!! =\lambda_{max} \label{lam1} \vspace*{-4mm}
+!! =\lambda_{max} \label{lam1} \vspace*{-4mm}\qquad (Eqn 15)
 !!\f]
 !!
 !!\f[
 !!if   LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha
 !! - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if   LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\
-!! \quad \lambda_{2,\alpha} = 0\label{lam2}
+!! \quad \lambda_{2,\alpha} = 0\label{lam2}\qquad (Eqn 16)
 !!\f]
 !!
-!!The original formulation of \cite Arora2006-pp only considered \f$\lambda_{1,\alpha}\f$ but here
+!!The original formulation of Arora and Boer (2006) \cite Arora2006-pp only considered \f$\lambda_{1,\alpha}\f$ but here
 !! we adjust the parametrization with the addition of \f$\lambda_{2,\alpha}\f$, which ensures
 !! that a small fraction of NPP is used for spatial expansion even at very low LAI values.
 !!This additional constraint allows for improved fractional coverage of grasses in arid
@@ -1639,9 +1638,9 @@ end subroutine competition
 !!The value of \f$\lambda_{max}\f$ is set to 0.1 so that a maximum of 10\,{\%} of
 !!daily NPP can be used for spatial expansion. Finally, \f$\Lambda_\alpha\f$ is
 !!set to zero for tree PFTs when they are in a full leaf-out mode and all NPP is
-!! being used for leaf expansion (see Appendix \ref{phenol}).
+!! being used for leaf expansion (see phenolgy.f90).
 !!
-!! Bioclimatic conditions determination
+!! # Bioclimatic conditions determination
 !!
 !!The mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$, ensures
 !! that PFTs do not venture outside their bioclimatic envelopes. The bioclimatic
@@ -1665,10 +1664,10 @@ end subroutine competition
 !! \f$X(t)\f$ and its value \f$x(t)\f$ for the current year as
 !!
 !!\f[
-!!\label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}).
+!!\label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}).\qquad (Eqn 17)
 !!\f]
 !!
-!!Equation (\ref{efold}) implies that \f$63\,{\%}\f$ of a sudden change in
+!!Equation 17 implies that \f$63\,{\%}\f$ of a sudden change in
 !!the value of a bioclimatic index \f$\Delta x\f$ is reflected in \f$X(t)\f$
 !! in \f$T\f$ years \f$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)\f$, while \f$86\,{\%}\f$
 !!of the change is reflected in \f$2T\f$ years \f$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86)

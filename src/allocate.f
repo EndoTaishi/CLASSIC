@@ -24,8 +24,11 @@
 !!
 !!The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction
 !!coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also ctem_params.f90), as for trees and crops:
+!!
 !!\f[ L = \exp(-k_\mathrm{n} LAI) ;\hspace{10pt}[Eqn 2]\f]
+!!
 !! and for grasses:
+!!
 !!\f[ L = \max\left(0,1-\frac{LAI}{4.5}\right).  \hspace{10pt}[Eqn 3]\f]
 !!
 !!For PFTs with a stem component (i.e. tree and crop PFTs), the fractions of positive NPP

@@ -37,6 +37,7 @@ var index =
       [ "Making input files for other input variables", "makeInputFiles.html#makeOther", null ]
     ] ],
     [ "Preparing a CLASSIC run", "runPrep.html", [
+      [ "Setting up the runtime environment", "runPrep.html#Environ", null ],
       [ "Running CLASSIC in a Singularity Container", "runPrep.html#Containers", null ],
       [ "Compiling CLASSIC for serial and parallel simulations", "runPrep.html#compilingMod", null ],
       [ "Setting up the joboptions file", "runPrep.html#setupJobOpts", null ]

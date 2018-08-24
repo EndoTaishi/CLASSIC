@@ -39,7 +39,7 @@ heterotrophic respiration components (\f$R_{\text{h,H}}\f$ and \f$R_{\text{h,D}}
 When the daily NPP (\f$ G_{canopy} - R_\mathrm{m} - R_\mathrm{g}\f$) is positive, carbon is allocated to the plant's live carbon pools and the rate of change is given by
 
   \f[
-  \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i \\ \quad i = {L, S, R}
+  \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i \\ \quad i = {L, S, R} \qquad (Eqn 1)
    \f]
    <!-- {#rate_change_eqns_live_pools} -->
 
@@ -48,7 +48,7 @@ where \f$a_{fi}\f$ is the corresponding allocation fractions for each pool (stem
 If the daily NPP is negative (\f$G_{canopy} < R_\mathrm{m}\f$, \f$R_\mathrm{g} = 0\f$), the rate of change is given by
 
 \f[
- \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi}G_{canopy} - R_{m,i}  - D_i  - H_i - M_i, \\ \quad i = {L, S, R}
+ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi}G_{canopy} - R_{m,i}  - D_i  - H_i - M_i, \\ \quad i = {L, S, R} \qquad (Eqn 2)
  \f]
 <!-- \label{rate_change_eqns_live_pools2} -->
 
@@ -60,6 +60,7 @@ The rate change equations for the litter and soil carbon pools are given by
 D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} -C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D} \\
 \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} &=& C_{\mathrm{D} \rightarrow
 \mathrm{H}} - R_{h,H}
+\qquad (Eqn 3)
 \f}
 <!-- \label{rate_change_eqns_dead_pools}, -->
 

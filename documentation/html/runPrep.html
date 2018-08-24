@@ -85,51 +85,90 @@ $(document).ready(function(){initNavTree('runPrep.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><ol type="1">
+<li><a class="el" href="runPrep.html#Environ">Setting up the runtime environment</a><ol type="a">
 <li><a class="el" href="runPrep.html#Containers">Running CLASSIC in a Singularity Container</a></li>
 </ol>
-<ol type="1">
+</li>
 <li><a class="el" href="runPrep.html#compilingMod">Compiling CLASSIC for serial and parallel simulations</a></li>
 <li><a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a></li>
 <li><a class="el" href="xmlSystem.html">Configuring the model outputs via the CLASSIC code and Output Variable Editor (OVE)</a> <hr/>
 </li>
 </ol>
+<h1><a class="anchor" id="Environ"></a>
+Setting up the runtime environment</h1>
+<p>To run CLASSIC you can either use your own immediate environment or use our Singularity container (described below). If you use your own immediate environment, the following libraries are required at a minimum:</p>
+<ul>
+<li>make</li>
+<li>libnetcdff-dev</li>
+<li>git</li>
+<li>gfortran</li>
+<li>netcdf-bin</li>
+<li>zlib1g</li>
+</ul>
+<p>These libraries will allow serial compiling and running of the model. To run in parallel add mpich. To run the documentation tool add doxygen.</p>
 <h1><a class="anchor" id="Containers"></a>
 Running CLASSIC in a Singularity Container</h1>
 <h2>What are containers?</h2>
-<p>A recent journal paper describes containers as "a software-based packaging and distribution tool that collects all elements and dependencies of a Linux-based application. Containers store the runtime environment together with one or more applications for ease of transportation, installation, and execution across a variety of operating systems (Linux, Mac, Windows)." (for more information, please see the References section) Docker is the container type we will be using. Singularity is the platform that will allow us to build, run or shell into one of these Docker containers.</p>
-<p>For example, in order to run CLASSIC model, we need several specific tools such as compilers (GNU, Intel etc.), libraries (MPI, NetCDF etc.) that have to be present on our machine to be able to run the model. If, however, we use containers instead, then we simply access the model through a container, a process that eliminates the cumbersome and time consuming process of installing all of these compilers and libraries locally.</p>
-<p>Another significant advantage is that the version of these libraries is "frozen" in the container. For example, we could have a container with the library versions at the time of a major model release version. So, even several years later, we can run the model with the original intended library versions.</p>
+<p>Containers are a tool to package and distribute all the elements and dependencies of a Linux-based application. Within a container it is possible to store the computing environment along with applications such as model code. Containers bring an ease of transportation, installation, and execution across operating systems such as Linux (local or cloud), Mac, and Windows. <a href="https://www.docker.com/">Docker is a type of container</a>. <a href="https://www.sylabs.io/">Singularity</a> is a platform that will allow us to build, run or shell into one of these Docker containers.</p>
+<p>In order to run CLASSIC, we need several specific software tools such as compilers (e.g. GNU, Intel, Cray, etc.) and libraries (MPI, NetCDF etc.) that have to be present on our machine to be able to run the model. If we use a container then we can simply access the model through the container, a process that eliminates the cumbersome and time consuming process of installing all of these compilers and libraries locally.</p>
+<p>Another significant advantage is that the versions of each library is "frozen" in the container. This has several advantages for scientific reproducibility, mobility, and model development. For example, we could have a container with the library versions at the time of a major model release version. So, even several years later, we can run the model with the original intended library versions recreating the software environment exactly. A version of the WRF weather prediction model has been containerized to aid in it use in teaching and research (Hacker et al. 2016) <a class="el" href="citelist.html#CITEREF_Hacker2016-qg">[42]</a> .</p>
+<h2>Benefits of {Singularity} containers</h2>
+<p>From Kurtzer et al. (2017) <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[51]</a> :</p>
+<blockquote class="doxtable">
+<p>Singularity offers mobility of compute by enabling environments to be completely portable via a single image file, and is designed with the features necessary to allow seamless integration with any scientific computational resources. ... Mobility of compute is defined as the ability to define, create, and maintain a workflow locally while remaining confident that the workflow can be executed on different hosts, Linux operating systems, and/or cloud service providers. In essence, mobility of compute means being able to contain the entire software stack, from data files up through the library stack, and reliability move it from system to system. Mobility of compute is an essential building block for reproducible science, and consistent and continuous deployment of applications. ... Many of the same features that facilitate mobility also facilitate reproducibility. Once a contained workflow has been defined, the container image can be snapshotted, archived, and locked down such that it can be used later and the user can be confident that the code within the container has not changed. The container is not subject to any external influence from the host operating system (aside from the kernel which is ubiquitous of any OS level virtualization solution).... Singularity can give the user the freedom they need to install the applications, versions, and dependencies for their workflows without impacting the system in any way. Users can define their own working environment and literally copy that environment image (a single file) to a shared resource, and run their workflow inside that image. </p>
+</blockquote>
+<p>A nice benefit of containers is that they are designed to be easy to use <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[51]</a> :</p>
+<blockquote class="doxtable">
+<p>The goal of Singularity is to support existing and traditional HPC resources as easily as installing a single package onto the host operating system. For the administrators of the hosts, some configuration may be required via a single configuration file, however the default values are tuned to be generally applicable for shared environments. </p>
+</blockquote>
+<p>System administrators will be comforted to know <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[51]</a> :</p>
+<blockquote class="doxtable">
+<p>Singularity does not provide a pathway for privilege escalation (which makes it truly applicable for multi-tenant shared scientific compute resources). This means that in the runtime environment, a user inside a Singularity container is the same user as outside the container. If a user wants to be root inside the container, they must first become root outside the container. Considering on most shared resources the user will not have root access means they will not have root access within their containers either. This simple concept thus defines the Singularity usage workflow. </p>
+</blockquote>
 <h2>How to use Singularity containers?</h2>
 <p>In order to use Singularity containers, one must first make certain that a local installation of Singularity is available.</p>
-<p>On a Linux machine (Ubuntu in our particular case) one may use the following command to install singularity.</p>
+<p>For most up-to-date instructions on installing Singularity on Linux, Mac, or Windows see the <a href="https://www.sylabs.io/docs/">Singularity documentation</a>.</p>
+<p>Generally, on a Linux machine (Ubuntu in our particular case), one may use aptitude with the following command to install singularity (providing the user has administrative privelidges).</p>
 <p><code>sudo apt install singularity-container</code></p>
-<p>Please see this link for more detailed instructions on how to set up Singularity on Mac and Windows:</p>
-<p><a href="http://singularity.lbl.gov/singularity-tutorial">http://singularity.lbl.gov/singularity-tutorial</a></p>
-<h2>Hello World</h2>
-<p>Once singularity has been installed, let's try out a simple hello world example:</p>
-<p><code>singularity run shub://vsoch/hello-world</code></p>
-<p>As we can see in the above example,</p>
-<h2>Creating Singularity containers</h2>
-<p>On Linux, the easiest way to install singularity is by using the standard repo:</p>
-<p><code>sudo apt-get install -y singularity-container</code></p>
-<p>Then, download our container: <b>FLAG need to make our own</b></p>
-<p><code>singularity pull shub://eduardwisernig/testSingularity</code></p>
+<h2>Obtaining the CLASSIC Singularity container</h2>
+<p>Download our container:</p>
+<p><code>singularity pull shub://jormelton/containerCLASSIC</code></p>
 <p>And shell into it:</p>
-<p><code>singularity shell eduardwisernig-testSingularity-master.simg</code></p>
-<p>One can successfully set up singularity on a macOS platform using vagrant using the method described below:</p>
-<p><code><a href="http://singularity.lbl.gov/install-mac#option-1-singularityware-vagrant-box">http://singularity.lbl.gov/install-mac#option-1-singularityware-vagrant-box</a></code></p>
-<p>For more information about Virtualbox, please visit:</p>
-<p><code><a href="https://www.virtualbox.org/wiki/VirtualBox">https://www.virtualbox.org/wiki/VirtualBox</a></code></p>
-<p>For more information about Vagrant, please visit:</p>
-<p><code><a href="https://www.vagrantup.com/intro/index.html">https://www.vagrantup.com/intro/index.html</a></code></p>
-<p>Regardless of wether you have your own immediate environment set up or if you are shelled into our container, now you can get ready to start using the model.</p>
-<h2>Github</h2>
-<h2>Singularity-hub</h2>
-<h1>References</h1>
-<p><code><a href="http://journals.ametsoc.org/doi/pdf/10.1175/BAMS-D-15-00255.1">http://journals.ametsoc.org/doi/pdf/10.1175/BAMS-D-15-00255.1</a></code></p>
+<p><code>singularity shell singularity pull shub://jormelton/containerCLASSIC</code></p>
+<p>E.g. </p><pre class="fragment">    acrnrjm@cccsing: ~&gt; singularity shell /user/nphome1/rjm/jormelton-containerCLASSIC-master-latest.simg
+    Singularity: Invoking an interactive shell within container...
+
+    Singularity jormelton-containerCLASSIC-master-latest.simg:~&gt;
+</pre><p>If that is successful, you are now in the CLASSIC container environment. This environment contains all the libraries needed to run the model (Note this is a bare-bones installation with only the run-time environment. It does not presently contain a workflow or compiled model code).</p>
+<p>E.g. test if gfortran is installed: </p><pre class="fragment">    Singularity jormelton-containerCLASSIC-master-latest.simg:~&gt; gfortran
+    gfortran: fatal error: no input files
+    compilation terminated.
+    Singularity jormelton-containerCLASSIC-master-latest.simg:~&gt;
+</pre><p>And test for something that is not installed: </p><pre class="fragment">    Singularity jormelton-containerCLASSIC-master-latest.simg:~&gt; okular
+    bash: okular: command not found
+    Singularity jormelton-containerCLASSIC-master-latest.simg:~&gt;
+</pre><p>You can now navigate to the location of CLASSIC code, compile and run the model.</p>
+<p>E.g. </p><pre class="fragment">    Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC&gt; bin/CLASSIC
+     Usage is as follows
+
+     bin/CLASSIC joboptions_file longitude/{longitude}/latitude/{latitude}
+
+     - joboptions_file - an example is
+       configurationFiles/template_job_options_file.txt.
+
+     - longitude/latitude
+       e.g. 105.23/40.91
+
+      *OR*
+      if you wish to run a region then you give
+      the corners of the box you wish to run
+
+     - longitude/longitude/latitude/latitude
+       e.g. 90/105/30/45
+</pre><p>One thing to note: once within the container you will not be able to 'see' remote servers since your container environment is not aware of them. So pay attention to where your input and output files are located.</p>
 <h1><a class="anchor" id="compilingMod"></a>
 Compiling CLASSIC for serial and parallel simulations</h1>
-<p>CLASSIC's Makefile (yourpath/CLASSIC/Makefile) is setup to allow easy compilation for serial or parallel model running.</p>
+<p>CLASSIC's Makefile (/Makefile) is setup to allow easy compilation for serial or parallel model running.</p>
 <p>There are three options when compiling:</p>
 <ul>
 <li>For a serial run, use the command "make mode=serial" or just "make"</li>
@@ -216,7 +255,7 @@ Setting up the joboptions file</h1>
         transientOBSWETF = .false. ,  !&lt; use observed wetland fraction time series, otherwise use fixedYearOBSWETF
         OBSWETFFile = '',             !&lt; Location of the netcdf file containing observed wetland fraction
         fixedYearOBSWETF = -9999 ,    !&lt; set the year to use for observed wetland fraction if transientOBSWETF is false.
-</pre><p>CLASS switches determine the configuration of the physics only as well as CLASS+CTEM (physics and biogeochemistry) runs. COMBAK </p><pre class="fragment">    ! Physics switches:
+</pre><p>CLASS switches determine the configuration of the physics only as well as CLASS+CTEM (physics and biogeochemistry) runs. </p><pre class="fragment">    ! Physics switches:
 
         ican = 4 ,     !&lt; Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
         IDISP = 0 ,    !&lt; if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
@@ -226,7 +265,7 @@ Setting up the joboptions file</h1>
         ISLFD = 0 ,    !&lt; if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-level diagnostic calculations
                         !&lt; is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-level diagnostic calculations.
                         !&lt; if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-level diagnostic calculations.
-        IPCP = 1 ,     !&lt; if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
+</pre><p>! The implications of the ISLFD switch is discussed more in <a class="el" href="CLASST_8f.html" title="Calls subroutines to perform surface energy budget calculations. ">CLASST.f</a> </p><pre class="fragment">        IPCP = 1 ,     !&lt; if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
                         !&lt; rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
                         !&lt; a polynomial curve between 0 C and 6 C.
         IWF = 0 ,      !&lt; if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0&lt;n&lt;4) ,
@@ -279,7 +318,7 @@ Setting up the joboptions file</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Thu Aug 23 2018 16:55:07 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 24 2018 12:46:19 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

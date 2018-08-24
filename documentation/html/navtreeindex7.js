@@ -1,5 +1,6 @@
 var NAVTREEINDEX7 =
 {
+"structctem__statevars_1_1ctem__tileavg__annual.html#ad6f5f88d04b14e8f931aca15092b7c04":[6,0,1,6,18],
 "structctem__statevars_1_1ctem__tileavg__annual.html#ad7d2245c1b6cbb8290fa3316a961e9b8":[6,0,1,6,25],
 "structctem__statevars_1_1ctem__tileavg__annual.html#ad81c4caa181e28b5ceb94aec7d635c72":[6,0,1,6,20],
 "structctem__statevars_1_1ctem__tileavg__annual.html#ada14403f7b829f779571fdcb2d9c44d7":[6,0,1,6,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX7 =
 "structctem__statevars_1_1veg__gat.html#afd694d2842ef60fa471d031bd2ac44f5":[6,0,1,8,59],
 "structctem__statevars_1_1veg__gat.html#afdd9fd0f57241ca0b665c065977eace5":[6,0,1,8,77],
 "structctem__statevars_1_1veg__gat.html#afe1bebb7494fe1a26c90e0aeb78f9057":[6,0,1,8,176],
-"structctem__statevars_1_1veg__gat.html#afe830c699b0e8e2100cb5bc021280df6":[6,0,1,8,48],
-"structctem__statevars_1_1veg__rot.html":[6,0,1,9]
+"structctem__statevars_1_1veg__gat.html#afe830c699b0e8e2100cb5bc021280df6":[6,0,1,8,48]
 };
