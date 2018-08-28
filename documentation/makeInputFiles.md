@@ -65,6 +65,7 @@ Importantly,
 - Only one variable per file besides lon, lat, and time.
 - Note the time units.
 - The file is chunked (which depends on the grid being used. What you see here is optimal for T63 global runs). Chunking is not needed for site-level runs
+- CLASSIC expects the first time step to be 0 hour 0 minute (in hh:mm:ss format - 00:00:00).
 
 If you have ACSCII met files from a site, see [ASCII to NetCDF met file loader](@ref asciiMet) to use the provided tool to convert them to the appropriate netCDF format.
 

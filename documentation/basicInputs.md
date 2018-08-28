@@ -21,8 +21,9 @@ At each physics time step, for each grid cell or modelled area, the following at
   - CLASSIC is able to run with total incoming precipitation, partitioning it into rainfall and snowfall on the basis of empirically-derived equations. If the rainfall rate (RPREROW) and snowfall rate (SPREROW) are available, they could be used instead. The @ref model_state_driver.getMet and @ref model_state_drivers.updateMet subroutines should be modified accordingly, and the job options switch IPCP should be set to 4 (more on this in @ref setupJobOpts).
 - PRESROW Surface air pressure \f$[P_a ]\f$
 - QAROW Specific humidity at reference height \f$[kg kg^{-1} ]\f$
-- TAROW Air temperature at reference height [K]
+- TAROW Air temperature at reference height [degree C]
   - For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure, Pa . For field data, the actual measured air temperature at the reference height should be used, since in this case the adiabatic extrapolation is performed within CLASS.
+  - **Note: In CLASSIC, TAROW is in Kelvin, however the driver expects the air temperature in units of degrees celsius. The conversion is done in main.f90.**
 - VMODROW Wind speed at reference height \f$[m s^-1 ]\f$
   - Atmospheric models provide the zonal and meridional components of the wind velocity, but CLASS does not actually require information on wind direction. Thus, if only the scalar wind speed is available, either ULROW or VLROW can be set to it, and the other to zero. (Both of these terms, plus the scalar wind speed VMODROW, must be supplied to CLASS.)
 - FSSROW Downwelling shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$

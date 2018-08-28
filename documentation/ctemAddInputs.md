@@ -20,7 +20,7 @@ CLASSIC can be run in several different configurations, some of which require ad
 
 # Atmospheric carbon dioxide concentration {#initCO2}
 
-Annual atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and 'ncdump -hs' on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units.
+**Annual** atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and 'ncdump -hs' on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units.
 
         dimensions:
             time = 318 ;
@@ -45,11 +45,11 @@ Annual atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs.
 
 # Atmospheric methane concentration {#initCH4}
 
-Annual atmospheric methane concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.
+**Annual** atmospheric methane concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.
 
 # Lightning frequency for fire ignition {#initLightFire}
 
-Mean monthly cloud-to-ground lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use mean monthly lightning frequency and interpolates daily values using these monthly values. It is unlikely anyone will have a daily observation-based time series of lightning data for a grid cell. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
+**Daily** cloud-to-ground lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use daily lightning frequency. If you have mean monthly values you can interpolate them to daily values (cdo inttime is useful here). An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. Note the units of the lght_lisotd and time variables.
 
         netcdf lisotd_1995_2014_climtlgl_lghtng_as_ts_1700_2050_chunked {
         dimensions:
@@ -91,7 +91,7 @@ Mean monthly cloud-to-ground lightning frequency is used by the disturbance subr
 
 # Population density for fire ignition/suppresion {#initPopd}
 
-Fire uses a time series of annually varying population density for fire suppression and ignition. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
+Fire uses a time series of **annually** varying population density for fire suppression and ignition. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
 
           netcdf POPD_annual_1700_2017_T63_chunked {
           dimensions:
@@ -170,9 +170,9 @@ Eight slope based fractions a read in from the model initialization file for cal
 
 # Prescribed wetland area {#initWetArea}
 
-Monthly values of wetland fraction are used for modelling methane emissions from wetlands.
+**Daily** values of wetland fraction are used for modelling methane emissions from wetlands.
 
-COMBAK
+
 
 
 # Peatland variables {#initPeat}
@@ -209,7 +209,7 @@ If you are running a single site peatland then the peatland tile is the whole gr
 
 # Land use change (LUC) {#inputLUC}
 
-The LUC file contains a time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, **lev** and time.
+The LUC file contains an **annual** time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, **lev** and time.
 
         netcdf GCP_2018_land_cover_CTEM_fractions_1700_2018_T63_chunked {
         dimensions:
