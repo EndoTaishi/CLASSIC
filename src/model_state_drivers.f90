@@ -1224,7 +1224,7 @@ contains
                 ! We read in only the suggested year's worth of daily data
                 ! FLAG Not presently set up for leap years!
                 allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,lengthOfFile], count = [1,1,365])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
@@ -1232,7 +1232,6 @@ contains
                 do d = 1,365
                     OBSWETFTime(d) = real(d)
                 end do
-
             end if
 
         case default
