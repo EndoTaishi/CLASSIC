@@ -4,7 +4,8 @@ program metASCIILoader
     real, allocatable   :: shortWave(:), longWave(:), precipitation(:), &
         temperature(:), humidity(:), wind(:), pressure(:), time(:)
     integer, allocatable    :: hour(:), minute(:), day(:), year(:)
-    character(300)          :: inputFile, charLon, charLat
+    character(300)          :: inputFile, charLon, charLat,charContainsLeaps
+    logical                 :: containsLeaps
     integer                 :: timesteps, i, currentYear
     integer, dimension(12)  :: daysInMonth = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]
     real, parameter         :: fillValue = 1.E38
@@ -19,13 +20,21 @@ program metASCIILoader
     close(unit = 10)
 contains
     subroutine processArguments
-        if (iargc() .ne. 3) then
-            stop('Usage is: metASCIILoader [input file] [lon] [lat]')
+        if (iargc() .ne. 4) then
+            print*,'Usage is: metASCIILoader [input file] [lon] [lat] [containsLeaps]'
+            print*,'containsLeaps should be true if the file contains leap years, otherwise false'
+            stop
         endif
 
         call getarg(1, inputFile)
         call getarg(2, charLon)
         call getarg(3, charLat)
+        call getarg(4, charContainsLeaps)
+        if (trim(charContainsLeaps) == 'true') then
+          containsLeaps = .true.
+        else
+          containsLeaps = .false.
+        endif
         lon = charToReal(charLon)
         lat = charToReal(charLat)
     end subroutine processArguments
@@ -98,10 +107,12 @@ contains
         do i = 1, timesteps
             if (currentYear /= year(i)) then
                 currentYear = year(i)
-                if (isLeapYear(year(i))) then
+                if (containsLeaps) then
+                  if (isLeapYear(year(i))) then
                     daysInMonth(2) = 29
-                else
+                  else
                     daysInMonth(2) = 28
+                  endif
                 endif
             endif
             time(i) = buildTimestep(hour(i), minute(i), day(i), year(i))
@@ -176,7 +187,7 @@ contains
                 title = 'Incoming long wave radiation'
                 name = 'long wave'
             case default
-                stop('Unrecognized label')
+                stop ('Unrecognized label')
             end select
 
             ! Define file attributes

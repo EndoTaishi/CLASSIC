@@ -358,7 +358,7 @@ type veg_rot
 
  ! allocated with nlat,nmos,icc,ignd:
     real, allocatable, dimension(:,:,:,:) :: rmatctem     !<fraction of roots for each of ctem's 9 pfts in each soil layer
-
+    
 ! allocated with nlat,nmos,iccp2:
     real, allocatable, dimension(:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
@@ -628,8 +628,6 @@ type veg_gat
     real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)   !<
     real, allocatable, dimension(:)    :: xdiffusgat !(ilg)
     real, allocatable, dimension(:)    :: faregat !(ilg)
-    real, allocatable, dimension(:,:)  :: FTABLE !(NLAT,NMOS)
-    real, allocatable, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
 
 end type veg_gat
 
@@ -1152,11 +1150,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
 
-         vgat%FTABLE(nlat,nmos),&
-         vgat%ACTLYR(nlat,nmos),&
-
-
-! allocated with nlat,nmos,ican:
+! allocated with nlat,nmos,ican:     
          vrot%zolnc(nlat,nmos,ican),&
          vrot%ailc(nlat,nmos,ican),&
          vrot%cmasvegc(nlat,nmos,ican),&
@@ -1171,7 +1165,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
 
  ! allocated with nlat,nmos,icc,ignd:
          vrot%rmatctem(nlat,nmos,icc,ignd),&
-
+    
 ! allocated with nlat,nmos,iccp2:
          vrot%litrmass(nlat,nmos,iccp2),&
          vrot%soilcmas(nlat,nmos,iccp2),&
@@ -1181,8 +1175,8 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%litresveg(nlat,nmos,iccp2),&
          vrot%soilcresveg(nlat,nmos,iccp2),&
          vrot%humiftrsveg(nlat,nmos,iccp2),&
-
-! allocated with nlat,nmos,{some number}:
+    
+! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
          vrot%slopefrac(nlat,nmos,8),&
 

@@ -1,12 +1,12 @@
 !>\file
 C>
 C!Gathers variables from two-dimensional arrays (latitude
-C!circle x mosaic tiles) onto long vectors for optimum processing 
+C!circle x mosaic tiles) onto long vectors for optimum processing
 C!efficiency on vector supercomputers.
-C!
+C!@author D. Verseghy, M. Lazare
 
       SUBROUTINE CLASSG(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,
-     1                  TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT, 
+     1                  TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT,
      2                  TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT,
      3                  FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT,
      4                  PAMNGAT,CMASGAT,ROOTGAT,RSMNGAT,QA50GAT,
@@ -15,69 +15,69 @@ C!
      7                  THPGAT, THRGAT, THMGAT, BIGAT,  PSISGAT,
      8                  GRKSGAT,THRAGAT,HCPSGAT,TCSGAT, IGDRGAT,
      9                   THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT,
-     A                   VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT, 
+     A                   VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT,
      B                   QACGAT, DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT,
      C                   WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,
      D                   ALGDNGAT,ASVDGAT,ASIDGAT,AGVDGAT,
-     E                   AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,       
-     F                   ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,       
-     G                   FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,        
-     H                   FSGGAT, FLGGAT, FDLGAT, ULGAT,  VLGAT,         
-     I                   TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,       
-     J                   VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,       
-     K                   SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,       
-     L                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,       
+     E                   AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,
+     F                   ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,
+     G                   FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,
+     H                   FSGGAT, FLGGAT, FDLGAT, ULGAT,  VLGAT,
+     I                   TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,
+     J                   VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
+     K                   SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
+     L                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,
      M                   ILMOS,JLMOS,
-     N                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,               
-     O                   TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,       
-     P                   TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT,        
-     Q                   TCANROT,RCANROT,SCANROT,GROROT, CMAIROT,       
-     R                   FCANROT,LNZ0ROT,ALVCROT,ALICROT,PAMXROT,       
-     S                   PAMNROT,CMASROT,ROOTROT,RSMNROT,QA50ROT,       
-     T                   VPDAROT,VPDBROT,PSGAROT,PSGBROT,PAIDROT,       
-     U                   HGTDROT,ACVDROT,ACIDROT,TSFSROT,WSNOROT,       
-     V                   THPROT, THRROT, THMROT, BIROT,  PSISROT,       
-     W                   GRKSROT,THRAROT,HCPSROT,TCSROT, IGDRROT,       
+     N                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,
+     O                   TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
+     P                   TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT,
+     Q                   TCANROT,RCANROT,SCANROT,GROROT, CMAIROT,
+     R                   FCANROT,LNZ0ROT,ALVCROT,ALICROT,PAMXROT,
+     S                   PAMNROT,CMASROT,ROOTROT,RSMNROT,QA50ROT,
+     T                   VPDAROT,VPDBROT,PSGAROT,PSGBROT,PAIDROT,
+     U                   HGTDROT,ACVDROT,ACIDROT,TSFSROT,WSNOROT,
+     V                   THPROT, THRROT, THMROT, BIROT,  PSISROT,
+     W                   GRKSROT,THRAROT,HCPSROT,TCSROT, IGDRROT,
      X                   THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT,
-     Y                   VMODL,  ZSNLROT,ZPLGROT,ZPLSROT,TACROT, 
+     Y                   VMODL,  ZSNLROT,ZPLGROT,ZPLSROT,TACROT,
      Z                   QACROT, DRNROT, XSLPROT,GRKFROT,WFSFROT,
      +                   WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,
-     +                   ALGDNROT,ASVDROT,ASIDROT,AGVDROT,    
-     +                   AGIDROT,ISNDROT,RADJ   ,ZBLDROW,Z0ORROW,       
+     +                   ALGDNROT,ASVDROT,ASIDROT,AGVDROT,
+     +                   AGIDROT,ISNDROT,RADJ   ,ZBLDROW,Z0ORROW,
      +                  ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW,
-     +                   FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW,        
-     +                   FSGROL, FLGROL, FDLROL, ULROW,  VLROW,         
+     +                   FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW,
+     +                   FSGROL, FLGROL, FDLROL, ULROW,  VLROW,
      +                  TAROW,  QAROW,  PRESROW,PREROW, PADRROW,
      +                  VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
      +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW)
 
-C                                                                       
+C
 C     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT,ASVDROT,
 C     *                        ASIDROT TO NLAT,NMOS (FOR LAKE MODEL)
-C     * Jan 16, 2015 - M.Lazare. New version called by "sfcproc3":      
+C     * Jan 16, 2015 - M.Lazare. New version called by "sfcproc3":
 C     *                          - Add THLW.
-C     *                          - {ALGWV,ALGWN,ALGDV,ALGDN} replace    
-C     *                            {ALGW,ALGD}.                         
-C     *                          - FSG,FLG,GUST added.                  
-C     *                          - FDLROW changed to FDLROL (cosmetic). 
-C     *                          - Adds GTGAT/GTROT.                    
-C     *                          - Adds NT (NTLD in sfcproc2            
-C     *                            call) to dimension land-only         
-C     *                            ROT fields, consistent with          
-C     *                            new comrow12.                        
-C     *                          - Unused IWMOS,JWMOS removed.          
-C     * Jun 13, 2013 - M.Lazare. CLASS gather routine called by         
-C     *                          "sfcproc" in new version gcm17.        
-C     * NOTE: This contains the following changes compared to the       
-C     *       working temporary version used in conjunction with        
-C     *       updates to gcm16 (ie not official):                       
-C     *         1) {DEPB,REF,BCSN} added for Maryam's new code.         
-C     *         2) {FSDB,FSFB,FSSB} added for Jason's new code.   
+C     *                          - {ALGWV,ALGWN,ALGDV,ALGDN} replace
+C     *                            {ALGW,ALGD}.
+C     *                          - FSG,FLG,GUST added.
+C     *                          - FDLROW changed to FDLROL (cosmetic).
+C     *                          - Adds GTGAT/GTROT.
+C     *                          - Adds NT (NTLD in sfcproc2
+C     *                            call) to dimension land-only
+C     *                            ROT fields, consistent with
+C     *                            new comrow12.
+C     *                          - Unused IWMOS,JWMOS removed.
+C     * Jun 13, 2013 - M.Lazare. CLASS gather routine called by
+C     *                          "sfcproc" in new version gcm17.
+C     * NOTE: This contains the following changes compared to the
+C     *       working temporary version used in conjunction with
+C     *       updates to gcm16 (ie not official):
+C     *         1) {DEPB,REF,BCSN} added for Maryam's new code.
+C     *         2) {FSDB,FSFB,FSSB} added for Jason's new code.
 C     * OCT 18/11 - M.LAZARE.  ADD IGDR.
 C     * OCT 07/11 - M.LAZARE.  ADD VMODL->VMODGAT.
 C     * OCT 05/11 - M.LAZARE.  PUT BACK IN PRESGROW->PRESGAT
-C     *                        REQUIRED FOR ADDED SURFACE RH 
+C     *                        REQUIRED FOR ADDED SURFACE RH
 C     *                        CALCULATION.
 C     * OCT 03/11 - M.LAZARE.  REMOVE ALL INITIALIZATION TO
 C     *                        ZERO OF GAT ARRAYS (NOW DONE
@@ -85,7 +85,7 @@ C     *                        IN CLASS DRIVER).
 C     * SEP 16/11 - M.LAZARE.  - ROW->ROT AND GRD->ROW.
 C     *                        - REMOVE INITIALIZATION OF
 C     *                          {ALVS,ALIR} TO ZERO.
-C     *                        - REMOVE PRESGROW->PRESGAT 
+C     *                        - REMOVE PRESGROW->PRESGAT
 C     *                          (OCEAN-ONLY NOW).
 C     *                        - RADJROW (64-BIT) NOW RADJ
 C     *                          (32-BIT).
@@ -93,60 +93,60 @@ C     * MAR 23/06 - D.VERSEGHY. ADD WSNO,FSNO,GGEO.
 C     * MAR 18/05 - D.VERSEGHY. ADDITIONAL VARIABLES.
 C     * FEB 18/05 - D.VERSEGHY. ADD "TSFS" VARIABLES.
 C     * NOV 03/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
-C     * AUG 15/02 - D.VERSEGHY. GATHER OPERATION ON CLASS 
+C     * AUG 15/02 - D.VERSEGHY. GATHER OPERATION ON CLASS
 C     *                         VARIABLES.
-C 
+C
       IMPLICIT NONE
 C
-C     (Suffix GAT refers to variables on gathered long vectors; suffix 
+C     (Suffix GAT refers to variables on gathered long vectors; suffix
 C     ROT refers to variables on original two-dimensional arrays.)
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER  NML,NL,NM,NT,ILG,IG,IC,ICP1,K,L,M,NBS                    
+      INTEGER  NML,NL,NM,NT,ILG,IG,IC,ICP1,K,L,M,NBS
 C
 C     * LAND SURFACE PROGNOSTIC VARIABLES.
 C
       REAL TBARROT(NL,NT,IG)    !<Temperature of soil layers [K]
-      REAL THLQROT(NL,NT,IG)    !<Volumetric liquid water content of soil 
+      REAL THLQROT(NL,NT,IG)    !<Volumetric liquid water content of soil
                                 !!layers \f$[m^3 m^{-3}]\f$
-      REAL THICROT(NL,NT,IG)    !<Frozen water content of soil layers 
+      REAL THICROT(NL,NT,IG)    !<Frozen water content of soil layers
                                 !!under vegetation \f$[m^3 m^{-3}]\f$
-      REAL TPNDROT(NL,NT)   !<Temperature of ponded water [K]    
+      REAL TPNDROT(NL,NT)   !<Temperature of ponded water [K]
       REAL ZPNDROT(NL,NT)   !<Depth of ponded water on surface [m]
       REAL TBASROT(NL,NT)   !<Temperature of bedrock in third soil layer [K]
       REAL ALBSROT(NL,NM)   !<Snow albedo [ ]
       REAL TSNOROT(NL,NM)   !<Snowpack temperature [K]
       REAL RHOSROT(NL,NM)   !<Density of snow \f$[kg m^{-3}]\f$
       REAL SNOROT (NL,NM)   !<Mass of snow pack \f$[kg m^{-2}]\f$
-      REAL TCANROT(NL,NT)   !<Vegetation canopy temperature [K] 
+      REAL TCANROT(NL,NT)   !<Vegetation canopy temperature [K]
       REAL RCANROT(NL,NT)   !<Intercepted liquid water stored on canopy \f$[kg m^{-2}]\f$
       REAL SCANROT(NL,NT)   !<Intercepted frozen water stored on canopy \f$[kg m^{-2}]\f$
-      REAL GROROT (NL,NT)   !<Vegetation growth index [ ] 
+      REAL GROROT (NL,NT)   !<Vegetation growth index [ ]
       REAL CMAIROT(NL,NT)   !<Aggregated mass of vegetation canopy \f$[kg m^{-2}]\f$
-      REAL TSFSROT(NL,NT,4) !<Ground surface temperature over subarea [K] 
+      REAL TSFSROT(NL,NT,4) !<Ground surface temperature over subarea [K]
       REAL TACROT (NL,NT)   !<Temperature of air within vegetation canopy [K]
-      REAL QACROT (NL,NT)   !<Specific humidity of air within vegetation 
+      REAL QACROT (NL,NT)   !<Specific humidity of air within vegetation
                             !!canopy \f$[kg kg^{-1}]\f$
       REAL WSNOROT(NL,NM)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
       REAL REFROT(NL,NM)    !<Snow grain size (for ISNOALB=1 option)
       REAL BCSNROT(NL,NM)   !<Black carbon mixing ratio (for ISNOALB=1 option)  [kg m-3]
 C
-      REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG), 
-     1        TPNDGAT(ILG),      ZPNDGAT(ILG),      TBASGAT(ILG),   
-     2        ALBSGAT(ILG),      TSNOGAT(ILG),      RHOSGAT(ILG),   
-     3        SNOGAT (ILG),      TCANGAT(ILG),      RCANGAT(ILG),   
+      REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG),
+     1        TPNDGAT(ILG),      ZPNDGAT(ILG),      TBASGAT(ILG),
+     2        ALBSGAT(ILG),      TSNOGAT(ILG),      RHOSGAT(ILG),
+     3        SNOGAT (ILG),      TCANGAT(ILG),      RCANGAT(ILG),
      4        SCANGAT(ILG),      GROGAT (ILG),      CMAIGAT(ILG),
      5        TSFSGAT(ILG,4),    TACGAT (ILG),      QACGAT (ILG),
      6        WSNOGAT(ILG),      REFGAT (ILG),      BCSNGAT(ILG)
 C
 C     * GATHER-SCATTER INDEX ARRAYS.
 C
-      INTEGER  ILMOS (ILG)  !<Index of latitude grid cell corresponding 
-                            !!to current element of gathered vector of 
+      INTEGER  ILMOS (ILG)  !<Index of latitude grid cell corresponding
+                            !!to current element of gathered vector of
                             !!land surface variables [ ]
-      INTEGER  JLMOS (ILG)  !<Index of mosaic tile corresponding to 
-                            !!current element of gathered vector of land 
+      INTEGER  JLMOS (ILG)  !<Index of mosaic tile corresponding to
+                            !!current element of gathered vector of land
                             !!surface variables [ ]
 
 C
@@ -155,49 +155,49 @@ C     * (THE LENGTH OF THESE ARRAYS IS DETERMINED BY THE NUMBER
 C     * OF SOIL LAYERS (3) AND THE NUMBER OF BROAD VEGETATION
 C     * CATEGORIES (4, OR 5 INCLUDING URBAN AREAS).)
 C
-      REAL FCANROT(NL,NT,ICP1)  !<Maximum fractional coverage of modelled 
+      REAL FCANROT(NL,NT,ICP1)  !<Maximum fractional coverage of modelled
                                 !!area by vegetation category [ ]
-      REAL LNZ0ROT(NL,NT,ICP1)  !<Natural logarithm of maximum roughness 
+      REAL LNZ0ROT(NL,NT,ICP1)  !<Natural logarithm of maximum roughness
                                 !!length of vegetation category [ ]
-      REAL ALVCROT(NL,NT,ICP1)  !<Background average visible albedo of 
+      REAL ALVCROT(NL,NT,ICP1)  !<Background average visible albedo of
                                 !!vegetation category [ ]
-      REAL ALICROT(NL,NT,ICP1)  !<Background average near-infrared albedo 
+      REAL ALICROT(NL,NT,ICP1)  !<Background average near-infrared albedo
                                 !!of vegetation category [ ]
-      REAL PAMXROT(NL,NT,IC)    !<Maximum plant area index of vegetation 
+      REAL PAMXROT(NL,NT,IC)    !<Maximum plant area index of vegetation
                                 !!category [ ]
-      REAL PAMNROT(NL,NT,IC)    !<Minimum plant area index of vegetation 
+      REAL PAMNROT(NL,NT,IC)    !<Minimum plant area index of vegetation
                                 !!category [ ]
-      REAL CMASROT(NL,NT,IC)    !<Maximum canopy mass for vegetation 
+      REAL CMASROT(NL,NT,IC)    !<Maximum canopy mass for vegetation
                                 !!category \f$[kg m^{-2}]\f$
-      REAL ROOTROT(NL,NT,IC)    !<Maximum rooting depth of vegetation 
+      REAL ROOTROT(NL,NT,IC)    !<Maximum rooting depth of vegetation
                                 !!category [m]
-      REAL RSMNROT(NL,NT,IC)    !<Minimum stomatal resistance of 
+      REAL RSMNROT(NL,NT,IC)    !<Minimum stomatal resistance of
                                 !!vegetation category \f$[s m^{-1}]\f$
-      REAL QA50ROT(NL,NT,IC)    !<Reference value of incoming shortwave 
-                                !!radiation for vegetation category (used 
+      REAL QA50ROT(NL,NT,IC)    !<Reference value of incoming shortwave
+                                !!radiation for vegetation category (used
                                 !!in stomatal resistance calculation) \f$[W m^{-2}]\f$
-      REAL VPDAROT(NL,NT,IC)    !<Vapour pressure deficit coefficient for 
-                                !!vegetation category (used in stomatal 
+      REAL VPDAROT(NL,NT,IC)    !<Vapour pressure deficit coefficient for
+                                !!vegetation category (used in stomatal
                                 !!resistance calculation) [ ]
-      REAL VPDBROT(NL,NT,IC)    !<Vapour pressure deficit coefficient for 
-                                !!vegetation category (used in stomatal 
+      REAL VPDBROT(NL,NT,IC)    !<Vapour pressure deficit coefficient for
+                                !!vegetation category (used in stomatal
                                 !!resistance calculation) [ ]
-      REAL PSGAROT(NL,NT,IC)    !<Soil moisture suction coefficient for 
-                                !!vegetation category (used in stomatal 
+      REAL PSGAROT(NL,NT,IC)    !<Soil moisture suction coefficient for
+                                !!vegetation category (used in stomatal
                                 !!resistance calculation) [ ]
-      REAL PSGBROT(NL,NT,IC)    !<Soil moisture suction coefficient for 
-                                !!vegetation category (used in stomatal 
+      REAL PSGBROT(NL,NT,IC)    !<Soil moisture suction coefficient for
+                                !!vegetation category (used in stomatal
                                 !!resistance calculation) [ ]
-      REAL PAIDROT(NL,NT,IC)    !<Optional user-specified value of plant 
-                                !!area indices of vegetation categories 
+      REAL PAIDROT(NL,NT,IC)    !<Optional user-specified value of plant
+                                !!area indices of vegetation categories
                                 !!to override CLASS-calculated values [ ]
-      REAL HGTDROT(NL,NT,IC)    !<Optional user-specified values of 
-                                !!height of vegetation categories to 
+      REAL HGTDROT(NL,NT,IC)    !<Optional user-specified values of
+                                !!height of vegetation categories to
                                 !!override CLASS-calculated values [m]
-      REAL ACVDROT(NL,NT,IC)    !<Optional user-specified value of canopy 
+      REAL ACVDROT(NL,NT,IC)    !<Optional user-specified value of canopy
                                 !!visible albedo to override CLASS-
                                 !!calculated value [ ]
-      REAL ACIDROT(NL,NT,IC)    !<Optional user-specified value of canopy 
+      REAL ACIDROT(NL,NT,IC)    !<Optional user-specified value of canopy
                                 !!near-infrared albedo to override CLASS-
                                 !!calculated value [ ]
 C
@@ -212,24 +212,24 @@ C
      8              ACVDGAT(ILG,IC),     ACIDGAT(ILG,IC)
 C
       REAL THPROT (NL,NT,IG)    !<Pore volume in soil layer \f$[m^3 m^{-3}]\f$
-      REAL THRROT (NL,NT,IG)    !<Liquid water retention capacity for 
+      REAL THRROT (NL,NT,IG)    !<Liquid water retention capacity for
                                 !!organic soil \f$[m^3 m^{-3}]\f$
-      REAL THMROT (NL,NT,IG)    !<Residual soil liquid water content 
+      REAL THMROT (NL,NT,IG)    !<Residual soil liquid water content
                                 !!remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
       REAL BIROT  (NL,NT,IG)    !<Clapp and Hornberger empirical "b"
                                 !!parameter [ ]
       REAL PSISROT(NL,NT,IG)    !<Soil moisture suction at saturation [m]
-      REAL GRKSROT(NL,NT,IG)    !<Saturated hydraulic conductivity of 
+      REAL GRKSROT(NL,NT,IG)    !<Saturated hydraulic conductivity of
                                 !!soil layers \f$[m s^{-1}]\f$
-      REAL THRAROT(NL,NT,IG)    !<Fractional saturation of soil behind 
+      REAL THRAROT(NL,NT,IG)    !<Fractional saturation of soil behind
                                 !!the wetting front [ ]
-      REAL HCPSROT(NL,NT,IG)    !<Volumetric heat capacity of soil 
+      REAL HCPSROT(NL,NT,IG)    !<Volumetric heat capacity of soil
                                 !!particles \f$[J m^{-3}]\f$
-      REAL TCSROT (NL,NT,IG)    !<Thermal conductivity of soil particles 
+      REAL TCSROT (NL,NT,IG)    !<Thermal conductivity of soil particles
                                 !!\f$[W m^{-1} K^{-1}]\f$
       REAL THFCROT(NL,NT,IG)    !<Field capacity \f$[m^3 m^{-3}]\f$
       REAL THLWROT(NL,NT,IG)    !<Liquid water content at wilting point \f$[m^3 m^{-3}]\f$
-      REAL PSIWROT(NL,NT,IG)    !<Soil moisture suction at wilting point 
+      REAL PSIWROT(NL,NT,IG)    !<Soil moisture suction at wilting point
                                 !![m]
       REAL DLZWROT(NL,NT,IG)    !<Permeable thickness of soil layer [m]
       REAL ZBTWROT(NL,NT,IG)    !<Depth to permeable bottom of soil layer [m]
@@ -242,63 +242,63 @@ C
       REAL ALGWNROT(NL,NT)      !<Reference near-infrared albedo for saturated soil  [  ]
       REAL ALGDVROT(NL,NT)      !<Reference visible albedo for dry soil  [  ]
       REAL ALGDNROT(NL,NT)      !<Reference near-infrared albedo for dry soil  [  ]
-      REAL ASVDROT(NL,NT)       !<Optional user-specified value of snow 
+      REAL ASVDROT(NL,NT)       !<Optional user-specified value of snow
                                 !!visible albedo to override CLASS-
                                 !!calculated value [ ]
-      REAL ASIDROT(NL,NM)       !<Optional user-specified value of snow 
+      REAL ASIDROT(NL,NM)       !<Optional user-specified value of snow
                                 !!near-infrared albedo to override CLASS-
                                 !!calculated value [ ]
-      REAL AGVDROT(NL,NT)       !<Optional user-specified value of ground 
+      REAL AGVDROT(NL,NT)       !<Optional user-specified value of ground
                                 !!visible albedo to override CLASS-
                                 !!calculated value [ ]
-      REAL AGIDROT(NL,NT)       !<Optional user-specified value of ground 
+      REAL AGIDROT(NL,NT)       !<Optional user-specified value of ground
                                 !!near-infrared albedo to override CLASS-
                                 !!calculated value [ ]
-      REAL ZSNLROT(NL,NT)       !<Limiting snow depth below which 
+      REAL ZSNLROT(NL,NT)       !<Limiting snow depth below which
                                 !!coverage is < 100% [m]
       REAL ZPLGROT(NL,NT)       !<Maximum water ponding depth for snow-
-                                !!free subareas (user-specified when 
+                                !!free subareas (user-specified when
                                 !!running MESH code) [m]
       REAL ZPLSROT(NL,NT)       !<Maximum water ponding depth for snow-
-                                !!covered subareas (user-specified when 
+                                !!covered subareas (user-specified when
                                 !!running MESH code) [m]
 C
 
       REAL    THPGAT (ILG,IG),   THRGAT (ILG,IG),   THMGAT (ILG,IG),
-     1        BIGAT  (ILG,IG),   PSISGAT(ILG,IG),   GRKSGAT(ILG,IG),   
-     2        THRAGAT(ILG,IG),   HCPSGAT(ILG,IG), 
-     3        TCSGAT (ILG,IG),   THFCGAT(ILG,IG),   THLWGAT(ILG,IG),   
-     4        PSIWGAT(ILG,IG),   DLZWGAT(ILG,IG),   ZBTWGAT(ILG,IG), 
+     1        BIGAT  (ILG,IG),   PSISGAT(ILG,IG),   GRKSGAT(ILG,IG),
+     2        THRAGAT(ILG,IG),   HCPSGAT(ILG,IG),
+     3        TCSGAT (ILG,IG),   THFCGAT(ILG,IG),   THLWGAT(ILG,IG),
+     4        PSIWGAT(ILG,IG),   DLZWGAT(ILG,IG),   ZBTWGAT(ILG,IG),
      5        DRNGAT (ILG),      XSLPGAT(ILG),      GRKFGAT(ILG),
-     6        WFSFGAT(ILG),      WFCIGAT(ILG),      ALGWVGAT(ILG),      
-     7        ALGWNGAT(ILG),     ALGDVGAT(ILG),     ALGDNGAT(ILG),      
-     8        ASVDGAT(ILG),      ASIDGAT(ILG),                          
-     9        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),       
-     A        ZPLGGAT(ILG),      ZPLSGAT(ILG)                           
+     6        WFSFGAT(ILG),      WFCIGAT(ILG),      ALGWVGAT(ILG),
+     7        ALGWNGAT(ILG),     ALGDVGAT(ILG),     ALGDNGAT(ILG),
+     8        ASVDGAT(ILG),      ASIDGAT(ILG),
+     9        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),
+     A        ZPLGGAT(ILG),      ZPLSGAT(ILG)
 C
       INTEGER ISNDROT(NL,NT,IG), ISNDGAT(ILG,IG)!<Sand content flag
-      INTEGER IGDRROT(NL,NT),    IGDRGAT(ILG)   !<Index of soil layer in 
-                                                !!which bedrock is 
+      INTEGER IGDRROT(NL,NT),    IGDRGAT(ILG)   !<Index of soil layer in
+                                                !!which bedrock is
                                                 !!encountered
 C
 C     * ATMOSPHERIC AND GRID-CONSTANT INPUT VARIABLES.
 C
-      REAL ZRFMROW( NL) !<Reference height associated with forcing wind 
+      REAL ZRFMROW( NL) !<Reference height associated with forcing wind
                         !!speed [m]
-      REAL ZRFHROW( NL) !<Reference height associated with forcing air 
+      REAL ZRFHROW( NL) !<Reference height associated with forcing air
                         !!temperature and humidity [m]
-      REAL ZDMROW ( NL) !<User-specified height associated with diagnosed 
+      REAL ZDMROW ( NL) !<User-specified height associated with diagnosed
                         !!anemometer-level wind speed [m]
-      REAL ZDHROW ( NL) !<User-specified height associated with diagnosed 
+      REAL ZDHROW ( NL) !<User-specified height associated with diagnosed
                         !!screen-level variables [m]
-      REAL FSVHROW( NL) !<Visible radiation incident on horizontal 
+      REAL FSVHROW( NL) !<Visible radiation incident on horizontal
                         !!surface \f$[W m^{-2}]\f$
-      REAL FSIHROW( NL) !<Near-infrared radiation incident on horizontal 
+      REAL FSIHROW( NL) !<Near-infrared radiation incident on horizontal
                         !!surface \f$[W m^{-2}]\f$
       REAL CSZROW ( NL) !<Cosine of solar zenith angle [ ]
       REAL FSGROL ( NL) !<Total shortwave radiation absorbed by land surface  [W m-2]
       REAL FLGROL ( NL) !<Total longwave radiation absorbed by land surface  [W m-2]
-      REAL FDLROL ( NL) !<Downwelling longwave radiation at bottom of 
+      REAL FDLROL ( NL) !<Downwelling longwave radiation at bottom of
                         !!atmosphere \f$[W m^{-2}]\f$
 
       REAL ULROW  ( NL) !<Zonal component of wind speed \f$[m s^{-1}]\f$
@@ -311,7 +311,7 @@ C
       REAL VPDROW ( NL) !<Vapour pressure deficit [mb]
       REAL TADPROW( NL) !<Dew point temperature of air [K]
       REAL RHOAROW( NL) !<Density of air \f$[kg m^{-3}]\f$
-      REAL ZBLDROW( NL) !<Atmospheric blending height for surface 
+      REAL ZBLDROW( NL) !<Atmospheric blending height for surface
                         !!roughness length averaging [m]
       REAL Z0ORROW( NL) !<Orographic roughness length [m]
       REAL RPCPROW( NL) !<Rainfall rate over modelled area \f$[m s^{-1}]\f$
@@ -321,7 +321,7 @@ C
       REAL RHSIROW( NL) !<Density of fresh snow \f$[kg m^{-3}]\f$
       REAL FCLOROW( NL) !<Fractional cloud cover [ ]
       REAL DLONROW( NL) !<Longitude of grid cell (east of Greenwich) [degrees]
-      REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile 
+      REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile
                         !!\f$[W m^{-2}]\f$
       REAL GUSTROL (NL) !<Wind gustiness factor  [  ]
       REAL RADJ   ( NL) !<Latitude of grid cell (positive north of equator) [rad]
@@ -334,57 +334,57 @@ C
 
 C
       REAL  ZRFMGAT(ILG), ZRFHGAT(ILG), ZDMGAT (ILG), ZDHGAT (ILG),
-     1      FSVHGAT(ILG), FSIHGAT(ILG), CSZGAT (ILG),                   
-     2      FSGGAT (ILG), FLGGAT (ILG), FDLGAT (ILG),                   
-     3      ULGAT  (ILG), VLGAT  (ILG), TAGAT  (ILG), QAGAT  (ILG),     
-     4      PRESGAT(ILG), PREGAT (ILG), PADRGAT(ILG), VPDGAT (ILG),     
-     5      TADPGAT(ILG), RHOAGAT(ILG), ZBLDGAT(ILG), Z0ORGAT(ILG),     
-     6      RPCPGAT(ILG), TRPCGAT(ILG), SPCPGAT(ILG), TSPCGAT(ILG),     
-     7      RHSIGAT(ILG), FCLOGAT(ILG), DLONGAT(ILG), GGEOGAT(ILG),     
+     1      FSVHGAT(ILG), FSIHGAT(ILG), CSZGAT (ILG),
+     2      FSGGAT (ILG), FLGGAT (ILG), FDLGAT (ILG),
+     3      ULGAT  (ILG), VLGAT  (ILG), TAGAT  (ILG), QAGAT  (ILG),
+     4      PRESGAT(ILG), PREGAT (ILG), PADRGAT(ILG), VPDGAT (ILG),
+     5      TADPGAT(ILG), RHOAGAT(ILG), ZBLDGAT(ILG), Z0ORGAT(ILG),
+     6      RPCPGAT(ILG), TRPCGAT(ILG), SPCPGAT(ILG), TSPCGAT(ILG),
+     7      RHSIGAT(ILG), FCLOGAT(ILG), DLONGAT(ILG), GGEOGAT(ILG),
      8      GUSTGAT(ILG), RADJGAT(ILG), VMODGAT(ILG), DEPBGAT(ILG)
-     
-      REAL, DIMENSION(ILG,NBS) :: FSDBGAT, FSFBGAT, FSSBGAT             
+
+      REAL, DIMENSION(ILG,NBS) :: FSDBGAT, FSFBGAT, FSSBGAT
 C----------------------------------------------------------------------
       !
-      !The prognostic, background and input variables are gathered into 
-      !long arrays (collapsing the latitude and mosaic dimensions into 
-      !one, but retaining the soil level and canopy category dimensions) 
+      !The prognostic, background and input variables are gathered into
+      !long arrays (collapsing the latitude and mosaic dimensions into
+      !one, but retaining the soil level and canopy category dimensions)
       !using the pointer vectors generated in GATPREP.
       !
       DO 100 K=1,NML
-          TPNDGAT(K)=TPNDROT(ILMOS(K),JLMOS(K))  
-          ZPNDGAT(K)=ZPNDROT(ILMOS(K),JLMOS(K))  
-          TBASGAT(K)=TBASROT(ILMOS(K),JLMOS(K))  
-          ALBSGAT(K)=ALBSROT(ILMOS(K),JLMOS(K))  
-          TSNOGAT(K)=TSNOROT(ILMOS(K),JLMOS(K))  
-          RHOSGAT(K)=RHOSROT(ILMOS(K),JLMOS(K))  
-          SNOGAT (K)=SNOROT (ILMOS(K),JLMOS(K))  
-          REFGAT (K)=REFROT (ILMOS(K),JLMOS(K))                         
-          BCSNGAT(K)=BCSNROT(ILMOS(K),JLMOS(K))                         
-          WSNOGAT(K)=WSNOROT(ILMOS(K),JLMOS(K))  
-          TCANGAT(K)=TCANROT(ILMOS(K),JLMOS(K))  
-          RCANGAT(K)=RCANROT(ILMOS(K),JLMOS(K))  
-          SCANGAT(K)=SCANROT(ILMOS(K),JLMOS(K))  
-          GROGAT (K)=GROROT (ILMOS(K),JLMOS(K))  
-          CMAIGAT(K)=CMAIROT(ILMOS(K),JLMOS(K))  
-          DRNGAT (K)=DRNROT (ILMOS(K),JLMOS(K))  
-          XSLPGAT(K)=XSLPROT(ILMOS(K),JLMOS(K))                         
-          GRKFGAT(K)=GRKFROT(ILMOS(K),JLMOS(K))                         
-          WFSFGAT(K)=WFSFROT(ILMOS(K),JLMOS(K))                         
-          WFCIGAT(K)=WFCIROT(ILMOS(K),JLMOS(K))                         
-          ALGWVGAT(K)=ALGWVROT(ILMOS(K),JLMOS(K))                       
-          ALGWNGAT(K)=ALGWNROT(ILMOS(K),JLMOS(K))                       
-          ALGDVGAT(K)=ALGDVROT(ILMOS(K),JLMOS(K))                       
-          ALGDNGAT(K)=ALGDNROT(ILMOS(K),JLMOS(K))                       
-          ASVDGAT(K)=ASVDROT(ILMOS(K),JLMOS(K))                         
-          ASIDGAT(K)=ASIDROT(ILMOS(K),JLMOS(K))                         
-          AGVDGAT(K)=AGVDROT(ILMOS(K),JLMOS(K))                         
-          AGIDGAT(K)=AGIDROT(ILMOS(K),JLMOS(K))                         
-          ZSNLGAT(K)=ZSNLROT(ILMOS(K),JLMOS(K))  
-          ZPLGGAT(K)=ZPLGROT(ILMOS(K),JLMOS(K))                         
-          ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))                         
-          TACGAT (K)=TACROT (ILMOS(K),JLMOS(K))  
-          QACGAT (K)=QACROT (ILMOS(K),JLMOS(K))  
+          TPNDGAT(K)=TPNDROT(ILMOS(K),JLMOS(K))
+          ZPNDGAT(K)=ZPNDROT(ILMOS(K),JLMOS(K))
+          TBASGAT(K)=TBASROT(ILMOS(K),JLMOS(K))
+          ALBSGAT(K)=ALBSROT(ILMOS(K),JLMOS(K))
+          TSNOGAT(K)=TSNOROT(ILMOS(K),JLMOS(K))
+          RHOSGAT(K)=RHOSROT(ILMOS(K),JLMOS(K))
+          SNOGAT (K)=SNOROT (ILMOS(K),JLMOS(K))
+          REFGAT (K)=REFROT (ILMOS(K),JLMOS(K))
+          BCSNGAT(K)=BCSNROT(ILMOS(K),JLMOS(K))
+          WSNOGAT(K)=WSNOROT(ILMOS(K),JLMOS(K))
+          TCANGAT(K)=TCANROT(ILMOS(K),JLMOS(K))
+          RCANGAT(K)=RCANROT(ILMOS(K),JLMOS(K))
+          SCANGAT(K)=SCANROT(ILMOS(K),JLMOS(K))
+          GROGAT (K)=GROROT (ILMOS(K),JLMOS(K))
+          CMAIGAT(K)=CMAIROT(ILMOS(K),JLMOS(K))
+          DRNGAT (K)=DRNROT (ILMOS(K),JLMOS(K))
+          XSLPGAT(K)=XSLPROT(ILMOS(K),JLMOS(K))
+          GRKFGAT(K)=GRKFROT(ILMOS(K),JLMOS(K))
+          WFSFGAT(K)=WFSFROT(ILMOS(K),JLMOS(K))
+          WFCIGAT(K)=WFCIROT(ILMOS(K),JLMOS(K))
+          ALGWVGAT(K)=ALGWVROT(ILMOS(K),JLMOS(K))
+          ALGWNGAT(K)=ALGWNROT(ILMOS(K),JLMOS(K))
+          ALGDVGAT(K)=ALGDVROT(ILMOS(K),JLMOS(K))
+          ALGDNGAT(K)=ALGDNROT(ILMOS(K),JLMOS(K))
+          ASVDGAT(K)=ASVDROT(ILMOS(K),JLMOS(K))
+          ASIDGAT(K)=ASIDROT(ILMOS(K),JLMOS(K))
+          AGVDGAT(K)=AGVDROT(ILMOS(K),JLMOS(K))
+          AGIDGAT(K)=AGIDROT(ILMOS(K),JLMOS(K))
+          ZSNLGAT(K)=ZSNLROT(ILMOS(K),JLMOS(K))
+          ZPLGGAT(K)=ZPLGROT(ILMOS(K),JLMOS(K))
+          ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))
+          TACGAT (K)=TACROT (ILMOS(K),JLMOS(K))
+          QACGAT (K)=QACROT (ILMOS(K),JLMOS(K))
           IGDRGAT(K)=IGDRROT(ILMOS(K),JLMOS(K))
           ZBLDGAT(K)=ZBLDROW(ILMOS(K))
           Z0ORGAT(K)=Z0ORROW(ILMOS(K))
@@ -395,9 +395,9 @@ C----------------------------------------------------------------------
           FSVHGAT(K)=FSVHROW(ILMOS(K))
           FSIHGAT(K)=FSIHROW(ILMOS(K))
           CSZGAT (K)=CSZROW (ILMOS(K))
-          FSGGAT (K)=FSGROL (ILMOS(K))                                  
-          FLGGAT (K)=FLGROL (ILMOS(K))                                  
-          FDLGAT (K)=FDLROL (ILMOS(K))                                  
+          FSGGAT (K)=FSGROL (ILMOS(K))
+          FLGGAT (K)=FLGROL (ILMOS(K))
+          FDLGAT (K)=FDLROL (ILMOS(K))
           ULGAT  (K)=ULROW  (ILMOS(K))
           VLGAT  (K)=VLROW  (ILMOS(K))
           TAGAT  (K)=TAROW  (ILMOS(K))
@@ -416,10 +416,10 @@ C----------------------------------------------------------------------
           FCLOGAT(K)=FCLOROW(ILMOS(K))
           DLONGAT(K)=DLONROW(ILMOS(K))
           GGEOGAT(K)=GGEOROW(ILMOS(K))
-          GUSTGAT(K)=GUSTROL(ILMOS(K))                                  
+          GUSTGAT(K)=GUSTROL(ILMOS(K))
           RADJGAT(K)=RADJ   (ILMOS(K))
           VMODGAT(K)=VMODL  (ILMOS(K))
-          DEPBGAT(K)=DEPBROW(ILMOS(K))                                  
+          DEPBGAT(K)=DEPBROW(ILMOS(K))
   100 CONTINUE
 C
       DO 250 L=1,IG
@@ -437,7 +437,7 @@ C
           HCPSGAT(K,L)=HCPSROT(ILMOS(K),JLMOS(K),L)
           TCSGAT (K,L)=TCSROT (ILMOS(K),JLMOS(K),L)
           THFCGAT(K,L)=THFCROT(ILMOS(K),JLMOS(K),L)
-          THLWGAT(K,L)=THLWROT(ILMOS(K),JLMOS(K),L)          
+          THLWGAT(K,L)=THLWROT(ILMOS(K),JLMOS(K),L)
           PSIWGAT(K,L)=PSIWROT(ILMOS(K),JLMOS(K),L)
           DLZWGAT(K,L)=DLZWROT(ILMOS(K),JLMOS(K),L)
           ZBTWGAT(K,L)=ZBTWROT(ILMOS(K),JLMOS(K),L)
@@ -465,20 +465,20 @@ C
           VPDBGAT(K,L)=VPDBROT(ILMOS(K),JLMOS(K),L)
           PSGAGAT(K,L)=PSGAROT(ILMOS(K),JLMOS(K),L)
           PSGBGAT(K,L)=PSGBROT(ILMOS(K),JLMOS(K),L)
-          PAIDGAT(K,L)=PAIDROT(ILMOS(K),JLMOS(K),L)                     
-          HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)                     
-          ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)                     
-          ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)                     
+          PAIDGAT(K,L)=PAIDROT(ILMOS(K),JLMOS(K),L)
+          HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)
+          ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)
+          ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)
           TSFSGAT(K,L)=TSFSROT(ILMOS(K),JLMOS(K),L)
 400   CONTINUE
 
-C                                                                       
-      DO L = 1, NBS                                                     
-         DO K = 1, NML                                                  
-            FSDBGAT(K,L) = FSDBROL(ILMOS(K),L)                          
-            FSFBGAT(K,L) = FSFBROL(ILMOS(K),L)                          
-            FSSBGAT(K,L) = FSSBROL(ILMOS(K),L)                          
-         END DO ! K                                                     
-      END DO ! L                                                        
+C
+      DO L = 1, NBS
+         DO K = 1, NML
+            FSDBGAT(K,L) = FSDBROL(ILMOS(K),L)
+            FSFBGAT(K,L) = FSFBROL(ILMOS(K),L)
+            FSSBGAT(K,L) = FSSBROL(ILMOS(K),L)
+         END DO ! K
+      END DO ! L
       RETURN
       END

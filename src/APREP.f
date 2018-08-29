@@ -1,6 +1,6 @@
 !>\file
 !!Calculates various land surface parameters.
-!!
+!!@author D. Verseghy, M. Lazare, V. Fortin, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
 
 !>
 !!This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS

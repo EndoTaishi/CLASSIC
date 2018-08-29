@@ -1,3 +1,4 @@
+!>\file
 !>Central module for all heterotrophic respiration-related operations
 module heterotrophic_respiration
 
@@ -16,7 +17,7 @@ contains
 !>\ingroup heterotrophic_respiration_hetresg
 !!@{
 !>Heterotrophic respiration subroutine for bare ground fraction
-
+!> @author Vivek Arora and Joe Melton
 subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
                     il1,      il2,     tbar,  psisat, b, &
                     thliq,    zbotw,   thiceg, &
@@ -273,7 +274,7 @@ end subroutine hetresg
 !>\ingroup heterotrophic_respiration_hetresv
 !!@{
 !>Heterotrophic Respiration Subroutine For Vegetated Fraction
-
+!> @author Vivek Arora and Joe Melton
 subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
                       delzw,  thpor, il1, &
                       il2,     tbar,   psisat, b, thliq,  &
@@ -687,5 +688,5 @@ end subroutine hetresv
 !!\f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \f]
 !!
 
-
+!>\file
 end module heterotrophic_respiration

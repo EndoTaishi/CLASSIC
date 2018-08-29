@@ -11,7 +11,7 @@
  ZRFHROW=  40.0     ,
  ZRFMROW=  40.000     ,
  ZBLDROW=  50.000     ,
- 
+
  !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
  GCROW= -1     ,
 
@@ -82,4 +82,9 @@
    5.1999999999999998E-002,  2.4000E-002, 2*0.0000       ,
  EXTNPROB= 0.50000     ,
  PRBFRHUC= 0.12000     ,
+ slopefrac= 0., 0., 0., 0., 0., 0., 0., 0.,
+ ipeatlandrow = 0,
+ Cmossmas= 0.,
+ litrmsmoss= 0.,
+ dmoss = 0.
  /

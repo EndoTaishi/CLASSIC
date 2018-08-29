@@ -1,14 +1,13 @@
+!>\file
 !>Central module for all land use change operations
 module landuse_change
 
-! J. Melton. Jan 11, 2013
 use ctem_params
 
 implicit none
 
 ! subroutines contained in this module:
 public  :: initializeLandCover
-!public  :: readin_luc
 public  :: luc
 private :: adjust_luc_fracs
 private :: adjust_fracs_comp
@@ -19,6 +18,7 @@ contains
 !>\ingroup landuse_change_initializeLandCover
 !>@{
 !>Initializes and checks over the PFT fractional cover.
+!> @author Joe Melton
 
 subroutine initializeLandCover
 !
@@ -89,78 +89,6 @@ pftarrays = 0.0
 ! from the LUC file.
 nfcancmxrow(:,:,:) = fcancmxrow(:,:,:)
 
-! !>it is the first year, so prepare the luc data:
-!
-! !>open the luc file
-!
-! open(unit=15,file='test.LUC')
-!
-! !>Skip first three rows:
-! read(15,*)
-! read(15,*)
-! read(15,*)
-! !>
-! !>get first year of luc data
-! !>note we load the nfcancmx, not pfcancmx array. this is because this
-! !>nfcancmx value is passed to the pfcancmx array at the start of each simulation year
-! !>
-! do i = 1, nlat
-!     if (.not. onetile_perPFT) then  !composite
-!     read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-!     if (nmos > 1) then
-!         do m = 2, nmos
-!         nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
-!         end do
-!     end if
-!     else                    !onetile_perPFT
-!     read (15,*) lucyr,(temparray(j),j=1,icc)
-!     do m = 1, nmos-1 !as nmos-1 = icc
-!         j = m
-!         nfcancmxrow(i,m,j) = temparray(m)
-!     enddo !m loop
-!     endif
-! enddo !nlat
-!
-! !>
-! !> next update our luc data if either of the following conditions are met:
-! !!
-! !! 1) we are cycling the met data and the luc year we just read in is less
-! !! than the year we want to cycle over (assuming it is not defaulted to
-! !! -9999) or,
-! !!
-! !! 2) we are not cycling over the met data so we just want to get the same
-! !! year of luc data as the met data we read in above in preparation for our
-! !! transient run.
-! !!
-! do while ((cyclemet .and. lucyr .lt. cylucyr             &
-!     .and. cylucyr .ne. -9999) .or. (.not. cyclemet .and.  &
-!     lucyr .lt. iyear))
-! !           get the luc data
-!     do i = 1, nlat
-!         if (.not. onetile_perPFT) then  !composite
-!         read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-!         if (nmos > 1) then
-!             do m = 2, nmos
-!             nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
-!             end do
-!         end if
-!         else                    !onetile_perPFT
-!         read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
-!         do m = 1, nmos-1 !nmos-1 same as icc
-!         j = m
-!         nfcancmxrow(i,m,j) = temparray(m)
-!         enddo !m loop
-!         endif
-!     enddo !nlat
-! enddo  !while loop
-!>
-!! If you are running with start_bare on, take in only the
-!! crop fractions, set rest to seed. If PFTCompetition, but not start bare, then
-!! just make sure you have at least seed for each pft.
-!!
-!n=1
-!k=1
-    !print*,'nfcancmxrow',nfcancmxrow
 if (PFTCompetition) then
     do i = 1, nlat
         do m = 1, nmos
@@ -237,152 +165,9 @@ do 997 j = 1, ican
 fcancmxrow(:,:,:)=nfcancmxrow(:,:,:)
 pfcancmxrow(:,:,:)=nfcancmxrow(:,:,:)
 
-! !>
-! !> back up one year in the luc file
-! !! this is because we were setting things up here,
-! !! we will later call readin_luc so want the file to be
-! !! rewound prior to that to the proper start year.
-! !!
-! do i = 1, nlat
-!     backspace(15)
-! enddo
-
 return
 
-! 999    continue
-!
-! !> end of the luc file is reached. close and tell main program to exit
-! close(15)
-! reach_eof = .true.
-
 end subroutine initializeLandCover
-!>@}
-!=======================================================================
-!>\ingroup landuse_change_readin_luc
-!>@{
-
-! subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
-!                       nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
-!                       onetile_perPFT)
-! !     9  Mar  2016  - Adapt for tiling where we PFTCompetition for space within a tile
-! !     J. Melton
-! !
-! !     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
-! !     J. Melton
-!
-! !     9  Jan. 2013  - this subroutine takes in luc information from
-! !     J. Melton       a luc file annually and adapts them for runclassctem
-! !
-! !     7  Feb. 2014  - Adapt it to work with competition
-! !     J. Melton
-!
-! use ctem_params,        only : nmos,nlat,icc,seed,crop
-!
-! implicit none
-!
-! ! arguments
-!
-! ! inputs
-! integer, intent(in) :: iyear
-! integer, intent(in) :: nmtest
-! integer, intent(in) :: nltest
-! logical, intent(in) :: PFTCompetition
-! logical, intent(in) :: onetile_perPFT !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
-!                                 !< how competition is run. Specifically it allows competition between tiles. This
-!                                 !< is not recommended for any case where you don't have one PFT in each tile as it
-!                                 !< has not been tested for that.
-!
-! ! updates
-! integer, intent(inout) :: lucyr
-! logical, intent(inout) :: reach_eof
-!
-! ! outputs
-! real, dimension(nlat,nmos,icc), intent(out) :: nfcancmxrow
-! real, dimension(nlat,nmos,icc), intent(in)  :: pfcancmxrow
-!
-! ! local variables
-! real, dimension(icc) :: temparray
-! real :: temp
-! integer :: j,m,i
-! integer :: k1,k2,n
-! real, dimension(nltest) :: bare_ground_frac
-!
-! !>-------------------------
-!
-! !>it is subsequent years so read in and adjust the luc file info.
-!
-!          do while (lucyr < iyear)
-!            do i = 1, nltest
-!             if (.not. onetile_perPFT) then  !composite
-!               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-!               if (nmtest > 1) then
-!                 do m = 2, nmtest
-!                     nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
-!                 end do
-!               end if
-!             else                    !onetile_perPFT
-!               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
-!               do m = 1, nmtest-1    !nmtest-1 same as icc
-!                j = m
-!                if (PFTCompetition) then
-!                   nfcancmxrow(i,m,j) = max(seed,temparray(m))
-!                else !prescribed run
-!                   nfcancmxrow(i,m,j) = max(0.,temparray(m))
-!                end if
-!               enddo !m loop
-!             endif
-!            enddo !nltest
-!          enddo !lucyr<iyear
-! !>
-! !>If PFTCompetition is on, then only take in the crop fraction. Set the other fractions
-! !>to the same as before. These will be adjusted in adjust_luc_fracs.
-!         if (PFTCompetition) then
-!          do j = 1, icc
-!           if (.not. crop(j)) then
-!            do i = 1, nltest
-!              do m = 1,nmtest
-!                 nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
-!              end do
-!            end do
-!           end if
-!          end do
-!         end if
-!
-!
-! !>(re)find the bare fraction for farerow(i,iccp1)
-!           bare_ground_frac=0.
-!           do i = 1, nltest
-!           temp = 0.0
-!            do j = 1, icc
-!             if (onetile_perPFT) then !flag
-!               m = j
-!             else !composite
-!               m = 1
-!             end if
-!             temp = temp + nfcancmxrow(i,m,j)
-!            enddo
-!
-!             bare_ground_frac(i) = 1.0- temp
-!
-!           enddo
-!
-!           do i = 1, nltest
-!            if ((PFTCompetition .and. bare_ground_frac(i) < seed) .or. (.not. PFTCompetition .and. bare_ground_frac(i) < 0.)) then
-!
-!              call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),PFTCompetition)
-!
-!            endif
-!           enddo !nltest
-!
-! return
-!
-! 999 continue
-!
-! !>end of the luc file is reached. close and tell main program to exit
-!         close(15)
-!         reach_eof = .true.
-!
-! end subroutine readin_luc
 !>@}
 !=======================================================================
 !>\ingroup landuse_change_luc
@@ -393,9 +178,9 @@ end subroutine initializeLandCover
 !! and soil c components. the decomposition from the litter and soil c pools thus implicitly models luc
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
-
-subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
-                        grclarea, pfcancmx, nfcancmx,      iday,    & !2
+!> @author Vivek Arora
+subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
+                        grclarea, pfcancmx, nfcancmx,      iday,    & !2    
                        todfrac,yesfrac,interpol,PFTCompetition,leapnow, & !3
 !    ----------------------- inputs above this line -------------
                          gleafmas, bleafmas, stemmass, rootmass,    & !4
@@ -656,39 +441,30 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         gavgscms(i)=0.0
 
 
-        grsumcom(i)=0.0          ! grid sum of combustion carbon for all
-                                 ! pfts that are chopped
-        grsumpap(i)=0.0          ! similarly for paper,
-        grsumfur(i)=0.0          ! furniture,
-        !do k = 1,ignd
-            grsumlit(i)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
-            grsumsoc(i)=0.0          ! soil c
-            grdenlit(i)=0.0          ! grid averaged densities for litter, and
-            grdensoc(i)=0.0          ! soil c
-            ! grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
-            ! grsumsoc(i,k)=0.0          ! soil c
-            ! grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
-            ! grdensoc(i,k)=0.0          ! soil c
-        !end do
+        barefrac(i)=1.0          
+        pbarefra(i)=1.0           
 
-        grdencom(i)=0.0          ! grid averaged densities for combustion carbon,
-        grdenpap(i)=0.0          ! paper,
-        grdenfur(i)=0.0          ! furniture,
+        grsumcom(i)=0.0
+        grsumpap(i)=0.0
+        grsumfur(i)=0.0
+        grsumlit(i)=0.0
+        grsumsoc(i)=0.0
 
-        totcmass(i)=0.0          ! total c mass (live+dead)
-        totlmass(i)=0.0          ! total c mass (live)
-        totdmas1(i)=0.0          ! total c mass (dead) litter
-        totdmas2(i)=0.0          ! total c mass (dead) soil c
+        grdencom(i)=0.0
+        grdenpap(i)=0.0
+        grdenfur(i)=0.0
+        grdenlit(i)=0.0
+        grdensoc(i)=0.0
 
-        barefrac(i)=1.0
-        pbarefra(i)=1.0
+        totcmass(i)=0.0
+        totlmass(i)=0.0
+        totdmas1(i)=0.0
+        totdmas2(i)=0.0
 
-
-        ntotcmas(i)=0.0          ! total c mass (live+dead)
-        ntotlmas(i)=0.0          ! total c mass (live)
-        ntotdms1(i)=0.0          ! total c mass (dead) litter
-        ntotdms2(i)=0.0          ! total c mass (dead) soil c
-
+        ntotcmas(i)=0.0
+        ntotlmas(i)=0.0
+        ntotdms1(i)=0.0
+        ntotdms2(i)=0.0
 
         lucemcom(i)=0.0
         lucltrin(i)=0.0
@@ -1159,10 +935,9 @@ end subroutine luc
 !>@{
 !> Adjusts the amount of each pft to ensure that the fraction of
 !> gridcell bare ground is >0.
-
+!> @author Joe Melton
 subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
                           bare_ground_frac, PFTCompetition)
-! J. Melton, Jan 11 2013
 
 use ctem_params,        only : nlat,nmos,icc,seed
 
@@ -1232,9 +1007,9 @@ end subroutine adjust_luc_fracs
 !>@{
 !> Used when PFTCompetition = true. It adjusts the amount of each pft
 !> to allow expansion of cropland.
+!> @author Joe Melton
 
 subroutine adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,outdelfrac)
-! J. Melton, Feb 13 2014
 
 use ctem_params,        only : icc,crop,zero,seed
 
@@ -1332,6 +1107,8 @@ end subroutine adjust_fracs_comp
 !>@}
 
 !>\namespace landuse_change
+!>Central module for all land use change operations
+!!
 !!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416 and briefly
 !! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
 !! In the simulation where fractional coverage of PFTs is specified, the changes in
@@ -1385,4 +1162,5 @@ end subroutine adjust_fracs_comp
 !! grow vegetation over the area that was previously a cropland.
 !!
 
+!>\file
 end module

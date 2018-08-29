@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['peatlands_5fmod',['peatlands_mod',['../namespacepeatlands__mod.html',1,'']]]
+  ['xmlmanager',['xmlmanager',['../namespacexmlmanager.html',1,'']]]
 ];

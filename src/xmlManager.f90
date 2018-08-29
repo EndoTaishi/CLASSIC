@@ -1,5 +1,9 @@
+!>\file
 !> The XML Manager Module handles the loading of variable descriptors and variable variants from an XML file.
 !! Once the variables are generated, corresponding NetCDF output files are created.
+!>@author
+!> Ed Wisernig
+
 module xmlManager
     use outputManager,  only : outputDescriptor, outputDescriptors, descriptorCount, &
                                 variant, variants, variantCount
@@ -46,10 +50,10 @@ contains
                 variableSetType = trim(attribs(2,1))
                 variableSetVersion = trim(attribs(2,2));
                 if (variableSetVersion == '') then
-                    stop("The input XML document doesn't feature the required version field of the <variableSet> node");
+                    stop ("The input XML document doesn't feature the required version field of the <variableSet> node");
                 else
                     xmlVersion = charToReal(variableSetVersion);
-                    if (xmlVersion < 1.2) stop('Older XML document found, please upgrade to a more recent version');
+                    if (xmlVersion < 1.2) stop ('Older XML document found, please upgrade to a more recent version');
                 endif
 
                 variableSetDate = trim(attribs(2,3))
@@ -147,4 +151,5 @@ contains
         character(len=*), intent(in)    :: input    !< Char input
         read(input,*) charToReal
     end function charToReal
+!>\file
 end module xmlManager

@@ -1,101 +1,111 @@
-      SUBROUTINE SNOW_ALBVAL(albdif, ! OUTPUT                                     SNOW_ALBVAL.2  
-     1                       albdir,                                              SNOW_ALBVAL.3  
-     2                       smu,    ! INPUT                                      SNOW_ALBVAL.4  
-     3                       salb,                                                SNOW_ALBVAL.5  
-     4                       bc_conc,                                             SNOW_ALBVAL.6  
-     5                       snow_reff,                                           SNOW_ALBVAL.7  
-     6                       swe,                                                 SNOW_ALBVAL.8  
-     7                       c_ind,                                               SNOW_ALBVAL.9  
-     8                       il1,                                                 SNOW_ALBVAL.10 
-     9                       il2,                                                 SNOW_ALBVAL.11 
-     1                       ilg,                                                 SNOW_ALBVAL.12 
-     2                       nbnd     )                                           SNOW_ALBVAL.13 
-!                                                                                 SNOW_ALBVAL.14 
-!     * JAN 24, 2013 - J. COLE                                                    SNOW_ALBVAL.15 
-!                    - COMPUTES THE DIRECT AND DIFFUSE SNOW ALBEDO                SNOW_ALBVAL.16 
-!                      USING LOOKUP TABLE AND CURRENT SNOW CONDITIONS.            SNOW_ALBVAL.17 
-!                                                                                 SNOW_ALBVAL.18 
-                                                                                  SNOW_ALBVAL.19 
-      IMPLICIT NONE                                                               SNOW_ALBVAL.20 
-                                                                                  SNOW_ALBVAL.21 
-!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~             SNOW_ALBVAL.22 
-! THIS SUBROUTINE COMPUTE THE DIRECT AND DIFFUSE SNOW ALBEDO USING A              SNOW_ALBVAL.23 
-! LOOKUP TABLE AND INFORMATION ABOUT THE CURRENT SNOW PACK STATE.                 SNOW_ALBVAL.24 
-! ALBEDOS ARE COMPUTED FOR EACH SOLAR RADIATION WAVELENGTH INTERVALS              SNOW_ALBVAL.25 
-! SO A TOTAL OF 8 ALBEDOS WILL BE RETURNED.  THESE ALBEDOS CAN THEN BE            SNOW_ALBVAL.26 
-! USED TO COMPUTE THE TOTAL SNOW ALBEDO BASED ON THE BY WEIGHTING                 SNOW_ALBVAL.27 
-! THE RESULTS BY THE DIRECT BEAM FRACTION OF THE INCIDENT SOLAR RADIATION.        SNOW_ALBVAL.28 
-!                                                                                 SNOW_ALBVAL.29 
-! INPUTS                                                                          SNOW_ALBVAL.30 
-! SMU:       COSINE OF THE SOLAR ZENITH ANGLE [UNITLESS]                          SNOW_ALBVAL.31 
-! SALB :     ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]                          SNOW_ALBVAL.32 
-! BC_CONC:   CONCENTRATION OF BLACK CARBON IN THE SNOW PACK [NG (BC)/KG (SNOW)]   SNOW_ALBVAL.33 
-! SNOW_REFF: EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]                         SNOW_ALBVAL.34 
-! SWE:       SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]    SNOW_ALBVAL.35 
-! C_IND:     INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT      SNOW_ALBVAL.36 
-!            1-YES, 0-NO                                                          SNOW_ALBVAL.37 
-! IL1:       STARTING POINT FOR ALBEDO CALCULATIONS                               SNOW_ALBVAL.38 
-! IL2:       ENDING POINT FOR ALBEDO CALCULATIONS                                 SNOW_ALBVAL.39 
-! ILG:      NUMBER OF POINTS FOR WHICH TO COMPUTE ALBEDOS                         SNOW_ALBVAL.40 
-! NBND:      NUMBER OF WAVELENGTH INTERVALS FOR WHICH TO COMPUTE THE ALBEDOS      SNOW_ALBVAL.41 
-!                                                                                 SNOW_ALBVAL.42 
-! OUTPUTS                                                                         SNOW_ALBVAL.43 
-! ALBDIF: DIFFUSE SNOW ALBEDO (AKA WHITE SKY ALBEDO)                              SNOW_ALBVAL.44 
-! ALBDIR: DIRECT BEAM SNOW ALBEDO (AKA BLACK SKY ALBEDO)                          SNOW_ALBVAL.45 
-!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~             SNOW_ALBVAL.46 
-                                                                                  SNOW_ALBVAL.47 
-!                                                                                 SNOW_ALBVAL.48 
-! INPUT                                                                           SNOW_ALBVAL.49 
-!                                                                                 SNOW_ALBVAL.50 
-      REAL, INTENT(IN), DIMENSION(ILG) ::                                         SNOW_ALBVAL.51 
-     1 smu,                                                                       SNOW_ALBVAL.52 
-     2 bc_conc,                                                                   SNOW_ALBVAL.53 
-     3 snow_reff,                                                                 SNOW_ALBVAL.54 
-     4 swe                                                                        SNOW_ALBVAL.55 
-                                                                                  SNOW_ALBVAL.56 
-      REAL, INTENT(IN), DIMENSION(ILG,NBND) ::                                    SNOW_ALBVAL.57 
-     1 salb                                                                       SNOW_ALBVAL.58 
-                                                                                  SNOW_ALBVAL.59 
-      INTEGER, INTENT(IN), DIMENSION(ILG) ::                                      SNOW_ALBVAL.60 
-     1 c_ind                                                                      SNOW_ALBVAL.61 
-                                                                                  SNOW_ALBVAL.62 
-      INTEGER, INTENT(IN) ::                                                      SNOW_ALBVAL.63 
-     1 il1,                                                                       SNOW_ALBVAL.64 
-     2 il2,                                                                       SNOW_ALBVAL.65 
-     3 ilg,                                                                       SNOW_ALBVAL.66 
-     4 nbnd                                                                       SNOW_ALBVAL.67 
-                                                                                  SNOW_ALBVAL.68 
-!                                                                                 SNOW_ALBVAL.69 
-! OUTPUT                                                                          SNOW_ALBVAL.70 
-!                                                                                 SNOW_ALBVAL.71 
-      REAL, INTENT(OUT), DIMENSION(ILG,NBND) ::                                   SNOW_ALBVAL.72 
-     1 albdif,                                                                    SNOW_ALBVAL.73 
-     2 albdir                                                                     SNOW_ALBVAL.74 
-                                                                                  SNOW_ALBVAL.75 
-!                                                                                 SNOW_ALBVAL.76 
-! LOCAL                                                                           SNOW_ALBVAL.77 
-!                                                                                 SNOW_ALBVAL.78 
-      REAL, DIMENSION(ILG,2) ::                                                   SNOW_ALBVAL.79 
-     1 wsmu,                                                                      SNOW_ALBVAL.80 
-     2 wbc,                                                                       SNOW_ALBVAL.81 
-     3 wreff,                                                                     SNOW_ALBVAL.82 
-     4 wswe                                                                       SNOW_ALBVAL.83 
-                                                                                  SNOW_ALBVAL.84 
-      REAL ::                                                                     SNOW_ALBVAL.85 
-     1 wsalb(2)                                                                   SNOW_ALBVAL.86 
-                                                                                  SNOW_ALBVAL.87 
-      REAL ::                                                                     SNOW_ALBVAL.88 
-     1 wtt,                                                                       SNOW_ALBVAL.89 
-     2 snow_reff_l                                                                SNOW_ALBVAL.90 
-                                                                                  SNOW_ALBVAL.91 
-      INTEGER, DIMENSION(ILG) ::                                                  SNOW_ALBVAL.92 
-     1 ismu,                                                                      SNOW_ALBVAL.93 
-     2 ibc,                                                                       SNOW_ALBVAL.94 
-     3 ireff,                                                                     SNOW_ALBVAL.95 
-     4 iswe                                                                       SNOW_ALBVAL.96 
-                                                                                  SNOW_ALBVAL.97 
-      INTEGER ::                                                                  SNOW_ALBVAL.98 
-     1 ib,                                                                        SNOW_ALBVAL.99 
+!>\file
+C!Computes the direct and diffuse snow albedo using lookup table and current snow conditions.
+C!@author J. Cole
+!!
+C!! This subroutine compute the direct and diffuse snow albedo using a
+!! lookup table and information about the current snow pack state.
+!! Albedos are computed for each solar radiation wavelength intervals
+!! so a total of 8 albedos will be returned.  These albedos can then be
+!! used to compute the total snow albedo based on the by weighting
+!! the results by the direct beam fraction of the incident solar radiation.
+C!
+      SUBROUTINE SNOW_ALBVAL(albdif, ! OUTPUT                                     SNOW_ALBVAL.2
+     1                       albdir,                                              SNOW_ALBVAL.3
+     2                       smu,    ! INPUT                                      SNOW_ALBVAL.4
+     3                       salb,                                                SNOW_ALBVAL.5
+     4                       bc_conc,                                             SNOW_ALBVAL.6
+     5                       snow_reff,                                           SNOW_ALBVAL.7
+     6                       swe,                                                 SNOW_ALBVAL.8
+     7                       c_ind,                                               SNOW_ALBVAL.9
+     8                       il1,                                                 SNOW_ALBVAL.10
+     9                       il2,                                                 SNOW_ALBVAL.11
+     1                       ilg,                                                 SNOW_ALBVAL.12
+     2                       nbnd     )                                           SNOW_ALBVAL.13
+!                                                                                 SNOW_ALBVAL.14
+!     * JAN 24, 2013 - J. COLE                                                    SNOW_ALBVAL.15
+!                    - COMPUTES THE DIRECT AND DIFFUSE SNOW ALBEDO                SNOW_ALBVAL.16
+!                      USING LOOKUP TABLE AND CURRENT SNOW CONDITIONS.            SNOW_ALBVAL.17
+!                                                                                 SNOW_ALBVAL.18
+                                                                                  SNOW_ALBVAL.19
+      IMPLICIT NONE                                                               SNOW_ALBVAL.20
+                                                                                  SNOW_ALBVAL.21
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~             SNOW_ALBVAL.22
+! THIS SUBROUTINE COMPUTE THE DIRECT AND DIFFUSE SNOW ALBEDO USING A              SNOW_ALBVAL.23
+! LOOKUP TABLE AND INFORMATION ABOUT THE CURRENT SNOW PACK STATE.                 SNOW_ALBVAL.24
+! ALBEDOS ARE COMPUTED FOR EACH SOLAR RADIATION WAVELENGTH INTERVALS              SNOW_ALBVAL.25
+! SO A TOTAL OF 8 ALBEDOS WILL BE RETURNED.  THESE ALBEDOS CAN THEN BE            SNOW_ALBVAL.26
+! USED TO COMPUTE THE TOTAL SNOW ALBEDO BASED ON THE BY WEIGHTING                 SNOW_ALBVAL.27
+! THE RESULTS BY THE DIRECT BEAM FRACTION OF THE INCIDENT SOLAR RADIATION.        SNOW_ALBVAL.28
+!                                                                                 SNOW_ALBVAL.29
+! INPUTS                                                                          SNOW_ALBVAL.30
+!! @var SMU:       COSINE OF THE SOLAR ZENITH ANGLE [UNITLESS]                          SNOW_ALBVAL.31
+!! @var SALB :     ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]                          SNOW_ALBVAL.32
+!! @param BC_CONC:   CONCENTRATION OF BLACK CARBON IN THE SNOW PACK [NG (BC)/KG (SNOW)]   SNOW_ALBVAL.33
+!! @param SNOW_REFF: EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]                         SNOW_ALBVAL.34
+!! @param SWE:       SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]    SNOW_ALBVAL.35
+!! @param C_IND:     INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT 1-YES, 0-NO                                                          SNOW_ALBVAL.37
+!! @param IL1:       STARTING POINT FOR ALBEDO CALCULATIONS                               SNOW_ALBVAL.38
+!! @param IL2:       ENDING POINT FOR ALBEDO CALCULATIONS                                 SNOW_ALBVAL.39
+!! @param ILG:      NUMBER OF POINTS FOR WHICH TO COMPUTE ALBEDOS                         SNOW_ALBVAL.40
+!! @param NBND:      NUMBER OF WAVELENGTH INTERVALS FOR WHICH TO COMPUTE THE ALBEDOS      SNOW_ALBVAL.41
+!                                                                                 SNOW_ALBVAL.42
+! OUTPUTS                                                                         SNOW_ALBVAL.43
+!! @param ALBDIF: DIFFUSE SNOW ALBEDO (AKA WHITE SKY ALBEDO)                              SNOW_ALBVAL.44
+!! @param ALBDIR: DIRECT BEAM SNOW ALBEDO (AKA BLACK SKY ALBEDO)                          SNOW_ALBVAL.45
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~             SNOW_ALBVAL.46
+                                                                                  SNOW_ALBVAL.47
+!                                                                                 SNOW_ALBVAL.48
+! INPUT                                                                           SNOW_ALBVAL.49
+!                                                                                 SNOW_ALBVAL.50
+      REAL, INTENT(IN), DIMENSION(ILG) ::                                         SNOW_ALBVAL.51
+     1 smu,                                                                       SNOW_ALBVAL.52
+     2 bc_conc,                                                                   SNOW_ALBVAL.53
+     3 snow_reff,                                                                 SNOW_ALBVAL.54
+     4 swe                                                                        SNOW_ALBVAL.55
+                                                                                  SNOW_ALBVAL.56
+      REAL, INTENT(IN), DIMENSION(ILG,NBND) ::                                    SNOW_ALBVAL.57
+     1 salb                                                                       SNOW_ALBVAL.58
+                                                                                  SNOW_ALBVAL.59
+      INTEGER, INTENT(IN), DIMENSION(ILG) ::                                      SNOW_ALBVAL.60
+     1 c_ind                                                                      SNOW_ALBVAL.61
+                                                                                  SNOW_ALBVAL.62
+      INTEGER, INTENT(IN) ::                                                      SNOW_ALBVAL.63
+     1 il1,                                                                       SNOW_ALBVAL.64
+     2 il2,                                                                       SNOW_ALBVAL.65
+     3 ilg,                                                                       SNOW_ALBVAL.66
+     4 nbnd                                                                       SNOW_ALBVAL.67
+                                                                                  SNOW_ALBVAL.68
+!                                                                                 SNOW_ALBVAL.69
+! OUTPUT                                                                          SNOW_ALBVAL.70
+!                                                                                 SNOW_ALBVAL.71
+      REAL, INTENT(OUT), DIMENSION(ILG,NBND) ::                                   SNOW_ALBVAL.72
+     1 albdif,                                                                    SNOW_ALBVAL.73
+     2 albdir                                                                     SNOW_ALBVAL.74
+                                                                                  SNOW_ALBVAL.75
+!                                                                                 SNOW_ALBVAL.76
+! LOCAL                                                                           SNOW_ALBVAL.77
+!                                                                                 SNOW_ALBVAL.78
+      REAL, DIMENSION(ILG,2) ::                                                   SNOW_ALBVAL.79
+     1 wsmu,                                                                      SNOW_ALBVAL.80
+     2 wbc,                                                                       SNOW_ALBVAL.81
+     3 wreff,                                                                     SNOW_ALBVAL.82
+     4 wswe                                                                       SNOW_ALBVAL.83
+                                                                                  SNOW_ALBVAL.84
+      REAL ::                                                                     SNOW_ALBVAL.85
+     1 wsalb(2)                                                                   SNOW_ALBVAL.86
+                                                                                  SNOW_ALBVAL.87
+      REAL ::                                                                     SNOW_ALBVAL.88
+     1 wtt,                                                                       SNOW_ALBVAL.89
+     2 snow_reff_l                                                                SNOW_ALBVAL.90
+                                                                                  SNOW_ALBVAL.91
+      INTEGER, DIMENSION(ILG) ::                                                  SNOW_ALBVAL.92
+     1 ismu,                                                                      SNOW_ALBVAL.93
+     2 ibc,                                                                       SNOW_ALBVAL.94
+     3 ireff,                                                                     SNOW_ALBVAL.95
+     4 iswe                                                                       SNOW_ALBVAL.96
+                                                                                  SNOW_ALBVAL.97
+      INTEGER ::                                                                  SNOW_ALBVAL.98
+     1 ib,                                                                        SNOW_ALBVAL.99
      2 i,                                                                         SNOW_ALBVAL.100
      3 isalb                                                                      SNOW_ALBVAL.101
                                                                                   SNOW_ALBVAL.102
@@ -115,7 +125,7 @@
       INTEGER, PARAMETER ::                                                       SNOW_ALBVAL.116
      1 nsmu     = 10,                                                             SNOW_ALBVAL.117
      2 nsalb    = 11,                                                             SNOW_ALBVAL.118
-     3 nbc      = 20,                                                             new_snow_lut.2 
+     3 nbc      = 20,                                                             new_snow_lut.2
      4 nreff    = 10,                                                             SNOW_ALBVAL.120
      5 nswe     = 11,                                                             SNOW_ALBVAL.121
      6 nbnd_lut = 4                                                               SNOW_ALBVAL.122
@@ -129,13 +139,13 @@
      6   (/50.0,75.0,100.0,150.0,200.0,275.0,375.0,500.0,700.0,1000.0/),          SNOW_ALBVAL.130
      7 LSWE(NSWE)        =                                                        SNOW_ALBVAL.131
      8      (/0.1,0.25,0.65,1.7,4.4,12.0,30.0,75.0,200.0,500.0,5000.0/),          SNOW_ALBVAL.132
-     9 LBC_CONC(NBC)     = (/0.0,1.0,                                             new_snow_lut.3 
-     1                       5.0,10.0,                                            new_snow_lut.4 
-     2                       50.0,100.0,                                          new_snow_lut.5 
-     3                       500.0,1000.0,                                        new_snow_lut.6 
-     4                       5000.0,10000.0,                                      new_snow_lut.7 
-     5                       50000.0,100000.0,                                    new_snow_lut.8 
-     6                       250000.0,500000.0,750000.0,1000000.0,                new_snow_lut.9 
+     9 LBC_CONC(NBC)     = (/0.0,1.0,                                             new_snow_lut.3
+     1                       5.0,10.0,                                            new_snow_lut.4
+     2                       50.0,100.0,                                          new_snow_lut.5
+     3                       500.0,1000.0,                                        new_snow_lut.6
+     4                       5000.0,10000.0,                                      new_snow_lut.7
+     5                       50000.0,100000.0,                                    new_snow_lut.8
+     6                       250000.0,500000.0,750000.0,1000000.0,                new_snow_lut.9
      7                       2500000.0,5000000.0,7500000.0,10000000.0/)           new_snow_lut.10
                                                                                   SNOW_ALBVAL.135
       REAL, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) ::                      SNOW_ALBVAL.136
@@ -290,4 +300,5 @@
       END DO                    ! ib                                              SNOW_ALBVAL.285
                                                                                   SNOW_ALBVAL.286
       RETURN                                                                      SNOW_ALBVAL.287
+      !>\file
       END                                                                         SNOW_ALBVAL.288
