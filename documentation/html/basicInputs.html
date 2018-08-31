@@ -110,8 +110,9 @@ Atmospheric Forcing Data</h1>
 </li>
 <li>PRESROW Surface air pressure <img class="formulaInl" alt="$[P_a ]$" src="form_1510.png"/></li>
 <li>QAROW Specific humidity at reference height <img class="formulaInl" alt="$[kg kg^{-1} ]$" src="form_233.png"/></li>
-<li>TAROW Air temperature at reference height [K]<ul>
+<li>TAROW Air temperature at reference height [degree C]<ul>
 <li>For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure, Pa . For field data, the actual measured air temperature at the reference height should be used, since in this case the adiabatic extrapolation is performed within CLASS.</li>
+<li><b>Note: In CLASSIC, TAROW is in Kelvin, however the driver expects the air temperature in units of degrees celsius. The conversion is done in <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a>.</b></li>
 </ul>
 </li>
 <li>VMODROW Wind speed at reference height <img class="formulaInl" alt="$[m s^-1 ]$" src="form_1511.png"/><ul>
@@ -337,7 +338,7 @@ Initialization of Biogeochemical Prognostic Variables</h2>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Aug 24 2018 12:46:19 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 31 2018 12:04:25 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

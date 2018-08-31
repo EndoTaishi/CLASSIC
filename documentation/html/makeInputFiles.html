@@ -148,6 +148,7 @@ Preparation of files for meteorological inputs</h1>
 <li>Only one variable per file besides lon, lat, and time.</li>
 <li>Note the time units.</li>
 <li>The file is chunked (which depends on the grid being used. What you see here is optimal for T63 global runs). Chunking is not needed for site-level runs</li>
+<li>CLASSIC expects the first time step to be 0 hour 0 minute (in hh:mm:ss format - 00:00:00).</li>
 </ul>
 <p>If you have ACSCII met files from a site, see <a class="el" href="asciiMet.html">ASCII to NetCDF met file loader</a> to use the provided tool to convert them to the appropriate netCDF format.</p>
 <h1><a class="anchor" id="makeInit"></a>
@@ -495,7 +496,7 @@ Making input files for other input variables</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Aug 24 2018 12:46:19 for CLASSIC by
+    <li class="footer">Generated on Fri Aug 31 2018 12:04:25 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -234,6 +234,8 @@ var NAVTREEINDEX1 =
 "hetres__mod_8f90.html":[7,0,0,41],
 "hetres__mod_8f90.html#a6015e31f90a97392aab943cb6f320202":[7,0,0,41,1],
 "hetres__mod_8f90.html#ab4a0ba4bae97230b3b5400dd3cf5513f":[7,0,0,41,0],
+"howDoI.html":[0,10],
+"howDoI.html#chgSoil":[0,10,0],
 "index.html":[],
 "index.html":[0],
 "index.html#main":[0,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "interfacexmlparser_1_1xml__report__errors.html#af67e68edea33c838a8791149b5832b25":[6,0,3,2,1],
 "landuse__change__mod_8f90.html":[7,0,0,43],
 "landuse__change__mod_8f90.html#a242419d727f14ffc4a8681914054ad62":[7,0,0,43,3],
-"landuse__change__mod_8f90.html#abd34dc6a8785098e4bdfd731a6f8e7d2":[7,0,0,43,2],
-"landuse__change__mod_8f90.html#ac5e376aec7af38f3cc2fc3e70becfe71":[7,0,0,43,1],
-"landuse__change__mod_8f90.html#af8bd5c9aac5c07650742637d986dbf15":[7,0,0,43,0]
+"landuse__change__mod_8f90.html#abd34dc6a8785098e4bdfd731a6f8e7d2":[7,0,0,43,2]
 };

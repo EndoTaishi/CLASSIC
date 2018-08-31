@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"structctem__statevars_1_1veg__gat.html#afe1bebb7494fe1a26c90e0aeb78f9057":[6,0,1,8,176],
+"structctem__statevars_1_1veg__gat.html#afe830c699b0e8e2100cb5bc021280df6":[6,0,1,8,48],
 "structctem__statevars_1_1veg__rot.html":[6,0,1,9],
 "structctem__statevars_1_1veg__rot.html#a0261920e3fafa54faf4fae34aafb395a":[6,0,1,9,33],
 "structctem__statevars_1_1veg__rot.html#a0607e84fdde5dd7a352ed1fa1d27a6d0":[6,0,1,9,134],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "xmlManager_8f90.html#a2204aa9d7d067f81fb462c4df4d4faf3":[7,0,0,86,2],
 "xmlManager_8f90.html#a2884eec136afc157e5963e57dbc82b6d":[7,0,0,86,3],
 "xmlManager_8f90.html#a29cf1ecaaff938e0e6a29eb42d810c6d":[7,0,0,86,16],
-"xmlManager_8f90.html#a3fc710b9837036cf32acd57ed0e43774":[7,0,0,86,12],
-"xmlManager_8f90.html#a41bef94a20c37e6e733646cdf534ac86":[7,0,0,86,0],
-"xmlManager_8f90.html#a4b24d4723996d745939b9312de144416":[7,0,0,86,4]
+"xmlManager_8f90.html#a3fc710b9837036cf32acd57ed0e43774":[7,0,0,86,12]
 };

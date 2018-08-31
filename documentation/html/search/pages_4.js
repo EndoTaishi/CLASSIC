@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['overview_20of_20the_20canadian_20land_20surface_20scheme_20_28class_29',['Overview of the Canadian Land Surface Scheme (CLASS)',['../overviewCLASS.html',1,'index']]],
-  ['overview_20of_20the_20canadian_20terrestrial_20ecosystem_20model_20_28ctem_29',['Overview of the Canadian Terrestrial Ecosystem Model (CTEM)',['../overviewCTEM.html',1,'index']]]
+  ['modify_20netcdf_20model_20initialization_20files_20for_20whole_20fields_20or_20point_20locations',['Modify netcdf model initialization files for whole fields or point locations',['../modifyRS.html',1,'']]]
 ];

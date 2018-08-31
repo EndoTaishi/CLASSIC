@@ -1,5 +1,7 @@
 var NAVTREEINDEX6 =
 {
+"structctem__statevars_1_1ctem__gridavg__annual.html#a17178579f13f453f55c217a952ffc735":[6,0,1,1,5],
+"structctem__statevars_1_1ctem__gridavg__annual.html#a205279684ffd74d8c6a7c5ef798b3fec":[6,0,1,1,2],
 "structctem__statevars_1_1ctem__gridavg__annual.html#a26d53f76a82e0633f7e267cd57198ba3":[6,0,1,1,28],
 "structctem__statevars_1_1ctem__gridavg__annual.html#a3bd2cc3c7b205a3d3d609438bb33ccba":[6,0,1,1,17],
 "structctem__statevars_1_1ctem__gridavg__annual.html#a407c5145b70282fd23328db089b46830":[6,0,1,1,36],
@@ -247,7 +249,5 @@ var NAVTREEINDEX6 =
 "structctem__statevars_1_1ctem__tileavg__annual.html#ab60ce9de9dda8f00c16258829b6d684b":[6,0,1,6,35],
 "structctem__statevars_1_1ctem__tileavg__annual.html#ab702d45465437d1ca7ae763d61ee2cef":[6,0,1,6,10],
 "structctem__statevars_1_1ctem__tileavg__annual.html#ab761ea9a618dab18dc2a4a48b4b598c5":[6,0,1,6,17],
-"structctem__statevars_1_1ctem__tileavg__annual.html#aba91807b85fd59ad73520bfe080ee3ad":[6,0,1,6,38],
-"structctem__statevars_1_1ctem__tileavg__annual.html#ad2f2ae5dd570b70da58456c81e8251a4":[6,0,1,6,36],
-"structctem__statevars_1_1ctem__tileavg__annual.html#ad6a51ed9fd40a0d3fd0f41fe6d7b311c":[6,0,1,6,28]
+"structctem__statevars_1_1ctem__tileavg__annual.html#aba91807b85fd59ad73520bfe080ee3ad":[6,0,1,6,38]
 };

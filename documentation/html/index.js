@@ -49,5 +49,8 @@ var index =
     [ "Running CLASSIC", "runCLASSIC.html", [
       [ "Running CLASSIC for a point location", "runCLASSIC.html#runStandAloneMode", null ],
       [ "Running CLASSIC over a grid (Global or Regional)", "runCLASSIC.html#runGrid", null ]
+    ] ],
+    [ "How do I ...", "howDoI.html", [
+      [ "Change the number/depth/etc of soil layers?", "howDoI.html#chgSoil", null ]
     ] ]
 ];

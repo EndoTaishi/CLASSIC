@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['running_20classic',['Running CLASSIC',['../runCLASSIC.html',1,'index']]]
+  ['preparing_20a_20classic_20run',['Preparing a CLASSIC run',['../runPrep.html',1,'index']]]
 ];
