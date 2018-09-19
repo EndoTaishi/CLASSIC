@@ -706,9 +706,9 @@ contains
             deallocate(dimArray,start,count)
 
             allocate(dimArray(4),start(4),count(4))
-            dimArray = (/lonDimId,latDimId,slopeDimId,tileDimId/)
+            dimArray = (/lonDimId,latDimId,tileDimId,slopeDimId/)
             start = (/1, 1, 1 ,1/)
-            count = (/1, 1, 8, 1/)
+            count = (/1, 1, 1, 8/)
             call exportVariable('slopefrac',units='-',long_name='Slope-based fraction for dynamic wetlands',values2D=slopefrac)
 
             dimArray = (/lonDimId,latDimId,icctemDimId,tileDimId/)
