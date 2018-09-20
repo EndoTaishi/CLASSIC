@@ -84,7 +84,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M
+      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M,k
 C
 C     * OUTPUT ARRAYS.
 C
@@ -314,12 +314,28 @@ C
               THLW(I,M,J)=0.0
               PSIWLT(I,M,J)=0.0
           ELSEIF(ISAND(I,M,J).EQ.-2) THEN
-              THPOR (I,M,J)=THPORG(MIN(J,3))
-              THLRET(I,M,J)=THRORG(MIN(J,3))
-              THLMIN(I,M,J)=THMORG(MIN(J,3))
-              BI    (I,M,J)=BORG(MIN(J,3))
-              PSISAT(I,M,J)=PSISORG(MIN(J,3))
-              GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
+              ! FLAG test!
+              if (j==1) then
+                  k = 1
+              elseif (j == 2 .or. j == 3) then
+                  k = 2
+              else
+                  k = 3
+              end if
+              THPOR (I,M,J)=THPORG(k)
+              THLRET(I,M,J)=THRORG(k)
+              THLMIN(I,M,J)=THMORG(k)
+              BI    (I,M,J)=BORG(k)
+              PSISAT(I,M,J)=PSISORG(k)
+              GRKSAT(I,M,J)=GRKSORG(k)
+
+              !THPOR (I,M,J)=THPORG(MIN(J,3))
+              !THLRET(I,M,J)=THRORG(MIN(J,3))
+              !THLMIN(I,M,J)=THMORG(MIN(J,3))
+              !BI    (I,M,J)=BORG(MIN(J,3))
+              !PSISAT(I,M,J)=PSISORG(MIN(J,3))
+              !GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
+              ! FLAG end test. JM
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
