@@ -846,6 +846,9 @@ contains
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
         logical, pointer :: dohhoutput
+        logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+
 
         ! ROW vars:
         logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -1880,6 +1883,7 @@ contains
         dodayoutput       => c_switch%dodayoutput
         dohhoutput        => c_switch%dohhoutput
         readMetStartYear  => c_switch%readMetStartYear
+        projectedGrid     => c_switch%projectedGrid
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -2359,18 +2363,34 @@ contains
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
-            if (dofire) call getInput('POPD',longitude,latitude) ! Population density
-            if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
-            if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
-            if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
-
+            if (.not. projectedGrid) then
+              !regular lon/lat grid
+              if (dofire) call getInput('POPD',longitude,latitude) ! Population density
+              if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
+              if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
+              if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
+            else
+              ! Projected grids use the lon and lat indexes, not the actual coordinates
+              if (dofire) call getInput('POPD',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Population density
+              if (dofire) call getInput('LGHT',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Cloud-to-ground lightning frequency
+              if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) &
+                  call getInput('OBSWETF',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Observed wetland distribution
+              if (lnduseon .or. (fixedYearLUC .ne. -9999)) &
+                  call getInput('LUC',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Land use change
+            end if
             !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
             !! and assign the CLASS PFTs as they are not read in when ctem_on.
             call initializeLandCover
         end if
 
         !> Read in the meteorological forcing data to a suite of arrays
-        call getMet(longitude,latitude,nday,delt)
+        if (.not. projectedGrid) then
+          ! regular lon lat grid
+          call getMet(longitude,latitude,nday,delt)
+        else
+          ! Projected grids use the lon and lat indexes, not the actual coordinates
+          call getMet(longitude,latitude,nday,delt,projLonInd=lonIndex,projLatInd=latIndex)
+        end if
 
         !> Now disaggregate the meteorological forcing to the right timestep
         !! for this model run (if needed; this is checked for in the subroutine)

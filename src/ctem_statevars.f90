@@ -20,7 +20,7 @@ public :: resetMosaicAccum
 type ctem_switches
 
     logical :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
-                                !! regions referenced by the indexs, not coordinates, when running a sub-region
+                                !! regions referenced by the indexes, not coordinates, when running a sub-region
     logical :: ctem_on          !<True if this run includes the biogeochemistry parameterizations (CTEM)
     integer :: metLoop          !< no. of times the meteorological data is to be looped over. this
                                 !< option is useful to equilibrate CTEM's C pools
@@ -1152,7 +1152,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
 
-! allocated with nlat,nmos,ican:     
+! allocated with nlat,nmos,ican:
          vrot%zolnc(nlat,nmos,ican),&
          vrot%ailc(nlat,nmos,ican),&
          vrot%cmasvegc(nlat,nmos,ican),&

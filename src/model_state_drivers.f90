@@ -316,8 +316,8 @@ contains
         myDomain%LandCellCount = 0
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
+              if (projectedGrid) flattenedIndex = (i + myDomain%srtx - 2) * totlon + (j + myDomain%srty - 1)  !FLAG this needs to be checked when I have a file!!
                 if (mask(i,j) .eq. -1) then
-                  if (projectedGrid) flattenedIndex = (i + myDomain%srtx - 2) * totlon + (j + myDomain%srty - 1)  !FLAG this needs to be checked when I have a file!!
                     !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
                     !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
                   myDomain%LandCellCount = myDomain%LandCellCount + 1
@@ -1033,7 +1033,7 @@ contains
     !! as well as the input values into memory.
     !>@author Joe Melton
 
-    subroutine getInput(inputRequested,longitude,latitude)
+    subroutine getInput(inputRequested,longitude,latitude,projLonInd,projLatInd)
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp
@@ -1046,10 +1046,13 @@ contains
         character(*), intent(in) :: inputRequested
         real, intent(in), optional :: longitude
         real, intent(in), optional :: latitude
+        integer, intent(in), optional :: projLonInd
+        integer, intent(in), optional :: projLatInd
         integer :: lengthOfFile
         integer :: lonloc,latloc
         integer :: i,arrindex,m,numPFTsinFile,d
         real, dimension(:), allocatable :: fileTime
+        logical, pointer :: projectedGrid
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
         logical, pointer :: transientCH4
@@ -1070,6 +1073,7 @@ contains
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
 
+        projectedGrid   => c_switch%projectedGrid
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
         transientCH4    => c_switch%transientCH4
@@ -1164,8 +1168,15 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 POPDTime(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
-            lonloc = closestCell(popid,'lon',longitude)
-            latloc = closestCell(popid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(popid,'lon',longitude)
+              latloc = closestCell(popid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
@@ -1196,8 +1207,15 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 LGHTTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
-            lonloc = closestCell(lghtid,'lon',longitude)
-            latloc = closestCell(lghtid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(lghtid,'lon',longitude)
+              latloc = closestCell(lghtid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             ! Units expected are "strikes km-2 yr-1"
 
@@ -1241,8 +1259,15 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 LUCTime(i) = int(dateTime(1)) ! Rewrite putting in only the year
             end do
-            lonloc = closestCell(lucid,'lon',longitude)
-            latloc = closestCell(lucid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(lucid,'lon',longitude)
+              latloc = closestCell(lucid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             ! Ensure the file has the expected number of PFTs
             numPFTsinFile = ncGetDimLen(lucid, 'lev')
@@ -1282,8 +1307,14 @@ contains
                 OBSWETFTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
 
-            lonloc = closestCell(obswetid,'lon',longitude)
-            latloc = closestCell(obswetid,'lat',latitude)
+            if (.not. projectedGrid) then
+              lonloc = closestCell(obswetid,'lon',longitude)
+              latloc = closestCell(obswetid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             if (transientOBSWETF) then
                 ! We read in the whole OBSWETF times series and store it.
@@ -1501,7 +1532,7 @@ contains
     !! There is an orders of magnitude slow-up otherwise!
     !>@author Joe Melton
 
-    subroutine getMet(longitude,latitude,nday,delt)
+    subroutine getMet(longitude,latitude,nday,delt,projLonInd,projLatInd)
 
         use fileIOModule
         use ctem_statevars, only : c_switch
@@ -1513,9 +1544,13 @@ contains
         real, intent(in) :: latitude        !< Latitude of grid cell of interest
         integer, intent(in) :: nday         !< Maximum number of physics timesteps in one day
         real, intent(in) :: delt            !< Physics timestep (s)
+        integer, intent(in), optional :: projLonInd !< Longitude index of the cell for projected grid runs
+        integer, intent(in), optional :: projLatInd !< Latitude index of the cell for projected grid runs
 
         integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
         integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+        logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                            !! regions referenced by the indexes, not coordinates, when running a sub-region
 
         real :: moStart,moEnd,domStart,domEnd !< Assumed start and end months and days of month
         real :: timeStart, timeEnd            !< Calculated start and end in the format:%Y%m%d.%f
@@ -1527,6 +1562,7 @@ contains
         integer :: firstIndex
         real, dimension(5) :: firstTime,secondTime
 
+        projectedGrid     => c_switch%projectedGrid
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
 
@@ -1582,8 +1618,15 @@ contains
         metInputTimeStep = (secondTime(4) - firstTime(4)) * 86400.
 
         ! Find the closest cell to our lon and lat
-        lonloc = closestCell(metFssId,'lon',longitude)
-        latloc = closestCell(metFssId,'lat',latitude)
+        if (.not. projectedGrid) then
+          lonloc = closestCell(metFssId,'lon',longitude)
+          latloc = closestCell(metFssId,'lat',latitude)
+        else
+          ! For projected grids, we use the index of the cells, not their coordinates.
+          ! So the index has been passed in as a real, convert here to an integer.
+          lonloc = projLonInd
+          latloc = projLatInd
+        end if
 
         ! Now read in the whole MET times series and store it for each variable
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&

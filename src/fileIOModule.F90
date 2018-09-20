@@ -328,7 +328,7 @@ contains
           allocate(ncGetDimValues(count2D(1)*count2D(2)))
           ncGetDimValues = ncGetVar(fileId, label, localStart2D, localCount2D)
         case default
-            stop("Only up to 2 dimensions have been implemented in ncGetDimValues")
+            stop ("Only up to 2 dimensions have been implemented in ncGetDimValues")
         end select
 
     end function ncGetDimValues
