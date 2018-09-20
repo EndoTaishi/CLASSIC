@@ -1,3 +1,7 @@
+!>\file
+!>Calculates surface layer transfer coefficients and fluxes
+!!FLXSURFZ is a variant of FLXSURF3 that permits to input
+!!wind and temperature (humidity) at different levels
       SUBROUTINE FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO,
      X                    UE, FCOR, TA , QA , ZU, ZT, VA,
      Y                    TG , QG , H , Z0 , Z0T,
@@ -41,7 +45,7 @@ c                               to avoid numerical problems with log
 c 016      D. Verseghy (Jun 06) - Loop over IL1-IL2 instead of 1-N
 c 017      J.P. Paquin (Aug 08) - "Synchronization" with flxsurf3
 c                               - Insert code from stabfunc2.cdk (v4.5)
-c                               - VAMIN=2.5 m/s to be coherent with ISBA  
+c                               - VAMIN=2.5 m/s to be coherent with ISBA
 c                                 (temporary measure VAMIN should be added
 c                                  to physics constants)
 c                                 (changes implemented by L.Duarte on Oct 08)
@@ -68,7 +72,7 @@ c RIB      bulk Richardson number
 c FTEMP    temperature flux
 c FVAP     vapor flux
 c ILMO     (1/length of Monin-Obukov)
-c UE       friction velocity 
+c UE       friction velocity
 c H        height of the boundary layer
 c FM       momentum stability function
 c FH       heat stability function
@@ -91,7 +95,7 @@ cNotes
 c          SEE DELAGE AND GIRARD BLM 58 (19-31)
 c                "       BLM 82 (23-48)
 c
-c     DIVERSES CONSTANTES PHYSIQUES 
+c     DIVERSES CONSTANTES PHYSIQUES
 c
       REAL AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX,CLM
       REAL DELTA,GRAV,KARMAN,CPD
@@ -159,7 +163,7 @@ c  FIRST APPROXIMATION TO ILMO
       ENDIF
       ENDDO
 
-c - - - - - - - - -  BEGINNING OF ITERATION LOOP - - - - - - - - - - - 
+c - - - - - - - - -  BEGINNING OF ITERATION LOOP - - - - - - - - - - -
       DO 35 IT=1,ITMAX
       DO 35 J=IL1,IL2
       IF(FI(J).GT.0. .AND. ITER(J).EQ.1) THEN

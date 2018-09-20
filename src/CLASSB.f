@@ -4,9 +4,9 @@ C>\file
 !!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
-     2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,            
+     2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)                 
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)
 C
 C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, somehow it worked
 C                               Change to TCCLAY for consistency with rest of model.
@@ -84,7 +84,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M
+      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M,k
 C
 C     * OUTPUT ARRAYS.
 C
@@ -229,8 +229,8 @@ C
 !!depending on soil type. Values of ISAND greater than or equal to zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
 !!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
 !!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
-!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc:
-
+!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc
+!!
 !!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
 !!\f$b = 0.159 X_{clay} + 2.91\f$
 !!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
@@ -314,12 +314,28 @@ C
               THLW(I,M,J)=0.0
               PSIWLT(I,M,J)=0.0
           ELSEIF(ISAND(I,M,J).EQ.-2) THEN
-              THPOR (I,M,J)=THPORG(MIN(J,3))
-              THLRET(I,M,J)=THRORG(MIN(J,3))
-              THLMIN(I,M,J)=THMORG(MIN(J,3))
-              BI    (I,M,J)=BORG(MIN(J,3))
-              PSISAT(I,M,J)=PSISORG(MIN(J,3))
-              GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
+              ! FLAG test!
+              if (j==1) then
+                  k = 1
+              elseif (j == 2 .or. j == 3) then
+                  k = 2
+              else
+                  k = 3
+              end if
+              THPOR (I,M,J)=THPORG(k)
+              THLRET(I,M,J)=THRORG(k)
+              THLMIN(I,M,J)=THMORG(k)
+              BI    (I,M,J)=BORG(k)
+              PSISAT(I,M,J)=PSISORG(k)
+              GRKSAT(I,M,J)=GRKSORG(k)
+
+              !THPOR (I,M,J)=THPORG(MIN(J,3))
+              !THLRET(I,M,J)=THRORG(MIN(J,3))
+              !THLMIN(I,M,J)=THMORG(MIN(J,3))
+              !BI    (I,M,J)=BORG(MIN(J,3))
+              !PSISAT(I,M,J)=PSISORG(MIN(J,3))
+              !GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
+              ! FLAG end test. JM
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM

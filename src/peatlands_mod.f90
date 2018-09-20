@@ -1,3 +1,4 @@
+!>\file
 !> Peatland specific parameterizations (photosynthesis and heterotrophic respiration)
 module peatlands_mod
 
@@ -17,7 +18,7 @@ contains
 !>\ingroup peatlands_mod_mosspht
 !!@{
 !> Moss photosynthesis subroutine (equations are in module-level description)
-
+!> @author Yuanqiao Wu
 subroutine mosspht(il1,il2,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
             &      pres,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss, &
             &      ievapmoss,ipeatland,daylength,pdd)
@@ -345,7 +346,7 @@ end subroutine mosspht
 !>\ingroup peatlands_mod_hetres_peat
 !!@{
 !> Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)
-
+!> @author Yuanqiao Wu
 subroutine  hetres_peat(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable,&
                  tbar, thliq, thice,thpor,bi,zbotw,delzw,psisat,&
                 litresms, socresp, resoxic, resanoxic)
@@ -579,7 +580,7 @@ do i= il1, il2
 !!    min moisture factor is at 0.5 for moss litter but at 0.2 for soil).
 
     litpsims(i) = psi(i,1)
-!    limit of ltrmoscalms at saturation 
+!    limit of ltrmoscalms at saturation
     if (litpsims(i) .gt. 10000.0) then
             ltrmosclms(i) = 0.2
         elseif (litpsims(i).le. 10000.0 .and.litpsims(i).gt. 6.0) then
@@ -615,6 +616,7 @@ end subroutine hetres_peat
 !>\ingroup peatlands_mod_peatDayEnd
 !!@{
 !> At the end of the day update the degree days for moss photosynthesis and the peat bottom layer depth
+!> @author Yuanqiao Wu
 subroutine peatDayEnd(nml)
 
     use ctem_statevars, only : ctem_tile,vgat
@@ -947,5 +949,6 @@ end subroutine peatDayEnd
 !! water retention capacity and the porosity, and \f$z_b\f$ (unit: m) is the
 !! bottom depth of the soil layer.
 !!
-!!
+
+!>\file
 end module peatlands_mod

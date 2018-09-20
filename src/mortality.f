@@ -1,34 +1,34 @@
 !>\file
 !>Calculates the litter generated from leaves, stem, and root components after
 !! vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality)
-!!
-!!Mortality
+!!@author Vivek Arora, Joe Melton
 !!
 !!The PFT-dependent mortality rate (\f$day^{-1}\f$),
 !!
-!!\f[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, \f]
+!!\f[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha},\qquad (Eqn 1) \f]
+!!
 !!reflects the net effect of four different processes: (1) intrinsic- or age-related mortality, \f$m_{intr}\f$, (2) growth or stress-related mortality, \f$m_{ge}\f$, (3) mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$ and (4) mortality associated with disturbances, \f$m_{dist}\f$.
 !!
 !!Intrinsic- or age-related mortality uses a PFT-specific maximum age, \f$A_{max}\f$ (see also ctem_params.f90), to calculate an annual mortality rate such that only \f$1\,{\%}\f$ of tree PFTs exceed \f$A_{max},\alpha\f$. Intrinsic mortality accounts for processes, whose effect is not explicitly captured in the model including insect damage, hail, wind throw, etc.,
 !!
-!!\f[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \f]
+!!\f[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}).\qquad (Eqn 2) \f]
 !!
-!!Grasses and crops have \f$m_{intr} = 0\f$. The annual growth-related mortality \f$m_{ge}\f$ is calculated using growth efficiency of a PFT over the course of the previous year following \cite Prentice1993-xn and \cite Sitch2003-847 as
+!!Grasses and crops have \f$m_{intr} = 0\f$. The annual growth-related mortality \f$m_{ge}\f$ is calculated using growth efficiency of a PFT over the course of the previous year following Prentice et al. (1993) \cite Prentice1993-xn and Sitch et al. (2003) \cite Sitch2003-847 as
 !!
-!!\f[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \f]
+!!\f[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \qquad (Eqn 3)\f]
 !!
-!!where \f$m_{{ge},max}\f$ represents the PFT-specific maximum mortality rate when no growth occurs (see also ctem_params.f90). \f$k_{m}\f$ is a parameter set to \f$0.3\,m^{2}\,(g\,C)^{-1}\f$. \f$g_\mathrm{e}\f$ is the growth efficiency of the PFT (\f$g\,C\,m^{-2}\f$) calculated based on the maximum LAI (\f$L_{\alpha,max}\f$; \f$m^{2}\,m^{-2}\f$) and the increment in stem and root mass over the course of the previous year (\f$\Delta C_\mathrm{S}\f$ and \f$\Delta C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$, respectively) \cite Waring1983-wc
-!!\f[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \f]
+!!where \f$m_{{ge},max}\f$ represents the PFT-specific maximum mortality rate when no growth occurs (see also ctem_params.f90). \f$k_{m}\f$ is a parameter set to \f$0.3\,m^{2}\,(g\,C)^{-1}\f$. \f$g_\mathrm{e}\f$ is the growth efficiency of the PFT (\f$g\,C\,m^{-2}\f$) calculated based on the maximum LAI (\f$L_{\alpha,max}\f$; \f$m^{2}\,m^{-2}\f$) and the increment in stem and root mass over the course of the previous year (\f$\Delta C_\mathrm{S}\f$ and \f$\Delta C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$, respectively) (Waring, 1983) \cite Waring1983-wc
+!!\f[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \qquad (Eqn 4)\f]
 !!
-!!Mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$ (\f$0.25\,yr^{-1}\f$), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in the next section.
+!!When competition between PFTs is switched on, mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$ (\f$0.25\,yr^{-1}\f$), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in competition_scheme::existence.
 !!
-!!The annual mortality rates for \f$m_{intr}\f$, \f$m_{ge}\f$ and \f$m_{bioclim}\f$ are converted to daily rates and applied at the daily time step of the model, while \f$m_{dist}\f$ is calculated by the fire module of the model based on daily area burned for each PFT as summarized in Appendix \ref{fire}. In practice, the \f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha\f$ term of Eq. (\ref{compact}) is implemented right after area burnt is calculated.
+!!The annual mortality rates for \f$m_{intr}\f$, \f$m_{ge}\f$ and \f$m_{bioclim}\f$ are converted to daily rates and applied at the daily time step of the model. \f$m_{dist}\f$ is calculated by the fire module of the model (when switched on) based on daily area burned for each PFT as summarized in disturbance_scheme::disturb. In practice, the \f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha\f$ term of competition_scheme Eqn 1  is implemented right after area burnt is calculated.
 !!
 !!
       subroutine mortalty (stemmass, rootmass,    ailcg, gleafmas,
      1                     bleafmas,     il1,  il2, leapnow,
      2                     iday, sort,  fcancmx,
-c    + ------------------ inputs above this line ----------------------   
+c    + ------------------ inputs above this line ----------------------
      4                     lystmmas, lyrotmas, tymaxlai, grwtheff,
 c    + -------------- inputs updated above this line ------------------
      5                     stemltrm, rootltrm, glealtrm, geremort,
@@ -47,14 +47,14 @@ c
 c     07  may 2003  - this subroutine calculates the litter generated
 c     V. Arora        from leaves, stem, and root components after
 c                     vegetation dies due to reduced growth efficiency
-c                     or due to aging (the intrinsic mortality)  
+c                     or due to aging (the intrinsic mortality)
 c
-c     inputs 
+c     inputs
 c
 c     icc       - no. of ctem plant function types, currently 8
 c     ilg       - no. of grid cells in latitude circle
 c
-      use ctem_params,        only : icc, ilg, kk, zero, mxmortge, 
+      use ctem_params,        only : icc, ilg, kk, zero, mxmortge,
      1                               kmort1, maxage
 c
       implicit none
@@ -93,15 +93,15 @@ c
 !!
       do 140 j = 1,icc
         do 150 i = il1, il2
-          stemltrm(i,j)=0.0    
-          rootltrm(i,j)=0.0   
-          glealtrm(i,j)=0.0   
-          geremort(i,j)=0.0    
-          intrmort(i,j)=0.0  
-150     continue                  
+          stemltrm(i,j)=0.0
+          rootltrm(i,j)=0.0
+          glealtrm(i,j)=0.0
+          geremort(i,j)=0.0
+          intrmort(i,j)=0.0
+150     continue
 140   continue
 !>
-!>initialization ends    
+!>initialization ends
 !!
 !!------------------------------------------------------------------
 !!
@@ -126,7 +126,7 @@ c
      &        (leapnow.and.iday.eq.366)) then
             if(tymaxlai(i,j).gt.zero)then
               grwtheff(i,j)= ( (stemmass(i,j)+rootmass(i,j))-
-     &         (lystmmas(i,j)+lyrotmas(i,j)) )/tymaxlai(i,j) 
+     &         (lystmmas(i,j)+lyrotmas(i,j)) )/tymaxlai(i,j)
             else
               grwtheff(i,j)= 0.0
             endif
@@ -141,19 +141,19 @@ c
 !!
           geremort(i,j)=mxmortge(n)/(1.0+kmort1*grwtheff(i,j))
 c
-!>convert (1/year) rate into (1/day) rate 
-          if (leapnow) then 
+!>convert (1/year) rate into (1/day) rate
+          if (leapnow) then
             geremort(i,j)=geremort(i,j)/366.0
-          else 
+          else
             geremort(i,j)=geremort(i,j)/365.0
-          endif 
+          endif
          endif
 210     continue
 200   continue
 !>
-!>calculate intrinsic mortality rate due to aging which implicity includes effects of frost, 
-!!hail, wind throw etc. it is assumed that only 1% of the plants exceed maximum age (which is 
-!!a pft-dependent parameter). to achieve this some fraction of the plants need to be killed every year. 
+!>calculate intrinsic mortality rate due to aging which implicity includes effects of frost,
+!!hail, wind throw etc. it is assumed that only 1% of the plants exceed maximum age (which is
+!!a pft-dependent parameter). to achieve this some fraction of the plants need to be killed every year.
 !!
       do 250 j = 1, icc
         n = sort(j)
@@ -166,15 +166,15 @@ c
               intrmort(i,j)=0.0
            endif
 
-!>convert (1/year) rate into (1/day) rate   
-          if (leapnow) then 
+!>convert (1/year) rate into (1/day) rate
+          if (leapnow) then
             intrmort(i,j)=intrmort(i,j)/366.0
-          else 
+          else
             intrmort(i,j)=intrmort(i,j)/365.0
           endif
          endif
 260     continue
-250   continue 
+250   continue
 !>
 !!now that we have both growth related and intrinsic mortality rates,
 !!lets combine these rates for every pft and estimate litter generated
@@ -194,4 +194,3 @@ c
 c
       return
       end
-

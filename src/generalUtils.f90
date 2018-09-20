@@ -1,4 +1,4 @@
-!>Central module for all general utilities
+!Central module for all general utilities
 module generalUtils
 
     implicit none
@@ -7,7 +7,7 @@ module generalUtils
     public :: findDaylength
     public :: findCloudiness
     public :: findLeapYears
-    public :: findActiveLayerDepth
+    public :: findPermafrostVars
     public :: parseTimeStamp
     public :: closeEnough
 
@@ -16,12 +16,21 @@ module generalUtils
     contains
 
     !---------------------------------------------------------------------------------------
-
-    subroutine abandonCell
+    !>\ingroup generalUtils_abandonCell
+    !!@{
+    !> Used to stop running a model grid cell. For errors that need to be caught early in a run,
+    !! the fortran intrinsic 'stop' is preferred but for errors later in a run or simple fails on
+    !! single grid cells, abandonCell is best since it allows the netcdf files to continue to
+    !! written to and won't disrupt the MPI processes (as stop does)
+    !! @author Joe Melton and Ed Wisernig
+    !!
+    subroutine abandonCell(errmsg)
 
         use class_statevars,    only : class_rot
 
         implicit none
+
+        character(*), intent(in), optional :: errmsg
 
         real, pointer, dimension(:) :: DLONROW !<
         real, pointer, dimension(:) :: DLATROW !<
@@ -30,14 +39,21 @@ module generalUtils
         DLONROW => class_rot%DLONROW
 
         run_model = .false.
+        if (present(errmsg)) then
+          print*,errmsg
+          print*,'exiting cell: ',DLONROW,DLATROW
+        end if
         print*,'died on',DLONROW,DLATROW
         return
 
     end subroutine abandonCell
-
+    !!@}
     !---------------------------------------------------------------------------------------
-
+    !>\ingroup generalUtils_findDaylength
+    !!@{
     !> Calculate the daylength based on the latitude and day of year
+    !! @author Joe Melton
+    !!
     real function findDaylength(solday,radl)
 
         ! Joe Melton Dec 18 2015 (taken from phenlogy.f)
@@ -59,12 +75,14 @@ module generalUtils
             findDaylength=24.0-(24.0/pi)*acos(term)
 
     end function findDaylength
-
+    !!@}
     !---------------------------------------------------------------------------------------
-
+    !>\ingroup generalUtils_findLeapYears
+    !!@{
+    !> Check if this year is a leap year
+    !! @author Joe Melton
+    !!
     subroutine findLeapYears(iyear,leapnow,lastDOY)
-
-        !Check if this year is a leap year
 
         use ctem_params,        only : monthend, mmday,monthdays
 
@@ -106,8 +124,10 @@ module generalUtils
         end if
 
     end subroutine findLeapYears
-
+    !!@}
     !---------------------------------------------------------------------------------------
+    !>\ingroup generalUtils_findCloudiness
+    !!@{
     !> The cosine of the solar zenith angle COSZ is calculated from the day of
     !> the year, the hour, the minute and the latitude using basic radiation geometry,
     !> and (avoiding vanishingly small numbers) is assigned to CSZROW.  The fractional
@@ -115,7 +135,8 @@ module generalUtils
     !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
     !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
     !> is at the horizon, and 0.10 when it is at the zenith).
-
+    !! @author Diana Verseghy
+    !!
     subroutine findCloudiness(nltest,imin,ihour,iday,lastDOY)
 
         use ctem_params, only : pi
@@ -165,11 +186,15 @@ module generalUtils
         end do
 
     end subroutine findCloudiness
-
+    !!@}
     !---------------------------------------------------------------------------------------
+    !>\ingroup generalUtils_parseTimeStamp
+    !!@{
     !> Parses a time stamp in the expected form "day as %Y%m%d.%f"
     !! Returns an array with 1) year, 2) month, 3) day, 4) fraction of day
     !! 5) day of year
+    !! @author Joe Melton, Ed Wisernig
+    !!
     function parseTimeStamp(timeStamp)
 
     use ctem_params, only : monthdays
@@ -199,17 +224,75 @@ module generalUtils
     parseTimeStamp(5) = real(totdays + day)
 
     end function parseTimeStamp
-
+    !!@}
     !---------------------------------------------------------------------------------------
+    !>\ingroup generalUtils_findPermafrostVars
+    !!@{
+    !> Finds the active layer depth and depth to the frozen water table.
+    !! @author Joe Melton
+    !!
+    subroutine findPermafrostVars(nltest,nmtest,tfrez)
 
-    subroutine findActiveLayerDepth
+      use ctem_params, only : ignd
+      use class_statevars, only : class_rot,class_gat
+
+      implicit none
+
+      integer, intent(in) :: nmtest
+      integer, intent(in) :: nltest
+      real, intent(in)    :: tfrez                  !<Freezing point of water [K]
+      real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
+      real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+      real, pointer, dimension(:,:,:) :: tbarrot    !<Temperature of soil layers [K]
+      integer, pointer, dimension(:,:,:) :: isndrot !<Sand content flag, used to delineate non-soils.
+      real, pointer, dimension(:,:,:) :: thicrot    !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+      real, pointer, dimension(:,:,:) :: thlqrot    !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+      real, pointer, dimension(:,:,:) :: dlzwrot    !<Permeable thickness of soil layer [m]
+      real, pointer, dimension(:) :: delz           !<Overall thickness of soil layer [m]
+      real, pointer, dimension(:,:,:) :: thmrot     !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
+      integer :: i, j, m
+
+      ftable  => class_rot%ftable
+      actlyr  => class_rot%actlyr
+      tbarrot => class_rot%tbarrot
+      thlqrot => class_rot%thlqrot
+      thicrot => class_rot%thicrot
+      isndrot => class_rot%isndrot
+      dlzwrot => class_rot%dlzwrot
+      delz    => class_gat%delz
+      thmrot => class_rot%thmrot
+      !---
+
+      actlyr=0.0
+      ftable=0.0
+      do j=1,ignd
+        do i = 1, nltest
+          do m = 1,nmtest
+            if(abs(tbarrot(i,m,j)-tfrez).lt.0.0001) then
+              if(isndrot(i,m,j).gt.-3) then
+                actlyr(i,m)=actlyr(i,m)+(thlqrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)))*dlzwrot(i,m,j)
+                ftable(i,m)=ftable(i,m)+(thicrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)-thmrot(i,m,j)))*dlzwrot(i,m,j)
+                  !elseif(isndgat(1,j).eq.-3) then
+                  !    actlyr=actlyr+delz(j)
+                  !    ftable=ftable+delz(j)
+              endif
+            elseif(tbarrot(i,m,j).gt.tfrez) then
+              actlyr(i,m)=actlyr(i,m)+delz(j)
+              ftable(i,m)=ftable(i,m)+delz(j)
+            endif
+          end do
+        end do
+      end do
 
 
-    end subroutine findActiveLayerDepth
-
+    end subroutine findPermafrostVars
+    !!@}
     !---------------------------------------------------------------------------------------
-
+    !>\ingroup generalUtils_findPermafrostVars
+    !!@{
     !> As real numbers are not precise, this is a simple way to compare two reals
+    !! @author Joe Melton
+    !!
     logical function closeEnough(num1, num2,error)
         real, intent(in)    :: num1, num2
         real, intent(in)     :: error
@@ -219,5 +302,9 @@ module generalUtils
             closeEnough = .false.
         endif
     end function closeEnough
+    !!@}
+
+!>\file
+!>Central module for all general utilities
 
 end module generalUtils

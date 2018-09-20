@@ -630,8 +630,6 @@ type veg_gat
     real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)   !<
     real, allocatable, dimension(:)    :: xdiffusgat !(ilg)
     real, allocatable, dimension(:)    :: faregat !(ilg)
-    real, allocatable, dimension(:,:)  :: FTABLE !(NLAT,NMOS)
-    real, allocatable, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
 
 end type veg_gat
 
@@ -1154,11 +1152,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
 
-         vgat%FTABLE(nlat,nmos),&
-         vgat%ACTLYR(nlat,nmos),&
-
-
-! allocated with nlat,nmos,ican:
+! allocated with nlat,nmos,ican:     
          vrot%zolnc(nlat,nmos,ican),&
          vrot%ailc(nlat,nmos,ican),&
          vrot%cmasvegc(nlat,nmos,ican),&

@@ -1514,3 +1514,135 @@
 \form#1513:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Visible albedo & Near-infrared Albedo & Roughness length (m) \\ Needleleaf evergreen forest & 1 & 0.03 & 0.19 & 1.5 \\ Needleleaf deciduous forest & 1 & 0.03 & 0.19 & 1.0 \\ Broadleaf evergreen forest & 2 & 0.03 & 0.23 & 3.5 \\ Broadleaf cold deciduous forest & 2 & 0.05 & 0.29 & 2.0 \\ Broadleaf tropical evergreen forest & 2 & 0.03 & 0.23 & 3.0 \\ Broadleaf tropical drought deciduous forest & 2 & 0.05 & 0.29 & 0.8 \\ Broadleaf evergreen shrub & 4 & 0.03 & 0.19 & 0.05 \\ Broadleaf deciduous shrub & 2 & 0.05 & 0.29 & 0.15 \\ Broadleaf thorn shrub & 2 & 0.06 & 0.32 & 0.15 \\ Short grass and forbs & 4 & 0.06 & 0.34 & 0.02 \\ Long grass & 4 & 0.05 & 0.31 & 0.08 \\ Arable & 3 & 0.06 & 0.34 & 0.08 \\ Rice & 3 & 0.06 & 0.36 & 0.08 \\ Sugarcane & 3 & 0.05 & 0.31 & 0.35 \\ Maize & 3 & 0.05 & 0.33 & 0.25 \\ Cotton & 3 & 0.07 & 0.43 & 0.10 \\ Irrigated crop & 3 & 0.07 & 0.36 & 0.08 \\ Tundra & 4 & 0.05 & 0.29 & 0.01 \\ Swamp & 4 & 0.03 & 0.25 & 0.05 \\ Urban & 5 & 0.09 & 0.15 & 1.35 \\ \end{tabular} \]
 \form#1514:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Max. LAI (m2/m2) & Min. LAI (m2/m2) & Aboveground biomass (kg/m2) & Rooting depth (m) \\ Needleleaf evergreen forest & 1 & 2.0 & 1.6 & 25.0 & 1.0 \\ Needleleaf deciduous forest & 1 & 2.0 & 0.5 & 15.0 & 1.0 \\ Broadleaf evergreen forest & 2 & 8.0 & 8.0 & 50.0 & 5.0 \\ Broadleaf cold deciduous forest & 6.0 & 0.5 & 20.0 & 2.0 \\ Broadleaf tropical evergreen forest & 8.0 & 8.0 & 40.0 & 5.0 \\ Broadleaf tropical drought deciduous forest & 4.0 & 4.0 & 15.0 & 5.0 \\ Broadleaf evergreen shrub & 2.0 & 2.0 & 2.0 & 0.2 \\ Broadleaf deciduous shrub & 4.0 & 0.5 & 8.0 & 1.0 \\ Broadleaf thorn shrub & 3.0 & 3.0 & 8.0 & 5.0 \\ Short grass and forbs & 3.0 & 3.0 & 1.5 & 1.2 \\ Long grass & 4.0 & 4.0 & 3.0 & 1.2 \\ Arable & 4.0 & 0.0 & 2.0 & 1.2 \\ Rice & 6.5 & 0.0 & 2.0 & 1.2 \\ Sugarcane & 5.0 & 0.0 & 5.0 & 1.0 \\ Maize & 4.0 & 0.0 & 5.0 & 1.5 \\ Cotton & 5.0 & 0.0 & 2.0 & 2.0 \\ Irrigated crop & 4.0 & 0.0 & 2.0 & 5.0 \\ Tundra & 1.5 & 1.5 & 0.2 & 0.1 \\ Swamp & 1.5 & 1.5 & 1.0 & 5.0 \\ Urban & - & - & - & - \\ \end{tabular} \]
 \form#1515:\[ \begin{tabular}{ | l | c | c | } & CTEM PFTs & CLASS PFTs \\ 1. & Needleleaf Evergreen & Needleleaf \\ 2. & Needleleaf Deciduous & \\ 3. & Broadleaf Evergreen & Broadleaf \\ 4. & Broadleaf Cold Deciduous & \\ 5. & Broadleaf Drought/Dry Deciduous & \\ 6. & C3 Crop & Crops \\ 7. & C4 Crop & \\ 8. & C3 Grass & Grasses \\ 9. & C4 Grass & \\ \end{tabular} \]
+\form#1516:$\phi_{i} (\theta_{i} )$
+\form#1517:\[ W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i}) r_{i}. \hspace{10pt}[Eqn 1]\]
+\form#1518:\[ L = \exp(-k_\mathrm{n} LAI) ;\hspace{10pt}[Eqn 2]\]
+\form#1519:\[ L = \max\left(0,1-\frac{LAI}{4.5}\right). \hspace{10pt}[Eqn 3]\]
+\form#1520:\[ a_{fS}=\frac{\epsilon_\mathrm{S}+\omega_\mathrm{a}(1-L)}{1+\omega_\mathrm{a}(2-L-W)}, \hspace{10pt}[Eqn 4] \]
+\form#1521:\[ a_{fR}=\frac{\epsilon_\mathrm{R}+ \omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(2-L-W)}, \hspace{10pt}[Eqn 5]\]
+\form#1522:\[ a_{fL}=\frac{\epsilon_\mathrm{L}}{1+\omega_\mathrm{a}(2-L-W)}= 1-a_{fS}-a_{fR}. \hspace{10pt}[Eqn 6]\]
+\form#1523:\[ a_{fL}=\frac{\epsilon_\mathrm{L}+\omega_\mathrm{a} L}{1+\omega_\mathrm{a}(1+L-W)} ;\hspace{10pt}[Eqn 7]\]
+\form#1524:\[ a_{fR}=\frac{\epsilon_\mathrm{R}+\omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(1+L-W)}. \hspace{10pt}[Eqn 8]\]
+\form#1525:\[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\]
+\form#1526:$(kg c/m^2)$
+\form#1527:$\theta_p = (-0.126 X_{sand} +48.9)/100.0$
+\form#1528:$b = 0.159 X_{clay} + 2.91$
+\form#1529:$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)$
+\form#1530:$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)$
+\form#1531:$K = K_{sat} (\theta_l / \theta_p ) (2b + 3)$
+\form#1532:$f_{inf} = 0.5 1/(2b+3)$
+\form#1533:$\theta_{min}$
+\form#1534:$C_g = \Sigma (C_{sand} \theta_{sand} + C_{fine} \theta_{fine} + C_{org} \theta_{org} )/(1 - \theta_p )$
+\form#1535:$\tau_g$
+\form#1536:$\tau_g = \Sigma (\tau_{sand} \theta_{sand} + \tau_{fine} \theta_{fine} + \tau_{org} \theta_{org} )/(1 - \theta_p )$
+\form#1537:$d^{-1}$
+\form#1538:$\theta_{fc} = \theta_p (1.157 x 10^{-9} /K_{sat} )^{1/(2b + 3)}$
+\form#1539:$\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]$
+\form#1540:$\Psi_{wilt}$
+\form#1541:$ \theta_{wilt} $
+\form#1542:$ \theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} $
+\form#1543:\[ \begin{table}[] \caption{CTEM and peatland PFTs and their mapping to the CLASS PFTs} \label{my-label} \begin{tabular}{|l|l|l|l|l|l|} \hline \multicolumn{1}{|c|}{CLASS PFTs} & \multicolumn{3}{c|}{CTEM PFTs} & \multicolumn{2}{c|}{Peatland PFTs} \\ \hline Needleleaf tree & Evergreen & Deciduous & & & \\ \hline Broadleaf tree & Evergreen & Cold Deciduous & Drought/Dry Decidous & Evergreen Shrubs & Deciduous Shrubs \\ \hline Crop & C$_3$ & C$_4$ & & & \\ \hline Grass & C$_3$ & C$_4$ & & Sedges & \\ \hline \end{tabular} \end{table} \]
+\form#1544:\[ \caption{Development history of CLASS} \begin{tabular}{ | l | l || l | } 1.0 & April 1989 & Basic thermal and hydrological model of snow and soil. \\ 2.0 & August 1991 & Addition of vegetation thermal and hydrological model. \\ 2.1 & May 1993 & Full vectorization of code to enable efficienr running on vector supercomputers. \\ 2.2 & April 1994 & Augmentation of diagnostic calculations; incorporation of in-line comments throughout; development \\ & & of a parallel stand-alone version of the model for use with field data. \\ 2.3 & December 1994 & Revisions to diagnostic calculations; new near-surface atmospheric stability functions. \\ 2.4 & August 1995 & Complete set of water budget diagnostic calculations; parametrizations of organic soils and \\ & &rock soils; allowance for inhomegeneity between soil layers; incorporation of variable \\ & & surface detention capacity. \\ 2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\ 2.6 & August 1997 & Revisions to surface stability function calculations. \\ 2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic properties based on textural composition; modified surface temperature iteration scheme. \\ 3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\ 3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; improved treatment of snow sublimation and interception; transition to Fortran 90 and single precision variables. \\ 3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation transmission in vegetation. \\ 3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets; water and energy balance checks for each time step; modifications to soil hydraulic conductivity calculations. \\ 3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of water stored on vegetation. \\ 3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; reworked calculation of baseflow. \\ 3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model (CTEM). \\ 3.6.1 & December 2016 & New treatment of bare soil albedo; new optional four-band snow albedo formulation; fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on snow depth. \\ \end{tabular} \]
+\form#1545:$_3$
+\form#1546:$G_{\text{canopy}}$
+\form#1547:$R_{\text{h,H}}$
+\form#1548:$R_{\text{h,D}}$
+\form#1549:$ G_{canopy} - R_\mathrm{m} - R_\mathrm{g}$
+\form#1550:$\frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i, \nonumber \\i = {L, S, R}$
+\form#1551:$\frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i, \\i = {L, S, R}$
+\form#1552:\[ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i \\ i = {L, S, R} \]
+\form#1553:\[ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i \\{hspace}{10pt} i = {L, S, R} \]
+\form#1554:\[ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i \\ \quad i = {L, S, R} \]
+\form#1555:$a_{fi}$
+\form#1556:$D_i$
+\form#1557:$H_i$
+\form#1558:$M_i$
+\form#1559:$G_{canopy} < R_\mathrm{m}$
+\form#1560:$R_\mathrm{g} = 0$
+\form#1561:\[ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi}G_{canopy} - R_{m,i} - D_i - H_i - M_i, \\ \quad i = {L, S, R} \]
+\form#1562:\[ \frac{\mathrm{d}C_\mathrm{D}}{\mathrm{d}t} = D_\mathrm{L} + D_\mathrm{S} + D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} \\ \quad \quad ~~ - C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D}\\ \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} = C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,H} \]
+\form#1563:\[ \frac{\mathrm{d}C_\mathrm{D}}{\mathrm{d}t} = D_\mathrm{L} + D_\mathrm{S} + D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} -C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D}\\ \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} = C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,H} \]
+\form#1564:$H_\mathrm{D}$
+\form#1565:\begin{eqnarray*} \frac{\mathrm{d}C_\mathrm{D}}{\mathrm{d}t} &=& D_\mathrm{L} + D_\mathrm{S} + D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} -C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D} \\ \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} &=& C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,H} \end{eqnarray*}
+\form#1566:$[kg C m^{-2} ]$
+\form#1567:$[km^{2} ]$
+\form#1568:$km^{2}$
+\form#1569:\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, (Eqn 1) \]
+\form#1570:\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha},\qquad (Eqn 1) \]
+\form#1571:\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}).\qquad (Eqn 2) \]
+\form#1572:\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \qquad (Eqn 3)\]
+\form#1573:\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \qquad (Eqn 4)\]
+\form#1574:\[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\qquad (Eqn 1)\]
+\form#1575:\[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}} {B_{high} - B_{low}}\right)\right]. \qquad (Eqn 2)\]
+\form#1576:\[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high} - F_{low}} \right)\right], \qquad (Eqn 3)\]
+\form#1577:\[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\qquad (Eqn 4)\]
+\form#1578:\[ P_i,n = y(\vartheta_F) - y(0)(1 - \vartheta_F) + \vartheta_F[1-y(1)] \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \qquad (Eqn 5)\]
+\form#1579:\[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \qquad (Eqn 6)\]
+\form#1580:\[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}].\qquad (Eqn 7) \]
+\form#1581:\[ P_{m,V} = 1-\tanh \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\qquad (Eqn 8)\]
+\form#1582:\[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \qquad (Eqn 9)\]
+\form#1583:\[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff} \nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\qquad (Eqn 10)\]
+\form#1584:\[ a(t)=\pi \frac{l}{2}\frac{w}{2}= \frac{\pi}{2} (v_\mathrm{d}+v_\mathrm{u})v_\mathrm{p}t^2,\qquad (Eqn 11)\]
+\form#1585:\[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\qquad (Eqn 12)\]
+\form#1586:\[ \label{lb} L_\mathrm{b}= \frac{l}{w} = \frac{v_\mathrm{d} + v_\mathrm{u}}{2v_\mathrm{p}} = 1 + 10 [1 -\exp(-0.06 u)] \qquad (Eqn 13)\]
+\form#1587:\[ \label{hb} H_\mathrm{b} = \frac{v_\mathrm{d}}{v_\mathrm{u}} = \frac{L_\mathrm{b} + (L_\mathrm{b}^2 - 1)^{0.5}}{L_\mathrm{b} - (L_\mathrm{b}^2 - 1)^{0.5}}, \qquad (Eqn 14)\]
+\form#1588:\[ g(u)= g(0) \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})} \nonumber\\ \frac{g(u)}{g(0)}=\frac{v_\mathrm{d}}{v_\mathrm{p}} = \frac{2.0 L_\mathrm{b}} {(1 + 1/H_\mathrm{b})},\qquad (Eqn 15) \]
+\form#1589:\[ h(\phi_{r, d})= h(\phi_{root})(1-f_{duff}) + h(\phi_{1})f_{duff}\nonumber \\ h(\phi_{root})= \left(1-min \left(1,\frac{\phi_{root}}{E_\mathrm{V}} \right) \right)^2\nonumber \\ h(\phi_{1})= \left(1-min \left(1,\frac{\phi_{1}}{E_\mathrm{D}} \right) \right)^2. \qquad (Eqn 16)\]
+\form#1590:\[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)} {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \qquad (Eqn 17)\]
+\form#1591:\[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},\qquad (Eqn 18) \]
+\form#1592:\[ \overline{\tau} = E(\tau) = \sum_{\tau=0}^\infty\,\tau\,q(1-q)^{\tau} = \frac{1-q}{q}.\qquad (Eqn 19) \]
+\form#1593:\[ a_{\tau \mathrm{d}} =E(a_{1{\mathrm{d}}} \tau^2)=\sum_{\tau=0}^ \infty\,a_{1{\mathrm{d}}}\,\tau^2 q(1-q)^{\tau} \\ = a_{1{\mathrm{d}}}\, \frac{(1-q) (2-q)}{q^2}.\nonumber\qquad (Eqn 20) \]
+\form#1594:\[A_{\mathrm{b},\alpha}=P_{f,\alpha}\,a_{\tau \mathrm{d},\alpha} \frac{A_\mathrm{g}f_\alpha}{a_{rep}},\qquad (Eqn 21) \]
+\form#1595:\[ A_\mathrm{b}=\sum_{\alpha=1}^{N}A_{\mathrm{b},\alpha}.\qquad (Eqn 22)\]
+\form#1596:\[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha} )\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450},\qquad (Eqn 23) \]
+\form#1597:\[ \label{emiss_combust_loss} H_{\alpha, i}= C_{\alpha, i} mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}.\qquad (Eqn 24) \]
+\form#1598:\[ \label{eqn_using_mort_factors} {M_{\alpha}}= (\vec{C}_\alpha \cdot \Theta_{\alpha} ) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}},\qquad (Eqn 25) \]
+\form#1599:\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}.\qquad (Eqn 26) \]
+\form#1600:\[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha} \frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}.\qquad (Eqn 27) \]
+\form#1601:\[ \label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.\qquad (Eqn 1) \]
+\form#1602:\[ \label{J_e} J_\mathrm{e} = \begin{cases} \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants\\ \varepsilon\,(1-{\nu})I,\quad C_4 plants, \end{cases}\qquad (Eqn 1) \]
+\form#1603:\[ \label{J_c} J_\mathrm{c} = \begin{cases} V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\\ V_\mathrm{m}, C_4 plants, \end{cases} \qquad (Eqn 2)\]
+\form#1604:\[ \label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m}, C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p}, C_4 plants \end{array} \right. \qquad (Eqn 3)\]
+\form#1605:\[ V_\mathrm{m} = \nonumber \\ \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}} {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m} \qquad (Eqn 4)\]
+\form#1606:\[ S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \vspace*{-4mm} \qquad (Eqn 5)\]
+\form#1607:\[ \label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho, \qquad (Eqn 6)\]
+\form#1608:\[ \label{phitheta} \phi_{i}(\theta_{i}) = \max \left[0, \min \left(1, \frac{\theta_{i} - \theta_{i, wilt}}{\theta_{i, field} - \theta_{i, wilt}} \right) \right], \qquad (Eqn 7)\]
+\form#1609:\[ \label{co2comp} \Gamma = \left\{\begin{array}{l l} \frac{O_\mathrm{a}}{2 \sigma}, C_3 plants\\ 0, C_4 plants, \end{array} \right.\qquad (Eqn 8) \]
+\form#1610:\[ \label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \\ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2).\qquad (Eqn 9) \]
+\form#1611:\[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \\ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2},\qquad (Eqn 10) \]
+\form#1612:\[ \label{G_nitro} G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \label{Nthrottle} \Xi_\mathrm{N} = \frac{1 + \gamma_{gd} \ln(c_\mathrm{a}/c_{0})}{1 + \gamma_g \ln(c_\mathrm{a}/c_{0})}, \qquad (Eqn 11)\]
+\form#1613:\[ \label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}),\qquad (Eqn 12) \]
+\form#1614:\[ \label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}.\qquad (Eqn 13) \]
+\form#1615:\[ \label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI}\qquad (Eqn 14) \]
+\form#1616:\[ \label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}.\qquad (Eqn 15) \]
+\form#1617:\[ \label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}.\qquad (Eqn 16) \]
+\form#1618:\[ g_\mathrm{c} (m\,s^{-1}) = 0.0224\,\frac{T_\mathrm{c}}{T_\mathrm{f}}\,\frac{p_0}{p}\,g_\mathrm{c} (mol\,m^{-2}\,s^{-1}),\qquad (Eqn 17) \]
+\form#1619:\[ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi} \left(G_{canopy}-R_\mathrm{m}-R_\mathrm{g} \right) - D_i - H_i - M_i \\ \quad i = {L, S, R} \qquad (Eqn 1) \]
+\form#1620:\[ \frac{\mathrm{d}C_i}{\mathrm{d}t} = a_{fi}G_{canopy} - R_{m,i} - D_i - H_i - M_i, \\ \quad i = {L, S, R} \qquad (Eqn 2) \]
+\form#1621:\begin{eqnarray*} \frac{\mathrm{d}C_\mathrm{D}}{\mathrm{d}t} &=& D_\mathrm{L} + D_\mathrm{S} + D_\mathrm{R} + M_\mathrm{L} + M_\mathrm{R} + M_\mathrm{S} - H_\mathrm{D} -C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,D} \\ \frac{\mathrm{d}C_\mathrm{H}}{\mathrm{d}t} &=& C_{\mathrm{D} \rightarrow \mathrm{H}} - R_{h,H} \qquad (Eqn 3) \end{eqnarray*}
+\form#1622:\[ \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1} +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\ - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1), \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}\qquad (Eqn 2) \]
+\form#1623:\[ \label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N} (m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}).\qquad (Eqn 3) \]
+\form#1624:\[ \label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha \left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta} = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.\qquad (Eqn 4) \]
+\form#1625:\[ \label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1} (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta} \delta_{\beta,\alpha} f_\alpha f^b_\beta) - m_{\alpha} f_\alpha.\qquad (Eqn 5) \]
+\form#1626:\[ \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\ = c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2},\qquad (Eqn 6) \]
+\form#1627:\[ f_1=max \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}\qquad (Eqn 7) \]
+\form#1628:\[ f_2 = max \left[ \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0 \right] \nonumber \\ = max \left[ \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0 \right],\label{f2_eq_b_eq_1}\qquad (Eqn 8) \]
+\form#1629:\[ \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ = c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare} - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1}\qquad (Eqn 9) \]
+\form#1630:\[ \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}\qquad (Eqn 10) \]
+\form#1631:\[ \label{f_equil_b_eq_0_2} f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.\qquad (Eqn 11) \]
+\form#1632:\[ \label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}},\qquad (Eqn 12) \]
+\form#1633:\[ \label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}.\qquad (Eqn 13) \]
+\form#1634:\[ \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}\qquad (Eqn 14) \]
+\form#1635:\[ if LAI_\alpha \leq LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =0 \nonumber \\ if LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max} \nonumber \\ if LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =\lambda_{max} \label{lam1} \vspace*{-4mm}\qquad (Eqn 15) \]
+\form#1636:\[ if LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\ \quad \lambda_{2,\alpha} = 0\label{lam2}\qquad (Eqn 16) \]
+\form#1637:\[ \label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}).\qquad (Eqn 17) \]
+\form#1638:\[ J_\mathrm{e} = \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants \qquad (Eqn 1) J_\mathrm{e} = \varepsilon\,(1-{\nu})I,\quad C_4 plants,\qquad (Eqn 1) \]
+\form#1639:\[ J_\mathrm{e} = \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants \qquad (Eqn 1) \]
+\form#1640:\[ J_\mathrm{e} = \varepsilon\,(1-{\nu})I,\quad C_4 plants,\qquad (Eqn 1) \]
+\form#1641:\[ \label{J_c} J_\mathrm{c} = V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\qquad (Eqn 2) \]
+\form#1642:\[ J_\mathrm{c} = V_\mathrm{m}, C_4 plants, \qquad (Eqn 2) \]
+\form#1643:\[ \label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m},\qquad C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p},\qquad C_4 plants \end{array} \right. \qquad (Eqn 3)\]
+\form#1644:\[ \label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \qquad (Eqn 9) \]
+\form#1645:\[ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2).\qquad (Eqn 9) \]
+\form#1646:\[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \qquad (Eqn 10) \]
+\form#1647:\[ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2},\qquad (Eqn 10) \]

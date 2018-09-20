@@ -1,5 +1,5 @@
-!>Central module that handles all CTEM preparation and writing of output files
-module io_driver
+!>Central module that handles all preparation and writing to output files
+module prepareOutputs
 
 ! J. Melton Mar 30 2015
 
@@ -18,7 +18,7 @@ public  :: ctem_annual_aw       ! Accumulates and writes the CTEM (biogeochemist
 
 contains
 
-    !>\ingroup io_driver_class_halfhourly_aw
+    !>\ingroup prepareOutputs_class_halfhourly_aw
     !>@{
     !> Prepares and writes the CLASS (physics) half hourly file
     subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr,SBC,TFREZ)
@@ -727,7 +727,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_class_daily_aw
+    !>\ingroup prepareOutputs_class_daily_aw
     !>@{
     !>Accumaltes and writes the daily physics variables. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
@@ -1256,39 +1256,6 @@ contains
 ! !       open(unit=99,file='test.CT17D_G') !peatland water balance
 ! !       open(unit=90,file='test.CT18Y_G') !peatland depth information
 !
-!------------------------------------------------------------------------------------
-! Find the active layer depth and depth to the frozen water table.
-!             ! FLAG! move into a subroutine and put in ctemUtilities. It should happen
-!               regardless of whether the daily files are outputted since the monthly or
-!               annual files might need this info.
-!             ACTLYR=0.0
-!             FTABLE=0.0
-!             DO 440 J=1,IGND
-!                 DO I = 1, NLTEST
-!                     DO M = 1,NMTEST
-!                         IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
-!                             IF(ISNDROT(I,M,J).GT.-3) THEN
-!                                 ACTLYR(I,M)=ACTLYR(I,M)+(THLQROT(I,M,J)/(THLQROT(I,M,J)+&
-!                                     &               THICROT(I,M,J)))*DLZWROT(I,M,J)
-!                                 !ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
-!                                 !    ACTLYR=ACTLYR+DELZ(J)
-!                             ENDIF
-!                         ELSEIF(TBARROT(I,M,J).GT.TFREZ) THEN
-!                             ACTLYR(I,M)=ACTLYR(I,M)+DELZ(J)
-!                         ENDIF
-!                         IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
-!                             IF(ISNDROT(I,M,J).GT.-3) THEN
-!                                 FTABLE(I,M)=FTABLE(I,M)+(THICROT(I,M,J)/(THLQROT(I,M,J)+&
-!                                     &              THICROT(I,M,J)-THMROT(I,M,J)))*DLZWROT(I,M,J)
-!                                 !ELSE
-!                                 !    FTABLE=FTABLE+DELZ(J)
-!                             ENDIF
-!                         ELSEIF(TBARROT(I,M,J).LT.TFREZ) THEN
-!                             FTABLE(I,M)=FTABLE(I,M)+DELZ(J)
-!                         ENDIF
-!                     END DO
-!                 END DO
-! 440         CONTINUE
 ! !!    ----peatland output-----------------------------------------------\
 ! !
 ! !                 write(99,6999)  IDAY,realyr,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
@@ -1396,14 +1363,14 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_class_monthly_aw
+    !>\ingroup prepareOutputs_class_monthly_aw
     !>@{
     !>Accumulate and write out the monthly physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a monthly value.
     !! The pointer to the monthly data structures (in class_statevars) keeps the data between calls.
 
     subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
-                                ACTLYR,FTABLE,lastDOY)
+                                lastDOY)
 
         use class_statevars, only : class_out,resetclassmon,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
@@ -1423,8 +1390,6 @@ contains
         real, intent(in) :: SBC  !CLASS common block items,
         real, intent(in) :: DELT !CLASS common block items,
         real, intent(in) :: TFREZ !CLASS common block items,
-        real, dimension(:,:), intent(in) :: ACTLYR          ! Active layer depth (m)  !FLAG why arguments?
-        real, dimension(:,:), intent(in) :: FTABLE          ! Depth to frozen water table (m)  !FLAG why arguments?
 
         ! pointers
         real, dimension(:,:,:), pointer :: TBARROT
@@ -1454,10 +1419,13 @@ contains
         real, dimension(:,:), pointer :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
         real, dimension(:,:), pointer :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
         real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
+        real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
+        real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+        real, pointer, dimension(:,:,:) :: dlzwrot    !<Permeable thickness of soil layer [m]
         real, pointer, dimension(:) :: ALVSACC_MO
         real, pointer, dimension(:) :: ALIRACC_MO
         real, pointer, dimension(:) :: FLUTACC_MO
-        real, pointer, dimension(:) :: FSINACC_MO
+        real, pointer, dimension(:) :: FSINACC_MO     !<Surface Downwelling Shortwave Radiative flux in air [$W m^{-2}$]
         real, pointer, dimension(:) :: FLINACC_MO
         real, pointer, dimension(:) :: HFSACC_MO
         real, pointer, dimension(:) :: QEVPACC_MO
@@ -1480,6 +1448,8 @@ contains
         real, pointer, dimension(:,:) :: TBARACC_MO
         real, pointer, dimension(:,:) :: THLQACC_MO
         real, pointer, dimension(:,:) :: THICACC_MO
+        real, pointer, dimension(:) :: MRSO_MO
+        real, pointer, dimension(:,:) :: MRSOL_MO
         integer, pointer, dimension(:) :: altotcntr_m
 
         ! local
@@ -1490,8 +1460,8 @@ contains
         integer :: i,m,j
         integer :: IMONTH
         real :: tovere
-        real, dimension(nltest) :: ACTLYR_tmp
-        real, dimension(nltest) :: FTABLE_tmp
+        real :: ACTLYR_tmp
+        real :: FTABLE_tmp
         real :: FSSTAR_MO
         real :: FLSTAR_MO
         real :: QH_MO
@@ -1526,6 +1496,9 @@ contains
         FSIHROW         => class_rot%FSIHROW
         TAROW           => class_rot%TAROW
         PREROW          => class_rot%PREROW
+        ftable          => class_rot%ftable
+        actlyr          => class_rot%actlyr
+        dlzwrot         => class_rot%dlzwrot
         ALVSACC_MO        => class_out%ALVSACC_MO
         ALIRACC_MO        => class_out%ALIRACC_MO
         FLUTACC_MO        => class_out%FLUTACC_MO
@@ -1553,6 +1526,8 @@ contains
         CANOPYEVAP        => class_out%CANOPYEVAP
         ALTOTACC_MO       => class_out%ALTOTACC_MO
         altotcntr_m       => class_out%altotcntr_m
+        MRSO_MO           => class_out%MRSO_MO
+        MRSOL_MO           => class_out%MRSOL_MO
 
         ! ------------
 
@@ -1581,8 +1556,8 @@ contains
             TAACC_MO(I)=TAACC_MO(I)+TAROW(I)*FAREROT(I,M)
             ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
             FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
-            ACTLYR_tmp(I) = ACTLYR_tmp(I) + ACTLYR(I,M) * FAREROT(I,M)
-            FTABLE_tmp(I) = FTABLE_tmp(I) + FTABLE(I,M) * FAREROT(I,M)
+            ACTLYR_tmp = ACTLYR_tmp + ACTLYR(I,M) * FAREROT(I,M)
+            FTABLE_tmp = FTABLE_tmp + FTABLE(I,M) * FAREROT(I,M)
             GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M)*DELT !ground evap includes both evap and sublimation from snow
             CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M)*DELT !canopy evap includes both evap and sublimation
 
@@ -1604,16 +1579,20 @@ contains
                 TBARACC_MO(I,J)=TBARACC_MO(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
                 THLQACC_MO(I,J)=THLQACC_MO(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
                 THICACC_MO(I,J)=THICACC_MO(I,J)+THICROT(I,M,J)*FAREROT(I,M)
+                ! Find the total soil moisture content
+                ! Add up each soil layers moisture and convert from m3/m3 to kg/m2
+                MRSO_MO(I) = MRSO_MO(I) + (THLQROT(I,M,J)*FAREROT(I,M) + THICROT(I,M,J)*FAREROT(I,M)) * 1000. * DLZWROT(I,M,J)
+                MRSOL_MO(I,J) = MRSOL_MO(I,J) + (THLQROT(I,M,J)*FAREROT(I,M) + THICROT(I,M,J)*FAREROT(I,M)) * 1000. * DLZWROT(I,M,J)
                 TRANSPACC_MO(I)=TRANSPACC_MO(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
 823          CONTINUE
 
 821     CONTINUE
 
-        ! Check if the active layer has become more shallow or deepended.
-        ACTLYR_MAX_MO(I) = max(ACTLYR_MAX_MO(I), ACTLYR_tmp(I))
-        ACTLYR_MIN_MO(I) = min(ACTLYR_MIN_MO(I), ACTLYR_tmp(I))
-        FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp(I))
-        FTABLE_MIN_MO(I) = min(FTABLE_MIN_MO(I), FTABLE_tmp(I))
+        ! Check if the active layer has become more shallow or deepened.
+        ACTLYR_MAX_MO(I) = max(ACTLYR_MAX_MO(I), ACTLYR_tmp)
+        ACTLYR_MIN_MO(I) = min(ACTLYR_MIN_MO(I), ACTLYR_tmp)
+        FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp)
+        FTABLE_MIN_MO(I) = min(FTABLE_MIN_MO(I), FTABLE_tmp)
 
         DO NT=1,NMON
             IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
@@ -1649,13 +1628,15 @@ contains
 
                 ACTLYR_MO(I) = ACTLYR_MO(I)/REAL(NDMONTH)
                 FTABLE_MO(I) = FTABLE_MO(I)/REAL(NDMONTH)
-                ! The accumulated quantities don't change.
-                !ROFACC_MO,PREACC_MO(I),EVAPACC_MO(I),TRANSPACC_MO(I),GROUNDEVAP,CANOPYEVAP
+                MRSO_MO(I) = MRSO_MO(I)/REAL(NDMONTH)
                 DO J=1,IGND
                     TBARACC_MO(I,J)=TBARACC_MO(I,J)/REAL(NDMONTH)
                     THLQACC_MO(I,J)=THLQACC_MO(I,J)/REAL(NDMONTH)
                     THICACC_MO(I,J)=THICACC_MO(I,J)/REAL(NDMONTH)
+                    MRSOL_MO(I,J) = MRSOL_MO(I,J)/REAL(NDMONTH)
                 ENDDO
+                ! The accumulated quantities don't change.
+                !ROFACC_MO,PREACC_MO(I),EVAPACC_MO(I),TRANSPACC_MO(I),GROUNDEVAP,CANOPYEVAP
 
                 FSSTAR_MO=FSINACC_MO(I)*(1.-ALTOTACC_MO(I))
                 FLSTAR_MO=FLINACC_MO(I)-FLUTACC_MO(I)
@@ -1673,6 +1654,7 @@ contains
                 ! rather than the first day of the next month.
                 timeStamp = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
 
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_mo'     ,timeStamp,'hfss', [QH_MO])
@@ -1686,11 +1668,12 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
-
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)-TFREZ])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'mrso_mo',timeStamp,'mrso', [MRSO_MO(I)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'mrsol_mo',timeStamp,'mrsol', [MRSOL_MO(I,:)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
@@ -1709,14 +1692,14 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_class_annual_aw
+    !>\ingroup prepareOutputs_class_annual_aw
     !>@{
     !>Accumulate and write out the annual physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce annuals values.
     !! The pointer to the annual data structures (in class_statevars) keeps the data between calls.
 
     subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,DELT, &
-                                nltest,nmtest,ACTLYR,FTABLE,lastDOY)
+                                nltest,nmtest,lastDOY)
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
@@ -1735,8 +1718,6 @@ contains
         integer, intent(in) :: lastDOY
         real, intent(in) :: SBC
         real, intent(in) :: DELT
-        real, dimension(:,:), intent(in) :: ACTLYR          ! Active layer depth (m)
-        real, dimension(:,:), intent(in) :: FTABLE          ! Depth to frozen water table (m)
 
         ! pointers
         real, dimension(:), pointer :: FSSROW
@@ -1757,6 +1738,9 @@ contains
         real, dimension(:,:), pointer :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
         real, dimension(:,:), pointer :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
         real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
+        real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
+        real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+
         integer, pointer, dimension(:) :: altotcntr_yr
         real, pointer, dimension(:) :: ALVSACC_YR
         real, pointer, dimension(:) :: ALIRACC_YR
@@ -1771,7 +1755,11 @@ contains
         real, pointer, dimension(:) :: TRANSPACC_YR
         real, pointer, dimension(:) :: TAACC_YR
         real, pointer, dimension(:) :: ACTLYR_YR
+        real, pointer, dimension(:) :: ACTLYR_MIN_YR
+        real, pointer, dimension(:) :: ACTLYR_MAX_YR
         real, pointer, dimension(:) :: FTABLE_YR
+        real, pointer, dimension(:) :: FTABLE_MIN_YR
+        real, pointer, dimension(:) :: FTABLE_MAX_YR
         real, pointer, dimension(:) :: ALTOTACC_YR
 
         !local
@@ -1781,6 +1769,8 @@ contains
         real :: FLSTAR_YR
         real :: QH_YR
         real :: QE_YR
+        real :: ACTLYR_tmp
+        real :: FTABLE_tmp
         real, dimension(1) :: timeStamp
 
         !point pointers
@@ -1802,6 +1792,8 @@ contains
         FSIHROW         => class_rot%FSIHROW
         TAROW           => class_rot%TAROW
         PREROW          => class_rot%PREROW
+        ftable          => class_rot%ftable
+        actlyr          => class_rot%actlyr
         ALVSACC_YR        => class_out%ALVSACC_YR
         ALIRACC_YR        => class_out%ALIRACC_YR
         FLUTACC_YR        => class_out%FLUTACC_YR
@@ -1815,7 +1807,11 @@ contains
         TRANSPACC_YR      => class_out%TRANSPACC_YR
         TAACC_YR          => class_out%TAACC_YR
         ACTLYR_YR         => class_out%ACTLYR_YR
+        ACTLYR_MIN_YR     => class_out%ACTLYR_MIN_YR
+        ACTLYR_MAX_YR     => class_out%ACTLYR_MAX_YR
         FTABLE_YR         => class_out%FTABLE_YR
+        FTABLE_MIN_YR     => class_out%FTABLE_MIN_YR
+        FTABLE_MAX_YR     => class_out%FTABLE_MAX_YR
         ALTOTACC_YR       => class_out%ALTOTACC_YR
         altotcntr_yr      => class_out%altotcntr_yr
 
@@ -1825,6 +1821,8 @@ contains
         FLSTAR_YR   =0.0
         QH_YR       =0.0
         QE_YR       =0.0
+        ACTLYR_tmp  =0.0
+        FTABLE_tmp  =0.0
 
         i = 1 ! offline nlat is always 1 so this array position is always 1.
         DO 828 M=1,NMTEST
@@ -1842,18 +1840,27 @@ contains
             ROFACC_YR(I) =ROFACC_YR(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
             PREACC_YR(I) =PREACC_YR(I)+PREROW(I)*FAREROT(I,M)*DELT
             EVAPACC_YR(I)=EVAPACC_YR(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
+            ACTLYR_YR(I) = ACTLYR_YR(I) + ACTLYR(I,M) * FAREROT(I,M)
+            FTABLE_YR(I) = FTABLE_YR(I) + FTABLE(I,M) * FAREROT(I,M)
+            ACTLYR_TMP = ACTLYR_TMP + ACTLYR(I,M) * FAREROT(I,M)
+            FTABLE_TMP = FTABLE_TMP + FTABLE(I,M) * FAREROT(I,M)
+
             DO J = 1,IGND
                 TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
             END DO
-
-            !ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
-            !FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
 
             IF(FSSROW(I).GT.0.0) THEN
                 ALTOTACC_YR(I)=ALTOTACC_YR(I) + ((FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
                 /FSSROW(I) )*FAREROT(I,M)
                 altotcntr_yr(i) = altotcntr_yr(i) + 1
             ENDIF
+
+            ! Check if the active layer has become more shallow or deepened.
+            ACTLYR_MAX_YR(I) = max(ACTLYR_MAX_YR(I), ACTLYR_tmp)
+            ACTLYR_MIN_YR(I) = min(ACTLYR_MIN_YR(I), ACTLYR_tmp)
+            FTABLE_MAX_YR(I) = max(FTABLE_MAX_YR(I), FTABLE_tmp)
+            FTABLE_MIN_YR(I) = min(FTABLE_MIN_YR(I), FTABLE_tmp)
+
 
     828     CONTINUE
 
@@ -1878,6 +1885,8 @@ contains
             EVAPACC_YR(I)=EVAPACC_YR(I)
             TRANSPACC_YR(I)=TRANSPACC_YR(I)
             TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*real(lastDOY))
+            ACTLYR_YR(I) = ACTLYR_YR(I)/(REAL(NDAY)*real(lastDOY))
+            FTABLE_YR(I) = FTABLE_YR(I)/(REAL(NDAY)*real(lastDOY))
 
             ! Albedo is only counted when sun is above horizon so it uses its own counter.
             if (altotcntr_yr(i) > 0) then
@@ -1909,6 +1918,13 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_yr' ,timeStamp,'evspsbl', [EVAPACC_YR(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_yr' ,timeStamp,'tran', [TRANSPACC_YR(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_yr' ,timeStamp,'albs', [ALTOTACC_YR(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_yr' ,timeStamp,'actlyr', [actlyr_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_yr' ,timeStamp,'ftable', [ftable_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_yr' ,timeStamp,'actlyrmax', [actlyr_max_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_max_yr' ,timeStamp,'ftablemax', [ftable_max_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_yr' ,timeStamp,'actlyrmin', [actlyr_min_yr(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_min_yr' ,timeStamp,'ftablemin', [ftable_min_yr(i)])
+
             ! tovere
 
             !> ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
@@ -1921,7 +1937,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_ctem_daily_aw
+    !>\ingroup prepareOutputs_ctem_daily_aw
     !>@{
     !> Accumulate and write the daily biogeochemical outputs
 
@@ -2754,7 +2770,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_ctem_monthly_aw
+    !>\ingroup prepareOutputs_ctem_monthly_aw
     !>@{
     !> Accumulate and write out the monthly CTEM outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce a monthly value.
@@ -3421,6 +3437,8 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_mo_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_g(i)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_mo_g' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_g(i)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_g' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_mo_g' ,timeStamp,'fDeforestTotal',&
+                                      [lucsocin_mo_g(i)+lucltrin_mo_g(i)+luc_emc_mo_g(i)])
                 end if
 
                 if (PFTCompetition) then
@@ -3430,7 +3448,7 @@ contains
                             pftExist(j) = 1.0
                         end if
                     end do
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_mo_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
                 end if
 
                 if (doperpftoutput) then
@@ -3483,14 +3501,17 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
 
-                        if (dofire .or. lnduseon) then
+                        if (dofire) then
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_t' ,timeStamp,'fFire',[emit_co2_mo_t(i,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_t' ,timeStamp,'burntFractionAll',[burnfrac_mo_t(i,:)])
+                        end if
+                        if (lnduseon) then
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_mo_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_t(i,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_mo_t' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_t(i,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_t' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_t(i,:)])
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_mo_t' ,timeStamp,'fDeforestTotal',&
+                                              [lucsocin_mo_t(i,:)+lucltrin_mo_t(i,:)+luc_emc_mo_t(i,:)])
                         end if
-
                     end if
                 end if
 
@@ -3506,7 +3527,7 @@ contains
 
     !==============================================================================================================
 
-    !>\ingroup io_driver_ctem_annual_aw
+    !>\ingroup prepareOutputs_ctem_annual_aw
     !>@{
     !> Accumulate and write out the annual biogeochemical (CTEM) outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce annual values.
@@ -3719,6 +3740,7 @@ contains
         real :: sumfare
         real, dimension(1) :: timeStamp
         real, dimension(icc) :: pftExist
+        real, dimension(icc) :: fcancmxNoSeed
 
         ! point pointers
 
@@ -4116,29 +4138,42 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
-            do m=1,nmtest
-                sumfare = 0.0
-                do j=1,icc
-                    sumfare=sumfare+fcancmxrow(i,m,j)
-                end do !j
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc), 1- sumfare])
-            end do !m
+            ! We only want to record the fraction of the PFTs that are actually in existance.
+            if (PFTCompetition) then !FLAG this needs to be tested!
+                do m=1,nmtest
+                    sumfare = 0.0
+                    fcancmxNoSeed = 0.0
+                    pftExist = 0.0
+                    do j=1,icc
+                        if (pftexistrow(i,1,j)) then
+                            pftExist(j) = 1.0
+                            sumfare=sumfare+fcancmxrow(i,m,j)
+                            fcancmxNoSeed(j)=fcancmxrow(i,m,j)
+                        end if
+                    end do
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxNoSeed(1:icc), 1- sumfare])
+                end do
+            else
+              do m=1,nmtest
+                   sumfare = 0.0
+                  do j=1,icc
+                      sumfare=sumfare+fcancmxrow(i,m,j)
+                  end do !j
+                  call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc), 1- sumfare])
+              end do !m
+            end if
 
             if (dofire .or. lnduseon) then
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)])
             end if
-
-            if (PFTCompetition) then !FLAG this needs to be tested!
-                do m=1,nmtest
-                    pftExist = 0.0
-                    do j=1,icc
-                        if (pftexistrow(i,1,j)) then
-                            pftExist(j) = 1.0
-                        end if
-                    end do
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
-                end do
+            if (lnduseon) then
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_g' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_yr_g' ,timeStamp,'fDeforestTotal',&
+                                  [lucsocin_yr_g(i)+lucltrin_yr_g(i)+luc_emc_yr_g(i)])
             end if
 
             if (doperpftoutput) then
@@ -4169,10 +4204,9 @@ contains
 
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)])
+                    end if
     !                            smfuncveg_yr(i,m,j), &
     !                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
-                    end if
-
                 end if
             end if
 
@@ -4207,6 +4241,13 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)])
                     end if
+                    if (lnduseon) then
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_t' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_t' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_yr_t' ,timeStamp,'fDeforestTotal',&
+                                          [lucsocin_yr_t(i,:)+lucltrin_yr_t(i,:)+luc_emc_yr_t(i,:)])
+                    end if
                 end if
             end if
 
@@ -4220,4 +4261,4 @@ contains
 !>\file
 !>Central module that handles all CTEM preparation and writing of output files
 
-end module io_driver
+end module prepareOutputs

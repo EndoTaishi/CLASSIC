@@ -7,6 +7,8 @@ tools/metASCIILoader/.project
 tools/outputVariableEditor/.settings
 tools/outputVariableEditor/.project
 tools/outputVariableEditor/.tern-project
+tools/initFileConverter/*.o
+tools/initFileConverter/*.mod
 bin/CLASSIC
 oldcode
 outputFiles/*

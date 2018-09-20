@@ -84,11 +84,9 @@ contains
     !> The number of latitudes is always 1 offline while the maximum number of
     !> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
     !> ilg is then calculated from nlat and nmos.
+    !>@author Joe Melton
 
     subroutine read_modelsetup
-
-        ! J. Melton
-        ! Feb 2017
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
@@ -424,6 +422,7 @@ contains
     !>\ingroup model_state_drivers_read_initialstate
     !!@{
     !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
+    !>@author Joe Melton
 
     subroutine read_initialstate(lonIndex,latIndex)
 
@@ -454,6 +453,7 @@ contains
         real, pointer, dimension(:,:,:) :: PAMXROT
         real, pointer, dimension(:,:,:) :: LNZ0ROT
         real, pointer, dimension(:,:,:) :: CMASROT
+        real, pointer, dimension(:,:) :: CMAIROT !<
         real, pointer, dimension(:,:,:) :: ROOTROT
         real, pointer, dimension(:,:)   :: DRNROT
         real, pointer, dimension(:,:)   :: SDEPROT
@@ -462,6 +462,7 @@ contains
         real, pointer, dimension(:,:)   :: WFSFROT
         real, pointer, dimension(:,:)   :: WFCIROT
         integer, pointer, dimension(:,:)   :: MIDROT
+        real, pointer, dimension(:,:)   :: WSNOROT !<
         real, pointer, dimension(:,:,:) :: SANDROT
         real, pointer, dimension(:,:,:) :: CLAYROT
         real, pointer, dimension(:,:,:) :: ORGMROT
@@ -490,8 +491,12 @@ contains
         real, pointer, dimension(:)     :: Z0ORROW !<
         real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:)   :: SOCIROT
-
         real, pointer, dimension(:,:)   :: TBASROT !<
+        real, pointer, dimension(:,:) :: ZSNLROT !< Limiting snow depth (m)
+        real, pointer, dimension(:,:,:)  :: TSFSROT !<Ground surface temperature over subarea [K]
+        real, pointer, dimension(:,:) :: TACROT  !<Temperature of air within vegetation canopy \f$[K] (T_{ac} )\f$
+        real, pointer, dimension(:,:) :: QACROT  !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ] (q_{ac} )\f$
+        integer, pointer, dimension(:,:,:,:) :: ITCTROT !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
         logical, pointer :: ctem_on
         logical, pointer :: dofire
         logical, pointer :: PFTCompetition
@@ -618,7 +623,13 @@ contains
         GGEOROW           => class_rot%GGEOROW
         SOCIROT           => class_rot%SOCIROT
         TBASROT           => class_rot%TBASROT
-
+        CMAIROT           => class_rot%CMAIROT
+        WSNOROT           => class_rot%WSNOROT
+        ZSNLROT           => class_rot%ZSNLROT
+        TSFSROT           => class_rot%TSFSROT
+        TACROT            => class_rot%TACROT
+        QACROT            => class_rot%QACROT
+        ITCTROT           => class_rot%ITCTROT
         ! ----------------------------
 
         do i = 1, nlat
@@ -699,8 +710,8 @@ contains
             !else fcancmx is read in instead and fcanrot is derived later.
         end if
 
-!     Complete some initial set up work:
-
+!     Complete some initial set up work. The limiting snow
+!> depth, ZSNL, is assigned its operational value of 0.10 m.
         DO 100 I=1,nlat
             DO 100 M=1,nmos
 
@@ -712,22 +723,20 @@ contains
 
                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
                 TBASROT(I,M)=TBARROT(I,M,IGND)
-                !CMAIROT(I,M)=0.
-                !WSNOROT(I,M)=0.
-                !ZSNLROT(I,M)=0.10
-                !TSFSROT(I,M,1)=TFREZ
-                !TSFSROT(I,M,2)=TFREZ
+                CMAIROT(I,M)=0.
+                WSNOROT(I,M)=0.
+                ZSNLROT(I,M)=0.10
+                TSFSROT(I,M,1)=TFREZ
+                TSFSROT(I,M,2)=TFREZ
+                TSFSROT(I,M,3)=TBARROT(I,M,1)
+                TSFSROT(I,M,4)=TBARROT(I,M,1)
+                TACROT (I,M)=TCANROT(I,M)
+                QACROT (I,M)=0.5E-2
 
-                !TSFSROT(I,M,3)=TBARROT(I,M,1)
-                !TSFSROT(I,M,4)=TBARROT(I,M,1)
-                !TACROT (I,M)=TCANROT(I,M)
-                !QACROT (I,M)=0.5E-2
-
-                !DO 75 K=1,6
-                !    DO 75 L=1,50
-                !        ITCTROT(I,M,K,L)=0
-!75              CONTINUE
 100     CONTINUE
+
+        ! Set the counter for the number of iterations required to solve surface energy balance for the elements of the four subareas to zero.
+        ITCTROT=0
 
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
@@ -862,11 +871,9 @@ contains
     !!@{
     !> Write out the model restart file to netcdf. We only write out the variables that the model
     !! influences. This overwrites a pre-existing netcdf file.
+    !>@author Joe Melton
 
     subroutine write_restart(lonIndex,latIndex)
-
-        ! J. Melton
-        ! Jun 2017
 
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
@@ -1024,10 +1031,9 @@ contains
     !!@{
     !>  Read in a model input from a netcdf file and store the file's time array
     !! as well as the input values into memory.
+    !>@author Joe Melton
 
     subroutine getInput(inputRequested,longitude,latitude)
-
-
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp
@@ -1110,7 +1116,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
-                if (arrindex == 0) stop('getInput says: The CO2 file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1138,7 +1144,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
-                if (arrindex == 0) stop('getInput says: The CH4 file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The CH4 file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1164,16 +1170,15 @@ contains
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
                 allocate(POPDFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
-
+                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
-                if (arrindex == 0) stop('getInput says: The POPD file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The POPD file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [arrindex,lonloc,latloc], count = [1,1,1])
+                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,arrindex], count = [1,1,1])
 
             end if
 
@@ -1199,7 +1204,7 @@ contains
             if (transientLGHT) then
                 ! We read in the whole LGHT times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
                 ! Find the requested day and year in the file.
@@ -1207,12 +1212,12 @@ contains
                 startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
 
                 arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
-                if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
                 ! We read in only the suggested year of daily inputs
                 ! FLAG Not presently set up for leap years!
                 allocate(LGHTFromFile(365))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(LGHTTime)
@@ -1241,25 +1246,23 @@ contains
 
             ! Ensure the file has the expected number of PFTs
             numPFTsinFile = ncGetDimLen(lucid, 'lev')
-            if (numPFTsinFile .ne. icc) stop('getInput says: LUC file does not have expected number of PFTs')
+            if (numPFTsinFile .ne. icc) stop ('getInput says: LUC file does not have expected number of PFTs')
 
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
-                allocate(LUCFromFile(lengthOfFile,icc))
-                !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
+                allocate(LUCFromFile(icc,lengthOfFile))
                 LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
-                if (arrindex == 0) stop('getInput says: The LUC file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The LUC file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
 
-                if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
+                if (nmos .ne. 1) stop ('getInput for LUC is not setup for more than one tile at present!')
 
-                !fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
                 fcancmxrow(i,m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
 
             end if
@@ -1285,7 +1288,7 @@ contains
             if (transientOBSWETF) then
                 ! We read in the whole OBSWETF times series and store it.
                 allocate(OBSWETFFromFile(lengthOfFile))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
 
@@ -1295,12 +1298,12 @@ contains
 
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,OBSWETFTime,startWETTime)
-                if (arrindex == 0) stop('getInput says: The OBSWETF file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
                 ! FLAG Not presently set up for leap years!
                 allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
@@ -1308,11 +1311,10 @@ contains
                 do d = 1,365
                     OBSWETFTime(d) = real(d)
                 end do
-
             end if
 
         case default
-            stop('Specify an input kind for getInput')
+            stop ('Specify an input kind for getInput')
 
         end select
 
@@ -1326,17 +1328,19 @@ contains
     !>\ingroup model_state_drivers_updateInput
     !!@{
     !> Update the input field variable based on the present model timestep
+    !>@author Joe Melton
 
-    subroutine updateInput(inputRequested,iyear,imonth,iday,dom)
+    subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
         use ctem_params, only : nmos
+        use generalUtils, only : abandonCell
 
         implicit none
 
         character(*), intent(in) :: inputRequested
-        integer, intent(in) :: iyear
+        integer, intent(in) :: yearNeeded
         integer, intent(in), optional :: imonth
         integer, intent(in), optional :: iday
         integer, intent(in), optional :: dom            ! day of month
@@ -1352,6 +1356,7 @@ contains
         logical, pointer :: transientLGHT
         integer, pointer :: fixedYearLGHT
         logical, pointer :: transientOBSWETF
+        character(4) :: seqstring
 
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
@@ -1370,38 +1375,58 @@ contains
             lengthTime = size(CO2Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            co2concrow(i,:) = CO2FromFile(arrindex)
+            arrindex = checkForTime(lengthTime,real(CO2Time),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The CO2 file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              co2concrow(i,:) = CO2FromFile(arrindex)
+            end if
 
         case ('CH4')
 
             lengthTime = size(CH4Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CH4Time),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            ch4concrow(i,:) = CH4FromFile(arrindex)
+            arrindex = checkForTime(lengthTime,real(CH4Time),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The CH4 file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              ch4concrow(i,:) = CH4FromFile(arrindex)
+            end if
 
         case ('POPD')
 
             lengthTime = size(POPDTime)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(POPDTime),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            popdinrow(i,:) = POPDFromFile(arrindex)
+            arrindex = checkForTime(lengthTime,real(POPDTime),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The POPD file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              popdinrow(i,:) = POPDFromFile(arrindex)
+            end if
 
         case ('LUC')
 
             lengthTime = size(LUCTime)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
-            if (nmos > 1) stop('updateInput for LUC only set up for 1 tile at present')
-            nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            arrindex = checkForTime(lengthTime,real(LUCTime),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The LUC file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
+              if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
+              nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            end if
 
        case('LGHT')
 
@@ -1411,21 +1436,24 @@ contains
             lengthTime = size(LGHTTime)
 
             if (transientLGHT) then
-                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+                LGHTTimeNow = real(yearNeeded) * 10000. + real(imonth+1) * 100. + real(dom)
             else ! we only need the day
                 LGHTTimeNow = real(iday)
             end if
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,LGHTTime,LGHTTimeNow)
-
-            lightng(1)= LGHTFromFile(arrindex)
-
-            ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
-            ! can just pass the same values across all ilg.
-            do m = 1, size(lightng)
-                lightng(m) = lightng(1)
-            end do
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The LGHT file does not contain requested year: '//seqstring)
+            else
+              lightng(1)= LGHTFromFile(arrindex)
+              ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
+              ! can just pass the same values across all ilg.
+              do m = 1, size(lightng)
+                  lightng(m) = lightng(1)
+              end do
+            end if
 
         case('OBSWETF')
 
@@ -1437,24 +1465,28 @@ contains
             lengthTime = size(OBSWETFTime)
 
             if (transientOBSWETF) then
-                OBSWTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+                OBSWTimeNow = real(yearNeeded) * 10000. + real(imonth+1) * 100. + real(dom)
             else ! we only need the day
                 OBSWTimeNow = real(iday)
             end if
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,OBSWETFTime,OBSWTimeNow)
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The OBSWETF file does not contain requested year: '//seqstring)
+            else
+              wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
 
-            wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
-
-            ! Since wetland area is presently assumed the same for all tiles, and nlat is
-            ! always 1 offline, then we can just pass the same values across all ilg.
-            do m = 1, size(wetfrac_presgat)
-                wetfrac_presgat(m) = wetfrac_presgat(1)
-            end do
+              ! Since wetland area is presently assumed the same for all tiles, and nlat is
+              ! always 1 offline, then we can just pass the same values across all ilg.
+              do m = 1, size(wetfrac_presgat)
+                  wetfrac_presgat(m) = wetfrac_presgat(1)
+              end do
+            end if
 
         case default
-            stop('specify an input kind for updateInput')
+            stop ('specify an input kind for updateInput')
         end select
 
     end subroutine updateInput
@@ -1465,8 +1497,10 @@ contains
     !>\ingroup model_state_drivers_getMet
     !!@{
     !> Read in the meteorological input from a netcdf file
-    !! It is **very** important that the files have time as the fastest varying dimension.
-    !! There is an orders of magnitude slow-up if the dimensions are out of order!
+    !! It is **very** important that the files are chunked correctly (for global and regional runs).
+    !! There is an orders of magnitude slow-up otherwise!
+    !>@author Joe Melton
+
     subroutine getMet(longitude,latitude,nday,delt)
 
         use fileIOModule
@@ -1557,11 +1591,10 @@ contains
 
         ! NOTE: Carefully check that your incoming inputs are in the expected units!
 
-        ! Also take care here. If you use ncdump on a file it will show the opposite order for the
+        ! WARNING. If you use ncdump on a file it will show the opposite order for the
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
 
-        !metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
@@ -1579,6 +1612,7 @@ contains
     !!@{
     !> This transfers the met data of this time step from the read-in array to the
     !! instantaneous variables. This also sets iyear to the present year of MET being read in.
+    !>@author Joe Melton
 
     subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
@@ -1656,6 +1690,7 @@ contains
     !>\ingroup model_state_drivers_closestCell
     !!@{
     !> Finds the closest grid cell in the file
+    !>@author Joe Melton
 
     integer function closestCell(ncid,label,gridPoint)
 
@@ -1684,6 +1719,7 @@ contains
     !>\ingroup model_state_drivers_deallocInput
     !!@{
     !> Deallocates the input files arrays
+    !>@author Joe Melton
 
     subroutine deallocInput
 

@@ -1,11 +1,22 @@
-      SUBROUTINE SNOW_TRANVAL(trandif, ! OUTPUT                                   SNOW_TRANVAL.2 
-     1                        trandir,                                            SNOW_TRANVAL.3 
-     2                        smu,     ! INPUT                                    SNOW_TRANVAL.4 
-     3                        salb,                                               SNOW_TRANVAL.5 
-     4                        bc_conc,                                            SNOW_TRANVAL.6 
-     5                        snow_reff,                                          SNOW_TRANVAL.7 
-     6                        swe,                                                SNOW_TRANVAL.8 
-     7                        c_ind,                                              SNOW_TRANVAL.9 
+!>\file
+C!Computes the direct and diffuse snow transmission using lookup table and current snow conditions.
+C!@author J. Cole
+!!
+C!! This subroutine compute the direct and diffuse snow transmission using a
+!! lookup table and information about the current snow pack state.
+!! Transmission are computed for each solar radiation wavelength intervals
+!! so a total of 8 albedos will be returned.  These transmissions can then be
+!! used to compute the total snow transmission based on the by weighting
+!! the results by the direct beam fraction of the incident solar radiation.
+C!
+      SUBROUTINE SNOW_TRANVAL(trandif, ! OUTPUT                                   SNOW_TRANVAL.2
+     1                        trandir,                                            SNOW_TRANVAL.3
+     2                        smu,     ! INPUT                                    SNOW_TRANVAL.4
+     3                        salb,                                               SNOW_TRANVAL.5
+     4                        bc_conc,                                            SNOW_TRANVAL.6
+     5                        snow_reff,                                          SNOW_TRANVAL.7
+     6                        swe,                                                SNOW_TRANVAL.8
+     7                        c_ind,                                              SNOW_TRANVAL.9
      8                        il1,                                                SNOW_TRANVAL.10
      9                        il2,                                                SNOW_TRANVAL.11
      1                        ilg,                                                SNOW_TRANVAL.12
@@ -290,4 +301,5 @@
       END DO                    ! ib                                              SNOW_TRANVAL.285
                                                                                   SNOW_TRANVAL.286
       RETURN                                                                      SNOW_TRANVAL.287
+      !>\file
       END                                                                         SNOW_TRANVAL.288

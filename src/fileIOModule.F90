@@ -1,9 +1,10 @@
+!>\file
 !> The File IO Module contains wrappers for accessing netCDF files.
-!! It uses precompile directives to determine if a compilation should be serial or parallel.
-!! Instead of including netcdf function calls and the netcdf module in the code,
-!! one is encouraged to use the fileIOModule. The main advantage of using wrapper
-!! functions is that the code can be easily written for either parallel or serial
-!! execution without having to worry about the necessary different function calls.
+!! It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF.
+!!
+!>@author
+!> Ed Wisernig, Joe Melton
+
 module fileIOModule
 #if PARALLEL
     use mpi
@@ -43,6 +44,8 @@ module fileIOModule
 
 contains
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncCreate
+    !!@{
     !> Creates a new netCDF file and returns the file id.
     integer function ncCreate(fileName, cmode)
         character(*), intent(in)    :: fileName !< File name
@@ -63,8 +66,10 @@ contains
         call checkNC(nf90_create(trim(fileName), cmode, ncCreate), tag = 'ncCreate(' // trim(filename) // ') ')
 #endif
     end function ncCreate
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncOpen
+    !!@{
     !> Opens an existing netCDF file and returns the file id.
     integer function ncOpen(fileName, omode)
         character(*), intent(in)    :: fileName !< File name
@@ -85,24 +90,30 @@ contains
         call checkNC(nf90_open(trim(fileName), omode, ncOpen), tag = 'ncOpen(' // trim(filename) // ') ')
 #endif
     end function ncOpen
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetVarId
+    !!@{
     !> Returns the variable id for a given variable label.
     integer function ncGetVarId(fileId, label)
         integer, intent(in)         :: fileId   !< File id
         character(*), intent(in)    :: label    !< netCDF variable label
         call checkNC(nf90_inq_varid(fileId, label, ncGetVarId), tag = 'ncGetVarId(' // trim(label) // ') hint -check if nameInCode is in the xml file, or perhaps you have a duplicate')
     end function ncGetVarId
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetVarDimensions
+    !!@{
     !> Returns the variable dimensions.
     integer function ncGetVarDimensions(fileId, varId)
         integer, intent(in)         :: fileId   !< File id
         integer, intent(in)         :: varId    !< Variable id
         call checkNC(nf90_inquire_variable(fileId, varId, ndims = ncGetVarDimensions), tag = 'ncGetVarDimensions() ')
     end function ncGetVarDimensions
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetVarName
+    !!@{
     !> Returns the variable name.
     function ncGetVarName(fileId)
         integer, intent(in)         :: fileId   !< File id
@@ -127,16 +138,20 @@ contains
         end do
 
     end function ncGetVarName
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetDimId
+    !!@{
     !> Returns the dimension ID.
     integer function ncGetDimId(fileId, label)
         integer, intent(in)         :: fileId   !< File id
         character(*), intent(in)    :: label    !< Variable label
         call checkNC(nf90_inq_dimid(fileId, label, ncGetDimId), tag = 'ncGetDimId(' // trim(label) // ') ')
     end function ncGetDimId
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetDimLen
+    !!@{
     !> Returns the dimension length for a given dimension
     integer function ncGetDimLen(fileId, label)
         integer, intent(in)             :: fileId   !< File id
@@ -145,8 +160,10 @@ contains
         dimId = ncGetDimId(fileId, label)
         call checkNC(nf90_inquire_dimension(fileId, dimId, len=ncGetDimLen), tag = 'ncGetDimLen(' // trim(label) // ') ')
     end function ncGetDimLen
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncDefDim
+    !!@{
     !> Defines a new dimension and returns the dimension id
     integer function ncDefDim(fileId, label, length)
         integer, intent(in)                         :: fileId   !< File id
@@ -166,8 +183,10 @@ contains
 #endif
         call checkNC(nf90_def_dim(fileId, label, length, ncDefDim), tag = 'ncDefDim(' // trim(label) // ') ')
     end function ncDefDim
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncDefVar
+    !!@{
     !> Defines a new variable and returns the variable id
     integer function ncDefVar(fileId, label, type, dimIds)
         integer, intent(in)                         :: fileId   !< File id
@@ -176,29 +195,37 @@ contains
         character(*), intent(in)                    :: label    !< Variable label
         call checkNC(nf90_def_var(fileId, label, type, dimIds, ncDefVar), tag = 'ncDefVar(' // trim(label) // ') ')
     end function ncDefVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncEndDef
+    !!@{
     !> Ends the definition mode.
     subroutine ncEndDef(fileId)
         integer, intent(in)                 :: fileId   !< File id
         call checkNC(nf90_enddef(fileId))
     end subroutine ncEndDef
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncReDef
+    !!@{
     !> Enters definition mode.
     subroutine ncReDef(fileId)
         integer, intent(in)                 :: fileId   !< File id
         call checkNC(nf90_redef(fileId))
     end subroutine ncReDef
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncClose
+    !!@{
     !> Closes a given file.
     subroutine ncClose(fileId)
         integer, intent(in)                 :: fileId !< File id
         call checkNC(nf90_close(fileId))
     end subroutine ncClose
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncPutAtt
+    !!@{
     !> Writes an attribute to a file. Can take in attributes of the char/int/real types. Only one type can be used at a time.
     subroutine ncPutAtt(fileId, varId, label, charValues, intValues, realValues)
         integer, intent(in)     :: fileId   !< File id
@@ -221,10 +248,12 @@ contains
             counter = counter + 1
             call checkNC(nf90_put_att(fileId, varId, label, realValues), tag = 'ncPutAtt(' // trim(label) // ') ')
         end if
-        if (counter /= 1) stop('In function ncPutAtt, please supply either charValues, intValue or realValues. Just one')
+        if (counter /= 1) stop ('In function ncPutAtt, please supply either charValues, intValue or realValues- just one')
     end subroutine ncPutAtt
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetVar
+    !!@{
     !> Returns the variable content
     function ncGetVar(fileId, label, start, count)
         integer, intent(in)                             :: fileId       !< File id
@@ -265,12 +294,14 @@ contains
             call checkNC(nf90_get_var(fileId, varId, temp5D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = reshape(temp5D,(/size(temp5D)/))
         case default
-            stop("Only up to 5 dimensions have been implemented!")
+            stop ("Only up to 5 dimensions have been implemented!")
         end select
 
     end function ncGetVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGetDimValues
+    !!@{
     !> Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)
     function ncGetDimValues(fileId, label, start, count, start2D, count2D)
         integer, intent(in)                         :: fileId   !< File id
@@ -301,8 +332,10 @@ contains
         end select
 
     end function ncGetDimValues
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGet1DVar
+    !!@{
     !> Returns a 1D array from a variable, based on file id, label and coordinates
     function ncGet1DVar(fileId, label, start, count)
         integer, intent(in)                         :: fileId
@@ -319,7 +352,7 @@ contains
             formatSize = estimateOnes(count)
             allocate(localFormat(formatSize))
             localFormat = collapseOnes(count)
-            if (size(localFormat) /= 1) stop('Count problem in ncGet1DVar function')
+            if (size(localFormat) /= 1) stop ('Count problem in ncGet1DVar function')
         else
             allocate(localCount(2))
             localCount = [1, 1]
@@ -331,8 +364,10 @@ contains
         ncGet1DVar = ncGetVar(fileId, label, start, localCount)
 
     end function ncGet1DVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGet2DVar
+    !!@{
     !> Returns a 2D array from a variable, based on file id, label and coordinates
     function ncGet2DVar(fileId, label, start, count, format)
         integer, intent(in)                         :: fileId
@@ -354,7 +389,7 @@ contains
                 formatSize = estimateOnes(count)
                 allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
-                if (size(localFormat) /= 2) stop('Count and/or format problem found in ncGet2DVar function')
+                if (size(localFormat) /= 2) stop ('Count and/or format problem found in ncGet2DVar function')
             endif
         else
             allocate(localCount(3))
@@ -373,8 +408,10 @@ contains
         allocate(ncGet2DVar(fixedFormat(1), fixedFormat(2)))
         ncGet2DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
     end function ncGet2DVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGet3DVar
+    !!@{
     !> Returns a 3D array from a variable, based on file id, label and coordinates
     function ncGet3DVar(fileId, label, start, count, format)
         integer, intent(in)                         :: fileId
@@ -396,7 +433,7 @@ contains
                 formatSize = estimateOnes(count)
                 allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
-                if (size(localFormat) /= 3) stop('Count and/or format problem found in ncGet3DVar function')
+                if (size(localFormat) /= 3) stop ('Count and/or format problem found in ncGet3DVar function')
             endif
         else
             allocate(localCount(4))
@@ -415,8 +452,10 @@ contains
         allocate(ncGet3DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3)))
         ncGet3DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
     end function ncGet3DVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncGet4DVar
+    !!@{
     !> Returns a 4D array from a variable, based on file id, label and coordinates
     function ncGet4DVar(fileId, label, start, count, format)
         integer, intent(in)                         :: fileId
@@ -438,7 +477,7 @@ contains
                 formatSize = estimateOnes(count)
                 allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
-                if (size(localFormat) /= 4) stop('Count and/or format problem found in ncGet4DVar function')
+                if (size(localFormat) /= 4) stop ('Count and/or format problem found in ncGet4DVar function')
             endif
         else
             allocate(localCount(5))
@@ -457,8 +496,10 @@ contains
         allocate(ncGet4DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3), fixedFormat(4)))
         ncGet4DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
     end function ncGet4DVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncPutDimValues
+    !!@{
     !> Writes the 1D dimension values to a given file
     subroutine ncPutDimValues(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                 :: fileId       !< File id
@@ -484,11 +525,13 @@ contains
             call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutDimValues, please supply either intValues or realValues. Just one')
+        if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues- just one')
 
     end subroutine ncPutDimValues
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncPutVar
+    !!@{
     !> Writes a local variable (1D input values, either real or int)
     !! Takes in a 1D array (of either real or int elements) and writes it into a netCDF structure, according to start and count
     subroutine ncPutVar(fileId, label, realValues, intValues, start, count)
@@ -511,11 +554,13 @@ contains
             call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues. Just one')
+        if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues- just one')
 
     end subroutine ncPutVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncPut2DVar
+    !!@{
     !> Writes a local variable of 2D input values
     !! Takes in a 2D array (of either real or int elements) and writes it into a netCDF structure, according to start and count
     subroutine ncPut2DVar(fileId, label, realValues, intValues, start, count)
@@ -536,10 +581,12 @@ contains
             call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPut2DVar, please supply either intValues or realValues. Just one')
+        if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues- just one')
     end subroutine ncPut2DVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_ncPut3DVar
+    !!@{
     !> Writes a local variable of 3D input values
     !! Takes in a 3D array (of either real or int elements) and writes it into a netCDF structure, according to start and count
     subroutine ncPut3DVar(fileId, label, realValues, intValues, start, count)
@@ -560,8 +607,10 @@ contains
             call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
         end if
     end subroutine ncPut3DVar
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_estimateOnes
+    !!@{
     !> Returns an estimate count of how many 1s can be collapsed in the array
     integer function estimateOnes(values)
         integer, intent(in)             :: values(:)        !< The input values
@@ -577,8 +626,10 @@ contains
             estimateOnes = 1;
         endif
     end function estimateOnes
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_collapseOnes
+    !!@{
     !> Returns an array that keeps only the values not equal to one.
     function collapseOnes(values)
         integer, intent(in)             :: values(:)        !< The input values
@@ -599,8 +650,10 @@ contains
             collapseOnes(1) = 1
         endif
     end function collapseOnes
-
+    !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !>\ingroup fileIOMOdule_checkNC
+    !!@{
     !> Checks for errors in the NetCDF access process
     subroutine checkNC(ncStatus, tag)
         integer, intent(in)         :: ncStatus !< Status variable
@@ -617,5 +670,6 @@ contains
             stop
         end if
     end subroutine checkNC
-
+    !>@}
+!>\file
 end module fileIOModule

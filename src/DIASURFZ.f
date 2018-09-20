@@ -1,3 +1,6 @@
+!>\file
+!>Calculate the diagnostic values of U, V, T, Q
+!!near the surface (ZU and ZT)
       SUBROUTINE DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA,
      1                  H,UE,FTEMP,FVAP,ZU,ZT,LAT,F,IL1,IL2,JL)
 
@@ -22,14 +25,14 @@
 * 007      Y. Delage (Sept 00) - Change UE2 by UE
 *                              - Introduce log-linear profile for near-
 *                                 neutral cases
-* 008      D. Verseghy (Nov 02) - Remove unused constant CLM 
+* 008      D. Verseghy (Nov 02) - Remove unused constant CLM
 *                                 from common block CLASSD2
 * 009      M. Mackay (Nov 04) - Change all occurrences of ALOG
 *                               to LOG for greater portability.
 * 010      F. SeglenieKs (Mar 05) - Declare LAT as REAL*8 for
 *                                   consistency
 * 011      P.Bartlett (Mar 06) - Set HI to zero for unstable case
-* 012      E.Chan (Nov 06) - Bracket entire subroutine loop with 
+* 012      E.Chan (Nov 06) - Bracket entire subroutine loop with
 *                            IF(F(J).GT.0.)
 * 013      D.Verseghy (Nov 06) - Convert LAT to regular precision
 * 014      B.Dugas (Jan 09) - "Synchronization" with diasurf2
@@ -66,7 +69,7 @@
 * ZU       heights for computation of wind components
 * ZT       heights for computation of temperature and moisture
 * LAT      LATITUDE
-* F        Fraction of surface type being studied 
+* F        Fraction of surface type being studied
 
       REAL ANG,ANGI,VITS,LZZ0,LZZ0T
       REAL CT,DANG,CM
@@ -131,7 +134,7 @@
       UZ(J)=UZ(J)+F(J)*VITS*COS(ANG)
       VZ(J)=VZ(J)+F(J)*VITS*SIN(ANG)
 
-      ENDIF 
+      ENDIF
       ENDDO
 
       RETURN

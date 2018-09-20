@@ -624,14 +624,16 @@ type class_rotated
     real, allocatable, dimension(:,:) :: WTRSROT !<
     real, allocatable, dimension(:,:) :: SFRHROT !<
     real, allocatable, dimension(:,:) :: wtableROT !<
+    real, allocatable, dimension(:,:)  :: FTABLE !<Depth to frozen water table (m)
+    real, allocatable, dimension(:,:)  :: ACTLYR !<Active layer depth (m)
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
-    integer, allocatable, dimension(:,:,:) :: ISNDROT !<
+    integer, allocatable, dimension(:,:,:) :: ISNDROT !<Sand content flag, used to delineate non-soils.
     real, allocatable, dimension(:,:,:) :: TBARROT !< Temperature of soil layers [K]
     real, allocatable, dimension(:,:,:) :: THICROT !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: THLQROT !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: BIROT   !<
-    real, allocatable, dimension(:,:,:) :: DLZWROT !<
+    real, allocatable, dimension(:,:,:) :: DLZWROT !<Permeable thickness of soil layer [m]
     real, allocatable, dimension(:,:,:) :: GRKSROT !<
     real, allocatable, dimension(:,:,:) :: HCPSROT !<
     real, allocatable, dimension(:,:,:) :: SANDROT !<Percentage sand content of soil
@@ -641,7 +643,7 @@ type class_rotated
     real, allocatable, dimension(:,:,:) :: PSIWROT !<
     real, allocatable, dimension(:,:,:) :: TCSROT  !<
     real, allocatable, dimension(:,:,:) :: THFCROT !<
-    real, allocatable, dimension(:,:,:) :: THMROT  !<
+    real, allocatable, dimension(:,:,:) :: THMROT  !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: THPROT  !<
     real, allocatable, dimension(:,:,:) :: THRROT  !<
     real, allocatable, dimension(:,:,:) :: THRAROT !<
@@ -756,7 +758,7 @@ type class_moyr_output
     real, allocatable, dimension(:) :: ALVSACC_MO   !<
     real, allocatable, dimension(:) :: ALIRACC_MO   !<
     real, allocatable, dimension(:) :: FLUTACC_MO   !<
-    real, allocatable, dimension(:) :: FSINACC_MO   !<
+    real, allocatable, dimension(:) :: FSINACC_MO   !<Surface Downwelling Shortwave Radiative flux in air [$W m^{-2}$]
     real, allocatable, dimension(:) :: FLINACC_MO   !<
     real, allocatable, dimension(:) :: HFSACC_MO    !<
     real, allocatable, dimension(:) :: QEVPACC_MO   !<
@@ -773,6 +775,8 @@ type class_moyr_output
     real, allocatable, dimension(:) :: ACTLYR_MAX_MO
     real, allocatable, dimension(:) :: FTABLE_MIN_MO
     real, allocatable, dimension(:) :: FTABLE_MAX_MO
+    real, allocatable, dimension(:) :: MRSO_MO      !< Total Soil Moisture Content [kg $m^{-2}$]
+    real, allocatable, dimension(:,:):: MRSOL_MO     !< Total water content of soil layer [kg $m^{-2}$]
     real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo
     real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
     real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
@@ -1330,6 +1334,7 @@ allocate(class_rot% ALIRACC (nlat),&
          class_out%FTABLE_MIN_MO (nlat),&
          class_out%FTABLE_MAX_MO (nlat),&
          class_out%ALTOTACC_MO (nlat),&
+         class_out%MRSO_MO (nlat),&
          class_out%GROUNDEVAP (nlat),&
          class_out%CANOPYEVAP (nlat),&
          class_out%altotcntr_m (nlat),&
@@ -1338,6 +1343,8 @@ allocate(class_rot% ALIRACC (nlat),&
          class_out%TBARACC_MO (nlat,ignd),&
          class_out%THLQACC_MO (nlat,ignd),&
          class_out%THICACC_MO (nlat,ignd),&
+         class_out%MRSOL_MO (nlat,ignd),&
+
          class_out%ALVSACC_YR (nlat),&
          class_out%ALIRACC_YR (nlat),&
          class_out%FLUTACC_YR (nlat),&
@@ -1468,6 +1475,8 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot% WTRSROT (nlat,nmos),&
          class_rot% SFRHROT (nlat,nmos),&
          class_rot% wtableROT(nlat,nmos),&
+         class_rot% ACTLYR(nlat,nmos),&
+         class_rot% FTABLE(nlat,nmos),&
          class_rot%PREACC_M(nlat,nmos),&
          class_rot%GTACC_M (nlat,nmos),&
          class_rot%QEVPACC_M (nlat,nmos),&
@@ -1621,12 +1630,13 @@ do i=1,nltest
     class_out%GROUNDEVAP(I)=0.
     class_out%ALTOTACC_MO(I)=0.
     class_out%altotcntr_m(i)=0
-
+    class_out%MRSO_MO(i) = 0.
 
     DO J=1,IGND
         class_out%TBARACC_MO(I,J)=0.
         class_out%THLQACC_MO(I,J)=0.
         class_out%THICACC_MO(I,J)=0.
+        class_out%MRSOL_MO(i,j) = 0.
     end do
 end do
 
@@ -1661,6 +1671,13 @@ do i=1,nltest
           class_out%TAACC_YR(I)=0.
           class_out%ALTOTACC_YR(I)=0.
           class_out%altotcntr_yr(i)=0
+          class_out%ACTLYR_yr(I)=0.
+          class_out%FTABLE_yr(I)=0.
+          class_out%ACTLYR_MIN_yr(I)=100000.
+          class_out%FTABLE_MIN_yr(I)=100000.
+          class_out%ACTLYR_MAX_yr(I)=0.
+          class_out%FTABLE_MAX_yr(I)=0.
+
 end do
 
 end subroutine resetclassyr

@@ -161,7 +161,7 @@ contains
             counter = counter + 1
             call checkNC(nf90_put_att(fileId, varId, label, realValues), tag = 'ncPutAtt(' // trim(label) // ') ')
         end if
-        if (counter /= 1) stop('In function ncPutAtt, please supply either charValues, intValue or realValues; just one')
+        if (counter /= 1) stop ('In function ncPutAtt, please supply either charValues, intValue or realValues; just one')
     end subroutine ncPutAtt
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ contains
             call checkNC(nf90_get_var(fileId, varId, temp5D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
             ncGetVar = reshape(temp5D,(/size(temp5D)/))
         case default
-            stop("Only up to 5 dimensions have been implemented!")
+            stop ("Only up to 5 dimensions have been implemented!")
         end select
 
     end function ncGetVar
@@ -265,7 +265,7 @@ contains
             call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
+        if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues; just one')
 
     end subroutine ncPutVar
 
@@ -302,7 +302,7 @@ contains
             formatSize = estimateOnes(count)
             allocate(localFormat(formatSize))
             localFormat = collapseOnes(count)
-            if (size(localFormat) /= 1) stop('Count problem in ncGet1DVar function')
+            if (size(localFormat) /= 1) stop ('Count problem in ncGet1DVar function')
         else
             allocate(localCount(2))
             localCount = [1, 1]
@@ -337,7 +337,7 @@ contains
                 formatSize = estimateOnes(count)
                 allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
-                if (size(localFormat) /= 2) stop('Count and/or format problem found in ncGet2DVar function')
+                if (size(localFormat) /= 2) stop ('Count and/or format problem found in ncGet2DVar function')
             endif
         else
             allocate(localCount(3))
@@ -379,7 +379,7 @@ contains
                 formatSize = estimateOnes(count)
                 allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
-                if (size(localFormat) /= 3) stop('Count and/or format problem found in ncGet3DVar function')
+                if (size(localFormat) /= 3) stop ('Count and/or format problem found in ncGet3DVar function')
             endif
         else
             allocate(localCount(4))
@@ -421,7 +421,7 @@ contains
                 formatSize = estimateOnes(count)
                 allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
-                if (size(localFormat) /= 4) stop('Count and/or format problem found in ncGet4DVar function')
+                if (size(localFormat) /= 4) stop ('Count and/or format problem found in ncGet4DVar function')
             endif
         else
             allocate(localCount(5))

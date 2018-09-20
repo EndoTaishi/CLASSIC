@@ -1,4 +1,4 @@
-Modify netcdf model initialization files for whole fields or point locations
+Modify netcdf model initialization files for whole fields or point locations {#modifyRS}
 ========
 
 # Purpose

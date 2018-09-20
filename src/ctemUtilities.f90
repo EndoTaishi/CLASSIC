@@ -1,3 +1,4 @@
+!>\file
 !> Central module for CTEM (biogeochemical)-related utilities
 module ctemUtilities
 
@@ -10,6 +11,8 @@ public :: ctemInit
 contains
 
 ! --------------------------------------------------------------------------------------------------------------------
+!>\ingroup ctemUtil_dayEndCTEMPreparation
+!!@{
 !> Prepare the CTEM input (physics) variables at the end of the day.
 subroutine dayEndCTEMPreparation(nml,nday)
 
@@ -155,8 +158,10 @@ subroutine dayEndCTEMPreparation(nml,nday)
     end do !nml loop
 
 end subroutine dayEndCTEMPreparation
-
+!>@}
 ! --------------------------------------------------------------------------------------------------------------------
+!>\ingroup ctemUtil_accumulateForCTEM
+!!@{
 !> Accumulate the CTEM input (physics) variables at the end of each physics timestep
 subroutine accumulateForCTEM(nml)
 
@@ -399,8 +404,11 @@ subroutine accumulateForCTEM(nml)
     end do
 
 end subroutine accumulateForCTEM
+!>@}
 !
 ! --------------------------------------------------------------------------------------------------------------------
+!>\ingroup ctemUtil_ctemInit
+!!@{
 !> Find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
 !! Also initialize additional variables which are used by CTEM (biogeochemical processes).
 subroutine ctemInit(nltest,nmtest)
@@ -637,5 +645,6 @@ subroutine ctemInit(nltest,nmtest)
     end do
 
 end subroutine ctemInit
-
+!>@}
+!>\file
 end module ctemUtilities

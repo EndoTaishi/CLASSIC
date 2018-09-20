@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<variableSet type="CLASS" version="1.2" created="2018/5/7">
+<?xml version="1.0"?>
+<variableSet type="CLASS" version="1.2" created="2018/8/7">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -451,6 +451,12 @@
             <shortName>actlyr</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>actlyr_mo</nameInCode>
@@ -462,6 +468,12 @@
             <longName>Maximum active layer depth</longName>
             <shortName>actlyrmax</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_max_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -475,6 +487,12 @@
             <shortName>actlyrmin</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_min_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>actlyr_min_mo</nameInCode>
@@ -486,6 +504,12 @@
             <longName>Mean depth to frozen water table</longName>
             <shortName>ftable</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -499,6 +523,12 @@
             <shortName>ftablemax</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_max_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ftable_max_mo</nameInCode>
@@ -510,6 +540,12 @@
             <longName>Minimum depth to frozen water table</longName>
             <shortName>ftablemin</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_min_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -581,12 +617,18 @@
             <standardName>Surface Downwelling Shortwave Radiation</standardName>
             <longName>Surface Downwelling Shortwave Radiative flux in air</longName>
             <shortName>rsds</shortName>
-            <defaultUnits>W/$m^2$</defaultUnits>
+            <defaultUnits>W $m^2$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fsinacc_mo</nameInCode>
+                <units>W $m^2$</units>
+            </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>fss_hh</nameInCode>
-                <units>W/$m^2$</units>
+                <units>W $m^2$</units>
             </variant>
         </variable>
         <variable id="57" includeBareGround="false" dormant="false">
@@ -913,6 +955,30 @@
                 <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
+        <variable id="78" includeBareGround="false" dormant="false">
+            <standardName>Total Soil Moisture Content</standardName>
+            <longName>the mass per unit area (summed over all soil layers) of water in all phases</longName>
+            <shortName>mrso</shortName>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>mrso_mo</nameInCode>
+                <units>kg$m^{-2}$</units>
+            </variant>
+        </variable>
+        <variable id="79" includeBareGround="false" dormant="false">
+            <standardName>Total water content of soil layer</standardName>
+            <longName>in each soil layer, the mass of water in all phases, including ice. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
+            <shortName>mrsol</shortName>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>mrsol_mo</nameInCode>
+                <units>kg$m^{-2}$</units>
+            </variant>
+        </variable>
     </group>
     <group type="ctem">
         <variable id="23" includeBareGround="false" dormant="false">
@@ -1061,7 +1127,7 @@
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
-                <nameInCode>litrmass_mo</nameInCode>
+                <nameInCode>litrmass_yr</nameInCode>
                 <units>kg C/$m^2$</units>
             </variant>
             <variant>
@@ -1074,6 +1140,12 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>litrmass_mo_g</nameInCode>
+                <units>kg C/$m^2$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>litrmass_mo</nameInCode>
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
@@ -1890,19 +1962,19 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>luc_emc_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>luc_emc_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>luc_emc_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
         </variable>
         <variable id="46" includeBareGround="false" dormant="false">
@@ -1932,19 +2004,19 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucltrin_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucltrin_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucltrin_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
         </variable>
         <variable id="47" includeBareGround="false" dormant="false">
@@ -1974,19 +2046,49 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucsocin_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucsocin_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucsocin_mo_t</nameInCode>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="77" includeBareGround="false" dormant="false">
+            <standardName>Sum of fDeforestToAtmo,  fDeforestToLitter, fDeforestToSoil</standardName>
+            <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed. This is the total amount of C</longName>
+            <shortName>fDeforestTotal</shortName>
+            <defaultUnits>g C $m^{-2}$ year$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luctot_yr_g</nameInCode>
                 <units>g C $m^{-2}$ year$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>luctot_yr_t</nameInCode>
+                <units>g C $m^{-2}$ year$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luctot_mo_g</nameInCode>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>luctot_mo_t</nameInCode>
+                <units>g C $m^{-2}$ mo$^{-1}$</units>
             </variant>
         </variable>
     </group>

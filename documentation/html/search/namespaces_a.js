@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['readjobopts',['readjobopts',['../namespacereadjobopts.html',1,'']]]
+  ['xmlmanager',['xmlmanager',['../namespacexmlmanager.html',1,'']]]
 ];
