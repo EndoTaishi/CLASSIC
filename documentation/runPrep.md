@@ -63,9 +63,9 @@ Download our container:
 
 `singularity pull shub://jormelton/containerCLASSIC`
 
-And shell into it:
+And shell into it (example assumes you are in the same folder as the .simg file):
 
-`singularity shell singularity pull shub://jormelton/containerCLASSIC`
+`singularity shell jormelton-containerCLASSIC-master-latest.simg`
 
 E.g.
 
