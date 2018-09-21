@@ -316,7 +316,7 @@ contains
         myDomain%LandCellCount = 0
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
-              if (projectedGrid) flattenedIndex = (i + myDomain%srtx - 2) * totlon + (j + myDomain%srty - 1)  !FLAG this needs to be checked when I have a file!!
+              if (projectedGrid) flattenedIndex = (i + myDomain%srtx - 2) * totlat + (j + myDomain%srty - 1)
                 if (mask(i,j) .eq. -1) then
                     !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
                     !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
@@ -341,7 +341,7 @@ contains
                     myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
                     myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
                   else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
-                    tempIndex = (i - 1) * myDomain%cntx + j !FLAG this needs to be checked when I have a
+                    tempIndex = (i - 1) * myDomain%cnty + j
                     myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
                     myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
                   end if
