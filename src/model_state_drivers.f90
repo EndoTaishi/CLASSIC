@@ -300,8 +300,8 @@ contains
           allocate(myDomain%latUnique(myDomain%cnty),&
                    myDomain%lonUnique(myDomain%cntx))
         else
-          allocate(myDomain%latUnique(myDomain%cnty*myDomain%cntx),&
-                   myDomain%lonUnique(myDomain%cnty*myDomain%cntx))
+          allocate(myDomain%latUnique(totsize),&
+                   myDomain%lonUnique(totsize))
         end if
 
         !> Retrieve the number of soil layers (set ignd!)
@@ -312,40 +312,45 @@ contains
         allocate(mask(myDomain%cntx, myDomain%cnty))
         mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty],&
                           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
-
         myDomain%LandCellCount = 0
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
-              if (projectedGrid) flattenedIndex = (i + myDomain%srtx - 2) * totlat + (j + myDomain%srty - 1)
-                if (mask(i,j) .eq. -1) then
-                    !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
-                    !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
-                  myDomain%LandCellCount = myDomain%LandCellCount + 1
-                  myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
-                  myDomain%lonLocalIndex(myDomain%LandCellCount) = i
-                  myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
-                  myDomain%latLocalIndex(myDomain%LandCellCount) = j
-                  if (.not. projectedGrid) then
-                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                  else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
-                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
-                    myDomain%lonUnique(i) = myDomain%allLonValues(flattenedIndex)
-                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
-                    myDomain%latUnique(j) = myDomain%allLatValues(flattenedIndex)
-                  end if
-                else !keep track of the non-land too for the making of the output files.
-                  if (.not. projectedGrid) then
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                  else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
-                    tempIndex = (i - 1) * myDomain%cnty + j
-                    myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
-                    myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
-                  end if
-                endif
+              if (projectedGrid) then
+                flattenedIndex = (j + myDomain%srty - 2) * totlon + (i + myDomain%srtx - 1)
+                tempIndex = (i - 1) * myDomain%cnty + j
+              end if
+              if (mask(i,j) .eq. -1) then
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
+                  ! , ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
+                myDomain%LandCellCount = myDomain%LandCellCount + 1
+                myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
+                myDomain%lonLocalIndex(myDomain%LandCellCount) = i
+                myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
+                myDomain%latLocalIndex(myDomain%LandCellCount) = j
+                if (.not. projectedGrid) then
+                  myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
+                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
+                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is valid"
+                  myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
+                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                end if
+              else !keep track of the non-land too for the making of the output files.
+                if (.not. projectedGrid) then
+                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
+                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is NOT valid"
+                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                end if
+              endif
             enddo
         enddo
 
