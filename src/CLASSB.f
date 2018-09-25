@@ -421,19 +421,19 @@ C
               ! For MINERAL soil:
               ! Make it so the first layer is considered moss if peatland flag >0.
               ! This overwrites the previous assignments.
-             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
-                  if (j .eq. 1) then ! First layer is moss
-                      thpor(i,m,j)  = thpmoss
-                      thlret(i,m,j) = thrmoss
-                      thlmin(i,m,j) = thmmoss
-                      bi(i,m,j)     = bmoss
-                      psisat(i,m,j) = psismoss
-                      grksat(i,m,j) = grksmoss
-                      hcps(i,m,j) = hcpmoss
-                      tcs(i,m,j) = tcom
+             !if (ipeatland(i,m) .eq. 0 ) then ! Peatland flag, 1= bog, 2 = fen
+            !      if (j .eq. 1) then ! First layer is moss
+            !          thpor(i,m,j)  = thpmoss
+            !          thlret(i,m,j) = thrmoss
+            !          thlmin(i,m,j) = thmmoss
+            !          bi(i,m,j)     = bmoss
+            !          psisat(i,m,j) = psismoss
+            !          grksat(i,m,j) = grksmoss
+            !          hcps(i,m,j) = hcpmoss
+            !          tcs(i,m,j) = tcom
 
-                  end if
-             end if
+            !      end if
+            ! end if
 
           ENDIF
 300   CONTINUE
