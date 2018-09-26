@@ -2804,6 +2804,8 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: doperpftoutput
         logical, pointer :: dopertileoutput
+        logical, pointer :: transientOBSWETF
+        integer, pointer :: fixedYearOBSWETF
 
         real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
@@ -2882,6 +2884,7 @@ contains
         real, pointer, dimension(:,:) :: ch4wet1_mo_t
         real, pointer, dimension(:,:) :: ch4wet2_mo_t
         real, pointer, dimension(:,:) :: wetfdyn_mo_t
+        real, pointer, dimension(:,:) :: wetfpres_mo_t
         real, pointer, dimension(:,:) :: ch4dyn1_mo_t
         real, pointer, dimension(:,:) :: ch4dyn2_mo_t
         real, pointer, dimension(:,:) :: ch4soills_mo_t
@@ -2925,6 +2928,7 @@ contains
         real, pointer, dimension(:,:) :: ch4wet1row
         real, pointer, dimension(:,:) :: ch4wet2row
         real, pointer, dimension(:,:) :: wetfdynrow
+        real, pointer, dimension(:,:) :: wetfrac_presrow
         real, pointer, dimension(:,:) :: ch4dyn1row
         real, pointer, dimension(:,:) :: ch4dyn2row
         real, pointer, dimension(:,:) :: ch4soillsrow
@@ -2937,6 +2941,7 @@ contains
         real, pointer, dimension(:,:,:) :: humiftrsvegrow
         real, pointer, dimension(:,:) ::uvaccrow_m
         real, pointer, dimension(:,:) ::vvaccrow_m
+        real, pointer, dimension(:) :: wetfrac_presgat
 
         real, pointer, dimension(:) :: laimaxg_mo_g
         real, pointer, dimension(:) :: stemmass_mo_g
@@ -2978,6 +2983,7 @@ contains
         real, pointer, dimension(:) :: ch4wet1_mo_g
         real, pointer, dimension(:) :: ch4wet2_mo_g
         real, pointer, dimension(:) :: wetfdyn_mo_g
+        real, pointer, dimension(:) :: wetfpres_mo_g
         real, pointer, dimension(:) :: ch4dyn1_mo_g
         real, pointer, dimension(:) :: ch4dyn2_mo_g
         real, pointer, dimension(:) :: ch4soills_mo_g
@@ -2998,6 +3004,8 @@ contains
         PFTCompetition        => c_switch%PFTCompetition
         doperpftoutput        => c_switch%doperpftoutput
         dopertileoutput       => c_switch%dopertileoutput
+        transientOBSWETF      => c_switch%transientOBSWETF
+        fixedYearOBSWETF      => c_switch%fixedYearOBSWETF
 
         FAREROT => class_rot%FAREROT
 
@@ -3077,6 +3085,7 @@ contains
         ch4wet1_mo_t          =>ctem_tile_mo%ch4wet1_mo_t
         ch4wet2_mo_t          =>ctem_tile_mo%ch4wet2_mo_t
         wetfdyn_mo_t          =>ctem_tile_mo%wetfdyn_mo_t
+        wetfpres_mo_t         =>ctem_tile_mo%wetfpres_mo_t
         ch4dyn1_mo_t          =>ctem_tile_mo%ch4dyn1_mo_t
         ch4dyn2_mo_t          =>ctem_tile_mo%ch4dyn2_mo_t
         ch4soills_mo_t        =>ctem_tile_mo%ch4soills_mo_t
@@ -3119,6 +3128,8 @@ contains
         ch4wet1row        => vrot%ch4wet1
         ch4wet2row        => vrot%ch4wet2
         wetfdynrow        => vrot%wetfdyn
+        wetfrac_presrow   => vrot%wetfrac_pres
+
         ch4dyn1row        => vrot%ch4dyn1
         ch4dyn2row        => vrot%ch4dyn2
         ch4soillsrow      => vrot%ch4_soills
@@ -3172,6 +3183,7 @@ contains
         ch4wet1_mo_g        =>ctem_grd_mo%ch4wet1_mo_g
         ch4wet2_mo_g        =>ctem_grd_mo%ch4wet2_mo_g
         wetfdyn_mo_g        =>ctem_grd_mo%wetfdyn_mo_g
+        wetfpres_mo_g       =>ctem_grd_mo%wetfpres_mo_g
         ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
         ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
         ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
@@ -3232,6 +3244,7 @@ contains
             ch4wet1_mo_t(i,m) = ch4wet1_mo_t(i,m) + ch4wet1row(i,m)
             ch4wet2_mo_t(i,m) = ch4wet2_mo_t(i,m) + ch4wet2row(i,m)
             wetfdyn_mo_t(i,m) = wetfdyn_mo_t(i,m) + wetfdynrow(i,m)
+            wetfpres_mo_t(i,m) = wetfpres_mo_t(i,m) + wetfrac_presrow(i,m)
             ch4dyn1_mo_t(i,m) = ch4dyn1_mo_t(i,m) + ch4dyn1row(i,m)
             ch4dyn2_mo_t(i,m) = ch4dyn2_mo_t(i,m) + ch4dyn2row(i,m)
             ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)
@@ -3384,6 +3397,7 @@ contains
                     ch4wet1_mo_g(i) = ch4wet1_mo_g(i) +ch4wet1_mo_t(i,m)*FAREROT(i,m)
                     ch4wet2_mo_g(i) = ch4wet2_mo_g(i)+ch4wet2_mo_t(i,m)*FAREROT(i,m)
                     wetfdyn_mo_g(i) = wetfdyn_mo_g(i)+wetfdyn_mo_t(i,m)*FAREROT(i,m)
+                    wetfpres_mo_g(i) = wetfpres_mo_g(i)+wetfpres_mo_t(i,m)*FAREROT(i,m)
                     ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)+ch4dyn1_mo_t(i,m)*FAREROT(i,m)
                     ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)+ch4dyn2_mo_t(i,m)*FAREROT(i,m)
                     ch4soills_mo_g(i) = ch4soills_mo_g(i)+ch4soills_mo_t(i,m)*FAREROT(i,m)
@@ -3420,6 +3434,9 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
+                if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
+                  call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_g' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_g(i)])
+                end if
 
                 do m=1,nmtest
                     sumfare = 0.0
@@ -3501,6 +3518,9 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
 
+                        if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
+                          call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_t' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_t(i,:)])
+                        end if
                         if (dofire) then
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_t' ,timeStamp,'fFire',[emit_co2_mo_t(i,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_t' ,timeStamp,'burntFractionAll',[burnfrac_mo_t(i,:)])

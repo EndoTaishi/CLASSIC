@@ -44,14 +44,14 @@
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow, rmlmossrow, gppmossrow, armossrow,
      4      nppmossrow,peatdeprow,litrmsmossrow,Cmossmasrow,
-     5      dmossrow, ipeatlandrow,pddrow,!thlqaccrow_m,thicaccrow_m,
+     5      dmossrow, ipeatlandrow,pddrow,wetfrac_presrow,!thlqaccrow_m,thicaccrow_m,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
      v      ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,
      w      ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,
-     x      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat, 
-     y      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat, 
+     x      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,
+     y      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,
      z      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
      1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
@@ -91,7 +91,7 @@ c --
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      3      anmossgat, rmlmossgat, gppmossgat,armossgat,
      4      nppmossgat,peatdepgat,litrmsmossgat,Cmossmasgat,
-     5      dmossgat,ipeatlandgat,pddgat)!,thlqaccgat_m,thicaccgat_m)
+     5      dmossgat,ipeatlandgat,pddgat,wetfrac_presgat)!,thlqaccgat_m,thicaccgat_m)
 
 c     Dec 23 2016     Remove thlqaccXXX_m/thicaccXXX_m
 c     Ed Chan
@@ -101,7 +101,7 @@ c     J. Melton
 
 c      August 4, 2009 scatter operation on CTEM variables.
 c      Rong Li
-c 
+c
       use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
      1                               icc,iccp1
 
@@ -131,9 +131,9 @@ c
      b      ancgvegrow(nlat,nmos,icc),  rmlcsvegrow(nlat,nmos,icc),
      c      rmlcgvegrow(nlat,nmos,icc), canresrow(nlat,nmos),
      d      sdeprow(nlat,nmos),         fcanrow(nlat,nmos,icp1),
-     e      ch4concrow(nlat,nmos)
+     e      ch4concrow(nlat,nmos),      wetfrac_presrow(nlat,nmos)
 c
-      real    sandrow(nlat,nmos,ignd),  clayrow(nlat,nmos,ignd), 
+      real    sandrow(nlat,nmos,ignd),  clayrow(nlat,nmos,ignd),
      1        orgmrow(nlat,nmos,ignd)
 c
       real  anvegrow(nlat,nmos,icc),    rmlvegrow(nlat,nmos,icc)
@@ -183,7 +183,7 @@ c
 c
 c     fire variables
 c
-      real emit_co2row(nlat,nmos,icc),    emit_corow(nlat,nmos,icc), 
+      real emit_co2row(nlat,nmos,icc),    emit_corow(nlat,nmos,icc),
      1     emit_ch4row(nlat,nmos,icc),    emit_nmhcrow(nlat,nmos,icc),
      2     emit_h2row(nlat,nmos,icc),     emit_noxrow(nlat,nmos,icc),
      3     emit_n2orow(nlat,nmos,icc),    emit_pm25row(nlat,nmos,icc),
@@ -219,9 +219,9 @@ c
      b      ancgveggat(ilg,icc),        rmlcsveggat(ilg,icc),
      c      rmlcgveggat(ilg,icc),       canresgat(ilg),
      d      sdepgat(ilg),               fcangat(ilg,icp1),
-     e      ch4concgat(ilg)
+     e      ch4concgat(ilg),            wetfrac_presgat(ilg)
 c
-      real    sandgat(ilg,ignd),        claygat(ilg,ignd), 
+      real    sandgat(ilg,ignd),        claygat(ilg,ignd),
      1        orgmgat(ilg,ignd)
 c
       real  anveggat(ilg,icc),          rmlveggat(ilg,icc)
@@ -229,8 +229,8 @@ c
       real  prbfrhucgat(ilg),           extnprobgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),
-     3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),  
-     &      pstemmassgat(ilg,icc),      pgleafmassgat(ilg,icc),  
+     3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),
+     &      pstemmassgat(ilg,icc),      pgleafmassgat(ilg,icc),
      4      litrmassgat(ilg,iccp1),     gleafmasgat(ilg,icc),
      5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp1),
      6      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
@@ -268,7 +268,7 @@ c
      h      dstcemls3gat(ilg)
 c
 c      fire variables
-       real emit_co2gat(ilg,icc),      emit_cogat(ilg,icc), 
+       real emit_co2gat(ilg,icc),      emit_cogat(ilg,icc),
      1      emit_ch4gat(ilg,icc),      emit_nmhcgat(ilg,icc),
      2      emit_h2gat(ilg,icc),       emit_noxgat(ilg,icc),
      3      emit_n2ogat(ilg,icc),      emit_pm25gat(ilg,icc),
@@ -278,8 +278,8 @@ c      fire variables
      7      ltermgat(ilg),             mtermgat(ilg,icc)
 
 c
-      real  faregat(ilg) 
-      real  gavgscmsgat(ilg)  
+      real  faregat(ilg)
+      real  gavgscmsgat(ilg)
 c
       real rmlvegaccgat(ilg,icc),     rmsveggat(ilg,icc),
      1      rmrveggat(ilg,icc),       rgveggat(ilg,icc)
@@ -325,7 +325,7 @@ c   Peatland variables
 !    9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
 !    1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
      2         pddrow(nlat,nmos), pddgat(ilg)
-     
+
       integer  ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 
 c----------------------------------------------------------------------
@@ -336,7 +336,7 @@ c----------------------------------------------------------------------
           cfluxcgrow(ilmos(k),jlmos(k))     = cfluxcggat(k)
           cfluxcsrow(ilmos(k),jlmos(k))     = cfluxcsgat(k)
           canresrow(ilmos(k),jlmos(k))      = canresgat(k)
-          xdiffus(ilmos(k))                 = xdiffusgat(k) 
+          xdiffus(ilmos(k))                 = xdiffusgat(k)
           prbfrhucgrd(ilmos(k))             = prbfrhucgat(k)
           extnprobgrd(ilmos(k))             = extnprobgat(k)
           vgbiomasrow(ilmos(k),jlmos(k))    = vgbiomasgat(k)
@@ -375,6 +375,7 @@ c----------------------------------------------------------------------
           ch4dyn1row(ilmos(k),jlmos(k))     = ch4dyn1gat(k)
           ch4dyn2row(ilmos(k),jlmos(k))     = ch4dyn2gat(k)
           ch4soillsrow(ilmos(k),jlmos(k))   = ch4soillsgat(k)
+          wetfrac_presrow(ilmos(k),jlmos(k))= wetfrac_presgat(k)
 
           twarmmrow(ilmos(k),jlmos(k)) = twarmmgat(k)
           tcoldmrow(ilmos(k),jlmos(k)) = tcoldmgat(k)
@@ -396,15 +397,15 @@ c
           smfuncvegrow(ilmos(k),jlmos(k),l) = smfuncveggat(k,l)
           mtermrow(ilmos(k),jlmos(k),l)     = mtermgat(k,l)
           btermrow(ilmos(k),jlmos(k),l)     = btermgat(k,l)
-          ailcgrow(ilmos(k),jlmos(k),l)     = ailcggat(k,l)   
+          ailcgrow(ilmos(k),jlmos(k),l)     = ailcggat(k,l)
           ailcgsrow(ilmos(k),jlmos(k),l)    = ailcgsgat(k,l)
-          co2i1cgrow(ilmos(k),jlmos(k),l)   = co2i1cggat(k,l) 
-          co2i1csrow(ilmos(k),jlmos(k),l)   = co2i1csgat(k,l) 
-          co2i2cgrow(ilmos(k),jlmos(k),l)   = co2i2cggat(k,l) 
-          co2i2csrow(ilmos(k),jlmos(k),l)   = co2i2csgat(k,l) 
-          slairow(ilmos(k),jlmos(k),l)      = slaigat(k,l) 
-          anvegrow(ilmos(k),jlmos(k),l)     = anveggat(k,l) 
-          rmlvegrow(ilmos(k),jlmos(k),l)    = rmlveggat(k,l) 
+          co2i1cgrow(ilmos(k),jlmos(k),l)   = co2i1cggat(k,l)
+          co2i1csrow(ilmos(k),jlmos(k),l)   = co2i1csgat(k,l)
+          co2i2cgrow(ilmos(k),jlmos(k),l)   = co2i2cggat(k,l)
+          co2i2csrow(ilmos(k),jlmos(k),l)   = co2i2csgat(k,l)
+          slairow(ilmos(k),jlmos(k),l)      = slaigat(k,l)
+          anvegrow(ilmos(k),jlmos(k),l)     = anveggat(k,l)
+          rmlvegrow(ilmos(k),jlmos(k),l)    = rmlveggat(k,l)
           pfcancmxrow(ilmos(k),jlmos(k),l)  = pfcancmxgat(k,l)
           nfcancmxrow(ilmos(k),jlmos(k),l)  = nfcancmxgat(k,l)
           fcancmxrow(ilmos(k),jlmos(k),l)   = fcancmxgat(k,l)
@@ -415,7 +416,7 @@ c
           gleafmasrow(ilmos(k),jlmos(k),l)  = gleafmasgat(k,l)
           pgleafmassrow(ilmos(k),jlmos(k),l)  = pgleafmassgat(k,l)
           bleafmasrow(ilmos(k),jlmos(k),l)  = bleafmasgat(k,l)
-          ailcbrow(ilmos(k),jlmos(k),l)     = ailcbgat(k,l)   
+          ailcbrow(ilmos(k),jlmos(k),l)     = ailcbgat(k,l)
           flhrlossrow(ilmos(k),jlmos(k),l)  = flhrlossgat(k,l)
           pandaysrow(ilmos(k),jlmos(k),l)   = pandaysgat(k,l)
           lfstatusrow(ilmos(k),jlmos(k),l)  = lfstatusgat(k,l)
@@ -455,7 +456,7 @@ c
 
 c         fire variables
           emit_co2row(ilmos(k),jlmos(k),l)    = emit_co2gat(k,l)
-          emit_corow(ilmos(k),jlmos(k),l)     = emit_cogat(k,l) 
+          emit_corow(ilmos(k),jlmos(k),l)     = emit_cogat(k,l)
           emit_ch4row(ilmos(k),jlmos(k),l)    = emit_ch4gat(k,l)
           emit_nmhcrow(ilmos(k),jlmos(k),l)   = emit_nmhcgat(k,l)
           emit_h2row(ilmos(k),jlmos(k),l)     = emit_h2gat(k,l)
@@ -521,16 +522,16 @@ c
           rmatcrow(ilmos(k),jlmos(k),l,m) = rmatcgat(k,l,m)
 290   continue
 c
- 
+
 c     this class variable is scattered here, but it gathered in classg,
 c     not in ctemg2. jm jan 8 2013.
       do 300 l=1,icp1
        do 300 k=1,nml
-          fcanrow(ilmos(k),jlmos(k),l)     = fcangat(k,l)  
+          fcanrow(ilmos(k),jlmos(k),l)     = fcangat(k,l)
 300   continue
 
 c    scatter peatland variables----------------------------------------\
-      do 400 k=1,nml 
+      do 400 k=1,nml
           anmossrow(ilmos(k),jlmos(k)) = anmossgat(k)
           rmlmossrow(ilmos(k),jlmos(k))= rmlmossgat(k)
           gppmossrow(ilmos(k),jlmos(k))= gppmossgat(k)

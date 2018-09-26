@@ -285,6 +285,7 @@ type veg_rot
     real, allocatable, dimension(:,:) :: ch4wet1               !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: ch4wet2               !<methane flux from wetlands calculated using npp in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: wetfdyn               !<dynamic wetland fraction
+    real, allocatable, dimension(:,:) :: wetfrac_pres          !<Prescribed wetland fraction read in from OBSWETFFile
     real, allocatable, dimension(:,:) :: ch4dyn1               !<methane flux from wetlands calculated using hetrores
                                                         !<and wetfdyn, in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: ch4dyn2               !<methane flux from wetlands calculated using npp and wetfdyn,
@@ -765,6 +766,7 @@ type ctem_gridavg_monthly
     real, allocatable, dimension(:) :: ch4wet1_mo_g  !<
     real, allocatable, dimension(:) :: ch4wet2_mo_g  !<
     real, allocatable, dimension(:) :: wetfdyn_mo_g  !<
+    real, allocatable, dimension(:) :: wetfpres_mo_g  !<
     real, allocatable, dimension(:) :: ch4dyn1_mo_g  !<
     real, allocatable, dimension(:) :: ch4dyn2_mo_g  !<
     real, allocatable, dimension(:) :: ch4soills_mo_g!<
@@ -821,6 +823,7 @@ type ctem_tileavg_monthly
       real, allocatable, dimension(:,:) :: ch4wet1_mo_t  !<
       real, allocatable, dimension(:,:) :: ch4wet2_mo_t  !<
       real, allocatable, dimension(:,:) :: wetfdyn_mo_t  !<
+      real, allocatable, dimension(:,:) :: wetfpres_mo_t  !<
       real, allocatable, dimension(:,:) :: ch4dyn1_mo_t  !<
       real, allocatable, dimension(:,:) :: ch4dyn2_mo_t  !<
       real, allocatable, dimension(:,:) :: ch4soills_mo_t!<
@@ -1099,6 +1102,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%ch4wet1 (nlat,nmos),&
          vrot%ch4wet2 (nlat,nmos),&
          vrot%wetfdyn (nlat,nmos),&
+         vrot%wetfrac_pres(nlat,nmos),&
          vrot%ch4dyn1 (nlat,nmos),&
          vrot%ch4dyn2 (nlat,nmos),&
          vrot%ch4_soills(nlat,nmos),&
@@ -1504,6 +1508,7 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_mo%ch4wet1_mo_g (nlat),&
          ctem_grd_mo%ch4wet2_mo_g (nlat),&
          ctem_grd_mo%wetfdyn_mo_g (nlat),&
+         ctem_grd_mo%wetfpres_mo_g (nlat),&
          ctem_grd_mo%ch4dyn1_mo_g (nlat),&
          ctem_grd_mo%ch4dyn2_mo_g (nlat),&
          ctem_grd_mo%ch4soills_mo_g (nlat),&
@@ -1548,6 +1553,7 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_mo%ch4wet1_mo_t (nlat,nmos),&
          ctem_tile_mo%ch4wet2_mo_t (nlat,nmos),&
          ctem_tile_mo%wetfdyn_mo_t (nlat,nmos),&
+         ctem_tile_mo%wetfpres_mo_t (nlat,nmos),&
          ctem_tile_mo%ch4dyn1_mo_t (nlat,nmos),&
          ctem_tile_mo%ch4dyn2_mo_t (nlat,nmos),&
          ctem_tile_mo%ch4soills_mo_t (nlat,nmos),&
@@ -1931,6 +1937,7 @@ do i=1,nltest
     ctem_grd_mo%ch4wet1_mo_g(i)  =0.0
     ctem_grd_mo%ch4wet2_mo_g(i)  =0.0
     ctem_grd_mo%wetfdyn_mo_g(i)  =0.0
+    ctem_grd_mo%wetfpres_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn1_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn2_mo_g(i)  =0.0
     ctem_grd_mo%ch4soills_mo_g(i)  =0.0
@@ -1971,6 +1978,7 @@ do i=1,nltest
         ctem_tile_mo%ch4wet1_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4wet2_mo_t(i,m)  =0.0
         ctem_tile_mo%wetfdyn_mo_t(i,m)  =0.0
+        ctem_tile_mo%wetfpres_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4dyn1_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4dyn2_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4soills_mo_t(i,m)  =0.0

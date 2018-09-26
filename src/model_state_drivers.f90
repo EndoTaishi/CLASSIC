@@ -1378,8 +1378,6 @@ contains
 
         case('OBSWETF')
 
-            print*,'OBSWETF in updateInput has not been fully tested, remove this print statement once it has been'
-
             ! This file is daily so we need to find the day we are looking for.
             ! imonth is starting at 0 so add 1 always.
 

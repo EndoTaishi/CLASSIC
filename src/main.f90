@@ -946,6 +946,7 @@ contains
         real, pointer, dimension(:,:) :: rmrrow
 
         real, pointer, dimension(:,:,:) :: slopefracrow
+        real, pointer, dimension(:,:) :: wetfrac_presrow
         real, pointer, dimension(:,:) :: ch4wet1row
         real, pointer, dimension(:,:) :: ch4wet2row
         real, pointer, dimension(:,:) :: wetfdynrow
@@ -1977,6 +1978,7 @@ contains
         rmrrow            => vrot%rmr
 
         slopefracrow      => vrot%slopefrac
+        wetfrac_presrow   => vrot%wetfrac_pres
         ch4wet1row        => vrot%ch4wet1
         ch4wet2row        => vrot%ch4wet2
         wetfdynrow        => vrot%wetfdyn
@@ -3101,7 +3103,7 @@ contains
                 &      annsrplsrow,   annpcprow,  dry_season_lengthrow,&
                     anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,&
                     peatdeprow,litrmsmossrow,Cmossmasrow,dmossrow,&
-                    ipeatlandrow, pddrow,&!thlqaccrow_m, thicaccrow_m,&
+                    ipeatlandrow, pddrow,wetfrac_presrow,&!thlqaccrow_m, thicaccrow_m,&
                         !    ----
                 &      ilmos,       jlmos,       iwmos,        jwmos,&
                 &      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,&
@@ -3147,7 +3149,7 @@ contains
                 &      annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
                         anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,&
                         peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,&
-                        ipeatlandgat,pddgat)!,thlqaccgat_m,thicaccgat_m)
+                        ipeatlandgat,pddgat,wetfrac_presgat)!,thlqaccgat_m,thicaccgat_m)
 
             if(ncount.eq.nday) then
 
