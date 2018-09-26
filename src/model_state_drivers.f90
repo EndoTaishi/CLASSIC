@@ -1654,6 +1654,9 @@ contains
         if (allocated(LGHTFromFile))  deallocate(LGHTFromFile)
         if (allocated(LUCTime))       deallocate(LUCTime)
         if (allocated(LUCFromFile))   deallocate(LUCFromFile)
+        if (allocated(OBSWETFTime)) deallocate(OBSWETFTime)
+        if (allocated(OBSWETFFromFile)) deallocate(OBSWETFFromFile)
+
         deallocate(metTime,metFss,metFdl,metPre,metPres,metQa,metTa,metUv)
 
     end subroutine deallocInput
