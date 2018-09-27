@@ -42,5 +42,6 @@ var structctem__statevars_1_1ctem__gridavg__monthly =
     [ "stemmass_mo_g", "structctem__statevars_1_1ctem__gridavg__monthly.html#ac4ecf610da4fb220ea898ead6809f350", null ],
     [ "totcmass_mo_g", "structctem__statevars_1_1ctem__gridavg__monthly.html#ad5975823406210db60cbe05d111215d2", null ],
     [ "vgbiomas_mo_g", "structctem__statevars_1_1ctem__gridavg__monthly.html#aeef22f174c428abff053f979c8002eb7", null ],
-    [ "wetfdyn_mo_g", "structctem__statevars_1_1ctem__gridavg__monthly.html#a2edef4fc7635c7c418d80fc1b80eb5c5", null ]
+    [ "wetfdyn_mo_g", "structctem__statevars_1_1ctem__gridavg__monthly.html#a2edef4fc7635c7c418d80fc1b80eb5c5", null ],
+    [ "wetfpres_mo_g", "structctem__statevars_1_1ctem__gridavg__monthly.html#a2132f1983e9d6eac68567c7435936b91", null ]
 ];

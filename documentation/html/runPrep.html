@@ -165,7 +165,26 @@ Running CLASSIC in a Singularity Container</h1>
 
      - longitude/longitude/latitude/latitude
        e.g. 90/105/30/45
-</pre><p>One thing to note: once within the container you will not be able to 'see' remote servers since your container environment is not aware of them. So pay attention to where your input and output files are located.</p>
+</pre><h2>Dealing with access to file systems while in a container</h2>
+<p>From the <a href="https://www.sylabs.io/guides/2.6/user-guide/bind_paths_and_mounts.html?highlight=bind%20mount">Singularity manual</a>:</p>
+<blockquote class="doxtable">
+<p>When Singularity ‘swaps’ the host operating system for the one inside your container, the host file systems becomes inaccessible. But you may want to read and write files on the host system from within the container. To enable this functionality, Singularity will bind directories back in via two primary methods: system-defined bind points and conditional user-defined bind points. </p>
+</blockquote>
+<p>This can demonstrated by an example in which a remote server is visible on the host operating system but not within the Singularity container. Using the -B option binds that path allowing it to now be accessible: </p><pre class="fragment">    acrnrjm@cccsing: ~/Documents/CLASSIC&gt; singularity shell ../../jormelton-containerCLASSIC-master-latest.simg 
+    Singularity: Invoking an interactive shell within container...
+
+    Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC&gt; ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63
+    ls: cannot access '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63': No such file or directory
+
+    Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC&gt; exit
+    exit
+
+    acrnrjm@cccsing: ~/Documents/CLASSIC&gt; singularity shell -B /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63 ../../jormelton-containerCLASSIC-master-latest.simg 
+    Singularity: Invoking an interactive shell within container...
+
+    Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC&gt; ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63
+    dlwrf_T63_chunked_1700_2017.nc dswrf_v1.1.5_T63_chunked_1700_2017.nc spfh_T63_chunked_1700_2017.nc ...
+</pre><p>This -B flag can be very useful when using a Vagrant box to run CLASSIC on a Windows, Mac or even Linux machine. The -B flag can point to the <a href="https://www.vagrantup.com/docs/synced-folders/basic_usage.html">synced folder</a>.</p>
 <h1><a class="anchor" id="compilingMod"></a>
 Compiling CLASSIC for serial and parallel simulations</h1>
 <p>CLASSIC's Makefile (/Makefile) is setup to allow easy compilation for serial or parallel model running.</p>
@@ -318,7 +337,7 @@ Setting up the joboptions file</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Sep 21 2018 13:07:59 for CLASSIC by
+    <li class="footer">Generated on Thu Sep 27 2018 09:54:02 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

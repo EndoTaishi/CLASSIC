@@ -1,7 +1,7 @@
 var searchData=
 [
   ['wetfdyn',['wetfdyn',['../structctem__statevars_1_1veg__rot.html#afa5ada8ecceab568acbfce2b743b421f',1,'ctem_statevars::veg_rot::wetfdyn()'],['../structctem__statevars_1_1veg__gat.html#aec6ed9e74a5bc50612a7c6507889b9fc',1,'ctem_statevars::veg_gat::wetfdyn()']]],
-  ['wetfrac_5fpres',['wetfrac_pres',['../structctem__statevars_1_1veg__gat.html#aa7a8f8aa3bde4a2877e36d9fad9716f0',1,'ctem_statevars::veg_gat']]],
+  ['wetfrac_5fpres',['wetfrac_pres',['../structctem__statevars_1_1veg__rot.html#acedc9fb797b5b3bca3b1f26a4f7c25da',1,'ctem_statevars::veg_rot::wetfrac_pres()'],['../structctem__statevars_1_1veg__gat.html#aa7a8f8aa3bde4a2877e36d9fad9716f0',1,'ctem_statevars::veg_gat::wetfrac_pres()']]],
   ['wfcigat',['wfcigat',['../structclass__statevars_1_1class__gather.html#a398fe12fd0978b91e55adf716a4670df',1,'class_statevars::class_gather']]],
   ['wfsfgat',['wfsfgat',['../structclass__statevars_1_1class__gather.html#a3cc2c55be7ef09c997148115afc15112',1,'class_statevars::class_gather']]],
   ['wsnoacc',['wsnoacc',['../structclass__statevars_1_1class__rotated.html#ae0860c25f95e7270b5c6770f349d481b',1,'class_statevars::class_rotated']]],

@@ -161,6 +161,7 @@ var structctem__statevars_1_1veg__rot =
     [ "vgbiomas_veg", "structctem__statevars_1_1veg__rot.html#aa800f4f66c1bd350f9da9e2644d97153", null ],
     [ "vvaccrow_m", "structctem__statevars_1_1veg__rot.html#a5b97ba02a8fa2447fdebe17aeb4073c2", null ],
     [ "wetfdyn", "structctem__statevars_1_1veg__rot.html#afa5ada8ecceab568acbfce2b743b421f", null ],
+    [ "wetfrac_pres", "structctem__statevars_1_1veg__rot.html#acedc9fb797b5b3bca3b1f26a4f7c25da", null ],
     [ "wtstatus", "structctem__statevars_1_1veg__rot.html#a135c354c64556e3470cd2c92ee1772b3", null ],
     [ "zolnc", "structctem__statevars_1_1veg__rot.html#a429181968be41375bc24fa3a467e40d8", null ]
 ];

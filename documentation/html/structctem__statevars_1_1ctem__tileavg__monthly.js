@@ -43,5 +43,6 @@ var structctem__statevars_1_1ctem__tileavg__monthly =
     [ "totcmass_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a339d0f4b5c4b27cace2bfcbef1cd3529", null ],
     [ "vgbiomas_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a3534ab918158acf0e87021d353bec560", null ],
     [ "wetfdyn_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#af233a6194f7defb630490648f35b5c16", null ],
+    [ "wetfpres_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a5351501975c98067ee6e0de3662e689e", null ],
     [ "wind_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a9d7a806e45c554eb6392627e435e2bdb", null ]
 ];

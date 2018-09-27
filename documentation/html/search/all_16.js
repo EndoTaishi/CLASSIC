@@ -3,7 +3,7 @@ var searchData=
   ['wend',['wend',['../WEND_8f.html#aef71fcd76a2c9c23bd3d07a80231ca8b',1,'WEND.f']]],
   ['wend_2ef',['WEND.f',['../WEND_8f.html',1,'']]],
   ['wetfdyn',['wetfdyn',['../structctem__statevars_1_1veg__rot.html#afa5ada8ecceab568acbfce2b743b421f',1,'ctem_statevars::veg_rot::wetfdyn()'],['../structctem__statevars_1_1veg__gat.html#aec6ed9e74a5bc50612a7c6507889b9fc',1,'ctem_statevars::veg_gat::wetfdyn()']]],
-  ['wetfrac_5fpres',['wetfrac_pres',['../structctem__statevars_1_1veg__gat.html#aa7a8f8aa3bde4a2877e36d9fad9716f0',1,'ctem_statevars::veg_gat']]],
+  ['wetfrac_5fpres',['wetfrac_pres',['../structctem__statevars_1_1veg__rot.html#acedc9fb797b5b3bca3b1f26a4f7c25da',1,'ctem_statevars::veg_rot::wetfrac_pres()'],['../structctem__statevars_1_1veg__gat.html#aa7a8f8aa3bde4a2877e36d9fad9716f0',1,'ctem_statevars::veg_gat::wetfrac_pres()']]],
   ['wetland_5fmethane',['wetland_methane',['../wetland__methane_8f90.html#a35841c55304898bc73bd6b16661abdfb',1,'wetland_methane.f90']]],
   ['wetland_5fmethane_2ef90',['wetland_methane.f90',['../wetland__methane_8f90.html',1,'']]],
   ['wfcigat',['wfcigat',['../structclass__statevars_1_1class__gather.html#a398fe12fd0978b91e55adf716a4670df',1,'class_statevars::class_gather']]],
