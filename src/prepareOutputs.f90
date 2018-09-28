@@ -3317,6 +3317,7 @@ contains
 
                     !> Convert some quantities into per day values
                     wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
+                    wetfpres_mo_t(i,m)=wetfpres_mo_t(i,m)*(1./real(monthdays(nt)))
                     lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
                     !wind_mo_t(i,m) = wind_mo_t(i,m)*(1./real(monthdays(nt)))
                     do j = 1, icc
