@@ -3430,12 +3430,14 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[litres_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[soilcres_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_g' ,timeStamp,'fVegLitter',[litrfall_mo_g(i)])
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_g(i)])
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])                
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_g(i)])                
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn2_mo_g' ,timeStamp,'wetlandCH4dynNPP',[ch4dyn2_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
                 if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
+                  call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_g(i)])
+                  call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_mo_g' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_mo_g(i)])
                   call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_g' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_g(i)])
                 end if
 
@@ -3448,6 +3450,7 @@ contains
                 end do !m
 
                 if (dofire) then
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_g' ,timeStamp,'fFireCH4',[emit_ch4_mo_g(i)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)])
                 end if
@@ -3489,6 +3492,7 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,:)])
                         if (dofire .or. lnduseon) then
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo' ,timeStamp,'fFireCH4',[emit_ch4_mo(i,m,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo' ,timeStamp,'fFire',[emit_co2_mo(i,m,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo' ,timeStamp,'burntFractionAll',[burnfrac_mo(i,m,:)])
     !                            smfuncveg_mo(i,m,j), &
@@ -3514,15 +3518,19 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[soilcres_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_t(i,:)])
+                        
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn2_mo_t' ,timeStamp,'wetlandCH4dynNPP',[ch4dyn2_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
 
                         if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
                           call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_t' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_t(i,:)])
+                          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_t(i,:)])
+                          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_mo_t' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_mo_t(i,:)])
                         end if
                         if (dofire) then
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_t' ,timeStamp,'fFireCH4',[emit_ch4_mo_t(i,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_t' ,timeStamp,'fFire',[emit_co2_mo_t(i,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_t' ,timeStamp,'burntFractionAll',[burnfrac_mo_t(i,:)])
                         end if
@@ -3579,6 +3587,9 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: doperpftoutput
         logical, pointer :: dopertileoutput
+        logical, pointer :: transientOBSWETF
+        integer, pointer :: fixedYearOBSWETF
+
 
         real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
@@ -3770,6 +3781,8 @@ contains
         PFTCompetition        => c_switch%PFTCompetition
         doperpftoutput        => c_switch%doperpftoutput
         dopertileoutput       => c_switch%dopertileoutput
+        transientOBSWETF      => c_switch%transientOBSWETF
+        fixedYearOBSWETF      => c_switch%fixedYearOBSWETF
 
         FAREROT => class_rot%FAREROT
 
@@ -4154,11 +4167,16 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_g(i)])
+            
             call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_yr_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
+            if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
+              call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_g(i)])
+              call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_yr_g' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_yr_g(i)])
+            end if
+              
             ! We only want to record the fraction of the PFTs that are actually in existance.
             if (PFTCompetition) then !FLAG this needs to be tested!
                 do m=1,nmtest
@@ -4186,6 +4204,7 @@ contains
             end if
 
             if (dofire .or. lnduseon) then
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr_g' ,timeStamp,'fFireCH4',[emit_ch4_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)])
             end if
@@ -4222,7 +4241,7 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
 
                     if (dofire .or. lnduseon) then
-
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr' ,timeStamp,'fFireCH4',[emit_ch4_yr(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)])
                     end if
@@ -4252,13 +4271,16 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr_t' ,timeStamp,'ra',[autores_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])                    
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_yr_t' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_t' ,timeStamp,'wetlandFrac',[wetfdyn_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_t' ,timeStamp,'soilCH4cons',[ch4soills_yr_t(i,:)])
-
-                    if (dofire .or. lnduseon) then
+                    if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
+                      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_t(i,:)])
+                      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_yr_t' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_yr_t(i,:)])
+                    end if
+                    if (dofire .or. lnduseon) then                      
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr_t' ,timeStamp,'fFireCH4',[emit_ch4_yr_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)])
                     end if
