@@ -32,6 +32,7 @@ real, parameter :: pi       = 3.1415926535898d0
 real, parameter :: earthrad = 6371.22   !<radius of earth, km
 real, parameter :: km2tom2  = 1.0e+06   !<changes from \f$km^2\f$ to \f$m^2\f$
 real, parameter :: deltat   = 1.0       !<CTEM's time step in days
+real, parameter :: convertkgC = 1.201e-8 !< Converts from umolCO2/m2/s to kgC/m2/s
 
 ! These month arrays are possibly overwritten in runclassctem due to leap years.
 integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
@@ -319,7 +320,6 @@ real :: ratioch4                !< methane to carbon dioxide flux scaling factor
 !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
 !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
 real :: wtdryres
-real :: factor2        !< constant value for secondary (ch4wet2) methane emissions calculation
 real :: lat_thrshld1   !< Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2   !< Boundary with southern zone for wetland determination (degrees North)
 real :: soilw_thrshN   !< Soil wetness threshold in the North zone
@@ -658,7 +658,6 @@ subroutine readin_params
         stmhrspn,&
         ratioch4,&
         wtdryres,&
-        factor2,&
         lat_thrshld1,&
         lat_thrshld2,&
         soilw_thrshN,&

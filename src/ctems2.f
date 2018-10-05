@@ -37,8 +37,7 @@
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
-     &      ch4wet1row, ch4wet2row, wetfdynrow, ch4dyn1row,
-     &      ch4dyn2row,ch4soillsrow,
+     &      ch4WetSpecrow, wetfdynrow, ch4WetDynrow, ch4soillsrow,
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
@@ -84,8 +83,7 @@ c --
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
 
-     &      ch4wet1gat, ch4wet2gat, wetfdyngat, ch4dyn1gat,
-     &      ch4dyn2gat, ch4soillsgat,
+     &      ch4WetSpecgat, wetfdyngat, ch4WetDyngat, ch4soillsgat,
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
@@ -292,11 +290,9 @@ c
      3      soilcresveggat(ilg,iccp1)
 
 c   Methane related variables
-       real  ch4wet1row(nlat,nmos),         ch4wet1gat(ilg),
-     3       ch4wet2row(nlat,nmos),         ch4wet2gat(ilg),
+       real  ch4WetSpecrow(nlat,nmos),         ch4WetSpecgat(ilg),
      4       wetfdynrow(nlat,nmos),         wetfdyngat(ilg),
-     5       ch4dyn1row(nlat,nmos),         ch4dyn1gat(ilg),
-     6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg),
+     5       ch4WetDynrow(nlat,nmos),         ch4WetDyngat(ilg),
      7       ch4soillsrow(nlat,nmos),      ch4soillsgat(ilg)
 
        real twarmmrow(nlat,nmos),             twarmmgat(ilg),
@@ -369,11 +365,9 @@ c----------------------------------------------------------------------
           gavgscmsrow(ilmos(k),jlmos(k))    = gavgscmsgat(k)
 !          wetfracrow(ilmos(k))              = wetfracgat(k)
 !          slopefrac_row(ilmos(k))            = slopefrac_gat(k)
-          ch4wet1row(ilmos(k),jlmos(k))     = ch4wet1gat(k)
-          ch4wet2row(ilmos(k),jlmos(k))     = ch4wet2gat(k)
+          ch4WetSpecrow(ilmos(k),jlmos(k))     = ch4WetSpecgat(k)
           wetfdynrow(ilmos(k),jlmos(k))     = wetfdyngat(k)
-          ch4dyn1row(ilmos(k),jlmos(k))     = ch4dyn1gat(k)
-          ch4dyn2row(ilmos(k),jlmos(k))     = ch4dyn2gat(k)
+          ch4WetDynrow(ilmos(k),jlmos(k))     = ch4WetDyngat(k)
           ch4soillsrow(ilmos(k),jlmos(k))   = ch4soillsgat(k)
           wetfrac_presrow(ilmos(k),jlmos(k))= wetfrac_presgat(k)
 

@@ -1947,7 +1947,7 @@ contains
 
         use class_statevars, only : class_rot
         use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
-        use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed
+        use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed,convertkgC
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -2008,11 +2008,9 @@ contains
         real, pointer, dimension(:,:) :: lucemcomrow
         real, pointer, dimension(:,:) :: lucltrinrow
         real, pointer, dimension(:,:) :: lucsocinrow
-        real, pointer, dimension(:,:) :: ch4wet1row
-        real, pointer, dimension(:,:) :: ch4wet2row
+        real, pointer, dimension(:,:) :: ch4WetSpecrow
         real, pointer, dimension(:,:) :: wetfdynrow
-        real, pointer, dimension(:,:) :: ch4dyn1row
-        real, pointer, dimension(:,:) :: ch4dyn2row
+        real, pointer, dimension(:,:) :: ch4WetDynrow
         real, pointer, dimension(:,:) :: ch4soillsrow
         real, pointer, dimension(:,:,:) :: litrmassrow
         real, pointer, dimension(:,:,:) :: soilcmasrow
@@ -2112,11 +2110,9 @@ contains
         real, allocatable, dimension(:) :: lucltrin_g !<
         real, allocatable, dimension(:) :: lucsocin_g !<
         real, allocatable, dimension(:) :: emit_co2_g !<
-        real, allocatable, dimension(:) :: ch4wet1_g  !<
-        real, allocatable, dimension(:) :: ch4wet2_g  !<
+        real, allocatable, dimension(:) :: ch4WetSpec_g  !<
         real, allocatable, dimension(:) :: wetfdyn_g  !<
-        real, allocatable, dimension(:) :: ch4dyn1_g  !<
-        real, allocatable, dimension(:) :: ch4dyn2_g  !<
+        real, allocatable, dimension(:) :: ch4WetDyn_g  !<
         real, allocatable, dimension(:) :: ch4soills_g   !<
         real, allocatable, dimension(:,:) :: afrleaf_g  !<
         real, allocatable, dimension(:,:) :: afrstem_g  !<
@@ -2200,11 +2196,9 @@ contains
         lucemcomrow       => vrot%lucemcom
         lucltrinrow       => vrot%lucltrin
         lucsocinrow       => vrot%lucsocin
-        ch4wet1row        => vrot%ch4wet1
-        ch4wet2row        => vrot%ch4wet2
+        ch4WetSpecrow        => vrot%ch4WetSpec
         wetfdynrow        => vrot%wetfdyn
-        ch4dyn1row        => vrot%ch4dyn1
-        ch4dyn2row        => vrot%ch4dyn2
+        ch4WetDynrow        => vrot%ch4WetDyn
         ch4soillsrow      => vrot%ch4_soills
         litrmassrow       => vrot%litrmass
         soilcmasrow       => vrot%soilcmas
@@ -2271,8 +2265,8 @@ contains
                 soilcmas_g (nltest),slai_g (nltest),ailcg_g (nltest),ailcb_g (nltest),veghght_g (nltest),&
                 rootdpth_g (nltest),roottemp_g (nltest),totcmass_g (nltest),tcanoacc_out_g (nltest),&
                 burnfrac_g (nltest),smfuncveg_g (nltest),lucemcom_g (nltest),lucltrin_g (nltest),lucsocin_g (nltest),&
-                emit_co2_g (nltest),ch4wet1_g (nltest),ch4wet2_g (nltest),wetfdyn_g (nltest),ch4dyn1_g (nltest),&
-                ch4dyn2_g (nltest),ch4soills_g (nltest),afrleaf_g (nltest,icc),afrstem_g (nltest,icc),&
+                emit_co2_g (nltest),ch4WetSpec_g (nltest),wetfdyn_g (nltest),ch4WetDyn_g (nltest),&
+                ch4soills_g (nltest),afrleaf_g (nltest,icc),afrstem_g (nltest,icc),&
                 afrroot_g (nltest,icc),lfstatus_g (nltest,icc),rmlvegrow_g (nltest,icc),anvegrow_g(nltest,icc),&
                 rmatctem_g (nltest,ignd) )
 
@@ -2296,8 +2290,8 @@ contains
             leaflitr_g(i)=0.0 ; tltrleaf_g(i)=0.0 ; tltrstem_g(i)=0.0 ; tltrroot_g(i)=0.0
             gleafmas_g(i)=0.0 ; bleafmas_g(i)=0.0 ; stemmass_g(i)=0.0 ; rootmass_g(i)=0.0
             litrmass_g(i)=0.0 ; soilcmas_g(i)=0.0 ; veghght_g(i)=0.0 ; rootdpth_g(i)=0.0
-            roottemp_g(i)=0.0 ; slai_g(i)=0.0 ; CH4WET1_G(i) = 0.0 ; CH4WET2_G(i) = 0.0
-            WETFDYN_G(i) = 0.0 ; CH4DYN1_G(i) = 0.0 ; CH4DYN2_G(i) = 0.0 ; ch4soills_g(i) = 0.0
+            roottemp_g(i)=0.0 ; slai_g(i)=0.0 ; ch4WetSpec_G(i) = 0.0 ; 
+            WETFDYN_G(i) = 0.0 ; ch4WetDyn_G(i) = 0.0 ; ch4soills_g(i) = 0.0
 
             do k=1,ignd
                 rmatctem_g(i,k)=0.0
@@ -2321,18 +2315,23 @@ contains
             end do
         end do
 
-        !>First some unit conversions:  FLAG these are NOT setting to the CMIP6 units we want to move towards!!
+        !>First some unit conversions:  
+        
+        !! We want to go from umol CO2/m2/s to kg C/m2/s so:
+        !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
+        !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
+        !! convertkgC = 1.201E-8
 
         do 10 i = 1,nltest
             do 20 m = 1 , nmtest
-                !   ------convert peatland C fluxes to gC/m2/day for output-----------\
+
                 nppmossrow(i,m)=nppmossrow(i,m)*1.0377 ! convert to gc/m2.day
                 armossrow(i,m)=armossrow(i,m)*1.0377 ! convert to gc/m2.day
 
                 do 30 j=1,icc
                     if (fcancmxrow(i,m,j) .gt.0.0) then
 
-                        gppvegrow(i,m,j)=gppvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
+                        gppvegrow(i,m,j)=gppvegrow(i,m,j)* 1.0377 ! convert to gc/m2.day
                         nppvegrow(i,m,j)=nppvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
                         nepvegrow(i,m,j)=nepvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
                         nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
@@ -2363,10 +2362,8 @@ contains
                 autoresrow(i,m) =autoresrow(i,m)*1.0377  ! convert to gc/m2.day
                 litresrow(i,m)  =litresrow(i,m)*1.0377   ! convert to gc/m2.day
                 socresrow(i,m)  =socresrow(i,m)*1.0377   ! convert to gc/m2.day
-                ch4wet1row(i,m) = ch4wet1row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
-                ch4wet2row(i,m) = ch4wet2row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
-                ch4dyn1row(i,m) = ch4dyn1row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
-                ch4dyn2row(i,m) = ch4dyn2row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
+                ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
+                ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
                 ch4soillsrow(i,m) = ch4soillsrow(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
 
     20      continue
@@ -2453,11 +2450,9 @@ contains
                 lucemcom_g(i) =lucemcom_g(i)+lucemcomrow(i,m)*FAREROT(i,m)
                 lucltrin_g(i) =lucltrin_g(i)+lucltrinrow(i,m)*FAREROT(i,m)
                 lucsocin_g(i) =lucsocin_g(i)+lucsocinrow(i,m)*FAREROT(i,m)
-                ch4wet1_g(i) = ch4wet1_g(i) + ch4wet1row(i,m)*farerot(i,m)
-                ch4wet2_g(i) = ch4wet2_g(i) + ch4wet2row(i,m)*farerot(i,m)
+                ch4WetSpec_g(i) = ch4WetSpec_g(i) + ch4WetSpecrow(i,m)*farerot(i,m)
                 wetfdyn_g(i) = wetfdyn_g(i) + wetfdynrow(i,m)*farerot(i,m)
-                ch4dyn1_g(i) = ch4dyn1_g(i) + ch4dyn1row(i,m)*farerot(i,m)
-                ch4dyn2_g(i) = ch4dyn2_g(i) + ch4dyn2row(i,m)*farerot(i,m)
+                ch4WetDyn_g(i) = ch4WetDyn_g(i) + ch4WetDynrow(i,m)*farerot(i,m)
                 ch4soills_g(i) = ch4soills_g(i) + ch4soillsrow(i,m)*farerot(i,m)
                 emit_co2_g(i) =emit_co2_g(i)+ emit_co2_t(i,m)*FAREROT(i,m)
                 ! nppmoss_g(i)  = nppmoss_g(i) +nppmossrow(i,m)*FAREROT(i,m)
@@ -2686,9 +2681,9 @@ contains
     !
     !         !>File .CT08D
     !         if (.or. obswetf) then
-    !             write(79,8810)iday,realyr, ch4wet1_g(i),  &
-    !             ch4wet2_g(i), wetfdyn_g(i),  &
-    !             ch4dyn1_g(i), ch4dyn2_g(i),  &
+    !             write(79,8810)iday,realyr, ch4WetSpec_g(i),  &
+    !              wetfdyn_g(i),  &
+    !             ch4WetDyn_g(i),  &
     !             ch4soills_g(i),' GRDAV'
     !         endif
     !
@@ -2757,8 +2752,8 @@ contains
                 humiftrs_g ,rmr_g ,tltrleaf_g ,gavgltms_g ,vgbiomas_g ,gavglai_g ,gavgscms_g ,gleafmas_g ,&
                 bleafmas_g ,stemmass_g ,rootmass_g ,litrmass_g ,soilcmas_g ,slai_g ,ailcg_g ,ailcb_g ,veghght_g ,&
                 rootdpth_g ,roottemp_g ,totcmass_g ,tcanoacc_out_g ,burnfrac_g ,smfuncveg_g ,&
-                lucemcom_g ,lucltrin_g ,lucsocin_g ,emit_co2_g ,ch4wet1_g ,ch4wet2_g ,wetfdyn_g ,ch4dyn1_g ,&
-                ch4dyn2_g ,ch4soills_g ,afrleaf_g, afrstem_g,afrroot_g,lfstatus_g,rmlvegrow_g,anvegrow_g,&
+                lucemcom_g ,lucltrin_g ,lucsocin_g ,emit_co2_g ,ch4WetSpec_g ,wetfdyn_g ,ch4WetDyn_g ,&
+                ch4soills_g ,afrleaf_g, afrstem_g,afrroot_g,lfstatus_g,rmlvegrow_g,anvegrow_g,&
                 rmatctem_g)
 
         deallocate(leaflitr_t ,tltrleaf_t ,tltrstem_t ,tltrroot_t ,ailcg_t ,ailcb_t ,rmatctem_t ,veghght_t ,&
@@ -2881,12 +2876,10 @@ contains
         real, pointer, dimension(:,:) :: lucsocin_mo_t
         real, pointer, dimension(:,:) :: mterm_mo_t
         real, pointer, dimension(:,:) :: lucltrin_mo_t
-        real, pointer, dimension(:,:) :: ch4wet1_mo_t
-        real, pointer, dimension(:,:) :: ch4wet2_mo_t
+        real, pointer, dimension(:,:) :: ch4WetSpec_mo_t
         real, pointer, dimension(:,:) :: wetfdyn_mo_t
         real, pointer, dimension(:,:) :: wetfpres_mo_t
-        real, pointer, dimension(:,:) :: ch4dyn1_mo_t
-        real, pointer, dimension(:,:) :: ch4dyn2_mo_t
+        real, pointer, dimension(:,:) :: ch4WetDyn_mo_t
         real, pointer, dimension(:,:) :: ch4soills_mo_t
         real, pointer, dimension(:,:) :: wind_mo_t
 
@@ -2925,12 +2918,10 @@ contains
         real, pointer, dimension(:,:) :: lucemcomrow
         real, pointer, dimension(:,:) :: lucltrinrow
         real, pointer, dimension(:,:) :: lucsocinrow
-        real, pointer, dimension(:,:) :: ch4wet1row
-        real, pointer, dimension(:,:) :: ch4wet2row
+        real, pointer, dimension(:,:) :: ch4WetSpecrow
         real, pointer, dimension(:,:) :: wetfdynrow
         real, pointer, dimension(:,:) :: wetfrac_presrow
-        real, pointer, dimension(:,:) :: ch4dyn1row
-        real, pointer, dimension(:,:) :: ch4dyn2row
+        real, pointer, dimension(:,:) :: ch4WetDynrow
         real, pointer, dimension(:,:) :: ch4soillsrow
         real, pointer, dimension(:,:,:) :: litrmassrow
         real, pointer, dimension(:,:,:) :: soilcmasrow
@@ -2980,12 +2971,10 @@ contains
         real, pointer, dimension(:) :: bterm_mo_g
         real, pointer, dimension(:) :: lterm_mo_g
         real, pointer, dimension(:) :: mterm_mo_g
-        real, pointer, dimension(:) :: ch4wet1_mo_g
-        real, pointer, dimension(:) :: ch4wet2_mo_g
+        real, pointer, dimension(:) :: ch4WetSpec_mo_g
         real, pointer, dimension(:) :: wetfdyn_mo_g
         real, pointer, dimension(:) :: wetfpres_mo_g
-        real, pointer, dimension(:) :: ch4dyn1_mo_g
-        real, pointer, dimension(:) :: ch4dyn2_mo_g
+        real, pointer, dimension(:) :: ch4WetDyn_mo_g
         real, pointer, dimension(:) :: ch4soills_mo_g
 
         ! local
@@ -3082,12 +3071,10 @@ contains
         lucsocin_mo_t         =>ctem_tile_mo%lucsocin_mo_t
         mterm_mo_t            =>ctem_tile_mo%mterm_mo_t
         lucltrin_mo_t         =>ctem_tile_mo%lucltrin_mo_t
-        ch4wet1_mo_t          =>ctem_tile_mo%ch4wet1_mo_t
-        ch4wet2_mo_t          =>ctem_tile_mo%ch4wet2_mo_t
+        ch4WetSpec_mo_t          =>ctem_tile_mo%ch4WetSpec_mo_t
         wetfdyn_mo_t          =>ctem_tile_mo%wetfdyn_mo_t
         wetfpres_mo_t         =>ctem_tile_mo%wetfpres_mo_t
-        ch4dyn1_mo_t          =>ctem_tile_mo%ch4dyn1_mo_t
-        ch4dyn2_mo_t          =>ctem_tile_mo%ch4dyn2_mo_t
+        ch4WetDyn_mo_t          =>ctem_tile_mo%ch4WetDyn_mo_t
         ch4soills_mo_t        =>ctem_tile_mo%ch4soills_mo_t
         wind_mo_t             =>ctem_tile_mo%wind_mo_t
 
@@ -3125,13 +3112,11 @@ contains
         lucemcomrow       => vrot%lucemcom
         lucltrinrow       => vrot%lucltrin
         lucsocinrow       => vrot%lucsocin
-        ch4wet1row        => vrot%ch4wet1
-        ch4wet2row        => vrot%ch4wet2
+        ch4WetSpecrow        => vrot%ch4WetSpec
         wetfdynrow        => vrot%wetfdyn
         wetfrac_presrow   => vrot%wetfrac_pres
 
-        ch4dyn1row        => vrot%ch4dyn1
-        ch4dyn2row        => vrot%ch4dyn2
+        ch4WetDynrow        => vrot%ch4WetDyn
         ch4soillsrow      => vrot%ch4_soills
         litrmassrow       => vrot%litrmass
         soilcmasrow       => vrot%soilcmas
@@ -3180,12 +3165,10 @@ contains
         bterm_mo_g          =>ctem_grd_mo%bterm_mo_g
         lterm_mo_g          =>ctem_grd_mo%lterm_mo_g
         mterm_mo_g          =>ctem_grd_mo%mterm_mo_g
-        ch4wet1_mo_g        =>ctem_grd_mo%ch4wet1_mo_g
-        ch4wet2_mo_g        =>ctem_grd_mo%ch4wet2_mo_g
+        ch4WetSpec_mo_g        =>ctem_grd_mo%ch4WetSpec_mo_g
         wetfdyn_mo_g        =>ctem_grd_mo%wetfdyn_mo_g
         wetfpres_mo_g       =>ctem_grd_mo%wetfpres_mo_g
-        ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
-        ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
+        ch4WetDyn_mo_g        =>ctem_grd_mo%ch4WetDyn_mo_g
         ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 
         !> ------------
@@ -3241,12 +3224,10 @@ contains
             luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)
             lucsocin_mo_t(i,m) =lucsocin_mo_t(i,m)+lucsocinrow(i,m)
             lucltrin_mo_t(i,m) =lucltrin_mo_t(i,m)+lucltrinrow(i,m)
-            ch4wet1_mo_t(i,m) = ch4wet1_mo_t(i,m) + ch4wet1row(i,m)
-            ch4wet2_mo_t(i,m) = ch4wet2_mo_t(i,m) + ch4wet2row(i,m)
+            ch4WetSpec_mo_t(i,m) = ch4WetSpec_mo_t(i,m) + ch4WetSpecrow(i,m)
             wetfdyn_mo_t(i,m) = wetfdyn_mo_t(i,m) + wetfdynrow(i,m)
             wetfpres_mo_t(i,m) = wetfpres_mo_t(i,m) + wetfrac_presrow(i,m)
-            ch4dyn1_mo_t(i,m) = ch4dyn1_mo_t(i,m) + ch4dyn1row(i,m)
-            ch4dyn2_mo_t(i,m) = ch4dyn2_mo_t(i,m) + ch4dyn2row(i,m)
+            ch4WetDyn_mo_t(i,m) = ch4WetDyn_mo_t(i,m) + ch4WetDynrow(i,m)
             ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)
             lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)
             !wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
@@ -3395,12 +3376,10 @@ contains
                     luc_emc_mo_g(i) =luc_emc_mo_g(i)+luc_emc_mo_t(i,m)*FAREROT(i,m)
                     lucsocin_mo_g(i) =lucsocin_mo_g(i)+lucsocin_mo_t(i,m)*FAREROT(i,m)
                     lucltrin_mo_g(i) =lucltrin_mo_g(i)+lucltrin_mo_t(i,m)*FAREROT(i,m)
-                    ch4wet1_mo_g(i) = ch4wet1_mo_g(i) +ch4wet1_mo_t(i,m)*FAREROT(i,m)
-                    ch4wet2_mo_g(i) = ch4wet2_mo_g(i)+ch4wet2_mo_t(i,m)*FAREROT(i,m)
+                    ch4WetSpec_mo_g(i) = ch4WetSpec_mo_g(i) +ch4WetSpec_mo_t(i,m)*FAREROT(i,m)
                     wetfdyn_mo_g(i) = wetfdyn_mo_g(i)+wetfdyn_mo_t(i,m)*FAREROT(i,m)
                     wetfpres_mo_g(i) = wetfpres_mo_g(i)+wetfpres_mo_t(i,m)*FAREROT(i,m)
-                    ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)+ch4dyn1_mo_t(i,m)*FAREROT(i,m)
-                    ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)+ch4dyn2_mo_t(i,m)*FAREROT(i,m)
+                    ch4WetDyn_mo_g(i) = ch4WetDyn_mo_g(i)+ch4WetDyn_mo_t(i,m)*FAREROT(i,m)
                     ch4soills_mo_g(i) = ch4soills_mo_g(i)+ch4soills_mo_t(i,m)*FAREROT(i,m)
                     smfuncveg_mo_g(i)=smfuncveg_mo_g(i)+smfuncveg_mo_t(i,m)*FAREROT(i,m)
                     bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_t(i,m)*FAREROT(i,m)
@@ -3431,13 +3410,11 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[soilcres_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_g' ,timeStamp,'fVegLitter',[litrfall_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])                
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_g(i)])                
-                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn2_mo_g' ,timeStamp,'wetlandCH4dynNPP',[ch4dyn2_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_g' ,timeStamp,'wetlandch4WetDyn',[ch4WetDyn_mo_g(i)])                
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
                 if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
-                  call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_g(i)])
-                  call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_mo_g' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_mo_g(i)])
+                  call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_mo_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_g(i)])
                   call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_g' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_g(i)])
                 end if
 
@@ -3519,15 +3496,14 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,:)])
                         
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_t(i,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn2_mo_t' ,timeStamp,'wetlandCH4dynNPP',[ch4dyn2_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_t' ,timeStamp,'wetlandch4WetDyn',[ch4WetDyn_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
 
                         if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
                           call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_t' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_t(i,:)])
-                          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_t(i,:)])
-                          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_mo_t' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_mo_t(i,:)])
+                          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_mo_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_t(i,:)])
+
                         end if
                         if (dofire) then
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_t' ,timeStamp,'fFireCH4',[emit_ch4_mo_t(i,:)])
@@ -3661,11 +3637,9 @@ contains
         real, pointer, dimension(:,:) :: lucsocin_yr_t
         real, pointer, dimension(:,:) :: mterm_yr_t
         real, pointer, dimension(:,:) :: lucltrin_yr_t
-        real, pointer, dimension(:,:) :: ch4wet1_yr_t
-        real, pointer, dimension(:,:) :: ch4wet2_yr_t
+        real, pointer, dimension(:,:) :: ch4WetSpec_yr_t
         real, pointer, dimension(:,:) :: wetfdyn_yr_t
-        real, pointer, dimension(:,:) :: ch4dyn1_yr_t
-        real, pointer, dimension(:,:) :: ch4dyn2_yr_t
+        real, pointer, dimension(:,:) :: ch4WetDyn_yr_t
         real, pointer, dimension(:,:) :: ch4soills_yr_t
         real, pointer, dimension(:,:) :: veghght_yr_t
         real, pointer, dimension(:,:) :: peatdep_yr_t
@@ -3706,11 +3680,9 @@ contains
         real, pointer, dimension(:,:) :: lucemcomrow
         real, pointer, dimension(:,:) :: lucltrinrow
         real, pointer, dimension(:,:) :: lucsocinrow
-        real, pointer, dimension(:,:) :: ch4wet1row
-        real, pointer, dimension(:,:) :: ch4wet2row
+        real, pointer, dimension(:,:) :: ch4WetSpecrow
         real, pointer, dimension(:,:) :: wetfdynrow
-        real, pointer, dimension(:,:) :: ch4dyn1row
-        real, pointer, dimension(:,:) :: ch4dyn2row
+        real, pointer, dimension(:,:) :: ch4WetDynrow
         real, pointer, dimension(:,:) :: ch4soillsrow
         real, pointer, dimension(:,:,:) :: litrmassrow
         real, pointer, dimension(:,:,:) :: soilcmasrow
@@ -3757,11 +3729,9 @@ contains
         real, pointer, dimension(:) :: bterm_yr_g
         real, pointer, dimension(:) :: lterm_yr_g
         real, pointer, dimension(:) :: mterm_yr_g
-        real, pointer, dimension(:) :: ch4wet1_yr_g
-        real, pointer, dimension(:) :: ch4wet2_yr_g
+        real, pointer, dimension(:) :: ch4WetSpec_yr_g
         real, pointer, dimension(:) :: wetfdyn_yr_g
-        real, pointer, dimension(:) :: ch4dyn1_yr_g
-        real, pointer, dimension(:) :: ch4dyn2_yr_g
+        real, pointer, dimension(:) :: ch4WetDyn_yr_g
         real, pointer, dimension(:) :: ch4soills_yr_g
         real, pointer, dimension(:) :: veghght_yr_g
         real, pointer, dimension(:) :: peatdep_yr_g
@@ -3854,11 +3824,9 @@ contains
         lucsocin_yr_t         =>ctem_tile_yr%lucsocin_yr_t
         mterm_yr_t            =>ctem_tile_yr%mterm_yr_t
         lucltrin_yr_t         =>ctem_tile_yr%lucltrin_yr_t
-        ch4wet1_yr_t          =>ctem_tile_yr%ch4wet1_yr_t
-        ch4wet2_yr_t          =>ctem_tile_yr%ch4wet2_yr_t
+        ch4WetSpec_yr_t          =>ctem_tile_yr%ch4WetSpec_yr_t
         wetfdyn_yr_t          =>ctem_tile_yr%wetfdyn_yr_t
-        ch4dyn1_yr_t          =>ctem_tile_yr%ch4dyn1_yr_t
-        ch4dyn2_yr_t          =>ctem_tile_yr%ch4dyn2_yr_t
+        ch4WetDyn_yr_t          =>ctem_tile_yr%ch4WetDyn_yr_t
         ch4soills_yr_t        =>ctem_tile_yr%ch4soills_yr_t
         veghght_yr_t          =>ctem_tile_yr%veghght_yr_t
         peatdep_yr_t          =>ctem_tile_yr%peatdep_yr_t
@@ -3899,11 +3867,10 @@ contains
         lucemcomrow       => vrot%lucemcom
         lucltrinrow       => vrot%lucltrin
         lucsocinrow       => vrot%lucsocin
-        ch4wet1row        => vrot%ch4wet1
-        ch4wet2row        => vrot%ch4wet2
+        ch4WetSpecrow        => vrot%ch4WetSpec
         wetfdynrow        => vrot%wetfdyn
-        ch4dyn1row        => vrot%ch4dyn1
-        ch4dyn2row        => vrot%ch4dyn2
+        ch4WetDynrow        => vrot%ch4WetDyn
+
         ch4soillsrow      => vrot%ch4_soills
         litrmassrow       => vrot%litrmass
         soilcmasrow       => vrot%soilcmas
@@ -3950,11 +3917,9 @@ contains
         bterm_yr_g            =>ctem_grd_yr%bterm_yr_g
         lterm_yr_g            =>ctem_grd_yr%lterm_yr_g
         mterm_yr_g            =>ctem_grd_yr%mterm_yr_g
-        ch4wet1_yr_g          =>ctem_grd_yr%ch4wet1_yr_g
-        ch4wet2_yr_g          =>ctem_grd_yr%ch4wet2_yr_g
+        ch4WetSpec_yr_g          =>ctem_grd_yr%ch4WetSpec_yr_g
         wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
-        ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
-        ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
+        ch4WetDyn_yr_g          =>ctem_grd_yr%ch4WetDyn_yr_g
         ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
         veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
         peatdep_yr_g          =>ctem_grd_yr%peatdep_yr_g
@@ -4016,10 +3981,8 @@ contains
         luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
         lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)
         lucltrin_yr_t(i,m)=lucltrin_yr_t(i,m)+lucltrinrow(i,m)
-        ch4wet1_yr_t(i,m) = ch4wet1_yr_t(i,m)+ch4wet1row(i,m)
-        ch4wet2_yr_t(i,m) = ch4wet2_yr_t(i,m)+ch4wet2row(i,m)
-        ch4dyn1_yr_t(i,m) = ch4dyn1_yr_t(i,m)+ch4dyn1row(i,m)
-        ch4dyn2_yr_t(i,m) = ch4dyn2_yr_t(i,m)+ch4dyn2row(i,m)
+        ch4WetSpec_yr_t(i,m) = ch4WetSpec_yr_t(i,m)+ch4WetSpecrow(i,m)
+        ch4WetDyn_yr_t(i,m) = ch4WetDyn_yr_t(i,m)+ch4WetDynrow(i,m)
         ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m)+ch4soillsrow(i,m)
 
     883     continue ! m
@@ -4135,11 +4098,9 @@ contains
                 luc_emc_yr_g(i)=luc_emc_yr_g(i)+luc_emc_yr_t(i,m)*FAREROT(i,m)
                 lucsocin_yr_g(i)=lucsocin_yr_g(i)+lucsocin_yr_t(i,m)*FAREROT(i,m)
                 lucltrin_yr_g(i)=lucltrin_yr_g(i)+lucltrin_yr_t(i,m)*FAREROT(i,m)
-                ch4wet1_yr_g(i) = ch4wet1_yr_g(i)+ch4wet1_yr_t(i,m)*FAREROT(i,m)
-                ch4wet2_yr_g(i) = ch4wet2_yr_g(i)+ch4wet2_yr_t(i,m)*FAREROT(i,m)
+                ch4WetSpec_yr_g(i) = ch4WetSpec_yr_g(i)+ch4WetSpec_yr_t(i,m)*FAREROT(i,m)
                 wetfdyn_yr_g(i) = wetfdyn_yr_g(i)+wetfdyn_yr_t(i,m)*FAREROT(i,m)
-                ch4dyn1_yr_g(i) = ch4dyn1_yr_g(i)+ch4dyn1_yr_t(i,m)*FAREROT(i,m)
-                ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)+ch4dyn2_yr_t(i,m)*FAREROT(i,m)
+                ch4WetDyn_yr_g(i) = ch4WetDyn_yr_g(i)+ch4WetDyn_yr_t(i,m)*FAREROT(i,m)
                 ch4soills_yr_g(i) = ch4soills_yr_g(i)+ch4soills_yr_t(i,m)*FAREROT(i,m)
                 veghght_yr_g(i) = veghght_yr_g(i) + veghght_yr_t(i,m)*FAREROT(i,m)
 
@@ -4168,13 +4129,12 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
             
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_yr_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_yr_g' ,timeStamp,'wetlandch4WetDyn',[ch4WetDyn_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
             if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_g(i)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_yr_g' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_yr_g(i)])
+              call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_g(i)])
             end if
               
             ! We only want to record the fraction of the PFTs that are actually in existance.
@@ -4272,12 +4232,11 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])                    
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_yr_t' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_yr_t' ,timeStamp,'wetlandch4WetDyn',[ch4WetDyn_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_t' ,timeStamp,'wetlandFrac',[wetfdyn_yr_t(i,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_t' ,timeStamp,'soilCH4cons',[ch4soills_yr_t(i,:)])
                     if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
-                      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_t(i,:)])
-                      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet2_yr_t' ,timeStamp,'wetlandCH4specNPP',[ch4wet2_yr_t(i,:)])
+                      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_t(i,:)])
                     end if
                     if (dofire .or. lnduseon) then                      
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr_t' ,timeStamp,'fFireCH4',[emit_ch4_yr_t(i,:)])

@@ -947,11 +947,9 @@ contains
 
         real, pointer, dimension(:,:,:) :: slopefracrow
         real, pointer, dimension(:,:) :: wetfrac_presrow
-        real, pointer, dimension(:,:) :: ch4wet1row
-        real, pointer, dimension(:,:) :: ch4wet2row
+        real, pointer, dimension(:,:) :: ch4WetSpecrow
         real, pointer, dimension(:,:) :: wetfdynrow
-        real, pointer, dimension(:,:) :: ch4dyn1row
-        real, pointer, dimension(:,:) :: ch4dyn2row
+        real, pointer, dimension(:,:) :: ch4WetDynrow
         real, pointer, dimension(:,:) :: ch4soillsrow
 
         real, pointer, dimension(:,:) :: peatdeprow
@@ -1111,11 +1109,9 @@ contains
 
         real, pointer, dimension(:,:) :: slopefracgat
         real, pointer, dimension(:) :: wetfrac_presgat
-        real, pointer, dimension(:) :: ch4wet1gat
-        real, pointer, dimension(:) :: ch4wet2gat
+        real, pointer, dimension(:) :: ch4WetSpecgat
         real, pointer, dimension(:) :: wetfdyngat
-        real, pointer, dimension(:) :: ch4dyn1gat
-        real, pointer, dimension(:) :: ch4dyn2gat
+        real, pointer, dimension(:) :: ch4WetDyngat
         real, pointer, dimension(:) :: ch4soillsgat
 
         real, pointer, dimension(:) :: lucemcomgat
@@ -1979,11 +1975,9 @@ contains
 
         slopefracrow      => vrot%slopefrac
         wetfrac_presrow   => vrot%wetfrac_pres
-        ch4wet1row        => vrot%ch4wet1
-        ch4wet2row        => vrot%ch4wet2
+        ch4WetSpecrow        => vrot%ch4WetSpec
         wetfdynrow        => vrot%wetfdyn
-        ch4dyn1row        => vrot%ch4dyn1
-        ch4dyn2row        => vrot%ch4dyn2
+        ch4WetDynrow        => vrot%ch4WetDyn
         ch4soillsrow      => vrot%ch4_soills
 
         peatdeprow        => vrot%peatdep
@@ -2174,12 +2168,10 @@ contains
         rmrgat            => vgat%rmr
 
         slopefracgat      => vgat%slopefrac
-        ch4wet1gat        => vgat%ch4wet1
-        ch4wet2gat        => vgat%ch4wet2
+        ch4WetSpecgat        => vgat%ch4WetSpec
         wetfdyngat        => vgat%wetfdyn
         wetfrac_presgat   => vgat%wetfrac_pres
-        ch4dyn1gat        => vgat%ch4dyn1
-        ch4dyn2gat        => vgat%ch4dyn2
+        ch4WetDyngat        => vgat%ch4WetDyn
         ch4soillsgat      => vgat%ch4_soills
 
         lucemcomgat       => vgat%lucemcom
@@ -2667,8 +2659,8 @@ contains
                     btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,&
                     nbpveggat,    hetroresveggat, autoresveggat,litresveggat,&
                     soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-                    ch4wet1gat, ch4wet2gat,  slopefracgat,&
-                    wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,&
+                    ch4WetSpecgat, slopefracgat,&
+                    wetfdyngat, ch4WetDyngat,  ch4soillsgat,&
                     twarmmgat,    tcoldmgat,     gdd5gat,&
                     ariditygat, srplsmongat,  defctmongat, anndefctgat,&
                     annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
@@ -2711,8 +2703,8 @@ contains
                     btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,&
                     nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,&
                     soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-                    ch4wet1row, ch4wet2row,  slopefracrow,&
-                    wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
+                    ch4WetSpecrow, slopefracrow,&
+                    wetfdynrow, ch4WetDynrow, ch4soillsrow,&
                     twarmmrow,    tcoldmrow,     gdd5row,&
                     aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
                     annsrplsrow,   annpcprow,  dry_season_lengthrow,&
@@ -2927,8 +2919,8 @@ contains
                         &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&
                         &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,&
                         &        hetroresveggat, autoresveggat, litresveggat,&
-                        &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,&
-                        &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,&
+                        &           soilcresveggat, nml, ilmos, jlmos, ch4WetSpecgat,&
+                        &          wetfdyngat, ch4WetDyngat, &
                         &          ch4soillsgat,&
                                     ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,&
                                     Cmossmasgat,litrmsmossgat,wtablegat,&
@@ -3096,8 +3088,7 @@ contains
                 &      btermrow,     ltermrow,   mtermrow,&
                 &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,&
                 &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-                &      ch4wet1row, ch4wet2row,&
-                &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
+                &      ch4WetSpecrow, wetfdynrow, ch4WetDynrow, ch4soillsrow,&
                 &      twarmmrow,    tcoldmrow,     gdd5row,&
                 &      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
                 &      annsrplsrow,   annpcprow,  dry_season_lengthrow,&
@@ -3142,8 +3133,7 @@ contains
                 &      btermgat,     ltermgat,   mtermgat,&
                 &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,&
                 &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-                &      ch4wet1gat, ch4wet2gat,&
-                &      wetfdyngat, ch4dyn1gat, ch4dyn2gat,ch4soillsgat,&
+                &      ch4WetSpecgat, wetfdyngat, ch4WetDyngat, ch4soillsgat,&
                 &      twarmmgat,    tcoldmgat,     gdd5gat,&
                 &      ariditygat, srplsmongat,  defctmongat, anndefctgat,&
                 &      annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
