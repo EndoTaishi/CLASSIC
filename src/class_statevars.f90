@@ -373,35 +373,7 @@ type class_rotated
 
 ! These will be allocated the dimension: 'nlat'
 
-    real, allocatable, dimension(:) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
-    real, allocatable, dimension(:) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
-    real, allocatable, dimension(:) :: EVAPACC !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: FLINACC !<Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: FLUTACC !<Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: FSINACC !<Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: GROACC  !<Vegetation growth index [ ]
-    real, allocatable, dimension(:) :: GTACC   !<Diagnosed effective surface black-body temperature [K]
-    real, allocatable, dimension(:) :: HFSACC  !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: HMFNACC !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: OVRACC  !<Overland flow from top of soil column \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: PREACC  !<Surface precipitation rate \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: PRESACC !<Surface air pressure [Pa]
-    real, allocatable, dimension(:) :: QAACC   !<Specific humidity at reference height \f$[kg kg^{-1} ]\f$
-    real, allocatable, dimension(:) :: QEVPACC !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: RCANACC !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: RHOSACC !<Density of snow \f$[kg m^{-3} ]\f$
-    real, allocatable, dimension(:) :: ROFACC  !<Total runoff from soil \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: SCANACC !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: SNOACC  !<Mass of snow pack \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: TAACC   !<Air temperature at reference height [K]
-    real, allocatable, dimension(:) :: TCANACC !<Vegetation canopy temperature [K]
-    real, allocatable, dimension(:) :: TSNOACC !<Snowpack temperature [K]
-    real, allocatable, dimension(:) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
-    real, allocatable, dimension(:) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: WTBLACC !<Depth of water table in soil [m]
-    real, allocatable, dimension(:) :: ALTOTACC!<Broadband albedo [-]
-    real, allocatable, dimension(:) :: CANARE  !<
-    real, allocatable, dimension(:) :: SNOARE  !<
     real, allocatable, dimension(:) :: CSZROW  !<
     real, allocatable, dimension(:) :: DLONROW !<
     real, allocatable, dimension(:) :: DLATROW !<
@@ -655,11 +627,10 @@ type class_rotated
     real, allocatable, dimension(:,:,:) :: QFCROT  !<
 
     ! allocated with nlat,nmos,ignd:
-    real, allocatable, dimension(:,:,:) :: TBARACC_M        !<
-    real, allocatable, dimension(:,:,:) :: THLQACC_M        !<
-    real, allocatable, dimension(:,:,:) :: THICACC_M        !<
-    real, allocatable, dimension(:,:,:) :: THALACC_M        !<
-    real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !<
+    real, allocatable, dimension(:,:,:) :: TBARACC_M        !<Temperature of soil layers [K] (accumulated for means)
+    real, allocatable, dimension(:,:,:) :: THLQACC_M        !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:,:) :: THICACC_M        !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !<Temperature of soil layers [K] (accumulated for CTEM)
 
 
     ! These will be allocated the dimension: 'nlat,nmos,ican'
@@ -695,10 +666,6 @@ type class_rotated
 
     ! These will be allocated the dimension: 'nlat,ignd'
 
-    real, allocatable, dimension(:,:) :: TBARACC !<Temperature of soil layers [K] (accumulated for daily means)
-    real, allocatable, dimension(:,:) :: THALACC !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for daily means)
-    real, allocatable, dimension(:,:) :: THICACC !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for daily means)
-    real, allocatable, dimension(:,:) :: THLQACC !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for daily means)
     real, allocatable, dimension(:,:) :: TBARROW !<Temperature of soil layers [K]
     real, allocatable, dimension(:,:) :: THALROW !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:) :: THICROW !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -715,34 +682,33 @@ type class_rotated
     real, allocatable, dimension(:,:,:)  :: TSFSROT !<
 
     ! allocated with nlat,nmos:
-    real, allocatable, dimension(:,:) :: PREACC_M              !<
-    real, allocatable, dimension(:,:) :: GTACC_M               !<
-    real, allocatable, dimension(:,:) :: QEVPACC_M             !<
-    real, allocatable, dimension(:,:) :: HFSACC_M              !<
-    real, allocatable, dimension(:,:) :: HMFNACC_M             !<
-    real, allocatable, dimension(:,:) :: ROFACC_M              !<
-    real, allocatable, dimension(:,:) :: SNOACC_M              !<
-    real, allocatable, dimension(:,:) :: OVRACC_M              !<
-    real, allocatable, dimension(:,:) :: WTBLACC_M             !<
-    real, allocatable, dimension(:,:) :: ALVSACC_M             !<
-    real, allocatable, dimension(:,:) :: ALIRACC_M             !<
-    real, allocatable, dimension(:,:) :: RHOSACC_M             !<
-    real, allocatable, dimension(:,:) :: TSNOACC_M             !<
-    real, allocatable, dimension(:,:) :: WSNOACC_M             !<
-    real, allocatable, dimension(:,:) :: SNOARE_M              !<
-    real, allocatable, dimension(:,:) :: TCANACC_M             !<
-    real, allocatable, dimension(:,:) :: RCANACC_M             !<
-    real, allocatable, dimension(:,:) :: SCANACC_M             !<
-    real, allocatable, dimension(:,:) :: ALTOTACC_M            !<Daily broadband albedo
-    real, allocatable, dimension(:,:) :: GROACC_M              !<
-    real, allocatable, dimension(:,:) :: FSINACC_M             !<
-    real, allocatable, dimension(:,:) :: FLINACC_M             !<
-    real, allocatable, dimension(:,:) :: TAACC_M               !<
-    real, allocatable, dimension(:,:) :: UVACC_M               !<
-    real, allocatable, dimension(:,:) :: PRESACC_M             !<
-    real, allocatable, dimension(:,:) :: QAACC_M               !<
-    real, allocatable, dimension(:,:) :: EVAPACC_M             !<
-    real, allocatable, dimension(:,:) :: FLUTACC_M             !<
+    real, allocatable, dimension(:,:) :: PREACC_M              !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:,:) :: GTACC_M               !< Diagnosed effective surface black-body temperature [K]
+    real, allocatable, dimension(:,:) :: QEVPACC_M             !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: HFSACC_M              !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: HMFNACC_M             !< Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: ROFACC_M              !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:,:) :: SNOACC_M              !< Mass of snow pack \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: OVRACC_M              !< Overland flow from top of soil column \f$[kg m^{-2} s^{-1}]\f$
+    real, allocatable, dimension(:,:) :: WTBLACC_M             !< Depth of water table in soil [m]
+    real, allocatable, dimension(:,:) :: ALVSACC_M             !< Diagnosed total visible albedo of land surface [ ]
+    real, allocatable, dimension(:,:) :: ALIRACC_M             !< Diagnosed total near-infrared albedo of land surface [ ]
+    real, allocatable, dimension(:,:) :: RHOSACC_M             !< Density of snow \f$[kg m^{-3} ]\f$
+    real, allocatable, dimension(:,:) :: TSNOACC_M             !< Snowpack temperature [K]
+    real, allocatable, dimension(:,:) :: WSNOACC_M             !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: TCANACC_M             !< Vegetation canopy temperature [K]
+    real, allocatable, dimension(:,:) :: RCANACC_M             !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: SCANACC_M             !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: ALTOTACC_M            !< Daily broadband albedo
+    real, allocatable, dimension(:,:) :: GROACC_M              !< Vegetation growth index [ ]  
+    real, allocatable, dimension(:,:) :: FSINACC_M             !< Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: FLINACC_M             !< Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:,:) :: TAACC_M               !< Air temperature at reference height [K]
+    real, allocatable, dimension(:,:) :: UVACC_M               !< Wind speed \f$[m s^{-1} ]\f$
+    real, allocatable, dimension(:,:) :: PRESACC_M             !< Surface air pressure [Pa]
+    real, allocatable, dimension(:,:) :: QAACC_M               !< Specific humidity at reference height \f$[kg kg^{-1} ]\f$
+    real, allocatable, dimension(:,:) :: EVAPACC_M             !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1}]\f$
+    real, allocatable, dimension(:,:) :: FLUTACC_M             !< Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
 
 end type class_rotated
 
@@ -755,20 +721,20 @@ type class_moyr_output
 !   MONTHLY OUTPUT FOR CLASS GRID-MEAN
 
 ! allocated with nlat:
-    real, allocatable, dimension(:) :: ALVSACC_MO   !<
-    real, allocatable, dimension(:) :: ALIRACC_MO   !<
-    real, allocatable, dimension(:) :: FLUTACC_MO   !<
-    real, allocatable, dimension(:) :: FSINACC_MO   !<Surface Downwelling Shortwave Radiative flux in air [$W m^{-2}$]
-    real, allocatable, dimension(:) :: FLINACC_MO   !<
-    real, allocatable, dimension(:) :: HFSACC_MO    !<
-    real, allocatable, dimension(:) :: QEVPACC_MO   !<
-    real, allocatable, dimension(:) :: SNOACC_MO    !<
-    real, allocatable, dimension(:) :: WSNOACC_MO   !<
-    real, allocatable, dimension(:) :: ROFACC_MO    !<
-    real, allocatable, dimension(:) :: PREACC_MO    !<
-    real, allocatable, dimension(:) :: EVAPACC_MO   !<
+    real, allocatable, dimension(:) :: ALVSACC_MO   !< Diagnosed total visible albedo of land surface [ ]
+    real, allocatable, dimension(:) :: ALIRACC_MO   !< Diagnosed total near-infrared albedo of land surface [ ]
+    real, allocatable, dimension(:) :: FLUTACC_MO   !< Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: FSINACC_MO   !< Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: FLINACC_MO   !< Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: HFSACC_MO    !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: QEVPACC_MO   !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: SNOACC_MO    !< Mass of snow pack \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:) :: WSNOACC_MO   !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:) :: ROFACC_MO    !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:) :: PREACC_MO    !< Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
+    real, allocatable, dimension(:) :: EVAPACC_MO   !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1}]\f$
     real, allocatable, dimension(:) :: TRANSPACC_MO !<
-    real, allocatable, dimension(:) :: TAACC_MO     !<
+    real, allocatable, dimension(:) :: TAACC_MO     !< Air temperature at reference height [K]
     real, allocatable, dimension(:) :: ACTLYR_MO
     real, allocatable, dimension(:) :: FTABLE_MO
     real, allocatable, dimension(:) :: ACTLYR_MIN_MO
@@ -783,24 +749,24 @@ type class_moyr_output
     integer, allocatable, dimension(:) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
 
 ! allocated with nlat,ignd:
-    real, allocatable, dimension(:,:) :: TBARACC_MO !<
-    real, allocatable, dimension(:,:) :: THLQACC_MO !<
-    real, allocatable, dimension(:,:) :: THICACC_MO !<
+    real, allocatable, dimension(:,:) :: TBARACC_MO !<Temperature of soil layers [K] (accumulated for means)
+    real, allocatable, dimension(:,:) :: THLQACC_MO !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:) :: THICACC_MO !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
 
 !   YEARLY OUTPUT FOR CLASS GRID-MEAN
 
-    real, allocatable, dimension(:) :: ALVSACC_YR  !<
-    real, allocatable, dimension(:) :: ALIRACC_YR  !<
-    real, allocatable, dimension(:) :: FLUTACC_YR  !<
-    real, allocatable, dimension(:) :: FSINACC_YR  !<
-    real, allocatable, dimension(:) :: FLINACC_YR  !<
-    real, allocatable, dimension(:) :: HFSACC_YR   !<
-    real, allocatable, dimension(:) :: QEVPACC_YR  !<
-    real, allocatable, dimension(:) :: ROFACC_YR   !<
-    real, allocatable, dimension(:) :: PREACC_YR   !<
-    real, allocatable, dimension(:) :: EVAPACC_YR  !<
+    real, allocatable, dimension(:) :: ALVSACC_YR  !< Diagnosed total visible albedo of land surface [ ]
+    real, allocatable, dimension(:) :: ALIRACC_YR  !< Diagnosed total near-infrared albedo of land surface [ ]
+    real, allocatable, dimension(:) :: FLUTACC_YR  !< Upwelling longwave radiation from surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: FSINACC_YR  !< Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: FLINACC_YR  !< Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: HFSACC_YR   !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: QEVPACC_YR  !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: ROFACC_YR   !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:) :: PREACC_YR   !< Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
+    real, allocatable, dimension(:) :: EVAPACC_YR  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1}]\f$
     real, allocatable, dimension(:) :: TRANSPACC_YR!<
-    real, allocatable, dimension(:) :: TAACC_YR    !<
+    real, allocatable, dimension(:) :: TAACC_YR    !< Air temperature at reference height [K]
     real, allocatable, dimension(:) :: ACTLYR_YR
     real, allocatable, dimension(:) :: ACTLYR_MIN_YR
     real, allocatable, dimension(:) :: ACTLYR_MAX_YR
@@ -1169,36 +1135,7 @@ allocate(class_gat% ITCTGAT (ilg,6,50))
 
 ! These will be allocated the dimension: 'nlat'
 
-allocate(class_rot% ALIRACC (nlat),&
-         class_rot% ALVSACC (nlat),&
-         class_rot% EVAPACC (nlat),&
-         class_rot% FLINACC (nlat),&
-         class_rot% FLUTACC (nlat),&
-         class_rot% FSINACC (nlat),&
-         class_rot% GROACC  (nlat),&
-         class_rot% GTACC   (nlat),&
-         class_rot% HFSACC  (nlat),&
-         class_rot% HMFNACC (nlat),&
-         class_rot% OVRACC  (nlat),&
-         class_rot% PREACC  (nlat),&
-         class_rot% PRESACC (nlat),&
-         class_rot% QAACC   (nlat),&
-         class_rot% QEVPACC (nlat),&
-         class_rot% RCANACC (nlat),&
-         class_rot% RHOSACC (nlat),&
-         class_rot% ROFACC  (nlat),&
-         class_rot% SCANACC (nlat),&
-         class_rot% SNOACC  (nlat),&
-         class_rot% TAACC   (nlat),&
-         class_rot% TCANACC (nlat),&
-         class_rot% TSNOACC (nlat),&
-         class_rot% UVACC   (nlat),&
-         class_rot% WSNOACC (nlat),&
-         class_rot% WTBLACC (nlat),&
-         class_rot% ALTOTACC(nlat),&
-         class_rot% CANARE  (nlat),&
-         class_rot% SNOARE  (nlat),&
-         class_rot% CSZROW  (nlat),&
+allocate(class_rot% CSZROW  (nlat),&
          class_rot% DLONROW (nlat),&
          class_rot% DLATROW (nlat),&
          class_rot% FCLOROW (nlat),&
@@ -1491,7 +1428,6 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot%RHOSACC_M(nlat,nmos),&
          class_rot%TSNOACC_M(nlat,nmos),&
          class_rot%WSNOACC_M(nlat,nmos),&
-         class_rot%SNOARE_M(nlat,nmos),&
          class_rot%TCANACC_M(nlat,nmos),&
          class_rot%RCANACC_M(nlat,nmos),&
          class_rot%SCANACC_M(nlat,nmos),&
@@ -1535,7 +1471,6 @@ allocate(class_rot% ISNDROT (nlat,nmos,ignd),&
          class_rot%TBARACC_M(nlat,nmos,ignd),&
          class_rot%THLQACC_M(nlat,nmos,ignd),&
          class_rot%THICACC_M(nlat,nmos,ignd),&
-         class_rot%THALACC_M(nlat,nmos,ignd),&
          class_rot%tbaraccrow_m(nlat,nmos,ignd))
 
     ! These will be allocated the dimension: 'nlat,nmos,ican'
@@ -1571,8 +1506,7 @@ allocate(class_rot% FSDBROL  (nlat,nbs),&
 
     ! These will be allocated the dimension: 'nlat,ignd'
 
-allocate(class_rot% TBARACC (nlat,ignd), class_rot% THALACC (nlat,ignd), class_rot% THICACC (nlat,ignd), class_rot% THLQACC (nlat,ignd),&
-         class_rot% TBARROW (nlat,ignd),&
+allocate(class_rot% TBARROW (nlat,ignd),&
          class_rot% THALROW (nlat,ignd),&
          class_rot% THICROW (nlat,ignd),&
          class_rot% THLQROW (nlat,ignd),&
@@ -1699,41 +1633,6 @@ integer, intent(in) :: nmtest
 
 integer :: i,m,j
 
-
-    class_rot%PREACC(:)=0.
-    class_rot%GTACC(:)=0.
-    class_rot%QEVPACC(:)=0.
-    class_rot%EVAPACC(:)=0.
-    class_rot%HFSACC(:)=0.
-    class_rot%HMFNACC(:)=0.
-    class_rot%ROFACC(:)=0.
-    class_rot%ALTOTACC(:)=0.
-    class_rot%OVRACC(:)=0.
-    class_rot%WTBLACC(:)=0.
-    class_rot%ALVSACC(:)=0.
-    class_rot%ALIRACC(:)=0.
-    class_rot%RHOSACC(:)=0.
-    class_rot%SNOACC(:)=0.
-    class_rot%WSNOACC(:)=0.
-    class_rot%CANARE(:)=0.
-    class_rot%SNOARE(:)=0.
-    class_rot%TSNOACC(:)=0.
-    class_rot%TCANACC(:)=0.
-    class_rot%RCANACC(:)=0.
-    class_rot%SCANACC(:)=0.
-    class_rot%GROACC(:)=0.
-    class_rot%FSINACC(:)=0.
-    class_rot%FLINACC(:)=0.
-    class_rot%FLUTACC(:)=0.
-    class_rot%TAACC(:)=0.
-    class_rot%UVACC(:)=0.
-    class_rot%PRESACC(:)=0.
-    class_rot%QAACC(:)=0.
-
-    class_rot%TBARACC(:,:)=0.
-    class_rot%THLQACC(:,:)=0.
-    class_rot%THICACC(:,:)=0.
-    class_rot%THALACC(:,:)=0.
 DO I=1,NLTEST
 
     class_rot%altotcntr_d(i) = 0
@@ -1754,7 +1653,6 @@ DO I=1,NLTEST
         class_rot%RHOSACC_M(i,m) = 0.
         class_rot%TSNOACC_M(i,m) = 0.
         class_rot%WSNOACC_M(i,m) = 0.
-        class_rot%SNOARE_M(i,m) = 0.
         class_rot%TCANACC_M(i,m) = 0.
         class_rot%RCANACC_M(i,m) = 0.
         class_rot%SCANACC_M(i,m) = 0.
@@ -1773,7 +1671,6 @@ DO I=1,NLTEST
         class_rot%TBARACC_M(I,M,J)=0.
         class_rot%THLQACC_M(I,M,J)=0.
         class_rot%THICACC_M(I,M,J)=0.
-        class_rot%THALACC_M(I,M,J)=0.
         class_rot%tbaraccrow_m(i,m,j)  = 0.0
 
     end do

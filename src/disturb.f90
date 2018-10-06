@@ -135,7 +135,7 @@ real :: blfltrdt(ilg,icc) !<brown leaf litter generated due to disturbance \f$(k
 real :: blcaemls(ilg,icc) !<brown leaf carbon emission losses, \f$kg c/m^2\f$
 real :: burnfrac(ilg)     !<total areal fraction burned, (%)
 
-!     emitted compounds from biomass burning in g of compound
+!     emitted compounds from biomass burning (kg {species} / m2 / s)
 real :: emit_co2(ilg,icc) !<carbon dioxide
 real :: emit_co(ilg,icc)  !<carbon monoxide
 real :: emit_ch4(ilg,icc) !<methane
@@ -652,7 +652,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !>Calculate the emissions of trace gases and aerosols based upon how much plant matter was burnt
 
-!>Sum all pools that will be converted to emissions/aerosols \f$(g c/m^2)\f$
+!>Sum all pools that will be converted to emissions/aerosols \f$(g c/m^2 /day)\f$
            tot_emit = (glcaemls(i,j) + blcaemls(i,j) + rtcaemls(i,j)+ stcaemls(i,j) + ltrcemls(i,j)) * 1000.0
 
 !>Add in the emissions due to luc fires (deforestation)
@@ -661,23 +661,25 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !>Convert burnt plant matter from carbon to dry organic matter using
 !>a conversion factor, assume all parts of the plant has the same
-!>ratio of carbon to dry organic matter. units: \f$kg dom / m^2\f$
+!>ratio of carbon to dry organic matter. units: \f$kg dom / m^2 / day\f$
            tot_emit_dom = tot_emit / c2dom
 
 !>Convert the dom to emissions/aerosols using emissions factors units: \f$g species / m^2\f$
+!! Also convert units to \f$kg species / m^2 / s^{-1}\f$
+! g {species} / m2/d * d/86400s * 1kg/1000g = kg {species} / m2 / s
 
-           emit_co2(i,j)  = emif_co2(n) * tot_emit_dom
-           emit_co(i,j)   = emif_co(n)  * tot_emit_dom
-           emit_ch4(i,j)  = emif_ch4(n) * tot_emit_dom
-           emit_nmhc(i,j) = emif_nmhc(n) * tot_emit_dom
-           emit_h2(i,j)   = emif_h2(n) * tot_emit_dom
-           emit_nox(i,j)  = emif_nox(n) * tot_emit_dom
-           emit_n2o(i,j)  = emif_n2o(n) * tot_emit_dom
-           emit_pm25(i,j) = emif_pm25(n) * tot_emit_dom
-           emit_tpm(i,j)  = emif_tpm(n) * tot_emit_dom
-           emit_tc(i,j)   = emif_tc(n) * tot_emit_dom
-           emit_oc(i,j)   = emif_oc(n) * tot_emit_dom
-           emit_bc(i,j)   = emif_bc(n) * tot_emit_dom
+           emit_co2(i,j)  = emif_co2(n) * tot_emit_dom * 1.1574e-8
+           emit_co(i,j)   = emif_co(n)  * tot_emit_dom * 1.1574e-8
+           emit_ch4(i,j)  = emif_ch4(n) * tot_emit_dom * 1.1574e-8
+           emit_nmhc(i,j) = emif_nmhc(n) * tot_emit_dom * 1.1574e-8
+           emit_h2(i,j)   = emif_h2(n) * tot_emit_dom * 1.1574e-8
+           emit_nox(i,j)  = emif_nox(n) * tot_emit_dom * 1.1574e-8
+           emit_n2o(i,j)  = emif_n2o(n) * tot_emit_dom * 1.1574e-8
+           emit_pm25(i,j) = emif_pm25(n) * tot_emit_dom * 1.1574e-8
+           emit_tpm(i,j)  = emif_tpm(n) * tot_emit_dom * 1.1574e-8
+           emit_tc(i,j)   = emif_tc(n) * tot_emit_dom * 1.1574e-8
+           emit_oc(i,j)   = emif_oc(n) * tot_emit_dom * 1.1574e-8
+           emit_bc(i,j)   = emif_bc(n) * tot_emit_dom * 1.1574e-8
 
 630     continue
 620   continue

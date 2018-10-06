@@ -440,18 +440,18 @@ type veg_gat
     real, allocatable, dimension(:,:) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: vgbiomas_veg !<vegetation biomass for each pft
 
-    real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide
-    real, allocatable, dimension(:,:) :: emit_co    !<carbon monoxide
-    real, allocatable, dimension(:,:) :: emit_ch4   !<methane
-    real, allocatable, dimension(:,:) :: emit_nmhc  !<non-methane hydrocarbons
-    real, allocatable, dimension(:,:) :: emit_h2    !<hydrogen gas
-    real, allocatable, dimension(:,:) :: emit_nox   !<nitrogen oxides
-    real, allocatable, dimension(:,:) :: emit_n2o   !<nitrous oxide
-    real, allocatable, dimension(:,:) :: emit_pm25  !<particulate matter less than 2.5 um in diameter
-    real, allocatable, dimension(:,:) :: emit_tpm   !<total particulate matter
-    real, allocatable, dimension(:,:) :: emit_tc    !<total carbon
-    real, allocatable, dimension(:,:) :: emit_oc    !<organic carbon
-    real, allocatable, dimension(:,:) :: emit_bc    !<black carbon
+    real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_co    !<carbon monoxide (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_ch4   !<methane (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_nmhc  !<non-methane hydrocarbons (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_h2    !<hydrogen gas (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_nox   !<nitrogen oxides (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_n2o   !<nitrous oxide (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_pm25  !<particulate matter less than 2.5 um in diameter (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_tpm   !<total particulate matter (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_tc    !<total carbon (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_oc    !<organic carbon (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_bc    !<black carbon (kg <species> $m^{-2}$$s^{-1}$)
     real, allocatable, dimension(:)   :: burnfrac   !<areal fraction burned due to fire for every grid cell (%)
     real, allocatable, dimension(:,:) :: burnvegf   !<per PFT fraction burned of that PFT's area
     real, allocatable, dimension(:,:) :: smfuncveg  !<

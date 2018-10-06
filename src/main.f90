@@ -464,8 +464,6 @@ contains
 
         ! These will be allocated the dimension: 'nlat'
 
-        real, pointer, dimension(:) :: CANARE  !<
-        real, pointer, dimension(:) :: SNOARE  !<
         real, pointer, dimension(:) :: CSZROW  !<Cosine of solar zenith angle [ ]
         real, pointer, dimension(:) :: DLONROW !<
         real, pointer, dimension(:) :: DLATROW !<
@@ -1628,8 +1626,6 @@ contains
         TSFSGAT => class_gat%TSFSGAT
         ITCTGAT => class_gat%ITCTGAT
 
-        CANARE => class_rot%CANARE
-        SNOARE => class_rot%SNOARE
         CSZROW => class_rot%CSZROW
         DLONROW => class_rot%DLONROW
         DLATROW => class_rot%DLATROW
@@ -3172,7 +3168,7 @@ contains
                (runyr <= jdendy) .and. &
                (iday  >= jdstd) .and. &
                (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,&
-                                                         iday,nltest,nmtest,sbc,delt,&
+                                                         iday,nltest,nmtest,sbc,&
                                                          ncount,nday,lastDOY,runyr,TFREZ)
 
             DO NT=1,NMON
@@ -3185,11 +3181,11 @@ contains
             ! Monthly physics outputs
             if (domonthoutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex,&
                                                             latLocalIndex,IDAY,runyr,NCOUNT,&
-                                                            NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
+                                                            NDAY,SBC,nltest,nmtest,TFREZ,&
                                                             lastDOY)
 
             ! Annual physics outputs
-            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,SBC,DELT,&
+            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,SBC,&
                &                       nltest,nmtest,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
