@@ -31,12 +31,13 @@ contains
 !>\ingroup metDisaggModule_disaggMet
 !!@{
 !> Main subroutine to disaggregate input meteorology to that of the physics timestep
-    subroutine disaggMet(longitude, latitude,delt) ! longitude, latitude
+    subroutine disaggMet(longitude, latitude) ! longitude, latitude
 
+        use classic_params, only : delt
+        
         implicit none
 
         real, intent(in)    :: longitude, latitude  !in degrees
-        real, intent(in)    :: delt                 !< Simulation physics timestep
         integer             :: vcount,vcountPlus
 
         !> First check that we should be doing the disaggregation. If we are already
@@ -67,7 +68,7 @@ contains
         !> Expand original MET data to physics timestep. This increases the array size
         !! and puts the old values within the larger array. It also duplicates the first
         !! and last days for the interpolation. This also expands the time array (metTime)
-        call makebig(vcount,vcountPlus,delt)
+        call makebig(vcount,vcountPlus)
 
         !> Perform the interpolations that are either step (for longwave), linear (for
         !! for air temperature, specific humidity, wind, pressure), randomly distributed
@@ -77,12 +78,12 @@ contains
         call linearInterpolation(metQa)
         call linearInterpolation(metUv)
         call linearInterpolation(metPres)
-        call precipDistribution(metPre,delt)
-        call diurnalDistribution(metFss, latitude,delt)
+        call precipDistribution(metPre)
+        call diurnalDistribution(metFss, latitude)
 
         !> Adjust the met arrays for the timezone relative to Greenwich and also
         !! trim off the added two days.
-        call timeShift(timeZone(longitude,delt),vcount,vcountPlus)
+        call timeShift(timeZone(longitude),vcount,vcountPlus)
 
     end subroutine disaggMet
 !!@}
@@ -94,13 +95,14 @@ contains
 !! timesteps on the physics timestep. Also copies the first day and last day values
 !! into the array to give a startday -1 and endday + 1 values for the interpolations.
 !! While we are at it we also expand the time array
-    subroutine makebig(vcount,vcountPlus,delt)
+    subroutine makebig(vcount,vcountPlus)
 
+        use classic_params, only : delt
+        
         implicit none
 
         integer, intent(in) :: vcount
         integer, intent(in) :: vcountPlus
-        real, intent(in) :: delt
         real, allocatable, dimension(:) :: tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres,tmpTime
         integer :: i,j,timePlusTwoDays
 
@@ -226,12 +228,13 @@ contains
 !>\ingroup metDisaggModule_precipDistribution
 !!@{
 !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
-    subroutine precipDistribution(var,delt)
+    subroutine precipDistribution(var)
 
+        use classic_params, only : delt
+        
         implicit none
 
         real, intent(inout)                         :: var(:)
-        real, intent(in)                            :: delt
         integer                                     :: i, j, k, T,start, endpt, countr,wetpds
         real                                        :: temp,startpre
         real, allocatable, dimension(:)             :: random
@@ -333,13 +336,14 @@ contains
 !>\ingroup metDisaggModule_diurnalDistribution
 !!@{
 !> Diurnal distribution over the entire timespan
-    subroutine diurnalDistribution(shortWave, latitude,delt)
+    subroutine diurnalDistribution(shortWave, latitude)
 
+        use classic_params, only : delt
+        
         implicit none
 
         real, intent(inout)                         :: shortWave(:)
         real, intent(in)                            :: latitude
-        real, intent(in)                            :: delt
         integer                                     :: i,d, start, endpt, midday
         integer, allocatable                        :: daylightIndYear(:,:)
         real, allocatable                           :: zenithAngYear(:,:)
@@ -367,7 +371,7 @@ contains
                 zenithAngYear(d,:) = zenithAngles(timesteps, d, latRad, 365,shortSteps)
                 ! Find the zenith angle at noon
                 zenithNoon(d) = zenithAngYear(d,midday)
-                daylightIndYear(d,:) = daylightIndices(zenithAngYear(d,:),delt,shortSteps)
+                daylightIndYear(d,:) = daylightIndices(zenithAngYear(d,:),shortSteps)
         end do
 
         d=365 ! We start on day 365 since we have the extra day added on the start
@@ -429,14 +433,15 @@ contains
 !>\ingroup metDisaggModule_daylightIndices
 !!@{
 !> Find day lengths depending on zenith angles
-    function daylightIndices(zenithAngles,delt,countr)
+    function daylightIndices(zenithAngles,countr)
 
+        use classic_params, only : delt
+        
         implicit none
 
         integer                         :: i, daylightCount
         integer, intent(in)             :: countr
         real,  intent(in)               :: zenithAngles(:)
-        real,  intent(in)               :: delt
         integer, allocatable            :: daylightIndices(:)
         real                            :: zenithCos
         real                            :: dayLength
@@ -506,12 +511,13 @@ contains
 !>\ingroup metDisaggModule_timeZone
 !!@{
 !> Find the local timezone relative to Greenwich.
-    real function timeZone(longitude,delt)
+    real function timeZone(longitude)
 
+        use classic_params, only : delt
+        
         implicit none
 
         real,       intent(in)      :: longitude
-        real,       intent(in)      :: delt
 
         !> Each timezone is 15 deg of longitude per hour. So convert our physics
         !! timestep into a minutes equivalent.

@@ -212,7 +212,7 @@ C
               !>
               SLOAD=(CWFCAP(I)-SNOCAN(I))*(1.0-EXP(-SINT/CWFCAP(I)))
               SWXCES=SINT-SLOAD
-              SNUNLD=(SLOAD+SNOCAN(I))*(1.0-EXP(-1.157E-6*DELT))
+              SNUNLD=(SLOAD+SNOCAN(I))*(1.0-EXP(-1.157E-6*DELT))  !BDCS P?
               IF(SWXCES.GT.0. .OR. SNUNLD.GT.0.)                 THEN 
                   SDRIP(I)=(MAX(SWXCES,0.0)+SNUNLD)/(DELT*RHOSNI(I))
                   IF((SDRIP(I)+STHRU).GT.0.)       THEN                                           

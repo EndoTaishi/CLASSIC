@@ -47,7 +47,9 @@ contains
     subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
 
         use classic_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, monthend, &
-                                        modelpft, l2max,deltat,NBS, readin_params,nol2pfts
+                                        modelpft, l2max,deltat,NBS, readin_params,nol2pfts, &
+                                        DELT,TFREZ
+                                        
         use landuse_change,      only : initializeLandCover
         use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&
                                         resetmonthend,resetyearend,&
@@ -97,7 +99,7 @@ contains
         INTEGER NLANDI  !<Number of modelled areas that are ice sheets
         INTEGER I,J,K,L,M,N
         INTEGER NTLD    !<
-        INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
+        !INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
         !INTEGER ITA        !<
         !INTEGER ITCAN      !<
         !INTEGER ITD        !<
@@ -688,35 +690,35 @@ contains
         !
         !     * ARRAYS ASSOCIATED WITH COMMON BLOCKS.
         !FLAG! >>> Not in the new structure
-        REAL THPORG (  3) !<
-        REAL THRORG (  3) !<
-        REAL THMORG (  3) !<
-        REAL BORG   (  3) !<
-        REAL PSISORG(  3) !<
-        REAL GRKSORG(  3) !<
-
-        REAL GROWYR (  18,4,2) !< !
-
-        !FLAG! <<< Not in the new structure
-
-        !     * CONSTANTS AND TEMPORARY VARIABLES.
-        !
-        !REAL EVAPSUM,ALTOT,DECL,DAY,COSZ HOUR,
-             !FSSTAR,FLSTAR,GTOUT,QH,QE,TCN,TPN,TSN,TSURF,ZSN,BEG,SNOMLT
-
-        real :: CUMSNO
-        !
-        !     * COMMON BLOCK PARAMETERS.
-        !
-        REAL X1,X2,X3,X4,G,GAS,X5,X6,CPRES,GASV,X7,CPI,X8,CELZRO,X9,&
-        X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,&
-        RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,&
-        TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,&
-        HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
-        CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,&
-        ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
-        ANGMAX
-        !
+        ! REAL THPORG (  3) !<
+        ! REAL THRORG (  3) !<
+        ! REAL THMORG (  3) !<
+        ! REAL BORG   (  3) !<
+        ! REAL PSISORG(  3) !<
+        ! REAL GRKSORG(  3) !<
+        ! 
+        ! REAL GROWYR (  18,4,2) !< !
+        ! 
+        ! !FLAG! <<< Not in the new structure
+        ! 
+        ! !     * CONSTANTS AND TEMPORARY VARIABLES.
+        ! !
+        ! !REAL EVAPSUM,ALTOT,DECL,DAY,COSZ HOUR,
+        !      !FSSTAR,FLSTAR,GTOUT,QH,QE,TCN,TPN,TSN,TSURF,ZSN,BEG,SNOMLT
+        ! 
+         real :: CUMSNO
+        ! !
+        ! !     * COMMON BLOCK PARAMETERS.
+        ! !
+        ! REAL X1,X2,X3,X4,G,GAS,X5,X6,CPRES,GASV,X7,CPI,X8,CELZRO,X9,&
+        ! X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,&
+        ! RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,&
+        ! TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,&
+        ! HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
+        ! CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,&
+        ! ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
+        ! ANGMAX
+        ! !
         !================= CTEM array declaration ===============================\
         !
         !     Local variables for coupling CLASS and CTEM
@@ -1286,29 +1288,29 @@ contains
         !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
         !     * WITHIN THE GCM.
 
-        COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5, &
-                        X6,    CPRES, GASV,  X7
-        COMMON /PARAM1/ CPI,   X8,    CELZRO,X9,    X10,    X11
-        COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
-        COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,&
-                        K6,    K7,    K8,    K9,    K10,    K11
-        !
-        !     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
-        !     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
-        !
-        COMMON /CLASS1/ DELT,TFREZ
-        COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-        COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,&
-        &                RHOSOL,RHOOM
-        COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,&
-        &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
-        &                TCGLAC,CLHMLT,CLHVAP
-        COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI!,ZORAT,ZORATG
-        !COMMON /CLASS7/ CANEXT,XLEAF
-        COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
-        COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
-        COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+        ! COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5, &
+        !                 X6,    CPRES, GASV,  X7
+        ! COMMON /PARAM1/ CPI,   X8,    CELZRO,X9,    X10,    X11
+        ! COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
+        ! COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,&
+        !                 K6,    K7,    K8,    K9,    K10,    K11
+        ! !
+        ! !     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
+        ! !     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
+        ! !
+        ! COMMON /CLASS1/ DELT,TFREZ
+        ! COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
+        ! COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,&
+        ! &                RHOSOL,RHOOM
+        ! COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,&
+        ! &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
+        ! &                TCGLAC,CLHMLT,CLHVAP
+        ! COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
+        ! COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI!,ZORAT,ZORATG
+        ! !COMMON /CLASS7/ CANEXT,XLEAF
+        ! COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
+        ! COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
+        ! COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
         !
         !===================== CTEM ==============================================\
 
@@ -2372,11 +2374,11 @@ contains
         end if
 
         !> Read in the meteorological forcing data to a suite of arrays
-        call getMet(longitude,latitude,nday,delt)
+        call getMet(longitude,latitude,nday)
 
         !> Now disaggregate the meteorological forcing to the right timestep
         !! for this model run (if needed; this is checked for in the subroutine)
-        call disaggMet(longitude, latitude, delt)
+        call disaggMet(longitude, latitude)
 
         ! Initialize accumulated array for monthly & yearly outputs
         call resetclassmon(nltest)
@@ -2464,7 +2466,7 @@ contains
             !
             !> Update the meteorological forcing data for current time step;
             !
-            call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
+            call updateMet(metTimeIndex,iyear,iday,ihour,imin,metDone)
 
                 !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
@@ -2888,8 +2890,7 @@ contains
                         &              popdingat,  dofire, isndgat,&
                         &          faregat,wetfrac_presgat,slopefracgat,&
                         &                  BIGAT,    THPGAT, thicegacc_t, DLATGAT,&
-                        &             ch4concgat,      GRAV, RHOW, RHOICE,&
-                        &              leapnow,&
+                        &             ch4concgat,  leapnow,&
                                     !    -------------- inputs used by ctem are above this line ---------
                         &            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,&
                         &            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,&
@@ -3162,7 +3163,7 @@ contains
 
                 ! Determine the active layer depth and depth to the frozen water table.
                 ! This only occurs once per day since they don't change rapidly.
-                call findPermafrostVars(nmtest,nltest,tfrez)
+                call findPermafrostVars(nmtest,nltest)
 
             end if !ncount eq nday
 
@@ -3174,16 +3175,15 @@ contains
                 (runyr <= jhhendy) .and. &
                 (iday >= jhhstd) .and. &
                 (iday <= jhhendd) ) call class_hh_w(lonLocalIndex,latLocalIndex,nltest,&
-                                                    nmtest,ncount,nday,iday,runyr,SBC,TFREZ)
+                                                    nmtest,ncount,nday,iday,runyr)
 
             ! Daily physics outputs
             if (dodayoutput .and. &
                (runyr >= jdsty) .and. &
                (runyr <= jdendy) .and. &
                (iday  >= jdstd) .and. &
-               (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,&
-                                                         iday,nltest,nmtest,sbc,delt,&
-                                                         ncount,nday,lastDOY,runyr,TFREZ)
+               (iday  <= jdendd))  call class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,&
+                                                      ncount,nday,lastDOY,runyr)
 
             DO NT=1,NMON
                 IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
@@ -3195,11 +3195,10 @@ contains
             ! Monthly physics outputs
             if (domonthoutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex,&
                                                             latLocalIndex,IDAY,runyr,NCOUNT,&
-                                                            NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
-                                                            lastDOY)
+                                                            NDAY,nltest,nmtest,lastDOY)
 
             ! Annual physics outputs
-            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,SBC,DELT,&
+            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,&
                &                       nltest,nmtest,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then

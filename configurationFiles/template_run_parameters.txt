@@ -168,6 +168,33 @@ GRKSORG = 2.8E-4, 2.0E-6, 1.0E-7,
 ! Model physics timestep (s) 
 DELT = 1800.0,
 
+! CANALB parameters:
+
+  ! Average background visible albedo of snow covered canopy (-)
+  ALVSWC = 0.27,     
+
+  ! Average background NIR albedo of snow covered canopy (-)
+  ALIRWC = 0.38,     
+
+  ! Effective overall exctinction coefficient given if visible transmissivity is very small
+  CXTLRG = 1.0E20,   
+
+! CLASSB parameters: 
+
+  ! Look up tables for wet (w) and dry (d) visible (v) and NIR (n) soil albedos based on soil colour index 
+  ALWV(1:10)  = 0.25,0.23,0.21,0.20,0.19,0.18,0.17,0.16,0.15,0.14,
+  ALWV(11:20) = 0.13,0.12,0.11,0.10,0.09,0.08,0.07,0.06,0.05,0.04,
+  ALWN(1:10)  = 0.50,0.46,0.42,0.40,0.38,0.36,0.34,0.32,0.30,0.28,
+  ALWN(11:20) = 0.26,0.24,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08,
+  ALDV(1:10)  = 0.36,0.34,0.32,0.31,0.30,0.29,0.28,0.27,0.26,0.25,
+  ALDV(11:20) = 0.24,0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08,
+  ALDN(1:10)  = 0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,
+  ALDN(11:20) = 0.37,0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16,
+
+! SNINFL parameters:
+
+  ! Maximum water retention capacity of the snow pack (weight percentage)
+  WSNCAP = 0.04, 
 
 ! -------------------------------------
 

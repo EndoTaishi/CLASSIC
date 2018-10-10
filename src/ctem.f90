@@ -25,8 +25,7 @@
      &                    popdin, dofire,  isand,  &
      &                   faregat, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &
-     &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
-     &                   leapnow, &
+     &                   ch4conc,  leapnow, &
 !
 !    -------------- inputs used by ctem are above this line ---------
 !
@@ -131,7 +130,7 @@ use classic_params,        only : kk, pi, zero,&
      &                         ignd, icc, nmos, l2max, grescoef,&
      &                         humicfac,laimin,laimax,lambdamax,&
      &                         crop,repro_fraction,grescoefmoss,&
-     &                         rmortmoss,humicfacmoss
+     &                         rmortmoss,humicfacmoss,GRAV,RHOW,RHOICE
 
 use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
@@ -200,9 +199,6 @@ real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional covera
 real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
 real, dimension(ilg), intent(in) :: wetfrac             !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg,8), intent(in) :: slopefrac         !<
-real, intent(in) :: GRAV                                !<Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.
-real, intent(in) :: RHOW                                !<Density of water ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
-real, intent(in) :: RHOICE                              !<Density of ice ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
 real, dimension(ilg), intent(in) :: anmoss              !< moss net photoysnthesis -daily averaged C fluxes rates (umol/m2/s)
 real, dimension(ilg), intent(in) :: rmlmoss             !< moss maintainance respiration -daily averaged C fluxes rates (umol/m2/s)
 real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily averaged C fluxes rates (umol/m2/s)

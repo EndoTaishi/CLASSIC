@@ -494,7 +494,7 @@ C
       !!subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
       !!
           IF(IHGT.EQ.0) THEN
-              H(I,1)=10.0*EXP(ZOLN(I,1))
+              H(I,1)=10.0*EXP(ZOLN(I,1))  !BDCS P?
               H(I,2)=10.0*EXP(ZOLN(I,2))
               H(I,3)=10.0*EXP(ZOLN(I,3))*GROWA(I)
               H(I,4)=10.0*EXP(ZOLN(I,4))
@@ -566,7 +566,7 @@ C
           ELSE
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
-            AIL(I,1)=PAI(I,1)*0.90
+            AIL(I,1)=PAI(I,1)*0.90   !BDCS P?
             AIL(I,2)=MAX((PAI(I,2)-PAIMIN(I,2)),0.0)
             AIL(I,3)=PAI(I,3)
             AIL(I,4)=PAI(I,4)
@@ -617,7 +617,7 @@ C     *        BARE SOIL:            0.002 M.
 C     *        LOW VEGETATION:       0.003 M.
 C     *        FOREST:               0.01  M.
 C
-      THR_LAI=1.0
+      THR_LAI=1.0  !BDCS P?
       !>
       !!In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is
       !!calculated, for snow-free (FCAN) and snow-covered ground (FCANS). For needleleaf and broadleaf
@@ -728,7 +728,7 @@ C
 C
           IF(IWF.EQ.0) THEN
               IF(ISAND(I,1).EQ.-4) THEN
-                  ZPLIMG(I)=0.001
+                  ZPLIMG(I)=0.001  !BDCS P?
               ELSEIF(ISAND(I,1).EQ.-3) THEN
                   ZPLIMG(I)=0.001
               ELSE
@@ -841,8 +841,8 @@ C
               PAICNS(I)=0.0
           ENDIF
 C
-          CWLCAP(I)=0.20*PAICAN(I)
-          CWLCPS(I)=0.20*PAICNS(I)
+          CWLCAP(I)=0.20*PAICAN(I)  !BDCS P?
+          CWLCPS(I)=0.20*PAICNS(I)  !BDCS P?
 C
           RRESID(I)=0.0
           IF(RCAN(I).LT.1.0E-5 .OR. (FC(I)+FCS(I)).LT.1.0E-5) THEN
@@ -870,7 +870,7 @@ C
           ENDIF
 C
           IF(FC(I).GT.0.)                                     THEN
-              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
+              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+   !BDCS P?
      1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
           ELSE
               PAICAN(I)=0.0
@@ -883,8 +883,8 @@ C
               PAICNS(I)=0.0
           ENDIF
 C
-          CWFCAP(I)=6.0*PAICAN(I)*(0.27+46.0/RHOSNI(I))
-          CWFCPS(I)=6.0*PAICNS(I)*(0.27+46.0/RHOSNI(I))
+          CWFCAP(I)=6.0*PAICAN(I)*(0.27+46.0/RHOSNI(I))   !BDCS P?
+          CWFCPS(I)=6.0*PAICNS(I)*(0.27+46.0/RHOSNI(I))   !BDCS P?
 C
           SRESID(I)=0.0
           IF(SNCAN(I).LT.1.0E-5 .OR. (FC(I)+FCS(I)).LT.1.0E-5) THEN
@@ -1030,9 +1030,9 @@ C
       DO 250 I=IL1,IL2
           IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN
               IF(IDISP.EQ.1)   DISP(I)=DISP(I)+FCAN (I,J)*
-     1                                 LOG(0.7*H(I,J))
+     1                                 LOG(0.7*H(I,J))   !BDCS P?
               ZOMLNC(I)=ZOMLNC(I)+FCAN (I,J)/
-     1                  ((LOG(ZBLEND(I)/(0.1*H(I,J))))**2)
+     1                  ((LOG(ZBLEND(I)/(0.1*H(I,J))))**2)   !BDCS P?
               ZOELNC(I)=ZOELNC(I)*
      1                  (0.01*H(I,J)*H(I,J)/ZORAT(IC))**FCAN(I,J)
           ENDIF
@@ -1111,7 +1111,7 @@ C
           IF(Z0ORO(I).GT.1.0E-4) THEN
               LZ0ORO=LOG(Z0ORO(I))
           ELSE
-              LZ0ORO=-10.0
+              LZ0ORO=-10.0            
           ENDIF
           ZOMLNC(I)=MAX(ZOMLNC(I),LZ0ORO)
           ZOMLCS(I)=MAX(ZOMLCS(I),LZ0ORO)
@@ -1157,12 +1157,12 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
               ENDIF     !CTEM MODIFICATION
 C
               IF(IDISP.EQ.0) THEN
-                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7*
+                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7* !BDCS P?
      1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
      2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
               ENDIF
               IF(IZREF.EQ.2) THEN
-                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1*
+                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1* !BDCS P?
      1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
      2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
               ENDIF
@@ -1269,7 +1269,7 @@ C
               IF(ZROOT.LE.(ZBOTW(I,K)-DELZW(I,K)+0.0001))          THEN
                   RMAT(I,J,K)=0.0
               ELSEIF(ZROOT.LE.ZBOTW(I,K))                          THEN
-                  RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-
+                  RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-  !BDCS P?
      1                EXP(-3.0*ZROOT))/(1.0-EXP(-3.0*ZROOT))
               ELSE
                   RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-

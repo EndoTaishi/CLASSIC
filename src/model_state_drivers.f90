@@ -1420,9 +1420,10 @@ contains
     !! There is an orders of magnitude slow-up otherwise!
     !>@author Joe Melton
 
-    subroutine getMet(longitude,latitude,nday,delt)
+    subroutine getMet(longitude,latitude,nday)
 
         use fileIOModule
+        use classic_params, only : delt
         use ctem_statevars, only : c_switch
         use generalUtils, only : parseTimeStamp,closeEnough
 
@@ -1431,7 +1432,6 @@ contains
         real, intent(in) :: longitude       !< Longitude of grid cell of interest
         real, intent(in) :: latitude        !< Latitude of grid cell of interest
         integer, intent(in) :: nday         !< Maximum number of physics timesteps in one day
-        real, intent(in) :: delt            !< Physics timestep (s)
 
         integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
         integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
@@ -1533,15 +1533,15 @@ contains
     !! instantaneous variables. This also sets iyear to the present year of MET being read in.
     !>@author Joe Melton
 
-    subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
+    subroutine updateMet(metTimeIndex,iyear,iday,ihour,imin,metDone)
 
+        use classic_params, only : delt
         use class_statevars, only : class_rot
         use generalUtils, only : parseTimeStamp
 
         implicit none
 
         integer, intent(inout) :: metTimeIndex      !< Index to read from met file
-        real,    intent(in) :: delt                 !< Physics timestep (s)
         integer, intent(out) :: iyear               !< Present year of simulation
         integer, intent(out) :: iday                !< Present day of simulation
         integer, intent(out) :: ihour               !< Present hour of simulation

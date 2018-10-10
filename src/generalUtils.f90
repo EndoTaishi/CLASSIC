@@ -231,16 +231,15 @@ module generalUtils
     !> Finds the active layer depth and depth to the frozen water table.
     !! @author Joe Melton
     !!
-    subroutine findPermafrostVars(nltest,nmtest,tfrez)
+    subroutine findPermafrostVars(nltest,nmtest)
 
-      use classic_params, only : ignd
+      use classic_params, only : ignd,tfrez
       use class_statevars, only : class_rot,class_gat
 
       implicit none
 
       integer, intent(in) :: nmtest
       integer, intent(in) :: nltest
-      real, intent(in)    :: tfrez                  !<Freezing point of water [K]
       real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
       real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
       real, pointer, dimension(:,:,:) :: tbarrot    !<Temperature of soil layers [K]

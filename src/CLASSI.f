@@ -152,8 +152,8 @@ C
       DO 100 I=IL1,IL2
           EA=QA(I)*PRESSG(I)/(0.622+0.378*QA(I))                              
           IF(TA(I).GE.TFREZ) THEN                                             
-              CA=17.269                                                       
-              CB=35.86                                                        
+              CA=17.269                   !BDCS P?                                    
+              CB=35.86                    !BDCS P?                                    
           ELSE                                                                
               CA=21.874                                                       
               CB=7.66                                                         
@@ -179,7 +179,7 @@ C
           !!\f$\rho_{s,i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
           !!
           IF(TA(I).LE.TFREZ) THEN
-              RHOSNI(I)=67.92+51.25*EXP((TA(I)-TFREZ)/2.59)
+              RHOSNI(I)=67.92+51.25*EXP((TA(I)-TFREZ)/2.59) !BDCS P?
           ELSE
               RHOSNI(I)=MIN((119.17+20.0*(TA(I)-TFREZ)),200.0)
           ENDIF
@@ -242,7 +242,7 @@ C
                   ELSEIF(TA(I).GE.(TFREZ+6.0)) THEN
                       PHASE(I)=0.0
                   ELSE
-                      PHASE(I)=(0.0202*(TA(I)-TFREZ)**6-0.3660*
+                      PHASE(I)=(0.0202*(TA(I)-TFREZ)**6-0.3660*   !BDCS P?
      1                    (TA(I)-TFREZ)**5+2.0399*(TA(I)-TFREZ)**4-
      2                    1.5089*(TA(I)-TFREZ)**3-15.038*
      3                    (TA(I)-TFREZ)**2+4.6664*(TA(I)-TFREZ)+100.0)/

@@ -116,10 +116,11 @@ real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
 
 integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
+integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
 
-real :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
+real, parameter  :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
                             ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
-real :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
+real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
 
 !> Logical switch for using constant allocation factors (default value is false)
 logical :: consallo = .false.
@@ -146,9 +147,9 @@ integer :: numcrops          !< number of crop pfts
 integer :: numtreepfts       !< number of tree pfts
 integer :: numgrass          !< number of grass pfts
 integer :: numshrubs         !< number of shrubs pfts
-integer, dimension(:), allocatable :: nol2pfts  !< Number of level 2 PFTs calculated in readin_params
-logical, dimension(:), allocatable :: crop      !< simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
-logical, dimension(:), allocatable :: grass     !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
+integer, dimension(:), allocatable :: nol2pfts !< Number of level 2 PFTs calculated in readin_params
+logical, dimension(:), allocatable :: crop     !< simple crop matrix, define number and position of the crops (NOTE: dimension icc)
+logical, dimension(:), allocatable :: grass    !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
 
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
@@ -209,29 +210,29 @@ real, dimension(:), allocatable  :: GRKSORG !<Peat hydraulic conductivity of soi
 ! Model physics timestep (s) (GCM name: DELTIM)
 real :: DELT
 
-! CANALB parameters: !FLAG!!!!! COMBAK
-real :: ALVSWC ! = 0.27
-real :: ALIRWC ! = 0.38
-real :: CXTLRG ! = 1.0E20
+! CANALB parameters: ----------------------
+real :: ALVSWC     !< Average background visible albedo of snow covered canopy (-)
+real :: ALIRWC     !< Average background NIR albedo of snow covered canopy (-)
+real :: CXTLRG     !< Effective overall exctinction coefficient given if visible transmissivity is very small
 
-! CLASSB parameters: !FLAG!!!!! COMBAK
-real, dimension(:), allocatable  :: ALWV ! =/0.25,0.23,0.21,0.20,0.19,0.18,0.17,0.16,0.15,0.14,0.13,
-!1           0.12,0.11,0.10,0.09,0.08,0.07,0.06,0.05,0.04/
-real, dimension(:), allocatable  :: ALWN != /0.50,0.46,0.42,0.40,0.38,0.36,0.34,0.32,0.30,0.28,0.26,
-!1           0.24,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
-real, dimension(:), allocatable  :: ALDV !=/0.36,0.34,0.32,0.31,0.30,0.29,0.28,0.27,0.26,0.25,0.24,
-!1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
-real, dimension(:), allocatable  :: ALDN !=/0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
-!1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
+! CLASSB parameters:  ----------------------
 
-! DRCOEF parameters: !FLAG has 4 but no idea what they are... COMBAK
+real, dimension(:), allocatable  :: ALWV !< Lookup tables for wet visible soil albedos based on soil colour index 
+real, dimension(:), allocatable  :: ALWN !< Lookup tables for wet NIR soil albedos based on soil colour index 
+real, dimension(:), allocatable  :: ALDV !< Lookup tables for dry visible soil albedos based on soil colour index 
+real, dimension(:), allocatable  :: ALDN !< Lookup tables for dry NIR soil albedos based on soil colour index 
 
-! FLXSURFZ parameters: FLAG has some but no idea what they are... COMBAK
+! DRCOEF parameters: ----------------------
+!FLAG has 4 but no idea what they are... COMBAK
 
-! SNINFL parameters:
+! FLXSURFZ parameters: ----------------------
+! FLAG has some but no idea what they are... COMBAK
 
-real :: WSNCAP ! =0.04 !< Maximum water retention capacity of the snow pack (weight percentage)
+! SNINFL parameters: ----------------------
+real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight percentage)
 
+! ----------------------
+! ----------------------
 
 ! Biogeochemical (CTEM) parameters:
 
@@ -639,6 +640,20 @@ subroutine allocateParamsCLASSIC()
             inico2i(kk),&
             chi(kk),&
             rmlcoeff(kk))
+    allocate(GROWYR(18,4,2),&
+            ZORAT(ican),&
+            CANEXT(ican),&
+            XLEAF(ican),&
+            THPORG(3),&
+            THRORG(3),&
+            THMORG(3),&
+            BORG(3),&
+            PSISORG(3),&
+            GRKSORG(3),&
+            ALWV(soilcolrinds),&
+            ALWN(soilcolrinds),&
+            ALDV(soilcolrinds),&
+            ALDN(soilcolrinds))
 
 end subroutine allocateParamsCLASSIC
 !!@}
@@ -713,6 +728,14 @@ subroutine readin_params
         PSISORG,&
         GRKSORG,&
         DELT,&
+        ALVSWC,&
+        ALIRWC,&
+        CXTLRG,&
+        ALWV,&
+        ALWN,&
+        ALDV,&
+        ALDN,&
+        WSNCAP,&
         modelpft,&
         vegtype, &
         pftlist,&

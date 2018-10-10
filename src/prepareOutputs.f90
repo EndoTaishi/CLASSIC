@@ -21,11 +21,11 @@ contains
     !>\ingroup prepareOutputs_class_halfhourly_aw
     !>@{
     !> Prepares and writes the CLASS (physics) half hourly file
-    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr,SBC,TFREZ)
+    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr)
 
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
-        use classic_params, only : ignd,icc
+        use classic_params, only : ignd,icc,SBC,TFREZ
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -38,9 +38,6 @@ contains
         integer, intent(in) :: nday
         integer, intent(in) :: iday
         integer, intent(in) :: realyr
-        real, intent(in) :: SBC  !CLASS common block items,
-        real, intent(in) :: TFREZ !CLASS common block items,
-
 
         ! local variables
         real, dimension(1) :: timeStamp
@@ -733,10 +730,10 @@ contains
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
     !! The pointer to the daily data structures (in class_statevars) keeps the data between calls.
 
-    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,delt,ncount,nday,lastDOY,realyr,TFREZ)
+    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,nday,lastDOY,realyr)
 
         use class_statevars, only : class_rot,resetAccVars
-        use classic_params, only : ignd
+        use classic_params, only : ignd,sbc,delt,TFREZ
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -746,13 +743,10 @@ contains
         integer, intent(in) :: iday
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
-        real, intent(in) :: sbc
-        real, intent(in) :: delt
         integer, intent(in) :: ncount
         integer, intent(in) :: nday
         integer, intent(in) :: lastDOY
         integer, intent(in) :: realyr
-        real, intent(in) :: TFREZ !CLASS common block items,
 
         ! local variables
         integer :: i,m,j,k
@@ -1369,11 +1363,10 @@ contains
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a monthly value.
     !! The pointer to the monthly data structures (in class_statevars) keeps the data between calls.
 
-    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
-                                lastDOY)
+    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,nltest,nmtest,lastDOY)
 
         use class_statevars, only : class_out,resetclassmon,class_rot
-        use classic_params, only : nmon, monthend, nmos, ignd
+        use classic_params, only : nmon, monthend, nmos, ignd,SBC,DELT,TFREZ
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -1387,9 +1380,6 @@ contains
         integer, intent(in) :: lastDOY
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
-        real, intent(in) :: SBC  !CLASS common block items,
-        real, intent(in) :: DELT !CLASS common block items,
-        real, intent(in) :: TFREZ !CLASS common block items,
 
         ! pointers
         real, dimension(:,:,:), pointer :: TBARROT
@@ -1698,11 +1688,11 @@ contains
     !! this subroutine is called each physics timestep and we increment the timestep values to produce annuals values.
     !! The pointer to the annual data structures (in class_statevars) keeps the data between calls.
 
-    subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,DELT, &
+    subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY, &
                                 nltest,nmtest,lastDOY)
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
-        use classic_params, only : nmon, monthend, nmos, ignd
+        use classic_params, only : nmon, monthend, nmos, ignd,SBC,DELT
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -1716,8 +1706,6 @@ contains
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
         integer, intent(in) :: lastDOY
-        real, intent(in) :: SBC
-        real, intent(in) :: DELT
 
         ! pointers
         real, dimension(:), pointer :: FSSROW
