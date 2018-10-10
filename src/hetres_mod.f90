@@ -41,7 +41,7 @@ subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
 !     J. Melton       behave incorrectly if the soil froze as it thought the water
 !                     was leaving the soil. This is now fixed.
 !
-!     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
 !     23  Jul 2013  - add in module for parameters
@@ -53,7 +53,7 @@ subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
 !                             int was missing some gridcells assigned
 !                             to bedrock in classb
 
-use ctem_params,        only : icc, ilg, ignd, zero, tanhq10, a, &
+use classic_params,        only : icc, ilg, ignd, zero, tanhq10, a_hetr, &
                                      bsratelt_g, bsratesc_g
 
 implicit none
@@ -98,7 +98,7 @@ implicit none
       real tempq10s(ilg)    !<
       real fcoeff           !<
 !     ------------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
+!     Constants and parameters are located in classic_params.f90
 !     ---------------------------------------------------------------
 
 !     initialize required arrays to zero
@@ -139,21 +139,21 @@ implicit none
 
       do 240 i = il1, il2
 
-        zcarbon = 3.0 / a
+        zcarbon = 3.0 / a_hetr
         zcarb_g = 0.0
         do j=1,ignd
           zcarb_g = zcarb_g + delzw(i,j)
         end do
         zcarbon = min(zcarbon,zcarb_g)
-        fcoeff=exp(-a*zcarbon)
-        fracarb(i,1)=1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+        fcoeff=exp(-a_hetr*zcarbon)
+        fracarb(i,1)=1.0-(exp(-a_hetr*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
         do 245 j = 2,ignd
           if (zcarbon <= zbotw(i,j) - delzw(i,j)+0.0001) then
              fracarb(i,j) = 0.0
           elseif (zcarbon <= zbotw(i,j)) then
-             fracarb(i,j) = (exp(-a * zbotw(i,j)-delzw(i,j))-exp(-a*zcarbon))/(1. - exp(-a*zcarbon))
+             fracarb(i,j) = (exp(-a_hetr * zbotw(i,j)-delzw(i,j))-exp(-a_hetr*zcarbon))/(1. - exp(-a_hetr*zcarbon))
           else
-             fracarb(i,j) = (exp(-a * zbotw(i,j)-delzw(i,j))-exp(-a*zbotw(i,j)))/(1. - exp(-a*zcarbon))
+             fracarb(i,j) = (exp(-a_hetr * zbotw(i,j)-delzw(i,j))-exp(-a_hetr*zbotw(i,j)))/(1. - exp(-a_hetr*zcarbon))
           end if
 245       continue
 
@@ -298,7 +298,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
 !     J. Melton       behave incorrectly if the soil froze as it thought the water
 !                     was leaving the soil. This is now fixed.
-!     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 
 !     22  Jul 2013  - Add in module for parameters
@@ -311,7 +311,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !                             to bedrock in classb
 !     ------
 
-      use ctem_params,        only : icc, ilg, ignd, kk, zero, bsratelt,&
+      use classic_params,        only : icc, ilg, ignd, kk, zero, bsratelt,&
                                bsratesc, abar, tanhq10,&
                                alpha_hetres
 
@@ -360,7 +360,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
 
 !     ------------------------------------------------------------------
-!!     Constants and parameters are located in ctem_params.f90
+!!     Constants and parameters are located in classic_params.f90
 !     ---------------------------------------------------------------
 
 !     initialize required arrays to zero
@@ -604,7 +604,7 @@ end subroutine hetresv
 !!(\f$C_\mathrm{H}\f$ and \f$C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$) and on a PFT-dependent
 !!respiration rate specified at \f$15\,{C}\f$ (\f$\varsigma_\mathrm{H}\f$ and
 !!\f$\varsigma_\mathrm{D}\f$; \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also
-!! ctem_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from
+!! classic_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from
 !!\f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
 !!
 !!The effect of soil moisture is accounted for via dependence on soil matric
@@ -677,7 +677,7 @@ end subroutine hetresv
 !!carbon pool (\f$C_{\mathrm{D} \rightarrow \mathrm{H}}\f$) is modelled as a fraction
 !!of litter respiration (\f$R_{h,D}\f$) as
 !!\f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \f]
-!!where \f$\chi\f$ (see also ctem_params.f90) is the PFT-dependent humification factor
+!!where \f$\chi\f$ (see also classic_params.f90) is the PFT-dependent humification factor
 !!and varies between 0.4 and 0.5. For crops, \f$\chi\f$ is set to 0.1 to account for
 !!reduced transfer of humidified litter to the soil carbon pool which leads to loss in
 !!soil carbon when natural vegetation is converted to croplands. Over the bare ground

@@ -3,7 +3,7 @@
 !!
 !!The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root (\f$C_R\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
 !!
-!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_L\f$; see also ctem_params.f90)
+!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_L\f$; see also classic_params.f90)
 !!
 !!\f[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \f]
 !!
@@ -36,7 +36,7 @@
 !!The parameter \f$\iota\f$ that describes the exponential root distribution is calculated as
 !!\f[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \f]
 !!
-!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_R}\f$ the average root biomass derived from Jackson et al. (1996) \cite Jackson1996-va (see also ctem_params.f90). Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
+!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_R}\f$ the average root biomass derived from Jackson et al. (1996) \cite Jackson1996-va (see also classic_params.f90). Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
 !!
 !!The rooting depth \f$d_R\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_R\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_R\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
 !!
@@ -52,7 +52,7 @@ c    4--------------- inputs above this line, outputs below --------
 c
 c     ----------------------------------------------------------------
 c
-c     2   Jul 2013  - Integreated ctem_params module
+c     2   Jul 2013  - Integreated classic_params module
 c     J. Melton       
 c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
@@ -90,7 +90,7 @@ c                     of the grid cell. only roughness lengths over the
 c                     vegetated fraction are updated
 c
 
-      use ctem_params,        only : ignd, icc, ilg, ican, abszero,
+      use classic_params,        only : ignd, icc, ilg, ican, abszero,
      1                               l2max,kk, eta, kappa, kn, lfespany, 
      2                               fracbofg, specsla, abar, avertmas,
      3                               alpha, prcnslai, minslai, mxrtdpth,
@@ -156,7 +156,7 @@ c
       integer ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
       
 c     ---------------------------------------------------------------
-!>     Constants and parameters are located in ctem_params.f90
+!>     Constants and parameters are located in classic_params.f90
 !!
 !!    class' original root parameterization has deeper roots than ctem's
 !!    default values based on literature. in the coupled model this leads

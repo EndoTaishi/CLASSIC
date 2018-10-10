@@ -51,7 +51,9 @@ C     *                         SOIL LAYER. SET THE SURFACE LATENT
 C     *                         HEAT OF VAPORIZATION OF WATER AND 
 C     *                         THE STARTING TEMPERATURE FOR THE 
 C     *                         ITERATION IN "TSOLVC"/"TSOLVE".
-C                                                                                 
+
+      use classic_params,        only : CLHMLT,CLHVAP
+                                                                                       
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -97,40 +99,40 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL TCW      !<Thermal conductivity of water \f$(0.57) [W m^{-1} K^{-1}]\f$
-      REAL TCICE    !<Thermal conductivity of ice \f$(2.24) [W m^{-1} K^{-1}]\f$
-      REAL TCSAND   !<Thermal conductivity of sand particles \f$(2.5) [W m^{-1} K^{-1}]\f$
-      REAL TCCLAY   !<Thermal conductivity of fine mineral particles 
-                    !<\f$(2.5) [W m^{-1} K^{-1}]\f$
-      REAL TCOM     !<Thermal conductivity of organic matter \f$(0.25) [W m^{-1} K^{-1}]\f$
-      REAL TCDRYS   !<Thermal conductivity of dry mineral soil \f$(0.275) [W m^{-1} K^{-1}]\f$
-      REAL RHOSOL   !<Density of soil mineral matter \f$(2.65 * 10^3) [kg m^{-3}]\f$
-      REAL RHOOM    !<Density of soil organic matter \f$(1.30 * 10^3) [kg m^{-3}]\f$
-      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
-                    !<\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPOM    !<Volumetric heat capacity of organic matter 
-                    !<\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSND   !<Volumetric heat capacity of sand particles 
-                    !<\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
-                    !<\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
-      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
-C
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-     1                RHOSOL,RHOOM
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
+!       REAL TCW      !<Thermal conductivity of water \f$(0.57) [W m^{-1} K^{-1}]\f$
+!       REAL TCICE    !<Thermal conductivity of ice \f$(2.24) [W m^{-1} K^{-1}]\f$
+!       REAL TCSAND   !<Thermal conductivity of sand particles \f$(2.5) [W m^{-1} K^{-1}]\f$
+!       REAL TCCLAY   !<Thermal conductivity of fine mineral particles 
+!                     !<\f$(2.5) [W m^{-1} K^{-1}]\f$
+!       REAL TCOM     !<Thermal conductivity of organic matter \f$(0.25) [W m^{-1} K^{-1}]\f$
+!       REAL TCDRYS   !<Thermal conductivity of dry mineral soil \f$(0.275) [W m^{-1} K^{-1}]\f$
+!       REAL RHOSOL   !<Density of soil mineral matter \f$(2.65 * 10^3) [kg m^{-3}]\f$
+!       REAL RHOOM    !<Density of soil organic matter \f$(1.30 * 10^3) [kg m^{-3}]\f$
+!       REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
+!                     !<\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPOM    !<Volumetric heat capacity of organic matter 
+!                     !<\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPSND   !<Volumetric heat capacity of sand particles 
+!                     !<\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
+!                     !<\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+!       REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+!       REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
+!       REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+!       REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+!       REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+!       REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+!       REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+!       REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
+! C
+!       COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
+!      1                RHOSOL,RHOOM
+!       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
+!      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
+!      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
 C     * INITIALIZATION OF ARRAYS.
 C

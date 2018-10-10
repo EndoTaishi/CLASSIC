@@ -28,13 +28,10 @@ subroutine mosspht(il1,il2,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
 ! J. Melton Sep 26 2016
 !   - Bring into rest of model and model formatting, convert to doxygen compatible code,
 !     trim out extraneous.
-
-! Created by Yuanqiao Wu, 2015
-
 ! ----------
 
-use ctem_params, only : rmlmoss25, tau25m,ektau,gasc,kc25,ko25,ec,ej,eo,evc,sj, &
-                        hj,alpha_moss,thpmoss,thmmoss,ilg,ignd
+use classic_params, only : rmlmoss25, tau25m,ektau,gasc,kc25,ko25,ec,ej,eo,evc,sj, &
+                        hj,alpha_moss,thpmoss,thmmoss,ilg,ignd,TFREZ,RHOW
 
 implicit none
 
@@ -122,14 +119,12 @@ real:: mII(ilg)         !<coefficients of the solutions for net psn
 
 real, parameter :: tref = 298.16    !< unit K
 
-! Remainder of parameters stored in ctem_params.f90
+! Remainder of parameters stored in classic_params.f90
 
 !    -------------common block parameters --------------
-real     DELT,TFREZ,RHOW
 !real     DELT,TFREZ,RHOW,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14
 
-COMMON /CLASS1/ DELT,TFREZ
-COMMON /CLASS4/ RHOW
+!COMMON /CLASS1/ DELT,TFREZ
 !COMMON /CLASS4/ x1,x2,x3,x4,x5,x6, &      ! EC Jan 24 2017.
 !                x7,x8,x9,x10,RHOW,x11, &
 !                x12,x13,x14
@@ -278,7 +273,7 @@ do 200 i =  il1, il2
     endif
 
 
-!!    calculate the maximum electorn transport rate Jmax (umol/m2/s)
+!!    calculate the maximum electron transport rate Jmax (umol/m2/s)
 !!   1.67 = vcmax25m/jmax25m ratio
 
     jmax25(i) = 1.67 * vcmax25(i)
@@ -350,18 +345,14 @@ end subroutine mosspht
 subroutine  hetres_peat(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable,&
                  tbar, thliq, thice,thpor,bi,zbotw,delzw,psisat,&
                 litresms, socresp, resoxic, resanoxic)
-
-
+                
 !   History:
 
 ! J. Melton Sep 26 2016
 !   - Bring into rest of model and model formatting, convert to doxygen compatible code
-
-!   Created by Yuanqiao Wu, March 20, 2015
-
 !   ----------------------------------
 
-use ctem_params,      only :icc, ilg,ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms
+use classic_params,      only :icc, ilg,ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms,TFREZ
 
 implicit none
 
@@ -412,10 +403,10 @@ integer:: lewtable(ilg)     !< layer index of the water table layer
 
 !    -------------common block parameters --------------
 !real     TFREZ
-real     DELT,TFREZ
+!real     DELT,TFREZ
 
 !COMMON /CLASS1/ TFREZ
-COMMON /CLASS1/ DELT,TFREZ ! EC Jan 19 2017.
+!COMMON /CLASS1/ DELT,TFREZ ! EC Jan 19 2017.
 
 !    ------------------------------------------------------------------
 !
@@ -621,15 +612,14 @@ subroutine peatDayEnd(nml)
 
     use ctem_statevars, only : ctem_tile,vgat
     use class_statevars, only : class_gat
-    use ctem_params,only : ignd
+    use classic_params,only : ignd,TFREZ
 
     implicit none
 
     integer, intent(in) :: nml
 
     integer :: i
-    real :: tfrez
-
+    
     real, pointer, dimension(:) :: taaccgat_t       !<Daily mean air temperature [K]
     real, pointer, dimension(:) :: pddgat           !<peatland degree days above 0 deg C.
     integer, pointer, dimension(:) :: ipeatlandgat  !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
@@ -643,8 +633,6 @@ subroutine peatDayEnd(nml)
     dlzwgat          => class_gat%dlzwgat
     peatdepgat       => vgat%peatdep
     sdepgat          => vgat%sdepgat
-
-    tfrez = 273.16 !FLAG, later when CLASS params are similar to ctem_params, then use the TFREZ from there.
 
     !> Calculate degree days for mosspht Vmax seasonality (only once per day)
     do   i = 1, nml

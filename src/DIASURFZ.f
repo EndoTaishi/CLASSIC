@@ -4,7 +4,11 @@
       SUBROUTINE DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA,
      1                  H,UE,FTEMP,FVAP,ZU,ZT,LAT,F,IL1,IL2,JL)
 
+      use classic_params, only : AS,ASX,CI,BETA,FACTN,HMIN,ANGMAX,
+     1                           GRAV,SPHAIR
+
       IMPLICIT NONE
+      
       INTEGER NI,JL
       REAL ZT(NI),ZU(NI)
       REAL UZ(NI),VZ(NI),TZ(NI),QZ(NI),ZA(NI),U(NI),V(NI)
@@ -77,10 +81,13 @@
       REAL RAC3
       INTEGER J,IL1,IL2
 *
-      REAL AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-      COMMON / CLASSD2 / AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-      REAL DELTA,GRAV,KARMAN,CPD
-      COMMON / PHYCON / DELTA,GRAV,KARMAN,CPD
+      REAL KARMAN !FLAG FIXME - this value is not in the code!!!
+      
+      
+!      REAL AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+!      COMMON / CLASSD2 / AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+!      REAL DELTA,GRAV,KARMAN,SPHAIR
+!      COMMON / PHYCON / DELTA,GRAV,KARMAN,SPHAIR
 
       RAC3=SQRT(3.)
 
@@ -118,7 +125,7 @@
 *---------------------------------------------------------------------
       CT=KARMAN/FH
       CM=KARMAN/FM
-      TZ(J)=TZ(J)+F(J)*(TG(J)-FTEMP(J)/(CT*UE(J))-GRAV/CPD*ZT(J))
+      TZ(J)=TZ(J)+F(J)*(TG(J)-FTEMP(J)/(CT*UE(J))-GRAV/SPHAIR*ZT(J))
       QZ(J)=QZ(J)+F(J)*(QG(J)-FVAP(J)/(CT*UE(J)))
       VITS=UE(J)/CM
 

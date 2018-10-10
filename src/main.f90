@@ -39,14 +39,14 @@ contains
     !!     the product of the first two dimension elements in the
     !!     "rot" variables.
     !!
-    !!     The majority of CTEM parameters are stored in ctem_params.f90.
+    !!     The majority of CTEM parameters are stored in classic_params.f90.
     !!     Also the CLASS and CTEM variables are stored in modules that we point to
     !!     in this driver. We access the variables and parameters
     !!     through use statements for modules:
 
     subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
 
-        use ctem_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, monthend, &
+        use classic_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, monthend, &
                                         modelpft, l2max,deltat,NBS, readin_params,nol2pfts
         use landuse_change,      only : initializeLandCover
         use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&

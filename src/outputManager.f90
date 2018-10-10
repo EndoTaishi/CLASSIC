@@ -344,7 +344,7 @@ contains
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
-        use ctem_params,        only : ignd,icc,nmos,iccp1
+        use classic_params,        only : ignd,icc,nmos,iccp1
 
         implicit none
 
@@ -543,7 +543,7 @@ contains
         use fileIOModule
         use ctem_statevars,     only : c_switch
         use generalUtils,       only : findLeapYears
-        use ctem_params,        only : monthend
+        use classic_params,        only : monthend
 
         implicit none
 

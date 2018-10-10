@@ -148,7 +148,10 @@ C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY
 C     *                         PARAMETERS.
 C
 
-      use ctem_params,        only : zolnmoss
+      use classic_params,        only : zolnmoss,DELT,HCPW,HCPICE,
+     1                 HCPSND,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
+     2                 PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,GROWYR,ZORAT,
+     3                 CANEXT,XLEAF 
 
       IMPLICIT NONE
 C
@@ -279,19 +282,16 @@ C
       REAL BI    (ILG,IG) !<Clapp and Hornberger empirical "b" parameter [ ]
       REAL PSIWLT(ILG,IG) !<Soil moisture suction at wilting point (\f$\Psi\f$ w) [m]
       REAL HCPS  (ILG,IG) !<Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
-
-C
+      REAL DELZ  (IG)     !<Soil layer thickness [m]
       INTEGER ISAND (ILG,IG) !<Sand content flag
 
 C
 C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
 C
-
-      REAL GROWYR(18,4,2) !<
-      REAL DELZ  (IG)     !<Soil layer thickness [m]
-      REAL ZORAT (4)      !<
-      REAL CANEXT(4)      !<
-      REAL XLEAF (4)      !<
+!      REAL GROWYR(18,4,2) !<!
+!      REAL ZORAT (4)      !<
+!      REAL CANEXT(4)      !<
+!      REAL XLEAF (4)      !<
 C
 C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.
 C
@@ -332,19 +332,19 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
-     1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,
-     2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,
-     3     ZORATG
+!      REAL DELT,TFREZ,TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
+!     1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,
+!     2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,
+!     3     ZORATG
 C
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-     1                RHOSOL,RHOOM
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
-      COMMON /CLASS7/ CANEXT,XLEAF
+!      COMMON /CLASS1/ DELT,TFREZ
+!      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
+!     1                RHOSOL,RHOOM
+!      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
+!     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
+!     2                TCGLAC,CLHMLT,CLHVAP
+!      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
+!      COMMON /CLASS7/ CANEXT,XLEAF
 
 C-----------------------------------------------------------------------
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
@@ -400,7 +400,7 @@ C
         !!the hemisphere index, NL, is set to 1 for the Eastern Hemisphere, and 2 for the Western Hemisphere. If
         !!the planting date for the modelled area is zero (indicating a location in the tropics), GROWA is set to 1.
         !!Otherwise, GROWA is set to 1 if the day of the year lies between the maturity date and the start of the
-        !!54harvest, and to zero if the day of the year lies between the end of the harvest and the planting date. For
+        !!harvest, and to zero if the day of the year lies between the end of the harvest and the planting date. For
         !!dates in between, the value of GROWA is interpolated between 0 and 1. Checks are performed at the
         !!end to ensure that GROWA is not less than 0 or greater than 1. If the calculated value of GROWA is
         !!vanishingly small, it is set to zero.
@@ -493,7 +493,6 @@ C
       !!areas. For needleleaf and broadleaf trees, HS is set to H. For crops and grass, HS is calculated by
       !!subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
       !!
-
           IF(IHGT.EQ.0) THEN
               H(I,1)=10.0*EXP(ZOLN(I,1))
               H(I,2)=10.0*EXP(ZOLN(I,2))
@@ -1075,7 +1074,7 @@ C
 !!passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
 !!
 !! In the same loop the roughness length for peatlands is also calculated assuming
-!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in ctem_params.f90)
+!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in classic_params.f90)
 !!
       DO 300 I=IL1,IL2
           IF(FG(I).GT.0.)                                        THEN

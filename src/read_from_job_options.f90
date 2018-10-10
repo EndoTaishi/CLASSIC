@@ -21,7 +21,7 @@ contains
 
         use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
-        use ctem_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch
+        use classic_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch
 
         implicit none
 

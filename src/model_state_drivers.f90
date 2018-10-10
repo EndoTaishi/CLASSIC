@@ -89,7 +89,7 @@ contains
     subroutine read_modelsetup
 
         use ctem_statevars,     only : c_switch
-        use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
+        use classic_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
         use outputManager, only : myDomain
 
         implicit none
@@ -352,7 +352,7 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
-        use ctem_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop
+        use classic_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop
 
         implicit none
 
@@ -798,7 +798,7 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
-        use ctem_params,        only : icc,nmos,ignd,icp1,modelpft,iccp1
+        use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp1
 
         implicit none
 
@@ -959,7 +959,7 @@ contains
         use fileIOModule
         use generalUtils, only : parseTimeStamp
         use ctem_statevars, only : c_switch,vrot
-        use ctem_params, only : icc,nmos
+        use classic_params, only : icc,nmos
         use outputManager, only : checkForTime
 
         implicit none
@@ -1255,7 +1255,7 @@ contains
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
-        use ctem_params, only : nmos
+        use classic_params, only : nmos
         use generalUtils, only : abandonCell
 
         implicit none

@@ -35,7 +35,7 @@
 !!{LAI}_{thrs} = L_f [ {SLA} (\frac{C_S + C_R}{\eta} ) ^ {1/\kappa} ].
 !!\f]
 !!
-!!The PFT-specific \f$L_f\f$ term (see also ctem_params.f90) calculates \f${LAI}_{thrs}\f$ to be typically between
+!!The PFT-specific \f$L_f\f$ term (see also classic_params.f90) calculates \f${LAI}_{thrs}\f$ to be typically between
 !!40 and 50 % of the maximum LAI that a given amount of stem and root biomass can support (based on the terms in the square
 !!brackets and Eq. (\ref{propwoody}). \f$SLA\f$ is the specific leaf area (Eq. \ref{sla}).  This rule for transition
 !!from a maximum to a normal growth state is also used for evergreen tree PFTs and grass PFTs. Similar to
@@ -70,13 +70,13 @@
 !!
 !!where (\f$\Omega_{N,C,D}\f$, \f$day^{-1}\f$) are the leaf loss rates associated with normal turnover of leaves and
 !!the cold and drought stress. The rate of normal turnover of leaves is governed by PFT-specific leaf lifespan
-!!(\f$\tau_L\f$, \f$yr\f$) as \f$\Omega_N= 1/365 \tau_L\f$ (see also ctem_params.f90}
+!!(\f$\tau_L\f$, \f$yr\f$) as \f$\Omega_N= 1/365 \tau_L\f$ (see also classic_params.f90}
 !!for PFT specific values of \f$\tau_L\f$).  The leaf loss rate associated with cold stress
 !!(\f$\Omega_C\f$) is calculated as
 !!
 !!\f[ \label{gamma_cold} \Omega_C = \Omega_{C,max}L_{cold}^3, \f]
 !!
-!!where \f$\Omega_{C,max}\f$ (\f$day^{-1}\f$, see also ctem_params.f90) is the maximum cold stress loss rate.
+!!where \f$\Omega_{C,max}\f$ (\f$day^{-1}\f$, see also classic_params.f90) is the maximum cold stress loss rate.
 !!\f$L_{cold}\f$ is a scalar that varies between 0 and 1 as
 !!
 !!\f[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} -
@@ -84,12 +84,12 @@
 !!> T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \f]
 !!
 !!where \f$T_{cold}^{leaf}\f$ is a PFT-specific temperature threshold below which a PFT experiences damage
-!!to its leaves promoting leaf loss (see also ctem_params.f90) and \f$T_a\f$ is the daily mean air
+!!to its leaves promoting leaf loss (see also classic_params.f90) and \f$T_a\f$ is the daily mean air
 !!temperature (\f$C\f$).  The leaf loss rate due to drought stress is calculated in a similar manner
 !!
 !!\f[ \label{gamma_dry} \Omega_{D} = \Omega_{D,max}\,(1-\phi_{root})^3, \f]
 !!
-!!where \f$\Omega_{D,max}\f$ (\f$day^{-1}\f$, see also ctem_params.f90) is the maximum drought
+!!where \f$\Omega_{D,max}\f$ (\f$day^{-1}\f$, see also classic_params.f90) is the maximum drought
 !!stress loss rate and \f$\phi_{root}\f$ (Eq. \ref{degsoilsat}) is the degree of soil saturation in the rooting zone.
 !!
 !!
@@ -113,7 +113,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
 !     14  Jan 2016  - There was a bit of hardwired code for 3 soil layers, that has been
 !                     fixed to allow >3.
 
-!     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
 !     22  Jul 2013  - Add in module for parameters
@@ -137,7 +137,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
 !     l2max     - maximum number of level 2 ctem pfts
 !     ican      - number of class pfts
 !
-      use ctem_params,        only : kn, pi, zero, kappa, eta, lfespany,&
+      use classic_params,        only : kn, pi, zero, kappa, eta, lfespany,&
      &                               fracbofg, specsla,ilg,ignd,icc,kk,&
      &                               ican, cdlsrtmx, drlsrtmx, drgta,&
      &                               colda, lwrthrsh, dayschk, coldlmt,&
@@ -211,7 +211,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
       character(8) :: pftkind
 !>
 !!------------------------------------------------------------------
-!!Constants and parameters are located in ctem_params.f90
+!!Constants and parameters are located in classic_params.f90
 !!
 !!---------------------------------------------------------------
 !!

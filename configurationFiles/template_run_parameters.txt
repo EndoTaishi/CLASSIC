@@ -1,13 +1,177 @@
 &classicparams
 
 ! This file contains all of the CTEM parameters that are read in by
-! readin_params in the ctem_params.f90 file. The format is a fortran
+! readin_params in the classic_params.f90 file. The format is a fortran
 ! namelist. It ignores anything after a '!'. The array syntax is not the
 ! same as usual fortran. It is presently set up so it is easy to see how
 ! the CTEM level PFT values correspond to the CLASS level ones. Pay attention
 ! to the commas at the end of a declaration. You can use scientific notation (E)
 ! The order of parameters does not have to match that in the code but the parameter
 ! names must match. It stops reading when it encounters a '/'
+
+! ---------
+
+! Physics (CLASS) parameters:
+
+! Von Karman Constant (-)
+VKC = 0.40,
+
+! Drag Coefficient for water (-)
+CT =  1.15E-3,
+
+! Minimum wind speed (m s^{-1})
+VMIN = 0.1,
+
+! Thermal conductivity of water ($W m^{-1} K^{-1} $)
+TCW = 0.57,
+
+! Thermal conductivity of ice  ($W m^{-1} K^{-1} $)
+TCICE = 2.24,
+
+! Thermal conductivity of sand particles  ($W m^{-1} K^{-1} $)
+TCSAND = 2.5, 
+
+! Thermal conductivity of fine mineral particles  ($W m^{-1} K^{-1} $)
+TCCLAY = 2.5,
+
+! Thermal conductivity of organic matter  ($W m^{-1} K^{-1} $)
+TCOM = 0.25,
+
+! Thermal conductivity of dry mineral soil  ($W m^{-1} K^{-1} $)
+TCDRYS = 0.275,
+
+! Particle density of soil mineral matter ($kg m^{-3}$)
+RHOSOL = 2.65E3,
+
+! Particle density of soil organic matter ($kg m^{-3}$)
+RHOOM = 1.30E3,
+
+! Volumetric heat capacity of water ($J m^{-3} K^{-1}$)
+HCPW = 4.187E6,
+
+! Volumetric heat capacity of ice ($J m^{-3} K^{-1}$)
+HCPICE = 1.9257E6,
+
+! Volumetric heat capacity of mineral matter ($J m^{-3} K^{-1}$)
+HCPSOL = 2.25E6,
+
+! Volumetric heat capacity of organic matter ($J m^{-3} K^{-1}$)
+HCPOM = 2.50E6,
+
+! Volumetric heat capacity of sand particles ($J m^{-3} K^{-1}$)
+HCPSND = 2.13E6,
+
+! Volumetric heat capacity of fine mineral particles ($J m^{-3} K^{-1}$)
+HCPCLY = 2.38E6,
+
+! Specific heat of water ($J kg^{-1} K^{-1}$)
+SPHW = 4.186E3,
+
+! Specific heat of ice  ($J kg^{-1} K^{-1}$)
+SPHICE = 2.10E3,
+
+! Specific heat of vegetation matter  ($J kg^{-1} K^{-1}$)
+SPHVEG = 2.70E3,
+
+! Density of water ($kg m^{-3}$) 
+RHOW = 1.0E3,
+
+! Density of ice ($kg m^{-3}$)
+RHOICE = 0.917E3,
+
+! Thermal conductivity of ice sheets ($W m^{-1} K^{-1}$)
+TCGLAC = 2.24,
+
+! Latent heat of freezing of water ($J kg^{-1}$)
+CLHMLT = 0.334E6,
+
+! Latent heat of vaporization of water ($J kg^{-1}$)
+CLHVAP = 2.501E6,
+
+! Natural log of roughness length of soil (-)
+ZOLNG = -4.605,
+
+! Natural log of roughness length of snow (-)
+ZOLNS = -6.908,
+
+! Natural log of roughness length of ice (-)
+ZOLNI = -6.215,
+
+! Ratio of soil roughness length for momentum to roughness length for heat (-)
+ZORATG = 3.0,
+
+! Visible albedo of ice (-)
+ALVSI = 0.95,
+
+! Near-infrared albedo of ice (-)      
+ALIRI = 0.73,
+
+! Visible albedo of organic matter (-)
+ALVSO = 0.05,
+
+! Near-infrared albedo of organic matter (-)
+ALIRO = 0.30,
+
+! Albedo of rock (-)
+ALBRCK = 0.16,
+
+!< The crop growth descriptor array (see APREP.f for description)
+GROWYR(1:9,1,1)   = 213.,213.,213.,213.,213.,213.,0.,0.,0.,
+GROWYR(10:18,1,1) = 0.,0.,0., 75.,106.,136.,167.,167.,167.,
+GROWYR(1:9,2,1)   = 273.,273.,273.,273.,273.,273.,0.,0.,0.,
+GROWYR(10:18,2,1) = 0.,0.,0.,135.,166.,196.,196.,196.,196.,
+GROWYR(1:9,3,1)   = 121.,121.,121.,121.,121.,121.,0.,0.,0.,
+GROWYR(10:18,3,1) = 0.,0.,0.,275.,244.,214.,214.,214.,214.,
+GROWYR(1:9,4,1)   = 151.,151.,151.,151.,151.,151.,0.,0.,0.,
+GROWYR(10:18,4,1) = 0.,0.,0.,305.,274.,244.,244.,244.,244.,
+GROWYR(1:9,1,2)   = 213.,213.,213.,213.,213.,213.,0.,0.,0.,
+GROWYR(10:18,1,2) = 0.,0., 75.,106.,136.,167.,167.,167.,167.,
+GROWYR(1:9,2,2)   = 273.,273.,273.,273.,273.,273.,0.,0.,0.,
+GROWYR(10:18,2,2) = 0.,0.,135.,166.,196.,196.,196.,196.,196.,
+GROWYR(1:9,3,2)   = 121.,121.,121.,121.,121.,121.,0.,0.,0.,
+GROWYR(10:18,3,2) = 0.,0.,275.,244.,214.,214.,214.,214.,214.,
+GROWYR(1:9,4,2)   = 151.,151.,151.,151.,151.,151.,0.,0.,0.,
+GROWYR(10:18,4,2) = 0.,0.,305.,274.,244.,244.,244.,244.,244., 
+
+! The ratio of the roughness length for momentum to the roughness length for heat
+ZORAT =  1.0, 1.0, 1.0, 1.0,
+
+! Attenuation coefficient used in calculating the sky view factor for vegetation canopies (variable c in the documentation for subroutine CANALB)
+CANEXT = -0.5, -1.5, -0.8, -0.8,
+
+! Leaf dimension factor used in calculating the leaf boundary resistance (variable Cl in the documentation for subroutine APREP)
+XLEAF = 0.0247, 0.0204, 0.0456, 0.0456,
+
+! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric). Values are derived from the work of Letts et al. (2000)
+
+! Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+THPORG = 0.93, 0.88, 0.83,
+
+! Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+THRORG = 0.275, 0.620, 0.705,
+
+! Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+THMORG = 0.04, 0.15, 0.22,
+
+! Clapp and Hornberger 'b' value for peat soils [ ]
+BORG = 2.7, 6.1, 12.0,
+
+! Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+PSISORG = 0.0103, 0.0102, 0.0101,
+
+! Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
+GRKSORG = 2.8E-4, 2.0E-6, 1.0E-7,
+
+! The next parameters are normally assigned in the GCM but need to be assigned here since this 
+! is an offline run. The names used below are the same as those in the GCM.
+
+! Model physics timestep (s) 
+DELT = 1800.0,
+
+
+! -------------------------------------
+
+! Biogeochemical (CTEM) parameters
 
 modelpft(1:3)  = 1,     1,     0,      ! CLASS PFT 1 NDL
 !               EVG    DCD
@@ -522,7 +686,7 @@ kn(10:12)  =0.46, 0.44, 0.00,
     bsratesc_g = 0.02258,
 
     !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
-    a = 4.0,
+    a_hetr = 4.0,
 
 ! landuse_change_mod.f90 parameters: --------------
 ! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!

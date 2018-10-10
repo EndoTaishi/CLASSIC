@@ -4,7 +4,7 @@ module metDisaggModule
 
     use model_state_drivers, only : metInputTimeStep,metTime,metFss,metFdl,metPre,metTa,metQa,metUv,metPres
     use generalUtils, only : closeEnough,parseTimeStamp
-    use ctem_params, only : pi
+    use classic_params, only : pi
 
     implicit none
 

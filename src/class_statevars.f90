@@ -8,7 +8,7 @@ module class_statevars
 
 ! J. Melton Nov 2016
 
-use ctem_params,  only : ican, icp1, NBS
+use classic_params,  only : ican, icp1, NBS
 
 implicit none
 
@@ -824,7 +824,7 @@ contains
 
 subroutine alloc_class_vars()
 
-use ctem_params, only : ican, nbs, icp1, nlat,nmos,ignd, ilg
+use classic_params, only : ican, nbs, icp1, nlat,nmos,ignd, ilg
 
 implicit none
 
@@ -1597,7 +1597,7 @@ end subroutine alloc_class_vars
 
 subroutine resetclassmon(nltest)
 
-use ctem_params, only : ignd
+use classic_params, only : ignd
 
 implicit none
 
@@ -1690,7 +1690,7 @@ end subroutine resetclassyr
 
 subroutine resetAccVars(nltest,nmtest)
 
-use ctem_params, only : ignd
+use classic_params, only : ignd
 
 implicit none
 
@@ -1789,7 +1789,7 @@ end subroutine resetAccVars
 
 subroutine initDiagnosticVars(nml,ilg)
 
-    use ctem_params, only : ignd
+    use classic_params, only : ignd
 
     implicit none
 
@@ -1887,7 +1887,7 @@ end subroutine initDiagnosticVars
 
 subroutine initRowVars(nml)
 
-    use ctem_params, only : ignd
+    use classic_params, only : ignd
 
     implicit none
 

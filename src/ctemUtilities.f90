@@ -16,7 +16,7 @@ contains
 !> Prepare the CTEM input (physics) variables at the end of the day.
 subroutine dayEndCTEMPreparation(nml,nday)
 
-    use ctem_params, only : icc,ignd
+    use classic_params, only : icc,ignd
     use ctem_statevars, only : vgat,ctem_tile
 
     implicit none
@@ -165,7 +165,7 @@ end subroutine dayEndCTEMPreparation
 !> Accumulate the CTEM input (physics) variables at the end of each physics timestep
 subroutine accumulateForCTEM(nml)
 
-    use ctem_params, only : icc,ignd
+    use classic_params, only : icc,ignd
     use class_statevars, only : class_gat,class_rot
     use ctem_statevars, only : vgat,ctem_tile
 
@@ -413,7 +413,7 @@ end subroutine accumulateForCTEM
 !! Also initialize additional variables which are used by CTEM (biogeochemical processes).
 subroutine ctemInit(nltest,nmtest)
 
-    use ctem_params, only : icc,ilg
+    use classic_params, only : icc,ilg
     use ctem_statevars, only : vrot,ctem_tile,vgat
     use class_statevars,only : class_rot
     use generalUtils,        only : findDaylength

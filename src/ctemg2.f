@@ -103,7 +103,7 @@ c     J. Melton
 c     July 28 2009    Gather operation on CTEM variables.
 c     Rong Li
 c 
-      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
+      use classic_params, only : nlat, nmos, ilg, ignd, ican, icp1,
      1                               icc,iccp1
 
       implicit none

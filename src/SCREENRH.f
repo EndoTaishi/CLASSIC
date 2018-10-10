@@ -10,6 +10,7 @@ C
 C     * DEC 16, 2014 - V.FORTIN.  REMOVE MERGE IN CALCULATION OF FRACW.
 C     * APR 30, 2009 - M.LAZARE.
 C
+!      use classic_params, only : 
       IMPLICIT NONE
 C
 C     * OUTPUT FIELD:

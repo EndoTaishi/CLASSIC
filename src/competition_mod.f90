@@ -55,7 +55,7 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
 !                     competition is switched on.
 
 
-use ctem_params, only : zero, monthdays, monthend
+use classic_params, only : zero, monthdays, monthend
 
 implicit none
 
@@ -317,7 +317,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !     J. Melton       and it and broadleaf drought/dry deciduous can not longer
 !                     co-exist. Grasses are now able to coexist.
 !
-!     27  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     27  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
 !     26  Nov 2013  - Update parameters for global off-line runs
@@ -344,7 +344,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !                     pfts will decide if they are present in a grid cell or
 !                     not.
 
-use ctem_params, only : zero, kk, icc, ican, tcoldmin, tcoldmax, twarmmax, &
+use classic_params, only : zero, kk, icc, ican, tcoldmin, tcoldmax, twarmmax, &
                         gdd5lmt, aridlmt, dryseasonlmt
 
 implicit none
@@ -379,7 +379,7 @@ logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !<binary array i
 integer :: i,j
 
 !> ----------------------------------------------------------------------
-!>     Constants and parameters are located in ctem_params.f90
+!>     Constants and parameters are located in classic_params.f90
 !> ----------------------------------------------------------------------
 
 !>go through all grid cells and based on bioclimatic parameters
@@ -488,7 +488,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !     20  Feb 2014  - Move adjustments due to disturbance out of here and into
 !     J. Melton       disturbance subroutine.
 !
-!     27  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     27  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 
 !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
@@ -510,7 +510,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !                     are slowly killed by increasing their mortality.
 !
 
-use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
+use classic_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
                         tolrance, crop, grass, numgrass
 
@@ -615,7 +615,7 @@ real, dimension(nilg) :: pbarefra
 real, dimension(nilg) :: grsumlit, grsumsoc
 
 !     ---------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
+!     Constants and parameters are located in classic_params.f90
 !     ---------------------------------------------------------------
 
 ! Model switches:
@@ -1601,7 +1601,7 @@ end subroutine competition
 !!
 !!where \f$\xi_{\alpha}\f$ (\f$(kg\,C)^{-1}\,m^{2}\f$) is the inverse sapling density
 !!calculated as the reciprocal of vegetation biomass (\f$C_{veg,\alpha}\f$; \f$kg\,C\,m^{-2}\f$)
-!! multiplied by a PFT-dependent constant (\f$S_{sap,\alpha}\f$; unitless; see also ctem_params.f90)
+!! multiplied by a PFT-dependent constant (\f$S_{sap,\alpha}\f$; unitless; see also classic_params.f90)
 !!
 !!\f[
 !!\label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}.\qquad (Eqn 13)
@@ -1633,7 +1633,7 @@ end subroutine competition
 !! that a small fraction of NPP is used for spatial expansion even at very low LAI values.
 !!This additional constraint allows for improved fractional coverage of grasses in arid
 !!regions. Similar to \f$S_{sap,\alpha}\f$, \f$LAI_{min,\alpha}\f$ and
-!!\f$LAI_{max,\alpha}\f$ are PFT-dependent parameters (see also ctem_params.f90).
+!!\f$LAI_{max,\alpha}\f$ are PFT-dependent parameters (see also classic_params.f90).
 !!
 !!The value of \f$\lambda_{max}\f$ is set to 0.1 so that a maximum of 10\,{\%} of
 !!daily NPP can be used for spatial expansion. Finally, \f$\Lambda_\alpha\f$ is

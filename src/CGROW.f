@@ -46,6 +46,8 @@ C     * APR 11/89 - D.VERSEGHY. INCREMENT/DECREMENT GROWTH INDEX FOR
 C     *                         VEGETATION TYPES 1 AND 2 (NEEDLELEAF
 C     *                         AND BROADLEAF TREES).
 C
+      use classic_params, only : DELT,TFREZ
+      
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -68,10 +70,10 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
+!      REAL DELT     !<Time step [s]
+!      REAL TFREZ    !<Freezing point of water [K]
 C
-      COMMON /CLASS1/ DELT,TFREZ
+!      COMMON /CLASS1/ DELT,TFREZ
 C-----------------------------------------------------------------------
 
       DO 100 I=IL1,IL2

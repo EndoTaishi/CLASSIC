@@ -58,7 +58,7 @@ module generalUtils
 
         ! Joe Melton Dec 18 2015 (taken from phenlogy.f)
 
-        use ctem_params, only : pi
+        use classic_params, only : pi
 
         implicit none
 
@@ -84,7 +84,7 @@ module generalUtils
     !!
     subroutine findLeapYears(iyear,leapnow,lastDOY)
 
-        use ctem_params,        only : monthend, mmday,monthdays
+        use classic_params,        only : monthend, mmday,monthdays
 
         implicit none
 
@@ -139,7 +139,7 @@ module generalUtils
     !!
     subroutine findCloudiness(nltest,imin,ihour,iday,lastDOY)
 
-        use ctem_params, only : pi
+        use classic_params, only : pi
         use class_statevars, only : class_rot
 
         implicit none
@@ -197,7 +197,7 @@ module generalUtils
     !!
     function parseTimeStamp(timeStamp)
 
-    use ctem_params, only : monthdays
+    use classic_params, only : monthdays
 
     implicit none
 
@@ -233,7 +233,7 @@ module generalUtils
     !!
     subroutine findPermafrostVars(nltest,nmtest,tfrez)
 
-      use ctem_params, only : ignd
+      use classic_params, only : ignd
       use class_statevars, only : class_rot,class_gat
 
       implicit none

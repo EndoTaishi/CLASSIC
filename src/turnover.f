@@ -1,7 +1,7 @@
 !>\file
 !!Calculates the litter generated from stem and root turnover
 !!
-!!The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation (\f$kg\,C\,m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem (\f$D_\mathrm{S}\f$) and root (\f$D_\mathrm{R}\f$) components is calculated based on the amount of biomass in the respective components (\f$C_\mathrm{S}, C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also ctem_params.f90) as
+!!The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation (\f$kg\,C\,m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem (\f$D_\mathrm{S}\f$) and root (\f$D_\mathrm{R}\f$) components is calculated based on the amount of biomass in the respective components (\f$C_\mathrm{S}, C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classic_params.f90) as
 !!\f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\f]
 !!
       subroutine turnover (stemmass, rootmass,  lfstatus,    ailcg,
@@ -14,7 +14,7 @@ c    5 ----------- inputs which are updated above this line -----------
 c    7 ------------------outputs above this line ----------------------
 c
 c               
-c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 c     J. Melton
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -31,7 +31,7 @@ c     icc       - no. of ctem plant function types, currently 9
 c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts
 
-      use ctem_params,        only : icc, ilg, ican, kk, zero, stemlife,
+      use classic_params, only : icc, ilg, ican, kk, zero, stemlife,
      1                               rootlife, stmhrspn
 c
       implicit none
@@ -65,7 +65,7 @@ c
                              !<also assumed to be harvested and this generates litter.
 !>
 !!------------------------------------------------------------------
-!!Constants and parameters are located in ctem_params.f90
+!!Constants and parameters are located in classic_params.f90
 !!---------------------------------------------------------------
 !!
 !!initialize required arrays to zero

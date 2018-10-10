@@ -27,9 +27,8 @@ C     * NOV 03/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
 C     * AUG 09/02 - D.VERSEGHY/M.LAZARE. DETERMINE INDICES FOR
 C     *                        GATHER-SCATTER OPERATIONS ON
 C     *                        CURRENT LATITUDE LOOP.
-C     
+C           
       IMPLICIT NONE
-
 C
 C     * INTEGER CONSTANTS.
 C

@@ -31,6 +31,8 @@ C     * AUG 12/91 - D.VERSEGHY. CODE FOR MODEL VERSION GCM7U -
 C     *                         CLASS VERSION 2.0 (WITH CANOPY).
 C     * APR 11/89 - D.VERSEGHY. SATURATED FLOW OF WATER THROUGH SOIL.
 C
+      use classic_params,        only : DELT
+      
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -78,10 +80,10 @@ C
 C 
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT  !<Time step [s]
-      REAL TFREZ !<Freezing point of water [K]
+!      REAL DELT  !<Time step [s]
+!      REAL TFREZ !<Freezing point of water [K]
 C
-      COMMON /CLASS1/ DELT,TFREZ
+!      COMMON /CLASS1/ DELT,TFREZ
 C-----------------------------------------------------------------------
 !>
 !!General calculations performed: The infiltration rate \f$F_{inf}\f$ under saturated conditions is calculated as

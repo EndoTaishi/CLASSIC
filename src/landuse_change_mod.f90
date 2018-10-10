@@ -2,7 +2,7 @@
 !>Central module for all land use change operations
 module landuse_change
 
-use ctem_params
+use classic_params
 
 implicit none
 
@@ -47,7 +47,7 @@ subroutine initializeLandCover
 !     J. Melton       fraction when we add in seed fractions.
 !
 
-use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop,numcrops,minbare,&
+use classic_params,        only : nmos,nlat,icc,ican,icp1,seed,crop,numcrops,minbare,&
                                 modelpft,l2max,nol2pfts
 use ctem_statevars,     only : c_switch,vrot
 use class_statevars,    only : class_rot
@@ -191,7 +191,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !
 !     ----------------------------------------------------------------
 !
-!     31  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     31  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
 !     18  Apr. 2013 - made it so that you will exit luc if the grid cell has
@@ -216,7 +216,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     icc       - no of pfts for use by ctem, currently 9
 !     ican        - no of pfts for use by class, currently 4
 !     ----------------------------------------------------------------
-      use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
+      use classic_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
                                      tolrnce1, tolrance, crop, numcrops, &
                                      minbare
@@ -302,7 +302,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       integer indexpos(nilg,icc-numcrops) !<
 
 !>---------------------------------------------------------------
-!>Constants and parameters are located in ctem_params.f90
+!>Constants and parameters are located in classic_params.f90
 !>---------------------------------------------------------------
 
 
@@ -921,7 +921,7 @@ end subroutine luc
 subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
                           bare_ground_frac, PFTCompetition)
 
-use ctem_params,        only : nlat,nmos,icc,seed
+use classic_params,        only : nlat,nmos,icc,seed
 
 implicit none
 
@@ -993,7 +993,7 @@ end subroutine adjust_luc_fracs
 
 subroutine adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,outdelfrac)
 
-use ctem_params,        only : icc,crop,zero,seed
+use classic_params,        only : icc,crop,zero,seed
 
 implicit none
 

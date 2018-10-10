@@ -60,6 +60,8 @@ C     * MAR 03/92 - D.VERSEGHY/M.LAZARE. REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CANOPY ALBEDOS AND TRANSMISSIVITIES.
 C
+      use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -148,7 +150,7 @@ C
 C
 C     * OTHER DATA ARRAYS.
 C
-      REAL CANEXT(4),     XLEAF (4)
+!      REAL CANEXT(4),     XLEAF (4)
 C
 C     * WORK ARRAYS.
 C
@@ -160,19 +162,20 @@ C
 C     * TEMPORARY VARIABLES.
 C
       REAL SVF,ALVSCX,ALIRCX,ALVSN,ALIRN,ALVSS,ALIRS,
-     1     TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP
+     1     TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP,TRCLRV,
+     2     TRCLDV,TRCLRT,TRCLDT
 C
 C     * COMMON BLOCK AND OTHER PARAMETERS.
 C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
-      REAL ALVSWC,ALIRWC,TRCLRV,TRCLDV,TRCLRT,TRCLDT,CXTLRG
+!      REAL DELT     !<Time step [s]
+!      REAL TFREZ    !<Freezing point of water [K]
+!      REAL ALVSWC,ALIRWC,,CXTLRG
 C                                                                                  
-      COMMON /CLASS1/ DELT,TFREZ                                                  
-      COMMON /CLASS7/ CANEXT,XLEAF
+!      COMMON /CLASS1/ DELT,TFREZ                                                  
+!      COMMON /CLASS7/ CANEXT,XLEAF
  
-      DATA ALVSWC,ALIRWC,CXTLRG
-     1    /  0.27,0.38,1.0E20  /
+!      DATA ALVSWC,ALIRWC,CXTLRG
+!     1    /  0.27,0.38,1.0E20  /
 C----------------------------------------------------------------------
       !>
       !!The transmissivity \f$\tau_c\f$ of a vegetation canopy to shortwave 

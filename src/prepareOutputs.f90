@@ -25,7 +25,7 @@ contains
 
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
-        use ctem_params, only : ignd,icc
+        use classic_params, only : ignd,icc
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -736,7 +736,7 @@ contains
     subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,delt,ncount,nday,lastDOY,realyr,TFREZ)
 
         use class_statevars, only : class_rot,resetAccVars
-        use ctem_params, only : ignd
+        use classic_params, only : ignd
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -1373,7 +1373,7 @@ contains
                                 lastDOY)
 
         use class_statevars, only : class_out,resetclassmon,class_rot
-        use ctem_params, only : nmon, monthend, nmos, ignd
+        use classic_params, only : nmon, monthend, nmos, ignd
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -1702,7 +1702,7 @@ contains
                                 nltest,nmtest,lastDOY)
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
-        use ctem_params, only : nmon, monthend, nmos, ignd
+        use classic_params, only : nmon, monthend, nmos, ignd
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -1947,7 +1947,7 @@ contains
 
         use class_statevars, only : class_rot
         use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
-        use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed
+        use classic_params, only : icc,ignd,nmos,iccp1,wtCH4,seed
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -2783,7 +2783,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
                                     resetmonthend,ctem_mo
-        use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
+        use classic_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
         use outputManager, only : writeOutput1D,refyr
 
         implicit none
@@ -3558,7 +3558,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                         resetyearend
-        use ctem_params, only : icc,iccp1,seed
+        use classic_params, only : icc,iccp1,seed
         use outputManager, only : writeOutput1D,refyr
 
         implicit none

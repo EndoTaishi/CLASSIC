@@ -28,6 +28,9 @@ C     * AUG 12/91 - D.VERSEGHY. CODE FOR MODEL VERSION GCM7U -
 C     *                         CLASS VERSION 2.0 (WITH CANOPY).
 C     * APR 11/89 - D.VERSEGHY. MELTING OF SNOWPACK.
 C
+      use classic_params, only : DELT,TFREZ,HCPW,HCPICE,
+     1                           RHOW,RHOICE,CLHMLT
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -61,28 +64,28 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
-      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSOL   !<Volumetric heat capacity of mineral matter \f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPOM    !<Volumetric heat capacity of organic matter \f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSND   !<Volumetric heat capacity of sand particles \f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles \f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
-      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
-C
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
+!       REAL DELT     !<Time step [s]
+!       REAL TFREZ    !<Freezing point of water [K]
+!       REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPSOL   !<Volumetric heat capacity of mineral matter \f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPOM    !<Volumetric heat capacity of organic matter \f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPSND   !<Volumetric heat capacity of sand particles \f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles \f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+!       REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+!       REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+!       REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
+!       REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+!       REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+!       REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+!       REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+!       REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+!       REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
+! C
+!       COMMON /CLASS1/ DELT,TFREZ
+!       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
+!      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
+!      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
       !>
       !!Melting of the snow pack occurs if a source of available energy 

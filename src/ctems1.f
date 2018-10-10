@@ -23,8 +23,7 @@ c
 c     july 8, 2009  - scatter operation on ctem variables.
 c     Rong Li
 
-      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1, 
-     1                               icc
+      use classic_params, only : nlat, nmos, ilg, ignd, ican, icp1,icc
 c 
       implicit none
 c

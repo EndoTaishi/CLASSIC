@@ -43,6 +43,8 @@ C     *                         ON UNSTABLE SIDE, FOR OPTIMIZATION.
 C     *                         THIS IS PREVIOUS VERSION "DRCOEFX".
 C     * K. ABDELLA/M. LAZARE. - NOV 30/94.
 C
+      use classic_params, only : GRAV,VKC
+      
       IMPLICIT NONE
 
 C     * INTEGER CONSTANTS.
@@ -79,10 +81,10 @@ C     * TEMPORARY VARIABLES.
      3     AS2,AS3,CLIMIT
 
 C     * COMMON BLOCK PARAMETERS.
-      REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
+!      REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
 
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
+!      COMMON /CLASS1/ DELT,TFREZ
+!      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
 C-------------------------------------------------------------
       AA=9.5285714
       AA1=14.285714

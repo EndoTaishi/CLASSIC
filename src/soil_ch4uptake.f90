@@ -15,7 +15,7 @@ subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
 ! the soil consumption of atmospheric methane at the global scale. Global
 ! Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
 
-use ctem_params,  only : ilg,ignd,ican,nlat,wtCH4
+use classic_params,  only : ilg,ignd,ican,nlat,wtCH4
 
 implicit none
 

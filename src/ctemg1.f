@@ -27,8 +27,7 @@ c     July 5 2009   - gather operation on ctem variables for consistency
 c                   with class' tiled version
 c     Rong Li
 c
-      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1, 
-     1                               icc
+      use classic_params,only : nlat,nmos,ilg,ignd,ican,icp1,icc
 
       implicit none
 c

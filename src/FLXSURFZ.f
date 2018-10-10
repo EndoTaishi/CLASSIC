@@ -6,7 +6,11 @@
      X                    UE, FCOR, TA , QA , ZU, ZT, VA,
      Y                    TG , QG , H , Z0 , Z0T,
      %                    LZZ0, LZZ0T, FM, FH,N,IL1,IL2,FI,ITER,JL )
+
+!      use classic_params, only : 
+
       IMPLICIT NONE
+
       INTEGER N,IL1,IL2,ITER(N),JL
       REAL CDM(N),CDH(N),CTU(N),RIB(N),FCOR(N),ILMO(N)
       REAL FTEMP(N),FVAP(N),TA(N),QA(N),ZU(N),VA(N)
