@@ -8,7 +8,8 @@
      Y                    TG , QG , H , Z0 , Z0T,
      %                    LZZ0, LZZ0T, FM, FH,N,IL1,IL2,FI,ITER,JL )
 
-      use classic_params, only : AS,CI,BS,BETA,FACTN,HMIN,DELTA,GRAV,VKC
+      use classic_params, only : AS,CI,BS,BETA,FACTN,HMIN,DELTA,GRAV,
+     1                           VKC,ASX
 
       IMPLICIT NONE
 

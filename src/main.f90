@@ -48,7 +48,7 @@ contains
 
         use classic_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, monthend, &
                                         modelpft, l2max,deltat,NBS, readin_params,nol2pfts, &
-                                        DELT,TFREZ
+                                        DELT,TFREZ,zbldJobOpt,zrfhJobOpt,zrfmJobOpt
                                         
         use landuse_change,      only : initializeLandCover
         use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&
@@ -2351,6 +2351,18 @@ contains
         ZDMROW(:)=10.0
         ZDHROW(:)=2.0
 
+        !> ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
+        !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
+        !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
+        !> refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.
+        ZRFMROW(:) = zrfmJobOpt
+        ZRFHROW(:) = zrfhJobOpt
+        
+        !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
+        !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
+        !>  The value is read in from the job options file.
+        ZBLDROW(:) = zbldJobOpt
+        
         !> Initialize variables in preparation for the run
         call initrowvars
         call resetAccVars(nlat,nmos)

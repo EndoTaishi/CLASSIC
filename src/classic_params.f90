@@ -512,6 +512,7 @@ real :: gamma_m                                 !< equivalent co2 fertilization 
 
 character(350)    :: runParamsFile
 logical          :: PFTCompetitionSwitch
+real :: zbldJobOpt,zrfhJobOpt,zrfmJobOpt
 
 
 ! --------------------------------------------------------------------------

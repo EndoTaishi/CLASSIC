@@ -402,12 +402,12 @@ contains
         real, pointer, dimension(:,:)   :: ALBSROT
         real, pointer, dimension(:,:)   :: RHOSROT
         real, pointer, dimension(:,:)   :: GROROT
-        real, pointer, dimension(:)     :: ZRFHROW !<
-        real, pointer, dimension(:)     :: ZRFMROW !<
+        !real, pointer, dimension(:)     :: ZRFHROW !<
+        !real, pointer, dimension(:)     :: ZRFMROW !<
         real, pointer, dimension(:)     :: DLATROW !<
         real, pointer, dimension(:)     :: DLONROW !<
         real, pointer, dimension(:)     :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
-        real, pointer, dimension(:)     :: ZBLDROW !<
+        !real, pointer, dimension(:)     :: ZBLDROW !<
         real, pointer, dimension(:)     :: RADJROW !<Latitude of grid cell (positive north of equator) [rad]
         real, pointer, dimension(:)     :: Z0ORROW !<
         real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
@@ -526,10 +526,10 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
-        ZRFHROW           => class_rot%ZRFHROW
-        ZRFMROW           => class_rot%ZRFMROW
+        !ZRFHROW           => class_rot%ZRFHROW
+        !ZRFMROW           => class_rot%ZRFMROW
         GCROW             => class_rot%GCROW
-        ZBLDROW           => class_rot%ZBLDROW
+        !ZBLDROW           => class_rot%ZBLDROW
         ALVCROT           => class_rot%ALVCROT
         ALICROT           => class_rot%ALICROT
         PAMNROT           => class_rot%PAMNROT
@@ -564,13 +564,13 @@ contains
     !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
     !> refer to the measurement height of these variables, which is fixed.
 
-        ZRFMROW = ncGet1DVar(initid, 'ZRFM', start = [lonIndex, latIndex], count = [1, 1])
-        ZRFHROW = ncGet1DVar(initid, 'ZRFH', start = [lonIndex, latIndex], count = [1, 1])
+        !ZRFMROW = ncGet1DVar(initid, 'ZRFM', start = [lonIndex, latIndex], count = [1, 1])
+        !ZRFHROW = ncGet1DVar(initid, 'ZRFH', start = [lonIndex, latIndex], count = [1, 1])
 
     !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
     !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
 
-        ZBLDROW = ncGet1DVar(initid, 'ZBLD', start = [lonIndex, latIndex], count = [1, 1])
+        !ZBLDROW = ncGet1DVar(initid, 'ZBLD', start = [lonIndex, latIndex], count = [1, 1])
 
     !> GCROW, the GCM surface descriptor variable.  For land surfaces (including inland water) it has a value of -1.
 
@@ -579,10 +579,11 @@ contains
         SDEPROT = ncGet2DVar(initid, 'SDEP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SOCIROT = ncGet2DVar(initid, 'SOCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         FAREROT = ncGet2DVar(initid, 'FARE', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        XSLPROT = ncGet2DVar(initid, 'XSLP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        GRKFROT = ncGet2DVar(initid, 'GRKF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        WFSFROT = ncGet2DVar(initid, 'WFSF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        WFCIROT = ncGet2DVar(initid, 'WFCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        ! The following four variables are not presently in use. Comment out read so not needed to be in input file.
+        !XSLPROT = ncGet2DVar(initid, 'XSLP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        !GRKFROT = ncGet2DVar(initid, 'GRKF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        !WFSFROT = ncGet2DVar(initid, 'WFSF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        !WFCIROT = ncGet2DVar(initid, 'WFCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         TCANROT = ncGet2DVar(initid, 'TCAN', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         TSNOROT = ncGet2DVar(initid, 'TSNO', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         TPNDROT = ncGet2DVar(initid, 'TPND', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])

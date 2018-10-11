@@ -21,7 +21,8 @@ contains
 
         use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
-        use classic_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch
+        use classic_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch,&
+                                   zbldJobOpt,zrfhJobOpt,zrfmJobOpt
 
         implicit none
 
@@ -108,6 +109,7 @@ contains
         character(350) :: jobfile
         character(350) :: argbuff
         integer :: argcount, iargc
+        real :: ZBLD,ZRFH,ZRFM 
 
         ! Order of the namelist and order in the file don't have to match.
 
@@ -155,6 +157,9 @@ contains
         l2max, &
         IDISP, &
         IZREF, &
+        ZBLD, &
+        ZRFH, &
+        ZRFM, &
         ISLFD, &
         IPCP, &
         ITC, &
@@ -298,6 +303,9 @@ contains
         ! Assign some vars that are passed out
         runParamsFile = runparams_file
         PFTCompetitionSwitch = PFTCompetition
+        zbldJobOpt =ZBLD
+        zrfhJobOpt =ZRFH
+        zrfmJobOpt =ZRFM
 
         end subroutine read_from_job_options
 !!@}
