@@ -1,7 +1,8 @@
 !>\file
 C!Evaluates infiltration of water into soil under
 C!unsaturated conditions.
-C!
+!!@author D. Verseghy, M. Lazare
+!
       SUBROUTINE WFILL(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR,
      1                 PSIF,GRKINF,THLINF,THLIQX,TBARWX,
      2                 DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD,

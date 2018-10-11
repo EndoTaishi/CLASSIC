@@ -3,6 +3,7 @@
 !!Scatters variables from long, gathered vectors back onto original two-dimensional arrays (latitude
 !!circle x mosaic tiles). The suffix ROT refers to variables on original two-dimensional arrays.
 !! The suffix GAT refers to variables on gathered long vectors.
+!!@author D. Verseghy, M. Lazare
 !!
       SUBROUTINE CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,       
      1                   ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,       

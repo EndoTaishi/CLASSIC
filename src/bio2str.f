@@ -1,5 +1,6 @@
 !>\file
 !! Converts biomass to structural attributes
+!!@author V. Arora, J. Melton, Y. Peng 
 !!
 !!The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root (\f$C_R\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
 !!

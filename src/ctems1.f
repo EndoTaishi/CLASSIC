@@ -1,6 +1,7 @@
 !>\file
 !! Performs intial scatter operation on biogeochemical variables
-!!
+!!@author R. Li, J. Melton 
+
       subroutine ctems1 (gleafmasrow,  bleafmasrow,  stemmassrow,
      1      rootmassrow,
      1      fcancmxrow,  zbtwrow,   dlzwrow,  sdeprow,   ailcgrow,

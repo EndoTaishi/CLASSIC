@@ -2,8 +2,7 @@
 !> The File IO Module contains wrappers for accessing netCDF files.
 !! It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF.
 !!
-!>@author
-!> Ed Wisernig, Joe Melton
+!>@author E. Wisernig, J. Melton
 
 module fileIOModule
 #if PARALLEL

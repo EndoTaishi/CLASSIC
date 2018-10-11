@@ -1,7 +1,8 @@
 !>\file
 !!Evaluates infiltration of water into soil under saturated 
 !!conditions.
-!!
+!!@author D. Verseghy, M. Lazare, Y. Delage, J. P. Blanchette
+!
       SUBROUTINE WFLOW(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND,
      1                 R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX,
      2                 DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ,
@@ -78,12 +79,6 @@ C     * TEMPORARY VARIABLES.
 C
       REAL RESID,FINF,ZPTEST,WINF
 C 
-C     * COMMON BLOCK PARAMETERS.
-C
-!      REAL DELT  !<Time step [s]
-!      REAL TFREZ !<Freezing point of water [K]
-C
-!      COMMON /CLASS1/ DELT,TFREZ
 C-----------------------------------------------------------------------
 !>
 !!General calculations performed: The infiltration rate \f$F_{inf}\f$ under saturated conditions is calculated as

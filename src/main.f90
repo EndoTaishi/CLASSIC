@@ -1,6 +1,6 @@
 !> Main model driver for CLASSIC in stand-alone mode using specified boundary
 !! conditions and atmospheric forcing.
-!!
+!!@author D. Verseghy, V. Arora, J. Melton, E. Chan
 !! This driver program initializes the run, reads in CLASSIC input files,
 !! manages the run and the coupling between CLASS and CTEM, calls subroutines
 !! that aggregate and write outputs, and closes the run for this grid cell.

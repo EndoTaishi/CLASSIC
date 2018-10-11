@@ -1,7 +1,6 @@
 !>\file
-!!Canadian Terrestrial Ecosystem Model (CTEM)
-!!Soil Methane Oxidation Subroutine
-!!
+!! Oxidation of methane in upland soils
+!!@author J. Melton 
 !! Coded up based on \cite Curry2007-du.
 
 subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &

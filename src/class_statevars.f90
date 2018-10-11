@@ -1,4 +1,5 @@
 !>Contains the physics variable type structures.
+!!@author J. Melton
 !! 1. class_rot - CLASS's 'rot' and 'row' vars
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs

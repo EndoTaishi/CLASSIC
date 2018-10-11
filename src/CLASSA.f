@@ -1,7 +1,8 @@
 !>\file
 C!Organizes calculation of radiation-related and other
 C!surface parameters.
-C!
+!!@author D. Verseghy, M. Lazare, J. Cole, Y. Wu, J. Melton 
+!!
       SUBROUTINE CLASSA(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,
      1                  ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,           
      2                  ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN, 
@@ -345,12 +346,6 @@ C
 C
       INTEGER   ISAND (ILG,IG)  !<Sand content flag
 C
-C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
-C
-!      REAL GROWYR(18,4,2)  
-!      REAL DELZ  (IG)  !<Soil layer thickness [m]     
-!      REAL ZORAT (4),       CANEXT(4),       XLEAF (4)
-C
 C     * CTEM-RELATED FIELDS.
 
 C     * AILCG  - GREEN LAI FOR USE IN PHOTOSYNTHESIS
@@ -389,72 +384,6 @@ C
      3     TRVS  (ILG),     TRIR  (ILG),     RCT   (ILG),     
      4     GC    (ILG),     PAICAN(ILG),     PAICNS(ILG) 
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-!  REAL DELT     !<Time step [s]
-!  REAL TFREZ    !<Freezing point of water [K]
-!  REAL RGAS     !<Gas Constant \f$[J kg^{-1} K^{-1}]\f$
-!  REAL RGASV    !<Gas constant for water vapour \f$[J kg^{-1} K^{-1}]\f$
-!  REAL GRAV     !<Acceleration due to gravity \f$[m s^{-1}]\f$
-!  REAL SBC      !<Stefan-Boltzmann constant \f$[W m^{-2} K^{-4}]\f$
-!  REAL VKC      !<Von Karman constant (0.40)
-!  REAL CT       !<Drag coefficient for water \f$(1.15 * 10^-3)\f$
-!  REAL VMIN     !<Minimum wind speed \f$(0.1) [m s^{-1}]\f$
-!  REAL TCW      !<Thermal conductivity of water \f$(0.57) [W m^{-1} K^{-1}]\f$
-!  REAL TCICE    !<Thermal conductivity of ice \f$(2.24) [W m^{-1} K^{-1}]\f$
-!  REAL TCSAND   !<Thermal conductivity of sand particles (2.5)  [W m^{-1} K^{-1}]\f$
-!  REAL TCCLAY   !<Thermal conductivity of fine mineral particles 
-!                !!\f$(2.5) [W m^{-1} K^{-1}]\f$
-!  REAL TCOM     !<Thermal conductivity of organic matter \f$(0.25) [W m^{-1} K^{-1}]\f$
-!  REAL TCDRYS   !<Thermal conductivity of dry mineral soil \f$(0.275) [W m^{-1} K^{-1}]\f$
-!  REAL RHOSOL   !<Density of soil mineral matter \f$(2.65 * 10^3) [kg m^{-3}]\f$
-!  REAL RHOOM    !<Density of soil organic matter \f$(1.30 * 10^3) [kg m^{-3}]\f$
-!  REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) 
-!                !![J m^{-3} K^{-1}]\f$
-!  REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) 
-!                !![J m^{-3} K^{-1}]\f$
-!  REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
-!                !!\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
-!  REAL HCPOM    !<Volumetric heat capacity of organic matter 
-!                !!\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
-!  REAL HCPSND   !<Volumetric heat capacity of sand particles 
-!                !!\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
-!  REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
-!                !!\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-!  REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
-!  REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
-!  REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
-!  REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
-!  REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-!  REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-!  REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-!  REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-!  REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
-!  REAL PI       !<Pi
-!  REAL ZOLNG    !<Natural log of roughness length of soil (-4.605)
-!  REAL ZOLNS    !<Natural log of roughness length of snow (-6.908)
-!  REAL ZOLNI    !<Natural log of roughness length of ice (-6.215)
-!  REAL ZORATG   !<Ratio of soil roughness for momentum to roughness
-!                !!length for heat (3.0)
-!  REAL ALVSI    !<Visible albedo of ice (0.95)
-!  REAL ALIRI    !<Near-infrared albedo of ice (0.73)
-!  REAL ALVSO    !<Visible albedo of organic matter (0.05)
-!  REAL ALIRO    !<Near-infrared albedo of organic matter (0.30)
-!  REAL ALBRCK   !<Albedo of rock 
-
-! 
-!  COMMON /CLASS1/ DELT,TFREZ                                               
-!  COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-!  !COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,CT,VMIN
-!  COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-! 1                RHOSOL,RHOOM
-!  COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-! 1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-! 2                TCGLAC,CLHMLT,CLHVAP
-!  COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG                   
-!  COMMON /CLASS7/ CANEXT,XLEAF
-!  COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
-                                                                                  
 C------------------------------------------------------------------
       !>
       !!In the first loop, the depth of snow \f$z_s\f$ is calculated from the 

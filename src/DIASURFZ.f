@@ -1,11 +1,14 @@
 !>\file
 !>Calculate the diagnostic values of U, V, T, Q
 !!near the surface (ZU and ZT)
+!!@author Y. Delage, G. Pellerin,B. Bilodeau,R. Sarrazin,G. Pellerin,D. Verseghy,
+!!M. Mackay,F. Seglenieks,P.Bartlett,E.Chan,B.Dugas,J.Melton
+!
       SUBROUTINE DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA,
      1                  H,UE,FTEMP,FVAP,ZU,ZT,LAT,F,IL1,IL2,JL)
 
       use classic_params, only : AS,ASX,CI,BETA,FACTN,HMIN,ANGMAX,
-     1                           GRAV,SPHAIR
+     1                           GRAV,SPHAIR,VKC
 
       IMPLICIT NONE
       
@@ -80,14 +83,6 @@
       REAL XX,XX0,YY,YY0,fh,fm,hi
       REAL RAC3
       INTEGER J,IL1,IL2
-*
-      REAL KARMAN !FLAG FIXME - this value is not in the code!!!
-      
-      
-!      REAL AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-!      COMMON / CLASSD2 / AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-!      REAL DELTA,GRAV,KARMAN,SPHAIR
-!      COMMON / PHYCON / DELTA,GRAV,KARMAN,SPHAIR
 
       RAC3=SQRT(3.)
 
@@ -123,8 +118,11 @@
      1              )
       ENDIF
 *---------------------------------------------------------------------
-      CT=KARMAN/FH
-      CM=KARMAN/FM
+      !CT=KARMAN/FH
+      !CM=KARMAN/FM
+      CT=VKC/FH
+      CM=VKC/FM
+      
       TZ(J)=TZ(J)+F(J)*(TG(J)-FTEMP(J)/(CT*UE(J))-GRAV/SPHAIR*ZT(J))
       QZ(J)=QZ(J)+F(J)*(QG(J)-FVAP(J)/(CT*UE(J)))
       VITS=UE(J)/CM

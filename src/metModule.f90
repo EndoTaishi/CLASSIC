@@ -1,5 +1,6 @@
 !
 !> Performs disaggregation of input meteorological forcing arrays to the model physics timestep
+!!@author V. Arora, J. Melton 
 module metDisaggModule
 
     use model_state_drivers, only : metInputTimeStep,metTime,metFss,metFdl,metPre,metTa,metQa,metUv,metPres
@@ -31,6 +32,7 @@ contains
 !>\ingroup metDisaggModule_disaggMet
 !!@{
 !> Main subroutine to disaggregate input meteorology to that of the physics timestep
+
     subroutine disaggMet(longitude, latitude) ! longitude, latitude
 
         use classic_params, only : delt

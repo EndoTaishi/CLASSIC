@@ -1,6 +1,7 @@
 !>\file
 C!Addresses freezing of water ponded on ground surface.
-C!
+!!@author D. Verseghy, M. Lazare
+!
       SUBROUTINE TFREEZ(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO,
      1                  GZERO,HMFG,HTCS,HTC,WTRS,WTRG,FI,QFREZ,
      2                  WSNOW,TA,TBAR,ISAND,IG,ILG,IL1,IL2,JL)
@@ -75,30 +76,6 @@ C     * TEMPORARY VARIABLES.
 C
       REAL ZFREZ,HADD,HCOOL,HCONV,TTEST,TLIM,HEXCES
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-!       REAL DELT     !<Time step [s]
-!       REAL TFREZ    !<Freezing point of water [K]
-!       REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
-!       REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
-!       REAL HCPSOL   !<Volumetric heat capacity of mineral matter \f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
-!       REAL HCPOM    !<Volumetric heat capacity of organic matter \f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
-!       REAL HCPSND   !<Volumetric heat capacity of sand particles \f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
-!       REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles \f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-!       REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg m^{-1} K^{-1}]\f$
-!       REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg m^{-1} K^{-1}]\f$
-!       REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg m^{-1} K^{-1}]\f$
-!       REAL SPHAIR   !<Specific heat of air \f$[J kg m^{-1} K^{-1}]\f$
-!       REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-!       REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-!       REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-!       REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-!       REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
-! C                                                                                   
-!       COMMON /CLASS1/ DELT,TFREZ
-!       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-!      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-!      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
       !>
       !!Freezing of water ponded on the ground surface occurs if an 

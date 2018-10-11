@@ -1,7 +1,8 @@
 !>\file
 C!Prints the name of the subroutine and an error code when
 C!an error condition is encountered.
-C!
+!!@author J. D. Henderson, E. Chan
+!
       SUBROUTINE XIT(NAME,N)
 
       use generalUtils, only : abandonCell

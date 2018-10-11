@@ -1,8 +1,8 @@
 var namespaces =
 [
     [ "class_statevars", "namespaceclass__statevars.html", null ],
+    [ "classic_params", "namespaceclassic__params.html", null ],
     [ "competition_scheme", "namespacecompetition__scheme.html", null ],
-    [ "ctem_params", "namespacectem__params.html", null ],
     [ "ctem_statevars", "namespacectem__statevars.html", null ],
     [ "disturbance_scheme", "namespacedisturbance__scheme.html", null ],
     [ "heterotrophic_respiration", "namespaceheterotrophic__respiration.html", null ],

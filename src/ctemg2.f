@@ -1,6 +1,7 @@
 !>\file
 C! Performs subsequent 'gather' operation on CTEM variables for consistency
 !! with physics variables gather operations.
+!!@author R. Li, Y. Wu, E. Chan, J. Melton  
 !!
       subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,
      1      paicgat,

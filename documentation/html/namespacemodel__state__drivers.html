@@ -113,13 +113,13 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a566c0005f80027365025af9f6b17d1fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the input field variable based on the present model timestep.  <a href="#a566c0005f80027365025af9f6b17d1fe">More...</a><br /></td></tr>
 <tr class="separator:a566c0005f80027365025af9f6b17d1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:aa1f54e07c9b953fa76892cde43cd0395"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aa1f54e07c9b953fa76892cde43cd0395">getmet</a> (longitude, latitude, nday, delt)</td></tr>
-<tr class="memdesc:aa1f54e07c9b953fa76892cde43cd0395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the meteorological input from a netcdf file It is <b>very</b> important that the files are chunked correctly (for global and regional runs). There is an orders of magnitude slow-up otherwise!  <a href="#aa1f54e07c9b953fa76892cde43cd0395">More...</a><br /></td></tr>
-<tr class="separator:aa1f54e07c9b953fa76892cde43cd0395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a364cbbdd4e93e090c4d167dd2b028ad9"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a364cbbdd4e93e090c4d167dd2b028ad9">getmet</a> (longitude, latitude, nday)</td></tr>
+<tr class="memdesc:a364cbbdd4e93e090c4d167dd2b028ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the meteorological input from a netcdf file It is <b>very</b> important that the files are chunked correctly (for global and regional runs). There is an orders of magnitude slow-up otherwise!  <a href="#a364cbbdd4e93e090c4d167dd2b028ad9">More...</a><br /></td></tr>
+<tr class="separator:a364cbbdd4e93e090c4d167dd2b028ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a250e1a4a9a115535075497adede17f46"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a250e1a4a9a115535075497adede17f46">updatemet</a> (metTimeIndex, delt, iyear, iday, ihour, imin, metDone)</td></tr>
-<tr class="memdesc:a250e1a4a9a115535075497adede17f46"><td class="mdescLeft">&#160;</td><td class="mdescRight">This transfers the met data of this time step from the read-in array to the instantaneous variables. This also sets iyear to the present year of MET being read in.  <a href="#a250e1a4a9a115535075497adede17f46">More...</a><br /></td></tr>
-<tr class="separator:a250e1a4a9a115535075497adede17f46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1307cad46e02ba87f9308b69652067d0"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a1307cad46e02ba87f9308b69652067d0">updatemet</a> (metTimeIndex, iyear, iday, ihour, imin, metDone)</td></tr>
+<tr class="memdesc:a1307cad46e02ba87f9308b69652067d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This transfers the met data of this time step from the read-in array to the instantaneous variables. This also sets iyear to the present year of MET being read in.  <a href="#a1307cad46e02ba87f9308b69652067d0">More...</a><br /></td></tr>
+<tr class="separator:a1307cad46e02ba87f9308b69652067d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:aaf94fac699883c97781af896554f4bbf"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aaf94fac699883c97781af896554f4bbf">deallocinput</a></td></tr>
@@ -477,8 +477,8 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 </div>
 </div>
-<a id="aa1f54e07c9b953fa76892cde43cd0395"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1f54e07c9b953fa76892cde43cd0395">&#9670;&nbsp;</a></span>getmet()</h2>
+<a id="a364cbbdd4e93e090c4d167dd2b028ad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a364cbbdd4e93e090c4d167dd2b028ad9">&#9670;&nbsp;</a></span>getmet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -499,13 +499,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>nday</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>delt</em>&#160;</td>
+          <td class="paramname"><em>nday</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -521,8 +515,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">longitude</td><td>Longitude of grid cell of interest</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">latitude</td><td>Latitude of grid cell of interest</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nday</td><td>Maximum number of physics timesteps in one day</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">delt</td><td>Physics timestep (s) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nday</td><td>Maximum number of physics timesteps in one day </td></tr>
   </table>
   </dd>
 </dl>
@@ -648,8 +641,8 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 </div>
 </div>
-<a id="a250e1a4a9a115535075497adede17f46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a250e1a4a9a115535075497adede17f46">&#9670;&nbsp;</a></span>updatemet()</h2>
+<a id="a1307cad46e02ba87f9308b69652067d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1307cad46e02ba87f9308b69652067d0">&#9670;&nbsp;</a></span>updatemet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -659,12 +652,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
           <td>(</td>
           <td class="paramtype">integer, intent(inout)&#160;</td>
           <td class="paramname"><em>metTimeIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>delt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -709,7 +696,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">mettimeindex</td><td>Index to read from met file</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">delt</td><td>Physics timestep (s)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">iyear</td><td>Present year of simulation</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">iday</td><td>Present day of simulation</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ihour</td><td>Present hour of simulation</td></tr>
@@ -761,7 +747,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Fri Sep 21 2018 13:08:00 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 11 2018 12:12:18 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

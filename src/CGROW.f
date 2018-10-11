@@ -67,13 +67,6 @@ C
                     !!modelled area [ ]
       REAL FCS(ILG) !<Fractional coverage of vegetation with underlying
                     !!snow pack on modelled area [ ]
-C
-C     * COMMON BLOCK PARAMETERS.
-C
-!      REAL DELT     !<Time step [s]
-!      REAL TFREZ    !<Freezing point of water [K]
-C
-!      COMMON /CLASS1/ DELT,TFREZ
 C-----------------------------------------------------------------------
 
       DO 100 I=IL1,IL2

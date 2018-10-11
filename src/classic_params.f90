@@ -1,4 +1,6 @@
 !> Contains CLASSIC globally accessible parameters
+!!@author J. Melton 
+!!
 module classic_params
 
 !>\ingroup classic_params_main
@@ -525,7 +527,7 @@ subroutine prepareGlobalParams
     implicit none
 
     !> Prepare CLASS parameters
-    CALL CLASSD
+    !CALL CLASSD
 
     !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
     iccp1 = icc + 1

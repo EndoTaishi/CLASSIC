@@ -1,5 +1,6 @@
 !> Calculates maintenance respiration, over a given sub-area, for stem and root components.
 !! leaf respiration is estimated within the phtsyn subroutine.
+!!@author V. Arora, J. Melton 
 !!
 !!Autotrophic respiration (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$) is composed of maintenance, \f$R_\mathrm{m}\f$, and growth respirations, \f$R_\mathrm{g}\f$,
 !!\f[

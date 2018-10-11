@@ -1,6 +1,7 @@
 C>\file
 !!Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type.
 !!Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
+!!@author D. Verseghy, M. Lazare, V. Fortin, Y. Wu, J. Melton
 !!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
@@ -8,7 +9,7 @@ C>\file
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
      4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)
 C
-C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, somehow it worked
+C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, 
 C                               Change to TCCLAY for consistency with rest of model.
 C     * DEC 16/16 - D.VERSEGHY. REMOVE OPTION FOR USING OLD SOIL
 C     *                         WET AND DRY ALBEDOS DETERMINED BY
@@ -128,41 +129,10 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-!      REAL ALWV(20), ALWN(20), ALDV(20), ALDN(20)
-C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
 C
-! C     * COMMON BLOCK PARAMETERS.
-! C
-!       REAL THPORG (3)         !<Peat pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
-!       REAL THRORG (3)         !<Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
-!       REAL THMORG (3)         !<Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
-!       REAL BORG   (3)         !<Clapp and Hornberger 'b' value for peat soils [ ]
-!       REAL PSISORG(3)         !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
-!       REAL GRKSORG(3)         !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
-! C
-!       REAL TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
-!      1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,SPHW,SPHICE,SPHVEG,
-!      2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
-! C
-!       COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-!      1                RHOSOL,RHOOM
-!       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,
-!      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-!      2                TCGLAC,CLHMLT,CLHVAP
-!       COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-! C
-!       DATA ALWV /0.25,0.23,0.21,0.20,0.19,0.18,0.17,0.16,0.15,0.14,0.13,
-!      1           0.12,0.11,0.10,0.09,0.08,0.07,0.06,0.05,0.04/
-!       DATA ALWN /0.50,0.46,0.42,0.40,0.38,0.36,0.34,0.32,0.30,0.28,0.26,
-!      1           0.24,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
-!       DATA ALDV /0.36,0.34,0.32,0.31,0.30,0.29,0.28,0.27,0.26,0.25,0.24,
-!      1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
-!       DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
-!      1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
 C---------------------------------------------------------------------
 C
-
 !>
 !!In the first section of code, two integer flags are evaluated: IGDR, the index of the soil layer in which the
 !!bottom of the soil permeable depth, \f$z_b\f$ , occurs; and ISAND, the value of the SAND variable for each soil

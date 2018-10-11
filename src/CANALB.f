@@ -1,7 +1,8 @@
 !>\file
 C!Calculates vegetation albedos, transmissivities and
 C!stomatal resistances.
-C!
+!!@author D. Verseghy, M. Lazare, P. Bartlett, R. Harvey, J. Melton
+!
       SUBROUTINE CANALB(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN,
      1                  TRVSCS,TRIRCS,RC,RCS,
      2                  ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB,
@@ -148,10 +149,6 @@ C
       REAL ALVSSC(ILG)  !<Visible/near-IR albedo of snow under vegetation [ ]
       REAL ALIRSC(ILG)  !<Visible/near-IR albedo of snow under vegetation [ ]
 C
-C     * OTHER DATA ARRAYS.
-C
-!      REAL CANEXT(4),     XLEAF (4)
-C
 C     * WORK ARRAYS.
 C
       REAL CXTEFF(ILG,IC),           RCACC (ILG,IC),
@@ -165,17 +162,6 @@ C
      1     TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP,TRCLRV,
      2     TRCLDV,TRCLRT,TRCLDT
 C
-C     * COMMON BLOCK AND OTHER PARAMETERS.
-C
-!      REAL DELT     !<Time step [s]
-!      REAL TFREZ    !<Freezing point of water [K]
-!      REAL ALVSWC,ALIRWC,,CXTLRG
-C                                                                                  
-!      COMMON /CLASS1/ DELT,TFREZ                                                  
-!      COMMON /CLASS7/ CANEXT,XLEAF
- 
-!      DATA ALVSWC,ALIRWC,CXTLRG
-!     1    /  0.27,0.38,1.0E20  /
 C----------------------------------------------------------------------
       !>
       !!The transmissivity \f$\tau_c\f$ of a vegetation canopy to shortwave 

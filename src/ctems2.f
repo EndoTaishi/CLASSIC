@@ -1,6 +1,6 @@
 !>\file
 !! Performs subsequent scatter operation on biogeochemical variables
-!!
+!!@author R. Li, J. Melton, E. Chan 
       subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,
      1      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,
      2      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,

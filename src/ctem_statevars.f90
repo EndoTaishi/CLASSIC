@@ -1,4 +1,5 @@
 !> Contains the biogeochemistry-related variable type structures.
+!!@author J. Melton 
 module ctem_statevars
 
 ! J. Melton Apr 2015

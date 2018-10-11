@@ -1,6 +1,7 @@
 !>\file
 !!Calculates near surface output variables
-!!
+!!@author Y. Delage, D. Verseghy, M. Lazare, J. Melton
+!
       SUBROUTINE SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0,
      1                  Z0M,Z0E,F,ZA,ZU,ZT,ILG,IL1,IL2,JL)
 
@@ -59,19 +60,7 @@ C     TEMPORARY VARIABLES
 C 
       REAL PR,WSPD,CM,US,TS,QS,L,UVA,RATIO,UVU,TTA,CE
 c
-C     * COMMON BLOCK PARAMETERS
-C
-      ! REAL RGAS     !<Gas constant [J kg-1 K-1]
-      ! REAL RGASV    !<Gas constant for water vapour [J kg-1 K-1]
-      ! REAL GRAV     !<Acceleration due to gravity [m s-1]
-      ! REAL SBC      !<Stefan-Boltzmann constant [W m-2 K-4]
-      ! REAL VKC      !<Von Karman constant (0.40)
-      ! REAL CT       !<Drag coefficient for water (1.15*10^-3)
-      ! REAL VMIN     !<Minimum wind speed (0.1) [m s-1]
-c
       REAL PSM,PSE,Y,PIM,PIE,X
-c
-      ! COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
       
 c     * STABILITY FUNCTIONS FOR THE STABLE CASE
 

@@ -1,6 +1,7 @@
 !>\file
 !!Solves surface energy balance for vegetated subareas.
-!!
+!!@author D. Verseghy, M. Lazare,  A. Wu, P. Bartlett, Y. Delage, V. Arora, E. Chan,  J. Melton, Y. Wu
+!
       SUBROUTINE TSOLVC(ISNOW,FI,
      1                 QSWNET,QSWNC,QSWNG,QLWOUT,QLWOC,QLWOG,QTRANS,
      2                 QSENS,QSENSC,QSENSG,QEVAP,QEVAPC,QEVAPG,EVAPC,
@@ -352,23 +353,6 @@ C
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
      3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-!       REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,HCPW,HCPICE,
-!      1     HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,
-!      2     RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,DELTA,CGRAV,CKARM,SPHAIR,
-!      3     AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-! C
-!       COMMON /CLASS1/ DELT,TFREZ
-!       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-!       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-!      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-!      2                TCGLAC,CLHMLT,CLHVAP
-!       COMMON /PHYCON/ DELTA,CGRAV,CKARM,SPHAIR
-!       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-C
-
-
 C-----------------------------------------------------------------------
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C===================== CTEM =====================================\

@@ -1,9 +1,8 @@
 !>\file
 !!Calculates drag coefficients and related variables
-!!
 !! This work has been described in \cite Abdella1996-em.
-!!
-
+!!@author K. Abdella, N. Macfarlane, M. Lazare, D. Verseghy, E. Chan
+!
       SUBROUTINE DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN,
      1                  CRIB,TVIRTG,TVIRTA,VA,FI,ITER,
      2                  ILG,IL1,IL2)
@@ -80,11 +79,6 @@ C     * TEMPORARY VARIABLES.
      2     AU1,OLS,PSIM1,PSIM0,PSIH1,PSIH0,USTAR,TSTAR,WTS,AS1,
      3     AS2,AS3,CLIMIT
 
-C     * COMMON BLOCK PARAMETERS.
-!      REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-
-!      COMMON /CLASS1/ DELT,TFREZ
-!      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
 C-------------------------------------------------------------
       AA=9.5285714
       AA1=14.285714

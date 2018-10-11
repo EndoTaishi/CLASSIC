@@ -1,5 +1,6 @@
 !>\file
-!>Wetland and wetland methane subroutine 
+!>Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine 
+!!@author B. Amiro, J. Melton, V. Arora
 !>
 subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
                        npp, tbar, thliqg, currlat, &

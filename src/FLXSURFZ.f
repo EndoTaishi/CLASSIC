@@ -2,6 +2,7 @@
 !>Calculates surface layer transfer coefficients and fluxes
 !!FLXSURFZ is a variant of FLXSURF3 that permits to input
 !!wind and temperature (humidity) at different levels
+!!@author Y. Delage, G. Pellerin, B. Bilodeau, M. Desgagne, R. Sarrazin, C. Girard, D. Verseghy, V. Fortin, J. P. Paquin, R. Harvey, J. Melton
       SUBROUTINE FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO,
      X                    UE, FCOR, TA , QA , ZU, ZT, VA,
      Y                    TG , QG , H , Z0 , Z0T,

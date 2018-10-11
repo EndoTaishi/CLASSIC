@@ -16,6 +16,7 @@ contains
 !>\ingroup competition_scheme_bioclim
 !!@{
 !> Calculates bioclimatic parameters required to determine existance of PFTs
+!!@author V. Arora, J. Melton, R. Shrestha
 
 subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                               il1,       il2,      nilg,  leapnow, &
@@ -305,6 +306,7 @@ end subroutine bioclim
 !>\ingroup competition_scheme_existence
 !!@{
 !> Determines if a PFT can exist in a grid cell based on climatic conditions
+!!@author V. Arora, J. Melton
 
 subroutine  existence(  iday,       il1,      il2,      nilg, &
                              sort,  nol2pfts,                 &
@@ -468,6 +470,7 @@ end subroutine existence
 !!@{
 !> Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified
 !! forms. either option may be used.
+!!@author V. Arora, J. Melton, Y. Peng
 
 subroutine competition(  iday,      il1,       il2,      nilg, &
                           nol2pfts,   nppveg,   dofire, leapnow, &

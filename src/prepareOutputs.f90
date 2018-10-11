@@ -21,6 +21,7 @@ contains
     !>\ingroup prepareOutputs_class_halfhourly_aw
     !>@{
     !> Prepares and writes the CLASS (physics) half hourly file
+    !!@author J. Melton 
     subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr)
 
         use class_statevars, only : class_rot,class_gat,initRowVars
@@ -729,6 +730,7 @@ contains
     !>Accumaltes and writes the daily physics variables. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
     !! The pointer to the daily data structures (in class_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,nday,lastDOY,realyr)
 
@@ -1362,6 +1364,7 @@ contains
     !>Accumulate and write out the monthly physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a monthly value.
     !! The pointer to the monthly data structures (in class_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,nltest,nmtest,lastDOY)
 
@@ -1687,6 +1690,7 @@ contains
     !>Accumulate and write out the annual physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce annuals values.
     !! The pointer to the annual data structures (in class_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY, &
                                 nltest,nmtest,lastDOY)
@@ -1928,6 +1932,7 @@ contains
     !>\ingroup prepareOutputs_ctem_daily_aw
     !>@{
     !> Accumulate and write the daily biogeochemical outputs
+    !!@author J. Melton 
 
     subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,nday,realyr,grclarea,ipeatlandrow)
 
@@ -2763,6 +2768,7 @@ contains
     !> Accumulate and write out the monthly CTEM outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce a monthly value.
     !! The pointer to the monthly data structures (in ctem_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr,nday,lastDOY)
 
@@ -3540,6 +3546,7 @@ contains
     !> Accumulate and write out the annual biogeochemical (CTEM) outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce annual values.
     !! The pointer to the annual data structures (in ctem_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,lastDOY)
 

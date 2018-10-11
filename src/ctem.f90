@@ -1,5 +1,6 @@
 !>\file
 !!Principle driver for CTEM
+!!@author V. Arora, J. Melton, Y. Peng, R. Shrestha
 !!
 !!The basic model structure of CTEM includes three live vegetation components
 !!(leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or

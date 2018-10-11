@@ -1,7 +1,8 @@
 !>\file
 C! Performs initial 'gather' operation on CTEM variables for consistency
 !! with physics variables gather operations.
-!!
+!!@author R. Li, J. Melton
+
       subroutine ctemg1(  gleafmasgat,  bleafmasgat,  stemmassgat,
      a                    rootmassgat,   fcancmxgat,      zbtwgat,
      b                        dlzwgat,      sdepgat,     ailcggat,

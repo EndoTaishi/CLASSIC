@@ -1,6 +1,6 @@
 !>\file
 !!Calculates various land surface parameters.
-!!@author D. Verseghy, M. Lazare, V. Fortin, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
+!!@author D. Verseghy, M. Lazare, V. Fortin, V. Arora, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
 
 !>
 !!This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS
@@ -284,14 +284,6 @@ C
       REAL HCPS  (ILG,IG) !<Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
       REAL DELZ  (IG)     !<Soil layer thickness [m]
       INTEGER ISAND (ILG,IG) !<Sand content flag
-
-C
-C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
-C
-!      REAL GROWYR(18,4,2) !<!
-!      REAL ZORAT (4)      !<
-!      REAL CANEXT(4)      !<
-!      REAL XLEAF (4)      !<
 C
 C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.
 C
@@ -330,22 +322,6 @@ C
 
       INTEGER ICTEM, M, N, K1, K2, L2MAX, NOL2PFTS(IC)
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-!      REAL DELT,TFREZ,TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
-!     1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,
-!     2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,
-!     3     ZORATG
-C
-!      COMMON /CLASS1/ DELT,TFREZ
-!      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-!     1                RHOSOL,RHOOM
-!      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-!     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-!     2                TCGLAC,CLHMLT,CLHVAP
-!      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
-!      COMMON /CLASS7/ CANEXT,XLEAF
-
 C-----------------------------------------------------------------------
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C

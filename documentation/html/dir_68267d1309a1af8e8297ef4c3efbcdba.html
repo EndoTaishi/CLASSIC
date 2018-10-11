@@ -138,6 +138,9 @@ Files</h2></td></tr>
 <tr class="memitem:CLASSIC_8F90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CLASSIC_8F90.html">CLASSIC.F90</a></td></tr>
 <tr class="memdesc:CLASSIC_8F90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Principle driver program to run CLASSIC in stand-alone mode using specified boundary conditions and atmospheric forcing. Depending upon the compiler options chosen, this program will either run in MPI mode for use on parallel computing environments or in serial mode for use in running at single sites. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:classic__params_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classic__params_8f90.html">classic_params.f90</a></td></tr>
+<tr class="memdesc:classic__params_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">This module holds CLASSIC globally accessible parameters. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:CLASSS_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CLASSS_8f.html">CLASSS.f</a></td></tr>
 <tr class="memdesc:CLASSS_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scatters variables from long, gathered vectors back onto original two-dimensional arrays (latitude circle x mosaic tiles). The suffix ROT refers to variables on original two-dimensional arrays. The suffix GAT refers to variables on gathered long vectors. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,9 +158,6 @@ Files</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ctem_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html">ctem.f90</a></td></tr>
 <tr class="memdesc:ctem_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Principle driver for CTEM. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ctem__params_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem__params_8f90.html">ctem_params.f90</a></td></tr>
-<tr class="memdesc:ctem__params_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">This module holds CTEM globally accessible parameters. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ctem__statevars_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem__statevars_8f90.html">ctem_statevars.f90</a></td></tr>
 <tr class="memdesc:ctem__statevars_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the biogeochemistry-related variable type structures. <br /></td></tr>
@@ -187,7 +187,7 @@ Files</h2></td></tr>
 <tr class="memdesc:disturb_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates disturbance as both natural and human-influenced fires. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:DRCOEF_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="DRCOEF_8f.html">DRCOEF.f</a></td></tr>
-<tr class="memdesc:DRCOEF_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates drag coefficients and related variables. <br /></td></tr>
+<tr class="memdesc:DRCOEF_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates drag coefficients and related variables This work has been described in <a class="el" href="citelist.html#CITEREF_Abdella1996-em">[1]</a>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:fileIOModule_8F90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fileIOModule_8F90.html">fileIOModule.F90</a></td></tr>
 <tr class="memdesc:fileIOModule_8F90"><td class="mdescLeft">&#160;</td><td class="mdescRight">The File IO Module contains wrappers for accessing netCDF files. It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF. <br /></td></tr>
@@ -237,9 +237,6 @@ Files</h2></td></tr>
 <tr class="memitem:mvidx_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mvidx_8f.html">mvidx.f</a></td></tr>
 <tr class="memdesc:mvidx_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility to determine location of closest value in an array. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ORDLEG_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ORDLEG_8f.html">ORDLEG.f</a></td></tr>
-<tr class="memdesc:ORDLEG_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subset of Belousovs algorithm used to calculate ordinary legendre polynomials. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:outputManager_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html">outputManager.f90</a></td></tr>
 <tr class="memdesc:outputManager_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central module for all netcdf output file operations. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -286,7 +283,7 @@ Files</h2></td></tr>
 <tr class="memdesc:SNOW__TRANVAL_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the direct and diffuse snow transmission using lookup table and current snow conditions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:soil__ch4uptake_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="soil__ch4uptake_8f90.html">soil_ch4uptake.f90</a></td></tr>
-<tr class="memdesc:soil__ch4uptake_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canadian Terrestrial Ecosystem Model (CTEM) Soil Methane Oxidation Subroutine. <br /></td></tr>
+<tr class="memdesc:soil__ch4uptake_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Oxidation of methane in upland soils. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:SUBCAN_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="SUBCAN_8f.html">SUBCAN.f</a></td></tr>
 <tr class="memdesc:SUBCAN_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assesses water flux elements at the ground surface under the vegetation canopy. <br /></td></tr>
@@ -331,7 +328,7 @@ Files</h2></td></tr>
 <tr class="memdesc:WEND_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recalculates liquid water content of soil layers after infiltration, and evaluates baseflow. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:wetland__methane_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wetland__methane_8f90.html">wetland_methane.f90</a></td></tr>
-<tr class="memdesc:wetland__methane_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wetland and wetland methane subroutine. <br /></td></tr>
+<tr class="memdesc:wetland__methane_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:WFILL_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="WFILL_8f.html">WFILL.f</a></td></tr>
 <tr class="memdesc:WFILL_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates infiltration of water into soil under unsaturated conditions. <br /></td></tr>
@@ -358,7 +355,7 @@ Files</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>
-    <li class="footer">Generated on Fri Sep 21 2018 13:08:00 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 11 2018 12:12:18 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
