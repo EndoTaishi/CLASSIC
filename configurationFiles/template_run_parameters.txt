@@ -142,6 +142,29 @@ CANEXT = -0.5, -1.5, -0.8, -0.8,
 ! Leaf dimension factor used in calculating the leaf boundary resistance (variable Cl in the documentation for subroutine APREP)
 XLEAF = 0.0247, 0.0204, 0.0456, 0.0456,
 
+! Minimum stomatal resistance of vegetation category \f$[s m^{-1}] (r_{s,min})\f$ (**IGNORED if CTEM is on**)
+RSMN=  200.00,  125.00,  85.000,  100.00,
+
+! Reference value of incoming shortwave radiation for vegetation category (used in stomatal 
+!resistance calculation) [W m^{-2}]  (**IGNORED if CTEM is on**)
+QA50 =  30.00,  40.00, 30.00, 30.00,
+
+! Vapour pressure deficit coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ]  (**IGNORED if CTEM is on**)       
+VPDA =  0.65, 0.50, 0.50, 0.50,
+
+! Vapour pressure deficit coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ]  (**IGNORED if CTEM is on**)       
+VPDB =  1.05, 0.60, 1.00, 1.00,
+
+! Soil moisture suction coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ](**IGNORED if CTEM is on**)       
+PSGA = 100.00, 100.00, 100.00, 100.00 ,
+
+! Soil moisture suction coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ](**IGNORED if CTEM is on**)       
+PSGB = 5.0000, 5.0000, 5.0000, 5.0000 ,
+
 ! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric). Values are derived from the work of Letts et al. (2000)
 
 ! Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$

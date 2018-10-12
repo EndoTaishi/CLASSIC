@@ -352,7 +352,8 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
-        use classic_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop
+        use classic_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop,TFREZ,&
+                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB
 
         implicit none
 
@@ -402,12 +403,9 @@ contains
         real, pointer, dimension(:,:)   :: ALBSROT
         real, pointer, dimension(:,:)   :: RHOSROT
         real, pointer, dimension(:,:)   :: GROROT
-        !real, pointer, dimension(:)     :: ZRFHROW !<
-        !real, pointer, dimension(:)     :: ZRFMROW !<
         real, pointer, dimension(:)     :: DLATROW !<
         real, pointer, dimension(:)     :: DLONROW !<
         real, pointer, dimension(:)     :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
-        !real, pointer, dimension(:)     :: ZBLDROW !<
         real, pointer, dimension(:)     :: RADJROW !<Latitude of grid cell (positive north of equator) [rad]
         real, pointer, dimension(:)     :: Z0ORROW !<
         real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
@@ -454,8 +452,8 @@ contains
 
         ! local variables
 
-        integer :: i,m,j
-        real, parameter :: TFREZ = 273.16       !FLAG eventually do a use statement with class params.
+        integer :: i,m,j,n
+        real :: bots
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -490,9 +488,7 @@ contains
         Cmossmas          => vrot%Cmossmas
         litrmsmoss        => vrot%litrmsmoss
         dmoss             => vrot%dmoss
-
         grclarea          => vgat%grclarea
-
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
         RSMNROT           => class_rot%RSMNROT
@@ -526,10 +522,7 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
-        !ZRFHROW           => class_rot%ZRFHROW
-        !ZRFMROW           => class_rot%ZRFMROW
         GCROW             => class_rot%GCROW
-        !ZBLDROW           => class_rot%ZBLDROW
         ALVCROT           => class_rot%ALVCROT
         ALICROT           => class_rot%ALICROT
         PAMNROT           => class_rot%PAMNROT
@@ -558,19 +551,6 @@ contains
          Z0ORROW(i)=0.0
          GGEOROW(i)=0.0
         end do
-
-    !> ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
-    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
-    !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
-    !> refer to the measurement height of these variables, which is fixed.
-
-        !ZRFMROW = ncGet1DVar(initid, 'ZRFM', start = [lonIndex, latIndex], count = [1, 1])
-        !ZRFHROW = ncGet1DVar(initid, 'ZRFH', start = [lonIndex, latIndex], count = [1, 1])
-
-    !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
-    !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
-
-        !ZBLDROW = ncGet1DVar(initid, 'ZBLD', start = [lonIndex, latIndex], count = [1, 1])
 
     !> GCROW, the GCM surface descriptor variable.  For land surfaces (including inland water) it has a value of -1.
 
@@ -602,21 +582,43 @@ contains
         PAMXROT = ncGet3DVar(initid, 'PAMX', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         CMASROT = ncGet3DVar(initid, 'CMAS', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         ROOTROT = ncGet3DVar(initid, 'ROOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        RSMNROT = ncGet3DVar(initid, 'RSMN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        QA50ROT = ncGet3DVar(initid, 'QA50', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        VPDAROT = ncGet3DVar(initid, 'VPDA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        VPDBROT = ncGet3DVar(initid, 'VPDB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        PSGAROT = ncGet3DVar(initid, 'PSGA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        PSGBROT = ncGet3DVar(initid, 'PSGB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        ! The following six are parameters that can be made to spatially vary by uncommenting below and including them in the
+        ! model init file. However, in practice these parameters are used with spatially invariable values so are read in from 
+        ! the CLASSIC namelist in classic_params.f90. 
+        !RSMNROT = ncGet3DVar(initid, 'RSMN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !QA50ROT = ncGet3DVar(initid, 'QA50', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !VPDAROT = ncGet3DVar(initid, 'VPDA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !VPDBROT = ncGet3DVar(initid, 'VPDB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !PSGAROT = ncGet3DVar(initid, 'PSGA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !PSGBROT = ncGet3DVar(initid, 'PSGB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        ! Here we apply the values read in from the namelist file:
+        do i = 1, nlat
+          do m = 1, nmos
+            RSMNROT(i,m,:) = RSMN(:)
+            QA50ROT(i,m,:) = QA50(:)
+            VPDAROT(i,m,:) = VPDA(:)
+            VPDBROT(i,m,:) = VPDB(:)
+            PSGAROT(i,m,:) = PSGA(:)
+            PSGBROT(i,m,:) = PSGB(:)
+          end do
+        end do
+      
         SANDROT = ncGet3DVar(initid, 'SAND', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         CLAYROT = ncGet3DVar(initid, 'CLAY', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         ORGMROT = ncGet3DVar(initid, 'ORGM', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         TBARROT = ncGet3DVar(initid, 'TBAR', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         THLQROT = ncGet3DVar(initid, 'THLQ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         THICROT = ncGet3DVar(initid, 'THIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
-        ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
-        DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         ipeatlandrow = ncGet2DVar(initid, 'ipeatland', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        DELZ = ncGet1DVar(initid, 'DELZ', start = [1], count = [ignd])
+        
+        ! From DELZ we can find ZBOT as:
+        bots=0.
+        do n = 1,ignd
+          bots = bots + delz(n)
+          ZBOT(n) = bots
+        end do
+        
 
         if (.not. ctem_on) then
             FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])

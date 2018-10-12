@@ -513,6 +513,8 @@ real :: gamma_m                                 !< equivalent co2 fertilization 
 character(350)    :: runParamsFile
 logical          :: PFTCompetitionSwitch
 real :: zbldJobOpt,zrfhJobOpt,zrfmJobOpt
+real, dimension(:), allocatable :: RSMN,QA50,VPDA,VPDB,PSGA,PSGB ! These are temporary variables storing these parameters until they are
+                                                                 ! transfered into their ROT structure in read_initialstate
 
 
 ! --------------------------------------------------------------------------
@@ -526,9 +528,6 @@ contains
 subroutine prepareGlobalParams
 
     implicit none
-
-    !> Prepare CLASS parameters
-    !CALL CLASSD
 
     !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
     iccp1 = icc + 1
@@ -647,6 +646,12 @@ subroutine allocateParamsCLASSIC()
             ZORAT(ican),&
             CANEXT(ican),&
             XLEAF(ican),&
+            RSMN(ican), &
+            QA50(ican), &
+            PSGA(ican), &
+            PSGB(ican), &
+            VPDA(ican), &
+            VPDB(ican), &        
             THPORG(3),&
             THRORG(3),&
             THMORG(3),&
@@ -724,6 +729,12 @@ subroutine readin_params
         ZORAT  ,& 
         CANEXT ,& 
         XLEAF  ,& 
+        RSMN, &
+        QA50, &
+        PSGA, &
+        PSGB, &
+        VPDA, &
+        VPDB, &        
         THPORG ,&
         THRORG ,&
         THMORG ,&

@@ -59,7 +59,7 @@ program initFileConverter
     real, allocatable, dimension(:,:):: TBARROT
     real, allocatable, dimension(:,:):: THLQROT
     real, allocatable, dimension(:,:):: THICROT
-    real, allocatable, dimension(:,:)   :: DELZ
+    real, allocatable, dimension(:)   :: DELZ
     real, allocatable, dimension(:,:)   :: ZBOT
     real, allocatable, dimension(:)  :: TCANROT
     real, allocatable, dimension(:)  :: TSNOROT
@@ -229,7 +229,7 @@ contains
         allocate(ALBSROT(NMTEST))
         allocate(RHOSROT(NMTEST))
         allocate(GROROT(NMTEST))
-        allocate(DELZ(nmtest,ignd))
+        allocate(DELZ(ignd))
         allocate(ZBOT(nmtest,ignd))
 
         allocate(ailcminrow(NMTEST,icc))
@@ -279,13 +279,12 @@ contains
 50    CONTINUE
      ! In CLASS 3.6.2, we include this soil info in the INI file.
       DO 25 J=1,IGND
-          READ(10,*) DELZ(1,J),ZBOT(1,J)
+          READ(10,*) DELZ(J),ZBOT(1,J)
  25   CONTINUE
 
     ! DELZ and ZBOT get put the same for all tiles.
     if (nmtest > 1) then
         do m = 2,nmtest
-            delz(m,:) = delz(1,:)
             zbot(m,:) = zbot(1,:)
         end do
     end if
@@ -368,18 +367,15 @@ contains
     subroutine readNamelist
 
         namelist /classicvars/ &
-            ZRFHROW,&
-            ZRFMROW,&
-            ZBLDROW,&
             GCROW,&
             FCANROT,&
             FAREROT,&
-            RSMNROT,&
-            QA50ROT,&
-            VPDAROT,&
-            VPDBROT,&
-            PSGAROT,&
-            PSGBROT,&
+            !RSMNROT,&
+            !QA50ROT,&
+            !VPDAROT,&
+            !VPDBROT,&
+            !PSGAROT,&
+            !PSGBROT,&
             ALVCROT,&
             ALICROT,&
             PAMNROT,&
@@ -389,10 +385,10 @@ contains
             ROOTROT,&
             DRNROT,&
             SDEPROT,&
-            XSLPROT,&
-            GRKFROT,&
-            WFSFROT,&
-            WFCIROT,&
+            !XSLPROT,&
+            !GRKFROT,&
+            !WFSFROT,&
+            !WFCIROT,&
             MIDROT,&
             SANDROT,&
             CLAYROT,&
@@ -401,7 +397,6 @@ contains
             THLQROT,&
             THICROT,&
             DELZ,&
-            ZBOT,&
             TCANROT,&
             TSNOROT,&
             TPNDROT,&
@@ -617,12 +612,13 @@ contains
         call exportVariable('PAMN',units='m2/m2',long_name='Annual minimum plant area index of vegetation category',values2D=PAMNROT)
         call exportVariable('CMAS',units='$[kg m^{-2} ]$',long_name='Annual maximum canopy mass for vegetation category',values2D=CMASROT)
         call exportVariable('ROOT',units='m',long_name='Annual maximum rooting depth of vegetation category',values2D=ROOTROT)
-        call exportVariable('RSMN',units='s/m',long_name='Minimum stomatal resistance of vegetation category',values2D=RSMNROT)
-        call exportVariable('QA50',units='W/m2',long_name='Reference value of incoming shortwave radiation (used in stomatal resistance calculation)',values2D=QA50ROT)
-        call exportVariable('VPDA',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDAROT)
-        call exportVariable('VPDB',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDBROT)
-        call exportVariable('PSGA',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGAROT)
-        call exportVariable('PSGB',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGBROT)
+        ! The following are now read in from the model parameter namelist file. 
+        !call exportVariable('RSMN',units='s/m',long_name='Minimum stomatal resistance of vegetation category',values2D=RSMNROT)
+        !call exportVariable('QA50',units='W/m2',long_name='Reference value of incoming shortwave radiation (used in stomatal resistance calculation)',values2D=QA50ROT)
+        !call exportVariable('VPDA',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDAROT)
+        !call exportVariable('VPDB',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDBROT)
+        !call exportVariable('PSGA',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGAROT)
+        !call exportVariable('PSGB',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGBROT)
 
         ! ignd variables:
         dimArray = (/lonDimId,latDimId,layerDimId,tileDimId/)
@@ -633,11 +629,19 @@ contains
         call exportVariable('TBAR',units='C',long_name='Temperature of soil layers',values2D=TBARROT)
         call exportVariable('THIC',units='m3/m3',long_name='Volumetric frozen water content of soil layers',values2D=THICROT)
         call exportVariable('THLQ',units='m3/m3',long_name='Volumetric liquid water content of soil layers',values2D=THLQROT)
-        call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values2D=DELZ)
-        call exportVariable('ZBOT',units='m',long_name='Depth of bottom of ground layer',values2D=ZBOT)
 
         deallocate(dimArray,start,count)
 
+        ! ignd variables:
+        allocate(dimArray(1),start(1),count(1))
+        dimArray = (/layerDimId/)
+        count = (/ignd/)
+        start = (/1/)
+        print*,DELZ,count,dimArray
+        call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values=DELZ)
+        deallocate(dimArray,start,count)
+
+        
         ! nmtest only variables:
         allocate(dimArray(3),start(3),count(3))
         dimArray = (/lonDimId,latDimId,tileDimId/)
@@ -646,10 +650,10 @@ contains
         call exportVariable('DRN',units='-',long_name='Soil drainage index',values=DRNROT)
         call exportVariable('FARE',units='fraction',long_name='Tile fractional area of gridcell',values=FAREROT)
         call exportVariable('SDEP',units='m',long_name='Soil permeable depth',values=SDEPROT)
-        call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
-        call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
-        call exportVariable('WFCI',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFCIROT)
-        call exportVariable('WFSF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFSFROT)
+        !call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
+        !call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
+        !call exportVariable('WFCI',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFCIROT)
+        !call exportVariable('WFSF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFSFROT)
         call exportVariable('SOCI',units='index',long_name='Soil colour index',intvalues=SOCIROT)
         call exportVariable('TCAN',units='C',long_name='Vegetation canopy temperature',values=TCANROT)
         call exportVariable('ALBS',units='-',long_name='Soil drainage index',values=ALBSROT)
@@ -669,9 +673,10 @@ contains
         dimArray = (/lonDimId,latDimId/)
         start = (/1, 1 /)
         count = (/1, 1 /)
-        call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
-        call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
-        call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
+        ! These are now in the joboptions file used to setup a model run.
+        !call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
+        !call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
+        !call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
         call exportVariable('grclarea',units='km2',long_name='Area of grid cell',values=(/grclarea/))
 
         deallocate(dimArray,start,count)
