@@ -1,8 +1,8 @@
 &joboptions
 
 ! Meteorological options:
-    readMetStartYear = 1850  !< First year of meteorological forcing to read in from the met file
-    readMetEndYear = 2010    !< Last year of meteorological forcing to read in from the met file
+    readMetStartYear = 1900  !< First year of meteorological forcing to read in from the met file
+    readMetEndYear = 1905    !< Last year of meteorological forcing to read in from the met file
     metLoop = 1 ,            !< no. of times to cycle over the read-in meteorology
     leap = .false. ,         !< True if your meteorological forcing includes leap years
 
@@ -118,22 +118,22 @@
 ! Output options:
 
     output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
-    xmlFile = 'configurationFiles/outputVariableDescriptors_v1.2.xml' ,  !< location of the xml file that outlines the possible netcdf output files
+    xmlFile = 'configurationFiles/outputVariableDescriptors_v1.3.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
     doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
 
-    dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
+    dohhoutput = .true. ,      !< Switch for making half hourly output files (annual are always outputted)
     JHHSTD = 166 ,                !< day of the year to start writing the half-hourly output
     JHHENDD = 185 ,             !< day of the year to stop writing the half-hourly output
     JHHSTY = 1901 ,             !< simulation year (iyear) to start writing the half-hourly output
     JHHENDY = 1901 ,            !< simulation year (iyear) to stop writing the half-hourly output
 
-    dodayoutput = .false. ,     !< Switch for making daily output files (annual are always outputted)
-    JDSTD = 20 ,                 !< day of the year to start writing the daily output
-    JDENDD = 30 ,              !< day of the year to stop writing the daily output
+    dodayoutput = .true. ,     !< Switch for making daily output files (annual are always outputted)
+    JDSTD = 1 ,                 !< day of the year to start writing the daily output
+    JDENDD = 365 ,              !< day of the year to stop writing the daily output
     JDSTY = 1902 ,              !< simulation year (iyear) to start writing the daily output
-    JDENDY = 1903 ,             !< simulation year (iyear) to stop writing the daily output
+    JDENDY = 1902 ,             !< simulation year (iyear) to stop writing the daily output
 
     domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
     JMOSTY = 1901 ,             !< Year to start writing out the monthly output files.

@@ -527,6 +527,20 @@ contains
         !call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
         call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
 
+        ! The following are needed by our in-house plotting software
+        call ncPutAtt(ncid,varid,'modeling_realm',charvalues='land')
+        call ncPutAtt(ncid,varid,'realization',charvalues='1')
+        select case(trim(timeFreq))
+            case("annually")
+              call ncPutAtt(ncid,varid,'frequency',charvalues='yr')
+            case("monthly")
+              call ncPutAtt(ncid,varid,'frequency',charvalues='mon')
+            case("daily")
+              call ncPutAtt(ncid,varid,'frequency',charvalues='day')
+            case("halfhourly")
+              call ncPutAtt(ncid,varid,'frequency',charvalues='hh')
+        end select
+
         call ncEndDef(ncid)
 
     end subroutine createNetCDF
@@ -687,7 +701,7 @@ contains
 
                 ! Sanity check on jhhsty and jhhendy
                 if ((readMetStartYear + totyrs - 1) < jhhsty .or. readMetStartYear > jhhendy) then
-                    print*,'**addTime says: Check your daily output file start and end points, they are outside the range of this run'
+                    print*,'**addTime says: Check your half hourly output file start and end points, they are outside the range of this run'
                     stop
                 end if
 

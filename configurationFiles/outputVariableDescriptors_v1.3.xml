@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2018/10/5">
+<variableSet type="CLASS" version="1.2" created="2018/10/11">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -944,6 +944,12 @@
             <defaultUnits>$[kg C m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rml_hh_g</nameInCode>
+                <units>$[kg C m^{-2} s^{-1} ]$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>rml_hh</nameInCode>
                 <units>$[kg C m^{-2} s^{-1} ]$</units>
@@ -1286,18 +1292,6 @@
                 <nameInCode>npp_d_g</nameInCode>
                 <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
-            <variant>
-                <timeFrequency>halfhourly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>npp_hh</nameInCode>
-                <units>kg C $m^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>halfhourly</timeFrequency>
-                <outputForm>tile</outputForm>
-                <nameInCode>npp_hh_t</nameInCode>
-                <units>kg C $m^{-2}$ s$^{-1}$</units>
-            </variant>
         </variable>
         <variable id="32" includeBareGround="false" dormant="false">
             <standardName>Gross Primary Productivity of Biomass Expressed As Carbon</standardName>
@@ -1344,6 +1338,24 @@
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>gpp_d_g</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>gpp_hh_g</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>gpp_hh</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>gpp_hh_t</nameInCode>
                 <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
@@ -1718,6 +1730,12 @@
                 <nameInCode>ch4WetSpec_mo_t</nameInCode>
                 <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetSpec_d_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
         </variable>
         <variable id="50" includeBareGround="false" dormant="false">
             <standardName>Methane emissions from wetlands</standardName>
@@ -1748,6 +1766,12 @@
                 <nameInCode>ch4WetDyn_mo_t</nameInCode>
                 <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetDyn_d_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
         </variable>
         <variable id="51" includeBareGround="false" dormant="false">
             <standardName>Methane uptake (methanotrophy) by oxic soils</standardName>
@@ -1770,6 +1794,12 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ch4soills_mo_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4soills_d_g</nameInCode>
                 <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
@@ -1948,6 +1978,12 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_ch4_mo_t</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_ch4_d_g</nameInCode>
                 <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>

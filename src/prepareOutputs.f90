@@ -49,7 +49,8 @@ contains
         real :: FLSTAR
         real :: FSSTAR
         real :: TCN,TPN,TSN,TSURF,ZSN
-        real, dimension(:), allocatable :: anveggrd,rmlveggrd
+        real :: an_grd, rml_grd, totvegarea
+        real, dimension(:), allocatable :: anveggrd,rmlveggrd,fcanctot
         integer :: i,j,m
 
         ! pointers
@@ -230,7 +231,8 @@ contains
         real, pointer, dimension(:) :: TPNDROW !< Temperature of ponded water [K]
         real, pointer, dimension(:) :: ZPNDROW !< Depth of ponded water [m]
         real, pointer, dimension(:) :: WSNOROW !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
-
+        real, pointer, dimension(:,:,:) :: fcancmxrow
+        
         ctem_on           => c_switch%ctem_on
         dopertileoutput   => c_switch%dopertileoutput
         doperpftoutput    => c_switch%doperpftoutput
@@ -404,7 +406,8 @@ contains
         WSNOROW => class_rot%WSNOROW
         TPNDROW => class_rot%TPNDROW
         ZPNDROW => class_rot%ZPNDROW
-
+        fcancmxrow => vrot%fcancmx
+        
         ! Calculate grid cell average diagnostic fields.
 
         ! First set all to zero
@@ -681,15 +684,12 @@ contains
 
             ! Write half-hourly CTEM results to file
             !
-            ! Net photosynthetic rates and leaf maintenance respiration for
-            ! each pft. however, if ctem_on then physyn subroutine
-            ! is using storage lai while actual lai is zero. if actual lai is
-            ! zero then we make anveg and rmlveg zero as well because these
-            ! are imaginary just like storage lai. note that anveg and rmlveg
-            ! are not passed to ctem. rather ancsveg, ancgveg, rmlcsveg, and
+            ! Net photosynthetic rates (GPP) and leaf maintenance respiration for each pft. however, if ctem_on then physyn subroutine
+            ! is using storage lai while actual lai is zero. if actual lai is zero then we make anveg and rmlveg zero as well because these
+            ! are imaginary just like storage lai. note that anveg and rmlveg are not passed to ctem. rather ancsveg, ancgveg, rmlcsveg, and
             ! rmlcgveg are passed.
             !
-            allocate(anveggrd(icc),rmlveggrd(icc))
+            allocate(anveggrd(icc),rmlveggrd(icc),fcanctot(icc))
             if (ctem_on) then
                 do m = 1,nmtest
                     do j = 1,icc
@@ -704,22 +704,33 @@ contains
                         endif
                     end do
                     if (dopertileoutput) then
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_hh_t',timeStamp,'npp', [anvegrow(I,M,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_hh_t',timeStamp,'gpp', [anvegrow(I,M,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh_t',timeStamp,'rmLeaf', [rmlvegrow(I,M,:)])
                     end if
-                    if (doperpftoutput) then
-                        anveggrd = 0.0
-                        rmlveggrd = 0.0
-                        do j = 1,icc
-                            anveggrd(j)=anveggrd(j)+anvegrow(i,m,j)*FAREROT(i,m)
-                            rmlveggrd(j)=anveggrd(j)+rmlvegrow(i,m,j)*FAREROT(i,m)
-                        enddo
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_hh',timeStamp,'npp', [anveggrd(:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh',timeStamp,'rmLeaf', [rmlveggrd(:)])
-                    end if
-                end do
-            end if
-
+                    anveggrd = 0.0
+                    rmlveggrd = 0.0
+                    fcanctot = 0.0
+                    do j = 1,icc
+                        anveggrd(j)=anveggrd(j)+anvegrow(i,m,j)*FAREROT(i,m)
+                        rmlveggrd(j)=rmlveggrd(j)+rmlvegrow(i,m,j)*FAREROT(i,m)
+                        fcanctot(j) = fcanctot(j) + fcancmxrow(i,m,j)*FAREROT(i,m)
+                    enddo                    
+                end do ! m loop
+                if (doperpftoutput) then
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_hh',timeStamp,'gpp', [anveggrd(:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh',timeStamp,'rmLeaf', [rmlveggrd(:)])
+                end if                    
+                ! Grid cell level outputs
+                an_grd =0.
+                rml_grd=0.
+                totvegarea = sum(fcanctot)
+                do j = 1,icc
+                    an_grd  = an_grd + anveggrd(j)  * fcanctot(j) / totvegarea
+                    rml_grd = rml_grd+ rmlveggrd(j) * fcanctot(j) / totvegarea
+                enddo                    
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_hh_g',timeStamp,'gpp', [an_grd])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh_g',timeStamp,'rmLeaf', [rml_grd])
+            end if !ctem_on 
         end do !nltest loop
 
     end subroutine class_hh_w
@@ -1862,6 +1873,8 @@ contains
         logical, pointer :: PFTCompetition
         logical, pointer :: doperpftoutput
         logical, pointer :: dopertileoutput
+        logical, pointer :: transientOBSWETF
+        integer, pointer :: fixedYearOBSWETF
 
         real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
@@ -2002,6 +2015,7 @@ contains
         real, allocatable, dimension(:) :: lucltrin_g !<
         real, allocatable, dimension(:) :: lucsocin_g !<
         real, allocatable, dimension(:) :: emit_co2_g !<
+        real, allocatable, dimension(:) :: emit_ch4_g !<
         real, allocatable, dimension(:) :: ch4WetSpec_g  !<
         real, allocatable, dimension(:) :: wetfdyn_g  !<
         real, allocatable, dimension(:) :: ch4WetDyn_g  !<
@@ -2036,6 +2050,7 @@ contains
         real, allocatable, dimension(:,:) :: bleafmas_t !<
         real, allocatable, dimension(:,:) :: soilcmas_t !<
         real, allocatable, dimension(:,:) :: emit_co2_t !<
+        real, allocatable, dimension(:,:) :: emit_ch4_t !<
         real, allocatable, dimension(:,:) :: smfuncveg_t!<
 
         integer :: i,m,j,nt,k
@@ -2050,6 +2065,8 @@ contains
         PFTCompetition        => c_switch%PFTCompetition
         doperpftoutput        => c_switch%doperpftoutput
         dopertileoutput       => c_switch%dopertileoutput
+        transientOBSWETF      => c_switch%transientOBSWETF
+        fixedYearOBSWETF      => c_switch%fixedYearOBSWETF
 
         FAREROT => class_rot%FAREROT
 
@@ -2157,7 +2174,7 @@ contains
                 soilcmas_g (nltest),slai_g (nltest),ailcg_g (nltest),ailcb_g (nltest),veghght_g (nltest),&
                 rootdpth_g (nltest),roottemp_g (nltest),totcmass_g (nltest),tcanoacc_out_g (nltest),&
                 burnfrac_g (nltest),smfuncveg_g (nltest),lucemcom_g (nltest),lucltrin_g (nltest),lucsocin_g (nltest),&
-                emit_co2_g (nltest),ch4WetSpec_g (nltest),wetfdyn_g (nltest),ch4WetDyn_g (nltest),&
+                emit_co2_g (nltest),emit_ch4_g (nltest),ch4WetSpec_g (nltest),wetfdyn_g (nltest),ch4WetDyn_g (nltest),&
                 ch4soills_g (nltest),afrleaf_g (nltest,icc),afrstem_g (nltest,icc),&
                 afrroot_g (nltest,icc),lfstatus_g (nltest,icc),rmlvegrow_g (nltest,icc),anvegrow_g(nltest,icc),&
                 rmatctem_g (nltest,ignd) )
@@ -2167,7 +2184,7 @@ contains
                 rootdpth_t (nltest,nmtest),roottemp_t (nltest,nmtest),slai_t (nltest,nmtest),afrroot_t (nltest,nmtest),&
                 afrleaf_t (nltest,nmtest),afrstem_t (nltest,nmtest),laimaxg_t (nltest,nmtest),stemmass_t (nltest,nmtest),&
                 rootmass_t (nltest,nmtest),litrmass_t (nltest,nmtest),gleafmas_t (nltest,nmtest),bleafmas_t(nltest,nmtest),&
-                soilcmas_t (nltest,nmtest),emit_co2_t (nltest,nmtest),smfuncveg_t (nltest,nmtest) )
+                soilcmas_t (nltest,nmtest),emit_co2_t (nltest,nmtest),emit_ch4_t (nltest,nmtest),smfuncveg_t (nltest,nmtest) )
 
 
         ! First set the local variables to 0.
@@ -2273,6 +2290,7 @@ contains
                     litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,j)*fcancmxrow(i,m,j)
                     soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,j)*fcancmxrow(i,m,j)
                     emit_co2_t(i,m) =emit_co2_t(i,m)+ emit_co2row(i,m,j)*fcancmxrow(i,m,j)
+                    emit_ch4_t(i,m) =emit_ch4_t(i,m)+ emit_ch4row(i,m,j)*fcancmxrow(i,m,j)
                     smfuncveg_t(i,m) = smfuncveg_t(i,m) + smfuncvegrow(i,m,j)*fcancmxrow(i,m,j)
 
                     do k=1,ignd
@@ -2333,6 +2351,7 @@ contains
                 ch4WetDyn_g(i) = ch4WetDyn_g(i) + ch4WetDynrow(i,m)*farerot(i,m)
                 ch4soills_g(i) = ch4soills_g(i) + ch4soillsrow(i,m)*farerot(i,m)
                 emit_co2_g(i) =emit_co2_g(i)+ emit_co2_t(i,m)*FAREROT(i,m)
+                emit_ch4_g(i) =emit_ch4_g(i)+ emit_ch4_t(i,m)*FAREROT(i,m)
                 ! nppmoss_g(i)  = nppmoss_g(i) +nppmossrow(i,m)*FAREROT(i,m)
                 ! armoss_g(i)   = armoss_g(i) + armossrow(i,m)*FAREROT(i,m)
 
@@ -2357,8 +2376,12 @@ contains
         call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_d_g' ,timeStamp,'nbp', [nbp_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_d_g' ,timeStamp,'ra', [autores_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_d_g' ,timeStamp,'rh', [hetrores_g(i)])
-
-    !         hetrores_g(i),
+        if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_d_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_g(i)])
+        end if
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_d_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_g(i)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_d_g' ,timeStamp,'soilCH4cons',[ch4soills_g(i)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_d_g' ,timeStamp,'fFireCH4',[emit_ch4_g(i)])        
     !litres_g(i),
     !socres_g(i), &
     !         (dstcemls_g(i)+dstcemls3_g(i)), &
@@ -2630,13 +2653,13 @@ contains
                 humiftrs_g ,rmr_g ,tltrleaf_g ,gavgltms_g ,vgbiomas_g ,gavglai_g ,gavgscms_g ,gleafmas_g ,&
                 bleafmas_g ,stemmass_g ,rootmass_g ,litrmass_g ,soilcmas_g ,slai_g ,ailcg_g ,ailcb_g ,veghght_g ,&
                 rootdpth_g ,roottemp_g ,totcmass_g ,tcanoacc_out_g ,burnfrac_g ,smfuncveg_g ,&
-                lucemcom_g ,lucltrin_g ,lucsocin_g ,emit_co2_g ,ch4WetSpec_g ,wetfdyn_g ,ch4WetDyn_g ,&
+                lucemcom_g ,lucltrin_g ,lucsocin_g ,emit_co2_g ,emit_ch4_g ,ch4WetSpec_g ,wetfdyn_g ,ch4WetDyn_g ,&
                 ch4soills_g ,afrleaf_g, afrstem_g,afrroot_g,lfstatus_g,rmlvegrow_g,anvegrow_g,&
                 rmatctem_g)
 
         deallocate(leaflitr_t ,tltrleaf_t ,tltrstem_t ,tltrroot_t ,ailcg_t ,ailcb_t ,rmatctem_t ,veghght_t ,&
                 rootdpth_t ,roottemp_t ,slai_t ,afrroot_t ,afrleaf_t ,afrstem_t ,laimaxg_t ,stemmass_t ,&
-                rootmass_t ,litrmass_t ,gleafmas_t ,bleafmas_t,soilcmas_t ,emit_co2_t ,smfuncveg_t )
+                rootmass_t ,litrmass_t ,gleafmas_t ,bleafmas_t,soilcmas_t ,emit_co2_t ,emit_ch4_t ,smfuncveg_t )
 
     end subroutine ctem_daily_aw
     !>@}
