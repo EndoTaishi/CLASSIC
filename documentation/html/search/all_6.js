@@ -39,10 +39,10 @@ var searchData=
   ['grkfgat',['grkfgat',['../structclass__statevars_1_1class__gather.html#a02cd8e5894dcb71ff342a363d7142047',1,'class_statevars::class_gather']]],
   ['grksgat',['grksgat',['../structclass__statevars_1_1class__gather.html#a2956b284bc2e5cb4b59b1ef195abb3bd',1,'class_statevars::class_gather']]],
   ['grksmoss',['grksmoss',['../namespacectem__params.html#ac6a30c2dccbba72bd498bed33c71aef4',1,'ctem_params']]],
-  ['groacc',['groacc',['../structclass__statevars_1_1class__rotated.html#a383e6087c6fef1dddf7b52fe286ada23',1,'class_statevars::class_rotated']]],
+  ['groacc_5fm',['groacc_m',['../structclass__statevars_1_1class__rotated.html#a50e0f8f5c48769846c1a9d132df94609',1,'class_statevars::class_rotated']]],
   ['grogat',['grogat',['../structclass__statevars_1_1class__gather.html#a115dcc86273a60a5e8470afce4863f4e',1,'class_statevars::class_gather']]],
   ['groundevap',['groundevap',['../structclass__statevars_1_1class__moyr__output.html#ad21ac3ef3b4381e865cf7eedf00affdd',1,'class_statevars::class_moyr_output']]],
   ['grwtheff',['grwtheff',['../structctem__statevars_1_1veg__rot.html#a9190dec99b6d51c0292ea9b5c7353b46',1,'ctem_statevars::veg_rot::grwtheff()'],['../structctem__statevars_1_1veg__gat.html#af0398c580fa5ffdbd29992e25dc2d75a',1,'ctem_statevars::veg_gat::grwtheff()']]],
-  ['gtacc',['gtacc',['../structclass__statevars_1_1class__rotated.html#a6ad35fc1942bf9aac8daf7ac2a4b3f7f',1,'class_statevars::class_rotated']]],
+  ['gtacc_5fm',['gtacc_m',['../structclass__statevars_1_1class__rotated.html#a1a1f2ef27f946b0c8c0a4cc5ab6b77b1',1,'class_statevars::class_rotated']]],
   ['gtgat',['gtgat',['../structclass__statevars_1_1class__gather.html#ae9f0a0a5fe937fab3825efd64a4ec5d2',1,'class_statevars::class_gather']]]
 ];

@@ -92,14 +92,14 @@ $(document).ready(function(){initNavTree('wetland__methane_8f90.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a35841c55304898bc73bd6b16661abdfb"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wetland__methane_8f90.html#a35841c55304898bc73bd6b16661abdfb">wetland_methane</a> (hetrores, il1, il2, ta, wetfrac, npp, tbar, thliqg, currlat, sand, slopefrac, ch4wet1, ch4wet2, wetfdyn, ch4dyn1, ch4dyn2)</td></tr>
-<tr class="separator:a35841c55304898bc73bd6b16661abdfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a867c5b383b8c3b3dad7d8ad3ff64c"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wetland__methane_8f90.html#a76a867c5b383b8c3b3dad7d8ad3ff64c">wetland_methane</a> (hetrores, il1, il2, ta, wetfrac, thliqg, currlat, sand, slopefrac, ch4WetSpec, wetfdyn, ch4WetDyn)</td></tr>
+<tr class="separator:a76a867c5b383b8c3b3dad7d8ad3ff64c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wetland and wetland methane subroutine. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="a35841c55304898bc73bd6b16661abdfb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35841c55304898bc73bd6b16661abdfb">&#9670;&nbsp;</a></span>wetland_methane()</h2>
+<a id="a76a867c5b383b8c3b3dad7d8ad3ff64c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a867c5b383b8c3b3dad7d8ad3ff64c">&#9670;&nbsp;</a></span>wetland_methane()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,18 +137,6 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
-          <td class="paramname"><em>npp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>tbar</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>thliqg</em>, </td>
         </tr>
@@ -174,13 +162,7 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
-          <td class="paramname"><em>ch4wet1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
-          <td class="paramname"><em>ch4wet2</em>, </td>
+          <td class="paramname"><em>ch4WetSpec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -192,13 +174,7 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
-          <td class="paramname"><em>ch4dyn1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
-          <td class="paramname"><em>ch4dyn2</em>&#160;</td>
+          <td class="paramname"><em>ch4WetDyn</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -214,17 +190,13 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">hetrores</td><td>heterotrophic respiration from main ctem program calculated as sum of litres + socres</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ta</td><td>air temperature, k</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">wetfrac</td><td>prescribed fraction of wetlands in a grid cell</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">npp</td><td>grid-averaged npp from ctem (u-mol co2/m2.s)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">currlat</td><td>centre latitude of grid cells in degrees</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">slopefrac</td><td>prescribed fraction of wetlands based on slope only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>temperature of soil layers</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thliqg</td><td>liquid soil moisture content (fraction)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">sand</td><td>percentage sand in soil layers</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ch4wet1</td><td>methane flux from wetlands calculated using hetrores in umol ch4/m2.s</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ch4wet2</td><td>methane flux from wetlands calculated using npp in umol ch4/m2.s</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ch4wetspec</td><td>methane flux from wetlands calculated using hetrores in umol ch4/m2.s</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">wetfdyn</td><td>dynamic gridcell wetland fraction determined using slope and soil moisture</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ch4dyn1</td><td>methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ch4dyn2</td><td>methane flux from wetlands calculated using npp and wetfdyn, in umol ch4/m2.s </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ch4wetdyn</td><td>methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s </td></tr>
   </table>
   </dd>
 </dl>
@@ -244,7 +216,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="wetland__methane_8f90.html">wetland_methane.f90</a></li>
-    <li class="footer">Generated on Thu Sep 27 2018 09:54:02 for CLASSIC by
+    <li class="footer">Generated on Fri Oct 19 2018 10:07:33 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

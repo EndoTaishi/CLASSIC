@@ -1646,3 +1646,6 @@
 \form#1645:\[ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2).\qquad (Eqn 9) \]
 \form#1646:\[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \qquad (Eqn 10) \]
 \form#1647:\[ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2},\qquad (Eqn 10) \]
+\form#1648:$(g c/m^2 /day)$
+\form#1649:$kg dom / m^2 / day$
+\form#1650:$kg species / m^2 / s^{-1}$

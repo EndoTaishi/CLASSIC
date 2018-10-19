@@ -270,6 +270,18 @@ contains
           READ(10,5030) (PSGAROT(M,J),J=1,ICAN),(PSGBROT(M,J),J=1,ICAN)
           READ(10,5040) DRNROT(M),SDEPROT(M),FAREROT(M)
           READ(10,5090) XSLPROT(M),GRKFROT(M),WFSFROT(M),WFCIROT(M),MIDROT(M),SOCIROT(M)
+          ! The soil colour index is a 'relatively' new input requirement. It is possible some older INI files 
+          ! would not have this information in them. If not then throw an error and stop the run.
+          if (SOCIROT(M) == 0) THEN
+            print*,''
+            print*,'*** Error! Your INI/nml file is missing the soil colour index! See CLASSIC Manual for information.***'
+            print*,'>>> Enter a soil colour index (integer) or enter -99 to abort the program:'
+            read(*,*)SOCIROT(M)
+            if (SOCIROT(M) == -99) then
+              print*,'Aborting...'
+              exit 
+            end if
+          end if
           READ(10,5080) (SANDROT(M,J),J=1,ignd)
           READ(10,5080) (CLAYROT(M,J),J=1,ignd)
           READ(10,5080) (ORGMROT(M,J),J=1,ignd)

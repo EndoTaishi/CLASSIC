@@ -20,7 +20,7 @@ The expected format of the INI file is:
    0.650   0.500   0.500   0.500           1.050   0.600   1.000   1.000
  100.000 100.000 100.000 100.000           5.000   5.000   5.000   5.000
    0.100   1.728   1.000
- 4.0E-02 3.0E-01 2.0E+03 1.0E-05       1      10
+ 4.0E-02 3.0E-01 2.0E+03 1.0E-05       1    **10**
       47.7      46.7      42.0
       24.7      27.2      31.8
        1.1       0.7       0.3
@@ -33,6 +33,10 @@ The expected format of the INI file is:
          1       365         1       365 !this line ignored in initFileConverter
       2009      2010      2009      2010 !this line ignored in initFileConverter
 </code></pre>
+
+**Special Note: The converter expects a soil colour index in the file (highlighted above). Please see the CLASSIC manual for more information.**
+
+* Additionally it is often best to make the snow in the canopy (SCAN), liquid in the canopy (RCAN) zero as they can often lead to instabilities when running the model at a new site for the first time (see CLASSIC manual for more on this).
 
 and the expected CTM format is:
 <pre><code>
@@ -71,3 +75,5 @@ To run the program, use the following command:
 `bin/initFileConverter [file.INI or file.nml] [file.CTM]
 
 The suffixes are case-insensitive. The namelist can have the suffix .txt or .nml.
+
+The initialization file created will be placed in the same folder as the INI file and will have the same file prefix (file.nc).

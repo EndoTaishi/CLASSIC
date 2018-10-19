@@ -98,7 +98,7 @@ $(document).ready(function(){initNavTree('initTool.html','');});
    0.650   0.500   0.500   0.500           1.050   0.600   1.000   1.000
  100.000 100.000 100.000 100.000           5.000   5.000   5.000   5.000
    0.100   1.728   1.000
- 4.0E-02 3.0E-01 2.0E+03 1.0E-05       1      10
+ 4.0E-02 3.0E-01 2.0E+03 1.0E-05       1    **10**
       47.7      46.7      42.0
       24.7      27.2      31.8
        1.1       0.7       0.3
@@ -110,7 +110,11 @@ $(document).ready(function(){initNavTree('initTool.html','');});
    3.750   4.100
          1       365         1       365 !this line ignored in initFileConverter
       2009      2010      2009      2010 !this line ignored in initFileConverter
-</code></pre><p>and the expected CTM format is: </p><pre><code>
+</code></pre><p><b>Special Note: The converter expects a soil colour index in the file (highlighted above). Please see the CLASSIC manual for more information.</b></p>
+<ul>
+<li>Additionally it is often best to make the snow in the canopy (SCAN), liquid in the canopy (RCAN) zero as they can often lead to instabilities when running the model at a new site for the first time (see CLASSIC manual for more on this).</li>
+</ul>
+<p>and the expected CTM format is: </p><pre><code>
  CTEM INITIALIZATION FILE. CTEM's 9 PFTs ARE                                    !this line ignored in initFileConverter
      NDL     NDL     BDL     BDL     BDL    CROP    CROP   GRASS   GRASS        !this line ignored in initFileConverter
      EVG     DCD     EVG DCD-CLD DCD-DRY      C3      C4      C3      C4!Note 2 !this line ignored in initFileConverter
@@ -137,13 +141,14 @@ $(document).ready(function(){initNavTree('initTool.html','');});
 <h1>Execute</h1>
 <p>To run the program, use the following command:</p>
 <p>`bin/initFileConverter [file.INI or file.nml] [file.CTM]</p>
-<p>The suffixes are case-insensitive. The namelist can have the suffix .txt or .nml. </p>
+<p>The suffixes are case-insensitive. The namelist can have the suffix .txt or .nml.</p>
+<p>The initialization file created will be placed in the same folder as the INI file and will have the same file prefix (file.nc). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Sep 27 2018 09:54:02 for CLASSIC by
+    <li class="footer">Generated on Fri Oct 19 2018 10:07:33 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
