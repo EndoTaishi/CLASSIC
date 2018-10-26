@@ -10,9 +10,10 @@
 
 # where <mode> is:
 # 
-# serial        - compiles code for the GNU compiler on the local platform (default)
-# parallel      - compiles code for the Intel compiler on the front-ends
-# supercomputer - compiles code for the Intel compiler on the supercomputers
+# serial        - compiles code for serial runs using the GNU compiler on the local platform (default)
+# parallel      - compiles code for parallel runs using the GNU compiler on the local platform
+# ppp           - compiles code for parallel runs using the Intel compiler on the front-ends
+# supercomputer - compiles code for parallel runs using the Intel compiler on the supercomputers
 
 # The "cray" mode uses the native Cray compiler on the supercomputers. It still requires testing.
 
@@ -20,7 +21,7 @@
 
 # Modifications: Ed Chan, Sep 2018.
 #   - Updated various compiler options.
-#   - Added "cray" mode.
+#   - Added "cray" and "ppp" modes.
 #   - All objects go into directories specific to the mode used.
 #   - All executable names are labelled with the mode appended.
 
@@ -58,7 +59,7 @@ else ifeq ($(mode), cray)
 	COMPILER = ftn
 	# Fortran Flags. Note: -g prevents most optimizations, -rm gives listings.
 	FFLAGS = -DPARALLEL -s real64 -e0 -ez -O2 -g
-else ifeq ($(mode), parallel)
+else ifeq ($(mode), ppp)
 	# Location of parallel netCDF library.
 	NCLIBS=/fs/ssm/comm/eccc/ccrn/nemo/nemo-1.0/openmpi-1.6.5/enable-shared/intelcomp-2016.1.156/ubuntu-14.04-amd64-64
 	# Open MPI wrapper to the default Fortran compiler. The following is specific to the Intel compiler.
@@ -71,6 +72,15 @@ else ifeq ($(mode), parallel)
 	IFLAGS = -I$(NCLIBS)/include
 	# Library Flags for netCDF.
 	LFLAGS = -L$(NCLIBS)/lib -lnetcdff -lnetcdf -lhdf5_hl -lhdf5
+else ifeq ($(mode), parallel)
+        # Parallel compiler.
+        COMPILER = mpif90
+        # Fortran Flags. The following is specific to the gfortran compiler.
+        FFLAGS = -DPARALLEL -O3 -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -J$(ODIR)  
+        # Include Flags.
+        IFLAGS =  -I${HOME}/PnetCDF/include 
+        # Library Flags.
+        LFLAGS = -L${HOME}/PnetCDF/lib -lnetcdf -ldl -lz -lm 
 else
 	# Serial compiler.
 	COMPILER = gfortran
