@@ -30,6 +30,7 @@
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
      J            ipeatland)
 
+C     * March 23/17 - S.Sun     Expand PFT from 4 to 5. The 5th PFT is broadleaf cold deciduous shrub
 C     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 !
@@ -151,7 +152,7 @@ C
       use classic_params,        only : zolnmoss,DELT,HCPW,HCPICE,
      1                 HCPSND,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                 PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,GROWYR,ZORAT,
-     3                 CANEXT,XLEAF 
+     3                 CANEXT,XLEAF,classpfts,CL4CTEM,ctempfts 
 
       IMPLICIT NONE
 C
@@ -295,7 +296,8 @@ C
 C     * TEMPORARY VARIABLES.
 C
       REAL DAY,GROWG,FSUM,SNOI,ZSNADD,THSUM,THICEI,THLIQI,ZROOT,
-     1     ZROOTG,FCOEFF,PSII,LZ0ORO,THR_LAI,PSIRAT
+     1     ZROOTG,FCOEFF,PSII,LZ0ORO,THR_LAI,PSIRAT,buriedcrp,
+     2     buriedgras,sumfcanmx,temp1
 C
 C     * CTEM-RELATED FIELDS.
 C
@@ -323,7 +325,6 @@ C
       INTEGER ICTEM, M, N, K1, K2, L2MAX, NOL2PFTS(IC)
 C
 C-----------------------------------------------------------------------
-      IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C
 C     * INITIALIZE DIAGNOSTIC AND OTHER ARRAYS.
 C
@@ -447,18 +448,14 @@ C
               GROWB(I)=MAX(0.0,(ABS(GROWTH(I))*2.0-1.0))
           ENDIF
           GROWG=1.0
-C
-C    ----------------- CTEM MODIFICATIONS -----------------------------\
+          
 C    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
-
-
           IF (ctem_on) THEN
            DO J = 1,IC
             ZOLN(I,J)=ZOLNC(I,J)
            END DO
           ENDIF
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
-C
+
       !>
       !!A branch in the code occurs next, depending on the value of the flag IHGT. If IHGT=0, the values of
       !!vegetation height calculated by CLASS are to be used. For trees and grass, the vegetation height under
@@ -469,22 +466,36 @@ C
       !!areas. For needleleaf and broadleaf trees, HS is set to H. For crops and grass, HS is calculated by
       !!subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
       !!
-          IF(IHGT.EQ.0) THEN
-              H(I,1)=10.0*EXP(ZOLN(I,1))  !BDCS P?
-              H(I,2)=10.0*EXP(ZOLN(I,2))
-              H(I,3)=10.0*EXP(ZOLN(I,3))*GROWA(I)
-              H(I,4)=10.0*EXP(ZOLN(I,4))
-          ELSE
-              H(I,1)=HGTDAT(I,1)
-              H(I,2)=HGTDAT(I,2)
-              H(I,3)=HGTDAT(I,3)
-              H(I,4)=HGTDAT(I,4)
+           IF(IHGT.EQ.0)  THEN ! Vegetation height from CLASS
+                do J = 1, IC
+                   select case (classpfts(J))  
+                   case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh')  ! <tree,grass, and shrub
+                     H(I,J) = 10.0*EXP(ZOLN(I,J))
+                   case ('Crops') ! <Crops
+                     H(I,J)=10.0*EXP(ZOLN(I,J))*GROWA(I)
+                   case default
+                     print*,'Unknown PFT in APREP ',classpfts(J)
+                     call XIT('APREP',-1)                   
+                   end select
+                end do
+           ELSE ! Vegetation height read in from external file
+                do J = 1, IC
+                   H(I,J) = HGTDAT(I,J) ! <Vegetation heights are user specified. 
+                end do
           ENDIF
-          HS(I,1)=H(I,1)
-          HS(I,2)=H(I,2)
-          HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)
-          HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)
 
+	!> Now account for burying under snow:
+               do J = 1, IC
+                   select case (classpfts(J))
+                   case ('NdlTr' , 'BdlTr', 'BdlSh')   ! tree,shrub (shrub with no bending or burying here)
+                     HS(I,J)=H(I,J)
+                   case ('Crops','Grass') ! Crops,Grass
+                     HS(I,J)=MAX(H(I,J)-ZSNOW(I),1.0E-3)
+                   case default
+                     print*,'Unknown PFT in APREP ',classpfts(J)
+                     call XIT('APREP',-2)                                        
+                   end select
+                end do
       !>
        !!If CLASS is being run uncoupled to CTEM, a second branch now occurs, depending on the value of the
       !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS are to be used. For all four
@@ -499,84 +510,103 @@ C
       !!generated values of PAI and AIL are used instead.)
       !!
           IF(IPAI.EQ.0) THEN
-C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
-
               IF (ctem_on) THEN
                DO J = 1, IC
                 PAI(I,J)=PAIC(I,J)
                END DO
-              ELSE
-                PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))
-                PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))
-                PAI(I,3)=PAIMIN(I,3)+GROWA(I)*(PAIMAX(I,3)-PAIMIN(I,3))
-                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))
-              ENDIF
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
-C
-          ELSE
+              ELSE !CLASS (physics) only
+               do J = 1, IC
+                 select case (classpfts(J))
+                 case ('BdlTr','BdlSh')   ! <Broadleaf tree and shrub
+                   PAI(I,J)=PAIMIN(I,J)+GROWB(I)*(PAIMAX(I,J)-
+     1                      PAIMIN(I,J))
+                 case ('NdlTr') ! <Needleleaf tree
+                   PAI(I,J)=PAIMIN(I,J)+GROWN(I)*
+     1                      (PAIMAX(I,J)-PAIMIN(I,J))
+                 case ('Crops') ! <Crops
+                   PAI(I,J)=PAIMIN(I,J)+GROWA(I)*(PAIMAX(I,J)-
+     1                      PAIMIN(I,J))
+                 case ('Grass ') ! <Grass
+                   PAI(I,J)=PAIMIN(I,J)+GROWG   *(PAIMAX(I,J)-
+     1                      PAIMIN(I,J))
+                 case default
+                  ! Error checking, if no known CLASS PFT given, bail.
+                  print*,'APREP says: Unknown CLASS pft=>',classpfts(j)
+                  call XIT('APREP',-3)
+                 end select
+               end do
+              ENDIF ! CTEM on/off
+          ELSE !IPAI = 1, so
+            ! Use a read-in time series of PAI.
             DO J = 1,IC
               PAI(I,J)=PAIDAT(I,J)
             END DO
           ENDIF
-          PAIS(I,1)=PAI(I,1)
-          PAIS(I,2)=PAI(I,2)
-          IF(H(I,3).GT.0.0) THEN
-              PAIS(I,3)=PAI(I,3)*HS(I,3)/H(I,3)
+          
+!        Now account for burying due to snow:
+              do J = 1, IC
+                 select case (classpfts(J))
+                 case ('NdlTr' , 'BdlTr', 'BdlSh')   ! <trees and shrub (NO SNOW BURIAL)
+                   PAIS(I,J)=PAI(I,J)
+                 case ('Crops','Grass') ! <Crops, Grass
+                   IF(H(I,J).GT.0.0) THEN
+                     PAIS(I,J)=PAI(I,J)*HS(I,J)/H(I,J)
           ELSE
-              PAIS(I,3)=0.0
+                     PAIS(I,J)=0.0
           ENDIF
-          IF(H(I,4).GT.0.0) THEN
-              PAIS(I,4)=PAI(I,4)*HS(I,4)/H(I,4)
-          ELSE
-              PAIS(I,4)=0.0
-          ENDIF
-C
-C    ----------------- CTEM MODIFICATIONS -----------------------------\
-C
+                 case default
+                    ! Error checking, if no known CLASS PFT given, bail.
+                    print*,'APREP says: Unknown CLASS pft => ',classpfts(j)
+                    call XIT('APREP',-4)
+                 end select
+               end do
 
           IF (ctem_on) THEN
            DO J = 1,IC
              AIL(I,J)=MAX(AILC(I,J), SLAIC(I,J))
            END DO
-          ELSE
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
-C
-            AIL(I,1)=PAI(I,1)*0.90   !BDCS P?
-            AIL(I,2)=MAX((PAI(I,2)-PAIMIN(I,2)),0.0)
-            AIL(I,3)=PAI(I,3)
-            AIL(I,4)=PAI(I,4)
-          ENDIF
+          ELSE !CLASS (physics) only
+             do J = 1, IC
+              select case (classpfts(J))
+                 case ('Crops','Grass')   ! <Crops and Grass
+                   AIL(I,J) = PAI(I,J)
+                 case ('NdlTr') ! <Needleleaf
+                   AIL(I,J)=PAI(I,J)*0.90    !BDCS P?
+                 case ('BdlTr','BdlSh') ! <Broadleaf
+                   AIL(I,J)=MAX((PAI(I,J)-PAIMIN(I,J)),0.0)
+                 case default
+                    ! Error checking, if no known CLASS PFT given, bail.
+                    print*,'APREP says: Unknown CLASS pft => ',classpfts(j)
+                    call XIT('APREP',-5)                   
+              end select
+             end do
+          ENDIF !CTEM on/off
 
-C    ----------------- CTEM MODIFICATIONS -----------------------------\
-C
 C         ESTIMATE GREEN LAI FOR CANOPY OVER SNOW FRACTION FOR CTEM's
 C         9 PFTs, JUST LIKE CLASS DOES.
 C
-
           IF (ctem_on) THEN
-           DO J = 1,ICTEM
+            do J = 1, ICTEM
+              select case (ctempfts(J))
+               case ('NdlEvgTr','NdlDcdTr','BdlEvgTr','BdlDCoTr',
+     1               'BdlDDrTr') ! <Tree and shrub
             AILCGS(I,J)=AILCG(I,J)
-           END DO
+               case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
+                  IF(H(I,CL4CTEM(J)).GT.0.0) THEN 
+                   AILCGS(I,J)=AILCG(I,J)*HS(I,CL4CTEM(J))/
+     1                        H(I,CL4CTEM(J)) 
+            ELSE
+                   AILCGS(I,J)=0.0
+            ENDIF
+               case default
+                  ! Error checking, if no known CTEM PFT given, bail.
+                  print*,'APREP says: Unknown CTEM pft => ',ctempfts(j)
+                  call XIT('APREP',-6)                   
+                end select
+            end do
+            ENDIF
 
-           ! Some adjustments for crops and grasses:
-            IF(H(I,3).GT.0.0) THEN
-              AILCGS(I,6)=AILCG(I,6)*HS(I,3)/H(I,3)  !<C3 CROP
-              AILCGS(I,7)=AILCG(I,7)*HS(I,3)/H(I,3)  !<C4 CROP
-            ELSE
-              AILCGS(I,6)=0.0
-              AILCGS(I,7)=0.0
-            ENDIF
-            IF(H(I,4).GT.0.0) THEN
-              AILCGS(I,8)=AILCG(I,8)*HS(I,4)/H(I,4)  !<C3 GRASS
-              AILCGS(I,9)=AILCG(I,9)*HS(I,4)/H(I,4)  !<C4 GRASS
-            ELSE
-              AILCGS(I,8)=0.0
-              AILCGS(I,9)=0.0
-            ENDIF
-          ENDIF
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
-C
   150 CONTINUE
 C
 C     * ADJUST FRACTIONAL COVERAGE OF GRID CELL FOR CROPS AND
@@ -628,6 +658,32 @@ C
       !!
 
       DO 175 I=IL1,IL2
+!        do J = 1, IC
+!          FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))	   
+!	  IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
+!          !select case (classpfts(J)) 
+!          !case ('NdlTr' , 'BdlTr', 'BdlSh')
+!          !case ('Crops','Grass')
+!            IF(PAI(I,J).LT.THR_LAI) THEN
+!              FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))*PAI(I,J)
+!              PAI (I,J)=THR_LAI
+!	      IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
+!           ENDIF
+!          !end select
+!          end do
+!        do J = 1, IC
+!          FCANS(I,J)=FCANMX(I,J)*FSNOW(I)
+!	  IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
+!          !select case (classpfts(J)) 
+!          !case ('NdlTr' , 'BdlTr', 'BdlSh')
+!          !case ('Crops','Grass')
+!            IF(PAIS(I,J).LT.THR_LAI) THEN
+!              FCANS(I,J)=FCANMX(I,J)*FSNOW(I)*PAIS(I,J)
+!              PAIS (I,J)=THR_LAI
+!              IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
+!            ENDIF
+!          !end select
+!          end do
           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))
           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
@@ -661,10 +717,10 @@ C
           end do
           IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
           IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
-C
-          FC (I)=FCAN(I,1)+FCAN(I,2)+FCAN(I,3)+FCAN(I,4)
+
+          FC (I) = SUM(FCAN(I,:))
+          FCS(I) = SUM(FCANS(I,:))
           FG (I)=1.0-FSNOW(I)-FC(I)
-          FCS(I)=FCANS(I,1)+FCANS(I,2)+FCANS(I,3)+FCANS(I,4)
           FGS(I)=FSNOW(I)-FCS(I)
           IF(ABS(1.0-FCS(I)-FC(I)).LT.8.0E-5) THEN
               IF(FCS(I).LT.1.0E-5) THEN
@@ -673,16 +729,14 @@ C
                 FSNOW(I)= 1.0
               ENDIF
               IF(FCS(I).GT.0.) THEN
-                FCANS(I,1)=FCANS(I,1)*FSNOW(I)/FCS(I)
-                FCANS(I,2)=FCANS(I,2)*FSNOW(I)/FCS(I)
-                FCANS(I,3)=FCANS(I,3)*FSNOW(I)/FCS(I)
-                FCANS(I,4)=FCANS(I,4)*FSNOW(I)/FCS(I)
+               do J = 1, IC
+                FCANS(I,J)=FCANS(I,J)*FSNOW(I)/FCS(I)
+               end do
               ENDIF
               IF(FC(I).GT.0.) THEN
-                FCAN(I,1)=FCAN(I,1)*(1.0-FSNOW(I))/FC(I)
-                FCAN(I,2)=FCAN(I,2)*(1.0-FSNOW(I))/FC(I)
-                FCAN(I,3)=FCAN(I,3)*(1.0-FSNOW(I))/FC(I)
-                FCAN(I,4)=FCAN(I,4)*(1.0-FSNOW(I))/FC(I)
+               do J = 1, IC
+                FCAN(I,J)=FCAN(I,J)*(1.0-FSNOW(I))/FC(I)
+               end do
               ENDIF
               FCS(I)=MIN(FSNOW(I),1.0)
               FC(I)=1.0-FCS(I)
@@ -700,7 +754,7 @@ C
           FGS(I)=FGS(I)/FSUM
 
           IF(ABS(1.0-FCS(I)-FGS(I)-FC(I)-FG(I)).GT.1.0E-5)
-     1                                   CALL XIT('APREP',-1)
+     1                                   CALL XIT('APREP',1)
 C
           IF(IWF.EQ.0) THEN
               IF(ISAND(I,1).EQ.-4) THEN
@@ -710,26 +764,68 @@ C
               ELSE
                   ZPLIMG(I)=0.002
               ENDIF
+
+              ZPLMGS(I)=0.0
               IF(FGS(I).GT.0.0) THEN
-                  ZPLMGS(I)=(ZPLIMG(I)*FSNOW(I)*(1.0-FCANMX(I,1)-
-     1                      FCANMX(I,2)-FCANMX(I,3)-FCANMX(I,4))+
-     2                      ZPLIMG(I)*(FSNOW(I)*FCANMX(I,3)-
-     3                      FCANS(I,3))+0.003*(FSNOW(I)*FCANMX(I,4)-
-     4                      FCANS(I,4)))/FGS(I)
-              ELSE
-                  ZPLMGS(I)=0.0
+                  sumfcanmx=0.
+                  buriedgras =0.
+                  buriedcrp =0.
+                  do J = 1, IC
+                    sumfcanmx=sumfcanmx+FCANMX(I,J)
+                    select case (classpfts(J)) 
+                    case ('Crops')
+                      buriedcrp= FSNOW(I)*FCANMX(I,J)-FCANS(I,J) 
+                    case ('Grass')
+                      buriedgras= FSNOW(I)*FCANMX(I,J)-FCANS(I,J)
+                    case ('NdlTr' , 'BdlTr', 'BdlSh')
+                    ! Assume not buried so do nothing.
+                    case default
+                       ! Error checking, if no known CLASS PFT given, bail.
+                       print*,'APREP says: Unknown CLASS pft => '
+     1                        ,classpfts(j)
+                       call XIT('APREP',-7)                                       
+                    end select
+                  end do
+                 ZPLMGS(I)=(ZPLIMG(I)*FSNOW(I)*(1.0-sumfcanmx)
+     1                     + ZPLIMG(I)*buriedcrp+0.003
+     2                     *buriedgras)
+     3                     /FGS(I)                 
               ENDIF
+C
+              ZPLIMC(I)=0.0
               IF(FC(I).GT.0.0) THEN
-                  ZPLIMC(I)=(0.01*(FCAN(I,1)+FCAN(I,2))+0.003*
-     1                      (FCAN(I,3)+FCAN(I,4)))/FC(I)
-              ELSE
-                  ZPLIMC(I)=0.0
+                  do J = 1, IC
+                   select case (classpfts(J))
+                   case ('NdlTr' , 'BdlTr', 'BdlSh') !assume trees and shrubs don't differ here.
+                     ZPLIMC(I) = ZPLIMC(I) + 0.01*FCAN(I,J)
+                   case ('Crops','Grass')
+                     ZPLIMC(I) = ZPLIMC(I) + 0.003*FCAN(I,J)
+                   case default
+                      ! Error checking, if no known CLASS PFT given, bail.
+                      print*,'APREP says: Unknown CLASS pft => '
+     1                       ,classpfts(j)
+                      call XIT('APREP',-8)                                                           
+                   end select
+                  end do
+                   ZPLIMC(I)=ZPLIMC(I)/FC(I)
               ENDIF
+C
+              ZPLMCS(I)=0.0
               IF(FCS(I).GT.0.0) THEN
-                  ZPLMCS(I)=(0.01*(FCANS(I,1)+FCANS(I,2))+0.003*
-     1                      (FCANS(I,3)+FCANS(I,4)))/FCS(I)
-              ELSE
-                  ZPLMCS(I)=0.0
+                  do J = 1, IC
+                   select case (classpfts(J))
+                   case ('NdlTr' , 'BdlTr', 'BdlSh') !assume trees and shrubs don't differ here.
+                     ZPLMCS(I) = ZPLMCS(I) + 0.01*FCANS(I,J)
+                   case ('Crops','Grass')
+                     ZPLMCS(I) = ZPLMCS(I) + 0.003*FCANS(I,J)
+                   case default
+                      ! Error checking, if no known CLASS PFT given, bail.
+                      print*,'APREP says: Unknown CLASS pft => '
+     1                   ,classpfts(j)
+                      call XIT('APREP',-9)                                                                                
+                   end select
+                  end do
+                   ZPLMCS(I)=ZPLMCS(I)/FCS(I)
               ENDIF
           ELSE
               ZPLMCS(I)=ZPLMS0(I)
@@ -801,20 +897,21 @@ C
       !!recalculated, the diagnosed change in internal energy HTC is updated, and RRESID and SRESID are
       !!added to WTRG, the diagnosed residual water transferred into or out of the soil, and are then set to zero.
       !!
-
       DO 200 I=IL1,IL2
+          PAICAN(I)=0.
           IF(FC(I).GT.0.)                                     THEN
-              PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
-     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
-          ELSE
-              PAICAN(I)=0.0
+              do J = 1,IC
+                PAICAN(I)=PAICAN(I)+FCAN(I,J)*PAI(I,J)
+              end do
+              PAICAN(I)=PAICAN(I)/FC(I)
           ENDIF
+
+          PAICNS(I)=0.0
           IF(FCS(I).GT.0.)                                    THEN
-              PAICNS(I)=(FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+
-     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/
-     2                   FCS(I)
-          ELSE
-              PAICNS(I)=0.0
+              do J = 1,IC
+                PAICNS(I)=PAICNS(I)+FCANS(I,J)*PAIS(I,J)
+              end do
+              PAICNS(I)=PAICNS(I)/FCS(I)
           ENDIF
 C
           CWLCAP(I)=0.20*PAICAN(I)  !BDCS P?
@@ -844,21 +941,47 @@ C
               RAICAN(I)=0.0
               RAICNS(I)=0.0
           ENDIF
-C
+
+          ! For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p,0}\f$ and \f$\Lambda_{p,s}\f$ is performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
+          ! of needle clumping.
+          PAICAN(I)=0.
           IF(FC(I).GT.0.)                                     THEN
-              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+   !BDCS P?
-     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
-          ELSE
-              PAICAN(I)=0.0
+             do J=1,IC
+               select case (classpfts(J))
+               case ('BdlTr', 'Crops', 'Grass', 'BdlSh')
+                 PAICAN(I)=PAICAN(I) + FCAN(I,J)*PAI(I,J)
+               case ('NdlTr')
+                 PAICAN(I)=PAICAN(I) + 0.7*FCAN(I,J)*PAI(I,J)
+               case default
+                  ! Error checking, if no known CLASS PFT given, bail.
+                  print*,'APREP says: Unknown CLASS pft => '
+     1                   ,classpfts(j)
+                  call XIT('APREP',-10)                                                                            
+               end select
+              end do
+              PAICAN(I)=PAICAN(I)/FC(I)
           ENDIF
+
+          PAICNS(I)=0.0
           IF(FCS(I).GT.0.)                                    THEN
-              PAICNS(I)=(0.7*FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+
-     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/
-     2                   FCS(I)
-          ELSE
-              PAICNS(I)=0.0
+             do J=1,IC
+               select case (classpfts(J))
+               case ('BdlTr', 'Crops', 'Grass', 'BdlSh')
+                 PAICNS(I)=PAICNS(I) + FCANS(I,J)*PAIS(I,J)
+               case ('NdlTr')
+                 PAICNS(I)=PAICNS(I) + 0.7*FCANS(I,J)*PAIS(I,J)
+               case default
+                  ! Error checking, if no known CLASS PFT given, bail.
+                  print*,'APREP says: Unknown CLASS pft => '
+     1                   ,classpfts(j)
+                  call XIT('APREP',-11)                                                                                             
+               end select
+              end do
+              PAICNS(I)=PAICNS(I)/FCS(I)
           ENDIF
 C
+          ! Calculate the canopy storage capacity for precip:
+          
           CWFCAP(I)=6.0*PAICAN(I)*(0.27+46.0/RHOSNI(I))   !BDCS P?
           CWFCPS(I)=6.0*PAICNS(I)*(0.27+46.0/RHOSNI(I))   !BDCS P?
 C
@@ -1055,12 +1178,13 @@ C
       DO 300 I=IL1,IL2
           IF(FG(I).GT.0.)                                        THEN
               IF(ISAND(I,1).NE.-4)                   THEN
-                  ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+
-     1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)
+                ZOMLNG(I)=((FG(I)-FCANMX(I,ICP1)*(1.0-FSNOW(I)))*ZOLNG+
+     1                      FCANMX(I,ICP1)*(1.0-FSNOW(I))*ZOLN(I,ICP1))
+     2                      /FG(I)
                   if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
-                      ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))
-     1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*
-     2               ZOLN(I,5))/FG(I)
+                    ZOMLNG(I)=((FG(I)-FCANMX(I,ICP1)*(1.0-FSNOW(I)))
+     1              *zolnmoss+FCANMX(I,ICP1)*(1.0-FSNOW(I))*
+     2               ZOLN(I,ICP1))/FG(I)
                   endif
               ELSE
                   ZOMLNG(I)=ZOLNI
@@ -1068,8 +1192,8 @@ C
               ZOELNG(I)=ZOMLNG(I)-LOG(ZORATG)
           ENDIF
           IF(FGS(I).GT.0.)                                       THEN
-              ZOMLNS(I)=((FGS(I)-FCANMX(I,5)*FSNOW(I))*ZOLNS+
-     1                  FCANMX(I,5)*FSNOW(I)*ZOLN(I,5))/FGS(I)
+              ZOMLNS(I)=((FGS(I)-FCANMX(I,ICP1)*FSNOW(I))*ZOLNS+
+     1                  FCANMX(I,ICP1)*FSNOW(I)*ZOLN(I,ICP1))/FGS(I)
               ZOELNS(I)=ZOMLNS(I)-LOG(ZORATG)
           ENDIF
   300 CONTINUE
@@ -1114,85 +1238,130 @@ C
 !!CMAI is recalculated, and is used to determine the change in internal energy of the canopy, HTCC, owing
 !!to growth or disappearance of the vegetation.
 !!
-
       DO 350 I=IL1,IL2
-          IF(FC(I).GT.0.)                                       THEN
-C     ---------------- CTEM MODIFICATIONS -----------------------------\
-
+          IF(FC(I).GT.0.)   THEN ! For non-snow covered ground
               IF (ctem_on) THEN
+               CMASSC(I)=0.0
+               do J=1,IC
+                CMASSC(I)=CMASSC(I)+FCAN(I,J)*CMASVEGC(I,J)
+               end do
+               CMASSC(I)=CMASSC(I)/FC(I)
+            ELSE !CLASS (physics) only
+               CMASSC(I)=0.0
+               do J=1,IC
+                select case (classpfts(J))
+                case ('NdlTr','BdlTr','Grass', 'BdlSh')
+                  CMASSC(I)=CMASSC(I)+FCAN(I,J)*CWGTMX(I,J)
+                case ('Crops')
+                  CMASSC(I)=CMASSC(I)+FCAN(I,J)*CWGTMX(I,J)*GROWA(I)
+                case default
+                   ! Error checking, if no known CLASS PFT given, bail.
+                   print*,'APREP says: Unknown CLASS pft => '
+     1                    ,classpfts(j)
+                   call XIT('APREP',-12)                                                                            
+                end select
+               end do
+               CMASSC(I)=CMASSC(I)/FC(I)
+            ENDIF !CTEM on/off
 
-                CMASSC(I)=(FCAN(I,1)*CMASVEGC(I,1)+
-     1                     FCAN(I,2)*CMASVEGC(I,2)+
-     2                     FCAN(I,3)*CMASVEGC(I,3)+
-     3                     FCAN(I,4)*CMASVEGC(I,4))/FC (I)
-              ELSE
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
-              CMASSC(I)=(FCAN(I,1)*CWGTMX(I,1)+FCAN (I,2)*CWGTMX(I,2)+
-     1                   FCAN(I,3)*CWGTMX(I,3)*GROWA(I)+
-     2                   FCAN(I,4)*CWGTMX(I,4))/FC (I)
-              ENDIF     !CTEM MODIFICATION
-C
+            !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
               IF(IDISP.EQ.0) THEN
+              temp1=0.0
+              do J=1,IC
+                temp1=temp1+FCAN(I,J)*H(I,J)
+              end do
                   CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7* !BDCS P?
-     1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
-     2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
+     1                   temp1/FC(I)
               ENDIF
+              !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+              !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
               IF(IZREF.EQ.2) THEN
-                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1* !BDCS P?
-     1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
-     2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
+              temp1=0.0
+              do J=1,IC
+                temp1=temp1+FCAN(I,J)*H(I,J)
+              end do
+              CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1*
+     1                   temp1/FC(I)
               ENDIF
           ENDIF
-          IF(FCS(I).GT.0.)                                      THEN
-C    ----------------- CTEM MODIFICATIONS -----------------------------\
+          
+          IF(FCS(I).GT.0.)   THEN ! For snow covered ground
+
               IF (ctem_on) THEN
-                CMASCS(I)=FCANS(I,1)*CMASVEGC(I,1)+
-     1                     FCANS(I,2)*CMASVEGC(I,2)+
-     2                     FCANS(I,3)*CMASVEGC(I,3)
-     3                    *HS(I,3)/MAX(H(I,3),HS(I,3))+
-     4                     FCANS(I,4)*CMASVEGC(I,4)
-     5                    *HS(I,4)/MAX(H(I,4),HS(I,4))/FCS(I)
-              ELSE
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
-              CMASCS(I)=(FCANS(I,1)*CWGTMX(I,1)+FCANS(I,2)*CWGTMX(I,2)+
-     1                   FCANS(I,3)*CWGTMX(I,3)*GROWA(I)
-     2                  *HS(I,3)/MAX(H(I,3),HS(I,3))+
-     3                   FCANS(I,4)*CWGTMX(I,4)
-     4                  *HS(I,4)/MAX(H(I,4),HS(I,4)))/FCS(I)
-              ENDIF   ! CTEM MODIFICATION
+                CMASCS(I)= 0.0
+                do J=1,IC
+                  select case (classpfts(J))
+                  case ('NdlTr','BdlTr','BdlSh') 
+                    CMASCS(I)= CMASCS(I) + FCANS(I,J)*CMASVEGC(I,J)
+                  case ('Crops','Grass')
+                    CMASCS(I)=CMASCS(I) + FCANS(I,J)*CMASVEGC(I,J)*
+     1                        HS(I,J)/MAX(H(I,J),HS(I,J))
+                  case default
+                    ! Error checking, if no known CLASS PFT given, bail.
+                    print*,'APREP says: Unknown CLASS pft => ',
+     1                      classpfts(j)
+                    call XIT('APREP',-13)                                                                            
+                  end select
+                end do
+                CMASCS(I)=CMASCS(I)/FCS(I)
+              ELSE ! CLASS (physics) only
+                CMASCS(I) = 0.0 
+                do J=1,IC
+                  select case (classpfts(J))
+                  case ('NdlTr','BdlTr','BdlSh') 
+                    CMASCS(I)=CMASCS(I) + FCANS(I,J)*CWGTMX(I,J)
+                  case ('Crops')
+                    CMASCS(I)=CMASCS(I) + FCANS(I,J)*CWGTMX(I,J)*
+     1                        GROWA(I)*HS(I,J)/MAX(H(I,J),HS(I,J))
+                  case ('Grass')
+                    CMASCS(I)=CMASCS(I) + FCANS(I,J)*CWGTMX(I,J)*
+     1                        HS(I,J)/MAX(H(I,J),HS(I,J))
+                  case default
+                    ! Error checking, if no known CLASS PFT given, bail.
+                    print*,'APREP says: Unknown CLASS pft => ',
+     1                     classpfts(j)
+                    call XIT('APREP',-14)                                                                            
+                  end select
+                end do
+                CMASCS(I)=CMASCS(I)/FCS(I)
+              ENDIF   ! CTEM on/off
 C
+              !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
               IF(IDISP.EQ.0) THEN
-                  CMASCS(I)=CMASCS(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7*
-     1                      (FCANS(I,1)*HS(I,1)+FCANS(I,2)*HS(I,2)+
-     2                       FCANS(I,3)*HS(I,3)+FCANS(I,4)*HS(I,4))/
-     3                       FCS(I)
+                 temp1=0.0
+                 do J=1,IC
+                   temp1=temp1+FCANS(I,J)*HS(I,J)
+                 end do
+                  CMASCS(I)=CMASCS(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7* !BDCS
+     1                      temp1/FCS(I)
               ENDIF
+              
+              !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+              !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
               IF(IZREF.EQ.2) THEN
+                 temp1=0.0
+                 do J=1,IC
+                   temp1=temp1+FCANS(I,J)*HS(I,J)
+                 end do
                   CMASCS(I)=CMASCS(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1*
-     1                      (FCANS(I,1)*HS(I,1)+FCANS(I,2)*HS(I,2)+
-     2                       FCANS(I,3)*HS(I,3)+FCANS(I,4)*HS(I,4))/
-     3                       FCS(I)
+     1                      temp1/FCS(I)
               ENDIF
           ENDIF
 
           CHCAP (I)=SPHVEG*CMASSC(I)+SPHW*RAICAN(I)+SPHICE*SNOCAN(I)
           CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I)
           HTCC  (I)=HTCC(I)-SPHVEG*CMAI(I)*TCAN(I)/DELT
-C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
-C         THIS, BELOW, WAS MAKING IT SO THAT OUR READ-IN TCAN WAS BEING
-C         OVERWRITTEN BY TA FOR THE FIRST TIME STEP. JM JAN 2013
           IF (ctem_on) THEN
-
             CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
             IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
-          ELSE
+          ELSE !CLASS (physics) only
           IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
           CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
           ENDIF
-C    ----------------- CTEM MODIFICATIONS -----------------------------/
+
           HTCC  (I)=HTCC(I)+SPHVEG*CMAI(I)*TCAN(I)/DELT
           RBCOEF(I)=0.0
   350 CONTINUE
@@ -1265,23 +1434,21 @@ C
 
   450 CONTINUE
 C
-      DO 500 J=1,IG
+      DO 500 K=1,IG
       DO 500 I=IL1,IL2
+          FROOT(I,K)=0.0
+          FROOTS(I,K)=0.0
           IF(FC(I).GT.0.)                               THEN
-              FROOT(I,J)=(FCAN(I,1)*RMAT(I,1,J) +
-     1                    FCAN(I,2)*RMAT(I,2,J) +
-     2                    FCAN(I,3)*RMAT(I,3,J) +
-     3                    FCAN(I,4)*RMAT(I,4,J))/FC(I)
-          ELSE
-              FROOT(I,J)=0.0
+            do J=1,IC
+              FROOT(I,K)=FROOT(I,K)+FCAN(I,J)*RMAT(I,J,K)
+            end do
+            FROOT(I,K)=FROOT(I,K)/FC(I)
           ENDIF
           IF(FCS(I).GT.0.)                              THEN
-              FROOTS(I,J)=(FCANS(I,1)*RMAT(I,1,J) +
-     1                     FCANS(I,2)*RMAT(I,2,J) +
-     2                     FCANS(I,3)*RMAT(I,3,J) +
-     3                     FCANS(I,4)*RMAT(I,4,J))/FCS(I)
-          ELSE
-              FROOTS(I,J)=0.0
+            do J=1,IC
+              FROOTS(I,K)=FROOTS(I,K)+FCANS(I,J)*RMAT(I,J,K)
+            end do
+            FROOTS(I,K)=FROOTS(I,K)/FCS(I)
           ENDIF
   500 CONTINUE
 C
@@ -1298,21 +1465,19 @@ C
 !!
 
       DO 600 I=IL1,IL2
+          FSVF (I)=0.0
           IF(FC(I).GT.0.)                                        THEN
-              FSVF (I)=(FCAN (I,1)*EXP(CANEXT(1)*PAI (I,1)) +
-     1                  FCAN (I,2)*EXP(CANEXT(2)*PAI (I,2)) +
-     2                  FCAN (I,3)*EXP(CANEXT(3)*PAI (I,3)) +
-     3                  FCAN (I,4)*EXP(CANEXT(4)*PAI (I,4)))/FC (I)
-          ELSE
-              FSVF (I)=0.
+            do J=1,IC
+              FSVF(I)=FSVF(I)+FCAN(I,J)*EXP(CANEXT(J)*PAI(I,J))
+            end do
+            FSVF(I)=FSVF(I)/FC(I)
           ENDIF
+          FSVFS(I)=0.0
           IF(FCS(I).GT.0.)                                       THEN
-              FSVFS(I)=(FCANS(I,1)*EXP(CANEXT(1)*PAIS(I,1)) +
-     1                  FCANS(I,2)*EXP(CANEXT(2)*PAIS(I,2)) +
-     2                  FCANS(I,3)*EXP(CANEXT(3)*PAIS(I,3)) +
-     3                  FCANS(I,4)*EXP(CANEXT(4)*PAIS(I,4)))/FCS(I)
-          ELSE
-              FSVFS(I)=0.
+            do J=1,IC
+              FSVFS(I)=FSVFS(I)+FCANS(I,J)*EXP(CANEXT(J)*PAIS(I,J))
+            end do
+            FSVFS(I)=FSVFS(I)/FCS(I)
           ENDIF
   600 CONTINUE
 C
@@ -1333,7 +1498,6 @@ C
 !!calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
 !!\f$\Psi_w\f$ over all the soil layers.
 !!
-
       DO 650 J=1,IG
       DO 650 I=IL1,IL2
           IF(FCS(I).GT.0.0 .OR. FC(I).GT.0.0)                      THEN
@@ -1373,18 +1537,20 @@ C
 !!
 
       DO 800 I=IL1,IL2
+          PAICAN(I)=0.0
           IF(FC(I).GT.0.)                                     THEN
-              PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
-     1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
-          ELSE
-              PAICAN(I)=0.0
+            do J=1,IC
+              PAICAN(I)=PAICAN(I)+FCAN(I,J)*PAI(I,J)
+            end do
+            PAICAN(I)=PAICAN(I)/FC(I)
           ENDIF
+
+          PAICNS(I)=0.0
           IF(FCS(I).GT.0.)                                    THEN
-              PAICNS(I)=(FCANS(I,1)*PAIS(I,1)+FCANS(I,2)*PAIS(I,2)+
-     1                   FCANS(I,3)*PAIS(I,3)+FCANS(I,4)*PAIS(I,4))/
-     2                   FCS(I)
-          ELSE
-              PAICNS(I)=0.0
+            do J=1,IC
+              PAICNS(I)=PAICNS(I)+FCANS(I,J)*PAIS(I,J)
+            end do
+            PAICNS(I)=PAICNS(I)/FCS(I)
           ENDIF
   800 CONTINUE
 C
@@ -1393,11 +1559,7 @@ C
 C       * ESTIMATE FCANC AND FCANCS FOR USE BY PHTSYN SUBROUTINE BASED ON
 C       * FCAN AND FCANS FOR CTEM PFTS.
 C
-        DO 810 J = 1, IC
-        DO 810 I = IL1, IL2
-          SFCANCMX(I,J)=0.0  ! SUM OF FCANCMXS
-  810   CONTINUE
-C
+        SFCANCMX(:,:)=0.0  ! SUM OF FCANCMXS
         K1=0
         DO 830 J = 1, IC
           IF(J.EQ.1) THEN

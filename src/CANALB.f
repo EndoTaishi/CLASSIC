@@ -12,6 +12,8 @@ C!stomatal resistances.
      6                  ILG,IL1,IL2,JL,IC,ICP1,IG,IALC,
      7                  CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC) 
 
+C     * Mar 28/17 - S.SUN Expand PFTs from 4 to 5 in CLASS
+C     *
 C     * AUG 04/15 - D.VERSEGHY/M.LAZARE. REMOVE FLAG VALUE OF RC FOR 
 C     *                         VERY DRY SOILS.
 C     * SEP 05/14 - P.BARTLETT. INCREASED ALBEDO VALUES FOR SNOW-
@@ -61,7 +63,8 @@ C     * MAR 03/92 - D.VERSEGHY/M.LAZARE. REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CANOPY ALBEDOS AND TRANSMISSIVITIES.
 C
-      use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG
+      use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG,
+     2                           classpfts
 
       IMPLICIT NONE
 C
@@ -344,17 +347,14 @@ C
       J=1
       DO 150 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
-              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   !BDCS P?
+              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)    
-                                 
               TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*             !BDCS P?  
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)   
-
               TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
 !              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-                                 
               TRCLDT=0.30*EXP(-0.3*PAI(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.3*PAI(I,J)/0.2588)   
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -442,19 +442,14 @@ C
              TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
 !              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)    
-
               TRCLDV=0.30*EXP(-0.5*PAI(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.5*PAI(I,J)/0.2588)
-
               TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
 !              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-
-                               
               TRCLDT=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)                
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
-
               IF(TRVS(I).GT.0.0001)                           THEN
                   CXTEFF(I,J)=-LOG(TRVS(I))/MAX(PAI(I,J),1.0E-5)
               ELSE
@@ -476,7 +471,7 @@ C
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
                   ALVSN=(1.0-SVF)*ALVSCX+SVF*TRVS(I)*ALVSGC(I)
                   ALIRN=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRGC(I)
-              ELSE
+            ELSE !user-specified values read-in.
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ACVDAT(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ACIDAT(I,J)
                   ALVSN=(1.0-SVF)*ALVSCX+SVF*ACVDAT(I,J)
@@ -502,7 +497,7 @@ C
       IF(IPTBAD.NE.0) THEN
           WRITE(6,6100) IPTBAD,JL,ALVSCN(IPTBAD),ALIRCN(IPTBAD)
  6100     FORMAT('0AT (I,J)= (',I3,',',I3,'), ALVSCN,ALIRCN = ',2F10.5)
-          CALL XIT('CANALB',-1)    
+          CALL XIT('CANALB',-2)    
       ENDIF                                                                                  
 C
 C     * TOTAL TRANSMISSIVITIES.
@@ -525,7 +520,6 @@ C
           CALL XIT('CANALB',-3)    
       ENDIF                                                                                  
 C----------------------------------------------------------------------
-C
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER SNOW.
 C
 C     * NEEDLELEAF TREES.
@@ -536,14 +530,11 @@ C
               TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))   !BDCS P?
 !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
-                                   
-              TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*           !BDCS P?    
-     1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
-
+              TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*           
+     1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   !BDCS P?    
               TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-             
               TRCLDT=0.30*EXP(-0.3*PAIS(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.3*PAIS(I,J)/0.2588)   
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -617,14 +608,11 @@ C
               TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
-                                   
               TRCLDV=0.30*EXP(-0.5*PAIS(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.5*PAIS(I,J)/0.2588)
-
               TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-                                    
               TRCLDT=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)                
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -699,19 +687,19 @@ C
       IF(IPTBAD.NE.0) THEN
           WRITE(6,6400) IPTBAD,JL,TRVSCS(IPTBAD),TRIRCS(IPTBAD)
  6400     FORMAT('0AT (I,J)= (',I3,',',I3,'), TRVSCS,TRIRCS = ',2F10.5)
-          CALL XIT('CANALB',-4)    
+          CALL XIT('CANALB',-5)    
       ENDIF
 C
       IF(IPTBAD.NE.0) THEN
           WRITE(6,6200) IPTBAD,JL,ALVSCS(IPTBAD),ALIRCS(IPTBAD)
  6200     FORMAT('0AT (I,J)= (',I3,',',I3,'), ALVSCS,ALIRCS = ',2F10.5)
-          CALL XIT('CANALB',-2)    
+          CALL XIT('CANALB',-6)    
       ENDIF                                                                                  
 C
       IF(JPTBAD.NE.0) THEN
           WRITE(6,6500) JPTBDI,JL,JPTBAD
  6500     FORMAT('0AT (I,J)= (',I3,',',I3,'), JPTBAD =  ',I5)
-          CALL XIT('CANALB',-5)    
+          CALL XIT('CANALB',-7)    
       ENDIF                      
 C-----------------------------------------------------------------------
       !>
