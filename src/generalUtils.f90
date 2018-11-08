@@ -10,6 +10,7 @@ module generalUtils
     public :: findPermafrostVars
     public :: parseTimeStamp
     public :: closeEnough
+    public :: initRandomSeed
 
     logical :: run_model           !< Simple logical switch to either keep run going or finish
 
@@ -302,6 +303,27 @@ module generalUtils
         endif
     end function closeEnough
     !!@}
+
+    subroutine initRandomSeed()
+      !! This subroutine sets a repeatable seed for the random number generator. 
+      !!@author J. Melton 
+      
+      ! NOTE: this subroutine will eventually be replaced by "call random_init()" which 
+      ! is an intrinsic in the  Fortran 2018 standard.
+      integer :: n
+      integer, allocatable :: seed(:)
+
+      call random_seed(size=n)
+      allocate(seed(n))
+      seed = [589389089, -1833635194, -1427112145,  -221780241, -1385512334,&
+             1330528710,   455378389, -1211778909,  -923613139,  1097388946,&
+            -1423068269, -1226460021,  1739551198, -1928317953,  1744844714,&
+             1290056192,   615614619,  1827352738,  -718644292,   652640521,&
+              614649693, -1553995767, -1949263691,   437632582,  1459224124,&
+              1651070976, -1377436989,  2116937179,  -364739526,  -984350084,&
+                 515991562,  -174991267,  -558585680]
+      call random_seed(put=seed)
+    end subroutine initRandomSeed
 
 !>\file
 !>Central module for all general utilities

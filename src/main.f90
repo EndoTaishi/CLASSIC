@@ -60,7 +60,7 @@ contains
                                         ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness,&
-                                        findPermafrostVars
+                                        findPermafrostVars,initRandomSeed
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities,       only : dayEndCTEMPreparation,accumulateForCTEM,ctemInit
         use metDisaggModule,     only : disaggMet
@@ -2387,6 +2387,10 @@ contains
 
         !> Read in the meteorological forcing data to a suite of arrays
         call getMet(longitude,latitude,nday)
+        
+        !> In preparation for the use of the random number generator by disaggMet,
+        !! we need to provide a seed to allow repeatable results. 
+        call initRandomSeed()
 
         !> Now disaggregate the meteorological forcing to the right timestep
         !! for this model run (if needed; this is checked for in the subroutine)

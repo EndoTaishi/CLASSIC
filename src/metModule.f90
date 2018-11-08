@@ -232,7 +232,7 @@ contains
 !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
     subroutine precipDistribution(var)
 
-        use classic_params, only : delt
+        use classic_params, only : delt,zero
         
         implicit none
 
@@ -240,17 +240,22 @@ contains
         integer                                     :: i, j, k, T,start, endpt, countr,wetpds
         real                                        :: temp,startpre
         real, allocatable, dimension(:)             :: random
-        integer, allocatable, dimension(:)             :: sort_ind
+        integer, allocatable, dimension(:)          :: sort_ind
+        real, allocatable, dimension(:)             :: incomingPre
 
         allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
 
         countr = size(var)
-
+                
         ! Loop through the metInputTimeStep timesteps (commonly 6 hr)
 
         ! Adjust the precip from mm/s to mm/6h (or mm/3h). The relationship below is
         ! derived for mm/6h originally.
         var = var * metInputTimeStep
+
+        ! Save the incoming precip for balance check later
+        allocate(incomingPre(countr))
+        incomingPre = var
 
         do i = 1, countr/numberPhysInMet
 
@@ -317,7 +322,7 @@ contains
                     !print*,j,k,random(k),startpre,var(j)
                     k = k + 1
                 end do
-
+              
             else !No precip, move on.
                 wetpds = 0
                 var(start:endpt) = 0.
@@ -325,11 +330,17 @@ contains
 
         enddo
 
+        ! Balance check that we have conserved our precip
+        if ((sum(var)-sum(incomingPre)) .gt. zero) then 
+          print*,'Warning: In precipDistribution, precip is not conserved',sum(var),sum(incomingPre)
+          call XIT('metModule',-1)
+        end if
+
         ! So we now have the amount of precip in each physics timestep (mm/delt)
         ! we now need to then convert back to mm/s
         var = var / delt
 
-        deallocate(random,sort_ind)
+        deallocate(random,sort_ind,incomingPre)
 
     end subroutine precipDistribution
 !!@}
