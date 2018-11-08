@@ -492,8 +492,8 @@ C     * BARE SOIL ALBEDOS.
 C
       CALL GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
      1            ALGWV,ALGWN,ALGDV,ALGDN,
-     +            THLIQ,FSNOW,ALVSC(1,5),ALIRC(1,5),                    
-     2            FCANMX(1,5),AGVDAT,AGIDAT,FG,ISAND, 
+     +            THLIQ,FSNOW,ALVSC(1,ICP1),ALIRC(1,ICP1),                    
+     2            FCANMX(1,ICP1),AGVDAT,AGIDAT,FG,ISAND, 
      3            ILG,IG,IL1,IL2,JL,IALG)
                                                                         
                                                                         

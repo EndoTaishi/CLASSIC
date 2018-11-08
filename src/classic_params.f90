@@ -141,7 +141,7 @@ integer :: icc               !< Number of CTEM (biogeochemical) pfts, read in fr
 integer :: l2max             !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs
                              !! associated with a single CLASS PFT. Read in from the job options file.
 ! ----
-! Plant-related parameters that are calculated based on job options
+! Plant-related parameters that are calculated based on job options or parameters
 integer :: icp1              !< ican + 1
 integer :: iccp1             !< iccp1
 integer :: kk                !< product of class pfts and l2max
@@ -152,9 +152,15 @@ integer :: numshrubs         !< number of shrubs pfts
 integer, dimension(:), allocatable :: nol2pfts !< Number of level 2 PFTs calculated in readin_params
 logical, dimension(:), allocatable :: crop     !< simple crop matrix, define number and position of the crops (NOTE: dimension icc)
 logical, dimension(:), allocatable :: grass    !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
+integer, dimension(:), allocatable :: CL4CTEM  !< Indexing of the CTEM-level PFTs into a CLASS PFT-level array.
 
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
+
+! Vegetation related parameters that define what PFTs are being simulated:
+character(5), dimension(:), allocatable :: classpfts  !< CLASS (physics) PFTs
+integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
+character(8), dimension(:), allocatable :: ctempfts  !<List of CTEM-level PFTs
 
 ! Physics (CLASS) parameters:
 
@@ -238,9 +244,6 @@ real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight perc
 
 ! Biogeochemical (CTEM) parameters:
 
-integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
-character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
-character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
 real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient
 
 !allocate.f parameters: ----------
@@ -551,11 +554,11 @@ subroutine allocateParamsCLASSIC()
 
     implicit none
 
-    kk = l2max * icc
+    kk = l2max * ican
 
     allocate(modelpft(kk),&
-            pftlist(kk),&
-            vegtype(kk),&
+            ctempfts(kk),&
+            CL4CTEM(kk), &
             kn(kk),&
             omega(kk),&
             epsilonl(kk),&
@@ -644,6 +647,7 @@ subroutine allocateParamsCLASSIC()
             rmlcoeff(kk))
     allocate(GROWYR(18,4,2),&
             ZORAT(ican),&
+            classpfts(ican),&
             CANEXT(ican),&
             XLEAF(ican),&
             RSMN(ican), &
@@ -686,7 +690,7 @@ subroutine readin_params
     real, dimension(kk):: mxmortge_compete
     real, dimension(kk):: maxage_compete
     real, dimension(kk):: drlsrtmx_compete
-    integer :: i,n
+    integer :: i,n,m
     character(8) :: pftkind
     integer :: isumc,k1c,k2c
 
@@ -751,8 +755,8 @@ subroutine readin_params
         ALDN,&
         WSNCAP,&
         modelpft,&
-        vegtype, &
-        pftlist,&
+        classpfts, &
+        ctempfts,&
         kn, &
         omega,&
         omega_compete,&
@@ -948,20 +952,38 @@ subroutine readin_params
         enddo
         nol2pfts(i)=isumc  ! number of level 2 pfts
     end do
+    
+    ! Calculate the CL4CTEM which helps index CTEM to CLASS in APREP.
+    k1c=0
+    do i = 1, ican
+      if(i.eq.1) then
+        k1c = k1c + 1
+      else
+        k1c = k1c + nol2pfts(i-1)
+      endif
+      k2c = k1c + nol2pfts(i) - 1
+      do m = k1c, k2c
+        CL4CTEM(m) = i
+      end do
+    end do
+    print*,'classicparams',CL4CTEM 
 
     do i = 1, icc
-        pftkind=vegtype(i)
+        pftkind=ctempfts(i)
         select case(pftkind)
-            case('Tree')
-                numtreepfts = numtreepfts + 1
-            case('Shrub')
-                numshrubs = numshrubs + 1
-            case('Grass')
-                numgrass = numgrass + 1
-                grass(i) = .true.
-            case('Crop')
-                numcrops = numcrops + 1
-                crop(i) = .true.
+        case('NdlEvgTr','NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
+            numtreepfts = numtreepfts + 1
+        case('Shrub')  !FLAG NEED FIX.
+            numshrubs = numshrubs + 1
+        case('GrassC3 ','GrassC4 ')
+            numgrass = numgrass + 1
+            grass(i) = .true.
+        case('CropC3  ','CropC4  ')
+            numcrops = numcrops + 1
+            crop(i) = .true.
+        case default
+          print*,'Unknown PFT in classic_params ',pftkind
+          call XIT('classic_params',-1)
         end select
     end do
 
@@ -989,33 +1011,63 @@ end subroutine readin_params
 !>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 !>first, then the remaining variables are assigned different variables if competition is on, or not.
 !>
+!> Please see documentation/overviewCTEM.md for more info.
+!!
 !> PFT parameters
 !!
 !!Note the structure of vectors which clearly shows the CLASS
 !!PFTs (along rows) and CTEM sub-PFTs (along columns)
 !!
+!! The basic version of CLASSIC includes the following PFTs:
 !!\f[
 !!\begin{tabular} { | l | c | c | c | c | c | }
 !!\hline
-!!needle leaf &  evg &      dcd &      --- & ---& ---\\ \hline
-!!broad leaf  &  evg &  dcd-cld &  dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline
-!!crops       &   c3 &       c4 &      --- & ---& ---\\ \hline
-!!grasses     &   c3 &       c4 &      sedges & ---& ---\\ \hline
+!!CLASS PFTs &  CTEM PFTs &      --- &      ---  \\ \hline
+!!\hline
+!!needle leaf &  evg &      dcd &      ---  \\ \hline
+!!broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
+!!crops       &   c3 &       c4 &      ---  \\ \hline
+!!grasses     &   c3 &       c4 &    --- \\ \hline
 !!\end{tabular}
 !!\f]
-!!
-!! We introduced three new
-!!PFTs for peatlands: evergreen shrubs, deciduous shrubs, and sedges. Evergreen
-!!shrubs, for example the ericaceous shrubs, are the common dominant vascular
+!! 
+!! The peatland module expands upon these PFTs with the addition of two 
+!! shrub PFTs (only biogeochemistry) and sedges (see Wu et al. 2016) \cite Wu2016-zt Evergreen
+!! shrubs, for example the ericaceous shrubs, are the common dominant vascular
 !!plants in bogs and poor fens while deciduous shrubs, such as the betulaceous
 !!shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf
 !!trees in CLASS morphologically, but their phenological and physiological
 !!characteristics are more similar to those of needleleaf trees. The shrub
 !!tundra ecosystem is situated adjacent to needleleaf forest in the Northern
 !!Hemisphere (Kaplan et al., 2003) and they share similar responses to climate
-!!in ESMs (e.g. Bonan et al., 2002). Table~2 lists the key parameters for the
-!!peatland PFTs used in this model. (The photosynthesis and autotrophic
+!!in ESMs (e.g. Bonan et al., 2002).  (The photosynthesis and autotrophic
 !!respiration of vascular PFTs are modelled the same as in the original CTEM.)
+!!
+!!\f[
+!!\begin{tabular} { | l | c | c | c | c | c | }
+!!\hline
+!!needle leaf &  evg &      dcd &      --- & --- & ---  \\ \hline
+!!broad leaf  &  evg &  dcd-cld &  dcd-dry &  EVG-shrubs & DCD-shrubs\\ \hline
+!!crops       &   c3 &       c4 &      ---  & --- & ---\\ \hline
+!!grasses     &   c3 &       c4 &      sedges & --- & ---\\ \hline
+!!\end{tabular}
+!!\f]
+!! Shrubs have now been implimented in the physic subroutines now as a fifth CLASS 
+!! PFT as below:
+!!
+!!\f[
+!!\begin{tabular} { | l | c | c | c | c | c | }
+!!\hline
+!!needle leaf &  evg &      dcd &      ---  \\ \hline
+!!broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
+!!crops       &   c3 &       c4 &      ---  \\ \hline
+!!grasses     &   c3 &       c4 &      sedges \\ \hline
+!!broad leaf shrubs & EVG-shrubs & DCD-shrubs &      ---  \\ \hline
+!!\end{tabular}
+!!\f]
+
+!!
+
 
 
 end module classic_params

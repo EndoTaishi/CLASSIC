@@ -11,6 +11,33 @@
 
 ! ---------
 
+! Description of the PFTs used [both physics only (CLASS) and with biogeochemistry (CTEM on) runs]
+! **Note: for competition, tree and grass should be placed in a contiguous block. So don't put
+! {trees, crops, tree, grass, tree, grass} as that will break the logic.
+
+! modelpft assigns the PFTs to their position in the kk sized matrix for CLASS and CTEM:
+modelpft(1:3)  = 1,     1,     0,      ! CLASS PFT 1 NDL (NdlTr)
+!               EVG    DCD
+modelpft(4:6) = 1,     1,     1,       ! CLASS PFT 2 BDL (BdlTr)
+!               EVG  DCD-CLD DCD-DRY
+modelpft(7:9)= 1,     1,     0,        ! CLASS PFT 3 CROP (Crop)
+!               C3      C4
+modelpft(10:12)= 1,     1,   0,   ! CLASS PFT 4 GRASS (Grass)
+!              C3      C4
+
+! List of CLASS-level PFTs
+classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass'
+
+! List of CTEM PFTs
+! **Note: 'BdlDCoTr' should be specified before 'BdlDDrTr' due to some code in competition.
+ctempfts = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ',
+
+! Array telling which vegetation type is c4
+isc4(1:3)  = .false., .false., .false.,
+isc4(4:6)  = .false., .false., .false.,
+isc4(7:9)  = .false., .true., .false.,
+isc4(10:12)= .false., .true., .false.,
+
 ! Physics (CLASS) parameters:
 
 ! Von Karman Constant (-)
@@ -222,27 +249,6 @@ DELT = 1800.0,
 ! -------------------------------------
 
 ! Biogeochemical (CTEM) parameters
-
-modelpft(1:3)  = 1,     1,     0,      ! CLASS PFT 1 NDL
-!               EVG    DCD
-modelpft(4:6) = 1,     1,     1,       ! CLASS PFT 2 BDL
-!               EVG  DCD-CLD DCD-DRY
-modelpft(7:9)= 1,     1,     0,        ! CLASS PFT 3 CROP
-!               C3      C4
-modelpft(10:12)= 1,     1,   0,   ! CLASS PFT 4 GRASS
-!              C3      C4
-
-pftlist = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ',
-
-! Note: for competition, tree and grass should be placed in a contiguous block. So don't put
-! {trees, crops, tree, grass, tree, grass} as that will break the logic.
-vegtype = 'Tree',      'Tree',     'Tree',    'Tree',     'Tree',    'Crop',    'Crop',    'Grass',   'Grass',
-
-! Array telling which vegetation type is c4
-isc4(1:3)  = .false., .false., .false.,
-isc4(4:6)  = .false., .false., .false.,
-isc4(7:9)  = .false., .true., .false.,
-isc4(10:12)= .false., .true., .false.,
 
 !Canopy light/nitrogen extinction coefficient
 kn(1:3)    =0.50, 0.50, 0.00,
