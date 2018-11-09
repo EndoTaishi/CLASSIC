@@ -636,7 +636,7 @@ C
           ! PAI has a minimum value of 1.0 for all PFTs. This is to prevent
           ! wild canopy temperature values that could occur when the canopy
           ! size is small.
-          do j = 1,4
+          do j = 3,4
            IF(PAI(I,j).LT.THR_LAI) THEN
              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
              PAI (I,j)=THR_LAI
@@ -651,7 +651,7 @@ C
           FCANS(I,2)=FCANMX(I,2)*FSNOW(I)
           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
-          do j = 1,4
+          do j = 3,4
             IF(PAIS(I,j).LT.THR_LAI) THEN
               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
               PAIS (I,j)=THR_LAI
