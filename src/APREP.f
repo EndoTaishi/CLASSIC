@@ -658,66 +658,68 @@ C
       !!
 
       DO 175 I=IL1,IL2
-!        do J = 1, IC
-!          FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))	   
-!	  IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
-!          !select case (classpfts(J)) 
-!          !case ('NdlTr' , 'BdlTr', 'BdlSh')
-!          !case ('Crops','Grass')
-!            IF(PAI(I,J).LT.THR_LAI) THEN
-!              FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))*PAI(I,J)
-!              PAI (I,J)=THR_LAI
-!	      IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
-!           ENDIF
-!          !end select
-!          end do
-!        do J = 1, IC
-!          FCANS(I,J)=FCANMX(I,J)*FSNOW(I)
-!	  IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
-!          !select case (classpfts(J)) 
-!          !case ('NdlTr' , 'BdlTr', 'BdlSh')
-!          !case ('Crops','Grass')
-!            IF(PAIS(I,J).LT.THR_LAI) THEN
-!              FCANS(I,J)=FCANMX(I,J)*FSNOW(I)*PAIS(I,J)
-!              PAIS (I,J)=THR_LAI
-!              IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
-!            ENDIF
-!          !end select
-!          end do
-          FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))
-          FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))
-          IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
-          IF(FCAN(I,2).LT.1.0E-5) FCAN(I,2)=0.0
-
-          ! PAI has a minimum value of 1.0 for all PFTs. This is to prevent
-          ! wild canopy temperature values that could occur when the canopy
-          ! size is small.
-          do j = 1,4
-           IF(PAI(I,j).LT.THR_LAI) THEN
-             FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
-             PAI (I,j)=THR_LAI
-           ELSE
-             FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
+       do J = 1, IC
+         FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))	   
+	       IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
+         select case (classpfts(J)) 
+         case ('Crops','Grass')
+           IF(PAI(I,J).LT.THR_LAI) THEN
+             FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))*PAI(I,J)
+             PAI (I,J)=THR_LAI
+	           IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
+          ENDIF
+         case ('NdlTr' , 'BdlTr', 'BdlSh')
+          !Do nothing.
+         end select
+       end do
+       do J = 1, IC
+         FCANS(I,J)=FCANMX(I,J)*FSNOW(I)
+	       IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
+         select case (classpfts(J))          
+          case ('Crops','Grass')
+           IF(PAIS(I,J).LT.THR_LAI) THEN
+             FCANS(I,J)=FCANMX(I,J)*FSNOW(I)*PAIS(I,J)
+             PAIS (I,J)=THR_LAI
+             IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
            ENDIF
-          end do
-          IF(FCAN(I,3).LT.1.0E-5) FCAN(I,3)=0.0
-          IF(FCAN(I,4).LT.1.0E-5) FCAN(I,4)=0.0
-C
-          FCANS(I,1)=FCANMX(I,1)*FSNOW(I)
-          FCANS(I,2)=FCANMX(I,2)*FSNOW(I)
-          IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
-          IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
-          do j = 1,4
-            IF(PAIS(I,j).LT.THR_LAI) THEN
-              FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
-              PAIS (I,j)=THR_LAI
-            ELSE
-              FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
-            ENDIF
-          end do
-          IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
-          IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
-
+          case ('NdlTr' , 'BdlTr', 'BdlSh')
+          ! Do nothing
+         end select
+         end do
+!           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))
+!           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))
+!           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
+!           IF(FCAN(I,2).LT.1.0E-5) FCAN(I,2)=0.0
+! 
+!           ! PAI has a minimum value of 1.0 for all PFTs. This is to prevent
+!           ! wild canopy temperature values that could occur when the canopy
+!           ! size is small.
+!           do j = 1,4
+!            IF(PAI(I,j).LT.THR_LAI) THEN
+!              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
+!              PAI (I,j)=THR_LAI
+!            ELSE
+!              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
+!            ENDIF
+!           end do
+!           IF(FCAN(I,3).LT.1.0E-5) FCAN(I,3)=0.0
+!           IF(FCAN(I,4).LT.1.0E-5) FCAN(I,4)=0.0
+! C
+!           FCANS(I,1)=FCANMX(I,1)*FSNOW(I)
+!           FCANS(I,2)=FCANMX(I,2)*FSNOW(I)
+!           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
+!           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
+!           do j = 1,4
+!             IF(PAIS(I,j).LT.THR_LAI) THEN
+!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
+!               PAIS (I,j)=THR_LAI
+!             ELSE
+!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
+!             ENDIF
+!           end do
+!           IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
+!           IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
+! 
           FC (I) = SUM(FCAN(I,:))
           FCS(I) = SUM(FCANS(I,:))
           FG (I)=1.0-FSNOW(I)-FC(I)
