@@ -30,7 +30,9 @@
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
      J            ipeatland)
 
-C     * March 23/17 - S.Sun     Expand PFT from 4 to 5. The 5th PFT is broadleaf cold deciduous shrub
+C     * Nov 2018 - J. Melton/S.Sun  Expand PFT from 4 to 5. The 5th PFT is broadleaf cold 
+C                               deciduous shrub. Revert change of JAN 05/16 as the XLEAF
+C                               bug makes this unneccesary.
 C     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 !
@@ -686,40 +688,7 @@ C
           ! Do nothing
          end select
          end do
-!           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))
-!           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))
-!           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
-!           IF(FCAN(I,2).LT.1.0E-5) FCAN(I,2)=0.0
-! 
-!           ! PAI has a minimum value of 1.0 for all PFTs. This is to prevent
-!           ! wild canopy temperature values that could occur when the canopy
-!           ! size is small.
-!           do j = 1,4
-!            IF(PAI(I,j).LT.THR_LAI) THEN
-!              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
-!              PAI (I,j)=THR_LAI
-!            ELSE
-!              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
-!            ENDIF
-!           end do
-!           IF(FCAN(I,3).LT.1.0E-5) FCAN(I,3)=0.0
-!           IF(FCAN(I,4).LT.1.0E-5) FCAN(I,4)=0.0
-! C
-!           FCANS(I,1)=FCANMX(I,1)*FSNOW(I)
-!           FCANS(I,2)=FCANMX(I,2)*FSNOW(I)
-!           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
-!           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
-!           do j = 1,4
-!             IF(PAIS(I,j).LT.THR_LAI) THEN
-!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
-!               PAIS (I,j)=THR_LAI
-!             ELSE
-!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
-!             ENDIF
-!           end do
-!           IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
-!           IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
-! 
+
           FC (I) = SUM(FCAN(I,:))
           FCS(I) = SUM(FCANS(I,:))
           FG (I)=1.0-FSNOW(I)-FC(I)

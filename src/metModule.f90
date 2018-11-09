@@ -232,115 +232,131 @@ contains
 !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
     subroutine precipDistribution(var)
 
-        use classic_params, only : delt,zero
-        
-        implicit none
+      use classic_params, only : delt,zero
+      
+      implicit none
 
-        real, intent(inout)                         :: var(:)
-        integer                                     :: i, j, k, T,start, endpt, countr,wetpds
-        real                                        :: temp,startpre
-        real, allocatable, dimension(:)             :: random
-        integer, allocatable, dimension(:)          :: sort_ind
-        real, allocatable, dimension(:)             :: incomingPre
+      real, intent(inout)                         :: var(:)
+      integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
+      real                                        :: temp,startpre
+      real, allocatable, dimension(:)             :: random
+      integer, allocatable, dimension(:)          :: sort_ind
+      real, allocatable, dimension(:)             :: incomingPre,tmpvar
+      logical                                     :: needDistrib
+      
+      !Set some initial conditions
+      needDistrib=.true.
+      attempts = 1
 
-        allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
+      allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
 
-        countr = size(var)
-                
-        ! Loop through the metInputTimeStep timesteps (commonly 6 hr)
+      countr = size(var)
+              
+      ! Loop through the metInputTimeStep timesteps (commonly 6 hr)
 
-        ! Adjust the precip from mm/s to mm/6h (or mm/3h). The relationship below is
-        ! derived for mm/6h originally.
-        var = var * metInputTimeStep
+      ! Adjust the precip from mm/s to mm/6h (or mm/3h). The relationship below is
+      ! derived for mm/6h originally.
+      var = var * metInputTimeStep
 
-        ! Save the incoming precip for balance check later
-        allocate(incomingPre(countr))
-        incomingPre = var
-
+      ! Save the incoming precip for balance check later
+      allocate(incomingPre(countr),tmpvar(countr))
+      incomingPre = var
+      
+      do while (needDistrib)
         do i = 1, countr/numberPhysInMet
 
-            start = (i - 1) * numberPhysInMet + 1
-            endpt = i * numberPhysInMet
+          start = (i - 1) * numberPhysInMet + 1
+          endpt = i * numberPhysInMet
 
-            !> If precipitation for this metInputTimeStep is greater than 0, use formula
-            !! to produce number of wet half hours
+          !> If precipitation for this metInputTimeStep is greater than 0, use formula
+          !! to produce number of wet half hours
 
-            if (var(start) > 0.) then
+          if (var(start) > 0.) then
 
-                startpre = var(start)
+              startpre = var(start)
 
-                ! We expect precipitation for this relation to be in mm/6h
-                wetpds = nint( &
-                                max( &
-                                    min( &
-                                        abs(2.6 * log10(6.93 * var(start) ) ) &
-                                        , real(numberPhysInMet)) &
-                                            , 1.0) &
-                                    )
+              ! We expect precipitation for this relation to be in mm/6h
+              wetpds = nint( &
+                              max( &
+                                  min( &
+                                      abs(2.6 * log10(6.93 * var(start) ) ) &
+                                      , real(numberPhysInMet)) &
+                                          , 1.0) &
+                                  )
 
-                ! Create an array of random numbers
-                call random_number(random)
+              ! Create an array of random numbers
+              call random_number(random)
 
-                ! Create an array of integers from 1 to numberPhysInMet
-                do k = 1,numberPhysInMet
-                    sort_ind(k) = k
-                end do
+              ! Create an array of integers from 1 to numberPhysInMet
+              do k = 1,numberPhysInMet
+                  sort_ind(k) = k
+              end do
 
-                ! Now use the random numbers to create a list of randomly sorted
-                ! integers that will be used as indices later. Here the integers are
-                ! sorted such that the highest integer ends up in the index of the largest
-                ! random number. The sorting continues until integer 1 is in the index position
-                ! of the smallest random number generated.
+              ! Now use the random numbers to create a list of randomly sorted
+              ! integers that will be used as indices later. Here the integers are
+              ! sorted such that the highest integer ends up in the index of the largest
+              ! random number. The sorting continues until integer 1 is in the index position
+              ! of the smallest random number generated.
 
-                do k = 1,numberPhysInMet
-                    do j = k,numberPhysInMet
-                        if (random(k) < random(j)) then
-                            temp = random(k)
-                            random(k) = random(j)
-                            random(j) = temp
-                            T = sort_ind(k)
-                            sort_ind(k) = sort_ind(j)
-                            sort_ind(j) = T
-                        end if
-                    end do
-                end do
+              do k = 1,numberPhysInMet
+                  do j = k,numberPhysInMet
+                      if (random(k) < random(j)) then
+                          temp = random(k)
+                          random(k) = random(j)
+                          random(j) = temp
+                          T = sort_ind(k)
+                          sort_ind(k) = sort_ind(j)
+                          sort_ind(j) = T
+                      end if
+                  end do
+              end do
 
-                ! Set all values in random to 0 in preparation for reassignment
-                random = 0.
+              ! Set all values in random to 0 in preparation for reassignment
+              random = 0.
 
-                ! Produces random list of 1s and 0s
-                do j = 1, wetpds
-                    call random_number(random(sort_ind(j)))
-                end do
-                random = random / sum(random)
+              ! Produces random list of 1s and 0s
+              do j = 1, wetpds
+                  call random_number(random(sort_ind(j)))
+              end do
+              random = random / sum(random)
 
-                ! Disperse precipitiation randomly across the random indice
-                k = 1
-                do j = start,endpt
-                    ! Assign this time period its precipitation
-                    var(j) = random(k) * startpre
-                    !print*,j,k,random(k),startpre,var(j)
-                    k = k + 1
-                end do
-              
-            else !No precip, move on.
-                wetpds = 0
-                var(start:endpt) = 0.
-            end if
+              ! Disperse precipitiation randomly across the random indice
+              k = 1
+              do j = start,endpt
+                  ! Assign this time period its precipitation
+                  tmpvar(j) = random(k) * startpre
+                  !print*,j,k,random(k),startpre,var(j)
+                  k = k + 1
+              end do
+            
+          else !No precip, move on.
+              wetpds = 0
+              tmpvar(start:endpt) = 0.
+          end if
 
         enddo
 
         ! Balance check that we have conserved our precip
-        if ((sum(var)-sum(incomingPre)) .gt. zero) then 
-          print*,'Warning: In precipDistribution, precip is not conserved',sum(var),sum(incomingPre)
-          call XIT('metModule',-1)
+        if ((sum(tmpvar)-sum(incomingPre)) .gt. zero) then 
+          if (attempts > 3) then            
+            print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
+            call XIT('metModule',-1)
+          else ! retry, could have just been a bad draw.
+            needDistrib = .true.
+            attempts = attempts + 1
+          end if
+        else 
+          ! All is well, finish up.
+          needDistrib = .false.
         end if
+        
+      end do !needDistrib
 
-        ! So we now have the amount of precip in each physics timestep (mm/delt)
-        ! we now need to then convert back to mm/s
-        var = var / delt
+      ! So we now have the amount of precip in each physics timestep (mm/delt)
+      ! we now need to then convert back to mm/s
+      var = tmpvar / delt
 
-        deallocate(random,sort_ind,incomingPre)
+      deallocate(random,sort_ind,incomingPre,tmpvar)
 
     end subroutine precipDistribution
 !!@}

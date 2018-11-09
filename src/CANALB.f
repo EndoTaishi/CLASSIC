@@ -341,11 +341,11 @@ C
 C
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER 
 C     * BARE SOIL.
-C
-C     * NEEDLELEAF TREES.
-C
-      J=1
-      DO 150 I=IL1,IL2                                                                                  
+
+      do J = 1, IC
+        select case (classpfts(J))
+        case ('NdlTr') !-------------------------------------------------------
+         DO 150 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
               TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
@@ -367,11 +367,7 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCN(I)=TRVSCN(I)+FCAN(I,J)*TRVS(I)
               TRIRCN(I)=TRIRCN(I)+FCAN(I,J)*TRIR(I)
-          ENDIF
-  150 CONTINUE
-C
-      DO 200 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
+
               SVF=EXP(CANEXT(J)*PAI(I,J))
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
@@ -387,12 +383,10 @@ C
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
               ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN
           ENDIF
-  200 CONTINUE
+  150 CONTINUE
 C
-C     * BROADLEAF TREES.
-C
-      J=2
-      DO 250 I=IL1,IL2                                                                                  
+        case ('BdlTr','BdlSh') !-------------------------------------------------------
+         DO 250 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
               TRCLRV=MIN(EXP(-0.7*PAI(I,J)),EXP(-0.4/COSZS(I)))                   
               TRCLDV=0.30*MIN(EXP(-0.7*PAI(I,J)),EXPMAX1)             !BDCS P?
@@ -412,11 +406,7 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCN(I)=TRVSCN(I)+FCAN(I,J)*TRVS(I)
               TRIRCN(I)=TRIRCN(I)+FCAN(I,J)*TRIR(I)
-          ENDIF
-  250 CONTINUE
-C
-      DO 300 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
+
               SVF=EXP(CANEXT(J)*PAI(I,J))
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
@@ -432,12 +422,10 @@ C
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
               ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN
           ENDIF
-  300 CONTINUE
+  250 CONTINUE  
 C
-C     * CROPS AND GRASS.
-C
-      DO 350 J=3,IC
-      DO 350 I=IL1,IL2                                                                                  
+        case ('Crops', 'Grass') !CROPS AND GRASS
+         DO 350 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
              TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
 !              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
@@ -459,12 +447,7 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCN(I)=TRVSCN(I)+FCAN(I,J)*TRVS(I)
               TRIRCN(I)=TRIRCN(I)+FCAN(I,J)*TRIR(I)
-          ENDIF
-  350 CONTINUE
-C
-      DO 400 J=3,IC
-      DO 400 I=IL1,IL2                                                     
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
+
               SVF=EXP(CANEXT(J)*PAI(I,J))
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
@@ -479,8 +462,14 @@ C
               ENDIF
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
               ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN              
-          ENDIF   
-  400 CONTINUE
+          ENDIF           
+  350 CONTINUE  
+
+        case default
+          print*,'Unknown CLASS PFT in CANALB ',classpfts(J)
+          call XIT('CANALB',-1)
+        end select
+      end do
 C
 C     * TOTAL ALBEDOS.
 C
@@ -521,12 +510,11 @@ C
       ENDIF                                                                                  
 C----------------------------------------------------------------------
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER SNOW.
-C
-C     * NEEDLELEAF TREES.
-C
-      J=1
-      DO 500 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
+      do J = 1,IC
+         select case (classpfts(J))
+         case ('NdlTr') !-------------------------------------------------------
+           DO 500 I=IL1,IL2                                                                                  
+            IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)         THEN
               TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))   !BDCS P?
 !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
@@ -542,11 +530,11 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCS(I)=TRVSCS(I)+FCANS(I,J)*TRVS(I)
               TRIRCS(I)=TRIRCS(I)+FCANS(I,J)*TRIR(I)
-          ENDIF
-  500 CONTINUE
+!          ENDIF
+!  500 CONTINUE
 C
-      DO 550 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
+!      DO 550 I=IL1,IL2                                               
+!          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -559,14 +547,13 @@ C
               ALIRS=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRSC(I)
               ALVSCS(I)=ALVSCS(I)+FCANS(I,J)*ALVSS
               ALIRCS(I)=ALIRCS(I)+FCANS(I,J)*ALIRS
-          ENDIF
-  550 CONTINUE
+            ENDIF
+!  550 CONTINUE
+  500 CONTINUE  
 C
-C     * BROADLEAF TREES.
-C
-      J=2
-      DO 600 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
+         case ('BdlTr','BdlSh') !-------------------------------------------------------
+          DO 600 I=IL1,IL2                                                                                  
+            IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
               TRCLRV=MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/COSZS(I)))                   
               TRCLDV=0.30*MIN(EXP(-0.7*PAIS(I,J)),EXPMAX1)             
      1              +0.50*MIN(EXP(-0.7*PAIS(I,J)),EXPMAX2)              
@@ -580,11 +567,11 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCS(I)=TRVSCS(I)+FCANS(I,J)*TRVS(I)
               TRIRCS(I)=TRIRCS(I)+FCANS(I,J)*TRIR(I)
-          ENDIF
-  600 CONTINUE
+!          ENDIF
+!  600 CONTINUE
 C
-      DO 650 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
+!      DO 650 I=IL1,IL2                                               
+!          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -597,14 +584,13 @@ C
               ALIRS=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRSC(I)
               ALVSCS(I)=ALVSCS(I)+FCANS(I,J)*ALVSS
               ALIRCS(I)=ALIRCS(I)+FCANS(I,J)*ALIRS
-          ENDIF
-  650 CONTINUE
+            ENDIF
+!  650 CONTINUE
+  600 CONTINUE
 C
-C     * CROPS AND GRASS.
-C
-      DO 700 J=3,IC
+      case ('Crops', 'Grass')  ! CROPS AND GRASS.
       DO 700 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
+            IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
               TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
@@ -620,12 +606,11 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCS(I)=TRVSCS(I)+FCANS(I,J)*TRVS(I)
               TRIRCS(I)=TRIRCS(I)+FCANS(I,J)*TRIR(I)
-          ENDIF
-  700 CONTINUE
-C
-      DO 750 J=3,IC
-      DO 750 I=IL1,IL2                                                     
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
+!          ENDIF
+!  700 CONTINUE
+    
+!      DO 750 I=IL1,IL2                                                     
+!          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -638,8 +623,15 @@ C
               ALIRS=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRSC(I)
               ALVSCS(I)=ALVSCS(I)+FCANS(I,J)*ALVSS
               ALIRCS(I)=ALIRCS(I)+FCANS(I,J)*ALIRS
-          ENDIF 
-  750 CONTINUE                                      
+            ENDIF 
+!  750 CONTINUE                                      
+  700 CONTINUE  
+         case default
+           print*,'Unknown CLASS PFT in CANALB ',classpfts(J)
+           call XIT('CANALB',-4)  
+         end select
+         
+      end do
 C
 C     * TOTAL ALBEDOS AND CONSISTENCY CHECKS.
 C
