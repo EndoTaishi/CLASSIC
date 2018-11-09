@@ -1433,9 +1433,7 @@ C>
 820   CONTINUE
 C
       DO 840 I = IL1, IL2
-        FC_TEST(I)=FCANC(I,1)+FCANC(I,2)+FCANC(I,3)+FCANC(I,4)+
-     &             FCANC(I,5)+FCANC(I,6)+FCANC(I,7)+FCANC(I,8)+
-     &             FCANC(I,9)
+      	FC_TEST(I) = SUM(FCANC(I,:))
         IF(FC_TEST(I).GT.ZERO)THEN
           RC(I)=RC(I)/FC_TEST(I)
         ELSE

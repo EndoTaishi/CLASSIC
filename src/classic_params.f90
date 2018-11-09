@@ -127,12 +127,6 @@ real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (F
 !> Logical switch for using constant allocation factors (default value is false)
 logical :: consallo = .false.
 
-character(8), dimension(9) :: pftlist = ['NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ']
-
-! Note: for competition, tree and grass should be placed in a contiguous block. So don't put
-! {trees, crops, tree, grass, tree, grass} as that will break the logic.
-character(5), dimension(9) :: vegtype = ['Tree ',      'Tree ',     'Tree ',    'Tree ',     'Tree ',    'Crop ',    'Crop ',    'Grass',   'Grass']
-
 ! --------------------------------------------------------------
 
 ! Read in from the netcdf initialization file:
@@ -972,7 +966,6 @@ subroutine readin_params
         CL4CTEM(m) = i
       end do
     end do
-    print*,'classicparams',CL4CTEM 
 
     do i = 1, icc
         pftkind=ctempfts(i)

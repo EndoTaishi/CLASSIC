@@ -12,8 +12,6 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "class_statevars.f90", "class__statevars_8f90.html", "class__statevars_8f90" ],
     [ "CLASSA.f", "CLASSA_8f.html", "CLASSA_8f" ],
     [ "CLASSB.f", "CLASSB_8f.html", "CLASSB_8f" ],
-    [ "CLASSBD.f", "CLASSBD_8f.html", null ],
-    [ "CLASSD.f", "CLASSD_8f.html", "CLASSD_8f" ],
     [ "CLASSG.f", "CLASSG_8f.html", "CLASSG_8f" ],
     [ "CLASSI.f", "CLASSI_8f.html", "CLASSI_8f" ],
     [ "CLASSIC.F90", "CLASSIC_8F90.html", "CLASSIC_8F90" ],

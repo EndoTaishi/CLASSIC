@@ -168,11 +168,14 @@ Functions/Subroutines</h2></td></tr>
 <p>The parameter JLAT is calculated from DLATROW as the nearest integer value,</p>
 <p>The timestep counter N for the run is initialized to 0, the daily averaging counter NCOUNT is set to 1, and the total number of timesteps in the day NDAY is calculated as the number of seconds in a day (86400) divided by the timestep length DELT.</p>
 <p>The grid-average height for the momentum diagnostic variables, ZDMROW, and for the energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer height of 10 m and to the screen height of 2 m respectively.</p>
+<p>ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables (temperature and specific humidity) are provided. In a run using atmospheric model forcing data, these heights would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.</p>
+<p>ZBLDROW, the atmospheric blending height. Technically this variable depends on the length scale of the patches of roughness elements on the land surface, but this is difficult to ascertain. Usually it is assigned a value of 50 m. The value is read in from the job options file.</p>
 <p>Initialize variables in preparation for the run</p>
 <p>Read in the model initial state</p>
 <p>Read in the inputs for a run with biogeochemical component turned on</p>
 <p>Regardless of whether lnduseon or not, we need to check the land cover that was read in and assign the CLASS PFTs as they are not read in when ctem_on.</p>
 <p>Read in the meteorological forcing data to a suite of arrays</p>
+<p>In preparation for the use of the random number generator by disaggMet, we need to provide a seed to allow repeatable results.</p>
 <p>Now disaggregate the meteorological forcing to the right timestep for this model run (if needed; this is checked for in the subroutine)</p>
 <p>As the last step in the initialization sequence, the subroutine CLASSB is called, to assign soil thermal and hydraulic properties on the basis of the textural information read in for each of the soil layers.</p>
 <p>The do while loop marks the beginning of the time stepping loop for the actual run. N is incremented by 1, and the atmospheric forcing data for the current time step are updated for each grid cell or modelled area (see the manual section on “Data Requirements”).</p>
@@ -203,7 +206,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemain.html">main</a></li>
-    <li class="footer">Generated on Thu Oct 11 2018 12:12:18 for CLASSIC by
+    <li class="footer">Generated on Fri Nov 9 2018 11:01:15 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

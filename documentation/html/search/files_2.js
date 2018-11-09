@@ -8,8 +8,6 @@ var searchData=
   ['class_5fstatevars_2ef90',['class_statevars.f90',['../class__statevars_8f90.html',1,'']]],
   ['classa_2ef',['CLASSA.f',['../CLASSA_8f.html',1,'']]],
   ['classb_2ef',['CLASSB.f',['../CLASSB_8f.html',1,'']]],
-  ['classbd_2ef',['CLASSBD.f',['../CLASSBD_8f.html',1,'']]],
-  ['classd_2ef',['CLASSD.f',['../CLASSD_8f.html',1,'']]],
   ['classg_2ef',['CLASSG.f',['../CLASSG_8f.html',1,'']]],
   ['classi_2ef',['CLASSI.f',['../CLASSI_8f.html',1,'']]],
   ['classic_2ef90',['CLASSIC.F90',['../CLASSIC_8F90.html',1,'']]],

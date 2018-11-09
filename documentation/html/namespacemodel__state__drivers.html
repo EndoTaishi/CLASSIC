@@ -550,8 +550,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 <p>Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on) </p>
 <dl class="section author"><dt>Author</dt><dd>Joe Melton </dd></dl>
-<p>ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables (temperature and specific humidity) are provided. In a run using atmospheric model forcing data, these heights would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW refer to the measurement height of these variables, which is fixed.</p>
-<p>ZBLDROW, the atmospheric blending height. Technically this variable depends on the length scale of the patches of roughness elements on the land surface, but this is difficult to ascertain. Usually it is assigned a value of 50 m.</p>
 <p>GCROW, the GCM surface descriptor variable. For land surfaces (including inland water) it has a value of -1.</p>
 <p>depth, ZSNL, is assigned its operational value of 0.10 m.</p>
 <p>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.</p>
@@ -747,7 +745,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Thu Oct 11 2018 12:12:18 for CLASSIC by
+    <li class="footer">Generated on Fri Nov 9 2018 11:01:15 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

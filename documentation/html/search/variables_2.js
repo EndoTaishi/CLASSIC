@@ -19,6 +19,8 @@ var searchData=
   ['ch4wet1',['ch4wet1',['../structctem__statevars_1_1veg__rot.html#ad5eded7b29c9ef90559fc027f9f02e4b',1,'ctem_statevars::veg_rot::ch4wet1()'],['../structctem__statevars_1_1veg__gat.html#ac99ca0240b54241d3045dbfbd46e83c9',1,'ctem_statevars::veg_gat::ch4wet1()']]],
   ['ch4wet2',['ch4wet2',['../structctem__statevars_1_1veg__rot.html#a0261920e3fafa54faf4fae34aafb395a',1,'ctem_statevars::veg_rot::ch4wet2()'],['../structctem__statevars_1_1veg__gat.html#a5e88723e69339ab0ce00db365184e9c4',1,'ctem_statevars::veg_gat::ch4wet2()']]],
   ['chi',['chi',['../namespaceclassic__params.html#a48cbb1cf374224884d24c9eaafc35e6e',1,'classic_params']]],
+  ['cl4ctem',['cl4ctem',['../namespaceclassic__params.html#ac98036ee564952fd0d591342387b4cc4',1,'classic_params']]],
+  ['classpfts',['classpfts',['../namespaceclassic__params.html#a04dce684649235360071af62a0de7dd0',1,'classic_params']]],
   ['clayrot',['clayrot',['../structclass__statevars_1_1class__rotated.html#ae0b9a01f5d30a120c45b518b8d62b6ce',1,'class_statevars::class_rotated']]],
   ['clhmlt',['clhmlt',['../namespaceclassic__params.html#a25784f8100420b864af4d7ef8fe7ea2e',1,'classic_params']]],
   ['clhvap',['clhvap',['../namespaceclassic__params.html#aa4a692276c4a94d8ca6ad694e5b2e755',1,'classic_params']]],
@@ -46,5 +48,6 @@ var searchData=
   ['cszgat',['cszgat',['../structclass__statevars_1_1class__gather.html#a8ffc8d191632aee12dfb790ec2f4bd91',1,'class_statevars::class_gather']]],
   ['ct',['ct',['../namespaceclassic__params.html#a4fad56d54b335aa5cc5a14d21b48bf5e',1,'classic_params']]],
   ['ctem_5fon',['ctem_on',['../structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f',1,'ctem_statevars::ctem_switches']]],
+  ['ctempfts',['ctempfts',['../namespaceclassic__params.html#adb7ae357e001d032f7aa1c69ee603f9b',1,'classic_params']]],
   ['cxtlrg',['cxtlrg',['../namespaceclassic__params.html#adad70f51f3b6d0fd7790e4cea71a3c44',1,'classic_params']]]
 ];

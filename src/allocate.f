@@ -110,11 +110,11 @@ c     ignd        - no. of soil layers (currently 3)
 c     ilg       - no. of grid cells in latitude circle
 c     ican        - number of class pfts
 c
-
       use classic_params,   only : eta, kappa, kn, abszero, icc, ilg,
-     1                               ignd, kk, ican, omega, epsilonl,
+     1                               ignd, ican, omega, epsilonl,
      2                               epsilons, epsilonr, caleaf, castem,
-     3                               caroot, consallo, rtsrmin, aldrlfon
+     3                               caroot, consallo, rtsrmin,aldrlfon,
+     4                               classpfts
 c
       implicit none
       integer il1 !<input: il1=1
@@ -254,11 +254,15 @@ c     ------------------------------------------------------------------
        k2 = k1 + nol2pfts(j) - 1
        do 255 m = k1, k2
         do 260 i = il1, il2
-          if(j.eq.4) then  ! grasses
-            ltstatus(i,m)=max(0.0, (1.0-(ailcg(i,m)/4.0)) )
-          else             ! trees and crops
-            ltstatus(i,m)=exp(-kn(sort(m))*ailcg(i,m))
-          endif
+          select case (classpfts(j))
+          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
+               ltstatus(i,m)=exp(-kn(sort(m))*ailcg(i,m))    
+          case ('Grass')  ! grass
+               ltstatus(i,m)=max(0.0,(1.0-(ailcg(i,m)/4.0)))    
+          case default
+            print*,'Unknown CLASS PFT in allocate ',classpfts(j)
+            call XIT('allocate',-1)                 
+          end select
           nstatus(i,m) =1.0
 260     continue
 255    continue
@@ -291,20 +295,24 @@ c     ------------------------------------------------------------------
        do 405 m = k1, k2
         do 410 i = il1, il2
           n = sort(m)
-          if(j.le.3)then           !trees and crops
-            denom = 1.0 + (omega(n)*( 2.0-ltstatus(i,m)-wnstatus(i,m) ))
-            afrstem(i,m)=( epsilons(n)+omega(n)*(1.0-ltstatus(i,m)) )/
-     &                     denom
-            afrroot(i,m)=( epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)) )/
-     &                     denom
-            afrleaf(i,m)=  epsilonl(n)/denom
-          else if (j.eq.4) then     !grasses
-            denom = 1.0 + (omega(n)*( 1.0+ltstatus(i,m)-wnstatus(i,m) ))
-            afrleaf(i,m)=( epsilonl(n) + omega(n)*ltstatus(i,m) ) /denom
-            afrroot(i,m)=( epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)) )/
-     &                     denom
-            afrstem(i,m)= 0.0
-          endif
+          select case (classpfts(j))
+          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
+            denom =1.0+(omega(n)*(2.0-ltstatus(i,m)-wnstatus(i,m)))    
+            afrstem(i,m)=(epsilons(n)+omega(n)*(1.0-ltstatus(i,m)))/
+     &                      denom  
+            afrroot(i,m)=(epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)))/
+     &                      denom  
+            afrleaf(i,m)=epsilonl(n)/denom        
+          case ('Grass') ! grass
+            denom =1.0+(omega(n)*(1.0+ltstatus(i,m)-wnstatus(i,m)))
+            afrleaf(i,m)=(epsilonl(n)+omega(n)*ltstatus(i,m))/denom  
+            afrroot(i,m)=(epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)))/
+     &                     denom  
+            afrstem(i,m)= 0.0    
+          case default
+            print*,'Unknown CLASS PFT in allocate ',classpfts(j)
+            call XIT('allocate',-2)                                 
+          end select
 410     continue
 405    continue
 400   continue
@@ -336,7 +344,7 @@ c     ------------------------------------------------------------------
            write(6,2000) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2000       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',e12.7)
-          call xit('allocate',-2)
+          call xit('allocate',-3)
           endif
          endif
 440     continue
@@ -363,13 +371,19 @@ c     ------------------------------------------------------------------
          if (fcancmx(i,m).gt.0.0) then
           if(lfstatus(i,m).eq.1) then
             aleaf(i,m)=aldrlfon(sort(m))
-!>
-!!for grasses we use the usual allocation even at leaf onset
-!!
-            if(j.eq.4)then
+
+	    !>for grasses we use the usual allocation even at leaf onset
+
+            select case (classpfts(j)) 
+            case ('Grass') 
               aleaf(i,m)=afrleaf(i,m)
-            endif
-c
+            case ('NdlTr' , 'BdlTr', 'Crops', 'Shrub') 
+              ! Do nothing for non-grass
+            case default
+              print*,'Unknown CLASS PFT in allocate ',classpfts(j)
+              call XIT('allocate',-4)                               
+            end select
+
             diff  = afrleaf(i,m)-aleaf(i,m)
             if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then
               term1 = afrstem(i,m)/(afrstem(i,m)+afrroot(i,m))
@@ -478,7 +492,7 @@ c
      & negative')
            write(6,2100)afrleaf(i,j),afrstem(i,j),afrroot(i,j)
 2100       format(' aleaf = ',f12.9,' astem = ',f12.9,' aroot = ',f12.9)
-           call xit('allocate',-3)
+           call xit('allocate',-5)
           endif
          endif
 560     continue
@@ -492,7 +506,7 @@ c
            write(6,2300) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2300       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',f12.7)
-           call xit('allocate',-4)
+           call xit('allocate',-6)
           endif
          endif
 590     continue

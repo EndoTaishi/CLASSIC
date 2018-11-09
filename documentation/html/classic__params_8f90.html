@@ -415,6 +415,22 @@ logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a3cbe544f20c49ace2df3e3b60765da4c">classic_params::grass</a></td></tr>
 <tr class="memdesc:a3cbe544f20c49ace2df3e3b60765da4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple grass matric, define the number and position of grass (NOTE: dimension icc) <br /></td></tr>
 <tr class="separator:a3cbe544f20c49ace2df3e3b60765da4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98036ee564952fd0d591342387b4cc4"><td class="memItemLeft" align="right" valign="top"><a id="ac98036ee564952fd0d591342387b4cc4"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac98036ee564952fd0d591342387b4cc4">classic_params::cl4ctem</a></td></tr>
+<tr class="memdesc:ac98036ee564952fd0d591342387b4cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexing of the CTEM-level PFTs into a CLASS PFT-level array. <br /></td></tr>
+<tr class="separator:ac98036ee564952fd0d591342387b4cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04dce684649235360071af62a0de7dd0"><td class="memItemLeft" align="right" valign="top"><a id="a04dce684649235360071af62a0de7dd0"></a>
+character(5), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a04dce684649235360071af62a0de7dd0">classic_params::classpfts</a></td></tr>
+<tr class="memdesc:a04dce684649235360071af62a0de7dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">CLASS (physics) PFTs. <br /></td></tr>
+<tr class="separator:a04dce684649235360071af62a0de7dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab457bf39ad7f125d29101b027a243468"><td class="memItemLeft" align="right" valign="top"><a id="ab457bf39ad7f125d29101b027a243468"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ab457bf39ad7f125d29101b027a243468">classic_params::modelpft</a></td></tr>
+<tr class="memdesc:ab457bf39ad7f125d29101b027a243468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts. <br /></td></tr>
+<tr class="separator:ab457bf39ad7f125d29101b027a243468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb7ae357e001d032f7aa1c69ee603f9b"><td class="memItemLeft" align="right" valign="top"><a id="adb7ae357e001d032f7aa1c69ee603f9b"></a>
+character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#adb7ae357e001d032f7aa1c69ee603f9b">classic_params::ctempfts</a></td></tr>
+<tr class="memdesc:adb7ae357e001d032f7aa1c69ee603f9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of CTEM-level PFTs. <br /></td></tr>
+<tr class="separator:adb7ae357e001d032f7aa1c69ee603f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4e5b7b29360afcf8a352d01d6e85c3c"><td class="memItemLeft" align="right" valign="top"><a id="ac4e5b7b29360afcf8a352d01d6e85c3c"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac4e5b7b29360afcf8a352d01d6e85c3c">classic_params::vkc</a></td></tr>
 <tr class="memdesc:ac4e5b7b29360afcf8a352d01d6e85c3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Von Karman Constant (-) <br /></td></tr>
@@ -626,18 +642,6 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a664c7429262f23114f589f07943c357f">classic_params::wsncap</a></td></tr>
 <tr class="memdesc:a664c7429262f23114f589f07943c357f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum water retention capacity of the snow pack (weight percentage) <br /></td></tr>
 <tr class="separator:a664c7429262f23114f589f07943c357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab457bf39ad7f125d29101b027a243468"><td class="memItemLeft" align="right" valign="top"><a id="ab457bf39ad7f125d29101b027a243468"></a>
-integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ab457bf39ad7f125d29101b027a243468">classic_params::modelpft</a></td></tr>
-<tr class="memdesc:ab457bf39ad7f125d29101b027a243468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts. <br /></td></tr>
-<tr class="separator:ab457bf39ad7f125d29101b027a243468"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77a8f81363f4ad30f7259e01f57f5f41"><td class="memItemLeft" align="right" valign="top"><a id="a77a8f81363f4ad30f7259e01f57f5f41"></a>
-character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a77a8f81363f4ad30f7259e01f57f5f41">classic_params::pftlist</a></td></tr>
-<tr class="memdesc:a77a8f81363f4ad30f7259e01f57f5f41"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of PFTs. <br /></td></tr>
-<tr class="separator:a77a8f81363f4ad30f7259e01f57f5f41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6577d3c82c4b7eff811922c717921e6b"><td class="memItemLeft" align="right" valign="top"><a id="a6577d3c82c4b7eff811922c717921e6b"></a>
-character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a6577d3c82c4b7eff811922c717921e6b">classic_params::vegtype</a></td></tr>
-<tr class="memdesc:a6577d3c82c4b7eff811922c717921e6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of vegetation, options: Tree, Grass, Crop, Shrub. <br /></td></tr>
-<tr class="separator:a6577d3c82c4b7eff811922c717921e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b74fec0837d9da97084df14d8f1c7e3"><td class="memItemLeft" align="right" valign="top"><a id="a9b74fec0837d9da97084df14d8f1c7e3"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a9b74fec0837d9da97084df14d8f1c7e3">classic_params::kn</a></td></tr>
 <tr class="memdesc:a9b74fec0837d9da97084df14d8f1c7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
@@ -1267,6 +1271,33 @@ character(350)&#160;</td><td class="memItemRight" valign="bottom"><b>classic_par
 <tr class="memitem:aaab2ba946661d54a5b9f08efbdddd5fb"><td class="memItemLeft" align="right" valign="top"><a id="aaab2ba946661d54a5b9f08efbdddd5fb"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::pftcompetitionswitch</b></td></tr>
 <tr class="separator:aaab2ba946661d54a5b9f08efbdddd5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91eea795bb35310302f49a69b119c8ce"><td class="memItemLeft" align="right" valign="top"><a id="a91eea795bb35310302f49a69b119c8ce"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::zbldjobopt</b></td></tr>
+<tr class="separator:a91eea795bb35310302f49a69b119c8ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96ff66c4beedbf6a96de836c7685e859"><td class="memItemLeft" align="right" valign="top"><a id="a96ff66c4beedbf6a96de836c7685e859"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::zrfhjobopt</b></td></tr>
+<tr class="separator:a96ff66c4beedbf6a96de836c7685e859"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a657d01ee27e2f3b0a6b8bf5bbcd1bd39"><td class="memItemLeft" align="right" valign="top"><a id="a657d01ee27e2f3b0a6b8bf5bbcd1bd39"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::zrfmjobopt</b></td></tr>
+<tr class="separator:a657d01ee27e2f3b0a6b8bf5bbcd1bd39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a829cb28555cffa370ad8deeeef424baf"><td class="memItemLeft" align="right" valign="top"><a id="a829cb28555cffa370ad8deeeef424baf"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::rsmn</b></td></tr>
+<tr class="separator:a829cb28555cffa370ad8deeeef424baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2671bf5fc1840fbb89b7fcb3e0e81b6c"><td class="memItemLeft" align="right" valign="top"><a id="a2671bf5fc1840fbb89b7fcb3e0e81b6c"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::qa50</b></td></tr>
+<tr class="separator:a2671bf5fc1840fbb89b7fcb3e0e81b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d566116a8062f653c87428e447f3f8"><td class="memItemLeft" align="right" valign="top"><a id="a85d566116a8062f653c87428e447f3f8"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::vpda</b></td></tr>
+<tr class="separator:a85d566116a8062f653c87428e447f3f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114dd0e5c36c4a118e64a73503967a95"><td class="memItemLeft" align="right" valign="top"><a id="a114dd0e5c36c4a118e64a73503967a95"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::vpdb</b></td></tr>
+<tr class="separator:a114dd0e5c36c4a118e64a73503967a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac444b15921693a4077d577f01f5a92a8"><td class="memItemLeft" align="right" valign="top"><a id="ac444b15921693a4077d577f01f5a92a8"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::psga</b></td></tr>
+<tr class="separator:ac444b15921693a4077d577f01f5a92a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bb50b8cc7ef18e73d9f965dbbc72f97"><td class="memItemLeft" align="right" valign="top"><a id="a2bb50b8cc7ef18e73d9f965dbbc72f97"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::psgb</b></td></tr>
+<tr class="separator:a2bb50b8cc7ef18e73d9f965dbbc72f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a607d5090e3483de84d533e527b7d0672"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a607d5090e3483de84d533e527b7d0672">classic_params::prepareglobalparams</a></td></tr>
 <tr class="memdesc:a607d5090e3483de84d533e527b7d0672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize and/or read in all global model parameters.  <a href="namespaceclassic__params.html#a607d5090e3483de84d533e527b7d0672">More...</a><br /></td></tr>
 <tr class="separator:a607d5090e3483de84d533e527b7d0672"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1282,19 +1313,27 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This module holds CLASSIC globally accessible parameters. </p>
 <p>These parameters are used in all CLASSIC subroutines via use statements pointing to this module. The structure of this subroutine is variables that are common to competition/prescribe PFT fractions first, then the remaining variables are assigned different variables if competition is on, or not.</p>
+<p>Please see documentation/overviewCTEM.md for more info.</p>
 <p>PFT parameters</p>
 <p>Note the structure of vectors which clearly shows the CLASS PFTs (along rows) and CTEM sub-PFTs (along columns)</p>
-<p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- &amp; ---&amp; ---\\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry &amp; EVG-shrubs &amp; DCD-shrubs\\ \hline crops &amp; c3 &amp; c4 &amp; --- &amp; ---&amp; ---\\ \hline grasses &amp; c3 &amp; c4 &amp; sedges &amp; ---&amp; ---\\ \hline \end{tabular} \]" src="form_544.png"/>
+<p>The basic version of CLASSIC includes the following PFTs: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline CLASS PFTs &amp; CTEM PFTs &amp; --- &amp; --- \\ \hline \hline needle leaf &amp; evg &amp; dcd &amp; --- \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry \\ \hline crops &amp; c3 &amp; c4 &amp; --- \\ \hline grasses &amp; c3 &amp; c4 &amp; --- \\ \hline \end{tabular} \]" src="form_1648.png"/>
 </p>
-<p>We introduced three new PFTs for peatlands: evergreen shrubs, deciduous shrubs, and sedges. Evergreen shrubs, for example the ericaceous shrubs, are the common dominant vascular plants in bogs and poor fens while deciduous shrubs, such as the betulaceous shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf trees in CLASS morphologically, but their phenological and physiological characteristics are more similar to those of needleleaf trees. The shrub tundra ecosystem is situated adjacent to needleleaf forest in the Northern Hemisphere (Kaplan et al., 2003) and they share similar responses to climate in ESMs (e.g. Bonan et al., 2002). Table~2 lists the key parameters for the peatland PFTs used in this model. (The photosynthesis and autotrophic respiration of vascular PFTs are modelled the same as in the original CTEM.) </p>
-</div></div><!-- contents -->
+<p>The peatland module expands upon these PFTs with the addition of two shrub PFTs (only biogeochemistry) and sedges (see Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[91]</a> Evergreen shrubs, for example the ericaceous shrubs, are the common dominant vascular plants in bogs and poor fens while deciduous shrubs, such as the betulaceous shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf trees in CLASS morphologically, but their phenological and physiological characteristics are more similar to those of needleleaf trees. The shrub tundra ecosystem is situated adjacent to needleleaf forest in the Northern Hemisphere (Kaplan et al., 2003) and they share similar responses to climate in ESMs (e.g. Bonan et al., 2002). (The photosynthesis and autotrophic respiration of vascular PFTs are modelled the same as in the original CTEM.)</p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- &amp; --- &amp; --- \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry &amp; EVG-shrubs &amp; DCD-shrubs\\ \hline crops &amp; c3 &amp; c4 &amp; --- &amp; --- &amp; ---\\ \hline grasses &amp; c3 &amp; c4 &amp; sedges &amp; --- &amp; ---\\ \hline \end{tabular} \]" src="form_1649.png"/>
+</p>
+<p> Shrubs have now been implimented in the physic subroutines now as a fifth CLASS PFT as below:</p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry \\ \hline crops &amp; c3 &amp; c4 &amp; --- \\ \hline grasses &amp; c3 &amp; c4 &amp; sedges \\ \hline broad leaf shrubs &amp; EVG-shrubs &amp; DCD-shrubs &amp; --- \\ \hline \end{tabular} \]" src="form_1650.png"/>
+</p>
+ </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="classic__params_8f90.html">classic_params.f90</a></li>
-    <li class="footer">Generated on Thu Oct 11 2018 12:12:17 for CLASSIC by
+    <li class="footer">Generated on Fri Nov 9 2018 11:01:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

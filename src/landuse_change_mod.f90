@@ -219,7 +219,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       use classic_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
                                      tolrnce1, tolrance, crop, numcrops, &
-                                     minbare
+                                     minbare,classpfts
 
       implicit none
 
@@ -305,12 +305,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !>Constants and parameters are located in classic_params.f90
 !>---------------------------------------------------------------
 
-
-      if(icc.ne.9)                               call xit('luc',-1)
-      if(ican.ne.4)                              call xit('luc',-2)
-
-!>------------------------------------------------------------------
-
 !>find/use provided current and previous day's fractional coverage
 !>if competition is on, we will adjust these later.
 
@@ -338,7 +332,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                 abs(fcancmx(i,j)).ge.1.0e-05)then
             write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
             write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-4)
+            call xit('luc',-1)
           endif
 
           if(fcancmy(i,j).lt.0.0.and.abs(fcancmy(i,j)).lt.1.0e-05)then
@@ -347,7 +341,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
          abs(fcancmy(i,j)).ge.1.0e-05)then
             write(6,*)'fcancmy(',i,',',j,')=',fcancmy(i,j)
             write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-5)
+            call xit('luc',-2)
           endif
 
 111     continue
@@ -365,7 +359,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
          abs(fcancmx(i,j)).ge.1.0e-05)then
             write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
             write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-4)
+            call xit('luc',-3)
           endif
 
           if(fcancmy(i,j).lt.0.0.and.abs(fcancmy(i,j)).lt.1.0e-05)then
@@ -374,7 +368,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
          abs(fcancmy(i,j)).ge.1.0e-05)then
             write(6,*)'fcancmy(',i,',',j,')=',fcancmy(i,j)
             write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-5)
+            call xit('luc',-4)
           endif
 
 116     continue
@@ -582,7 +576,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         else if(pbarefra(i).lt.0.0.and.abs(pbarefra(i)).ge.1.0e-05 )then
           write(6,*)'bare fractions cannot be negative'
           write(6,*)'prev. bare fraction(',i,')  =',pbarefra(i)
-          call xit('luc',-7)
+          call xit('luc',-5)
         endif
 
         if( barefrac(i).lt.0.0.and.abs(barefrac(i)).lt.1.0e-05 )then
@@ -591,7 +585,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         else if(barefrac(i).lt.0.0.and.abs(barefrac(i)).ge.1.0e-05 )then
           write(6,*)'bare fractions cannot be negative'
           write(6,*)'bare fraction(',i,')  =',barefrac(i)
-          call xit('luc',-8)
+          call xit('luc',-6)
         endif
 !>     find above ground biomass and treatment index for combust, paper,
 !>     and furniture
@@ -605,17 +599,29 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         k2 = k1 + nol2pfts(j) - 1
         do 510 m = k1, k2
             abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
-            if(j.eq.1.or.j.eq.2) then  ! trees
+            select case(classpfts(j))
+            case ('Crops', 'Grass') !Crops and Grass
+              treatind(i,m)=3
+            case('NdlTr','BdlTr')
               if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
                 treatind(i,m)=1
-              else if (abvgmass(i,m).le.bmasthrs(2)) then !bush
+              else if (abvgmass(i,m).le.bmasthrs(2)) then !bush 
                 treatind(i,m)=3
               else  !shrubland
                 treatind(i,m)=2
               endif
-            else                       !crops and grasses
-              treatind(i,m)=3
-            endif
+            case('BdlSh')  !FLAG - should shrubs only be bush or shrubs? JM FIXME
+              if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
+                treatind(i,m)=1
+              else if (abvgmass(i,m).le.bmasthrs(2)) then !bush 
+                treatind(i,m)=3
+              else  !shrubland
+                treatind(i,m)=2
+              endif      
+            case default
+              print*,'Unknown CLASS PFT in LUC ',classpfts(j)
+              call XIT('luc',-7)       
+            end select
 510     continue
 500   continue
 
@@ -693,7 +699,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                 write(6,*)'fcancmy-fcancmx = ',  &
                           fcancmy(i,m)-fcancmx(i,m)
                 write(6,*)'grid cell = ',i,' pft = ',m
-                call xit('luc',-10)
+                call xit('luc',-8)
               endif
 !>
 !>rootmass needs to be chopped as well and all of it goes to the litter/paper pool
@@ -762,7 +768,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'grsumfur(i) = ',grsumfur(i)
            write(6,*)'sum of grsumcom, grsumpap, grsumfur(i) = ', &
             grsumcom(i)+grsumpap(i)+grsumfur(i)
-           call xit('luc',-11)
+           call xit('luc',-9)
        endif
 !>
 !!spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts, including the bare fraction.
@@ -843,7 +849,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'totdmas1(i) + grsumpap(i) = ', &
                      totdmas1(i) + grsumpap(i)
            write(6,*)'ntotdms1(i) = ',ntotdms1(i)
-           call xit('luc',-12)
+           call xit('luc',-10)
         endif
 !>
 !>for conservation totcmass(i) must be equal to ntotcmas(i) plus combustion carbon losses
@@ -854,7 +860,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'totcmass(i) = ',totcmass(i)
            write(6,*)'ntotcmas(i) = ',ntotcmas(i)
            write(6,*)'grsumcom(i) = ',grsumcom(i)
-           call xit('luc',-13)
+           call xit('luc',-11)
         endif
 !>
 !>update grid averaged vegetation biomass, and litter and soil c densities
@@ -895,7 +901,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
          write(6,*)'diff = ',abs((pvgbioms(i)+pgavltms(i)+pgavscms(i)) &
           -(vgbiomas(i)+gavgltms(i)+gavgscms(i)+ grdencom(i)))
            write(6,*)'tolrance = ',tolrance
-           call xit('luc',-14)
+           call xit('luc',-12)
        endif
 
       do 800 j = 1, icc

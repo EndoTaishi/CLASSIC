@@ -341,24 +341,12 @@ Functions/Subroutines</h2></td></tr>
 <h2>we start with the "no leaves" mode </h2>
 <p>add one to pandays(i,j) if daily an is positive, otherwise set it to zero.</p>
 <p>if in "no leaves" mode check if an has been positive over last dayschk(j) days to move into "max. growth" mode. if not we stay in "no leaves" mode. also set the chkmode(i,j) switch to 1.</p>
-<p>find day length using day of year and latitude. this is to be used for initiating leaf offset for broad leaf dcd trees. !FLAG pass this in from the main. JM Oct 2017</p>
+<p>find day length using day of year and latitude. this is to be used for initiating leaf offset for broad leaf dcd trees.</p>
 <p>even if pandays criteria has been satisfied do not go into max. growth mode if environmental conditions are such that they will force leaf fall or harvest mode.</p>
-<p>crops</p>
 <h2>if in "max growth" mode </h2>
 <p>if mode hasn't been checked and we are in "max. growth" mode, then check if we are above pft-dependent lai threshold. if lai is more then this threshold we move into "normal growth" mode, otherwise we stay in "max growth" mode so that leaves can grow at their max. climate-dependent rate</p>
 <p>for dcd trees we also need to go into "leaf fall" mode directly from "max. growth" mode.</p>
-<p>ndl dcd</p>
-<p>bdl dcd cold</p>
-<p>bdl dcd dry</p>
-<h2>if in "normal growth" mode </h2>
 <p>if in "normal growth" mode then go through every pft individually and follow set of rules to determine if we go into "fall/harvest" mode</p>
-<p>needle leaf dcd</p>
-<p>broad leaf evg</p>
-<p>broad leaf dcd cold we use daylength and roottemp to initiate leaf offset</p>
-<p>broad leaf dcd dry we still use daylength and roottemp to initiate leaf offset, for the pathological cases of dry dcd trees being further away from the equator then we can imagine. other wise leaf loss will occur due to drought anyway.</p>
-<p>"normal growth" to "fall/harvest" transition for crops is based on specified lai. we harvest if lai of crops reaches a threshold. if lai doesn't reach this threshold (say due to a bad year) we harvest anyway if it starts getting cold, otherwise we don't harvest.</p>
-<pre class="fragment">add a branch for icc =12, j6, 7 = shrubs,j 8,9 = crops, j10,11,12
-= grasses, YW April 15, 2015 -----------------------------------\ </pre><p>"normal growth" to "max. growth" transition for grasses</p>
 <h2>if in "fall/harvest" mode </h2>
 <p>grasses and evg trees do not come into this mode, because they want to stay green if possible. this mode is activated for dcd plants and crops. once in this mode dcd trees loose their leaves and crops are harvested. ndl dcd trees keep loosing their leaves at rate determined by cold stress, bdl dcd trees loose their leaves at a specified rate, and crops are harvested over a period of 15 days. dcd trees and crops stay in "leaf fall/harvest" model until all green leaves are gone at which time they switch into "no leaves" mode, and then wait for the climate to become favourable to go into "max. growth" mode</p>
 <p>check that leaf status of all vegetation types in all grid cells has been updated</p>
@@ -385,7 +373,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="phenolgy_8f90.html">phenolgy.f90</a></li>
-    <li class="footer">Generated on Thu Oct 11 2018 12:12:17 for CLASSIC by
+    <li class="footer">Generated on Fri Nov 9 2018 11:01:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -32,7 +32,7 @@ c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts
 
       use classic_params, only : icc, ilg, ican, kk, zero, stemlife,
-     1                               rootlife, stmhrspn
+     1                               rootlife, stmhrspn,classpfts
 c
       implicit none
 c
@@ -130,32 +130,35 @@ c
        do 255 m = k1, k2
         do 260 i = il1, il2
          if (fcancmx(i,m).gt.0.0) then
-          if(j.eq.3)then     !>stem/root harvest/death for crops
 c
-            if(lfstatus(i,m).eq.3.and.stmhrlos(i,m).le.zero.and.
-     &      stemmass(i,m).gt.zero)then          
-              stmhrlos(i,m)=stemmass(i,m)*(1.0/stmhrspn)
-            endif
-c
-            if(lfstatus(i,m).eq.3.and.rothrlos(i,m).le.zero.and.
-     &      rootmass(i,m).gt.zero)then          
-              rothrlos(i,m)=rootmass(i,m)*(1.0/stmhrspn)   
-            endif
-c
-            if(stemmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
-     &      lfstatus(i,m).eq.2)then
+          select case (classpfts(j))
+            case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh') 
               stmhrlos(i,m)=0.0
-            endif
-c
-            if(rootmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
-     &      lfstatus(i,m).eq.2)then
               rothrlos(i,m)=0.0
-            endif
-c
-          else
-            stmhrlos(i,m)=0.0
-            rothrlos(i,m)=0.0
-          endif
+            case('Crops')
+              if(lfstatus(i,m).eq.3.and.stmhrlos(i,m).le.zero.and.
+     &          stemmass(i,m).gt.zero)then          
+                stmhrlos(i,m)=stemmass(i,m)*(1.0/stmhrspn)
+              endif
+  
+              if(lfstatus(i,m).eq.3.and.rothrlos(i,m).le.zero.and.
+     &           rootmass(i,m).gt.zero)then          
+                rothrlos(i,m)=rootmass(i,m)*(1.0/stmhrspn)   
+              endif
+  
+              if(stemmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
+     &         lfstatus(i,m).eq.2)then
+                stmhrlos(i,m)=0.0
+              endif
+  
+              if(rootmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
+     &           lfstatus(i,m).eq.2)then
+                rothrlos(i,m)=0.0
+              endif
+            case default
+              print*,'Unknown CLASS PFT in turnover ',classpfts(j)
+              call XIT('turnover',-1)                                             
+          end select
          endif
 260     continue
 255    continue   

@@ -2,7 +2,6 @@ var searchData=
 [
   ['variantcount',['variantcount',['../outputManager_8f90.html#a402d757f6976c03c4444c05436db3ab3',1,'outputmanager']]],
   ['veghght',['veghght',['../structctem__statevars_1_1veg__rot.html#ab71314c5891431794e8390785cd0c0fc',1,'ctem_statevars::veg_rot::veghght()'],['../structctem__statevars_1_1veg__gat.html#ab8bd8bda137701aba71a47c3e6fb9bc0',1,'ctem_statevars::veg_gat::veghght()']]],
-  ['vegtype',['vegtype',['../namespaceclassic__params.html#a6577d3c82c4b7eff811922c717921e6b',1,'classic_params']]],
   ['vgbiomas',['vgbiomas',['../structctem__statevars_1_1veg__rot.html#a89f971268ac8eb8ab809b5a81670393c',1,'ctem_statevars::veg_rot::vgbiomas()'],['../structctem__statevars_1_1veg__gat.html#acfa7110618f33145f34c3bc3e5f943ae',1,'ctem_statevars::veg_gat::vgbiomas()']]],
   ['vgbiomas_5fveg',['vgbiomas_veg',['../structctem__statevars_1_1veg__rot.html#aa800f4f66c1bd350f9da9e2644d97153',1,'ctem_statevars::veg_rot::vgbiomas_veg()'],['../structctem__statevars_1_1veg__gat.html#ab5e6fb1a7fe746e4f79086cf516f486f',1,'ctem_statevars::veg_gat::vgbiomas_veg()']]],
   ['vkc',['vkc',['../namespaceclassic__params.html#ac4e5b7b29360afcf8a352d01d6e85c3c',1,'classic_params']]],
