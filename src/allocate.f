@@ -372,12 +372,12 @@ c     ------------------------------------------------------------------
           if(lfstatus(i,m).eq.1) then
             aleaf(i,m)=aldrlfon(sort(m))
 
-	    !>for grasses we use the usual allocation even at leaf onset
-
+	           !>for grasses we use the usual allocation even at leaf onset
+             
             select case (classpfts(j)) 
             case ('Grass') 
               aleaf(i,m)=afrleaf(i,m)
-            case ('NdlTr' , 'BdlTr', 'Crops', 'Shrub') 
+            case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh') 
               ! Do nothing for non-grass
             case default
               print*,'Unknown CLASS PFT in allocate ',classpfts(j)

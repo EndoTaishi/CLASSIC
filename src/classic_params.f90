@@ -972,9 +972,9 @@ subroutine readin_params
         select case(pftkind)
         case('NdlEvgTr','NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
             numtreepfts = numtreepfts + 1
-        case('Shrub')  !FLAG NEED FIX.
+        case('BdlDCoSh','BdlEvgSh')  !FLAG NEED FIX.
             numshrubs = numshrubs + 1
-        case('GrassC3 ','GrassC4 ')
+        case('GrassC3 ','GrassC4 ','Sedge')
             numgrass = numgrass + 1
             grass(i) = .true.
         case('CropC3  ','CropC4  ')

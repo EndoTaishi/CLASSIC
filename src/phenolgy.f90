@@ -636,7 +636,7 @@ do 270 i = il1, il2
                       chkmode(i,j)=1
                     endif
 
-              case ('BdlDcdSh') ! DCD-SHRUB     treated the same as needle leaf dcd
+              case ('BdlDCoSh') ! DCD-SHRUB     treated the same as needle leaf dcd
                     if(ailcg(i,j).lt.lfthrs(i,j).and.&
                &      colddays(i,1).ge.coldlmt(1).and.&
                &      ailcg(i,j).gt.zero)then
@@ -692,7 +692,7 @@ do 410 i = il1, il2
       do 400 j = 1, icc
         pftkind = ctempfts(j)
         select case (pftkind)
-        case ('NdlDcdTr','BdlDCoTr','BdlDDrTr','BdlDcdSh','CropC3  ','CropC4  ') ! All deciduous PFTs
+        case ('NdlDcdTr','BdlDCoTr','BdlDDrTr','BdlDCoSh','CropC3  ','CropC4  ') ! All deciduous PFTs 
            if (fcancmx(i,j).gt.0.0 .and. chkmode(i,j).eq.0 .and. lfstatus(i,j).eq.3)then
               if(ailcg(i,j).le.0.01)then
                 lfstatus(i,j)=4            ! go into "no leaves" mode
@@ -700,7 +700,7 @@ do 410 i = il1, il2
                 pandays(i,j)=0
                 flhrloss(i,j)=0.0
               else
-                if (pftkind == 'NdlDcdTr' .or. pftkind == 'BdlDcdSh') then!    
+                if (pftkind == 'NdlDcdTr' .or. pftkind == 'BdlDCoSh') then!    
                   if(pandays(i,j).ge.dayschk(j).and. ta(i).gt.(coldthrs(1)+273.16)) then
                     if(ailcg(i,j).lt.lfthrs(i,j))then
                       lfstatus(i,j)=1      ! go into "max. growth" mode
@@ -734,7 +734,7 @@ do 410 i = il1, il2
                 endif
               endif !ailcg
             endif !fcancmax etc.
-          case ('NdlEvgTr' ,'BdlEvgTr','GrassC3 ','GrassC4 ')
+          case ('NdlEvgTr' ,'BdlEvgTr','GrassC3 ','GrassC4 ','Sedge   ','BdlEvgSh')
             ! Evergreens and grasses do not enter this mode.
           case default
             print*,'Unknown CTEM PFT in phenolgy ',pftkind
@@ -890,7 +890,8 @@ do 410 i = il1, il2
          endif
 
 630     continue
-      case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ','CropC4  ')
+      case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ',&
+            'CropC4  ','BdlEvgSh','BdlDCoSh')
         ! Do nothing for the non-grasses
       case default
         print*,'Unknown CTEM PFT in phenolgy ',pftkind

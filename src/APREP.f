@@ -592,9 +592,10 @@ C
             do J = 1, ICTEM
               select case (ctempfts(J))
                case ('NdlEvgTr','NdlDcdTr','BdlEvgTr','BdlDCoTr',
-     1               'BdlDDrTr') ! <Tree and shrub
+     1               'BdlDDrTr','BdlDCoSh','BdlEvgSh') ! <Tree and shrub
             AILCGS(I,J)=AILCG(I,J)
-               case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
+               case ('CropC3  ','CropC4  ','GrassC3 ',
+     1               'GrassC4 ','Sedge   ')
                   IF(H(I,CL4CTEM(J)).GT.0.0) THEN 
                    AILCGS(I,J)=AILCG(I,J)*HS(I,CL4CTEM(J))/
      1                        H(I,CL4CTEM(J)) 
