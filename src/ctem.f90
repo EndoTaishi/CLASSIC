@@ -12,11 +12,11 @@
 !!in the following sections.
 
       subroutine     ctem( fcancmx,    fsnow,     sand,      clay,  &
-     &                      il1,       il2,      iday,      radj, &
-     &                       tcano,    tcans,    tbarc,    tbarcs,    &
-     &                       tbarg,   tbargs,       ta,     delzw,&
-     &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    &
-     &                       zbotw,   thliqc,   thliqg,    deltat,&
+     &                         il1,      il2,     iday,      radj,  &
+     &                       tcano,    tcans,    tbarc,    tbarcs,  &
+     &                       tbarg,   tbargs,       ta,     delzw,  &
+     &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,  &
+     &                       zbotw,   thliqc,   thliqg,    deltat,  &
      &                       uwind,    vwind,  lightng,  prbfrhuc, &
      &                    extnprob,     tbar, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
@@ -1686,23 +1686,31 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 !!spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating 
 !!any fire by specifying fire extingushing probability equal to 1.
 !!
-call disturb (stemmass, rootmass, gleafmas, bleafmas,&
-     &                      thliqc,    THLW,      THFC,    uwind,&
-     &                       vwind,  lightng,  fcancmx, litrmass,&
-     &                    prbfrhuc, rmatctem, extnprob, &
-     &                         il1,      il2,     sort, nol2pfts,&
-     &                    grclarea,   thicec,   popdin, lucemcom,&
-     &                      dofire,  currlat,     iday, fsnow,&
-     &                       isand,  &
-!    in above, out below 
-     &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
-     &                    glcaemls, rtcaemls, stcaemls,&
-     &                    blcaemls, ltrcemls, burnfrac,smfunc_veg,&
-     &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
-     &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
-     &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
-     &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
-     &                    pstemmass, pgleafmass )  
+call disturb (            stemmass, rootmass, gleafmas, bleafmas,      &
+     &                      thliqc,    THLW,      THFC,    uwind,      &
+     &                       vwind,  lightng,  fcancmx, litrmass,      &
+     &                    rmatctem,                                    &
+     &                         il1,      il2,     sort, nol2pfts,      &
+     &                    grclarea,   thicec,   popdin, lucemcom,      &
+     &                      dofire,  currlat,     iday,    fsnow,      &
+     &                       isand,                                    &
+
+!    ------------------- inputs above this line ---------------------
+!    ------------ outputs below are the primary outputs -------------
+
+     &                    stemltdt,   rootltdt,   glfltrdt,    blfltrdt,  &
+     &                    glcaemls,   rtcaemls,   stcaemls,               &
+     &                    blcaemls,   ltrcemls,   burnfrac,               &
+     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4,  &
+
+!    ------------ outputs below are the secondary outputs -------------
+!                         which may be omitted in AGCM
+
+     &                     emit_co,  emit_nmhc,                           &
+     &                     emit_h2,   emit_nox,   emit_n2o,   emit_pm25,  &
+     &                    emit_tpm,    emit_tc,    emit_oc,     emit_bc,  &
+     &                    burnvegf,  bterm_veg,  mterm_veg,       lterm,  &
+     &                   smfunc_veg )  
     
 !    ------------------------------------------------------------------
 !>

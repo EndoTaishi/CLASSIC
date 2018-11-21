@@ -16,27 +16,39 @@ contains
 !> Calculates whether fire occurs, burned area, amount of C emitted and litter generated
 !> @author Vivek Arora and Joe Melton
 
-subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
-                            thliq,   THLW,  THFC,    uwind, &
-                            vwind,  lightng,  fcancmx, litrmass, &
-                         prbfrhuc, rmatctem, extnprob,   &
-                              il1,      il2,     sort, nol2pfts, &
-                         grclarea,    thice,   popdin, lucemcom, &
-                           dofire,   currlat,   iday,  fsnow,    &
-                            isand,                               &
-!     ------------------ inputs above this line ----------------------
-                         stemltdt, rootltdt, glfltrdt, blfltrdt, &
-                         glcaemls, rtcaemls, stcaemls, &
-                         blcaemls, ltrcemls, burnfrac, smfunc_veg, &
-                         emit_co2, emit_co,  emit_ch4, emit_nmhc, &
-                         emit_h2,  emit_nox, emit_n2o, emit_pm25, &
-                         emit_tpm, emit_tc,  emit_oc,  emit_bc, &
-                         burnvegf, bterm_veg, mterm_veg,    lterm, &
-                         pstemmass, pgleafmass )
+subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
+                            thliq,   THLW,       THFC,    uwind,      &
+                            vwind,  lightng,  fcancmx, litrmass,      &
+                         rmatctem,                                    &
+                              il1,      il2,     sort, nol2pfts,      &
+                         grclarea,    thice,   popdin, lucemcom,      &
+                           dofire,  currlat,     iday,  fsnow,        &
+                            isand,                                    &
+!    ------------------- inputs above this line ---------------------
+!    ------------ outputs below are the primary outputs -------------
+
+                         stemltdt,   rootltdt,   glfltrdt,    blfltrdt,   &
+                         glcaemls,   rtcaemls,   stcaemls,                &
+                         blcaemls,   ltrcemls,   burnfrac,                &
+                        pstemmass, pgleafmass,  emit_co2,     emit_ch4,   &
+
+!    ------------ outputs below are the secondary outputs -------------
+!                         which may be omitted in AGCM
+
+                          emit_co,  emit_nmhc,                            &
+                          emit_h2,   emit_nox,   emit_n2o,   emit_pm25,   &
+                         emit_tpm,    emit_tc,    emit_oc,     emit_bc,   &
+                         burnvegf,  bterm_veg,  mterm_veg,       lterm,   &
+                       smfunc_veg)
+
 !     ------------------outputs above this line ----------------------
 !
 
 
+!
+!     20  Nov 2018  - Remove extnprob from going in. It's redundant now because
+!     Vivek Arora     it's calculated inside as a f(POPDIN). Clean up arguments
+!                     list so that seocndary output can be cleanly removed for AGCM.
 !
 !     12  Jan 2016  - Change to allow more than 3 soil layers
 !     J. Melton
