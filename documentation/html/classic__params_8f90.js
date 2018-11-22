@@ -3,6 +3,7 @@ var classic__params_8f90 =
     [ "allocateparamsclassic", "classic__params_8f90.html#a621fec9700c467b535047098d42d4668", null ],
     [ "prepareglobalparams", "classic__params_8f90.html#a607d5090e3483de84d533e527b7d0672", null ],
     [ "readin_params", "classic__params_8f90.html#af848251bbbde37310b9068bb15642350", null ],
+    [ "readin_pftnums", "classic__params_8f90.html#ad3328061cd648af86291a18040114231", null ],
     [ "a", "classic__params_8f90.html#aa1de12c2b67eba5d8b3b5504be4c802c", null ],
     [ "a_hetr", "classic__params_8f90.html#abdc804f931cd40aea48063ecd61f6e88", null ],
     [ "abar", "classic__params_8f90.html#ab7a9cae6272a40a96d5162f115c1af48", null ],

@@ -11,8 +11,9 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
 1. @subpage overviewCLASS
    - @subpage devHistory
 2. @subpage overviewCTEM
-3. @subpage compvsmosaic
-4. @subpage basicInputs "The four basic types of data that are required to run CLASSIC"
+3. @subpage PFTsCLASSIC
+4. @subpage compvsmosaic
+5. @subpage basicInputs "The four basic types of data that are required to run CLASSIC"
   - @subpage forcingData
   - @subpage vegetationData
     - @subpage vegCLASSonly
@@ -21,7 +22,7 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
   - @subpage initProgVar
     - @subpage initPhysProgVar
     - @subpage initCTEMProgVar
-5. @subpage CTEMaddInputs
+6. @subpage CTEMaddInputs
   - Greenhouse gases
     - @subpage initCO2
     - @subpage initCH4
@@ -35,18 +36,18 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
     - @subpage initWetArea
   - @subpage initPeat "Peatlands"
   - @subpage inputLUC
-6. @subpage makeInputFiles
+7. @subpage makeInputFiles
   - @subpage makeMet "Meteorological inputs"
   - @subpage makeInit "The model initialization and restart files"
   - Greenhouse gas inputs
   - @subpage makeOther "Other inputs"
-7. @subpage runPrep "Preparing a CLASSIC run"
+8. @subpage runPrep "Preparing a CLASSIC run"
   - @subpage Environ
       - @subpage Containers
   - @subpage compilingMod
   - @subpage setupJobOpts
   - @subpage xmlSystem "Configuring the model outputs"
-8. @subpage runCLASSIC "Running CLASSIC"
+9. @subpage runCLASSIC "Running CLASSIC"
   - @subpage runStandAloneMode "Running CLASSIC for a point location"
   - @subpage runGrid "Running CLASSIC over a grid (regional,global)"
-9. @subpage howDoI
+10. @subpage howDoI

@@ -322,6 +322,7 @@ Functions/Subroutines</h2></td></tr>
 <p>make sure allocation fractions add to one</p>
 <p>the allocation fractions calculated above are overridden by two rules.</p>
 <p>rule 1 which states that at the time of leaf onset which corresponds to leaf status equal to 1, more c is allocated to leaves so that they can grow asap. in addition when leaf status is "fall/harvest" then nothing is allocated to leaves.</p>
+<p>for grasses we use the usual allocation even at leaf onset</p>
 <p>rule 2 overrides rule 1 above and makes sure that we do not allow the amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed an amount such that the remaining woody biomass cannot support. if this happens, allocation to leaves is reduced and most npp is allocated to stem and roots, in a proportion based on calculated afrstem and afrroot. for grasses this rule essentially constrains the root:shoot ratio, meaning that the model grasses can't have lots of leaves without having a reasonable amount of roots.</p>
 <p>make sure that root:shoot ratio is at least equal to rtsrmin. if not allocate more to root and decrease allocation to stem.</p>
 <p>finally check if all allocation fractions are positive and check again they all add to one.</p>
@@ -334,7 +335,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="allocate_8f.html">allocate.f</a></li>
-    <li class="footer">Generated on Fri Nov 9 2018 11:01:13 for CLASSIC by
+    <li class="footer">Generated on Wed Nov 21 2018 15:59:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

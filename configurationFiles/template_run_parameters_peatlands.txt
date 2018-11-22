@@ -1,3 +1,18 @@
+&classicPFTbasic
+
+! In this header, the basic numbers of PFTs is listed. Below this initial namelist is the parameters for each PFT.
+
+! Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
+ican = 4 ,    
+
+! Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
+icc = 9 ,           
+
+! Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
+l2max = 3 ,         
+
+/
+
 &classicparams
 
 ! This file contains all of the CTEM parameters that are read in by
@@ -8,6 +23,36 @@
 ! to the commas at the end of a declaration. You can use scientific notation (E)
 ! The order of parameters does not have to match that in the code but the parameter
 ! names must match. It stops reading when it encounters a '/'
+
+! ---------
+
+! Description of the PFTs used [both physics only (CLASS) and with biogeochemistry (CTEM on) runs]
+! **Note: for competition, tree and grass should be placed in a contiguous block. So don't put
+! {trees, crops, tree, grass, tree, grass} as that will break the logic.
+
+! modelpft assigns the PFTs to their position in the kk sized matrix for CLASS and CTEM:
+modelpft(1:5)  = 1,     1,     0,     0,        0,   ! CLASS PFT 1 NDL
+!               EVG    DCD
+modelpft(6:10) = 1,     1,     1,     1,        1,   ! CLASS PFT 2 BDL
+!               EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
+modelpft(11:15)= 1,     1,     0,     0,        0,   ! CLASS PFT 3 CROP
+!               C3      C4
+modelpft(16:20)= 1,     1,     1,     0,        0,   ! CLASS PFT 4 GRASS
+!              C3      C4     sedge
+
+
+! List of CLASS-level PFTs
+classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass',
+
+! List of CTEM PFTs
+! **Note: 'BdlDCoTr' should be specified before 'BdlDDrTr' due to some code in competition.
+ctempfts = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','BdlEvgSh','BdlDCoSh','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ','Sedge   ',
+
+! Array telling which vegetation type is c4
+isc4(1:5)  = .false., .false., .false., .false., .false.,
+isc4(6:10)  = .false., .false., .false., .false., .false.,
+isc4(11:15)  = .false., .true., .false., .false., .false.,
+isc4(16:20)= .false., .true., .false., .false., .false.,
 
 ! ---------
 
@@ -222,26 +267,6 @@ DELT = 1800.0,
 ! -------------------------------------
 
 ! Biogeochemical (CTEM) parameters
-
-
-modelpft(1:5)  = 1,     1,     0,     0,        0,   ! CLASS PFT 1 NDL
-!               EVG    DCD
-modelpft(6:10) = 1,     1,     1,     1,        1,   ! CLASS PFT 2 BDL
-!               EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
-modelpft(11:15)= 1,     1,     0,     0,        0,   ! CLASS PFT 3 CROP
-!               C3      C4
-modelpft(16:20)= 1,     1,     1,     0,        0,   ! CLASS PFT 4 GRASS
-!              C3      C4     sedge
-
-pftlist = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ','Sedge   ',
-
-vegtype = 'Tree',      'Tree',     'Tree',    'Tree',     'Tree',    'Shrub',   'Shrub',   'Crop',    'Crop',    'Grass',   'Grass',    'Grass',
-
-! Array telling which vegetation type is c4
-isc4(1:5)  = .false., .false., .false., .false., .false.,
-isc4(6:10)  = .false., .false., .false., .false., .false.,
-isc4(11:15)  = .false., .true., .false., .false., .false.,
-isc4(16:20)= .false., .true., .false., .false., .false.,
 
 !Canopy light/nitrogen extinction coefficient
 kn(1:5)    =0.50, 0.50, 0.00, 0.00, 0.00,
@@ -735,7 +760,7 @@ kn(16:20)  =0.46, 0.44, 0.46, 0.00, 0.00,
     bsratesc_g = 0.02258,
 
     !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
-    a = 4.0,
+    a_hetr = 4.0,
 
 ! landuse_change_mod.f90 parameters: --------------
 ! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!

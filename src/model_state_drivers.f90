@@ -1492,6 +1492,14 @@ contains
             end if
         end do
 
+        !  Error check, if metTime is of shape 0 then your met year start is
+        ! not in your met file so throw an error message
+        if (size(metTime) == 0) then 
+          print*,'***Check readMetStartYear in your joboptions file '
+          print*,'as it appears to be in conflict with your met file'
+          call XIT('model_state_drivers:getMet',-1)
+        end if 
+        
         ! Check that the first day is Jan 1, otherwise warn the user
         firstTime =  parseTimeStamp(metTime(1))
         if (.not. closeEnough(firstTime(5),1.,0.001)) then

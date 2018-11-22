@@ -48,7 +48,7 @@ program CLASSIC
     !! read_initialstate as well as the restart file that is written to later.
     call read_modelsetup
 
-    !> Prepare all of the global parameters such as those in CLASSD and classic_params
+    !> Prepare all of the global parameters in classic_params
     !! which are read from a namelist file.
     call prepareGlobalParams
 

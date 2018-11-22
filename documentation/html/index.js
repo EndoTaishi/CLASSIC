@@ -3,6 +3,7 @@ var index =
     [ "The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)", "index.html#main", null ],
     [ "Overview of the Canadian Land Surface Scheme (CLASS)", "overviewCLASS.html", null ],
     [ "Overview of the Canadian Terrestrial Ecosystem Model (CTEM)", "overviewCTEM.html", [
+      [ "Plant Functional Types (PFTs) in CLASSIC", "overviewCTEM.html#PFTsCLASSIC", null ],
       [ "Rate change equations for carbon pools", "overviewCTEM.html#CTEMRateChgEqns", null ]
     ] ],
     [ "Composite vs. mosaic representation", "compvsmosaic.html", null ],
@@ -51,6 +52,7 @@ var index =
       [ "Running CLASSIC over a grid (Global or Regional)", "runCLASSIC.html#runGrid", null ]
     ] ],
     [ "How do I ...", "howDoI.html", [
-      [ "Change the number/depth/etc of soil layers?", "howDoI.html#chgSoil", null ]
+      [ "Change the number/depth/etc of soil layers?", "howDoI.html#chgSoil", null ],
+      [ "Gotcha for Windows users", "howDoI.html#windowsEndings", null ]
     ] ]
 ];

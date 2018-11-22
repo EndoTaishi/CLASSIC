@@ -85,19 +85,24 @@ $(document).ready(function(){initNavTree('howDoI.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><ol type="1">
-<li><a class="el" href="howDoI.html#chgSoil">Change the number/depth/etc of soil layers?</a> <hr/>
+<li><a class="el" href="howDoI.html#chgSoil">Change the number/depth/etc of soil layers?</a></li>
+<li><a class="el" href="howDoI.html#windowsEndings">Gotcha for Windows users</a> <hr/>
 </li>
 </ol>
 <h1><a class="anchor" id="chgSoil"></a>
 Change the number/depth/etc of soil layers?</h1>
-<p>Information about the soil layers is taken in from the initialization netcdf file. <a class="el" href="namespacemodel__state__drivers.html#a9082d4f86f78f0dca4f7e3ed00c55b02" title="Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 off...">model_state_drivers::read_modelsetup</a> reads the netcdf for the number of soil layers (ignd). The ZBOT variable in the intialization file is the depth to the bottom of each layer. So change the initialization file for the number and depths of the soil layers as required and CLASSIC will simply read them in. </p>
+<p>Information about the soil layers is taken in from the initialization netcdf file. <a class="el" href="namespacemodel__state__drivers.html#a9082d4f86f78f0dca4f7e3ed00c55b02" title="Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 off...">model_state_drivers::read_modelsetup</a> reads the netcdf for the number of soil layers (ignd). The ZBOT variable in the intialization file is the depth to the bottom of each layer. So change the initialization file for the number and depths of the soil layers as required and CLASSIC will simply read them in.</p>
+<h1><a class="anchor" id="windowsEndings"></a>
+Gotcha for Windows users</h1>
+<p>Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, which Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from <a href="http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html">http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html</a>)</p>
+<p>Any CLASSIC tool that reads in ASCII expects the Linux/Unix line endings. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Nov 9 2018 11:01:14 for CLASSIC by
+    <li class="footer">Generated on Wed Nov 21 2018 15:59:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

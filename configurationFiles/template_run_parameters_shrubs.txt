@@ -1,3 +1,18 @@
+&classicPFTbasic
+
+! In this header, the basic numbers of PFTs is listed. Below this initial namelist is the parameters for each PFT.
+
+! Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
+ican = 5 ,    
+
+! Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
+icc = 9 ,           
+
+! Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
+l2max = 3 ,         
+
+/
+
 &classicparams
 
 ! This file contains all of the CTEM parameters that are read in by
@@ -805,7 +820,7 @@ kn(13:15) = 0.50, 0.50, 0.00,
     bsratesc_g = 0.02258,
 
     !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
-    a = 4.0,
+    a_hetr = 4.0,
 
 ! landuse_change_mod.f90 parameters: --------------
 ! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!
@@ -1090,11 +1105,11 @@ kn(13:15) = 0.50, 0.50, 0.00,
     drlsrtmx_compete(13:15)   = 0.006, 0.005, 0.000,
 
     !> Parameter determining how fast cold temperatures causes leaves to fall
-    colda(1:3)     = 3.0, 3.0, 0.0, 0.0, 0.0,
-    colda(4:6)    = 3.0, 3.0, 3.0, 3.0, 3.0,
-    colda(7:9)   = 3.0, 3.0, 0.0, 0.0, 0.0,
-    colda(10:12)   = 3.0, 3.0, 3.0, 0.0, 0.0,
-    colda(13:15)   = 3.0, 3.0, 3.0, 0.0, 0.0,
+    colda(1:3)     = 3.0, 3.0, 0.0, 
+    colda(4:6)    = 3.0, 3.0, 3.0, 
+    colda(7:9)   = 3.0, 3.0, 0.0,
+    colda(10:12)   = 3.0, 3.0, 3.0, 
+    colda(13:15)   = 3.0, 3.0, 0.0,
 
     !> No. of days for which some temperature has to remain below a given threshold for initiating a process, days
     coldlmt = 7 , 5,

@@ -1294,13 +1294,16 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="memitem:a607d5090e3483de84d533e527b7d0672"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a607d5090e3483de84d533e527b7d0672">prepareglobalparams</a></td></tr>
 <tr class="memdesc:a607d5090e3483de84d533e527b7d0672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize and/or read in all global model parameters.  <a href="#a607d5090e3483de84d533e527b7d0672">More...</a><br /></td></tr>
 <tr class="separator:a607d5090e3483de84d533e527b7d0672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3328061cd648af86291a18040114231"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ad3328061cd648af86291a18040114231">readin_pftnums</a></td></tr>
+<tr class="memdesc:ad3328061cd648af86291a18040114231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the number of PFTs from the parameters namelist file.  <a href="#ad3328061cd648af86291a18040114231">More...</a><br /></td></tr>
+<tr class="separator:ad3328061cd648af86291a18040114231"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a621fec9700c467b535047098d42d4668"><td class="memItemLeft" align="right" valign="top"><a id="a621fec9700c467b535047098d42d4668"></a>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a621fec9700c467b535047098d42d4668">allocateparamsclassic</a> ()</td></tr>
 <tr class="memdesc:a621fec9700c467b535047098d42d4668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate the arrays for CTEM params that require it. <br /></td></tr>
 <tr class="separator:a621fec9700c467b535047098d42d4668"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af848251bbbde37310b9068bb15642350"><td class="memItemLeft" align="right" valign="top"><a id="af848251bbbde37310b9068bb15642350"></a>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#af848251bbbde37310b9068bb15642350">readin_params</a></td></tr>
-<tr class="memdesc:af848251bbbde37310b9068bb15642350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the CTEM parameters from a namelist file. Populate a few parameters based on what was read in. <br /></td></tr>
+<tr class="memdesc:af848251bbbde37310b9068bb15642350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the CLASSIC parameters from a namelist file. Populate a few parameters based on what was read in. <br /></td></tr>
 <tr class="separator:af848251bbbde37310b9068bb15642350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -1323,9 +1326,29 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><div class="memdoc">
 
 <p>Initialize and/or read in all global model parameters. </p>
-<p>Assign iccp1 and icp1. icc and ican are read in from the job options file.</p>
+<p>Read in the number of PFTs to be used, this reads them in from the namelist file.</p>
 <p>Allocate the arrays that store the CTEM parameter values</p>
 <p>Initialize the CTEM parameters, this reads them in from a namelist file. </p>
+
+</div>
+</div>
+<a id="ad3328061cd648af86291a18040114231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3328061cd648af86291a18040114231">&#9670;&nbsp;</a></span>readin_pftnums()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine, public classic_params::readin_pftnums </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read in the number of PFTs from the parameters namelist file. </p>
+<p>Assign iccp1 and icp1. icc and ican are read in from the job options file. </p>
 
 </div>
 </div>
@@ -1355,7 +1378,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceclassic__params.html">classic_params</a></li>
-    <li class="footer">Generated on Fri Nov 9 2018 11:01:14 for CLASSIC by
+    <li class="footer">Generated on Wed Nov 21 2018 15:59:13 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

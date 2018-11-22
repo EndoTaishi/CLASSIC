@@ -253,6 +253,33 @@ character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valig
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a73890809feceec23d588deabdc5986fd">ctem_params::kn</a></td></tr>
 <tr class="memdesc:a73890809feceec23d588deabdc5986fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
 <tr class="separator:a73890809feceec23d588deabdc5986fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe258f7756428889e2b641744778c248"><td class="memItemLeft" align="right" valign="top"><a id="afe258f7756428889e2b641744778c248"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::omega_compete</b></td></tr>
+<tr class="separator:afe258f7756428889e2b641744778c248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0487bfe54f0a73722a80d817674b88fe"><td class="memItemLeft" align="right" valign="top"><a id="a0487bfe54f0a73722a80d817674b88fe"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::epsilonl_compete</b></td></tr>
+<tr class="separator:a0487bfe54f0a73722a80d817674b88fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451209a4ed3fc89505db07f35c3f2343"><td class="memItemLeft" align="right" valign="top"><a id="a451209a4ed3fc89505db07f35c3f2343"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::epsilons_compete</b></td></tr>
+<tr class="separator:a451209a4ed3fc89505db07f35c3f2343"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a648a7a00e3762cb20ce276775469b65a"><td class="memItemLeft" align="right" valign="top"><a id="a648a7a00e3762cb20ce276775469b65a"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::epsilonr_compete</b></td></tr>
+<tr class="separator:a648a7a00e3762cb20ce276775469b65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bedd6f64dfdb738dbc6f82b31b16e10"><td class="memItemLeft" align="right" valign="top"><a id="a2bedd6f64dfdb738dbc6f82b31b16e10"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bsrtstem_compete</b></td></tr>
+<tr class="separator:a2bedd6f64dfdb738dbc6f82b31b16e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72150a6507e6a5a509e5e1389504b08b"><td class="memItemLeft" align="right" valign="top"><a id="a72150a6507e6a5a509e5e1389504b08b"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bsrtroot_compete</b></td></tr>
+<tr class="separator:a72150a6507e6a5a509e5e1389504b08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece76dcff43df5e5ddbb5b208b0a2f18"><td class="memItemLeft" align="right" valign="top"><a id="aece76dcff43df5e5ddbb5b208b0a2f18"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::mxmortge_compete</b></td></tr>
+<tr class="separator:aece76dcff43df5e5ddbb5b208b0a2f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace4025dfd7bfbb4991cfe069167359ec"><td class="memItemLeft" align="right" valign="top"><a id="ace4025dfd7bfbb4991cfe069167359ec"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::maxage_compete</b></td></tr>
+<tr class="separator:ace4025dfd7bfbb4991cfe069167359ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f138fe36874075845642f90879e0e9a"><td class="memItemLeft" align="right" valign="top"><a id="a0f138fe36874075845642f90879e0e9a"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::drlsrtmx_compete</b></td></tr>
+<tr class="separator:a0f138fe36874075845642f90879e0e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab53002b0b06bff5af5822ebcfeaf285f"><td class="memItemLeft" align="right" valign="top"><a id="ab53002b0b06bff5af5822ebcfeaf285f"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#ab53002b0b06bff5af5822ebcfeaf285f">ctem_params::omega</a></td></tr>
 <tr class="memdesc:ab53002b0b06bff5af5822ebcfeaf285f"><td class="mdescLeft">&#160;</td><td class="mdescRight">omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run) <br /></td></tr>
@@ -534,10 +561,10 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a3b130e3b7506998094c8650ea4d26ff7">ctem_params::bsratesc_g</a></td></tr>
 <tr class="memdesc:a3b130e3b7506998094c8650ea4d26ff7"><td class="mdescLeft">&#160;</td><td class="mdescRight">bare ground soil c respiration rates at 15 c in kg c/kg c.year <br /></td></tr>
 <tr class="separator:a3b130e3b7506998094c8650ea4d26ff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8822a85e4e8060308fbdb71f7983e926"><td class="memItemLeft" align="right" valign="top"><a id="a8822a85e4e8060308fbdb71f7983e926"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a8822a85e4e8060308fbdb71f7983e926">ctem_params::a</a></td></tr>
-<tr class="memdesc:a8822a85e4e8060308fbdb71f7983e926"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool <br /></td></tr>
-<tr class="separator:a8822a85e4e8060308fbdb71f7983e926"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad532b62934701a87c46a24bb2b81cf49"><td class="memItemLeft" align="right" valign="top"><a id="ad532b62934701a87c46a24bb2b81cf49"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#ad532b62934701a87c46a24bb2b81cf49">ctem_params::a_hetr</a></td></tr>
+<tr class="memdesc:ad532b62934701a87c46a24bb2b81cf49"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool <br /></td></tr>
+<tr class="separator:ad532b62934701a87c46a24bb2b81cf49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa754be19830b01b24a5a992122c67f6f"><td class="memItemLeft" align="right" valign="top"><a id="aa754be19830b01b24a5a992122c67f6f"></a>
 real, dimension(3)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#aa754be19830b01b24a5a992122c67f6f">ctem_params::combust</a></td></tr>
 <tr class="memdesc:aa754be19830b01b24a5a992122c67f6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">how much deforested/chopped off biomass is combusted (these absolutely must add to 1.0!) <br /></td></tr>
@@ -905,7 +932,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem__params_8f90.html">ctem_params.f90</a></li>
-    <li class="footer">Generated on Fri Sep 21 2018 13:07:59 for CLASSIC by
+    <li class="footer">Generated on Wed Nov 21 2018 15:59:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

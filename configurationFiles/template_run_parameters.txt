@@ -1,3 +1,18 @@
+&classicPFTbasic
+
+! In this header, the basic numbers of PFTs is listed. Below this initial namelist is the parameters for each PFT.
+
+! Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
+ican = 4 ,    
+
+! Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
+icc = 9 ,           
+
+! Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
+l2max = 3 ,         
+
+/
+
 &classicparams
 
 ! This file contains all of the CTEM parameters that are read in by

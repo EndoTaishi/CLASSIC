@@ -1,9 +1,7 @@
-!> Contains CLASSIC globally accessible parameters
-!!@author J. Melton 
-!!
-module classic_params
+!> Contains CTEM globally accessible parameters
+module ctem_params
 
-!>\ingroup classic_params_main
+!>\ingroup ctem_params_main
 !!@{
 
 ! J. Melton
@@ -11,6 +9,9 @@ module classic_params
 
 ! Change History:
 
+! Sep 2018 - EC - Relocate variables defined in "readin_params" to the main module and allocate them
+!                 in "allocateParamsCTEM". Cray compiler doesn't currently support namelists using 
+!                 dynamic arrays dimensioned by a parameter specified in the main module.
 ! Jun 2017 - JM - Change to using namelist.
 ! Jun 11 2015 - JM - Add in new disturb params (extnmois_duff and extnmois_veg) replacing duff_dry and extnmois.
 ! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
@@ -20,39 +21,20 @@ module classic_params
 
 implicit none
 
-public :: allocateParamsCLASSIC
-public :: readin_PFTnums
+
+public :: allocateParamsCTEM
 public :: readin_params
 public :: prepareGlobalParams
 
+
 ! Constants
 
-real, parameter :: zero     = 1.0e-20   !<Defintion of zero
-real, parameter :: abszero  = 1e-12     !<Defintion of zero, this one is for main.f90 and allocate.f
-real, parameter :: earthrad = 6371.22   !< Radius of Earth, km
-real, parameter :: km2tom2  = 1.0e+06   !< Conversion factor from \f$km^2\f$ to \f$m^2\f$
-real, parameter :: gasc = 8.314         !< Gas constant (\f$J mol^{-1} K^{-1}\f$) 
-
-! The next parameters are normally assigned in the GCM but need to be assigned here since this 
-! is an offline run. The names used below are the same as those in the GCM.
-real, parameter :: TFREZ = 273.16       !<Freezing point of water (K) (GCM name: CELZRO)
-real, parameter :: RGAS = 287.04        !< Gas constant ($J kg^{-1} K^{-1}$) (GCM name: GAS)
-real, parameter :: RGASV = 461.50       !< Gas constant for water vapour ($J kg^{-1} K^{-1}$) (GCM name: GASV)
-real, parameter :: GRAV = 9.80616       !< Acceleration due to gravity ($m s^{-1}) (GCM name: G)
-real, parameter :: SBC = 5.66796E-8     !< Stefan-Boltzmann constant ($W m^{-2} K^{-4} $) (GCM name: SIGMA)
-real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air ($J kg^{-1} K^{-1}$) (GCM name: CPRES)
-real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
-real, parameter :: STD_PRESS = 101325.0 !<Standard atmospheric pressure (Pa)
-
-!SPHAIR=CPRES FLAG COMBAK
-!CPD=CPRES FLAG COMBAK
-
-! FLAG below not used anywhere.
-!AI=2.88053E+6/1004.5
-!BI=0.167E+3/1004.5
-!AW=3.15213E+6/1004.5
-!BW=2.38E+3/1004.5
-!SLP=1.0/(T1S-T2S)
+real, parameter :: zero     = 1.0e-20
+real, parameter :: abszero  = 1e-12     !<this one is for runclassctem.f and allocate.f
+real, parameter :: pi       = 3.1415926535898d0
+real, parameter :: earthrad = 6371.22   !<radius of earth, km
+real, parameter :: km2tom2  = 1.0e+06   !<changes from \f$km^2\f$ to \f$m^2\f$
+real, parameter :: deltat   = 1.0       !<CTEM's time step in days
 
 ! These month arrays are possibly overwritten in runclassctem due to leap years.
 integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
@@ -60,76 +42,7 @@ integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,3
 integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
 integer, parameter :: nmon = 12 !< Number of months in a year
 
-! Additional values for RPN and GCM common blocks:
-
-real, parameter :: DELTA = 0.608      
-real, parameter :: AS = 12.0
-real, parameter :: ASX = 4.7        
-real, parameter :: ANGMAX = 0.85
-real, parameter :: CI = 40.0
-real, parameter :: BS = 1.0
-real, parameter :: BETA = 1.0
-real, parameter :: FACTN = 1.2
-real, parameter :: HMIN = 40.0
-real, parameter :: A = 21.656
-real, parameter :: B = 5418.0
-real, parameter :: EPS1 = 0.622
-real, parameter :: EPS2 = 0.378
-real, parameter :: T1S = 273.16
-real, parameter :: T2S = 233.16
-real, parameter :: RW1 = 53.67957
-real, parameter :: RW2 = -6743.769
-real, parameter :: RW3 = -4.8451
-real, parameter :: RI1 = 23.33086
-real, parameter :: RI2 = -6111.72784
-real, parameter :: RI3 = 0.15215
-real, parameter :: X1 = 0.0
-real, parameter :: X2 = 0.0
-real, parameter :: X3 = 0.0
-real, parameter :: X4 = 0.0
-real, parameter :: X5 = 0.0
-real, parameter :: X6 = 0.0
-real, parameter :: X7 = 0.0
-real, parameter :: X8 = 0.0
-real, parameter :: X9 = 0.0
-real, parameter :: X10 = 0.0
-real, parameter :: X11 = 0.0
-real, parameter :: X12 = 0.0
-real, parameter :: X13 = 0.0
-real, parameter :: X14 = 0.0
-real, parameter :: X15 = 0.0
-real, parameter :: X16 = 0.0
-real, parameter :: K1 = 0
-real, parameter :: K2 = 0
-real, parameter :: K3 = 0
-real, parameter :: K4 = 0
-real, parameter :: K5 = 0
-real, parameter :: K6 = 0
-real, parameter :: K7 = 0
-real, parameter :: K8 = 0
-real, parameter :: K9 = 0
-real, parameter :: K10 = 0
-real, parameter :: K11 = 0
-
-! Biogeochemical parameters:
-real, parameter :: deltat   = 1.0       !<CTEM's time step in days
-real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
-real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
-real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
-real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
-
-integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
-integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
-
-real, parameter  :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
-                            ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
-real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
-
-!> Logical switch for using constant allocation factors (default value is false)
-logical :: consallo = .false.
-
-! --------------------------------------------------------------
-
+! ----
 ! Read in from the netcdf initialization file:
 integer :: nlat        !< Number of cells we are running, read in from the initialization file. Offline this always 1.
 integer :: nmos        !< Number of mosaic tiles, read in from the initialization file
@@ -141,8 +54,9 @@ integer :: ican              !< Number of CLASS (physics) pfts, read in from the
 integer :: icc               !< Number of CTEM (biogeochemical) pfts, read in from the job options file.
 integer :: l2max             !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs
                              !! associated with a single CLASS PFT. Read in from the job options file.
+
 ! ----
-! Plant-related parameters that are calculated based on job options or parameters
+! Plant-related parameters that are calculated based on job options
 integer :: icp1              !< ican + 1
 integer :: iccp1             !< iccp1
 integer :: kk                !< product of class pfts and l2max
@@ -150,102 +64,44 @@ integer :: numcrops          !< number of crop pfts
 integer :: numtreepfts       !< number of tree pfts
 integer :: numgrass          !< number of grass pfts
 integer :: numshrubs         !< number of shrubs pfts
-integer, dimension(:), allocatable :: nol2pfts !< Number of level 2 PFTs calculated in readin_params
-logical, dimension(:), allocatable :: crop     !< simple crop matrix, define number and position of the crops (NOTE: dimension icc)
-logical, dimension(:), allocatable :: grass    !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
-integer, dimension(:), allocatable :: CL4CTEM  !< Indexing of the CTEM-level PFTs into a CLASS PFT-level array.
+integer, dimension(:), allocatable :: nol2pfts  !< Number of level 2 PFTs calculated in readin_params
+logical, dimension(:), allocatable :: crop      !< simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
+logical, dimension(:), allocatable :: grass     !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
+
+real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
+real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
+real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
+
+integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
+
+real :: gasc = 8.314    !< gas constant (\f$J mol^{-1} K^{-1}\f$)  !COMBAK FLAG is there no global one I can use?
+real :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
+                            ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
+real :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
+
+!> Logical switch for using constant allocation factors (default value is false)
+logical :: consallo = .false.
 
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
 
-! Vegetation related parameters that define what PFTs are being simulated:
-character(5), dimension(:), allocatable :: classpfts  !< CLASS (physics) PFTs
 integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
-character(8), dimension(:), allocatable :: ctempfts  !<List of CTEM-level PFTs
-
-! Physics (CLASS) parameters:
-
-real :: VKC    !< Von Karman Constant (-) 
-real :: CT     !< Drag Coefficient for water (-)
-real :: VMIN   !< Minimum wind speed (m s^{-1})
-real :: TCW    !< Thermal conductivity of water ($W m^{-1} K^{-1} $)
-real :: TCICE  !< Thermal conductivity of ice  ($W m^{-1} K^{-1} $)
-real :: TCSAND !< Thermal conductivity of sand particles  ($W m^{-1} K^{-1} $)
-real :: TCCLAY !< Thermal conductivity of fine mineral particles  ($W m^{-1} K^{-1} $)
-real :: TCOM   !< Thermal conductivity of organic matter  ($W m^{-1} K^{-1} $)
-real :: TCDRYS !< Thermal conductivity of dry mineral soil  ($W m^{-1} K^{-1} $) FLAG QUESTION ever used?
-real :: RHOSOL !< Particle density of soil mineral matter ($kg m^{-3}$)
-real :: RHOOM  !< Particle density of soil organic matter ($kg m^{-3}$)
-real :: HCPW   !< Volumetric heat capacity of water ($J m^{-3} K^{-1}$)
-real :: HCPICE !< Volumetric heat capacity of ice ($J m^{-3} K^{-1}$)
-real :: HCPSOL !< Volumetric heat capacity of mineral matter ($J m^{-3} K^{-1}$) FLAG QUESTION ever used?
-real :: HCPOM  !< Volumetric heat capacity of organic matter ($J m^{-3} K^{-1}$)
-real :: HCPSND !< Volumetric heat capacity of sand particles ($J m^{-3} K^{-1}$)
-real :: HCPCLY !< Volumetric heat capacity of fine mineral particles ($J m^{-3} K^{-1}$)
-real :: SPHW   !< Specific heat of water ($J kg^{-1} K^{-1}$)
-real :: SPHICE !< Specific heat of ice  ($J kg^{-1} K^{-1}$)
-real :: SPHVEG !< Specific heat of vegetation matter  ($J kg^{-1} K^{-1}$)
-real :: RHOW   !< Density of water ($kg m^{-3}$) 
-real :: RHOICE !< Density of ice ($kg m^{-3}$)
-real :: TCGLAC !< Thermal conductivity of ice sheets ($W m^{-1} K^{-1}$)
-real :: CLHMLT !< Latent heat of freezing of water ($J kg^{-1}$)
-real :: CLHVAP !< Latent heat of vaporization of water ($J kg^{-1}$)
-real :: ZOLNG  !< Natural log of roughness length of soil (-)
-real :: ZOLNS  !< Natural log of roughness length of snow (-)
-real :: ZOLNI  !< Natural log of roughness length of ice (-)
-real :: ZORATG !< Ratio of soil roughness length for momentum to roughness length for heat (-)
-real :: ALVSI  !< Visible albedo of ice (-)
-real :: ALIRI  !< Near-infrared albedo of ice (-)
-real :: ALVSO  !< Visible albedo of organic matter (-)
-real :: ALIRO  !< Near-infrared albedo of organic matter (-)
-real :: ALBRCK !< Albedo of rock (-)
-
-real, dimension(:,:,:), allocatable  :: GROWYR !< The crop growth descriptor array (see APREP.f for description)
-real, dimension(:), allocatable  :: ZORAT   !<the ratio of the roughness length for momentum to the roughness length for heat
-real, dimension(:), allocatable  :: CANEXT  !< an attenuation coefficient used in calculating the sky view factor for
-                                            !! vegetation canopies (variable c in the documentation for subroutine CANALB)
-real, dimension(:), allocatable  :: XLEAF  !< a leaf dimension factor used in calculating the leaf boundary resistance 
-                                          !! (variable Cl in the documentation for subroutine APREP)
-
-!! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric), see the documentation for subroutine CLASSB. 
-
-real, dimension(:), allocatable  :: THPORG !<Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
-real, dimension(:), allocatable  :: THRORG !<Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
-real, dimension(:), allocatable  :: THMORG !<Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
-real, dimension(:), allocatable  :: BORG !<Clapp and Hornberger 'b' value for peat soils [ ]
-real, dimension(:), allocatable  :: PSISORG !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
-real, dimension(:), allocatable  :: GRKSORG !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
-
-! Model physics timestep (s) (GCM name: DELTIM)
-real :: DELT
-
-! CANALB parameters: ----------------------
-real :: ALVSWC     !< Average background visible albedo of snow covered canopy (-)
-real :: ALIRWC     !< Average background NIR albedo of snow covered canopy (-)
-real :: CXTLRG     !< Effective overall exctinction coefficient given if visible transmissivity is very small
-
-! CLASSB parameters:  ----------------------
-
-real, dimension(:), allocatable  :: ALWV !< Lookup tables for wet visible soil albedos based on soil colour index 
-real, dimension(:), allocatable  :: ALWN !< Lookup tables for wet NIR soil albedos based on soil colour index 
-real, dimension(:), allocatable  :: ALDV !< Lookup tables for dry visible soil albedos based on soil colour index 
-real, dimension(:), allocatable  :: ALDN !< Lookup tables for dry NIR soil albedos based on soil colour index 
-
-! DRCOEF parameters: ----------------------
-!FLAG has 4 but no idea what they are... COMBAK
-
-! FLXSURFZ parameters: ----------------------
-! FLAG has some but no idea what they are... COMBAK
-
-! SNINFL parameters: ----------------------
-real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight percentage)
-
-! ----------------------
-! ----------------------
-
-! Biogeochemical (CTEM) parameters:
-
+character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
+character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
 real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient
+
+! Moved definitions in "readin_params" here and allocate via "allocateParamsCTEM".
+
+real, dimension(:), allocatable :: omega_compete
+real, dimension(:), allocatable :: epsilonl_compete
+real, dimension(:), allocatable :: epsilons_compete
+real, dimension(:), allocatable :: epsilonr_compete
+real, dimension(:), allocatable :: bsrtstem_compete
+real, dimension(:), allocatable :: bsrtroot_compete
+real, dimension(:), allocatable :: mxmortge_compete
+real, dimension(:), allocatable :: maxage_compete
+real, dimension(:), allocatable :: drlsrtmx_compete
 
 !allocate.f parameters: ----------
 
@@ -516,16 +372,13 @@ real :: gamma_m                                 !< equivalent co2 fertilization 
 
 character(350)    :: runParamsFile
 logical          :: PFTCompetitionSwitch
-real :: zbldJobOpt,zrfhJobOpt,zrfmJobOpt
-real, dimension(:), allocatable :: RSMN,QA50,VPDA,VPDB,PSGA,PSGB ! These are temporary variables storing these parameters until they are
-                                                                 ! transfered into their ROT structure in read_initialstate
 
 
 ! --------------------------------------------------------------------------
 
 contains
 
-!>\ingroup classic_params_prepareGlobalParams
+!>\ingroup ctem_params_prepareGlobalParams
 !!@{
 !> Initialize and/or read in all global model parameters
 
@@ -533,11 +386,15 @@ subroutine prepareGlobalParams
 
     implicit none
 
-    !> Read in the number of PFTs to be used, this reads them in from the namelist file.
-    call readin_PFTnums
-    
+    !> Prepare CLASS parameters
+    CALL CLASSD
+
+    !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
+    iccp1 = icc + 1
+    icp1 = ican + 1
+
     !> Allocate the arrays that store the CTEM parameter values
-    call allocateParamsCLASSIC
+    call allocateParamsCTEM
 
     !> Initialize the CTEM parameters, this reads them in from a namelist file.
     call readin_params
@@ -546,46 +403,19 @@ end subroutine prepareGlobalParams
 !!@}
 ! --------------------------------------------------------------------------
 
-! --------------------------------------------------------------------------
-!>\ingroup classic_params_readin_PFTnums
-!!@{
-!> Read in the number of PFTs from the parameters namelist file. 
-subroutine readin_PFTnums
-
-    implicit none
-
-    namelist /classicPFTbasic/ &
-      ican,&
-      icc,&
-      l2max
-    
-    open(10,file=trim(runParamsFile),action='read',status='old')
-
-    read(10,nml = classicPFTbasic)
-
-    close(10)
-
-    !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
-    iccp1 = icc + 1
-    icp1 = ican + 1
-
-end subroutine readin_PFTnums
-!!@}
-! --------------------------------------------------------------------------
-
-!>\ingroup classic_params_allocateParamsCLASSIC
+!>\ingroup ctem_params_allocateParamsCTEM
 !!@{
 !> Allocate the arrays for CTEM params that require it.
 
-subroutine allocateParamsCLASSIC()
+subroutine allocateParamsCTEM()
 
     implicit none
 
-    kk = l2max * ican
+    kk = l2max * icc
 
     allocate(modelpft(kk),&
-            ctempfts(kk),&
-            CL4CTEM(kk), &
+            pftlist(kk),&
+            vegtype(kk),&
             kn(kk),&
             omega(kk),&
             epsilonl(kk),&
@@ -671,118 +501,49 @@ subroutine allocateParamsCLASSIC()
             vmax(kk),&
             inico2i(kk),&
             chi(kk),&
-            rmlcoeff(kk))
-    allocate(GROWYR(18,4,2),&
-            ZORAT(ican),&
-            classpfts(ican),&
-            CANEXT(ican),&
-            XLEAF(ican),&
-            RSMN(ican), &
-            QA50(ican), &
-            PSGA(ican), &
-            PSGB(ican), &
-            VPDA(ican), &
-            VPDB(ican), &        
-            THPORG(3),&
-            THRORG(3),&
-            THMORG(3),&
-            BORG(3),&
-            PSISORG(3),&
-            GRKSORG(3),&
-            ALWV(soilcolrinds),&
-            ALWN(soilcolrinds),&
-            ALDV(soilcolrinds),&
-            ALDN(soilcolrinds))
+            !rmlcoeff(kk))
+            rmlcoeff(kk),&
+            omega_compete(kk),&
+            epsilonl_compete(kk),&
+            epsilons_compete(kk),&
+            epsilonr_compete(kk),&
+            bsrtstem_compete(kk),&
+            bsrtroot_compete(kk),&
+            mxmortge_compete(kk),&
+            maxage_compete(kk),&
+            drlsrtmx_compete(kk))
 
-end subroutine allocateParamsCLASSIC
+end subroutine allocateParamsCTEM
 !!@}
+! --------------------------------------------------------------------------
 
 
-!>\ingroup classic_params_readin_params
+!>\ingroup ctem_params_readin_params
 !!@{
-!> Read in the CLASSIC parameters from a namelist file. Populate a few parameters
+!> Read in the CTEM parameters from a namelist file. Populate a few parameters
 !! based on what was read in.
 
 subroutine readin_params
 
     implicit none
 
-    real, dimension(kk):: omega_compete
-    real, dimension(kk):: epsilonl_compete
-    real, dimension(kk):: epsilons_compete
-    real, dimension(kk):: epsilonr_compete
-    real, dimension(kk):: bsrtstem_compete
-    real, dimension(kk):: bsrtroot_compete
-    real, dimension(kk):: mxmortge_compete
-    real, dimension(kk):: maxage_compete
-    real, dimension(kk):: drlsrtmx_compete
-    integer :: i,n,m
+    !real, dimension(kk):: omega_compete
+    !real, dimension(kk):: epsilonl_compete
+    !real, dimension(kk):: epsilons_compete
+    !real, dimension(kk):: epsilonr_compete
+    !real, dimension(kk):: bsrtstem_compete
+    !real, dimension(kk):: bsrtroot_compete
+    !real, dimension(kk):: mxmortge_compete
+    !real, dimension(kk):: maxage_compete
+    !real, dimension(kk):: drlsrtmx_compete
+    integer :: i,n
     character(8) :: pftkind
     integer :: isumc,k1c,k2c
 
     namelist /classicparams/ &
-        VKC,&    
-        CT   ,&  
-        VMIN ,&  
-        TCW  ,&  
-        TCICE,&  
-        TCSAND,& 
-        TCCLAY,& 
-        TCOM  ,& 
-        TCDRYS,& 
-        RHOSOL,& 
-        RHOOM ,& 
-        HCPW  ,& 
-        HCPICE,& 
-        HCPSOL,& 
-        HCPOM ,& 
-        HCPSND,& 
-        HCPCLY,& 
-        SPHW  ,& 
-        SPHICE,& 
-        SPHVEG,& 
-        RHOW  ,& 
-        RHOICE,& 
-        TCGLAC,& 
-        CLHMLT,& 
-        CLHVAP,& 
-        ZOLNG  ,&
-        ZOLNS  ,&
-        ZOLNI  ,&
-        ZORATG ,&
-        ALVSI  ,&
-        ALIRI  ,&
-        ALVSO  ,&
-        ALIRO  ,&
-        ALBRCK ,&
-        GROWYR ,&
-        ZORAT  ,& 
-        CANEXT ,& 
-        XLEAF  ,& 
-        RSMN, &
-        QA50, &
-        PSGA, &
-        PSGB, &
-        VPDA, &
-        VPDB, &        
-        THPORG ,&
-        THRORG ,&
-        THMORG ,&
-        BORG ,&
-        PSISORG,&
-        GRKSORG,&
-        DELT,&
-        ALVSWC,&
-        ALIRWC,&
-        CXTLRG,&
-        ALWV,&
-        ALWN,&
-        ALDV,&
-        ALDN,&
-        WSNCAP,&
         modelpft,&
-        classpfts, &
-        ctempfts,&
+        vegtype, &
+        pftlist,&
         kn, &
         omega,&
         omega_compete,&
@@ -978,37 +739,20 @@ subroutine readin_params
         enddo
         nol2pfts(i)=isumc  ! number of level 2 pfts
     end do
-    
-    ! Calculate the CL4CTEM which helps index CTEM to CLASS in APREP.
-    k1c=0
-    do i = 1, ican
-      if(i.eq.1) then
-        k1c = k1c + 1
-      else
-        k1c = k1c + nol2pfts(i-1)
-      endif
-      k2c = k1c + nol2pfts(i) - 1
-      do m = k1c, k2c
-        CL4CTEM(m) = i
-      end do
-    end do
 
     do i = 1, icc
-        pftkind=ctempfts(i)
+        pftkind=vegtype(i)
         select case(pftkind)
-        case('NdlEvgTr','NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
-            numtreepfts = numtreepfts + 1
-        case('BdlDCoSh','BdlEvgSh')  !FLAG NEED FIX.
-            numshrubs = numshrubs + 1
-        case('GrassC3 ','GrassC4 ','Sedge')
-            numgrass = numgrass + 1
-            grass(i) = .true.
-        case('CropC3  ','CropC4  ')
-            numcrops = numcrops + 1
-            crop(i) = .true.
-        case default
-          print*,'Unknown PFT in classic_params ',pftkind
-          call XIT('classic_params',-1)
+            case('Tree')
+                numtreepfts = numtreepfts + 1
+            case('Shrub')
+                numshrubs = numshrubs + 1
+            case('Grass')
+                numgrass = numgrass + 1
+                grass(i) = .true.
+            case('Crop')
+                numcrops = numcrops + 1
+                crop(i) = .true.
         end select
     end do
 
@@ -1029,70 +773,40 @@ end subroutine readin_params
 !!@}
 
 !>\file
-!> This module holds CLASSIC globally accessible parameters
+!> This module holds CTEM globally accessible parameters
 !!
-!> These parameters are used in all CLASSIC subroutines
+!> These parameters are used in all CTEM subroutines
 !> via use statements pointing to this module.
 !>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 !>first, then the remaining variables are assigned different variables if competition is on, or not.
 !>
-!> Please see documentation/overviewCTEM.md for more info.
-!!
 !> PFT parameters
 !!
 !!Note the structure of vectors which clearly shows the CLASS
 !!PFTs (along rows) and CTEM sub-PFTs (along columns)
 !!
-!! The basic version of CLASSIC includes the following PFTs:
 !!\f[
 !!\begin{tabular} { | l | c | c | c | c | c | }
 !!\hline
-!!CLASS PFTs &  CTEM PFTs &      --- &      ---  \\ \hline
-!!\hline
-!!needle leaf &  evg &      dcd &      ---  \\ \hline
-!!broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
-!!crops       &   c3 &       c4 &      ---  \\ \hline
-!!grasses     &   c3 &       c4 &    --- \\ \hline
+!!needle leaf &  evg &      dcd &      --- & ---& ---\\ \hline
+!!broad leaf  &  evg &  dcd-cld &  dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline
+!!crops       &   c3 &       c4 &      --- & ---& ---\\ \hline
+!!grasses     &   c3 &       c4 &      sedges & ---& ---\\ \hline
 !!\end{tabular}
 !!\f]
-!! 
-!! The peatland module expands upon these PFTs with the addition of two 
-!! shrub PFTs (only biogeochemistry) and sedges (see Wu et al. 2016) \cite Wu2016-zt Evergreen
-!! shrubs, for example the ericaceous shrubs, are the common dominant vascular
+!!
+!! We introduced three new
+!!PFTs for peatlands: evergreen shrubs, deciduous shrubs, and sedges. Evergreen
+!!shrubs, for example the ericaceous shrubs, are the common dominant vascular
 !!plants in bogs and poor fens while deciduous shrubs, such as the betulaceous
 !!shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf
 !!trees in CLASS morphologically, but their phenological and physiological
 !!characteristics are more similar to those of needleleaf trees. The shrub
 !!tundra ecosystem is situated adjacent to needleleaf forest in the Northern
 !!Hemisphere (Kaplan et al., 2003) and they share similar responses to climate
-!!in ESMs (e.g. Bonan et al., 2002).  (The photosynthesis and autotrophic
+!!in ESMs (e.g. Bonan et al., 2002). Table~2 lists the key parameters for the
+!!peatland PFTs used in this model. (The photosynthesis and autotrophic
 !!respiration of vascular PFTs are modelled the same as in the original CTEM.)
-!!
-!!\f[
-!!\begin{tabular} { | l | c | c | c | c | c | }
-!!\hline
-!!needle leaf &  evg &      dcd &      --- & --- & ---  \\ \hline
-!!broad leaf  &  evg &  dcd-cld &  dcd-dry &  EVG-shrubs & DCD-shrubs\\ \hline
-!!crops       &   c3 &       c4 &      ---  & --- & ---\\ \hline
-!!grasses     &   c3 &       c4 &      sedges & --- & ---\\ \hline
-!!\end{tabular}
-!!\f]
-!! Shrubs have now been implimented in the physic subroutines now as a fifth CLASS 
-!! PFT as below:
-!!
-!!\f[
-!!\begin{tabular} { | l | c | c | c | c | c | }
-!!\hline
-!!needle leaf &  evg &      dcd &      ---  \\ \hline
-!!broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
-!!crops       &   c3 &       c4 &      ---  \\ \hline
-!!grasses     &   c3 &       c4 &      sedges \\ \hline
-!!broad leaf shrubs & EVG-shrubs & DCD-shrubs &      ---  \\ \hline
-!!\end{tabular}
-!!\f]
-
-!!
 
 
-
-end module classic_params
+end module ctem_params
