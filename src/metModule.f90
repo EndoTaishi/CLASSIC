@@ -1,5 +1,6 @@
 !
 !> Performs disaggregation of input meteorological forcing arrays to the model physics timestep
+!!@author V. Arora, J. Melton 
 module metDisaggModule
 
     use model_state_drivers, only : metInputTimeStep,metTime,metFss,metFdl,metPre,metTa,metQa,metUv,metPres
@@ -232,10 +233,16 @@ contains
 
         real, intent(inout)                         :: var(:)
         real, intent(in)                            :: delt
-        integer                                     :: i, j, k, T,start, endpt, countr,wetpds
+        integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
         real                                        :: temp,startpre
         real, allocatable, dimension(:)             :: random
         integer, allocatable, dimension(:)             :: sort_ind
+      real, allocatable, dimension(:)             :: incomingPre,tmpvar
+      logical                                     :: needDistrib
+      
+      !Set some initial conditions
+      needDistrib=.true.
+      attempts = 1
 
         allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
 
@@ -247,6 +254,11 @@ contains
         ! derived for mm/6h originally.
         var = var * metInputTimeStep
 
+      ! Save the incoming precip for balance check later
+      allocate(incomingPre(countr),tmpvar(countr))
+      incomingPre = var
+      
+      do while (needDistrib)
         do i = 1, countr/numberPhysInMet
 
             start = (i - 1) * numberPhysInMet + 1
@@ -308,23 +320,39 @@ contains
                 k = 1
                 do j = start,endpt
                     ! Assign this time period its precipitation
-                    var(j) = random(k) * startpre
+                  tmpvar(j) = random(k) * startpre
                     !print*,j,k,random(k),startpre,var(j)
                     k = k + 1
                 end do
 
             else !No precip, move on.
                 wetpds = 0
-                var(start:endpt) = 0.
+              tmpvar(start:endpt) = 0.
             end if
 
         enddo
 
+        ! Balance check that we have conserved our precip
+        if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-12) then 
+          if (attempts > 3) then            
+            print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
+            call XIT('metModule',-1)
+          else ! retry, could have just been a bad draw.
+            needDistrib = .true.
+            attempts = attempts + 1
+          end if
+        else 
+          ! All is well, finish up.
+          needDistrib = .false.
+        end if
+        
+      end do !needDistrib
+
         ! So we now have the amount of precip in each physics timestep (mm/delt)
         ! we now need to then convert back to mm/s
-        var = var / delt
+      var = tmpvar / delt
 
-        deallocate(random,sort_ind)
+      deallocate(random,sort_ind,incomingPre,tmpvar)
 
     end subroutine precipDistribution
 !!@}
