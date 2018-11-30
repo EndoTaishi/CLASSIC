@@ -17,59 +17,73 @@
      &                       tbarg,   tbargs,       ta,     delzw,  &
      &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,  &
      &                       zbotw,   thliqc,   thliqg,    deltat,  &
-     &                       uwind,    vwind,  lightng,  prbfrhuc, &
-     &                    extnprob,     tbar, &
-     &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
-     &                      thicec, soildpth, spinfast,   todfrac,&
-     &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
-     &                    popdin, dofire,  isand,  &
-     &                   faregat, wetfrac, slopefrac,&
-     &                       bi,     thpor,    thiceg, currlat, &
-     &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
-     &                   leapnow, &
+     &                       uwind,    vwind,  lightng,      tbar,  &
+     &                    nol2pfts, pfcancmx, nfcancmx,             &
+     &                      thicec, soildpth, spinfast,   todfrac,  &
+     &                      netrad,   precip,    psisat,            &
+     &                    grclarea,   popdin,    isand,             &
+     &                     faregat,  wetfrac, slopefrac,       bi,  &
+     &                       thpor,   thiceg,   currlat,  ch4conc,  &
+     &                        GRAV,     RHOW,    RHOICE,            &
 !
-!    -------------- inputs used by ctem are above this line ---------
+!    ------------- logical switches determining model behaviour 
 !
-     &                    stemmass, rootmass, litrmass,  gleafmas,&
-     &                    bleafmas, soilcmas,    ailcg,      ailc,&
-     &                       zolnc, rmatctem,    rmatc,     ailcb,&
-     &                    flhrloss,  pandays, lfstatus,  grwtheff,&
-     &                    lystmmas, lyrotmas, tymaxlai,  vgbiomas,&
-     &                    gavgltms, gavgscms, stmhrlos,      slai, &
-     &                     bmasveg, cmasvegc, colddays,  rothrlos,&
-     &                      fcanmx,   alvisc,   alnirc,   gavglai,&
-     &                       tcurm, srpcuryr, dftcuryr,inibioclim,&
-     &                      tmonth, anpcpcur,  anpecur,   gdd5cur,&
-     &                    surmncur, defmncur, srplscur,  defctcur,&
-     &                    geremort, intrmort,   lambda,  &
-     &                    pftexist, twarmm,    tcoldm,       gdd5,&
-     &                     aridity, srplsmon, defctmon,  anndefct,&
-     &                    annsrpls,  annpcp,dry_season_length,&
-     &                    burnvegf, pstemmass, pgleafmass,&
-     &                        npp,       nep, hetrores,   autores,&
-     &                   soilresp,        rm,       rg,       nbp,&
-     &                     litres,    socres,      gpp, dstcemls1,&
-     &                   litrfall,  humiftrs,  veghght,  rootdpth,&
-     &                   litrfallveg,  humtrsvg, &
-     &                        rml,       rms,      rmr,  tltrleaf,&
-     &                   tltrstem,  tltrroot, leaflitr,  roottemp,&
-     &                    afrleaf,   afrstem,  afrroot,  wtstatus,&
-     &                   ltstatus,  burnfrac, smfunc_veg, lucemcom,&
-     &                   lucltrin,  lucsocin,   nppveg,  &
-     &                   dstcemls3, paicgat,  slaicgat,    &
-     &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
-     &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
-     &                    emit_tpm, emit_tc,  emit_oc,    emit_bc,&
-     &                  bterm_veg,    lterm, mterm_veg,        &
-     &                         cc,       mm,&
-     &                      rmlveg,  rmsveg,   rmrveg,    rgveg,&
-     &                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,&
+     &               PFTCompetition,  dofire,  lnduseon,  inibioclim,  &
+     &                      leapnow,                                   &
+!
+!    -------------- all inputs used by ctem are above this line ---------
+!
+     &                    stemmass,   rootmass,    litrmass,    gleafmas,   &
+     &                    bleafmas,   soilcmas,       ailcg,        ailc,   &
+     &                       zolnc,   rmatctem,       rmatc,       ailcb,   &
+     &                    flhrloss,    pandays,    lfstatus,    grwtheff,   &
+     &                    lystmmas,   lyrotmas,    tymaxlai,    vgbiomas,   &
+     &                    gavgltms,   gavgscms,    stmhrlos,        slai,   &
+     &                     bmasveg,   cmasvegc,    colddays,    rothrlos,   &
+     &                      fcanmx,     alvisc,      alnirc,     gavglai,   &
+     &                    geremort,   intrmort,   pstemmass,    pgleafmass, &
+!
+!    ------------- the following are all competition related variables ---
+!
+     &                       tcurm,   srpcuryr,    dftcuryr,      lambda,   &
+     &                      tmonth,   anpcpcur,     anpecur,     gdd5cur,   &
+     &                    surmncur,   defmncur,    srplscur,    defctcur,   &
+     &                     aridity,   srplsmon,    defctmon,    anndefct,   &
+     &                    annsrpls,    annpcp,     dry_season_length,       &
+     &                    pftexist,   twarmm,       tcoldm,         gdd5,   &
+!
+!    -------------- inputs updated by ctem are above this line ------
+!    ------------- these include all prognostic variables -----------
+!
+!    
+!    --------- and finally all output is below this line ------------------
+!
+     &                        npp,         nep,    hetrores,     autores,   &
+     &                   soilresp,          rm,          rg,         nbp,   &
+     &                     litres,      socres,         gpp,   dstcemls1,   &
+     &                   litrfall,    humiftrs,     veghght,    rootdpth,   &
+     &                litrfallveg,    humtrsvg,    burnvegf,                &
+     &                        rml,         rms,         rmr,    tltrleaf,   &
+     &                   tltrstem,    tltrroot,    leaflitr,    roottemp,   &
+     &                    afrleaf,     afrstem,     afrroot,    wtstatus,   &
+     &                   ltstatus,    burnfrac,   smfunc_veg,   lucemcom,   &
+     &                   lucltrin,    lucsocin,      nppveg,                &
+     &                   dstcemls3,   paicgat,     slaicgat,                &
+
+     &                    emit_co2,   emit_co,     emit_ch4, emit_nmhc,     &
+     &                    emit_h2,    emit_nox,    emit_n2o, emit_pm25,     &
+     &                    emit_tpm,   emit_tc,     emit_oc,    emit_bc,     &
+     &                  bterm_veg,      lterm,    mterm_veg,                &
+
+     &                      rmlveg,    rmsveg,   rmrveg,    rgveg,          &
+     &                vgbiomas_veg,    gppveg,   nepveg,   nbpveg,          &
      &                  hetrsveg,autoresveg, ltresveg, scresveg,&
      &                 nml,    ilmos, jlmos,  ch4WetSpec,  &
      &                 wetfdyn, ch4WetDyn, ch4soills, &
      &                 ipeatland, anmoss,rmlmoss,gppmoss, &
      &                 Cmossmas,litrmsmoss, wtable, &
      &                    THFC,THLW,thliq,thice,&
+     &                         cc,         mm,                              &
      &                nppmoss,armoss,peatdep)
 
 !
@@ -193,7 +207,6 @@ real, dimension(ilg), intent(in) :: vwind               !< v wind speed, m/s
 real, dimension(ilg), intent(in) ::  precip             !<daily precipitation (mm/day)
 real, dimension(ilg), intent(in) ::  netrad             !<daily net radiation (w/m2)
 real, dimension(ilg), intent(in) :: lightng             !< total lightning frequency, flashes/km2.year
-real, dimension(ilg), intent(in) :: prbfrhuc            !< probability of fire due to human causes
 real, dimension(ilg,icc), intent(in) :: pfcancmx        !<previous year's fractional coverages of pfts
 real, dimension(ilg,icc), intent(in) :: nfcancmx        !<next year's fractional coverages of pfts
 real, dimension(ilg), intent(in) ::  faregat            !<
@@ -223,7 +236,6 @@ real, dimension(ilg,icc), intent(inout) :: ancsveg      !< net photosynthetic ra
 real, dimension(ilg,icc), intent(inout) :: ancgveg      !< net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
 real, dimension(ilg,icc), intent(inout) :: rmlcsveg     !< leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
 real, dimension(ilg,icc), intent(inout) :: rmlcgveg     !< leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
-real, dimension(ilg), intent(inout) :: extnprob         !< fire extingusinging probability
 real, dimension(ilg,icc), intent(inout) :: fcancmx      !< max. fractional coverage of ctem's 9 pfts, but this can be
                                                         !< modified by land-use change, and competition between pfts
 real, dimension(ilg,ican,ignd), intent(inout) :: rmatc  !<fraction of roots for each of class' 4 pfts in each soil layer

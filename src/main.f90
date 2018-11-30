@@ -2866,57 +2866,70 @@ contains
 
                     ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
                     ! and uses daily accumulated values of variables simulated by CLASS.
-                    call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,&
-                        &                      1,        nml,        iday,    radjgat,&
-                        &          tcanoaccgat_t,  tcansacc_t, tbarcacc_t,tbarcsacc_t,&
-                        &             tbargacc_t, tbargsacc_t, taaccgat_t,    dlzwgat,&
-                        &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,&
-                        &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,&
-                        &             uvaccgat_t,  vvaccgat_t,    lightng,prbfrhucgat,&
-                        &            extnprobgat,  tbaraccgat_t, &
-                        &               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,&
-                        &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
-                        &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&
-                        &              popdingat,  dofire, isndgat,&
-                        &          faregat,wetfrac_presgat,slopefracgat,&
-                        &                  BIGAT,    THPGAT, thicegacc_t, DLATGAT,&
-                        &             ch4concgat,      GRAV, RHOW, RHOICE,&
-                        &              leapnow,&
-                                    !    -------------- inputs used by ctem are above this line ---------
-                        &            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,&
-                        &            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,&
-                        &               zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,&
-                        &            flhrlossgat,  pandaysgat, lfstatusgat, grwtheffgat,&
-                        &            lystmmasgat, lyrotmasgat, tymaxlaigat, vgbiomasgat,&
-                        &            gavgltmsgat, gavgscmsgat, stmhrlosgat,     slaigat,&
-                        &             bmasveggat, cmasvegcgat,  colddaysgat, rothrlosgat,&
-                        &                fcangat,  alvsctmgat,   alirctmgat,  gavglaigat,&
-                        &                  tcurm,    srpcuryr,     dftcuryr,  inibioclim,&
-                        &                 tmonth,    anpcpcur,      anpecur,     gdd5cur,&
-                        &               surmncur,    defmncur,     srplscur,    defctcur,&
-                        &            geremortgat, intrmortgat,    lambdagat,&
-                        &            pftexistgat,   twarmmgat,    tcoldmgat,     gdd5gat,&
-                        &             ariditygat, srplsmongat,  defctmongat, anndefctgat,&
-                        &            annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
-                        &              burnvegfgat, pstemmassgat, pgleafmassgat,&
-                                            !    -------------- inputs updated by ctem are above this line ------
-                        &                 nppgat,      nepgat, hetroresgat, autoresgat,&
-                        &            soilcrespgat,       rmgat,       rggat,      nbpgat,&
-                        &              litresgat,    socresgat,     gppgat, dstcemlsgat,&
-                        &            litrfallgat,  humiftrsgat, veghghtgat, rootdpthgat,&
-                        &            litrfallveggat,  humiftrsveggat,&
-                        &                 rmlgat,      rmsgat,     rmrgat,  tltrleafgat,&
-                        &            tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,&
-                        &             afrleafgat,  afrstemgat,  afrrootgat, wtstatusgat,&
-                        &            ltstatusgat, burnfracgat, smfuncveggat, lucemcomgat,&
-                        &            lucltringat, lucsocingat,   nppveggat,&
-                        &            dstcemls3gat,    paicgat,    slaicgat,&
-                        &            emit_co2gat,  emit_cogat,  emit_ch4gat, emit_nmhcgat,&
-                        &             emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&
-                        &            emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&
-                        &               btermgat,    ltermgat,     mtermgat,&
-                        &            ccgat,             mmgat,&
-                        &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&
+                    call ctem (      fcancmxgat,  fsnowacc_t,     sandgat,    claygat,     &
+                        &                      1,        nml,        iday,    radjgat,     &
+                        &          tcanoaccgat_t,  tcansacc_t, tbarcacc_t,tbarcsacc_t,     &
+                        &             tbargacc_t, tbargsacc_t, taaccgat_t,    dlzwgat,     &
+                        &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,     &
+                        &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,     &
+                        &             uvaccgat_t,  vvaccgat_t,    lightng, tbaraccgat_t,   &
+                        &               nol2pfts, pfcancmxgat, nfcancmxgat,                &
+                        &            thicecacc_t,     sdepgat,    spinfast,   todfrac,     &
+                        &             netrad_gat,  preacc_gat,   PSISGAT,                  &
+                        &              grclarea,    popdingat,     isndgat,                &
+                        &         faregat,    wetfrac_presgat,slopefracgat,     BIGAT,     &
+                        &               THPGAT,   thicegacc_t,    DLATGAT,  ch4concgat,    &
+                        &                GRAV,           RHOW,     RHOICE,                 &
+                        !
+                        ! -----------  logical switches determining model behaviour
+                        !
+                        &          PFTCompetition,    dofire,     lnduseon, inibioclim,    &
+                        &          leapnow,                                                &
+                        !
+                        !    all inputs used by ctem are above this line ---------
+                        !
+                        &       stemmassgat,    rootmassgat,    litrmassgat,     gleafmasgat,     &
+                        &       bleafmasgat,    soilcmasgat,       ailcggat,        ailcgat,      &
+                        &          zolncgat,     rmatctemgat,      rmatcgat,      ailcbgat,       &
+                        &       flhrlossgat,     pandaysgat,    lfstatusgat,     grwtheffgat,     &
+                        &       lystmmasgat,    lyrotmasgat,    tymaxlaigat,     vgbiomasgat,     &
+                        &       gavgltmsgat,    gavgscmsgat,    stmhrlosgat,         slaigat,     &
+                        &        bmasveggat,    cmasvegcgat,     colddaysgat,     rothrlosgat,    &
+                        &           fcangat,     alvsctmgat,      alirctmgat,      gavglaigat,    &
+                        &       geremortgat,    intrmortgat,    pstemmassgat,   pgleafmassgat,    &
+                        !
+                        !    ----------- the following are all competition related variables ---
+                        !
+                        &             tcurm,       srpcuryr,        dftcuryr,       lambdagat,    &
+                        &            tmonth,       anpcpcur,         anpecur,         gdd5cur,    &
+                        &          surmncur,       defmncur,        srplscur,        defctcur,    &
+                        &        ariditygat,    srplsmongat,     defctmongat,     anndefctgat,    &
+                        &       annsrplsgat,      annpcpgat,     dry_season_lengthgat,            &
+                        &       pftexistgat,      twarmmgat,       tcoldmgat,         gdd5gat,    &
+                        !
+                        !    -------------- inputs updated by ctem are above this line ------
+                        !    ------------- these include all prognostic variables -----------
+                        !
+                        !    --------- and finally all output is below this line ------------------
+                        !
+                        &            nppgat,         nepgat,     hetroresgat,     autoresgat,     &
+                        &      soilcrespgat,          rmgat,           rggat,          nbpgat,    &
+                        &         litresgat,       socresgat,         gppgat,     dstcemlsgat,    &
+                        &       litrfallgat,     humiftrsgat,     veghghtgat,     rootdpthgat,    &
+                        &    litrfallveggat,     humiftrsveggat,  burnvegfgat,                    &
+                        &            rmlgat,         rmsgat,          rmrgat,      tltrleafgat,   &
+                        &       tltrstemgat,    tltrrootgat,      leaflitrgat,     roottempgat,   &
+                        &        afrleafgat,     afrstemgat,       afrrootgat,     wtstatusgat,   &
+                        &       ltstatusgat,    burnfracgat,      smfuncveggat,    lucemcomgat,   &
+                        &       lucltringat,    lucsocingat,        nppveggat,                    &
+                        &      dstcemls3gat,       paicgat,         slaicgat,                     &
+
+                        &       emit_co2gat,     emit_cogat,       emit_ch4gat,    emit_nmhcgat,  &
+                        &        emit_h2gat,    emit_noxgat,       emit_n2ogat,    emit_pm25gat,  &
+                        &       emit_tpmgat,     emit_tcgat,        emit_ocgat,      emit_bcgat,  &
+                        &          btermgat,       ltermgat,          mtermgat,&
+
+                        &     rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&
                         &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,&
                         &        hetroresveggat, autoresveggat, litresveggat,&
                         &           soilcresveggat, nml, ilmos, jlmos, ch4WetSpecgat,&
@@ -2925,6 +2938,7 @@ contains
                                     ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,&
                                     Cmossmasgat,litrmsmossgat,wtablegat,&
                                     THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,&
+                        &       ccgat,             mmgat,&
                                     nppmossgat, armossgat,peatdepgat)
 
 !                     !    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
