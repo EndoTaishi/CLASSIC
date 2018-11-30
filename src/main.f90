@@ -2886,7 +2886,7 @@ contains
                         &          PFTCompetition,    dofire,     lnduseon, inibioclim,    &
                         &          leapnow,                                                &
                         !
-                        !    all inputs used by ctem are above this line ---------
+                        ! --  all inputs used by ctem are above this line ---------
                         !
                         &       stemmassgat,    rootmassgat,    litrmassgat,     gleafmasgat,     &
                         &       bleafmasgat,    soilcmasgat,       ailcggat,        ailcgat,      &
@@ -2896,10 +2896,10 @@ contains
                         &       gavgltmsgat,    gavgscmsgat,    stmhrlosgat,         slaigat,     &
                         &        bmasveggat,    cmasvegcgat,     colddaysgat,     rothrlosgat,    &
                         &           fcangat,     alvsctmgat,      alirctmgat,      gavglaigat,    &
-                        &       geremortgat,    intrmortgat,    pstemmassgat,   pgleafmassgat,    &
                         !
                         !    ----------- the following are all competition related variables ---
                         !
+                        &       geremortgat,    intrmortgat,    pstemmassgat,   pgleafmassgat,    &
                         &             tcurm,       srpcuryr,        dftcuryr,       lambdagat,    &
                         &            tmonth,       anpcpcur,         anpecur,         gdd5cur,    &
                         &          surmncur,       defmncur,        srplscur,        defctcur,    &
@@ -2916,30 +2916,31 @@ contains
                         &      soilcrespgat,          rmgat,           rggat,          nbpgat,    &
                         &         litresgat,       socresgat,         gppgat,     dstcemlsgat,    &
                         &       litrfallgat,     humiftrsgat,     veghghtgat,     rootdpthgat,    &
-                        &    litrfallveggat,     humiftrsveggat,  burnvegfgat,                    &
                         &            rmlgat,         rmsgat,          rmrgat,      tltrleafgat,   &
                         &       tltrstemgat,    tltrrootgat,      leaflitrgat,     roottempgat,   &
-                        &        afrleafgat,     afrstemgat,       afrrootgat,     wtstatusgat,   &
-                        &       ltstatusgat,    burnfracgat,      smfuncveggat,    lucemcomgat,   &
-                        &       lucltringat,    lucsocingat,        nppveggat,                    &
-                        &      dstcemls3gat,       paicgat,         slaicgat,                     &
+                        &       burnfracgat,                      lucemcomgat,     lucltringat, &
+                        &       lucsocingat,   dstcemls3gat,                                      &
+                        &     ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,  &
+                        &                          paicgat,         slaicgat,                     &
 
                         &       emit_co2gat,     emit_cogat,       emit_ch4gat,    emit_nmhcgat,  &
                         &        emit_h2gat,    emit_noxgat,       emit_n2ogat,    emit_pm25gat,  &
                         &       emit_tpmgat,     emit_tcgat,        emit_ocgat,      emit_bcgat,  &
-                        &          btermgat,       ltermgat,          mtermgat,&
+                        &          btermgat,       ltermgat,          mtermgat,                   &
 
-                        &     rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&
-                        &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,&
-                        &        hetroresveggat, autoresveggat, litresveggat,&
-                        &           soilcresveggat, nml, ilmos, jlmos, ch4WetSpecgat,&
-                        &          wetfdyngat, ch4WetDyngat, &
-                        &          ch4soillsgat,&
-                                    ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,&
-                                    Cmossmasgat,litrmsmossgat,wtablegat,&
-                                    THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,&
-                        &       ccgat,             mmgat,&
-                                    nppmossgat, armossgat,peatdepgat)
+                        &    litrfallveggat,     humiftrsveggat,  burnvegfgat,                    &
+                        &        afrleafgat,     afrstemgat,       afrrootgat,     wtstatusgat,   &
+                        &       ltstatusgat,                     smfuncveggat,                    &
+                        &                                           nppveggat,                    &
+                        &      rmlvegaccgat,      rmsveggat,         rmrveggat,         rgveggat, &
+                        &   vgbiomas_veggat,      gppveggat,         nepveggat,        nbpveggat, &
+                        &    hetroresveggat,  autoresveggat,      litresveggat,   soilcresveggat, &
+                        &               nml,          ilmos,             jlmos,                   &
+                        &      ipeatlandgat,     anmossac_t,       rmlmossac_t,      gppmossac_t, &
+                        &       Cmossmasgat,  litrmsmossgat,         wtablegat,                   &
+                        &           THFCGAT,        THLWGAT,        thliqacc_t,       thiceacc_t, &
+                        &             ccgat,          mmgat,                                      &
+                        &        nppmossgat,      armossgat,        peatdepgat)
 
 !                     !    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
 !                     do   i = 1, nml

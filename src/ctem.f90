@@ -41,10 +41,10 @@
      &                    gavgltms,   gavgscms,    stmhrlos,        slai,   &
      &                     bmasveg,   cmasvegc,    colddays,    rothrlos,   &
      &                      fcanmx,     alvisc,      alnirc,     gavglai,   &
-     &                    geremort,   intrmort,   pstemmass,    pgleafmass, &
 !
 !    ------------- the following are all competition related variables ---
 !
+     &                    geremort,   intrmort,   pstemmass,    pgleafmass, &
      &                       tcurm,   srpcuryr,    dftcuryr,      lambda,   &
      &                      tmonth,   anpcpcur,     anpecur,     gdd5cur,   &
      &                    surmncur,   defmncur,    srplscur,    defctcur,   &
@@ -62,29 +62,31 @@
      &                   soilresp,          rm,          rg,         nbp,   &
      &                     litres,      socres,         gpp,   dstcemls1,   &
      &                   litrfall,    humiftrs,     veghght,    rootdpth,   &
-     &                litrfallveg,    humtrsvg,    burnvegf,                &
      &                        rml,         rms,         rmr,    tltrleaf,   &
      &                   tltrstem,    tltrroot,    leaflitr,    roottemp,   &
-     &                    afrleaf,     afrstem,     afrroot,    wtstatus,   &
-     &                   ltstatus,    burnfrac,   smfunc_veg,   lucemcom,   &
-     &                   lucltrin,    lucsocin,      nppveg,                &
-     &                   dstcemls3,   paicgat,     slaicgat,                &
+     &                   burnfrac,                 lucemcom,    lucltrin,   &
+     &                   lucsocin,   dstcemls3,                             &
+     &                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   &
+     &                                 paicgat,     slaicgat,               &
 
      &                    emit_co2,   emit_co,     emit_ch4, emit_nmhc,     &
      &                    emit_h2,    emit_nox,    emit_n2o, emit_pm25,     &
      &                    emit_tpm,   emit_tc,     emit_oc,    emit_bc,     &
      &                  bterm_veg,      lterm,    mterm_veg,                &
 
-     &                      rmlveg,    rmsveg,   rmrveg,    rgveg,          &
-     &                vgbiomas_veg,    gppveg,   nepveg,   nbpveg,          &
-     &                  hetrsveg,autoresveg, ltresveg, scresveg,&
-     &                 nml,    ilmos, jlmos,  ch4WetSpec,  &
-     &                 wetfdyn, ch4WetDyn, ch4soills, &
-     &                 ipeatland, anmoss,rmlmoss,gppmoss, &
-     &                 Cmossmas,litrmsmoss, wtable, &
-     &                    THFC,THLW,thliq,thice,&
+     &                litrfallveg,    humtrsvg,    burnvegf,                &
+     &                    afrleaf,     afrstem,     afrroot,    wtstatus,   &
+     &                   ltstatus,               smfunc_veg,                &
+     &                                               nppveg,                &
+     &                      rmlveg,    rmsveg,       rmrveg,      rgveg,    &
+     &                vgbiomas_veg,    gppveg,       nepveg,     nbpveg,    &
+     &                  hetrsveg,  autoresveg,     ltresveg,   scresveg,    &
+     &                       nml,       ilmos,        jlmos,                &
+     &                 ipeatland,      anmoss,      rmlmoss,    gppmoss,    &
+     &                  Cmossmas,  litrmsmoss,       wtable,                &
+     &                       THFC,       THLW,        thliq,      thice,    &
      &                         cc,         mm,                              &
-     &                nppmoss,armoss,peatdep)
+     &                    nppmoss,     armoss,       peatdep)
 
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
