@@ -22,9 +22,12 @@
      &                      thicec, soildpth, spinfast,   todfrac,  &
      &                      netrad,   precip,    psisat,            &
      &                    grclarea,   popdin,    isand,             &
-     &                     faregat,  wetfrac, slopefrac,       bi,  &
-     &                       thpor,   thiceg,   currlat,  ch4conc,  &
-     &                        GRAV,     RHOW,    RHOICE,            &
+     &                    wetfrac, slopefrac,       bi,             &
+     &                      thpor,    thiceg,   currlat,  ch4conc,  &
+     &                       THFC,      THLW,     thliq,  thice,    &
+     &                       GRAV,      RHOW,    RHOICE,            &
+     &                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  &
+     &                   wtable,                                    &
 !
 !    ------------- logical switches determining model behaviour 
 !
@@ -41,6 +44,7 @@
      &                    gavgltms,   gavgscms,    stmhrlos,        slai,   &
      &                     bmasveg,   cmasvegc,    colddays,    rothrlos,   &
      &                      fcanmx,     alvisc,      alnirc,     gavglai,   &
+     &                    Cmossmas, litrmsmoss,     peatdep,               &
 !
 !    ------------- the following are all competition related variables ---
 !
@@ -58,6 +62,7 @@
 !    
 !    --------- and finally all output is below this line ------------------
 !
+!    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----\
      &                        npp,         nep,    hetrores,     autores,   &
      &                   soilresp,          rm,          rg,         nbp,   &
      &                     litres,      socres,         gpp,   dstcemls1,   &
@@ -67,31 +72,33 @@
      &                   burnfrac,                 lucemcom,    lucltrin,   &
      &                   lucsocin,   dstcemls3,                             &
      &                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   &
-     &                                 paicgat,     slaicgat,               &
+     &                                 paicgat,    slaicgat,                &
+     &                    emit_co2,   emit_ch4                              & 
+!    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----/
 
-     &                    emit_co2,   emit_co,     emit_ch4, emit_nmhc,     &
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
+     &                 ,  emit_co,   emit_nmhc,  smfunc_veg,                &
      &                    emit_h2,    emit_nox,    emit_n2o, emit_pm25,     &
      &                    emit_tpm,   emit_tc,     emit_oc,    emit_bc,     &
-     &                  bterm_veg,      lterm,    mterm_veg,                &
+     &                  bterm_veg,      lterm,    mterm_veg,  burnvegf,     &
 
-     &                litrfallveg,    humtrsvg,    burnvegf,                &
+     &                litrfallveg,    humtrsvg,    ltstatus,      nppveg,   &
      &                    afrleaf,     afrstem,     afrroot,    wtstatus,   &
-     &                   ltstatus,               smfunc_veg,                &
-     &                                               nppveg,                &
      &                      rmlveg,    rmsveg,       rmrveg,      rgveg,    &
      &                vgbiomas_veg,    gppveg,       nepveg,     nbpveg,    &
      &                  hetrsveg,  autoresveg,     ltresveg,   scresveg,    &
-     &                       nml,       ilmos,        jlmos,                &
-     &                 ipeatland,      anmoss,      rmlmoss,    gppmoss,    &
-     &                  Cmossmas,  litrmsmoss,       wtable,                &
-     &                       THFC,       THLW,        thliq,      thice,    &
-     &                         cc,         mm,                              &
-     &                    nppmoss,     armoss,       peatdep)
+     &                    nppmoss,     armoss,                              &
+     &                         cc,         mm                               &
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----/
+     &                  )
 
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
 !             Main Ctem Subroutine Compatible With CLASS 
 
+!     28  Nov 2018  - Clean up argument list before implementation in AGCM
+!     V. Arora        
+!
 !     14  Mar 2016  - Remove grid cell area calculation to the driver. This will
 !     J. Melton       harmonize this subroutine with the coupled code.
 !
@@ -211,7 +218,6 @@ real, dimension(ilg), intent(in) ::  netrad             !<daily net radiation (w
 real, dimension(ilg), intent(in) :: lightng             !< total lightning frequency, flashes/km2.year
 real, dimension(ilg,icc), intent(in) :: pfcancmx        !<previous year's fractional coverages of pfts
 real, dimension(ilg,icc), intent(in) :: nfcancmx        !<next year's fractional coverages of pfts
-real, dimension(ilg), intent(in) ::  faregat            !<
 real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
 real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
 real, dimension(ilg), intent(in) :: wetfrac             !< Prescribed fraction of wetlands in a grid cell
@@ -1715,16 +1721,19 @@ call disturb (            stemmass, rootmass, gleafmas, bleafmas,      &
      &                    stemltdt,   rootltdt,   glfltrdt,    blfltrdt,  &
      &                    glcaemls,   rtcaemls,   stcaemls,               &
      &                    blcaemls,   ltrcemls,   burnfrac,               &
-     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4,  &
+     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4   &
 
 !    ------------ outputs below are the secondary outputs -------------
 !                         which may be omitted in AGCM
 
-     &                     emit_co,  emit_nmhc,                           &
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
+     &                   , emit_co,  emit_nmhc,                           &
      &                     emit_h2,   emit_nox,   emit_n2o,   emit_pm25,  &
      &                    emit_tpm,    emit_tc,    emit_oc,     emit_bc,  &
      &                    burnvegf,  bterm_veg,  mterm_veg,       lterm,  &
-     &                   smfunc_veg )  
+     &                   smfunc_veg                                       & 
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
+     &                   )
     
 !    ------------------------------------------------------------------
 !>

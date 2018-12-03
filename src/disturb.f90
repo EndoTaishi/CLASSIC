@@ -30,17 +30,18 @@ subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
                          stemltdt,   rootltdt,   glfltrdt,    blfltrdt,   &
                          glcaemls,   rtcaemls,   stcaemls,                &
                          blcaemls,   ltrcemls,   burnfrac,                &
-                        pstemmass, pgleafmass,  emit_co2,     emit_ch4,   &
+                        pstemmass, pgleafmass,  emit_co2,     emit_ch4   &
 
 !    ------------ outputs below are the secondary outputs -------------
 !                         which may be omitted in AGCM
-
-                          emit_co,  emit_nmhc,                            &
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\ 
+                        , emit_co,  emit_nmhc,                            &
                           emit_h2,   emit_nox,   emit_n2o,   emit_pm25,   &
                          emit_tpm,    emit_tc,    emit_oc,     emit_bc,   &
                          burnvegf,  bterm_veg,  mterm_veg,       lterm,   &
-                       smfunc_veg)
-
+                       smfunc_veg                                         &
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----/ 
+                       )
 !     ------------------outputs above this line ----------------------
 !
 

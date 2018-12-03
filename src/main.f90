@@ -2877,9 +2877,12 @@ contains
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,     &
                         &             netrad_gat,  preacc_gat,   PSISGAT,                  &
                         &              grclarea,    popdingat,     isndgat,                &
-                        &         faregat,    wetfrac_presgat,slopefracgat,     BIGAT,     &
+                        &        wetfrac_presgat,slopefracgat,       BIGAT,                &
                         &               THPGAT,   thicegacc_t,    DLATGAT,  ch4concgat,    &
+                        &              THFCGAT,       THLWGAT, thliqacc_t,  thiceacc_t,    &
                         &                GRAV,           RHOW,     RHOICE,                 &
+                        &        ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &
+                        &           wtablegat,                                             &
                         !
                         ! -----------  logical switches determining model behaviour
                         !
@@ -2896,6 +2899,7 @@ contains
                         &       gavgltmsgat,    gavgscmsgat,    stmhrlosgat,         slaigat,     &
                         &        bmasveggat,    cmasvegcgat,     colddaysgat,     rothrlosgat,    &
                         &           fcangat,     alvsctmgat,      alirctmgat,      gavglaigat,    &
+                        &       Cmossmasgat,  litrmsmossgat,      peatdepgat,                     &
                         !
                         !    ----------- the following are all competition related variables ---
                         !
@@ -2912,6 +2916,7 @@ contains
                         !
                         !    --------- and finally all output is below this line ------------------
                         !
+                        !    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----\
                         &            nppgat,         nepgat,     hetroresgat,     autoresgat,     &
                         &      soilcrespgat,          rmgat,           rggat,          nbpgat,    &
                         &         litresgat,       socresgat,         gppgat,     dstcemlsgat,    &
@@ -2920,27 +2925,26 @@ contains
                         &       tltrstemgat,    tltrrootgat,      leaflitrgat,     roottempgat,   &
                         &       burnfracgat,                      lucemcomgat,     lucltringat, &
                         &       lucsocingat,   dstcemls3gat,                                      &
-                        &     ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,  &
+                        &     ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,   &
                         &                          paicgat,         slaicgat,                     &
+                        &       emit_co2gat,   emit_ch4gat,                                       &
+                        !    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----/
 
-                        &       emit_co2gat,     emit_cogat,       emit_ch4gat,    emit_nmhcgat,  &
+                        !    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
+                        &        emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &
                         &        emit_h2gat,    emit_noxgat,       emit_n2ogat,    emit_pm25gat,  &
                         &       emit_tpmgat,     emit_tcgat,        emit_ocgat,      emit_bcgat,  &
-                        &          btermgat,       ltermgat,          mtermgat,                   &
+                        &          btermgat,       ltermgat,          mtermgat,     burnvegfgat,  &
 
-                        &    litrfallveggat,     humiftrsveggat,  burnvegfgat,                    &
-                        &        afrleafgat,     afrstemgat,       afrrootgat,     wtstatusgat,   &
-                        &       ltstatusgat,                     smfuncveggat,                    &
-                        &                                           nppveggat,                    &
+                        &    litrfallveggat,     humiftrsveggat,   ltstatusgat,       nppveggat,  &
+                        &        afrleafgat,     afrstemgat,       afrrootgat,      wtstatusgat,  &
                         &      rmlvegaccgat,      rmsveggat,         rmrveggat,         rgveggat, &
                         &   vgbiomas_veggat,      gppveggat,         nepveggat,        nbpveggat, &
                         &    hetroresveggat,  autoresveggat,      litresveggat,   soilcresveggat, &
-                        &               nml,          ilmos,             jlmos,                   &
-                        &      ipeatlandgat,     anmossac_t,       rmlmossac_t,      gppmossac_t, &
-                        &       Cmossmasgat,  litrmsmossgat,         wtablegat,                   &
-                        &           THFCGAT,        THLWGAT,        thliqacc_t,       thiceacc_t, &
-                        &             ccgat,          mmgat,                                      &
-                        &        nppmossgat,      armossgat,        peatdepgat)
+                        &        nppmossgat,      armossgat,                                      &
+                        &             ccgat,          mmgat                                       &
+                        !    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----/
+                        &                  )
 
 !                     !    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
 !                     do   i = 1, nml
