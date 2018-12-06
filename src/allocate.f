@@ -75,14 +75,17 @@
 !!
 !!
       subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb,
-     1                         il1,     il2,     sand,     clay,
-     2                    rmatctem, gleafmas, stemmass, rootmass,
-     4                        sort, nol2pfts, fcancmx, isand,
-c    5 ------------------ inputs above this line ----------------------
+     1                         il1,      il2,      ilg,      sand,  
+     2                        clay,  rmatctem, gleafmas, stemmass, 
+     3                    rootmass,      sort, nol2pfts,  fcancmx, 
+     4                       isand,      THFC,     THLW,
+C    5 -------------- inputs above this line, outputs below -----------------
      6                     afrleaf,  afrstem,  afrroot,
-     7                     wtstatus, ltstatus, THFC, THLW)
-c    8 ------------------outputs  above this line ---------------------
+     7                    wtstatus, ltstatus)
 
+C     06  Dec 2018  - Pass ilg back in as an argument + minor reorganization
+C     V. Arora        of arguments              
+C
 C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
 C     J. Melton       Fixed that and also brought in isand so that the layers of
 C                     bedrock won't have their rmat used.
@@ -111,12 +114,13 @@ c     ilg       - no. of grid cells in latitude circle
 c     ican        - number of class pfts
 c
 
-      use ctem_params,        only : eta, kappa, kn, abszero, icc, ilg,
+      use ctem_params,        only : eta, kappa, kn, abszero, icc, 
      1                               ignd, kk, ican, omega, epsilonl,
      2                               epsilons, epsilonr, caleaf, castem,
      3                               caroot, consallo, rtsrmin, aldrlfon
 c
       implicit none
+      integer ilg !<
       integer il1 !<input: il1=1
       integer il2 !<input: il2=ilg
       integer i, j, k

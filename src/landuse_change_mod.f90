@@ -179,15 +179,16 @@ end subroutine initializeLandCover
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
 !> @author Vivek Arora
-subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
-                        grclarea, pfcancmx, nfcancmx,      iday,    & !2
-                       todfrac,yesfrac,interpol,PFTCompetition,leapnow, & !3
+subroutine    luc(         il1,         il2,     nilg,       nol2pfts,    & !1
+                      grclarea,    pfcancmx, nfcancmx,           iday,    & !2
+                       todfrac,     yesfrac, interpol, PFTCompetition,    & !3
+                       leapnow,                                           & !4
 !    ----------------------- inputs above this line -------------
-                         gleafmas, bleafmas, stemmass, rootmass,    & !4
-                         litrmass, soilcmas, vgbiomas, gavgltms,    & !5
-                         gavgscms,  fcancmx,   fcanmx,              & !6
+                      gleafmas,    bleafmas, stemmass,       rootmass,    & !5
+                      litrmass,    soilcmas, vgbiomas,       gavgltms,    & !6
+                      gavgscms,     fcancmx,   fcanmx,                    & !7
 !    ----------- updates above this line, outputs below ---------
-                         lucemcom, lucltrin, lucsocin)                !7
+                      lucemcom,    lucltrin, lucsocin)                      !8
 !
 !     ----------------------------------------------------------------
 !
