@@ -2413,13 +2413,15 @@ contains
                 rootdpthrow,alvsctmrow,alirctmrow,&
                 paicrow,    slaicrow, FAREROT,ipeatlandrow)
 
-            call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,&
-                                        1,      nml,    fcancmxgat, zbtwgat,&
-                                    dlzwgat, nol2pfts,   sdepgat,&
-                                    ailcggat, ailcbgat,  ailcgat, zolncgat,&
-                                    rmatcgat, rmatctemgat,slaigat,bmasveggat,&
-                            cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,&
-                                alirctmgat, paicgat,  slaicgat,ipeatlandgat)
+            call bio2str( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
+                                    1,           nml,          ilg,      zbtwgat, &
+                              dlzwgat,      nol2pfts,      sdepgat,   fcancmxgat, &
+                         ipeatlandgat,                                            &
+!                 --------------- inputs above this line, outputs below --------
+                             ailcggat,      ailcbgat,      ailcgat,     zolncgat, &
+                             rmatcgat,   rmatctemgat,      slaigat,   bmasveggat, &
+                          cmasvegcgat,    veghghtgat,  rootdpthgat,   alvsctmgat, &
+                           alirctmgat,       paicgat,     slaicgat)
 
             call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,&
                 fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,&

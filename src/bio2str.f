@@ -41,14 +41,15 @@
 !!The rooting depth \f$d_R\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_R\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_R\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
 !!
 !!
-      subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,                        
-     1                            il1,      il2,  fcancmx,    zbotw,
-     2                          delzw, nol2pfts,  soildpth,
-c    4--------------- inputs above this line, outputs below --------
+      subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,  
+     1                            il1,      il2,      ilg,    zbotw,
+     2                          delzw, nol2pfts,  soildpth, fcancmx,
+     3                      ipeatland,
+!    4--------------- inputs above this line, outputs below --------
      5                          ailcg,    ailcb,     ailc,    zolnc,
      6                          rmatc, rmatctem,     slai,  bmasveg,
      7                       cmasvegc,  veghght, rootdpth,   alvisc,
-     8                         alnirc,     paic,    slaic,ipeatland)
+     8                         alnirc,     paic,    slaic)
 c
 c     ----------------------------------------------------------------
 c
@@ -90,7 +91,7 @@ c                     of the grid cell. only roughness lengths over the
 c                     vegetated fraction are updated
 c
 
-      use ctem_params,        only : ignd, icc, ilg, ican, abszero,
+      use ctem_params,        only : ignd, icc, ican, abszero,
      1                               l2max,kk, eta, kappa, kn, lfespany, 
      2                               fracbofg, specsla, abar, avertmas,
      3                               alpha, prcnslai, minslai, mxrtdpth,
@@ -98,6 +99,7 @@ c
 
       implicit none
 
+      integer ilg !<
       integer il1 !<input: il1=1
       integer il2 !<input: il2=ilg
       integer i, j, k, m, n, k1c, k2c

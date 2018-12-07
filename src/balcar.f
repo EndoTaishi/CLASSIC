@@ -5,24 +5,27 @@
 !!unless mentioned all pools are in kg c/m2
 !!unless mentioned all fluxes are in units of u-mol co2/m2.sec
 !!
-       subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,
-     1                     litrmass, soilcmas, ntchlveg, ntchsveg,
-     2                     ntchrveg, tltrleaf, tltrstem, tltrroot,
-     3                     glcaemls, blcaemls, stcaemls, rtcaemls,
-     4                     ltrcemls, ltresveg, scresveg, humtrsvg,
-     5                     pglfmass, pblfmass, pstemass, protmass,
-     6                     plitmass, psocmass, vgbiomas, repro_cost,
-     7                     pvgbioms, gavgltms, pgavltms, gavgscms,
-     8                     pgavscms, galtcels, repro_cost_g,
-     9                          npp,  autores, hetrores,      gpp,
-     a                          nep,   litres,   socres, dstcemls,
-     b                          nbp, litrfall, humiftrs,
-     c                          il1,      il2,
-     1                          ipeatland, Cmossmas, pCmossmas,
-     2              nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss,
-     3              ltrestepmoss,humicmosstep)
+       subroutine balcar (gleafmas, stemmass,     rootmass, bleafmas,
+     1                    litrmass, soilcmas,     ntchlveg, ntchsveg,
+     2                    ntchrveg, tltrleaf,     tltrstem, tltrroot,
+     3                    glcaemls, blcaemls,     stcaemls, rtcaemls,
+     4                    ltrcemls, ltresveg,     scresveg, humtrsvg,
+     5                    pglfmass, pblfmass,     pstemass, protmass,
+     6                    plitmass, psocmass,     vgbiomas, repro_cost, 
+     7                    pvgbioms, gavgltms,     pgavltms, gavgscms,
+     8                    pgavscms, galtcels, repro_cost_g,
+     9                         npp,  autores,     hetrores,      gpp,
+     a                         nep,   litres,       socres, dstcemls,
+     b                         nbp, litrfall,     humiftrs,
+     c                         il1,      il2,          ilg,
+     1                   ipeatland,     Cmossmas,     pCmossmas,
+     2                  nppmosstep, litrfallmoss,    litrmsmoss, 
+     3                 plitrmsmoss, ltrestepmoss,  humicmosstep)
 
 c     -----------------------------------------------------------------
+c
+c     07  Dec 2018  - Pass ilg back in as an argument
+c     V. Arora
 c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
 c     V. Arora        subroutines were changed for compatibility with class
@@ -37,10 +40,11 @@ c     V. Arora        between the different pools balance properly to
 c                     make sure that conservation of mass is achieved
 c                     with in a specified tolerance.
 c
-      use ctem_params,        only : tolrance, icc, ilg, deltat,iccp1
+      use ctem_params,        only : tolrance, icc, deltat,iccp1
 c
       implicit none
 c
+      integer ilg !<
       integer il1 !<other variables: il1=1
       integer il2 !<other variables: il2=ilg
       integer i, j, k

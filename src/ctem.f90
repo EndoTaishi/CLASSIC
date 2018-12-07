@@ -1602,25 +1602,30 @@ do 680 j = 1, ignd
 !!status, calculates leaf litter, and converts green grass into brown.
 !!
 
-call phenolgy(gleafmas, bleafmas, &
-     &                         il1,      il2,  leapnow,tbarccs,&
-     &                      thliqc,     THLW,     THFC,       ta,&
-     &                    pheanveg,     iday,     radj, roottemp,&
-     &                    rmatctem, stemmass, rootmass,     sort,&
-     &                    nol2pfts,  fcancmx,  isand, &
-     &                    flhrloss, leaflitr, lfstatus,  pandays,&
-     &                    colddays,thicec)
+call phenolgy(gleafmas,   bleafmas,        il1,        il2,    &
+     &             ilg,    leapnow,    tbarccs,     thicec,    &
+     &          thliqc,       THLW,       THFC,         ta,    &
+     &        pheanveg,       iday,       radj,   roottemp,    &
+     &        rmatctem,   stemmass,   rootmass,       sort,    &
+     &        nol2pfts,    fcancmx,      isand,                &
+!     ------------------ inputs above this line ----------------------
+     &        flhrloss,   leaflitr,   lfstatus,    pandays,    &
+     &        colddays)
+!     --- variables which are updated and outputs above this line ----
 !
 !    -------------------------------------------------------------------
 !>
 !!while leaf litter is calculated in the phenology subroutine, stem
 !!and root turnover is calculated in the turnover subroutine.
 !!
-call turnover (stemmass, rootmass,  lfstatus,    ailcg,&
-     &                          il1,      il2,   leapnow,&
-     &                         sort, nol2pfts,  fcancmx,&
-     &                     stmhrlos, rothrlos,&
-     &                     stemlitr, rootlitr)
+call turnover (stemmass,  rootmass,  lfstatus,    ailcg,  &
+     &              il1,       il2,       ilg,  leapnow,  &
+     &             sort,  nol2pfts,   fcancmx,            &
+!  ------------------ inputs above this line ----------------------
+     &         stmhrlos,  rothrlos,                       &
+! ----------- inputs which are updated above this line -----------
+     &         stemlitr,  rootlitr)
+! ------------------outputs above this line ----------------------
 
 !>Update green leaf biomass for trees and crops and brown leaf biomass for grasses
 
@@ -1691,12 +1696,18 @@ do 800 j = 1, icc
 !!set maxage >0 in ctem_params.f90 to switch on mortality due to age and
 !!reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.
 !!
-Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
-     &                     bleafmas,      il1, il2, leapnow, &
-     &                         iday,     sort,  fcancmx,  &
-     &                     lystmmas,     lyrotmas, tymaxlai,&
-     &                     grwtheff, stemltrm,     rootltrm, glealtrm,&
-     &                     geremort, intrmort)
+
+call       mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  &
+     &               bleafmas,        il1,      il2,        ilg,  &
+     &                leapnow,       iday,     sort,    fcancmx,  &
+! ----------------- inputs above this line ----------------------
+     &               lystmmas,   lyrotmas, tymaxlai,   grwtheff,  &
+! -------------- inputs updated above this line ------------------
+     &               stemltrm,   rootltrm, glealtrm,   geremort,  &
+     &               intrmort)
+! ------------------outputs above this line ----------------------
+
+
 !>
 !>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the 
 !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
@@ -1743,7 +1754,7 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 call disturb (            stemmass, rootmass, gleafmas, bleafmas,      &
      &                      thliqc,    THLW,      THFC,    uwind,      &
      &                       vwind,  lightng,  fcancmx, litrmass,      &
-     &                    rmatctem,                                    &
+     &                    rmatctem,      ilg,                          &
      &                         il1,      il2,     sort, nol2pfts,      &
      &                    grclarea,   thicec,   popdin, lucemcom,      &
      &                      dofire,  currlat,     iday,    fsnow,      &
@@ -1755,18 +1766,16 @@ call disturb (            stemmass, rootmass, gleafmas, bleafmas,      &
      &                    stemltdt,   rootltdt,   glfltrdt,    blfltrdt,  &
      &                    glcaemls,   rtcaemls,   stcaemls,               &
      &                    blcaemls,   ltrcemls,   burnfrac,               &
-     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4   &
+     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4,   &
 
 !    ------------ outputs below are the secondary outputs -------------
 !                         which may be omitted in AGCM
 
-!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
-     &                   , emit_co,  emit_nmhc,                           &
+     &                    emit_co,  emit_nmhc,                           &
      &                     emit_h2,   emit_nox,   emit_n2o,   emit_pm25,  &
      &                    emit_tpm,    emit_tc,    emit_oc,     emit_bc,  &
      &                    burnvegf,  bterm_veg,  mterm_veg,       lterm,  &
      &                   smfunc_veg                                       & 
-!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
      &                   )
     
 !    ------------------------------------------------------------------
@@ -1894,22 +1903,22 @@ call disturb (            stemmass, rootmass, gleafmas, bleafmas,      &
 !!that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
 !!
 if(spinfast.eq.1)then
-        call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
-&                    litrmass, soilcmas, ntchlveg,  ntchsveg,&
-&                    ntchrveg, tltrleaf, tltrstem,  tltrroot,&
-&                    glcaemls, blcaemls, stcaemls,  rtcaemls,&
-&                    ltrcemls, ltresveg, scresveg,  humtrsvg,&
-&                    pglfmass, pblfmass, pstemass,  protmass,&
-&                    plitmass, psocmass, vgbiomas,  reprocost,&
-&                    pvgbioms, gavgltms, pgavltms,  gavgscms,&
-&                    pgavscms, galtcels, repro_cost_g,&
-&                         npp,  autores, hetrores,       gpp,&
-&                         nep,   litres,   socres, dstcemls1,&
-&                         nbp, litrfall, humiftrs,&
-&                         il1,       il2, &
-&             ipeatland, Cmossmas, pCmossmas, &
-&             nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss, &
-&             ltrestepmoss,humstepmoss)
+        call  balcar(gleafmas,   stemmass,     rootmass,    bleafmas, &
+&                    litrmass,   soilcmas,     ntchlveg,    ntchsveg, &
+&                    ntchrveg,   tltrleaf,     tltrstem,    tltrroot, &
+&                    glcaemls,   blcaemls,     stcaemls,    rtcaemls, &
+&                    ltrcemls,   ltresveg,     scresveg,    humtrsvg, &
+&                    pglfmass,   pblfmass,     pstemass,    protmass, &
+&                    plitmass,   psocmass,     vgbiomas,   reprocost, &
+&                    pvgbioms,   gavgltms,     pgavltms,    gavgscms, &
+&                    pgavscms,   galtcels, repro_cost_g,              &
+&                         npp,    autores,     hetrores,         gpp, &
+&                         nep,     litres,       socres,   dstcemls1, &
+&                         nbp,   litrfall,     humiftrs,              &
+&                         il1,         il2,         ilg,              &
+&                   ipeatland,        Cmossmas,       pCmossmas,      &
+&                  nppmosstep,    litrfallmoss,      litrmsmoss,      &
+&                 plitrmsmoss,    ltrestepmoss,     humstepmoss)
 
 endif
 
@@ -1917,13 +1926,15 @@ endif
 !>
 !>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass. 
 !>
-call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
-     &                            il1,      il2, fcancmx,    zbotw,&
-     &                          delzw, nol2pfts,  soildpth,&
-     &                          ailcg,    ailcb,     ailc,    zolnc,&
-     &                          rmatc, rmatctem,     slai,  bmasveg,&
-     &                       cmasvegc,  veghght, rootdpth,   alvisc,&
-     &                         alnirc,  paicgat,  slaicgat,ipeatland )
+call bio2str ( gleafmas,   bleafmas,   stemmass,   rootmass,  &
+     &              il1,        il2,        ilg,      zbotw,  &
+     &            delzw,   nol2pfts,   soildpth,    fcancmx,  &
+     &        ipeatland,                                      &
+! --------------- inputs above this line, outputs below --------
+     &            ailcg,      ailcb,       ailc,      zolnc,  &
+     &            rmatc,   rmatctem,       slai,    bmasveg,  &
+     &         cmasvegc,    veghght,   rootdpth,     alvisc,  &
+     &           alnirc,    paicgat,   slaicgat)
 
 !>
 !>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str

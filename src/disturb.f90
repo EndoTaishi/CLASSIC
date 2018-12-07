@@ -19,7 +19,7 @@ contains
 subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
                             thliq,   THLW,       THFC,    uwind,      &
                             vwind,  lightng,  fcancmx, litrmass,      &
-                         rmatctem,                                    &
+                         rmatctem,      ilg,                          &
                               il1,      il2,     sort, nol2pfts,      &
                          grclarea,    thice,   popdin, lucemcom,      &
                            dofire,  currlat,     iday,  fsnow,        &
@@ -30,18 +30,15 @@ subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
                          stemltdt,   rootltdt,   glfltrdt,    blfltrdt,   &
                          glcaemls,   rtcaemls,   stcaemls,                &
                          blcaemls,   ltrcemls,   burnfrac,                &
-                        pstemmass, pgleafmass,  emit_co2,     emit_ch4   &
+                        pstemmass, pgleafmass,  emit_co2,     emit_ch4,   &
 
 !    ------------ outputs below are the secondary outputs -------------
 !                         which may be omitted in AGCM
-!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\ 
-                        , emit_co,  emit_nmhc,                            &
+                          emit_co,  emit_nmhc,                            &
                           emit_h2,   emit_nox,   emit_n2o,   emit_pm25,   &
                          emit_tpm,    emit_tc,    emit_oc,     emit_bc,   &
                          burnvegf,  bterm_veg,  mterm_veg,       lterm,   &
-                       smfunc_veg                                         &
-!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----/ 
-                       )
+                       smfunc_veg)
 !     ------------------outputs above this line ----------------------
 !
 
@@ -49,7 +46,8 @@ subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
 !
 !     20  Nov 2018  - Remove extnprob from going in. It's redundant now because
 !     Vivek Arora     it's calculated inside as a f(POPDIN). Clean up arguments
-!                     list so that seocndary output can be cleanly removed for AGCM.
+!                     list so that secondary output can be cleanly removed for AGCM.
+!                     Pass in ILG back again as an argument.
 !
 !     12  Jan 2016  - Change to allow more than 3 soil layers
 !     J. Melton
@@ -84,7 +82,7 @@ subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
 !                     form of disturbance is modelled.
 
 
-use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
+use ctem_params, only : ignd, icc, ican, zero,kk, pi, c2dom, crop, &
                         iccp1, standreplace, tolrance, bmasthrs_fire, &
                         lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, &
                         f0, maxsprd, frco2glf, frco2blf, &
@@ -98,6 +96,7 @@ implicit none
 real, dimension(ilg,icc), intent(out) :: pstemmass
 real, dimension(ilg,icc), intent(out) :: pgleafmass
 
+integer :: ilg !<
 integer :: il1 !<il1=1
 integer :: il2 !<il2=ilg
 integer :: i,j,k,m,k1,k2,n
