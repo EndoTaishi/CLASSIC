@@ -405,7 +405,7 @@ Functions/Subroutines</h2></td></tr>
 <p>The pore volume of the soil layer is corrected for the presence of ice by defining the effective porevolume THPORF as equivalent to THLMAX.</p>
 <p>In loops 150 and 200, the theoretical amounts of water FDT flowing across the soil layer boundaries are calculated. FDT is evaluated as the product of the flow rate F(z) at the given depth z, and the period of time (DT) over which the flow is occurring. At z=0, the water flux is simply equal to the soil surface evaporation rate. Within the soil, the flow rate F at a given depth z is obtained using equation 21 from Verseghy (1991):</p>
 <p><img class="formulaInl" alt="$F(z) = K(z) [-b \Psi(z)/\theta_l(z) \times d\theta_l / dz + 1]$" src="form_738.png"/></p>
-<p>where K(z) is the hydraulic conductivity and psi(z) is the soil moisture suction at depth z, and b is an empirical parameter developed by Clapp and Hornberger (1978) <a class="el" href="citelist.html#CITEREF_Clapp1978-898">[20]</a>. K(z) and <img class="formulaInl" alt="$\Psi(z)$" src="form_739.png"/> are calculated following Clapp and Hornberger as</p>
+<p>where K(z) is the hydraulic conductivity and psi(z) is the soil moisture suction at depth z, and b is an empirical parameter developed by Clapp and Hornberger (1978) <a class="el" href="citelist.html#CITEREF_Clapp1978-898">[21]</a>. K(z) and <img class="formulaInl" alt="$\Psi(z)$" src="form_739.png"/> are calculated following Clapp and Hornberger as</p>
 <p><img class="formulaInl" alt="$K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}$" src="form_740.png"/> <img class="formulaInl" alt="$\Psi(z) = \Psi_{sat} (\theta_l/\theta_p)^{(-b )}$" src="form_741.png"/></p>
 <p>where <img class="formulaInl" alt="$K_{sat}$" src="form_273.png"/> and <img class="formulaInl" alt="$\Psi_{sat}$" src="form_88.png"/> are the values of <img class="formulaInl" alt="$K$" src="form_742.png"/> and <img class="formulaInl" alt="$\Psi$" src="form_48.png"/> respectively at saturation.</p>
 <p>At the bottom of the permeable soil depth, in layer IGDR, if the liquid water content of the soil is greater than the field capacity, the vertical flow out of the bottom of the soil profile is calculated using a relation derived from Soulis et al. (2010):</p>
@@ -433,7 +433,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="GRDRAN_8f.html">GRDRAN.f</a></li>
-    <li class="footer">Generated on Fri Oct 19 2018 10:07:33 for CLASSIC by
+    <li class="footer">Generated on Wed Dec 5 2018 16:43:26 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

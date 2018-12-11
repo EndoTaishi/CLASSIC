@@ -216,8 +216,8 @@ Percent Sand</div></div>
 <li>For mineral soils, the percentages of sand, clay and organic matter content need not add up to 100%, since the residual is assigned to silt content. If the exact sand, clay and organic matter contents are not known, estimates can be made for the general soil type on the basis of the standard USDA texture triangle shown above. Organic matter contents in mineral soils are typically not more than a few percent.</li>
 <li>If the layer consists of rock, SANDROT is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, CLAYROT and ORGMROT are not used and are set to zero.</li>
 <li>Highly organic soils have different behaviour if the area is being modelled as a peatland:<ul>
-<li>If the peatland flag is 0, that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one, SANDROT, CLAYROT and ORGMROT are used differently. The sand content is assigned a flag value of -2, and the organic matter content may be assigned a flag value of 1, 2 or 3 depending on whether the peat texture is fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[54]</a>). The current default is for the first layer to be assumed as fibric, the second as hemic and any lower layers as sapric. CLAYROT is not used and is set to zero.</li>
-<li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[91]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see <a class="el" href="CLASSB_8f.html">CLASSB.f</a>)</li>
+<li>If the peatland flag is 0, that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one, SANDROT, CLAYROT and ORGMROT are used differently. The sand content is assigned a flag value of -2, and the organic matter content may be assigned a flag value of 1, 2 or 3 depending on whether the peat texture is fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[55]</a>). The current default is for the first layer to be assumed as fibric, the second as hemic and any lower layers as sapric. CLAYROT is not used and is set to zero.</li>
+<li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see <a class="el" href="CLASSB_8f.html">CLASSB.f</a>)</li>
 </ul>
 </li>
 </ul>
@@ -235,7 +235,7 @@ Percent Sand</div></div>
 </ul>
 </li>
 <li>SOCIROT Soil colour index<ul>
-<li>The soil colour index is used to assign the soil albedo. It ranges from 1 to 20; low values indicate bright soils and high values indicate dark (see Lawrence and Chase (2007) <a class="el" href="citelist.html#CITEREF_Lawrence2007-bc">[52]</a>). The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in <a class="el" href="CLASSB_8f.html">CLASSB.f</a>.</li>
+<li>The soil colour index is used to assign the soil albedo. It ranges from 1 to 20; low values indicate bright soils and high values indicate dark (see Lawrence and Chase (2007) <a class="el" href="citelist.html#CITEREF_Lawrence2007-bc">[53]</a>). The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in <a class="el" href="CLASSB_8f.html">CLASSB.f</a>.</li>
 </ul>
 </li>
 </ul>
@@ -338,7 +338,7 @@ Initialization of Biogeochemical Prognostic Variables</h2>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Oct 19 2018 10:07:33 for CLASSIC by
+    <li class="footer">Generated on Wed Dec 5 2018 16:43:26 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

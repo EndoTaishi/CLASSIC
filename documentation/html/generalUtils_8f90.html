@@ -115,6 +115,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:afa44642b1117d4309ceee18d8984f0c0"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="generalUtils_8f90.html#afa44642b1117d4309ceee18d8984f0c0">generalutils::abandoncell</a> (errmsg)</td></tr>
 <tr class="memdesc:afa44642b1117d4309ceee18d8984f0c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to stop running a model grid cell. For errors that need to be caught early in a run, the fortran intrinsic 'stop' is preferred but for errors later in a run or simple fails on single grid cells, abandonCell is best since it allows the netcdf files to continue to written to and won't disrupt the MPI processes (as stop does)  <a href="generalUtils_8f90.html#afa44642b1117d4309ceee18d8984f0c0">More...</a><br /></td></tr>
 <tr class="separator:afa44642b1117d4309ceee18d8984f0c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82602d42e107240e96ffd441c0dcdb90"><td class="memItemLeft" align="right" valign="top"><a id="a82602d42e107240e96ffd441c0dcdb90"></a>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>generalutils::initrandomseed</b> ()</td></tr>
+<tr class="separator:a82602d42e107240e96ffd441c0dcdb90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -379,7 +382,7 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="generalUtils_8f90.html">generalUtils.f90</a></li>
-    <li class="footer">Generated on Fri Oct 19 2018 10:07:33 for CLASSIC by
+    <li class="footer">Generated on Wed Dec 5 2018 16:43:26 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
