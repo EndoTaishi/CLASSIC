@@ -55,7 +55,8 @@ contains
         use class_statevars,     only : class_gat,class_rot,resetAccVars,&
                                         resetclassmon,resetclassyr,initDiagnosticVars
         use prepareOutputs,      only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
+                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw,&
+                                        convertUnitsCTEM
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness,&
                                         findPermafrostVars,initRandomSeed
@@ -3193,6 +3194,9 @@ contains
                &                       nltest,nmtest,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
+              
+                ! Convert units in preparation for output:
+                call convertUnitsCTEM(nltest,nmtest)
 
                 ! Daily outputs from biogeochem (CTEM)
                 if (dodayoutput .and.&
