@@ -9,6 +9,9 @@ module ctem_params
 
 ! Change History:
 
+! Sep 2018 - EC - Relocate variables defined in "readin_params" to the main module and allocate them
+!                 in "allocateParamsCTEM". Cray compiler doesn't currently support namelists using 
+!                 dynamic arrays dimensioned by a parameter specified in the main module.
 ! Jun 2017 - JM - Change to using namelist.
 ! Jun 11 2015 - JM - Add in new disturb params (extnmois_duff and extnmois_veg) replacing duff_dry and extnmois.
 ! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
@@ -88,6 +91,18 @@ integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into le
 character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
 character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
 real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient
+
+! Moved definitions in "readin_params" here and allocate via "allocateParamsCTEM".
+
+real, dimension(:), allocatable :: omega_compete
+real, dimension(:), allocatable :: epsilonl_compete
+real, dimension(:), allocatable :: epsilons_compete
+real, dimension(:), allocatable :: epsilonr_compete
+real, dimension(:), allocatable :: bsrtstem_compete
+real, dimension(:), allocatable :: bsrtroot_compete
+real, dimension(:), allocatable :: mxmortge_compete
+real, dimension(:), allocatable :: maxage_compete
+real, dimension(:), allocatable :: drlsrtmx_compete
 
 !allocate.f parameters: ----------
 
@@ -486,7 +501,17 @@ subroutine allocateParamsCTEM()
             vmax(kk),&
             inico2i(kk),&
             chi(kk),&
-            rmlcoeff(kk))
+            !rmlcoeff(kk))
+            rmlcoeff(kk),&
+            omega_compete(kk),&
+            epsilonl_compete(kk),&
+            epsilons_compete(kk),&
+            epsilonr_compete(kk),&
+            bsrtstem_compete(kk),&
+            bsrtroot_compete(kk),&
+            mxmortge_compete(kk),&
+            maxage_compete(kk),&
+            drlsrtmx_compete(kk))
 
 end subroutine allocateParamsCTEM
 !!@}
@@ -502,15 +527,15 @@ subroutine readin_params
 
     implicit none
 
-    real, dimension(kk):: omega_compete
-    real, dimension(kk):: epsilonl_compete
-    real, dimension(kk):: epsilons_compete
-    real, dimension(kk):: epsilonr_compete
-    real, dimension(kk):: bsrtstem_compete
-    real, dimension(kk):: bsrtroot_compete
-    real, dimension(kk):: mxmortge_compete
-    real, dimension(kk):: maxage_compete
-    real, dimension(kk):: drlsrtmx_compete
+    !real, dimension(kk):: omega_compete
+    !real, dimension(kk):: epsilonl_compete
+    !real, dimension(kk):: epsilons_compete
+    !real, dimension(kk):: epsilonr_compete
+    !real, dimension(kk):: bsrtstem_compete
+    !real, dimension(kk):: bsrtroot_compete
+    !real, dimension(kk):: mxmortge_compete
+    !real, dimension(kk):: maxage_compete
+    !real, dimension(kk):: drlsrtmx_compete
     integer :: i,n
     character(8) :: pftkind
     integer :: isumc,k1c,k2c

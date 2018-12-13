@@ -5,7 +5,7 @@ A simple solution, if you have netcdf classic format files is to use ncks:
 ncks -4 infile.nc tmp.nc
 mv tmp.nc infile.nc
 
-Additionally we have found it to be very important for the files to be chunked appropriately. Present recipe for the T63 resolution (using ncks) is
+Additionally we have found it to be very important for the MET and LUC files to be chunked appropriately. Present recipe for the T63 resolution (using ncks) is
 
 Find number of time steps:
 
@@ -14,5 +14,3 @@ Find number of time steps:
 Then chunk:
 
  ncks -4 --cnk_plc=g3d --cnk_dmn=time,$ntimes --cnk_dmn=lat,8 --cnk_dmn=lon,16 in.nc out.nc
-
- 

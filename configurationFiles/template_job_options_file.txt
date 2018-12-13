@@ -1,5 +1,9 @@
 &joboptions
 
+! Model grid description
+    projectedGrid = .true. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+
 ! Meteorological options:
     readMetStartYear = 1900  !< First year of meteorological forcing to read in from the met file
     readMetEndYear = 1905    !< Last year of meteorological forcing to read in from the met file
@@ -123,17 +127,17 @@
     doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
 
-    dohhoutput = .true. ,      !< Switch for making half hourly output files (annual are always outputted)
+    dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
     JHHSTD = 166 ,                !< day of the year to start writing the half-hourly output
     JHHENDD = 185 ,             !< day of the year to stop writing the half-hourly output
     JHHSTY = 1901 ,             !< simulation year (iyear) to start writing the half-hourly output
     JHHENDY = 1901 ,            !< simulation year (iyear) to stop writing the half-hourly output
 
-    dodayoutput = .true. ,     !< Switch for making daily output files (annual are always outputted)
-    JDSTD = 1 ,                 !< day of the year to start writing the daily output
-    JDENDD = 365 ,              !< day of the year to stop writing the daily output
+    dodayoutput = .false. ,     !< Switch for making daily output files (annual are always outputted)
+    JDSTD = 20 ,                 !< day of the year to start writing the daily output
+    JDENDD = 30 ,              !< day of the year to stop writing the daily output
     JDSTY = 1902 ,              !< simulation year (iyear) to start writing the daily output
-    JDENDY = 1902 ,             !< simulation year (iyear) to stop writing the daily output
+    JDENDY = 1903 ,             !< simulation year (iyear) to stop writing the daily output
 
     domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
     JMOSTY = 1901 ,             !< Year to start writing out the monthly output files.

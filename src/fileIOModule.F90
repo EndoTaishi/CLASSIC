@@ -57,8 +57,7 @@ contains
 #if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call MPI_INFO_CREATE(info, status)
-        call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status)
-        mode = 0
+        !call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status) ! Obsolete and only for specific filesystems. EC, Sep, 2018.
         mode = ior(NF90_MPIIO, NF90_CLOBBER)
         mode = ior(mode, NF90_NETCDF4)
         call checkNC(nf90_create_par(trim(fileName), mode, MPI_COMM_WORLD, info, ncCreate), tag = 'ncCreate(' // trim(filename) // ') ')
@@ -81,8 +80,7 @@ contains
 #if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call MPI_INFO_CREATE(info, status)
-        call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status)
-        mode = 0
+        !call MPI_INFO_SET(info, "IBM_largeblock_io", "true", status) ! Obsolete and only for specific filesystems (EC, Sep 2018).
         mode = ior(NF90_MPIIO, omode)
         mode = ior(mode, NF90_NETCDF4)
         call checkNC(nf90_open_par(trim(fileName), mode, MPI_COMM_WORLD, info, ncOpen), tag = 'ncOpen(' // trim(filename) // ') ')
@@ -267,6 +265,9 @@ contains
         varId = ncGetVarId(fileId, label)
         ndims = ncGetVarDimensions(fileId, varId)
 
+        ! Currently makes I/O worse in general, but may be useful in the future (EC, Sep 2018).
+        !call checkNC(nf90_var_par_access(fileId, varId, nf90_collective))
+
         select case(ndims)
         case(1)
             allocate(ncGetVar(count(1)))
@@ -303,17 +304,33 @@ contains
     !>\ingroup fileIOMOdule_ncGetDimValues
     !!@{
     !> Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)
-    function ncGetDimValues(fileId, label, start, count)
+    function ncGetDimValues(fileId, label, start, count, start2D, count2D)
         integer, intent(in)                         :: fileId   !< File id
         character(*), intent(in)                    :: label    !< Label
+        integer                                     :: varId, ndims
         integer, intent(in), optional               :: start(1), count(1)
+        integer, intent(in), optional               :: start2D(2), count2D(2)
         real, allocatable                           :: ncGetDimValues(:)
         integer                                     :: localCount(1) = [1], localStart(1) = [1]
+        integer                                     :: localCount2D(2) = [1,1], localStart2D(2) = [1,1]
 
-        if (present(start)) localStart = start
-        if (present(count)) localCount = count
-        allocate(ncGetDimValues(count(1)))
-        ncGetDimValues = ncGetVar(fileId, label, localStart, localCount)
+        varId = ncGetVarId(fileId, label)
+        ndims = ncGetVarDimensions(fileId, varId)
+
+        select case(ndims)
+        case(1)
+          if (present(start)) localStart = start
+          if (present(count)) localCount = count
+          allocate(ncGetDimValues(count(1)))
+          ncGetDimValues = ncGetVar(fileId, label, localStart, localCount)
+        case(2)
+          if (present(start2D)) localStart2D = start2D
+          if (present(count2D)) localCount2D = count2D
+          allocate(ncGetDimValues(count2D(1)*count2D(2)))
+          ncGetDimValues = ncGetVar(fileId, label, localStart2D, localCount2D)
+        case default
+            stop ("Only up to 2 dimensions have been implemented in ncGetDimValues")
+        end select
 
     end function ncGetDimValues
     !>@}
@@ -557,6 +574,7 @@ contains
         integer                                                 :: varId, counter
         varId = ncGetVarId(fileId, label)
 
+        counter = 0
         if (present(realValues)) then
             counter = counter + 1
             call checkNC(nf90_put_var(fileId, varId, reshape(realValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
@@ -565,7 +583,7 @@ contains
             call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
         end if
 
-        if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues- just one')
+        if (counter /= 1) stop ('In function ncPut2DVar, please supply either intValues or realValues- just one')
     end subroutine ncPut2DVar
     !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -583,6 +601,7 @@ contains
         integer                                                 :: varId, counter
         varId = ncGetVarId(fileId, label)
 
+        counter = 0
         if (present(realValues)) then
             counter = counter + 1
             call checkNC(nf90_put_var(fileId, varId, reshape(realValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
@@ -590,6 +609,7 @@ contains
             counter = counter + 1
             call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
         end if
+        if (counter /= 1) stop ('In function ncPut3DVar, please supply either intValues or realValues- just one')
     end subroutine ncPut3DVar
     !>@}
     !-----------------------------------------------------------------------------------------------------------------------------------------------------

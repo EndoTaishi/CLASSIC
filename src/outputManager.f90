@@ -362,11 +362,13 @@ contains
         real, dimension(2)          :: xrange, yrange
         integer, dimension(:), allocatable :: intArray
 
+        logical, pointer :: projectedGrid
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
                                            !< also accounts for leap years in .MET when cycling over meteorology (metLoop > 1)
 
         ! Point pointers
+        projectedGrid => c_switch%projectedGrid
         leap => c_switch%leap
         Comment => c_switch%Comment
 
@@ -380,20 +382,27 @@ contains
         call ncPutAtt(ncid,nf90_global,'Conventions',charvalues='COARDS') !FLAG remove?
         call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
 
-        !----1 - Longitude
+        !----1 - Longitude and Latitude
 
         lonDimId = ncDefDim(ncid,'lon',myDomain%cntx)
-        varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId])
+        latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
+
+        if (.not. projectedGrid) then
+          varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId])
+        else
+          varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId, latDimId])
+        end if
         call ncPutAtt(ncid,varid,'standard_name',charvalues='Longitude')
         call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
         !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
-
-        !----2 - Latitude
-        latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
-        varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
+        if (.not. projectedGrid) then
+          varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
+        else
+          varid = ncDefVar(ncid,'lat',nf90_double,[londimId, latDimId])
+        end if
         call ncPutAtt(ncid,varid,'long_name',charvalues='latitude')
         call ncPutAtt(ncid,varid,'standard_name',charvalues='Latitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
@@ -468,9 +477,15 @@ contains
         deallocate(timeVect) !needs to be deallocated so the next file can allocate it.
 
         ! Fill in the dimension variables and define the model output vars
+        if (.not. projectedGrid) then
+          call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
+          call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
+        else ! projected grid
+          ! Since these are flattened arrays we will use the ncPutVar function which will reshape them
+          call ncPutVar(ncid, 'lon', realValues = myDomain%allLonValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
+          call ncPutVar(ncid, 'lat', realValues = myDomain%allLatValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
 
-        call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
-        call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
+        end if
 
         select case(trim(outputForm))
             case ("tile")       ! Per tile outputs
