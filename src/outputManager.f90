@@ -81,6 +81,8 @@ module outputManager
     character(30)   :: timestart                                 !< Time reference for netcdf output files
     real   :: fill_value = 1.E38                                 !< Default fill value for missing values in netcdf output files
     real, dimension(:), allocatable :: timeVect                  !< Array of the timesteps in days since refyr for this model run and output file
+    
+    real :: consecDays                                        !< Consecutive days since refyr in run. Set by setConsecDays
 
 contains
 
@@ -592,6 +594,7 @@ contains
         
         !  refyr is set to be the start year of the run.
         refyr = readMetStartYear
+        consecDays = 0.
         
         select case(trim(timeFreq))
 
@@ -803,6 +806,7 @@ contains
 
             if (posTimeWanted == 0) then
             print*,'missing timestep in output file ',key,localStamp
+            print*,'**Did you set leap=true but give CLASSIC inputs that do not have leap years?'
                 stop
             else
                 timeIndex = posTimeWanted

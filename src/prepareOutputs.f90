@@ -27,7 +27,7 @@ contains
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : ignd,icc
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -490,7 +490,7 @@ contains
 
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (realyr - refyr) * 365. + real(iday-1) + ((real(ncount)-1.) / real(nday))
+        timeStamp = consecDays + real(iday-1) + ((real(ncount)-1.) / real(nday))
 
         ! Now prepare and write out the grid averaged physics variables to output files
         DO I=1,NLTEST
@@ -749,7 +749,7 @@ contains
 
         use class_statevars, only : class_rot,resetAccVars
         use ctem_params, only : ignd
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -1039,7 +1039,7 @@ contains
             ! Now write to file the grid average values
 
             ! Prepare the timestamp for this month. Take one day off since it referenced to 01-01 of the refyr.
-            timeStamp = (realyr - refyr) * lastDOY + iday - 1 !FLAG this won't quite work with LEAP years since it doesn't know how many in past.
+            timeStamp = consecDays + iday - 1 
 
             do i = 1,nltest
                 if (altotcntr_d(i) > 0) then
@@ -1275,7 +1275,7 @@ contains
 
         use class_statevars, only : class_out,resetclassmon,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -1557,7 +1557,7 @@ contains
 
                 ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
                 ! rather than the first day of the next month.
-                timeStamp = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
+                timeStamp = consecDays + monthend(imonth+1) - 1
 
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
@@ -1608,7 +1608,7 @@ contains
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -1811,7 +1811,7 @@ contains
             end if
 
             ! Prepare the timestamp for this year
-            timeStamp = (realyr - refyr) * lastDOY
+            timeStamp = consecDays
 
             call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_yr' ,timeStamp,'rss', [FSSTAR_YR])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_yr' ,timeStamp,'rls', [FLSTAR_YR])
@@ -1978,7 +1978,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
         use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed,convertkgC
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -2493,7 +2493,7 @@ contains
         i = 1 ! offline nltest is always 1.
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (realyr - refyr) * 365. + real(iday) - 1. 
+        timeStamp = consecDays + real(iday) - 1. 
 
         !>Write grid average values
 
@@ -2807,7 +2807,7 @@ contains
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
                                     resetmonthend,ctem_mo
         use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -3436,7 +3436,7 @@ contains
                 ! Prepare the timestamp for this month 
                 
                 !Take one day off so it is the last day of the month rather than the first day of the next month.
-                timeStamp(1) = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
+                timeStamp(1) = consecDays + monthend(imonth+1) - 1
 
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
@@ -3586,7 +3586,7 @@ contains
         use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                         resetyearend
         use ctem_params, only : icc,iccp1,seed
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -4153,8 +4153,8 @@ contains
 
             !>Write to annual output files:
 
-            ! Prepare the timestamp for this year  !FLAG this isn't correct for leap yet. Need to look at yrs before realyr too!
-            timeStamp = (realyr - refyr) * lastDOY
+            ! Prepare the timestamp for this year  
+            timeStamp = consecDays
 
             !> First write out the per gridcell values
             call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])

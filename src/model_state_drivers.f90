@@ -957,7 +957,7 @@ contains
     subroutine getInput(inputRequested,longitude,latitude)
 
         use fileIOModule
-        use generalUtils, only : parseTimeStamp
+        use generalUtils, only : parseTimeStamp,findLeapYears
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : icc,nmos
         use outputManager, only : checkForTime
@@ -983,14 +983,17 @@ contains
         integer, pointer :: fixedYearLUC
         logical, pointer :: transientOBSWETF
         integer, pointer :: fixedYearOBSWETF
-
-        real, dimension(5) :: dateTime
-        real :: startLGHTTime,startWETTime
+        logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
 
+        real, dimension(5) :: dateTime
+        real :: startLGHTTime,startWETTime
+        logical :: dummyVar
+        integer :: lastDOY
+        
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
         transientCH4    => c_switch%transientCH4
@@ -1003,6 +1006,7 @@ contains
         fixedYearOBSWETF=> c_switch%fixedYearOBSWETF
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
+        leap            => c_switch%leap
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
@@ -1136,14 +1140,18 @@ contains
                 if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
                 ! We read in only the suggested year of daily inputs
+                
+                ! If we are using leap years, check if that year is a leap year
+                if (leap) call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
+                
                 ! FLAG Not presently set up for leap years!
-                allocate(LGHTFromFile(365))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
+                allocate(LGHTFromFile(lastDOY))
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(LGHTTime)
-                allocate(LGHTTime(365))
-                do d = 1,365
+                allocate(LGHTTime(lastDOY))
+                do d = 1,lastDOY
                     LGHTTime(d) = real(d)
                 end do
 
@@ -1222,14 +1230,17 @@ contains
                 if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
-                ! FLAG Not presently set up for leap years!
-                allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
+
+                ! If we are using leap years, check if that year is a leap year
+                if (leap) call findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
+
+                allocate(OBSWETFFromFile(lastDOY))
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
-                allocate(OBSWETFTime(365))
-                do d = 1,365
+                allocate(OBSWETFTime(lastDOY))
+                do d = 1,lastDOY
                     OBSWETFTime(d) = real(d)
                 end do
             end if

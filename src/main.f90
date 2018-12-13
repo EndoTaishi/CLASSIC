@@ -63,6 +63,7 @@ contains
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities,       only : dayEndCTEMPreparation,accumulateForCTEM,ctemInit
         use metDisaggModule,     only : disaggMet
+        use outputManager,       only : consecDays
 
         implicit none
 
@@ -2507,7 +2508,7 @@ contains
 
                     ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
                     if (leap) call findLeapYears(iyear,leapnow,lastDOY)
-
+                    
                     ! If needed, update values that were read in from the accessory input files (popd, wetlands, lightning...)
                     if (ctem_on) then
 
@@ -3232,6 +3233,10 @@ contains
 
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
+                
+                ! Increment the timestamp year (it is the number of consecutive days since the refyr. refyr is set
+                ! to the first year of the run in outputManager so consecDays is 0 initially then increments up.)
+                consecDays = consecDays + lastDOY
 
                 ! Increment the runyr
                 runyr = runyr + 1
