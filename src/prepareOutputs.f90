@@ -1879,6 +1879,7 @@ contains
         real, pointer, dimension(:,:) :: ch4WetSpecrow
         real, pointer, dimension(:,:) :: ch4WetDynrow
         real, pointer, dimension(:,:) :: ch4soillsrow
+        real, pointer, dimension(:,:,:) :: emit_co2row
         
         integer :: i,m,j
         
@@ -1907,6 +1908,7 @@ contains
         ch4soillsrow      => vrot%ch4_soills
         nppmossrow         => vrot%nppmoss
         armossrow          => vrot%armoss
+        emit_co2row       => vrot%emit_co2
 
         !>Some unit conversions:  
 
@@ -1954,7 +1956,8 @@ contains
                 hetroresrow(i,m)=hetroresrow(i,m)*convertkgC
                 autoresrow(i,m) =autoresrow(i,m)*convertkgC
                 litresrow(i,m)  =litresrow(i,m)*convertkgC
-                socresrow(i,m)  =socresrow(i,m)*convertkgC                
+                socresrow(i,m)  =socresrow(i,m)*convertkgC
+                emit_co2row(i,m) = emit_co2row(i,m)*convertkgC
                 ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
                 ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
                 ch4soillsrow(i,m) = ch4soillsrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
