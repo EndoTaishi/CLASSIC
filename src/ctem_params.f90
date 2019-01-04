@@ -68,7 +68,7 @@ logical, dimension(:), allocatable :: grass     !< simple grass matric, define t
 
 real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
 real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
-real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+real, parameter :: c2dom   = 450.0    !< gC / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
 
 integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
