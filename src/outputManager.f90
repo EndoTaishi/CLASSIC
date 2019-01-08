@@ -77,10 +77,12 @@ module outputManager
 
     integer :: variableCount = 0, descriptorCount = 0, variantCount = 0 !< Initializes the counter variables
 
-    integer         :: refyr = 1850                              !< Default time reference for netcdf output files
-    character(30)   :: timestart = "days since 1850-01-01 00:00" !< Default time reference for netcdf output files
+    integer         :: refyr                                     !< Time reference for netcdf output files
+    character(30)   :: timestart                                 !< Time reference for netcdf output files
     real   :: fill_value = 1.E38                                 !< Default fill value for missing values in netcdf output files
     real, dimension(:), allocatable :: timeVect                  !< Array of the timesteps in days since refyr for this model run and output file
+    
+    real :: consecDays                                        !< Consecutive days since refyr in run. Set by setConsecDays
 
 contains
 
@@ -357,6 +359,7 @@ contains
 
         character(8)  :: today
         character(10) :: now
+        character(80) :: format_string
         integer                     :: ncid, varid, suffix,i,timeLength
         integer                     :: DimId,lonDimId,latDimId,tileDimId,pftDimId,layerDimId,timeDimId
         real, dimension(2)          :: xrange, yrange
@@ -459,6 +462,10 @@ contains
         varid = ncDefVar(ncid,'time',nf90_double,[timeDimId])
 
         call ncPutAtt(ncid,varid,'long_name',charvalues='time')
+        
+        !timestart = "days since "//str(refyr)//"-01-01 00:00"
+        format_string = "(A11,I4,A12)"
+        write (timestart,format_string) "days since ",refyr,"-01-01 00:00"
         call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
 
         if (leap) then
@@ -542,20 +549,6 @@ contains
         !call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
         call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
 
-        ! The following are needed by our in-house plotting software
-        call ncPutAtt(ncid,varid,'modeling_realm',charvalues='land')
-        call ncPutAtt(ncid,varid,'realization',charvalues='1')
-        select case(trim(timeFreq))
-            case("annually")
-              call ncPutAtt(ncid,varid,'frequency',charvalues='yr')
-            case("monthly")
-              call ncPutAtt(ncid,varid,'frequency',charvalues='mon')
-            case("daily")
-              call ncPutAtt(ncid,varid,'frequency',charvalues='day')
-            case("halfhourly")
-              call ncPutAtt(ncid,varid,'frequency',charvalues='hh')
-        end select
-
         call ncEndDef(ncid)
 
     end subroutine createNetCDF
@@ -613,6 +606,11 @@ contains
         jmosty          => c_switch%jmosty
 
         lastDOY = 365
+        
+        !  refyr is set to be the start year of the run.
+        refyr = readMetStartYear
+        consecDays = 0.
+        
         select case(trim(timeFreq))
 
             case("annually")
@@ -716,7 +714,7 @@ contains
 
                 ! Sanity check on jhhsty and jhhendy
                 if ((readMetStartYear + totyrs - 1) < jhhsty .or. readMetStartYear > jhhendy) then
-                    print*,'**addTime says: Check your half hourly output file start and end points, they are outside the range of this run'
+                    print*,'**addTime says: Check your daily output file start and end points, they are outside the range of this run'
                     stop
                 end if
 
@@ -823,6 +821,7 @@ contains
 
             if (posTimeWanted == 0) then
             print*,'missing timestep in output file ',key,localStamp
+            print*,'**Did you set leap=true but give CLASSIC inputs that do not have leap years?'
                 stop
             else
                 timeIndex = posTimeWanted

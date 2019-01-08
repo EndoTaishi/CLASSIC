@@ -664,7 +664,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>ratio of carbon to dry organic matter. units: \f$kg dom / m^2 / day\f$
            tot_emit_dom = tot_emit / c2dom
 
-!>Convert the dom to emissions/aerosols using emissions factors units: \f$g species / m^2\f$
+!>Convert the dom to emissions/aerosols using emissions factors units: \f$g species / m^2 /d\f$
 !! Also convert units to \f$kg species / m^2 / s^{-1}\f$
 ! g {species} / m2/d * d/86400s * 1kg/1000g = kg {species} / m2 / s
 

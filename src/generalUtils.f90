@@ -295,6 +295,9 @@ module generalUtils
     !! @author Joe Melton
     !!
     logical function closeEnough(num1, num2,error)
+
+        implicit none
+      
         real, intent(in)    :: num1, num2
         real, intent(in)     :: error
         if (abs(num1 - num2) < error) then
@@ -305,10 +308,15 @@ module generalUtils
     end function closeEnough
     !!@}
 
+    !>\ingroup generalUtils_initRandomSeed
+    !!@{
+    !! This subroutine sets a repeatable seed for the random number generator. 
+    !!@author J. Melton 
+    !!
     subroutine initRandomSeed()
-      !! This subroutine sets a repeatable seed for the random number generator. 
-      !!@author J. Melton 
       
+      implicit none
+
       ! NOTE: this subroutine will eventually be replaced by "call random_init()" which 
       ! is an intrinsic in the  Fortran 2018 standard.
       integer :: n
@@ -323,7 +331,8 @@ module generalUtils
       call random_seed(put=seed)
       
     end subroutine initRandomSeed
-
+    !!@}
+    
 !>\file
 !>Central module for all general utilities
 

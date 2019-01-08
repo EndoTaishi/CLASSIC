@@ -11,6 +11,7 @@ public  :: class_hh_w           ! Prepares and writes the CLASS (physics) half h
 public  :: class_daily_aw       ! Accumulates and writes the CLASS (physics) daily outputs
 public  :: class_monthly_aw     ! Accumulates and writes the CLASS (physics) monthly outputs
 public  :: class_annual_aw      ! Accumulates and writes the CLASS (physics) annual outputs
+public  :: convertUnitsCTEM     ! Converts units prior to output for CTEM (biogeochemistry) variables.
 public  :: ctem_daily_aw        ! Accumulates and writes the CTEM (biogeochemistry) daily outputs
 public  :: ctem_monthly_aw      ! Accumulates and writes the CTEM (biogeochemistry) monthly outputs
 public  :: ctem_annual_aw       ! Accumulates and writes the CTEM (biogeochemistry) annual outputs
@@ -26,7 +27,7 @@ contains
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : ignd,icc
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -489,7 +490,7 @@ contains
 
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (realyr - refyr) * 365. + real(iday-1) + ((real(ncount)-1.) / real(nday))
+        timeStamp = consecDays + real(iday-1) + ((real(ncount)-1.) / real(nday))
 
         ! Now prepare and write out the grid averaged physics variables to output files
         DO I=1,NLTEST
@@ -748,7 +749,7 @@ contains
 
         use class_statevars, only : class_rot,resetAccVars
         use ctem_params, only : ignd
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -1038,7 +1039,7 @@ contains
             ! Now write to file the grid average values
 
             ! Prepare the timestamp for this month. Take one day off since it referenced to 01-01 of the refyr.
-            timeStamp = (realyr - refyr) * lastDOY + iday - 1 !FLAG this won't quite work with LEAP years since it doesn't know how many in past.
+            timeStamp = consecDays + iday - 1 
 
             do i = 1,nltest
                 if (altotcntr_d(i) > 0) then
@@ -1274,7 +1275,7 @@ contains
 
         use class_statevars, only : class_out,resetclassmon,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -1556,7 +1557,7 @@ contains
 
                 ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
                 ! rather than the first day of the next month.
-                timeStamp = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
+                timeStamp = consecDays + monthend(imonth+1) - 1
 
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
@@ -1607,7 +1608,7 @@ contains
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
         use ctem_params, only : nmon, monthend, nmos, ignd
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -1810,7 +1811,7 @@ contains
             end if
 
             ! Prepare the timestamp for this year
-            timeStamp = (realyr - refyr) * lastDOY
+            timeStamp = consecDays
 
             call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_yr' ,timeStamp,'rss', [FSSTAR_YR])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_yr' ,timeStamp,'rls', [FLSTAR_YR])
@@ -1840,6 +1841,140 @@ contains
 
     !==============================================================================================================
 
+    !>\ingroup prepareOutputs_convertUnitsCTEM
+    !!@{
+    !> Do some unit conversions for CTEM (biogeochemical processes) so they are ready to be written out
+    subroutine convertUnitsCTEM(nltest,nmtest)
+
+        use ctem_params, only : icc,ignd,iccp1,wtCH4,convertkgC
+        use ctem_statevars,     only :  vrot
+        
+        implicit none
+
+        integer, intent(in) :: nltest   ! number of grid cells (offline = 1)
+        integer, intent(in) :: nmtest   ! number of tiles per cell 
+        
+        real, pointer, dimension(:,:,:) :: fcancmxrow        
+        real, pointer, dimension(:,:) :: nppmossrow
+        real, pointer, dimension(:,:) :: armossrow
+        real, pointer, dimension(:,:,:) :: gppvegrow
+        real, pointer, dimension(:,:,:) :: nppvegrow        
+        real, pointer, dimension(:,:,:) :: nepvegrow
+        real, pointer, dimension(:,:,:) :: nbpvegrow
+        real, pointer, dimension(:,:,:) :: hetroresvegrow
+        real, pointer, dimension(:,:,:) :: autoresvegrow
+        real, pointer, dimension(:,:,:) :: litresvegrow
+        real, pointer, dimension(:,:,:) :: soilcresvegrow
+        real, pointer, dimension(:,:) :: npprow
+        real, pointer, dimension(:,:) :: neprow
+        real, pointer, dimension(:,:) :: nbprow
+        real, pointer, dimension(:,:) :: gpprow
+        real, pointer, dimension(:,:) :: lucemcomrow
+        real, pointer, dimension(:,:) :: lucltrinrow
+        real, pointer, dimension(:,:) :: lucsocinrow
+        real, pointer, dimension(:,:) :: hetroresrow
+        real, pointer, dimension(:,:) :: autoresrow
+        real, pointer, dimension(:,:) :: litresrow
+        real, pointer, dimension(:,:) :: socresrow
+        real, pointer, dimension(:,:) :: ch4WetSpecrow
+        real, pointer, dimension(:,:) :: ch4WetDynrow
+        real, pointer, dimension(:,:) :: ch4soillsrow
+        real, pointer, dimension(:,:,:) :: emit_co2row
+        
+        integer :: i,m,j
+        
+        fcancmxrow        => vrot%fcancmx
+        gppvegrow         => vrot%gppveg
+        nepvegrow         => vrot%nepveg
+        nbpvegrow         => vrot%nbpveg
+        nppvegrow         => vrot%nppveg
+        hetroresvegrow    => vrot%hetroresveg
+        autoresvegrow     => vrot%autoresveg
+        litresvegrow      => vrot%litresveg
+        soilcresvegrow    => vrot%soilcresveg
+        npprow            => vrot%npp
+        neprow            => vrot%nep
+        nbprow            => vrot%nbp
+        gpprow            => vrot%gpp        
+        lucemcomrow       => vrot%lucemcom
+        lucltrinrow       => vrot%lucltrin
+        lucsocinrow       => vrot%lucsocin
+        hetroresrow       => vrot%hetrores
+        autoresrow        => vrot%autores
+        litresrow         => vrot%litres
+        socresrow         => vrot%socres
+        ch4WetSpecrow        => vrot%ch4WetSpec
+        ch4WetDynrow        => vrot%ch4WetDyn
+        ch4soillsrow      => vrot%ch4_soills
+        nppmossrow         => vrot%nppmoss
+        armossrow          => vrot%armoss
+        emit_co2row       => vrot%emit_co2
+
+        !>Some unit conversions:  
+
+        !! We want to go from umol CO2/m2/s to kg C/m2/s so:
+        !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
+        !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
+        !! convertkgC = 1.201E-8
+
+        do 10 i = 1,nltest
+            do 20 m = 1 , nmtest
+
+                nppmossrow(i,m)=nppmossrow(i,m)*convertkgC
+                armossrow(i,m)=armossrow(i,m)*convertkgC
+
+                do 30 j=1,icc
+                    if (fcancmxrow(i,m,j) .gt.0.0) then
+
+                        gppvegrow(i,m,j)=gppvegrow(i,m,j)* convertkgC
+                        nppvegrow(i,m,j)=nppvegrow(i,m,j)*convertkgC
+                        nepvegrow(i,m,j)=nepvegrow(i,m,j)*convertkgC
+                        nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*convertkgC
+                        hetroresvegrow(i,m,j)=hetroresvegrow(i,m,j)*convertkgC
+                        autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*convertkgC
+                        litresvegrow(i,m,j)=litresvegrow(i,m,j)*convertkgC
+                        soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*convertkgC
+
+                    end if
+
+        30          continue ! icc
+
+                !>Now for the bare fraction of the grid cell.
+                hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
+                litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*convertkgC
+                soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*convertkgC
+                nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
+                nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
+
+                npprow(i,m)     =npprow(i,m)*convertkgC
+                gpprow(i,m)     =gpprow(i,m)*convertkgC
+                neprow(i,m)     =neprow(i,m)*convertkgC
+                nbprow(i,m)     =nbprow(i,m)*convertkgC
+                lucemcomrow(i,m)=lucemcomrow(i,m)*convertkgC
+                lucltrinrow(i,m)=lucltrinrow(i,m)*convertkgC
+                lucsocinrow(i,m)=lucsocinrow(i,m)*convertkgC
+                hetroresrow(i,m)=hetroresrow(i,m)*convertkgC
+                autoresrow(i,m) =autoresrow(i,m)*convertkgC
+                litresrow(i,m)  =litresrow(i,m)*convertkgC
+                socresrow(i,m)  =socresrow(i,m)*convertkgC
+                
+                ! emit_co2, like all fire gas fluxes is in kg {species} / m2 / s. So we need
+                ! to convert from kg CO2/m2/s to kg C/m2/s. Since 1 g C = 0.083 mole CO2 = 3.664 g CO2
+                ! kg CO2/m2/s * 1 g C/ 3.664 g CO2 = kg C /m2/s
+                emit_co2row(i,m) = emit_co2row(i,m) / 3.664
+                
+                ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+                ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+                ch4soillsrow(i,m) = ch4soillsrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+
+        20      continue
+        10  continue
+
+    end subroutine convertUnitsCTEM
+    !>@}
+
+    !==============================================================================================================
+
     !>\ingroup prepareOutputs_ctem_daily_aw
     !>@{
     !> Accumulate and write the daily biogeochemical outputs
@@ -1851,7 +1986,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
         use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed,convertkgC
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -2210,59 +2345,59 @@ contains
             stemmass_t(:,:) = 0.0 ; rootmass_t(:,:) = 0.0 ; litrmass_t(:,:) = 0.0
             soilcmas_t(:,:) = 0.0 ; emit_co2_t(:,:) = 0.0; rmatctem_t(:,:,:)=0.0
 
-        !>Then some unit conversions:  
-        
-        !! We want to go from umol CO2/m2/s to kg C/m2/s so:
-        !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
-        !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
-        !! convertkgC = 1.201E-8
-
-        do 10 i = 1,nltest
-            do 20 m = 1 , nmtest
-
-                nppmossrow(i,m)=nppmossrow(i,m)*convertkgC
-                armossrow(i,m)=armossrow(i,m)*convertkgC
-
-                do 30 j=1,icc
-                    if (fcancmxrow(i,m,j) .gt.0.0) then
-
-                        gppvegrow(i,m,j)=gppvegrow(i,m,j)* convertkgC
-                        nppvegrow(i,m,j)=nppvegrow(i,m,j)*convertkgC
-                        nepvegrow(i,m,j)=nepvegrow(i,m,j)*convertkgC
-                        nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*convertkgC
-                        hetroresvegrow(i,m,j)=hetroresvegrow(i,m,j)*convertkgC
-                        autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*convertkgC
-                        litresvegrow(i,m,j)=litresvegrow(i,m,j)*convertkgC
-                        soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*convertkgC
-
-                    end if
-
-    30          continue ! icc
-
-                !>Now for the bare fraction of the grid cell.
-                hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
-                litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*convertkgC
-                soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*convertkgC
-                nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
-                nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
-
-                npprow(i,m)     =npprow(i,m)*convertkgC
-                gpprow(i,m)     =gpprow(i,m)*convertkgC
-                neprow(i,m)     =neprow(i,m)*convertkgC
-                nbprow(i,m)     =nbprow(i,m)*convertkgC
-                lucemcomrow(i,m)=lucemcomrow(i,m)*convertkgC
-                lucltrinrow(i,m)=lucltrinrow(i,m)*convertkgC
-                lucsocinrow(i,m)=lucsocinrow(i,m)*convertkgC
-                hetroresrow(i,m)=hetroresrow(i,m)*convertkgC
-                autoresrow(i,m) =autoresrow(i,m)*convertkgC
-                litresrow(i,m)  =litresrow(i,m)*convertkgC
-                socresrow(i,m)  =socresrow(i,m)*convertkgC                
-                ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-                ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-                ch4soillsrow(i,m) = ch4soillsrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-
-    20      continue
-    10  continue
+    !     !>Then some unit conversions:  
+    ! 
+    !     !! We want to go from umol CO2/m2/s to kg C/m2/s so:
+    !     !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
+    !     !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
+    !     !! convertkgC = 1.201E-8
+    ! 
+    !     do 10 i = 1,nltest
+    !         do 20 m = 1 , nmtest
+    ! 
+    !             nppmossrow(i,m)=nppmossrow(i,m)*convertkgC
+    !             armossrow(i,m)=armossrow(i,m)*convertkgC
+    ! 
+    !             do 30 j=1,icc
+    !                 if (fcancmxrow(i,m,j) .gt.0.0) then
+    ! 
+    !                     gppvegrow(i,m,j)=gppvegrow(i,m,j)* convertkgC
+    !                     nppvegrow(i,m,j)=nppvegrow(i,m,j)*convertkgC
+    !                     nepvegrow(i,m,j)=nepvegrow(i,m,j)*convertkgC
+    !                     nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*convertkgC
+    !                     hetroresvegrow(i,m,j)=hetroresvegrow(i,m,j)*convertkgC
+    !                     autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*convertkgC
+    !                     litresvegrow(i,m,j)=litresvegrow(i,m,j)*convertkgC
+    !                     soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*convertkgC
+    ! 
+    !                 end if
+    ! 
+    ! 30          continue ! icc
+    ! 
+    !             !>Now for the bare fraction of the grid cell.
+    !             hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
+    !             litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*convertkgC
+    !             soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*convertkgC
+    !             nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
+    !             nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
+    ! 
+    !             npprow(i,m)     =npprow(i,m)*convertkgC
+    !             gpprow(i,m)     =gpprow(i,m)*convertkgC
+    !             neprow(i,m)     =neprow(i,m)*convertkgC
+    !             nbprow(i,m)     =nbprow(i,m)*convertkgC
+    !             lucemcomrow(i,m)=lucemcomrow(i,m)*convertkgC
+    !             lucltrinrow(i,m)=lucltrinrow(i,m)*convertkgC
+    !             lucsocinrow(i,m)=lucsocinrow(i,m)*convertkgC
+    !             hetroresrow(i,m)=hetroresrow(i,m)*convertkgC
+    !             autoresrow(i,m) =autoresrow(i,m)*convertkgC
+    !             litresrow(i,m)  =litresrow(i,m)*convertkgC
+    !             socresrow(i,m)  =socresrow(i,m)*convertkgC                
+    !             ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+    !             ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+    !             ch4soillsrow(i,m) = ch4soillsrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+    ! 
+    ! 20      continue
+    ! 10  continue
 
         !>Aggregate to the tile avg vars:
         do 60 i=1,nltest
@@ -2366,7 +2501,7 @@ contains
         i = 1 ! offline nltest is always 1.
 
         ! Prepare the timestamp for this timestep.
-        timeStamp = (realyr - refyr) * 365. + real(iday) - 1. 
+        timeStamp = consecDays + real(iday) - 1. 
 
         !>Write grid average values
 
@@ -2680,7 +2815,7 @@ contains
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
                                     resetmonthend,ctem_mo
         use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -2886,6 +3021,7 @@ contains
         integer :: imonth
         real, dimension(1) :: timeStamp
         real, dimension(icc) :: pftExist
+        real :: oneOverDPM
 
         ! point pointers
 
@@ -3075,7 +3211,17 @@ contains
         !> ------------
 
         !> Accumulate monthly outputs
-
+        
+        ! Find which month you are in so we know the number of days per month.
+        do nt = 1, nmon
+          if(iday.le.monthend(nt+1))then
+            oneOverDPM = 1./real(monthdays(nt))
+            exit
+          else
+            cycle
+          end if
+        end do
+        
         i = 1 ! offline nlat is always 1 so this array position is always 1.
         do 863 m = 1,nmtest
             do j=1,icc
@@ -3085,52 +3231,54 @@ contains
                     laimaxg_mo(i,m,j)=ailcgrow(i,m,j)
                 end if
 
-                npp_mo(i,m,j)=npp_mo(i,m,j)+nppvegrow(i,m,j)
-                gpp_mo(i,m,j)=gpp_mo(i,m,j)+gppvegrow(i,m,j)
-                nep_mo(i,m,j)=nep_mo(i,m,j)+nepvegrow(i,m,j)
-                nbp_mo(i,m,j)=nbp_mo(i,m,j)+nbpvegrow(i,m,j)
-                hetrores_mo(i,m,j)=hetrores_mo(i,m,j)+hetroresvegrow(i,m,j)
-                autores_mo(i,m,j) =autores_mo(i,m,j)+autoresvegrow(i,m,j)
-                litres_mo(i,m,j)  =litres_mo(i,m,j) +litresvegrow(i,m,j)
-                soilcres_mo(i,m,j) =soilcres_mo(i,m,j) +soilcresvegrow(i,m,j)
-                emit_co2_mo(i,m,j)=emit_co2_mo(i,m,j)+emit_co2row(i,m,j)
-                emit_co_mo(i,m,j) =emit_co_mo(i,m,j)+emit_corow(i,m,j)
-                emit_ch4_mo(i,m,j) =emit_ch4_mo(i,m,j)+emit_ch4row(i,m,j)
-                emit_nmhc_mo(i,m,j)=emit_nmhc_mo(i,m,j)+emit_nmhcrow(i,m,j)
-                emit_h2_mo(i,m,j) =emit_h2_mo(i,m,j)+emit_h2row(i,m,j)
-                emit_nox_mo(i,m,j) =emit_nox_mo(i,m,j)+emit_noxrow(i,m,j)
-                emit_n2o_mo(i,m,j) =emit_n2o_mo(i,m,j)+emit_n2orow(i,m,j)
-                emit_pm25_mo(i,m,j)=emit_pm25_mo(i,m,j)+emit_pm25row(i,m,j)
-                emit_tpm_mo(i,m,j) =emit_tpm_mo(i,m,j)+emit_tpmrow(i,m,j)
-                emit_tc_mo(i,m,j) =emit_tc_mo(i,m,j)+emit_tcrow(i,m,j)
-                emit_oc_mo(i,m,j) =emit_oc_mo(i,m,j)+emit_ocrow(i,m,j)
-                emit_bc_mo(i,m,j) =emit_bc_mo(i,m,j)+emit_bcrow(i,m,j)
-                bterm_mo(i,m,j) = bterm_mo(i,m,j) + btermrow(i,m,j)
-                mterm_mo(i,m,j) = mterm_mo(i,m,j) + mtermrow(i,m,j)
+                npp_mo(i,m,j)=npp_mo(i,m,j)+nppvegrow(i,m,j)*oneOverDPM
+                gpp_mo(i,m,j)=gpp_mo(i,m,j)+gppvegrow(i,m,j)*oneOverDPM
+                nep_mo(i,m,j)=nep_mo(i,m,j)+nepvegrow(i,m,j)*oneOverDPM
+                nbp_mo(i,m,j)=nbp_mo(i,m,j)+nbpvegrow(i,m,j)*oneOverDPM
+                hetrores_mo(i,m,j)=hetrores_mo(i,m,j)+hetroresvegrow(i,m,j)*oneOverDPM
+                autores_mo(i,m,j) =autores_mo(i,m,j)+autoresvegrow(i,m,j)*oneOverDPM
+                litres_mo(i,m,j)  =litres_mo(i,m,j) +litresvegrow(i,m,j)*oneOverDPM
+                soilcres_mo(i,m,j) =soilcres_mo(i,m,j) +soilcresvegrow(i,m,j)*oneOverDPM
+                emit_co2_mo(i,m,j)=emit_co2_mo(i,m,j)+emit_co2row(i,m,j)*oneOverDPM
+                emit_co_mo(i,m,j) =emit_co_mo(i,m,j)+emit_corow(i,m,j)*oneOverDPM
+                emit_ch4_mo(i,m,j) =emit_ch4_mo(i,m,j)+emit_ch4row(i,m,j)*oneOverDPM
+                emit_nmhc_mo(i,m,j)=emit_nmhc_mo(i,m,j)+emit_nmhcrow(i,m,j)*oneOverDPM
+                emit_h2_mo(i,m,j) =emit_h2_mo(i,m,j)+emit_h2row(i,m,j)*oneOverDPM
+                emit_nox_mo(i,m,j) =emit_nox_mo(i,m,j)+emit_noxrow(i,m,j)*oneOverDPM
+                emit_n2o_mo(i,m,j) =emit_n2o_mo(i,m,j)+emit_n2orow(i,m,j)*oneOverDPM
+                emit_pm25_mo(i,m,j)=emit_pm25_mo(i,m,j)+emit_pm25row(i,m,j)*oneOverDPM
+                emit_tpm_mo(i,m,j) =emit_tpm_mo(i,m,j)+emit_tpmrow(i,m,j)*oneOverDPM
+                emit_tc_mo(i,m,j) =emit_tc_mo(i,m,j)+emit_tcrow(i,m,j)*oneOverDPM
+                emit_oc_mo(i,m,j) =emit_oc_mo(i,m,j)+emit_ocrow(i,m,j)*oneOverDPM
+                emit_bc_mo(i,m,j) =emit_bc_mo(i,m,j)+emit_bcrow(i,m,j)*oneOverDPM
+                bterm_mo(i,m,j) = bterm_mo(i,m,j) + btermrow(i,m,j)*oneOverDPM
+                mterm_mo(i,m,j) = mterm_mo(i,m,j) + mtermrow(i,m,j)*oneOverDPM                
+                smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) + smfuncvegrow(i,m,j)*oneOverDPM
+                
+                ! Let accumulate, not fluxes nor meant to be mean values.
                 burnfrac_mo(i,m,j) =burnfrac_mo(i,m,j)+burnvegfrow(i,m,j)
-                smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) + smfuncvegrow(i,m,j)
                 litrfallveg_mo(i,m,j) = litrfallveg_mo(i,m,j) + litrfallvegrow(i,m,j)
                 humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j)
 
             end do !j
 
             !> Also do the bare ground
-            nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)
-            nbp_mo(i,m,iccp1)=nbp_mo(i,m,iccp1)+nbpvegrow(i,m,iccp1)
-            hetrores_mo(i,m,iccp1)=hetrores_mo(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
-            litres_mo(i,m,iccp1)  =litres_mo(i,m,iccp1)+litresvegrow(i,m,iccp1)
-            soilcres_mo(i,m,iccp1) =soilcres_mo(i,m,iccp1) +soilcresvegrow(i,m,iccp1)
+            nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)*oneOverDPM
+            nbp_mo(i,m,iccp1)=nbp_mo(i,m,iccp1)+nbpvegrow(i,m,iccp1)*oneOverDPM
+            hetrores_mo(i,m,iccp1)=hetrores_mo(i,m,iccp1)+hetroresvegrow(i,m,iccp1)*oneOverDPM
+            litres_mo(i,m,iccp1)  =litres_mo(i,m,iccp1)+litresvegrow(i,m,iccp1)*oneOverDPM
+            soilcres_mo(i,m,iccp1) =soilcres_mo(i,m,iccp1) +soilcresvegrow(i,m,iccp1)*oneOverDPM
 
             !> Accumulate monthly outputs at the per tile level.
-            luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)
-            lucsocin_mo_t(i,m) =lucsocin_mo_t(i,m)+lucsocinrow(i,m)
-            lucltrin_mo_t(i,m) =lucltrin_mo_t(i,m)+lucltrinrow(i,m)
-            ch4WetSpec_mo_t(i,m) = ch4WetSpec_mo_t(i,m) + ch4WetSpecrow(i,m)
-            wetfdyn_mo_t(i,m) = wetfdyn_mo_t(i,m) + wetfdynrow(i,m)
-            wetfpres_mo_t(i,m) = wetfpres_mo_t(i,m) + wetfrac_presrow(i,m)
-            ch4WetDyn_mo_t(i,m) = ch4WetDyn_mo_t(i,m) + ch4WetDynrow(i,m)
-            ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)
-            lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)
+            luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)*oneOverDPM
+            lucsocin_mo_t(i,m) =lucsocin_mo_t(i,m)+lucsocinrow(i,m)*oneOverDPM
+            lucltrin_mo_t(i,m) =lucltrin_mo_t(i,m)+lucltrinrow(i,m)*oneOverDPM
+            ch4WetSpec_mo_t(i,m) = ch4WetSpec_mo_t(i,m) + ch4WetSpecrow(i,m)*oneOverDPM
+            wetfdyn_mo_t(i,m) = wetfdyn_mo_t(i,m) + wetfdynrow(i,m)*oneOverDPM
+            wetfpres_mo_t(i,m) = wetfpres_mo_t(i,m) + wetfrac_presrow(i,m)*oneOverDPM
+            ch4WetDyn_mo_t(i,m) = ch4WetDyn_mo_t(i,m) + ch4WetDynrow(i,m)*oneOverDPM
+            ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)*oneOverDPM
+            lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)*oneOverDPM
             !wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
 
     863     continue ! m
@@ -3188,7 +3336,7 @@ contains
     866             continue  !nmtest loop.
 
             endif ! mmday (mid-month instantaneous value)
-
+            
             if(iday.eq.monthend(nt+1))then
 
                 !> Do the end of month variables
@@ -3198,15 +3346,15 @@ contains
 
 
                     !> Convert some quantities into per day values
-                    wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
-                    wetfpres_mo_t(i,m)=wetfpres_mo_t(i,m)*(1./real(monthdays(nt)))
-                    lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
-                    !wind_mo_t(i,m) = wind_mo_t(i,m)*(1./real(monthdays(nt)))
-                    do j = 1, icc
-                        bterm_mo(i,m,j)=bterm_mo(i,m,j)*(1./real(monthdays(nt)))
-                        mterm_mo(i,m,j)=mterm_mo(i,m,j)*(1./real(monthdays(nt)))
-                        smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) *(1./real(monthdays(nt)))
-                    end do
+                    !wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*oneOverDPM
+                    !wetfpres_mo_t(i,m)=wetfpres_mo_t(i,m)*oneOverDPM
+                    !lterm_mo_t(i,m)=lterm_mo_t(i,m)*oneOverDPM
+                    !wind_mo_t(i,m) = wind_mo_t(i,m)*oneOverDPM
+                    ! do j = 1, icc
+                    !     bterm_mo(i,m,j)=bterm_mo(i,m,j)*oneOverDPM
+                    !     mterm_mo(i,m,j)=mterm_mo(i,m,j)*oneOverDPM
+                    !     smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) *oneOverDPM
+                    ! end do
 
                     barefrac=1.0
 
@@ -3293,9 +3441,10 @@ contains
 
                 imonth=nt
 
-                ! Prepare the timestamp for this month !FLAG this isn't correct for leap yet. Need to look at yrs before realyr too!
+                ! Prepare the timestamp for this month 
+                
                 !Take one day off so it is the last day of the month rather than the first day of the next month.
-                timeStamp(1) = (realyr - refyr) * lastDOY + monthend(imonth+1) - 1
+                timeStamp(1) = consecDays + monthend(imonth+1) - 1
 
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
@@ -3445,7 +3594,7 @@ contains
         use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                         resetyearend
         use ctem_params, only : icc,iccp1,seed
-        use outputManager, only : writeOutput1D,refyr
+        use outputManager, only : writeOutput1D,consecDays
 
         implicit none
 
@@ -3644,6 +3793,7 @@ contains
         real, dimension(1) :: timeStamp
         real, dimension(icc) :: pftExist
         real, dimension(icc) :: fcancmxNoSeed
+        real :: oneOverDPY 
 
         ! point pointers
 
@@ -3827,7 +3977,7 @@ contains
         !------------
 
         !> Accumulate yearly outputs
-
+        oneOverDPY = 1./real(lastDOY)
         i = 1 ! offline nlat is always 1 so this array position is always 1.
         do 883 m=1,nmtest
             do 884 j=1,icc
@@ -3838,53 +3988,55 @@ contains
                     laimaxg_yr(i,m,j)=ailcgrow(i,m,j)
                 end if
 
-                npp_yr(i,m,j)=npp_yr(i,m,j)+nppvegrow(i,m,j)
-                gpp_yr(i,m,j)=gpp_yr(i,m,j)+gppvegrow(i,m,j)
-                nep_yr(i,m,j)=nep_yr(i,m,j)+nepvegrow(i,m,j)
-                nbp_yr(i,m,j)=nbp_yr(i,m,j)+nbpvegrow(i,m,j)
-                emit_co2_yr(i,m,j)=emit_co2_yr(i,m,j)+emit_co2row(i,m,j)
-                emit_co_yr(i,m,j)=emit_co_yr(i,m,j)+emit_corow(i,m,j)
-                emit_ch4_yr(i,m,j)=emit_ch4_yr(i,m,j)+emit_ch4row(i,m,j)
-                emit_nmhc_yr(i,m,j)=emit_nmhc_yr(i,m,j)+emit_nmhcrow(i,m,j)
-                emit_h2_yr(i,m,j)=emit_h2_yr(i,m,j)+emit_h2row(i,m,j)
-                emit_nox_yr(i,m,j)=emit_nox_yr(i,m,j)+emit_noxrow(i,m,j)
-                emit_n2o_yr(i,m,j)=emit_n2o_yr(i,m,j)+emit_n2orow(i,m,j)
-                emit_pm25_yr(i,m,j)=emit_pm25_yr(i,m,j)+emit_pm25row(i,m,j)
-                emit_tpm_yr(i,m,j)=emit_tpm_yr(i,m,j)+emit_tpmrow(i,m,j)
-                emit_tc_yr(i,m,j)=emit_tc_yr(i,m,j)+emit_tcrow(i,m,j)
-                emit_oc_yr(i,m,j)=emit_oc_yr(i,m,j)+emit_ocrow(i,m,j)
-                emit_bc_yr(i,m,j)=emit_bc_yr(i,m,j)+emit_bcrow(i,m,j)
+                npp_yr(i,m,j)=npp_yr(i,m,j)+nppvegrow(i,m,j)*oneOverDPY
+                gpp_yr(i,m,j)=gpp_yr(i,m,j)+gppvegrow(i,m,j)*oneOverDPY
+                nep_yr(i,m,j)=nep_yr(i,m,j)+nepvegrow(i,m,j)*oneOverDPY
+                nbp_yr(i,m,j)=nbp_yr(i,m,j)+nbpvegrow(i,m,j)*oneOverDPY
+                emit_co2_yr(i,m,j)=emit_co2_yr(i,m,j)+emit_co2row(i,m,j)*oneOverDPY
+                emit_co_yr(i,m,j)=emit_co_yr(i,m,j)+emit_corow(i,m,j)*oneOverDPY
+                emit_ch4_yr(i,m,j)=emit_ch4_yr(i,m,j)+emit_ch4row(i,m,j)*oneOverDPY
+                emit_nmhc_yr(i,m,j)=emit_nmhc_yr(i,m,j)+emit_nmhcrow(i,m,j)*oneOverDPY
+                emit_h2_yr(i,m,j)=emit_h2_yr(i,m,j)+emit_h2row(i,m,j)*oneOverDPY
+                emit_nox_yr(i,m,j)=emit_nox_yr(i,m,j)+emit_noxrow(i,m,j)*oneOverDPY
+                emit_n2o_yr(i,m,j)=emit_n2o_yr(i,m,j)+emit_n2orow(i,m,j)*oneOverDPY
+                emit_pm25_yr(i,m,j)=emit_pm25_yr(i,m,j)+emit_pm25row(i,m,j)*oneOverDPY
+                emit_tpm_yr(i,m,j)=emit_tpm_yr(i,m,j)+emit_tpmrow(i,m,j)*oneOverDPY
+                emit_tc_yr(i,m,j)=emit_tc_yr(i,m,j)+emit_tcrow(i,m,j)*oneOverDPY
+                emit_oc_yr(i,m,j)=emit_oc_yr(i,m,j)+emit_ocrow(i,m,j)*oneOverDPY
+                emit_bc_yr(i,m,j)=emit_bc_yr(i,m,j)+emit_bcrow(i,m,j)*oneOverDPY
 
-                bterm_yr(i,m,j)=bterm_yr(i,m,j)+(btermrow(i,m,j)*(1./real(lastDOY)))
-                mterm_yr(i,m,j)=mterm_yr(i,m,j)+(mtermrow(i,m,j)*(1./real(lastDOY)))
-                smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+(smfuncvegrow(i,m,j) * (1./real(lastDOY)))
-                hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)
-                autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)
-                litres_yr(i,m,j)=litres_yr(i,m,j)+litresvegrow(i,m,j)
-                soilcres_yr(i,m,j)=soilcres_yr(i,m,j)+soilcresvegrow(i,m,j)
+                bterm_yr(i,m,j)=bterm_yr(i,m,j)+btermrow(i,m,j)*oneOverDPY
+                mterm_yr(i,m,j)=mterm_yr(i,m,j)+mtermrow(i,m,j)*oneOverDPY
+                smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+smfuncvegrow(i,m,j)*oneOverDPY
+                hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)*oneOverDPY
+                autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)*oneOverDPY
+                litres_yr(i,m,j)=litres_yr(i,m,j)+litresvegrow(i,m,j)*oneOverDPY
+                soilcres_yr(i,m,j)=soilcres_yr(i,m,j)+soilcresvegrow(i,m,j)*oneOverDPY
+                
+                ! Let accumulate, not a flux or a mean value.
                 burnfrac_yr(i,m,j)=burnfrac_yr(i,m,j)+burnvegfrow(i,m,j)
 
     884         continue
 
         !>   Also do the bare fraction amounts
-        hetrores_yr(i,m,iccp1)=hetrores_yr(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
-        litres_yr(i,m,iccp1)=litres_yr(i,m,iccp1)+litresvegrow(i,m,iccp1)
-        soilcres_yr(i,m,iccp1)=soilcres_yr(i,m,iccp1)+soilcresvegrow(i,m,iccp1)
-        nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)
-        nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
+        hetrores_yr(i,m,iccp1)=hetrores_yr(i,m,iccp1)+hetroresvegrow(i,m,iccp1)*oneOverDPY
+        litres_yr(i,m,iccp1)=litres_yr(i,m,iccp1)+litresvegrow(i,m,iccp1)*oneOverDPY
+        soilcres_yr(i,m,iccp1)=soilcres_yr(i,m,iccp1)+soilcresvegrow(i,m,iccp1)*oneOverDPY
+        nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)*oneOverDPY
+        nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)*oneOverDPY
 
         peatdep_yr_t(i,m)=peatdeprow(i,m)      !YW September 04, 2015
 
 
         !> Accumulate the variables at the per tile level
-        lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./real(lastDOY)))
-        wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./real(lastDOY)))
-        luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
-        lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)
-        lucltrin_yr_t(i,m)=lucltrin_yr_t(i,m)+lucltrinrow(i,m)
-        ch4WetSpec_yr_t(i,m) = ch4WetSpec_yr_t(i,m)+ch4WetSpecrow(i,m)
-        ch4WetDyn_yr_t(i,m) = ch4WetDyn_yr_t(i,m)+ch4WetDynrow(i,m)
-        ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m)+ch4soillsrow(i,m)
+        lterm_yr_t(i,m)=lterm_yr_t(i,m)+ltermrow(i,m)*oneOverDPY
+        wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+wetfdynrow(i,m)*oneOverDPY
+        luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)*oneOverDPY
+        lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)*oneOverDPY
+        lucltrin_yr_t(i,m)=lucltrin_yr_t(i,m)+lucltrinrow(i,m)*oneOverDPY
+        ch4WetSpec_yr_t(i,m) = ch4WetSpec_yr_t(i,m)+ch4WetSpecrow(i,m)*oneOverDPY
+        ch4WetDyn_yr_t(i,m) = ch4WetDyn_yr_t(i,m)+ch4WetDynrow(i,m)*oneOverDPY
+        ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m)+ch4soillsrow(i,m)*oneOverDPY
 
     883     continue ! m
 
@@ -4009,8 +4161,8 @@ contains
 
             !>Write to annual output files:
 
-            ! Prepare the timestamp for this year  !FLAG this isn't correct for leap yet. Need to look at yrs before realyr too!
-            timeStamp = (realyr - refyr) * lastDOY
+            ! Prepare the timestamp for this year  
+            timeStamp = consecDays
 
             !> First write out the per gridcell values
             call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])

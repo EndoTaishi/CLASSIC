@@ -79,9 +79,6 @@ do 110 i = il1, il2
    do 210 i = il1, il2 
       wetresp(i)=hetrores(i)*wtdryres*wetfrac(i)
       ch4WetSpec(i)=ratioch4*wetresp(i)
-      if (ta(i).lt.273.2) then
-         ch4WetSpec(i)=0.0
-      endif
 210 continue
 !>
 !>next dynamically find the wetland locations and determine their methane emissions
@@ -128,9 +125,6 @@ do 110 i = il1, il2
 
      wetresp(i)=hetrores(i)*wtdryres*wetfdyn(i)
      ch4WetDyn(i)=ratioch4*wetresp(i)
-     if (ta(i).lt.273.2) then !FLAG!
-       ch4WetDyn(i)=0.0
-     endif
 
 310 continue
 

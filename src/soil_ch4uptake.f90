@@ -36,7 +36,7 @@ real, intent(in) :: RHOICE                        !< Density of ice \f$(kg m^{-3
 integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
 integer, intent(in) :: IL1
 integer, intent(in) :: IL2
-real, dimension(ilg), intent(out) :: CH4_soills   !< Methane uptake into the soil column \f$(mg CH_4 m^{-2} s^{-1})\f$
+real, dimension(ilg), intent(out) :: CH4_soills   !< Methane uptake into the soil column \f$(\mu mol CH4 m^{-2} s^{-1})\f$
 
 ! GRAV, RHOW, and RHOICE are the same as in the commonblocks:
 ! CLASS2 : GRAV and CLASS4 : RHOW, RHOICE. I am passing as arguments

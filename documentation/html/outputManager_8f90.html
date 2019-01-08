@@ -168,12 +168,12 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="o
 <tr class="memdesc:a402d757f6976c03c4444c05436db3ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the counter variables. <br /></td></tr>
 <tr class="separator:a402d757f6976c03c4444c05436db3ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8af4665acb1ae863ea3cecdfbd89326c"><td class="memItemLeft" align="right" valign="top"><a id="a8af4665acb1ae863ea3cecdfbd89326c"></a>
-integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a8af4665acb1ae863ea3cecdfbd89326c">outputmanager::refyr</a> = 1850</td></tr>
-<tr class="memdesc:a8af4665acb1ae863ea3cecdfbd89326c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default time reference for netcdf output files. <br /></td></tr>
+integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a8af4665acb1ae863ea3cecdfbd89326c">outputmanager::refyr</a></td></tr>
+<tr class="memdesc:a8af4665acb1ae863ea3cecdfbd89326c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time reference for netcdf output files. <br /></td></tr>
 <tr class="separator:a8af4665acb1ae863ea3cecdfbd89326c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c442c62ab538561522b6a35f70c7113"><td class="memItemLeft" align="right" valign="top"><a id="a6c442c62ab538561522b6a35f70c7113"></a>
-character(30)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a6c442c62ab538561522b6a35f70c7113">outputmanager::timestart</a> = &quot;days since 1850-01-01 00:00&quot;</td></tr>
-<tr class="memdesc:a6c442c62ab538561522b6a35f70c7113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default time reference for netcdf output files. <br /></td></tr>
+character(30)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a6c442c62ab538561522b6a35f70c7113">outputmanager::timestart</a></td></tr>
+<tr class="memdesc:a6c442c62ab538561522b6a35f70c7113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time reference for netcdf output files. <br /></td></tr>
 <tr class="separator:a6c442c62ab538561522b6a35f70c7113"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2292d2a189e3540ad676b344e39d9de9"><td class="memItemLeft" align="right" valign="top"><a id="a2292d2a189e3540ad676b344e39d9de9"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a2292d2a189e3540ad676b344e39d9de9">outputmanager::fill_value</a> = 1.E38</td></tr>
@@ -183,6 +183,10 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outp
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a1bc14e4ef51489ce749d0f93bb9a51a2">outputmanager::timevect</a></td></tr>
 <tr class="memdesc:a1bc14e4ef51489ce749d0f93bb9a51a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of the timesteps in days since refyr for this model run and output file. <br /></td></tr>
 <tr class="separator:a1bc14e4ef51489ce749d0f93bb9a51a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c744df8c121b84eff4c61ccbe01cab5"><td class="memItemLeft" align="right" valign="top"><a id="a8c744df8c121b84eff4c61ccbe01cab5"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="outputManager_8f90.html#a8c744df8c121b84eff4c61ccbe01cab5">outputmanager::consecdays</a></td></tr>
+<tr class="memdesc:a8c744df8c121b84eff4c61ccbe01cab5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consecutive days since refyr in run. Set by setConsecDays. <br /></td></tr>
+<tr class="separator:a8c744df8c121b84eff4c61ccbe01cab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Central module for all netcdf output file operations. </p>
@@ -193,7 +197,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="outputManager_8f90.html">outputManager.f90</a></li>
-    <li class="footer">Generated on Wed Dec 5 2018 16:43:26 for CLASSIC by
+    <li class="footer">Generated on Wed Dec 12 2018 16:42:11 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
