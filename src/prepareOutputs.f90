@@ -1934,6 +1934,11 @@ contains
                         autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*convertkgC
                         litresvegrow(i,m,j)=litresvegrow(i,m,j)*convertkgC
                         soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*convertkgC
+                        
+                        ! emit_co2, like all fire gas fluxes is in kg {species} / m2 / s. So we need
+                        ! to convert from kg CO2/m2/s to kg C/m2/s. Since 1 g C = 0.083 mole CO2 = 3.664 g CO2
+                        ! kg CO2/m2/s * 1 g C/ 3.664 g CO2 = kg C /m2/s
+                        emit_co2row(i,m,j) = emit_co2row(i,m,j) / 3.664
 
                     end if
 
@@ -1957,12 +1962,7 @@ contains
                 autoresrow(i,m) =autoresrow(i,m)*convertkgC
                 litresrow(i,m)  =litresrow(i,m)*convertkgC
                 socresrow(i,m)  =socresrow(i,m)*convertkgC
-                
-                ! emit_co2, like all fire gas fluxes is in kg {species} / m2 / s. So we need
-                ! to convert from kg CO2/m2/s to kg C/m2/s. Since 1 g C = 0.083 mole CO2 = 3.664 g CO2
-                ! kg CO2/m2/s * 1 g C/ 3.664 g CO2 = kg C /m2/s
-                emit_co2row(i,m) = emit_co2row(i,m) / 3.664
-                
+                                
                 ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
                 ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
                 ch4soillsrow(i,m) = ch4soillsrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
