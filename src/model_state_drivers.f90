@@ -111,6 +111,7 @@ contains
         character(350), pointer          :: metFileUv
         character(350), pointer          :: metFilePres
         logical, pointer                 :: ctem_on
+        logical, pointer                 :: projectedGrid
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
         integer, pointer                 :: fixedYearLUC
@@ -124,7 +125,7 @@ contains
         integer, dimension(1) :: pos
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
-        integer :: lonloc,latloc
+        integer :: lonloc,latloc,flattenedIndex,tempIndex
 
         ! point pointers:
         init_file               => c_switch%init_file
@@ -136,6 +137,7 @@ contains
         LUCFile                 => c_switch%LUCFile
         OBSWETFFile             => c_switch%OBSWETFFile
         ctem_on                 => c_switch%ctem_on
+        projectedGrid           => c_switch%projectedGrid
         dofire                  => c_switch%dofire
         lnduseon                => c_switch%lnduseon
         transientOBSWETF        => c_switch%transientOBSWETF
@@ -155,79 +157,135 @@ contains
 
         initid = ncOpen(init_file, NF90_NOWRITE)
 
-        !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
-        !! names of longitude and latitude.
+        if (.not. projectedGrid) then
 
-        totlon = ncGetDimLen(initid,'lon')
-        totlat = ncGetDimLen(initid,'lat')
+            !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
+            !! names of longitude and latitude.
 
-        !>calculate the number and indices of the pixels to be calculated
-        allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
+            totlon = ncGetDimLen(initid,'lon')
+            totlat = ncGetDimLen(initid,'lat')
 
-        myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
-        myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+            !>calculate the number and indices of the pixels to be calculated
+            allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
 
-        !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
-        !! when the input file expects the opposite.
-        if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
+            myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+
+            !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
+            !! when the input file expects the opposite.
+            if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
+            if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
+
+    ! FLAG - be good to put in a check here but need to do this better.
+    !         !> Check that our domain is within the longitude and latitude limits of
+    !         !! the input files. Otherwise print a warning. Primarily we are trying to
+    !         !! catch instances where the input file runs from 0 to 360 longitude while
+    !         !! the user expects -180 to 180.
+    !         if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLonValues(1)
+    !         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
+    !         else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLatValues(1)
+    !         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
+    !             print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
+    !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
+    !         end if
+
+            !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
+            if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
+                myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+                print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
+                xpos(1) = 1
+                xpos(2) = totlon
+                ypos(1) = 1
+                ypos(2) = totlat
+            else ! Use the domain as given
+              !> Based on the domainBounds, we make vectors of the cells to be run.
+              pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
+              xpos(1) = pos(1)
+
+              pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
+              xpos(2) = pos(1)
+
+              pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
+              ypos(1) = pos(1)
+
+              pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
+              ypos(2) = pos(1)
+            end if
+
+            myDomain%srtx = minval(xpos)
+            myDomain%srty = minval(ypos)
+
+            if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
+                myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
+            myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+
+            if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
+                myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
+            myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
+
+        else ! projected grid
+
+          !> On a projected grid we have to use the grid cell indexes to delineate our domain to run
+          !! over. We then use the indexes to determine the values of longitude and latitude for
+          !! each grid cell.
+
+          !> Retrieve dimensions. We assume the file has 'lon' and 'lat' for
+          !! names of longitude and latitude.
+
+          totlon = ncGetDimLen(initid,'lon')
+          totlat = ncGetDimLen(initid,'lat')
+
+          !>calculate the number and indices of the pixels to be calculated
+          allocate(myDomain%allLonValues(totlat*totlon), myDomain%allLatValues(totlat*totlon))
+
+          !> This will get all lon and lat grids as flattened vectors.
+          myDomain%allLonValues = ncGetDimValues(initid, 'lon', count2D = (/totlon,totlat/))
+          myDomain%allLatValues = ncGetDimValues(initid, 'lat', count2D = (/totlon,totlat/))
+
+          !> Since the domainBounds are indexes, and not coordinates, we can use them directly.
+          xpos(1) = myDomain%domainBounds(1)
+          xpos(2) = myDomain%domainBounds(2)
+          ypos(1) = myDomain%domainBounds(3)
+          ypos(2) = myDomain%domainBounds(4)
+
+          !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
+          if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
+              myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+              print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
+              xpos(1) = 1
+              xpos(2) = totlon
+              ypos(1) = 1
+              ypos(2) = totlat
+          end if
+
+          myDomain%srtx = minval(xpos)
+          myDomain%srty = minval(ypos)
+
+          myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+          myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
         end if
-        if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
-        if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
-        end if
-        if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
-
-! FLAG - be good to put in a check here but need to do this better.
-!         !> Check that our domain is within the longitude and latitude limits of
-!         !! the input files. Otherwise print a warning. Primarily we are trying to
-!         !! catch instances where the input file runs from 0 to 360 longitude while
-!         !! the user expects -180 to 180.
-!         if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then !W most lon
-!             print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLonValues(1)
-!         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
-!             print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
-!         else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then !S most lat
-!             print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLatValues(1)
-!         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then !N most lat
-!             print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of',&
-!                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
-!         end if
-
-        !> Based on the domainBounds, we make vectors of the cells to be run.
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
-        xpos(1) = pos(1)
-
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
-        xpos(2) = pos(1)
-
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
-        ypos(1) = pos(1)
-
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
-        ypos(2) = pos(1)
-
-        myDomain%srtx = minval(xpos)
-        myDomain%srty = minval(ypos)
-
-        if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
-            myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
-        myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
-
-        if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
-            myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
-        myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
 
         !> Save the longitudes and latitudes over the region of interest for making the
         !! output files.
@@ -237,9 +295,14 @@ contains
                  myDomain%latLandIndex(totsize),&
                  myDomain%lonLandIndex(totsize),&
                  myDomain%latLocalIndex(totsize),&
-                 myDomain%lonLocalIndex(totsize),&
-                 myDomain%latUnique(myDomain%cnty),&
-                 myDomain%lonUnique(myDomain%cntx))
+                 myDomain%lonLocalIndex(totsize))
+        if (.not. projectedGrid) then
+          allocate(myDomain%latUnique(myDomain%cnty),&
+                   myDomain%lonUnique(myDomain%cntx))
+        else
+          allocate(myDomain%latUnique(totsize),&
+                   myDomain%lonUnique(totsize))
+        end if
 
         !> Retrieve the number of soil layers (set ignd!)
         ignd = ncGetDimLen(initid, 'layer')
@@ -249,36 +312,57 @@ contains
         allocate(mask(myDomain%cntx, myDomain%cnty))
         mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty],&
                           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
-
         myDomain%LandCellCount = 0
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
-                if (mask(i,j) .eq. -1) then
-                    !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
-                    !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
-                    myDomain%LandCellCount = myDomain%LandCellCount + 1
-                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
-                    myDomain%lonLocalIndex(myDomain%LandCellCount) = i
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
-                    myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
-                    myDomain%latLocalIndex(myDomain%LandCellCount) = j
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                else !keep track of the non-land too for the making of the output files.
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                endif
+              if (projectedGrid) then
+                flattenedIndex = (j + myDomain%srty - 2) * totlon + (i + myDomain%srtx - 1)
+                tempIndex = (i - 1) * myDomain%cnty + j
+              end if
+              if (mask(i,j) .eq. -1) then
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
+                  ! , ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
+                myDomain%LandCellCount = myDomain%LandCellCount + 1
+                myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
+                myDomain%lonLocalIndex(myDomain%LandCellCount) = i
+                myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
+                myDomain%latLocalIndex(myDomain%LandCellCount) = j
+                if (.not. projectedGrid) then
+                  myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
+                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
+                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is valid"
+                  myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
+                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                end if
+              else !keep track of the non-land too for the making of the output files.
+                if (.not. projectedGrid) then
+                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
+                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is NOT valid"
+                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                end if
+              endif
             enddo
         enddo
 
         if (myDomain%LandCellCount == 0) then
             print*,'=>Your domain is not land my friend.'
-            if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
+            if (.not. projectedGrid) then
+             if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
                 lonloc = closestCell(initid,'lon',myDomain%domainBounds(1))
                 latloc = closestCell(initid,'lat',myDomain%domainBounds(3))
                 print*,'Closest grid cell is ',myDomain%allLonValues(lonloc),'/',myDomain%allLatValues(latloc)
                 print*,'but that may not be land. Check your input files to be sure'
+              end if
             end if
         end if
 
@@ -954,10 +1038,10 @@ contains
     !! as well as the input values into memory.
     !>@author Joe Melton
 
-    subroutine getInput(inputRequested,longitude,latitude)
+    subroutine getInput(inputRequested,longitude,latitude,projLonInd,projLatInd)
 
         use fileIOModule
-        use generalUtils, only : parseTimeStamp
+        use generalUtils, only : parseTimeStamp,findLeapYears
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : icc,nmos
         use outputManager, only : checkForTime
@@ -967,10 +1051,13 @@ contains
         character(*), intent(in) :: inputRequested
         real, intent(in), optional :: longitude
         real, intent(in), optional :: latitude
+        integer, intent(in), optional :: projLonInd
+        integer, intent(in), optional :: projLatInd
         integer :: lengthOfFile
         integer :: lonloc,latloc
         integer :: i,arrindex,m,numPFTsinFile,d
         real, dimension(:), allocatable :: fileTime
+        logical, pointer :: projectedGrid
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
         logical, pointer :: transientCH4
@@ -983,14 +1070,18 @@ contains
         integer, pointer :: fixedYearLUC
         logical, pointer :: transientOBSWETF
         integer, pointer :: fixedYearOBSWETF
-
-        real, dimension(5) :: dateTime
-        real :: startLGHTTime,startWETTime
+        logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
 
+        real, dimension(5) :: dateTime
+        real :: startLGHTTime,startWETTime
+        logical :: dummyVar
+        integer :: lastDOY
+        
+        projectedGrid   => c_switch%projectedGrid
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
         transientCH4    => c_switch%transientCH4
@@ -1003,6 +1094,7 @@ contains
         fixedYearOBSWETF=> c_switch%fixedYearOBSWETF
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
+        leap            => c_switch%leap
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
@@ -1085,8 +1177,15 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 POPDTime(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
-            lonloc = closestCell(popid,'lon',longitude)
-            latloc = closestCell(popid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(popid,'lon',longitude)
+              latloc = closestCell(popid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
@@ -1117,8 +1216,15 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 LGHTTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
-            lonloc = closestCell(lghtid,'lon',longitude)
-            latloc = closestCell(lghtid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(lghtid,'lon',longitude)
+              latloc = closestCell(lghtid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             ! Units expected are "strikes km-2 yr-1"
 
@@ -1136,14 +1242,18 @@ contains
                 if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
                 ! We read in only the suggested year of daily inputs
+                
+                ! If we are using leap years, check if that year is a leap year
+                if (leap) call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
+                
                 ! FLAG Not presently set up for leap years!
-                allocate(LGHTFromFile(365))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
+                allocate(LGHTFromFile(lastDOY))
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(LGHTTime)
-                allocate(LGHTTime(365))
-                do d = 1,365
+                allocate(LGHTTime(lastDOY))
+                do d = 1,lastDOY
                     LGHTTime(d) = real(d)
                 end do
 
@@ -1162,8 +1272,15 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 LUCTime(i) = int(dateTime(1)) ! Rewrite putting in only the year
             end do
-            lonloc = closestCell(lucid,'lon',longitude)
-            latloc = closestCell(lucid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(lucid,'lon',longitude)
+              latloc = closestCell(lucid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             ! Ensure the file has the expected number of PFTs
             numPFTsinFile = ncGetDimLen(lucid, 'lev')
@@ -1203,8 +1320,14 @@ contains
                 OBSWETFTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
 
-            lonloc = closestCell(obswetid,'lon',longitude)
-            latloc = closestCell(obswetid,'lat',latitude)
+            if (.not. projectedGrid) then
+              lonloc = closestCell(obswetid,'lon',longitude)
+              latloc = closestCell(obswetid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             if (transientOBSWETF) then
                 ! We read in the whole OBSWETF times series and store it.
@@ -1222,14 +1345,17 @@ contains
                 if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
-                ! FLAG Not presently set up for leap years!
-                allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,365])
+
+                ! If we are using leap years, check if that year is a leap year
+                if (leap) call findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
+
+                allocate(OBSWETFFromFile(lastDOY))
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
-                allocate(OBSWETFTime(365))
-                do d = 1,365
+                allocate(OBSWETFTime(lastDOY))
+                do d = 1,lastDOY
                     OBSWETFTime(d) = real(d)
                 end do
             end if
@@ -1420,7 +1546,7 @@ contains
     !! There is an orders of magnitude slow-up otherwise!
     !>@author Joe Melton
 
-    subroutine getMet(longitude,latitude,nday,delt)
+    subroutine getMet(longitude,latitude,nday,delt,projLonInd,projLatInd)
 
         use fileIOModule
         use ctem_statevars, only : c_switch
@@ -1432,9 +1558,13 @@ contains
         real, intent(in) :: latitude        !< Latitude of grid cell of interest
         integer, intent(in) :: nday         !< Maximum number of physics timesteps in one day
         real, intent(in) :: delt            !< Physics timestep (s)
+        integer, intent(in), optional :: projLonInd !< Longitude index of the cell for projected grid runs
+        integer, intent(in), optional :: projLatInd !< Latitude index of the cell for projected grid runs
 
         integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
         integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+        logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                            !! regions referenced by the indexes, not coordinates, when running a sub-region
 
         real :: moStart,moEnd,domStart,domEnd !< Assumed start and end months and days of month
         real :: timeStart, timeEnd            !< Calculated start and end in the format:%Y%m%d.%f
@@ -1446,6 +1576,7 @@ contains
         integer :: firstIndex
         real, dimension(5) :: firstTime,secondTime
 
+        projectedGrid     => c_switch%projectedGrid
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
 
@@ -1501,8 +1632,15 @@ contains
         metInputTimeStep = (secondTime(4) - firstTime(4)) * 86400.
 
         ! Find the closest cell to our lon and lat
-        lonloc = closestCell(metFssId,'lon',longitude)
-        latloc = closestCell(metFssId,'lat',latitude)
+        if (.not. projectedGrid) then
+          lonloc = closestCell(metFssId,'lon',longitude)
+          latloc = closestCell(metFssId,'lat',latitude)
+        else
+          ! For projected grids, we use the index of the cells, not their coordinates.
+          ! So the index has been passed in as a real, convert here to an integer.
+          lonloc = projLonInd
+          latloc = projLatInd
+        end if
 
         ! Now read in the whole MET times series and store it for each variable
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&

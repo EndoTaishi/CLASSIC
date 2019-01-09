@@ -19,6 +19,8 @@ public :: resetMosaicAccum
 !>switches for running the model, read from the joboptions file
 type ctem_switches
 
+    logical :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                !! regions referenced by the indexes, not coordinates, when running a sub-region
     logical :: ctem_on          !<True if this run includes the biogeochemistry parameterizations (CTEM)
     integer :: metLoop          !< no. of times the meteorological data is to be looped over. this
                                 !< option is useful to equilibrate CTEM's C pools

@@ -55,13 +55,15 @@ contains
         use class_statevars,     only : class_gat,class_rot,resetAccVars,&
                                         resetclassmon,resetclassyr,initDiagnosticVars
         use prepareOutputs,      only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
+                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw,&
+                                        convertUnitsCTEM
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness,&
                                         findPermafrostVars,initRandomSeed
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities,       only : dayEndCTEMPreparation,accumulateForCTEM,ctemInit
         use metDisaggModule,     only : disaggMet
+        use outputManager,       only : consecDays
 
         implicit none
 
@@ -844,6 +846,9 @@ contains
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
         logical, pointer :: dohhoutput
+        logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+
 
         ! ROW vars:
         logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -1873,6 +1878,7 @@ contains
         dodayoutput       => c_switch%dodayoutput
         dohhoutput        => c_switch%dohhoutput
         readMetStartYear  => c_switch%readMetStartYear
+        projectedGrid     => c_switch%projectedGrid
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -2349,18 +2355,34 @@ contains
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
-            if (dofire) call getInput('POPD',longitude,latitude) ! Population density
-            if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
-            if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
-            if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
-
+            if (.not. projectedGrid) then
+              !regular lon/lat grid
+              if (dofire) call getInput('POPD',longitude,latitude) ! Population density
+              if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
+              if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
+              if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
+            else
+              ! Projected grids use the lon and lat indexes, not the actual coordinates
+              if (dofire) call getInput('POPD',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Population density
+              if (dofire) call getInput('LGHT',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Cloud-to-ground lightning frequency
+              if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) &
+                  call getInput('OBSWETF',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Observed wetland distribution
+              if (lnduseon .or. (fixedYearLUC .ne. -9999)) &
+                  call getInput('LUC',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Land use change
+            end if
             !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
             !! and assign the CLASS PFTs as they are not read in when ctem_on.
             call initializeLandCover
         end if
 
         !> Read in the meteorological forcing data to a suite of arrays
+        if (.not. projectedGrid) then
+          ! regular lon lat grid
         call getMet(longitude,latitude,nday,delt)
+        else
+          ! Projected grids use the lon and lat indexes, not the actual coordinates
+          call getMet(longitude,latitude,nday,delt,projLonInd=lonIndex,projLatInd=latIndex)
+        end if
         
         !> In preparation for the use of the random number generator by disaggMet,
         !! we need to provide a seed to allow repeatable results. 
@@ -2508,7 +2530,7 @@ contains
 
                     ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
                     if (leap) call findLeapYears(iyear,leapnow,lastDOY)
-
+                    
                     ! If needed, update values that were read in from the accessory input files (popd, wetlands, lightning...)
                     if (ctem_on) then
 
@@ -3214,6 +3236,9 @@ contains
                &                       nltest,nmtest,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
+              
+                ! Convert units in preparation for output:
+                call convertUnitsCTEM(nltest,nmtest)
 
                 ! Daily outputs from biogeochem (CTEM)
                 if (dodayoutput .and.&
@@ -3249,6 +3274,10 @@ contains
 
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
+                
+                ! Increment the timestamp year (it is the number of consecutive days since the refyr. refyr is set
+                ! to the first year of the run in outputManager so consecDays is 0 initially then increments up.)
+                consecDays = consecDays + lastDOY
 
                 ! Increment the runyr
                 runyr = runyr + 1

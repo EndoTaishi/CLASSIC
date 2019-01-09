@@ -19,6 +19,7 @@ var outputManager_8f90 =
     [ "validgroup", "outputManager_8f90.html#adc6277b1261b4eefea54970d4451a533", null ],
     [ "validtime", "outputManager_8f90.html#a0bb432ea8447e992dd1d90b2e0c06f32", null ],
     [ "writeoutput1d", "outputManager_8f90.html#a3c41a47cff361b7db348c324798053a7", null ],
+    [ "consecdays", "outputManager_8f90.html#a8c744df8c121b84eff4c61ccbe01cab5", null ],
     [ "descriptorcount", "outputManager_8f90.html#a58200b3373181235dcd1cdfde3c1bea7", null ],
     [ "fill_value", "outputManager_8f90.html#a2292d2a189e3540ad676b344e39d9de9", null ],
     [ "maxncvariablenumber", "outputManager_8f90.html#a2ea7765ceadda0a7de6f81f0655c13f3", null ],

@@ -281,7 +281,7 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $" src="form_727.png"/><br />
  <img class="formulaInl" alt="$\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $" src="form_728.png"/></p>
 <p>If the soil on the modelled area is not mineral, i.e. if the ISAND flag is less than zero, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_711.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_712.png"/> are determined as follows:</p>
-<p>If ISAND = -2, indicating organic soil, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_711.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_712.png"/> are assigned values of 0.05 and 0.30 respectively from the lookup tables in the block data subroutine CLASSBD, corresponding to average measured values reported in Comer et al. (2000) <a class="el" href="citelist.html#CITEREF_Comer2000-mz">[24]</a>.</p>
+<p>If ISAND = -2, indicating organic soil, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_711.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_712.png"/> are assigned values of 0.05 and 0.30 respectively from the lookup tables in the block data subroutine CLASSBD, corresponding to average measured values reported in Comer et al. (2000) <a class="el" href="citelist.html#CITEREF_Comer2000-mz">[25]</a>.</p>
 <p>If ISAND = -3, indicating rock at the surface, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_711.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_712.png"/> are assigned the dry ground values from CLASSB.</p>
 <p>If ISAND = -4, indicating continental ice sheet or glacier, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_711.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_712.png"/> are assigned values of 0.95 and 073 from CLASSBD, reflecting values reported for Antarctica (e.g. Sellers, 1974).</p>
 <p>The above calculations are all performed if the flag IALG is set to zero. If IALG is set to one, indicating that assigned ground albedos are to be used instead of calculated values, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_711.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_712.png"/> are set to the assigned values AGVDAT and AGIDAT respectively.</p>
@@ -295,7 +295,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="GRALB_8f.html">GRALB.f</a></li>
-    <li class="footer">Generated on Fri Oct 19 2018 10:07:33 for CLASSIC by
+    <li class="footer">Generated on Wed Dec 12 2018 16:42:11 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
