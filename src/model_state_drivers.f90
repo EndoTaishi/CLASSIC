@@ -1347,7 +1347,7 @@ contains
                 ! We read in only the suggested year's worth of daily data
 
                 ! If we are using leap years, check if that year is a leap year
-                findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
+                call findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
 
                 allocate(OBSWETFFromFile(lastDOY))
                 OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
