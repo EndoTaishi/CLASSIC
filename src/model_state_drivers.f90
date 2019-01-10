@@ -1244,7 +1244,7 @@ contains
                 ! We read in only the suggested year of daily inputs
                 
                 ! If we are using leap years, check if that year is a leap year
-                if (leap) call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
+                call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
                 
                 ! FLAG Not presently set up for leap years!
                 allocate(LGHTFromFile(lastDOY))
@@ -1347,7 +1347,7 @@ contains
                 ! We read in only the suggested year's worth of daily data
 
                 ! If we are using leap years, check if that year is a leap year
-                if (leap) call findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
+                findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
 
                 allocate(OBSWETFFromFile(lastDOY))
                 OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
