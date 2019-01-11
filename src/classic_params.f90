@@ -31,6 +31,7 @@ real, parameter :: abszero  = 1e-12     !<Defintion of zero, this one is for mai
 real, parameter :: earthrad = 6371.22   !< Radius of Earth, km
 real, parameter :: km2tom2  = 1.0e+06   !< Conversion factor from \f$km^2\f$ to \f$m^2\f$
 real, parameter :: gasc = 8.314         !< Gas constant (\f$J mol^{-1} K^{-1}\f$) 
+real, parameter :: convertkgC = 1.201e-8 !< Converts from umolCO2/m2/s to kgC/m2/s
 
 ! The next parameters are normally assigned in the GCM but need to be assigned here since this 
 ! is an offline run. The names used below are the same as those in the GCM.

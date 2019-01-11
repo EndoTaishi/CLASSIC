@@ -1046,9 +1046,6 @@ kn(16:20)  =0.46, 0.44, 0.46, 0.00, 0.00,
     !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
     wtdryres     = 0.45,
 
-    !< constant value for secondary (ch4wet2) methane emissions calculation
-    factor2      = 0.015,
-
     !< Northern zone for wetland determination (degrees North)
     lat_thrshld1 = 40.0,
 

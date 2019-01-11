@@ -14,7 +14,7 @@ var searchData=
   ['ncget4dvar',['ncget4dvar',['../fileIOModule_8F90.html#a6e1e033f55fb1f88adc9d759678a1529',1,'fileiomodule']]],
   ['ncgetdimid',['ncgetdimid',['../fileIOModule_8F90.html#ab7cd9c6d9368d94cf634e5cb8614bd10',1,'fileiomodule']]],
   ['ncgetdimlen',['ncgetdimlen',['../fileIOModule_8F90.html#a3664b0a990990e489ec9f91b1de51031',1,'fileiomodule']]],
-  ['ncgetdimvalues',['ncgetdimvalues',['../fileIOModule_8F90.html#ab19fe641d576a703fe1c91ed3b0e53ff',1,'fileiomodule']]],
+  ['ncgetdimvalues',['ncgetdimvalues',['../fileIOModule_8F90.html#a56d3d63d1b6160375acf805bdbd07770',1,'fileiomodule']]],
   ['ncgetvar',['ncgetvar',['../fileIOModule_8F90.html#aee7296af3bc346de7b4349df566c2093',1,'fileiomodule']]],
   ['ncgetvardimensions',['ncgetvardimensions',['../fileIOModule_8F90.html#a5855602dc12b487b795ff1e59ff6abcf',1,'fileiomodule']]],
   ['ncgetvarid',['ncgetvarid',['../fileIOModule_8F90.html#afdafc3ba5778cd2e219358dfe0b678d0',1,'fileiomodule']]],

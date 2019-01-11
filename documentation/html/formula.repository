@@ -1646,3 +1646,18 @@
 \form#1645:\[ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2).\qquad (Eqn 9) \]
 \form#1646:\[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \qquad (Eqn 10) \]
 \form#1647:\[ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2},\qquad (Eqn 10) \]
+\form#1648:$(g c/m^2 /day)$
+\form#1649:$kg dom / m^2 / day$
+\form#1650:$kg species / m^2 / s^{-1}$
+\form#1651:$\rho_{s,i}$
+\form#1652:$\rho_{s,i} = 67.92 + 51.25 exp[(T_a – T_f)/2.59]$
+\form#1653:$\rho_{s,i} = 119.17 + 20.0 (T_a – T_f)$
+\form#1654:$ m s^{-1}$
+\form#1655:$T_a \leq 0 C$
+\form#1656:$T_a \geq 2.0 C$
+\form#1657:$T_a = 1.0 C$
+\form#1658:$T_a \geq 6.0 C$
+\form#1659:$X_{sf}$
+\form#1660:\[ X_{sf} = [0.0202 T_a^6 – 0.3660 T_a^5 + 2.0399 T_a^4 – 1.5089 T_a^3 – 15.038 T_a^2 + 4.6664 T_a + 100.0]/100.0 \]
+\form#1661:$g species / m^2 /d$
+\form#1662:$(\mu mol CH4 m^{-2} s^{-1})$

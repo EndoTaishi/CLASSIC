@@ -57,13 +57,15 @@ contains
         use class_statevars,     only : class_gat,class_rot,resetAccVars,&
                                         resetclassmon,resetclassyr,initDiagnosticVars
         use prepareOutputs,      only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw
+                                        ctem_daily_aw,class_annual_aw,class_hh_w,class_daily_aw,&
+                                        convertUnitsCTEM
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils,        only : findDaylength,findLeapYears,run_model,findCloudiness,&
                                         findPermafrostVars,initRandomSeed
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities,       only : dayEndCTEMPreparation,accumulateForCTEM,ctemInit
         use metDisaggModule,     only : disaggMet
+        use outputManager,       only : consecDays
 
         implicit none
 
@@ -466,8 +468,6 @@ contains
 
         ! These will be allocated the dimension: 'nlat'
 
-        real, pointer, dimension(:) :: CANARE  !<
-        real, pointer, dimension(:) :: SNOARE  !<
         real, pointer, dimension(:) :: CSZROW  !<Cosine of solar zenith angle [ ]
         real, pointer, dimension(:) :: DLONROW !<
         real, pointer, dimension(:) :: DLATROW !<
@@ -848,6 +848,9 @@ contains
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
         logical, pointer :: dohhoutput
+        logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+
 
         ! ROW vars:
         logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -949,11 +952,9 @@ contains
 
         real, pointer, dimension(:,:,:) :: slopefracrow
         real, pointer, dimension(:,:) :: wetfrac_presrow
-        real, pointer, dimension(:,:) :: ch4wet1row
-        real, pointer, dimension(:,:) :: ch4wet2row
+        real, pointer, dimension(:,:) :: ch4WetSpecrow
         real, pointer, dimension(:,:) :: wetfdynrow
-        real, pointer, dimension(:,:) :: ch4dyn1row
-        real, pointer, dimension(:,:) :: ch4dyn2row
+        real, pointer, dimension(:,:) :: ch4WetDynrow
         real, pointer, dimension(:,:) :: ch4soillsrow
 
         real, pointer, dimension(:,:) :: peatdeprow
@@ -1113,11 +1114,9 @@ contains
 
         real, pointer, dimension(:,:) :: slopefracgat
         real, pointer, dimension(:) :: wetfrac_presgat
-        real, pointer, dimension(:) :: ch4wet1gat
-        real, pointer, dimension(:) :: ch4wet2gat
+        real, pointer, dimension(:) :: ch4WetSpecgat
         real, pointer, dimension(:) :: wetfdyngat
-        real, pointer, dimension(:) :: ch4dyn1gat
-        real, pointer, dimension(:) :: ch4dyn2gat
+        real, pointer, dimension(:) :: ch4WetDyngat
         real, pointer, dimension(:) :: ch4soillsgat
 
         real, pointer, dimension(:) :: lucemcomgat
@@ -1634,8 +1633,6 @@ contains
         TSFSGAT => class_gat%TSFSGAT
         ITCTGAT => class_gat%ITCTGAT
 
-        CANARE => class_rot%CANARE
-        SNOARE => class_rot%SNOARE
         CSZROW => class_rot%CSZROW
         DLONROW => class_rot%DLONROW
         DLATROW => class_rot%DLATROW
@@ -1883,6 +1880,7 @@ contains
         dodayoutput       => c_switch%dodayoutput
         dohhoutput        => c_switch%dohhoutput
         readMetStartYear  => c_switch%readMetStartYear
+        projectedGrid     => c_switch%projectedGrid
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -1981,11 +1979,9 @@ contains
 
         slopefracrow      => vrot%slopefrac
         wetfrac_presrow   => vrot%wetfrac_pres
-        ch4wet1row        => vrot%ch4wet1
-        ch4wet2row        => vrot%ch4wet2
+        ch4WetSpecrow        => vrot%ch4WetSpec
         wetfdynrow        => vrot%wetfdyn
-        ch4dyn1row        => vrot%ch4dyn1
-        ch4dyn2row        => vrot%ch4dyn2
+        ch4WetDynrow        => vrot%ch4WetDyn
         ch4soillsrow      => vrot%ch4_soills
 
         peatdeprow        => vrot%peatdep
@@ -2176,12 +2172,10 @@ contains
         rmrgat            => vgat%rmr
 
         slopefracgat      => vgat%slopefrac
-        ch4wet1gat        => vgat%ch4wet1
-        ch4wet2gat        => vgat%ch4wet2
+        ch4WetSpecgat        => vgat%ch4WetSpec
         wetfdyngat        => vgat%wetfdyn
         wetfrac_presgat   => vgat%wetfrac_pres
-        ch4dyn1gat        => vgat%ch4dyn1
-        ch4dyn2gat        => vgat%ch4dyn2
+        ch4WetDyngat        => vgat%ch4WetDyn
         ch4soillsgat      => vgat%ch4_soills
 
         lucemcomgat       => vgat%lucemcom
@@ -2375,18 +2369,34 @@ contains
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
-            if (dofire) call getInput('POPD',longitude,latitude) ! Population density
-            if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
-            if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
-            if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
-
+            if (.not. projectedGrid) then
+              !regular lon/lat grid
+              if (dofire) call getInput('POPD',longitude,latitude) ! Population density
+              if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
+              if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
+              if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
+            else
+              ! Projected grids use the lon and lat indexes, not the actual coordinates
+              if (dofire) call getInput('POPD',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Population density
+              if (dofire) call getInput('LGHT',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Cloud-to-ground lightning frequency
+              if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) &
+                  call getInput('OBSWETF',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Observed wetland distribution
+              if (lnduseon .or. (fixedYearLUC .ne. -9999)) &
+                  call getInput('LUC',longitude,latitude,projLonInd=lonIndex,projLatInd=latIndex) ! Land use change
+            end if
             !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
             !! and assign the CLASS PFTs as they are not read in when ctem_on.
             call initializeLandCover
         end if
 
         !> Read in the meteorological forcing data to a suite of arrays
-        call getMet(longitude,latitude,nday)
+        if (.not. projectedGrid) then
+          ! regular lon lat grid
+          call getMet(longitude,latitude,nday)
+        else
+          ! Projected grids use the lon and lat indexes, not the actual coordinates
+          call getMet(longitude,latitude,nday,projLonInd=lonIndex,projLatInd=latIndex)
+        end if
         
         !> In preparation for the use of the random number generator by disaggMet,
         !! we need to provide a seed to allow repeatable results. 
@@ -2532,7 +2542,7 @@ contains
 
                     ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
                     if (leap) call findLeapYears(iyear,leapnow,lastDOY)
-
+                    
                     ! If needed, update values that were read in from the accessory input files (popd, wetlands, lightning...)
                     if (ctem_on) then
 
@@ -2685,8 +2695,8 @@ contains
                     btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,&
                     nbpveggat,    hetroresveggat, autoresveggat,litresveggat,&
                     soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-                    ch4wet1gat, ch4wet2gat,  slopefracgat,&
-                    wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,&
+                    ch4WetSpecgat, slopefracgat,&
+                    wetfdyngat, ch4WetDyngat,  ch4soillsgat,&
                     twarmmgat,    tcoldmgat,     gdd5gat,&
                     ariditygat, srplsmongat,  defctmongat, anndefctgat,&
                     annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
@@ -2729,8 +2739,8 @@ contains
                     btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,&
                     nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,&
                     soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-                    ch4wet1row, ch4wet2row,  slopefracrow,&
-                    wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
+                    ch4WetSpecrow, slopefracrow,&
+                    wetfdynrow, ch4WetDynrow, ch4soillsrow,&
                     twarmmrow,    tcoldmrow,     gdd5row,&
                     aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
                     annsrplsrow,   annpcprow,  dry_season_lengthrow,&
@@ -2944,8 +2954,8 @@ contains
                         &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&
                         &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,&
                         &        hetroresveggat, autoresveggat, litresveggat,&
-                        &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,&
-                        &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,&
+                        &           soilcresveggat, nml, ilmos, jlmos, ch4WetSpecgat,&
+                        &          wetfdyngat, ch4WetDyngat, &
                         &          ch4soillsgat,&
                                     ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,&
                                     Cmossmasgat,litrmsmossgat,wtablegat,&
@@ -3113,8 +3123,7 @@ contains
                 &      btermrow,     ltermrow,   mtermrow,&
                 &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,&
                 &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-                &      ch4wet1row, ch4wet2row,&
-                &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
+                &      ch4WetSpecrow, wetfdynrow, ch4WetDynrow, ch4soillsrow,&
                 &      twarmmrow,    tcoldmrow,     gdd5row,&
                 &      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
                 &      annsrplsrow,   annpcprow,  dry_season_lengthrow,&
@@ -3159,8 +3168,7 @@ contains
                 &      btermgat,     ltermgat,   mtermgat,&
                 &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,&
                 &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-                &      ch4wet1gat, ch4wet2gat,&
-                &      wetfdyngat, ch4dyn1gat, ch4dyn2gat,ch4soillsgat,&
+                &      ch4WetSpecgat, wetfdyngat, ch4WetDyngat, ch4soillsgat,&
                 &      twarmmgat,    tcoldmgat,     gdd5gat,&
                 &      ariditygat, srplsmongat,  defctmongat, anndefctgat,&
                 &      annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
@@ -3218,6 +3226,9 @@ contains
                &                       nltest,nmtest,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
+              
+                ! Convert units in preparation for output:
+                call convertUnitsCTEM(nltest,nmtest)
 
                 ! Daily outputs from biogeochem (CTEM)
                 if (dodayoutput .and.&
@@ -3253,6 +3264,10 @@ contains
 
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
+                
+                ! Increment the timestamp year (it is the number of consecutive days since the refyr. refyr is set
+                ! to the first year of the run in outputManager so consecDays is 0 initially then increments up.)
+                consecDays = consecDays + lastDOY
 
                 ! Increment the runyr
                 runyr = runyr + 1
@@ -3289,6 +3304,11 @@ contains
 
         ! deallocate arrays used for input files
         call deallocInput
+        
+        ! This is stored in outputManager so that means it retains its values between 
+        ! grid cells run. It must be reset here to ensure the value doesn't carry over to
+        ! the next grid cell!
+        consecDays = 0.
 
         return
 

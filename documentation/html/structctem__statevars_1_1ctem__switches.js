@@ -57,6 +57,7 @@ var structctem__statevars_1_1ctem__switches =
     [ "output_directory", "structctem__statevars_1_1ctem__switches.html#a19fc3088ccacb9ad6be0033d211478fa", null ],
     [ "pftcompetition", "structctem__statevars_1_1ctem__switches.html#aec15022cfcf98cfecd98da2f2f6a6b68", null ],
     [ "popdfile", "structctem__statevars_1_1ctem__switches.html#a0b31a61d0b00e976726ef3490d409db8", null ],
+    [ "projectedgrid", "structctem__statevars_1_1ctem__switches.html#aa3afb872b394ca718bbd732f699a23a8", null ],
     [ "readmetendyear", "structctem__statevars_1_1ctem__switches.html#afec4aea023e01574c72b9bb6e9a1d73f", null ],
     [ "readmetstartyear", "structctem__statevars_1_1ctem__switches.html#aa1948d0b513a2989498f28f3ab07a20e", null ],
     [ "rs_file_to_overwrite", "structctem__statevars_1_1ctem__switches.html#afd83352897381f7efe563b598f2220f7", null ],

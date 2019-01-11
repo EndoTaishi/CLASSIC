@@ -402,7 +402,7 @@ integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 <tr class="separator:a1937dbc0bd0fba20b1394cb4465f265a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6af203de7b89084fca1c2a6a88fcccac"><td class="memItemLeft" align="right" valign="top"><a id="a6af203de7b89084fca1c2a6a88fcccac"></a>
 logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a6af203de7b89084fca1c2a6a88fcccac">crop</a></td></tr>
-<tr class="memdesc:a6af203de7b89084fca1c2a6a88fcccac"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple crop matrix, define number and position of the crops (NOTE: dimension icc) <br /></td></tr>
+<tr class="memdesc:a6af203de7b89084fca1c2a6a88fcccac"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple crop matrix, define the number and position of the crops (NOTE: dimension icc) <br /></td></tr>
 <tr class="separator:a6af203de7b89084fca1c2a6a88fcccac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cbe544f20c49ace2df3e3b60765da4c"><td class="memItemLeft" align="right" valign="top"><a id="a3cbe544f20c49ace2df3e3b60765da4c"></a>
 logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a3cbe544f20c49ace2df3e3b60765da4c">grass</a></td></tr>
@@ -635,6 +635,33 @@ character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valig
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a9b74fec0837d9da97084df14d8f1c7e3">kn</a></td></tr>
 <tr class="memdesc:a9b74fec0837d9da97084df14d8f1c7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
 <tr class="separator:a9b74fec0837d9da97084df14d8f1c7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3cd2bdfbadbacf81bf8714ea48f12f0"><td class="memItemLeft" align="right" valign="top"><a id="ac3cd2bdfbadbacf81bf8714ea48f12f0"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>omega_compete</b></td></tr>
+<tr class="separator:ac3cd2bdfbadbacf81bf8714ea48f12f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21445c6ad6d64efebe2ac94c08b9f73e"><td class="memItemLeft" align="right" valign="top"><a id="a21445c6ad6d64efebe2ac94c08b9f73e"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>epsilonl_compete</b></td></tr>
+<tr class="separator:a21445c6ad6d64efebe2ac94c08b9f73e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3739b3408c8d16accab6d233b083b546"><td class="memItemLeft" align="right" valign="top"><a id="a3739b3408c8d16accab6d233b083b546"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>epsilons_compete</b></td></tr>
+<tr class="separator:a3739b3408c8d16accab6d233b083b546"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48ceab745c77a271c9ca4d9faba9992f"><td class="memItemLeft" align="right" valign="top"><a id="a48ceab745c77a271c9ca4d9faba9992f"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>epsilonr_compete</b></td></tr>
+<tr class="separator:a48ceab745c77a271c9ca4d9faba9992f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a810303dfa0b568ce1c17ee3381db0e"><td class="memItemLeft" align="right" valign="top"><a id="a3a810303dfa0b568ce1c17ee3381db0e"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>bsrtstem_compete</b></td></tr>
+<tr class="separator:a3a810303dfa0b568ce1c17ee3381db0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e23d14389786aea9e21c61b51fc7d25"><td class="memItemLeft" align="right" valign="top"><a id="a8e23d14389786aea9e21c61b51fc7d25"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>bsrtroot_compete</b></td></tr>
+<tr class="separator:a8e23d14389786aea9e21c61b51fc7d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab69c30a51725dd956e7b186786753fc5"><td class="memItemLeft" align="right" valign="top"><a id="ab69c30a51725dd956e7b186786753fc5"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>mxmortge_compete</b></td></tr>
+<tr class="separator:ab69c30a51725dd956e7b186786753fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6bdf8eac5347b23f506c7327788e8e6"><td class="memItemLeft" align="right" valign="top"><a id="ad6bdf8eac5347b23f506c7327788e8e6"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>maxage_compete</b></td></tr>
+<tr class="separator:ad6bdf8eac5347b23f506c7327788e8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84388dbf5bf32a3c8e4adb1b2cc441e6"><td class="memItemLeft" align="right" valign="top"><a id="a84388dbf5bf32a3c8e4adb1b2cc441e6"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>drlsrtmx_compete</b></td></tr>
+<tr class="separator:a84388dbf5bf32a3c8e4adb1b2cc441e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafc794a48ae501d373d775ff505fa1dd"><td class="memItemLeft" align="right" valign="top"><a id="aafc794a48ae501d373d775ff505fa1dd"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#aafc794a48ae501d373d775ff505fa1dd">omega</a></td></tr>
 <tr class="memdesc:aafc794a48ae501d373d775ff505fa1dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run) <br /></td></tr>
@@ -1151,10 +1178,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memdesc:a5b97d75a327ee3bc8a3d890303bed37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">ratio of wetland to upland respiration<br />
 Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis. These were summed as "hetrores". This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless) <br /></td></tr>
 <tr class="separator:a5b97d75a327ee3bc8a3d890303bed37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00c64b62d0acfb34b3207819e855522b"><td class="memItemLeft" align="right" valign="top"><a id="a00c64b62d0acfb34b3207819e855522b"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a00c64b62d0acfb34b3207819e855522b">factor2</a></td></tr>
-<tr class="memdesc:a00c64b62d0acfb34b3207819e855522b"><td class="mdescLeft">&#160;</td><td class="mdescRight">constant value for secondary (ch4wet2) methane emissions calculation <br /></td></tr>
-<tr class="separator:a00c64b62d0acfb34b3207819e855522b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca3da27e0be2b9d469a6b124508b33d5"><td class="memItemLeft" align="right" valign="top"><a id="aca3da27e0be2b9d469a6b124508b33d5"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#aca3da27e0be2b9d469a6b124508b33d5">lat_thrshld1</a></td></tr>
 <tr class="memdesc:aca3da27e0be2b9d469a6b124508b33d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Northern zone for wetland determination (degrees North) <br /></td></tr>
@@ -1217,7 +1240,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="separator:a00ecc97130988670c1826e54f5507309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70387b47d7f92d08b9eb331ab197cd5d"><td class="memItemLeft" align="right" valign="top"><a id="a70387b47d7f92d08b9eb331ab197cd5d"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a70387b47d7f92d08b9eb331ab197cd5d">vmax</a></td></tr>
-<tr class="memdesc:a70387b47d7f92d08b9eb331ab197cd5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[46]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
+<tr class="memdesc:a70387b47d7f92d08b9eb331ab197cd5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[47]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
 <tr class="separator:a70387b47d7f92d08b9eb331ab197cd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad04a9dc1e9e328efa3b79d36b37ee2f0"><td class="memItemLeft" align="right" valign="top"><a id="ad04a9dc1e9e328efa3b79d36b37ee2f0"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ad04a9dc1e9e328efa3b79d36b37ee2f0">reqiter</a></td></tr>
@@ -1260,6 +1283,33 @@ character(350)&#160;</td><td class="memItemRight" valign="bottom"><b>runparamsfi
 <tr class="memitem:aaab2ba946661d54a5b9f08efbdddd5fb"><td class="memItemLeft" align="right" valign="top"><a id="aaab2ba946661d54a5b9f08efbdddd5fb"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><b>pftcompetitionswitch</b></td></tr>
 <tr class="separator:aaab2ba946661d54a5b9f08efbdddd5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91eea795bb35310302f49a69b119c8ce"><td class="memItemLeft" align="right" valign="top"><a id="a91eea795bb35310302f49a69b119c8ce"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>zbldjobopt</b></td></tr>
+<tr class="separator:a91eea795bb35310302f49a69b119c8ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96ff66c4beedbf6a96de836c7685e859"><td class="memItemLeft" align="right" valign="top"><a id="a96ff66c4beedbf6a96de836c7685e859"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>zrfhjobopt</b></td></tr>
+<tr class="separator:a96ff66c4beedbf6a96de836c7685e859"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a657d01ee27e2f3b0a6b8bf5bbcd1bd39"><td class="memItemLeft" align="right" valign="top"><a id="a657d01ee27e2f3b0a6b8bf5bbcd1bd39"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>zrfmjobopt</b></td></tr>
+<tr class="separator:a657d01ee27e2f3b0a6b8bf5bbcd1bd39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a829cb28555cffa370ad8deeeef424baf"><td class="memItemLeft" align="right" valign="top"><a id="a829cb28555cffa370ad8deeeef424baf"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>rsmn</b></td></tr>
+<tr class="separator:a829cb28555cffa370ad8deeeef424baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2671bf5fc1840fbb89b7fcb3e0e81b6c"><td class="memItemLeft" align="right" valign="top"><a id="a2671bf5fc1840fbb89b7fcb3e0e81b6c"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>qa50</b></td></tr>
+<tr class="separator:a2671bf5fc1840fbb89b7fcb3e0e81b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85d566116a8062f653c87428e447f3f8"><td class="memItemLeft" align="right" valign="top"><a id="a85d566116a8062f653c87428e447f3f8"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>vpda</b></td></tr>
+<tr class="separator:a85d566116a8062f653c87428e447f3f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114dd0e5c36c4a118e64a73503967a95"><td class="memItemLeft" align="right" valign="top"><a id="a114dd0e5c36c4a118e64a73503967a95"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>vpdb</b></td></tr>
+<tr class="separator:a114dd0e5c36c4a118e64a73503967a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac444b15921693a4077d577f01f5a92a8"><td class="memItemLeft" align="right" valign="top"><a id="ac444b15921693a4077d577f01f5a92a8"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>psga</b></td></tr>
+<tr class="separator:ac444b15921693a4077d577f01f5a92a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bb50b8cc7ef18e73d9f965dbbc72f97"><td class="memItemLeft" align="right" valign="top"><a id="a2bb50b8cc7ef18e73d9f965dbbc72f97"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>psgb</b></td></tr>
+<tr class="separator:a2bb50b8cc7ef18e73d9f965dbbc72f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a607d5090e3483de84d533e527b7d0672"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a607d5090e3483de84d533e527b7d0672">prepareglobalparams</a></td></tr>
 <tr class="memdesc:a607d5090e3483de84d533e527b7d0672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize and/or read in all global model parameters.  <a href="#a607d5090e3483de84d533e527b7d0672">More...</a><br /></td></tr>
 <tr class="separator:a607d5090e3483de84d533e527b7d0672"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1292,7 +1342,6 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><div class="memdoc">
 
 <p>Initialize and/or read in all global model parameters. </p>
-<p>Prepare CLASS parameters</p>
 <p>Assign iccp1 and icp1. icc and ican are read in from the job options file.</p>
 <p>Allocate the arrays that store the CTEM parameter values</p>
 <p>Initialize the CTEM parameters, this reads them in from a namelist file. </p>
@@ -1325,7 +1374,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceclassic__params.html">classic_params</a></li>
-    <li class="footer">Generated on Thu Oct 11 2018 12:12:17 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 11 2019 11:27:26 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

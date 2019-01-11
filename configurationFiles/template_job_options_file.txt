@@ -1,23 +1,27 @@
 &joboptions
 
+! Model grid description
+    projectedGrid = .false. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+
 ! Meteorological options:
-    readMetStartYear = 1850  ! First year of meteorological forcing to read in from the met file
-    readMetEndYear = 2010    ! Last year of meteorological forcing to read in from the met file
-    metLoop = 1 ,            ! no. of times to cycle over the read-in meteorology
-    leap = .false. ,         ! True if your meteorological forcing includes leap years
+    readMetStartYear = 1900  !< First year of meteorological forcing to read in from the met file
+    readMetEndYear = 1905    !< Last year of meteorological forcing to read in from the met file
+    metLoop = 1 ,            !< no. of times to cycle over the read-in meteorology
+    leap = .false. ,         !< True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
-        metFileFss = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1700_2017.nc',        ! location of the incoming shortwave radiation meteorology file
-        metFileFdl = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dlwrf_T63_chunked_1700_2017.nc',        ! location of the incoming longwave radiation meteorology file
-        metFilePre = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pre_T63_chunked_1700_2017.nc',        ! location of the precipitation meteorology file
-        metFileTa = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/tmp_T63_chunked_1700_2017.nc',         ! location of the air temperature meteorology file
-        metFileQa = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/spfh_T63_chunked_1700_2017.nc',         ! location of the specific humidity meteorology file
-        metFileUv = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/wind_T63_chunked_1700_2017.nc',         ! location of the wind speed meteorology file
-        metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       ! location of the atmospheric pressure meteorology file
+        metFileFss = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1700_2017.nc',        !< location of the incoming shortwave radiation meteorology file
+        metFileFdl = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dlwrf_T63_chunked_1700_2017.nc',        !< location of the incoming longwave radiation meteorology file
+        metFilePre = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pre_T63_chunked_1700_2017.nc',        !< location of the precipitation meteorology file
+        metFileTa = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/tmp_T63_chunked_1700_2017.nc',         !< location of the air temperature meteorology file
+        metFileQa = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/spfh_T63_chunked_1700_2017.nc',         !< location of the specific humidity meteorology file
+        metFileUv = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/wind_T63_chunked_1700_2017.nc',         !< location of the wind speed meteorology file
+        metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND.nc' ,     ! location of the model initialization file
-    rs_file_to_overwrite = 'rsFile.nc' ,       ! location of the existing netcdf file that will be **overwritten** for the restart file
+    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz.nc' ,     !< location of the model initialization file
+    rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters
     runparams_file = 'configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
@@ -122,8 +126,8 @@
 
 ! Output options:
 
-    output_directory = 'outputFiles' ,        ! Directory where the output netcdfs will be placed
-    xmlFile = 'configurationFiles/outputVariableDescriptors_v1.2.xml' ,  ! location of the xml file that outlines the possible netcdf output files
+    output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
+    xmlFile = 'configurationFiles/outputVariableDescriptors_v1.3.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
     doperpftoutput = .true. ,   ! Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level

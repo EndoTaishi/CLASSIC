@@ -124,6 +124,11 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
       if(iday.eq.1)then
 
         ! Allocate the arrays to find the length of dry season
+        
+          if (allocated(wet_dry_mon_index)) deallocate(wet_dry_mon_index)
+          if (allocated(wet_dry_mon_index2)) deallocate(wet_dry_mon_index2)
+          if (allocated(dry_season_length_curyr)) deallocate(dry_season_length_curyr)
+          
           allocate(wet_dry_mon_index(nilg,12))
           allocate(wet_dry_mon_index2(nilg,24))
           allocate(dry_season_length_curyr(nilg))

@@ -108,7 +108,7 @@ contains
                              myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
         enddo
 
-        cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
+        cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells 
 
         if (rank < remainder) print*,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)

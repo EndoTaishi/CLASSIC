@@ -110,6 +110,10 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a0eda7d3a6fad697a660806095840a1fb">deltat</a> = 1.0</td></tr>
 <tr class="memdesc:a0eda7d3a6fad697a660806095840a1fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's time step in days. <br /></td></tr>
 <tr class="separator:a0eda7d3a6fad697a660806095840a1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e38d1074d3b8ff50034ce1eafbae1cc"><td class="memItemLeft" align="right" valign="top"><a id="a9e38d1074d3b8ff50034ce1eafbae1cc"></a>
+real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a9e38d1074d3b8ff50034ce1eafbae1cc">convertkgc</a> = 1.201e-8</td></tr>
+<tr class="memdesc:a9e38d1074d3b8ff50034ce1eafbae1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts from umolCO2/m2/s to kgC/m2/s. <br /></td></tr>
+<tr class="separator:a9e38d1074d3b8ff50034ce1eafbae1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="memItemLeft" align="right" valign="top"><a id="a4ef8efd46b3f253fcaa1d9e7626f63ff"></a>
 integer, dimension(12)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a4ef8efd46b3f253fcaa1d9e7626f63ff">monthdays</a> = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]</td></tr>
 <tr class="memdesc:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">days in each month <br /></td></tr>
@@ -762,10 +766,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memdesc:a71227aca2a1e2963319a981847fa2874"><td class="mdescLeft">&#160;</td><td class="mdescRight">ratio of wetland to upland respiration<br />
 Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis. These were summed as "hetrores". This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless) <br /></td></tr>
 <tr class="separator:a71227aca2a1e2963319a981847fa2874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba1c91ff7281b9069ec03e8ecc581fef"><td class="memItemLeft" align="right" valign="top"><a id="aba1c91ff7281b9069ec03e8ecc581fef"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#aba1c91ff7281b9069ec03e8ecc581fef">factor2</a></td></tr>
-<tr class="memdesc:aba1c91ff7281b9069ec03e8ecc581fef"><td class="mdescLeft">&#160;</td><td class="mdescRight">constant value for secondary (ch4wet2) methane emissions calculation <br /></td></tr>
-<tr class="separator:aba1c91ff7281b9069ec03e8ecc581fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a63b83e7f97702b648861ae4a586b59"><td class="memItemLeft" align="right" valign="top"><a id="a3a63b83e7f97702b648861ae4a586b59"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a3a63b83e7f97702b648861ae4a586b59">lat_thrshld1</a></td></tr>
 <tr class="memdesc:a3a63b83e7f97702b648861ae4a586b59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Northern zone for wetland determination (degrees North) <br /></td></tr>
@@ -828,7 +828,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="separator:ab47a506278f99ae337382d13fd18f47b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d3cef0b66c64ba7085647d81556e868"><td class="memItemLeft" align="right" valign="top"><a id="a6d3cef0b66c64ba7085647d81556e868"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a6d3cef0b66c64ba7085647d81556e868">vmax</a></td></tr>
-<tr class="memdesc:a6d3cef0b66c64ba7085647d81556e868"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[46]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
+<tr class="memdesc:a6d3cef0b66c64ba7085647d81556e868"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[47]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
 <tr class="separator:a6d3cef0b66c64ba7085647d81556e868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f6aa05eda71d15e38a31f0749d38623"><td class="memItemLeft" align="right" valign="top"><a id="a6f6aa05eda71d15e38a31f0749d38623"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a6f6aa05eda71d15e38a31f0749d38623">reqiter</a></td></tr>
@@ -935,7 +935,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacectem__params.html">ctem_params</a></li>
-    <li class="footer">Generated on Fri Sep 21 2018 13:07:59 for CLASSIC by
+    <li class="footer">Generated on Wed Dec 12 2018 16:42:12 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

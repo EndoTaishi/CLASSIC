@@ -65,8 +65,8 @@
      &                      rmlveg,  rmsveg,   rmrveg,    rgveg,&
      &                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,&
      &                  hetrsveg,autoresveg, ltresveg, scresveg,&
-     &                 nml,    ilmos, jlmos,  ch4wet1,  ch4wet2,  &
-     &                 wetfdyn, ch4dyn1, ch4dyn2, ch4soills, &
+     &                 nml,    ilmos, jlmos,  ch4WetSpec,  &
+     &                 wetfdyn, ch4WetDyn, ch4soills, &
      &                 ipeatland, anmoss,rmlmoss,gppmoss, &
      &                 Cmossmas,litrmsmoss, wtable, &
      &                    THFC,THLW,thliq,thice,&
@@ -342,11 +342,9 @@ real, dimension(ilg,icc), intent(out) :: emit_bc        !<black carbon emitted f
 real, dimension(ilg,icc), intent(out) :: bterm_veg      !<biomass term for fire probabilty calc
 real, dimension(ilg), intent(out) :: lterm              !<lightning term for fire probabilty calc
 real, dimension(ilg,icc), intent(out) :: mterm_veg      !<moisture term for fire probabilty calc
-real, dimension(ilg), intent(out) :: ch4wet1            !<
-real, dimension(ilg), intent(out) :: ch4wet2            !<
+real, dimension(ilg), intent(out) :: ch4WetSpec            !<
 real, dimension(ilg), intent(out) :: wetfdyn            !<
-real, dimension(ilg), intent(out) :: ch4dyn1            !<
-real, dimension(ilg), intent(out) :: ch4dyn2            !<
+real, dimension(ilg), intent(out) :: ch4WetDyn            !<
 real, dimension(ilg,icc), intent(out) :: cc             !<
 real, dimension(ilg,icc), intent(out) :: mm             !<
 real, dimension(ilg,icc), intent(out) :: lambda         !<
@@ -1319,10 +1317,9 @@ do 470 j = 1,icc
 
 !>Find CH4 wetland area (if not prescribed) and emissions:
     call  wetland_methane (hetrores, il1, il2, ta, wetfrac,&
-     &                        npp, tbar, thliqg, currlat,&  !FLAG consider making this thliqc? JM Aug 2016.
+     &                     thliqg, currlat,&  !FLAG consider making this thliqc? JM Aug 2016.
      &                     sand,  slopefrac, &
-     &                  ch4wet1,    ch4wet2,    wetfdyn,&
-     &                  ch4dyn1,    ch4dyn2)
+     &                  ch4WetSpec,    wetfdyn, ch4WetDyn)
 
 !> Calculate the methane that is oxidized by the soil sink
     call soil_ch4uptake(il1,il2,tbar,thpor,bi,thliqg, &

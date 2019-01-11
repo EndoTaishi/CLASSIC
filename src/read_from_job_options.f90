@@ -27,6 +27,9 @@ contains
         implicit none
 
         ! -------------
+
+        logical, pointer :: projectedGrid
+
         ! ctem model switches
 
         integer, pointer :: metLoop
@@ -114,6 +117,7 @@ contains
         ! Order of the namelist and order in the file don't have to match.
 
         namelist /joboptions/ &
+        projectedGrid, &
         metLoop, &
         readMetStartYear, &
         readMetEndYear, &
@@ -191,6 +195,7 @@ contains
         Comment
 
         ! Point pointers:
+        projectedGrid   => c_switch%projectedGrid
         metLoop         => c_switch%metLoop
         readMetStartYear=> c_switch%readMetStartYear
         readMetEndYear  => c_switch%readMetEndYear
@@ -283,6 +288,9 @@ contains
             write(*,*)' '
             write(*,*)'- longitude/longitude/latitude/latitude '
             write(*,*)'  e.g. 90/105/30/45 '
+            write(*,*)' '
+            write(*,*)' **If you are running a projected grid you must'
+            write(*,*)' use the grid cell indices, not coordinates!** '
             write(*,*)' '
             stop
         end if

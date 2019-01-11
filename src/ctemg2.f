@@ -38,8 +38,8 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      &      btermgat,     ltermgat,   mtermgat,daylgat,dayl_maxgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      ch4wet1gat, ch4wet2gat, slopefracgat,
-     &       wetfdyngat, ch4dyn1gat, ch4dyn2gat, ch4soillsgat,
+     &      ch4WetSpecgat, slopefracgat,
+     &       wetfdyngat, ch4WetDyngat, ch4soillsgat,
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
@@ -82,8 +82,8 @@ c
      &      btermrow,     ltermrow,   mtermrow, daylrow,dayl_maxrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow,
-     &      ch4wet1row, ch4wet2row, slopefracrow,
-     &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
+     &      ch4WetSpecrow, slopefracrow,
+     &      wetfdynrow, ch4WetDynrow, ch4soillsrow,
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
@@ -294,11 +294,9 @@ c
 
 c   Methane related variables
         real slopefracrow(nlat,nmos,8),      slopefracgat(ilg,8),
-     2       ch4wet1row(nlat,nmos),         ch4wet1gat(ilg),
-     3       ch4wet2row(nlat,nmos),         ch4wet2gat(ilg),
+     2       ch4WetSpecrow(nlat,nmos),         ch4WetSpecgat(ilg),
      4       wetfdynrow(nlat,nmos),         wetfdyngat(ilg),
-     5       ch4dyn1row(nlat,nmos),         ch4dyn1gat(ilg),
-     6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg),
+     5       ch4WetDynrow(nlat,nmos),         ch4WetDyngat(ilg),
      7       ch4soillsrow(nlat,nmos),      ch4soillsgat(ilg)
 
 
@@ -373,11 +371,9 @@ c----------------------------------------------------------------------
           do n = 1,8
             slopefracgat(k,n) = slopefracrow(ilmos(k),jlmos(k),n)
           end do
-          ch4wet1gat(k)   = ch4wet1row(ilmos(k),jlmos(k))
-          ch4wet2gat(k)   = ch4wet2row(ilmos(k),jlmos(k))
+          ch4WetSpecgat(k)   = ch4WetSpecrow(ilmos(k),jlmos(k))
           wetfdyngat(k)   = wetfdynrow(ilmos(k),jlmos(k))
-          ch4dyn1gat(k)   = ch4dyn1row(ilmos(k),jlmos(k))
-          ch4dyn2gat(k)   = ch4dyn2row(ilmos(k),jlmos(k))
+          ch4WetDyngat(k)   = ch4WetDynrow(ilmos(k),jlmos(k))
           ch4soillsgat(k) = ch4soillsrow(ilmos(k),jlmos(k))
 
           twarmmgat(k)    = twarmmrow(ilmos(k),jlmos(k))

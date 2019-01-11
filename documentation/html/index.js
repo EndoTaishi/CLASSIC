@@ -50,7 +50,10 @@ var index =
       [ "Running CLASSIC for a point location", "runCLASSIC.html#runStandAloneMode", null ],
       [ "Running CLASSIC over a grid (Global or Regional)", "runCLASSIC.html#runGrid", null ]
     ] ],
-    [ "How do I ...", "howDoI.html", [
-      [ "Change the number/depth/etc of soil layers?", "howDoI.html#chgSoil", null ]
+    [ "How do I ... / Something has gone wrong!", "howDoI.html", [
+      [ "Change the number/depth/etc of soil layers?", "howDoI.html#chgSoil", null ],
+      [ "My run starts and I get an immediate fail!", "howDoI.html#failStart", null ],
+      [ "My run won't compile but I didn't do anything I can think of.", "howDoI.html#makeClean", null ],
+      [ "initFileConverter tells me I need a soil colour index", "howDoI.html#soilColourIndex", null ]
     ] ]
 ];

@@ -132,7 +132,7 @@ C
 C
 C     * DENSITY OF FRESH SNOW.
 C
-          !!
+          !>
           !!In the next section, the density of fresh snow \f$\rho_{s,i}\f$ is 
           !!determined as an empirical function of the air temperature. 
           !!For temperatures below 0 C, an equation presented by Hedstrom 
@@ -151,7 +151,7 @@ C
 C
 C     * PRECIPITATION PARTITIONING BETWEEN RAIN AND SNOW.
 C
-          !!
+          !>
           !!In the last section, the partitioning of precipitation 
           !!between rainfall RPCP and snowfall SPCP is addressed. Four 
           !!options for doing so are provided; the user’s selection is 

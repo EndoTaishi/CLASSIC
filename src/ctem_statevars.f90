@@ -20,6 +20,8 @@ public :: resetMosaicAccum
 !>switches for running the model, read from the joboptions file
 type ctem_switches
 
+    logical :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                !! regions referenced by the indexes, not coordinates, when running a sub-region
     logical :: ctem_on          !<True if this run includes the biogeochemistry parameterizations (CTEM)
     integer :: metLoop          !< no. of times the meteorological data is to be looped over. this
                                 !< option is useful to equilibrate CTEM's C pools
@@ -283,14 +285,10 @@ type veg_rot
     real, allocatable, dimension(:,:) :: rml                   !<leaf maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: rms                   !<stem maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: rmr                   !<root maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
-    real, allocatable, dimension(:,:) :: ch4wet1               !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
-    real, allocatable, dimension(:,:) :: ch4wet2               !<methane flux from wetlands calculated using npp in umol ch4/m2.s
+    real, allocatable, dimension(:,:) :: ch4WetSpec               !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: wetfdyn               !<dynamic wetland fraction
     real, allocatable, dimension(:,:) :: wetfrac_pres          !<Prescribed wetland fraction read in from OBSWETFFile
-    real, allocatable, dimension(:,:) :: ch4dyn1               !<methane flux from wetlands calculated using hetrores
-                                                        !<and wetfdyn, in umol ch4/m2.s
-    real, allocatable, dimension(:,:) :: ch4dyn2               !<methane flux from wetlands calculated using npp and wetfdyn,
-                                                        !<in umol ch4/m2.s
+    real, allocatable, dimension(:,:) :: ch4WetDyn                !<methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: ch4_soills            !<Methane uptake into the soil column (\f$mg CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: lucemcom              !<land use change (luc) related combustion emission losses (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: lucltrin              !<luc related inputs to litter pool (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
@@ -445,18 +443,18 @@ type veg_gat
     real, allocatable, dimension(:,:) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: vgbiomas_veg !<vegetation biomass for each pft
 
-    real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide
-    real, allocatable, dimension(:,:) :: emit_co    !<carbon monoxide
-    real, allocatable, dimension(:,:) :: emit_ch4   !<methane
-    real, allocatable, dimension(:,:) :: emit_nmhc  !<non-methane hydrocarbons
-    real, allocatable, dimension(:,:) :: emit_h2    !<hydrogen gas
-    real, allocatable, dimension(:,:) :: emit_nox   !<nitrogen oxides
-    real, allocatable, dimension(:,:) :: emit_n2o   !<nitrous oxide
-    real, allocatable, dimension(:,:) :: emit_pm25  !<particulate matter less than 2.5 um in diameter
-    real, allocatable, dimension(:,:) :: emit_tpm   !<total particulate matter
-    real, allocatable, dimension(:,:) :: emit_tc    !<total carbon
-    real, allocatable, dimension(:,:) :: emit_oc    !<organic carbon
-    real, allocatable, dimension(:,:) :: emit_bc    !<black carbon
+    real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_co    !<carbon monoxide (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_ch4   !<methane (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_nmhc  !<non-methane hydrocarbons (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_h2    !<hydrogen gas (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_nox   !<nitrogen oxides (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_n2o   !<nitrous oxide (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_pm25  !<particulate matter less than 2.5 um in diameter (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_tpm   !<total particulate matter (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_tc    !<total carbon (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_oc    !<organic carbon (kg <species> $m^{-2}$$s^{-1}$)
+    real, allocatable, dimension(:,:) :: emit_bc    !<black carbon (kg <species> $m^{-2}$$s^{-1}$)
     real, allocatable, dimension(:)   :: burnfrac   !<areal fraction burned due to fire for every grid cell (%)
     real, allocatable, dimension(:,:) :: burnvegf   !<per PFT fraction burned of that PFT's area
     real, allocatable, dimension(:,:) :: smfuncveg  !<
@@ -495,12 +493,10 @@ type veg_gat
     real, allocatable, dimension(:,:) :: slopefrac      !<prescribed fraction of wetlands based on slope
                                                         !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
     real, allocatable, dimension(:)    :: wetfrac_pres  !<Prescribed fraction of wetlands in a grid cell
-    real, allocatable, dimension(:)    :: ch4wet1       !<methane flux from wetlands calculated using hetrores (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
-    real, allocatable, dimension(:)    :: ch4wet2       !<methane flux from wetlands calculated using npp (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:)    :: ch4WetSpec       !<methane flux from wetlands calculated using hetrores (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)    :: wetfdyn       !<dynamic wetland fraction
-    real, allocatable, dimension(:)    :: ch4dyn1       !<methane flux from wetlands calculated using hetrores
+    real, allocatable, dimension(:)    :: ch4WetDyn       !<methane flux from wetlands calculated using hetrores
                                                         !<and wetfdyn,(\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
-    real, allocatable, dimension(:)    :: ch4dyn2       !<methane flux from wetlands calculated using npp and wetfdyn (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)    :: ch4_soills    !<Methane uptake into the soil column (\f$mg CH_4 m^{-2} s^{-1}\f$)
 
     real, allocatable, dimension(:) :: lucemcom   !<land use change (luc) related combustion emission losses,(\f$\mu mol CO2 m^{-2} s^{-1}\f$)
@@ -764,12 +760,10 @@ type ctem_gridavg_monthly
     real, allocatable, dimension(:) :: bterm_mo_g    !<
     real, allocatable, dimension(:) :: lterm_mo_g    !<
     real, allocatable, dimension(:) :: mterm_mo_g    !<
-    real, allocatable, dimension(:) :: ch4wet1_mo_g  !<
-    real, allocatable, dimension(:) :: ch4wet2_mo_g  !<
+    real, allocatable, dimension(:) :: ch4WetSpec_mo_g  !<
     real, allocatable, dimension(:) :: wetfdyn_mo_g  !<
     real, allocatable, dimension(:) :: wetfpres_mo_g  !<
-    real, allocatable, dimension(:) :: ch4dyn1_mo_g  !<
-    real, allocatable, dimension(:) :: ch4dyn2_mo_g  !<
+    real, allocatable, dimension(:) :: ch4WetDyn_mo_g  !<
     real, allocatable, dimension(:) :: ch4soills_mo_g!<
 
 end type ctem_gridavg_monthly
@@ -821,12 +815,10 @@ type ctem_tileavg_monthly
       real, allocatable, dimension(:,:) :: lucsocin_mo_t !<
       real, allocatable, dimension(:,:) :: mterm_mo_t    !<
       real, allocatable, dimension(:,:) :: lucltrin_mo_t !<
-      real, allocatable, dimension(:,:) :: ch4wet1_mo_t  !<
-      real, allocatable, dimension(:,:) :: ch4wet2_mo_t  !<
+      real, allocatable, dimension(:,:) :: ch4WetSpec_mo_t  !<
       real, allocatable, dimension(:,:) :: wetfdyn_mo_t  !<
       real, allocatable, dimension(:,:) :: wetfpres_mo_t  !<
-      real, allocatable, dimension(:,:) :: ch4dyn1_mo_t  !<
-      real, allocatable, dimension(:,:) :: ch4dyn2_mo_t  !<
+      real, allocatable, dimension(:,:) :: ch4WetDyn_mo_t  !<
       real, allocatable, dimension(:,:) :: ch4soills_mo_t!<
       real, allocatable, dimension(:,:) :: wind_mo_t     !<
 
@@ -924,11 +916,9 @@ type ctem_gridavg_annual
     real, allocatable, dimension(:) :: bterm_yr_g    !<
     real, allocatable, dimension(:) :: lterm_yr_g    !<
     real, allocatable, dimension(:) :: mterm_yr_g    !<
-    real, allocatable, dimension(:) :: ch4wet1_yr_g  !<
-    real, allocatable, dimension(:) :: ch4wet2_yr_g  !<
+    real, allocatable, dimension(:) :: ch4WetSpec_yr_g  !<
     real, allocatable, dimension(:) :: wetfdyn_yr_g  !<
-    real, allocatable, dimension(:) :: ch4dyn1_yr_g  !<
-    real, allocatable, dimension(:) :: ch4dyn2_yr_g  !<
+    real, allocatable, dimension(:) :: ch4WetDyn_yr_g  !<
     real, allocatable, dimension(:) :: ch4soills_yr_g!<
     real, allocatable, dimension(:) :: veghght_yr_g  !<
     real, allocatable, dimension(:) :: peatdep_yr_g  !<
@@ -980,11 +970,9 @@ type ctem_tileavg_annual
       real, allocatable, dimension(:,:) :: lucsocin_yr_t !<
       real, allocatable, dimension(:,:) :: mterm_yr_t    !<
       real, allocatable, dimension(:,:) :: lucltrin_yr_t !<
-      real, allocatable, dimension(:,:) :: ch4wet1_yr_t  !<
-      real, allocatable, dimension(:,:) :: ch4wet2_yr_t  !<
+      real, allocatable, dimension(:,:) :: ch4WetSpec_yr_t  !<
       real, allocatable, dimension(:,:) :: wetfdyn_yr_t  !<
-      real, allocatable, dimension(:,:) :: ch4dyn1_yr_t  !<
-      real, allocatable, dimension(:,:) :: ch4dyn2_yr_t  !<
+      real, allocatable, dimension(:,:) :: ch4WetDyn_yr_t  !<
       real, allocatable, dimension(:,:) :: ch4soills_yr_t!<
       real, allocatable, dimension(:,:) :: veghght_yr_t  !<
       real, allocatable, dimension(:,:) :: peatdep_yr_t  !<
@@ -1100,12 +1088,10 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%rml     (nlat,nmos),&
          vrot%rms     (nlat,nmos),&
          vrot%rmr     (nlat,nmos),&
-         vrot%ch4wet1 (nlat,nmos),&
-         vrot%ch4wet2 (nlat,nmos),&
+         vrot%ch4WetSpec (nlat,nmos),&
          vrot%wetfdyn (nlat,nmos),&
          vrot%wetfrac_pres(nlat,nmos),&
-         vrot%ch4dyn1 (nlat,nmos),&
-         vrot%ch4dyn2 (nlat,nmos),&
+         vrot%ch4WetDyn (nlat,nmos),&
          vrot%ch4_soills(nlat,nmos),&
          vrot%lucemcom(nlat,nmos),&
          vrot%lucltrin(nlat,nmos),&
@@ -1206,11 +1192,10 @@ allocate(vgat%grclarea(ilg),&
          vgat%gavgltms (ilg),&
          vgat%gavgscms (ilg),&
          vgat%lterm (ilg),&
-         vgat%ch4wet1 (ilg),&
-         vgat%ch4wet2 (ilg),&
+         vgat%ch4WetSpec (ilg),&
          vgat%wetfdyn (ilg),&
-         vgat%ch4dyn1 (ilg),&
-         vgat%ch4dyn2 (ilg),&
+         vgat%ch4WetDyn (ilg),&
+
          vgat%ch4_soills (ilg),&
          vgat%lucemcom (ilg),&
          vgat%lucltrin (ilg),&
@@ -1506,12 +1491,10 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_mo%bterm_mo_g (nlat),&
          ctem_grd_mo%lterm_mo_g(nlat),&
          ctem_grd_mo%mterm_mo_g (nlat),&
-         ctem_grd_mo%ch4wet1_mo_g (nlat),&
-         ctem_grd_mo%ch4wet2_mo_g (nlat),&
+         ctem_grd_mo%ch4WetSpec_mo_g (nlat),&
          ctem_grd_mo%wetfdyn_mo_g (nlat),&
          ctem_grd_mo%wetfpres_mo_g (nlat),&
-         ctem_grd_mo%ch4dyn1_mo_g (nlat),&
-         ctem_grd_mo%ch4dyn2_mo_g (nlat),&
+         ctem_grd_mo%ch4WetDyn_mo_g (nlat),&
          ctem_grd_mo%ch4soills_mo_g (nlat),&
 
          ctem_tile_mo%laimaxg_mo_t (nlat,nmos),&
@@ -1551,12 +1534,10 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_mo%lucsocin_mo_t (nlat,nmos),&
          ctem_tile_mo%mterm_mo_t (nlat,nmos),&
          ctem_tile_mo%lucltrin_mo_t (nlat,nmos),&
-         ctem_tile_mo%ch4wet1_mo_t (nlat,nmos),&
-         ctem_tile_mo%ch4wet2_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4WetSpec_mo_t (nlat,nmos),&
          ctem_tile_mo%wetfdyn_mo_t (nlat,nmos),&
          ctem_tile_mo%wetfpres_mo_t (nlat,nmos),&
-         ctem_tile_mo%ch4dyn1_mo_t (nlat,nmos),&
-         ctem_tile_mo%ch4dyn2_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4WetDyn_mo_t (nlat,nmos),&
          ctem_tile_mo%ch4soills_mo_t (nlat,nmos),&
          ctem_tile_mo%wind_mo_t (nlat,nmos),&
 
@@ -1628,11 +1609,10 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_yr%bterm_yr_g (nlat),&
          ctem_grd_yr%lterm_yr_g (nlat),&
          ctem_grd_yr%mterm_yr_g (nlat),&
-         ctem_grd_yr%ch4wet1_yr_g (nlat),&
-         ctem_grd_yr%ch4wet2_yr_g (nlat),&
+         ctem_grd_yr%ch4WetSpec_yr_g (nlat),&
          ctem_grd_yr%wetfdyn_yr_g (nlat),&
-         ctem_grd_yr%ch4dyn1_yr_g (nlat),&
-         ctem_grd_yr%ch4dyn2_yr_g (nlat),&
+         ctem_grd_yr%ch4WetDyn_yr_g (nlat),&
+
          ctem_grd_yr%ch4soills_yr_g (nlat),&
          ctem_grd_yr%veghght_yr_g (nlat),&
          ctem_grd_yr%peatdep_yr_g (nlat),&
@@ -1672,11 +1652,9 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_yr%lucsocin_yr_t (nlat,nmos),&
          ctem_tile_yr%mterm_yr_t (nlat,nmos),&
          ctem_tile_yr%lucltrin_yr_t (nlat,nmos),&
-         ctem_tile_yr%ch4wet1_yr_t (nlat,nmos),&
-         ctem_tile_yr%ch4wet2_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4WetSpec_yr_t (nlat,nmos),&
          ctem_tile_yr%wetfdyn_yr_t (nlat,nmos),&
-         ctem_tile_yr%ch4dyn1_yr_t (nlat,nmos),&
-         ctem_tile_yr%ch4dyn2_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4WetDyn_yr_t (nlat,nmos),&
          ctem_tile_yr%ch4soills_yr_t (nlat,nmos),&
          ctem_tile_yr%veghght_yr_t (nlat,nmos),&
          ctem_tile_yr%peatdep_yr_t (nlat,nmos))
@@ -1729,11 +1707,9 @@ integer :: j,k,l,m
         vrot%lterm(j,k)            = 0.0
         vrot%cfluxcg(j,k)          = 0.0
         vrot%cfluxcs(j,k)          = 0.0
-        vrot%ch4wet1(j,k)          = 0.0
-        vrot%ch4wet2(j,k)          = 0.0
+        vrot%ch4WetSpec(j,k)          = 0.0
         vrot%wetfdyn(j,k)          = 0.0
-        vrot%ch4dyn1(j,k)          = 0.0
-        vrot%ch4dyn2(j,k)          = 0.0
+        vrot%ch4WetDyn(j,k)          = 0.0
         vrot%ch4_soills(j,k)       = 0.0
 
         vrot%nppmoss(j,k)           = 0.0
@@ -1935,12 +1911,10 @@ do i=1,nltest
     ctem_grd_mo%bterm_mo_g(i)    =0.0
     ctem_grd_mo%lterm_mo_g(i)    =0.0
     ctem_grd_mo%mterm_mo_g(i)    =0.0
-    ctem_grd_mo%ch4wet1_mo_g(i)  =0.0
-    ctem_grd_mo%ch4wet2_mo_g(i)  =0.0
+    ctem_grd_mo%ch4WetSpec_mo_g(i)  =0.0
     ctem_grd_mo%wetfdyn_mo_g(i)  =0.0
     ctem_grd_mo%wetfpres_mo_g(i)  =0.0
-    ctem_grd_mo%ch4dyn1_mo_g(i)  =0.0
-    ctem_grd_mo%ch4dyn2_mo_g(i)  =0.0
+    ctem_grd_mo%ch4WetDyn_mo_g(i)  =0.0
     ctem_grd_mo%ch4soills_mo_g(i)  =0.0
 
     do m = 1,nmtest
@@ -1976,12 +1950,10 @@ do i=1,nltest
         ctem_tile_mo%bterm_mo_t(i,m)    =0.0
         ctem_tile_mo%lterm_mo_t(i,m)    =0.0
         ctem_tile_mo%mterm_mo_t(i,m)    =0.0
-        ctem_tile_mo%ch4wet1_mo_t(i,m)  =0.0
-        ctem_tile_mo%ch4wet2_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4WetSpec_mo_t(i,m)  =0.0
         ctem_tile_mo%wetfdyn_mo_t(i,m)  =0.0
         ctem_tile_mo%wetfpres_mo_t(i,m)  =0.0
-        ctem_tile_mo%ch4dyn1_mo_t(i,m)  =0.0
-        ctem_tile_mo%ch4dyn2_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4WetDyn_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4soills_mo_t(i,m)  =0.0
         ctem_tile_mo%wind_mo_t(i,m) = 0.0
 
@@ -2083,11 +2055,9 @@ do i=1,nltest
     ctem_grd_yr%bterm_yr_g(i)=0.0
     ctem_grd_yr%lterm_yr_g(i)=0.0
     ctem_grd_yr%mterm_yr_g(i)=0.0
-    ctem_grd_yr%ch4wet1_yr_g(i)  =0.0
-    ctem_grd_yr%ch4wet2_yr_g(i)  =0.0
+    ctem_grd_yr%ch4WetSpec_yr_g(i)  =0.0
     ctem_grd_yr%wetfdyn_yr_g(i)  =0.0
-    ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
-    ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
+    ctem_grd_yr%ch4WetDyn_yr_g(i)  =0.0
     ctem_grd_yr%ch4soills_yr_g(i)  =0.0
     ctem_grd_yr%peatdep_yr_g(i)  =0.0
 
@@ -2129,11 +2099,9 @@ do i=1,nltest
         ctem_tile_yr%bterm_yr_t(i,m)=0.0
         ctem_tile_yr%lterm_yr_t(i,m)=0.0
         ctem_tile_yr%mterm_yr_t(i,m)=0.0
-        ctem_tile_yr%ch4wet1_yr_t(i,m)  =0.0
-        ctem_tile_yr%ch4wet2_yr_t(i,m)  =0.0
+        ctem_tile_yr%ch4WetSpec_yr_t(i,m)  =0.0
         ctem_tile_yr%wetfdyn_yr_t(i,m)  =0.0
-        ctem_tile_yr%ch4dyn1_yr_t(i,m)  =0.0
-        ctem_tile_yr%ch4dyn2_yr_t(i,m)  =0.0
+        ctem_tile_yr%ch4WetDyn_yr_t(i,m)  =0.0
         ctem_tile_yr%ch4soills_yr_t(i,m)  =0.0
         ctem_tile_yr%peatdep_yr_t(i,m)  =0.0
 
