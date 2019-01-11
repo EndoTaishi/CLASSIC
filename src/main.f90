@@ -3314,6 +3314,11 @@ contains
 
         ! deallocate arrays used for input files
         call deallocInput
+        
+        ! This is stored in outputManager so that means it retains its values between 
+        ! grid cells run. It must be reset here to ensure the value doesn't carry over to
+        ! the next grid cell!
+        consecDays = 0.
 
         return
 
