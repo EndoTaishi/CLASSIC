@@ -1731,6 +1731,13 @@ contains
         PREROW(i)   = metPre(metTimeIndex)
         TAROW(i)    = metTa(metTimeIndex) ! This is converted from the read-in degree C to K in main_driver!
         QAROW(i)    = metQa(metTimeIndex)
+        ! To prevent a divide by zero in CLASSI, we set this lower limit on the specific humidity.
+        if (QAROW(i) .eq. 0.) then 
+          QAROW(i) = 1.E-6
+          print*,'Warning, specific humidity of 0 in your input file. metTimeindex=',metTimeIndex
+          print*,'setting to 1.E-6 g/kg and moving on (updateMet)'
+        end if
+          
         UVROW(i)    = metUv(metTimeIndex)
         PRESROW(i)  = metPres(metTimeIndex)
 
