@@ -1,14 +1,14 @@
 &joboptions
 
 ! Model grid description
-    projectedGrid = .true. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+    projectedGrid = .false. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
                             !! regions referenced by the indexes, not coordinates, when running a sub-region
 
 ! Meteorological options:
     readMetStartYear = 1900  !< First year of meteorological forcing to read in from the met file
     readMetEndYear = 1905    !< Last year of meteorological forcing to read in from the met file
     metLoop = 1 ,            !< no. of times to cycle over the read-in meteorology
-    leap = .true. ,         !< True if your meteorological forcing includes leap years
+    leap = .false. ,         !< True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
         metFileFss = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1700_2017.nc',        !< location of the incoming shortwave radiation meteorology file
