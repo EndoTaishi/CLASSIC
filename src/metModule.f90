@@ -333,7 +333,7 @@ contains
         enddo
 
         ! Balance check that we have conserved our precip
-        if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-20) then 
+        if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-5) then 
           if (attempts > 3) then            
             print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
             call XIT('metModule',-1)
