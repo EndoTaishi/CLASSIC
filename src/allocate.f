@@ -23,7 +23,7 @@
 !!\f[  W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i})  r_{i}. \hspace{10pt}[Eqn 1]\f]
 !!
 !!The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction
-!!coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also ctem_params.f90), as for trees and crops:
+!!coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also classic_params.f90), as for trees and crops:
 !!
 !!\f[ L = \exp(-k_\mathrm{n} LAI) ;\hspace{10pt}[Eqn 2]\f]
 !!
@@ -42,8 +42,8 @@
 !!
 !!The base allocation fractions for each component (leaves -- \f$\epsilon_\mathrm{L}\f$,
 !!stem -- \f$\epsilon_\mathrm{S}\f$, and roots -- \f$\epsilon_\mathrm{R}\f$) are PFT-dependent
-!!(see also ctem_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
-!!The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also ctem_params.f90), determines the sensitivity
+!!(see also classic_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
+!!The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also classic_params.f90), determines the sensitivity
 !!of the allocation scheme to changes in \f$W\f$ and \f$L\f$. Larger values of \f$\omega_\mathrm{a}\f$ yield
 !!higher sensitivity to changes in \f$L\f$ and \f$W\f$.
 !!
@@ -63,13 +63,13 @@
 !!\f[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\f]
 !!
 !!where \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$ and \f$C_\mathrm{L}\f$ are the carbon in the stem,
-!!root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also ctem_params.f90)
+!!root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also classic_params.f90)
 !!and parameter \f$\kappa\f$ has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters
 !!are based on the Frankfurt Biosphere Model (FBM) Ludeke et al. (1994) \cite Ludeke1994-px. This constraint (Eq. 9) is based
 !!on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As
 !!grasses have no stem component, Eq. 9 determines their root to shoot ratio (i.e. the ratio of
 !!belowground to aboveground biomass). The final condition ensures that a minimum realistic root
-!!to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also ctem_params.f90). Root mass
+!!to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also classic_params.f90). Root mass
 !!is required for nutrient and water uptake and support for the aboveground biomass. If the minimum
 !!root to shoot ratio is not being maintained, carbon is allocated preferentially to roots.
 !!
@@ -87,7 +87,7 @@ C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
 C     J. Melton       Fixed that and also brought in isand so that the layers of
 C                     bedrock won't have their rmat used.
 c
-c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 c     J. Melton
 c
 c     5   Jul 2013  - Fixed bug with initializing the variables. Brought in
@@ -111,7 +111,7 @@ c     ilg       - no. of grid cells in latitude circle
 c     ican        - number of class pfts
 c
 
-      use ctem_params,        only : eta, kappa, kn, abszero, icc, ilg,
+      use classic_params,   only : eta, kappa, kn, abszero, icc, ilg,
      1                               ignd, kk, ican, omega, epsilonl,
      2                               epsilons, epsilonr, caleaf, castem,
      3                               caroot, consallo, rtsrmin, aldrlfon
@@ -159,7 +159,7 @@ c
 c
 c
 c     ------------------------------------------------------------------
-c     Constants and parameters are located in ctem_params.f90
+c     Constants and parameters are located in classic_params.f90
 c     ---------------------------------------------------------------
 c
 c     initialize required arrays to 0

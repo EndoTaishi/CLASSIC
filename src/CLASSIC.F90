@@ -20,7 +20,7 @@ program CLASSIC
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
     use class_statevars,        only : alloc_class_vars
-    use ctem_params,            only : prepareGlobalParams
+    use classic_params,            only : prepareGlobalParams
 
     implicit none
 
@@ -48,7 +48,7 @@ program CLASSIC
     !! read_initialstate as well as the restart file that is written to later.
     call read_modelsetup
 
-    !> Prepare all of the global parameters such as those in CLASSD and ctem_params
+    !> Prepare all of the global parameters such as those in CLASSD and classic_params
     !! which are read from a namelist file.
     call prepareGlobalParams
 

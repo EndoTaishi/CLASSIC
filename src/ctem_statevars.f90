@@ -1,9 +1,10 @@
 !> Contains the biogeochemistry-related variable type structures.
+!!@author J. Melton 
 module ctem_statevars
 
 ! J. Melton Apr 2015
 
-use ctem_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp1, &
+use classic_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp1, &
                     monthend, mmday,modelpft, l2max,deltat, abszero, monthdays,seed, crop, NBS
 
 implicit none
@@ -989,7 +990,7 @@ contains
 
 subroutine alloc_ctem_vars()
 
-use ctem_params, only : ican, icc,iccp1,ilg,nlat,nmos,ignd
+use classic_params, only : ican, icc,iccp1,ilg,nlat,nmos,ignd
 
 implicit none
 
@@ -1669,7 +1670,7 @@ end subroutine alloc_ctem_vars
 
 subroutine initrowvars()
 
-use ctem_params, only : nlat, nmos, ican, ignd ,icc, iccp1
+use classic_params, only : nlat, nmos, ican, ignd ,icc, iccp1
 
 implicit none
 
@@ -1837,7 +1838,7 @@ end subroutine initrowvars
 
 subroutine resetmonthend(nltest,nmtest)
 
-use ctem_params, only : iccp1,icc
+use classic_params, only : iccp1,icc
 
 implicit none
 
@@ -2007,7 +2008,7 @@ end subroutine resetmonthend
 
 subroutine resetyearend(nltest,nmtest)
 
-use ctem_params, only : iccp1,icc
+use classic_params, only : iccp1,icc
 
 implicit none
 

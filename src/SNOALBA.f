@@ -3,6 +3,7 @@ C!Diagnoses snowpack visible and near-IR albedos given the
 C!all-wave albedo at the current time step. Calculates snowpack
 C!transmissivity for shortwave radiation.
 C!@author D. Verseghy, J. Cole, M. Lazare
+!
       SUBROUTINE SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,
      1                   TRSNOWC, ALSNO, TRSNOWG, FSDB, FSFB, RHOSNO,
      2                   REFSN,BCSN,SNO,CSZ,ZSNOW,FSNOW,ASVDAT,ASIDAT,

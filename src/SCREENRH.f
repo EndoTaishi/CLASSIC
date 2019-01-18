@@ -4,12 +4,15 @@
 !!
 !!The formulae used here are consistent with that used elsewhere
 !!in the gcm physics.
-!!
+!!@author M. Lazare, V. Fortin
+!
       SUBROUTINE SCREENRH(SRH,ST,SQ,PRESSG,FMASK,ILG,IL1,IL2)
 C
 C     * DEC 16, 2014 - V.FORTIN.  REMOVE MERGE IN CALCULATION OF FRACW.
 C     * APR 30, 2009 - M.LAZARE.
 C
+      use classic_params, only : EPS1,EPS2,T1S,RW1,RW2,RW3,RI1,RI2,RI3                 
+
       IMPLICIT NONE
 C
 C     * OUTPUT FIELD:
@@ -21,20 +24,11 @@ C
       REAL   ST(ILG),SQ(ILG),PRESSG(ILG),FMASK(ILG)
 C
       REAL FACTE,EPSLIM,FRACW,ETMP,ESTREF,ESAT,QSW
-      REAL A,B,EPS1,EPS2,T1S,T2S,AI,BI,AW,BW,SLP
-      REAL RW1,RW2,RW3,RI1,RI2,RI3                 
+!      REAL A,B,EPS1,EPS2,T1S,T2S,AI,BI,AW,BW,SLP
+!      REAL RW1,RW2,RW3,RI1,RI2,RI3                 
       REAL ESW,ESI,ESTEFF,TTT,UUU
 C
       INTEGER ILG,IL,IL1,IL2
-C
-C     * COMMON BLOCKS FOR THERMODYNAMIC CONSTANTS.
-C
-      COMMON /EPS /  A,B,EPS1,EPS2    
-      COMMON /HTCP/  T1S,T2S,AI,BI,AW,BW,SLP
-C
-C     * PARAMETERS USED IN NEW SATURATION VAPOUR PRESSURE FORMULATION.
-C
-      COMMON /ESTWI/ RW1,RW2,RW3,RI1,RI2,RI3                 
 C
 C     * COMPUTES THE SATURATION VAPOUR PRESSURE OVER WATER OR ICE.
 C
@@ -42,6 +36,7 @@ C
       ESI(TTT)        = EXP(RI1+RI2/TTT)*TTT**RI3
       ESTEFF(TTT,UUU) = UUU*ESW(TTT) + (1.-UUU)*ESI(TTT)   
 C========================================================================
+      
       EPSLIM=0.001
       FACTE=1./EPS1-1.
       DO IL=IL1,IL2
@@ -58,6 +53,7 @@ C
         ENDIF 
 C
         ETMP=ESTEFF(ST(IL),FRACW)
+        
         ESTREF=0.01*PRESSG(IL)*(1.-EPSLIM)/(1.-EPSLIM*EPS2)
         IF ( ETMP.LT.ESTREF ) THEN
           ESAT=ETMP

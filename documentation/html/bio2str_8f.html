@@ -97,8 +97,9 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Converts biomass to structural attributes. </p>
+<dl class="section author"><dt>Author</dt><dd>V. Arora, J. Melton, Y. Peng</dd></dl>
 <p>The time-varying biomass in the leaves ( <img class="formulaInl" alt="$C_L$" src="form_91.png"/>), stem ( <img class="formulaInl" alt="$C_S$" src="form_92.png"/>) and root ( <img class="formulaInl" alt="$C_R$" src="form_93.png"/>) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.</p>
-<p>Leaf biomass is converted to LAI using specific leaf area ( <img class="formulaInl" alt="${SLA}$" src="form_94.png"/>, <img class="formulaInl" alt="$m^2\,(kg\,C)^{-1}$" src="form_95.png"/>), which itself is assumed to be a function of leaf lifespan ( <img class="formulaInl" alt="$\tau_L$" src="form_96.png"/>; see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>)</p>
+<p>Leaf biomass is converted to LAI using specific leaf area ( <img class="formulaInl" alt="${SLA}$" src="form_94.png"/>, <img class="formulaInl" alt="$m^2\,(kg\,C)^{-1}$" src="form_95.png"/>), which itself is assumed to be a function of leaf lifespan ( <img class="formulaInl" alt="$\tau_L$" src="form_96.png"/>; see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>)</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \]" src="form_97.png"/>
 </p>
@@ -120,7 +121,7 @@ Functions/Subroutines</h2></td></tr>
 <p>The parameter <img class="formulaInl" alt="$\iota$" src="form_117.png"/> that describes the exponential root distribution is calculated as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]" src="form_118.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> represents the PFT-specific mean root distribution profile parameter and <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/> the average root biomass derived from Jackson et al. (1996) <a class="el" href="citelist.html#CITEREF_Jackson1996-va">[45]</a> (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). Equation for <img class="formulaInl" alt="$\iota$" src="form_117.png"/> above yields a lower (higher) value of <img class="formulaInl" alt="$\iota$" src="form_117.png"/> than <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> when root biomass <img class="formulaInl" alt="$C_R$" src="form_93.png"/> is higher (lower) than the PFT-specific mean root biomass <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/>, resulting in a deeper (shallower) root profile than the mean root profile.</p>
+<p>where <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> represents the PFT-specific mean root distribution profile parameter and <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/> the average root biomass derived from Jackson et al. (1996) <a class="el" href="citelist.html#CITEREF_Jackson1996-va">[45]</a> (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>). Equation for <img class="formulaInl" alt="$\iota$" src="form_117.png"/> above yields a lower (higher) value of <img class="formulaInl" alt="$\iota$" src="form_117.png"/> than <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> when root biomass <img class="formulaInl" alt="$C_R$" src="form_93.png"/> is higher (lower) than the PFT-specific mean root biomass <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/>, resulting in a deeper (shallower) root profile than the mean root profile.</p>
 <p>The rooting depth <img class="formulaInl" alt="$d_R$" src="form_113.png"/> is checked to ensure it does not exceed the soil depth. If so, <img class="formulaInl" alt="$d_R$" src="form_113.png"/> is set to the soil depth and <img class="formulaInl" alt="$\iota$" src="form_117.png"/> is recalculated as <img class="formulaInl" alt="$\iota = 4.605/d_R$" src="form_121.png"/> (see Eq. rootterm1} for derivation of 4.605 term). The new value of <img class="formulaInl" alt="$\iota$" src="form_117.png"/> is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a id="ab4f6ee7a29e16434fb631d685b38ee30"></a>
@@ -330,7 +331,7 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Constants and parameters are located in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a></p>
+<p>Constants and parameters are located in <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a></p>
 <p>class' original root parameterization has deeper roots than ctem's default values based on literature. in the coupled model this leads to lower evapotranspiration (et) values. an option is provided here to deepen roots, but this will also increase photosynthesis and vegetation biomass slightly, due to more access to soil water. so while use of deeper roots is desirable in the coupled global model, one may decide to use ctem's default parameterizarion for stand alone simulations, and set deeproots to .false.</p>
 <p>&mdash;&mdash; 1. conversion of leaf biomass into leaf area index -&mdash;&mdash;</p>
 <p>find specific leaf area (sla, m2/kg) using leaf life span</p>
@@ -375,7 +376,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="bio2str_8f.html">bio2str.f</a></li>
-    <li class="footer">Generated on Wed Dec 12 2018 16:42:11 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 18 2019 12:01:30 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

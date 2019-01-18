@@ -1,3 +1,4 @@
+
 !>Central module that handles all preparation and writing to output files
 module prepareOutputs
 
@@ -22,11 +23,12 @@ contains
     !>\ingroup prepareOutputs_class_halfhourly_aw
     !>@{
     !> Prepares and writes the CLASS (physics) half hourly file
-    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr,SBC,TFREZ)
+    !!@author J. Melton 
+    subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr)
 
         use class_statevars, only : class_rot,class_gat,initRowVars
         use ctem_statevars, only : c_switch,vrot
-        use ctem_params, only : ignd,icc
+        use classic_params, only : ignd,icc,SBC,TFREZ
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -39,9 +41,6 @@ contains
         integer, intent(in) :: nday
         integer, intent(in) :: iday
         integer, intent(in) :: realyr
-        real, intent(in) :: SBC  !CLASS common block items,
-        real, intent(in) :: TFREZ !CLASS common block items,
-
 
         ! local variables
         real, dimension(1) :: timeStamp
@@ -744,11 +743,12 @@ contains
     !>Accumlates and writes the daily physics variables. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
     !! The pointer to the daily data structures (in class_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
-    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,sbc,ncount,nday,lastDOY,realyr,TFREZ)
+    subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,nday,lastDOY,realyr)
 
         use class_statevars, only : class_rot,resetAccVars
-        use ctem_params, only : ignd
+        use classic_params, only : ignd,sbc,delt,TFREZ
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -758,12 +758,10 @@ contains
         integer, intent(in) :: iday
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
-        real, intent(in) :: sbc
         integer, intent(in) :: ncount
         integer, intent(in) :: nday
         integer, intent(in) :: lastDOY
         integer, intent(in) :: realyr
-        real, intent(in) :: TFREZ !CLASS common block items,
 
         ! local variables
         integer :: i,m,j,k
@@ -1269,12 +1267,12 @@ contains
     !>Accumulate and write out the monthly physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce a monthly value.
     !! The pointer to the monthly data structures (in class_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
-    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC,nltest,nmtest,TFREZ,&
-                                lastDOY)
+    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,nltest,nmtest,lastDOY)
 
         use class_statevars, only : class_out,resetclassmon,class_rot
-        use ctem_params, only : nmon, monthend, nmos, ignd
+        use classic_params, only : nmon, monthend, nmos, ignd,SBC,DELT,TFREZ
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -1288,8 +1286,6 @@ contains
         integer, intent(in) :: lastDOY
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
-        real, intent(in) :: SBC  !CLASS common block items,
-        real, intent(in) :: TFREZ !CLASS common block items,
 
         ! pointers
         real, dimension(:,:,:), pointer :: TBARROT
@@ -1602,12 +1598,13 @@ contains
     !>Accumulate and write out the annual physics outputs. These are kept in pointer structures as
     !! this subroutine is called each physics timestep and we increment the timestep values to produce annuals values.
     !! The pointer to the annual data structures (in class_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
-    subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,SBC, &
+    subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY, &
                                 nltest,nmtest,lastDOY)
 
         use class_statevars,     only : class_out,resetclassyr,class_rot
-        use ctem_params, only : nmon, monthend, nmos, ignd
+        use classic_params, only : nmon, monthend, nmos, ignd,SBC,DELT
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -1621,7 +1618,6 @@ contains
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
         integer, intent(in) :: lastDOY
-        real, intent(in) :: SBC
 
         ! pointers
         real, dimension(:), pointer :: FSSROW
@@ -1846,7 +1842,7 @@ contains
     !> Do some unit conversions for CTEM (biogeochemical processes) so they are ready to be written out
     subroutine convertUnitsCTEM(nltest,nmtest)
 
-        use ctem_params, only : icc,ignd,iccp1,wtCH4,convertkgC
+        use classic_params, only : icc,ignd,iccp1,wtCH4,convertkgC
         use ctem_statevars,     only :  vrot
         
         implicit none
@@ -1978,6 +1974,7 @@ contains
     !>\ingroup prepareOutputs_ctem_daily_aw
     !>@{
     !> Accumulate and write the daily biogeochemical outputs
+    !!@author J. Melton 
 
     subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,nday,realyr,grclarea,ipeatlandrow)
 
@@ -1985,7 +1982,7 @@ contains
 
         use class_statevars, only : class_rot
         use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
-        use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed,convertkgC
+        use classic_params, only : icc,ignd,nmos,iccp1,wtCH4,seed,convertkgC
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -2806,6 +2803,7 @@ contains
     !> Accumulate and write out the monthly CTEM outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce a monthly value.
     !! The pointer to the monthly data structures (in ctem_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr,nday,lastDOY)
 
@@ -2814,7 +2812,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
                                     resetmonthend,ctem_mo
-        use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
+        use classic_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -3587,13 +3585,14 @@ contains
     !> Accumulate and write out the annual biogeochemical (CTEM) outputs. These are kept in pointer structures as
     !! this subroutine is called daily and we increment the daily values to produce annual values.
     !! The pointer to the annual data structures (in ctem_statevars) keeps the data between calls.
+    !!@author J. Melton 
 
     subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,lastDOY)
 
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                         resetyearend
-        use ctem_params, only : icc,iccp1,seed
+        use classic_params, only : icc,iccp1,seed
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none

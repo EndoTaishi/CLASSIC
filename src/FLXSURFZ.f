@@ -2,11 +2,17 @@
 !>Calculates surface layer transfer coefficients and fluxes
 !!FLXSURFZ is a variant of FLXSURF3 that permits to input
 !!wind and temperature (humidity) at different levels
+!!@author Y. Delage, G. Pellerin, B. Bilodeau, M. Desgagne, R. Sarrazin, C. Girard, D. Verseghy, V. Fortin, J. P. Paquin, R. Harvey, J. Melton
       SUBROUTINE FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO,
      X                    UE, FCOR, TA , QA , ZU, ZT, VA,
      Y                    TG , QG , H , Z0 , Z0T,
      %                    LZZ0, LZZ0T, FM, FH,N,IL1,IL2,FI,ITER,JL )
+
+      use classic_params, only : AS,CI,BS,BETA,FACTN,HMIN,DELTA,GRAV,
+     1                           VKC,ASX
+
       IMPLICIT NONE
+
       INTEGER N,IL1,IL2,ITER(N),JL
       REAL CDM(N),CDH(N),CTU(N),RIB(N),FCOR(N),ILMO(N)
       REAL FTEMP(N),FVAP(N),TA(N),QA(N),ZU(N),VA(N)
@@ -97,10 +103,6 @@ c                "       BLM 82 (23-48)
 c
 c     DIVERSES CONSTANTES PHYSIQUES
 c
-      REAL AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX,CLM
-      REAL DELTA,GRAV,KARMAN,CPD
-      COMMON / PHYCON / DELTA,GRAV,KARMAN,CPD
-      COMMON / CLASSD2 / AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
       INTEGER J
       INTEGER IT,ITMAX
       REAL HMAX,CORMIN,EPSLN
@@ -154,7 +156,7 @@ c  FIRST APPROXIMATION TO ILMO
      1           max(sqrt(z0(j)*z0t(j)),1.0)
            ILMO(J)=RIB(J)*FM(J)*FM(J)/(ZP*FH(J))
            F=MAX(ABS(FCOR(J)),CORMIN)
-           H(J)=BS*sqrt(KARMAN*u/(ILMO(J)*F*fm(j)))
+           H(J)=BS*sqrt(VKC*u/(ILMO(J)*F*fm(j)))
         ELSE
            FM(J)=LZZ0(J)-min(0.7+log(1.0-rib(j)),LZZ0(J)-1.0)
            FH(J)=BETA*(LZZ0T(J)-min(0.7+log(1.0-rib(j)),LZZ0T(J)-1.0))
@@ -175,7 +177,7 @@ c  STABLE CASE
           ILMO(J)=max(EPSLN,ILMO(J))
         hl=(ZU(J)+10.0*Z0(J))*FACTN
         F=MAX(ABS(FCOR(J)),CORMIN)
-        hs=BS*sqrt(KARMAN*u/(ILMO(J)*F*fm(j)))
+        hs=BS*sqrt(VKC*u/(ILMO(J)*F*fm(j)))
         H(J)=MAX(HMIN,hs,hl,factn/(4.0*AS*BETA*ILMO(J)))
         HI=1.0/H(J)
         unsl=ILMO(J)
@@ -238,8 +240,8 @@ c  SOLUTION
            endif
         endif
 c----------------------------------------------------------------------
-        CM=KARMAN/FM(J)
-        CT=KARMAN/FH(J)
+        CM=VKC/FM(J)
+        CT=VKC/FH(J)
         UE(J)=u*CM
         CDM(J)=CM**2
         CTU(J)=CT*UE(J)

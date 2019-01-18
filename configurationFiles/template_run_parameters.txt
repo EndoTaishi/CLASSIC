@@ -11,6 +11,215 @@
 
 ! ---------
 
+! Physics (CLASS) parameters:
+
+! Von Karman Constant (-)
+VKC = 0.40,
+
+! Drag Coefficient for water (-)
+CT =  1.15E-3,
+
+! Minimum wind speed (m s^{-1})
+VMIN = 0.1,
+
+! Thermal conductivity of water ($W m^{-1} K^{-1} $)
+TCW = 0.57,
+
+! Thermal conductivity of ice  ($W m^{-1} K^{-1} $)
+TCICE = 2.24,
+
+! Thermal conductivity of sand particles  ($W m^{-1} K^{-1} $)
+TCSAND = 2.5, 
+
+! Thermal conductivity of fine mineral particles  ($W m^{-1} K^{-1} $)
+TCCLAY = 2.5,
+
+! Thermal conductivity of organic matter  ($W m^{-1} K^{-1} $)
+TCOM = 0.25,
+
+! Thermal conductivity of dry mineral soil  ($W m^{-1} K^{-1} $)
+TCDRYS = 0.275,
+
+! Particle density of soil mineral matter ($kg m^{-3}$)
+RHOSOL = 2.65E3,
+
+! Particle density of soil organic matter ($kg m^{-3}$)
+RHOOM = 1.30E3,
+
+! Volumetric heat capacity of water ($J m^{-3} K^{-1}$)
+HCPW = 4.187E6,
+
+! Volumetric heat capacity of ice ($J m^{-3} K^{-1}$)
+HCPICE = 1.9257E6,
+
+! Volumetric heat capacity of mineral matter ($J m^{-3} K^{-1}$)
+HCPSOL = 2.25E6,
+
+! Volumetric heat capacity of organic matter ($J m^{-3} K^{-1}$)
+HCPOM = 2.50E6,
+
+! Volumetric heat capacity of sand particles ($J m^{-3} K^{-1}$)
+HCPSND = 2.13E6,
+
+! Volumetric heat capacity of fine mineral particles ($J m^{-3} K^{-1}$)
+HCPCLY = 2.38E6,
+
+! Specific heat of water ($J kg^{-1} K^{-1}$)
+SPHW = 4.186E3,
+
+! Specific heat of ice  ($J kg^{-1} K^{-1}$)
+SPHICE = 2.10E3,
+
+! Specific heat of vegetation matter  ($J kg^{-1} K^{-1}$)
+SPHVEG = 2.70E3,
+
+! Density of water ($kg m^{-3}$) 
+RHOW = 1.0E3,
+
+! Density of ice ($kg m^{-3}$)
+RHOICE = 0.917E3,
+
+! Thermal conductivity of ice sheets ($W m^{-1} K^{-1}$)
+TCGLAC = 2.24,
+
+! Latent heat of freezing of water ($J kg^{-1}$)
+CLHMLT = 0.334E6,
+
+! Latent heat of vaporization of water ($J kg^{-1}$)
+CLHVAP = 2.501E6,
+
+! Natural log of roughness length of soil (-)
+ZOLNG = -4.605,
+
+! Natural log of roughness length of snow (-)
+ZOLNS = -6.908,
+
+! Natural log of roughness length of ice (-)
+ZOLNI = -6.215,
+
+! Ratio of soil roughness length for momentum to roughness length for heat (-)
+ZORATG = 3.0,
+
+! Visible albedo of ice (-)
+ALVSI = 0.95,
+
+! Near-infrared albedo of ice (-)      
+ALIRI = 0.73,
+
+! Visible albedo of organic matter (-)
+ALVSO = 0.05,
+
+! Near-infrared albedo of organic matter (-)
+ALIRO = 0.30,
+
+! Albedo of rock (-)
+ALBRCK = 0.16,
+
+!< The crop growth descriptor array (see APREP.f for description)
+GROWYR(1:9,1,1)   = 213.,213.,213.,213.,213.,213.,0.,0.,0.,
+GROWYR(10:18,1,1) = 0.,0.,0., 75.,106.,136.,167.,167.,167.,
+GROWYR(1:9,2,1)   = 273.,273.,273.,273.,273.,273.,0.,0.,0.,
+GROWYR(10:18,2,1) = 0.,0.,0.,135.,166.,196.,196.,196.,196.,
+GROWYR(1:9,3,1)   = 121.,121.,121.,121.,121.,121.,0.,0.,0.,
+GROWYR(10:18,3,1) = 0.,0.,0.,275.,244.,214.,214.,214.,214.,
+GROWYR(1:9,4,1)   = 151.,151.,151.,151.,151.,151.,0.,0.,0.,
+GROWYR(10:18,4,1) = 0.,0.,0.,305.,274.,244.,244.,244.,244.,
+GROWYR(1:9,1,2)   = 213.,213.,213.,213.,213.,213.,0.,0.,0.,
+GROWYR(10:18,1,2) = 0.,0., 75.,106.,136.,167.,167.,167.,167.,
+GROWYR(1:9,2,2)   = 273.,273.,273.,273.,273.,273.,0.,0.,0.,
+GROWYR(10:18,2,2) = 0.,0.,135.,166.,196.,196.,196.,196.,196.,
+GROWYR(1:9,3,2)   = 121.,121.,121.,121.,121.,121.,0.,0.,0.,
+GROWYR(10:18,3,2) = 0.,0.,275.,244.,214.,214.,214.,214.,214.,
+GROWYR(1:9,4,2)   = 151.,151.,151.,151.,151.,151.,0.,0.,0.,
+GROWYR(10:18,4,2) = 0.,0.,305.,274.,244.,244.,244.,244.,244., 
+
+! The ratio of the roughness length for momentum to the roughness length for heat
+ZORAT =  1.0, 1.0, 1.0, 1.0,
+
+! Attenuation coefficient used in calculating the sky view factor for vegetation canopies (variable c in the documentation for subroutine CANALB)
+CANEXT = -0.5, -1.5, -0.8, -0.8,
+
+! Leaf dimension factor used in calculating the leaf boundary resistance (variable Cl in the documentation for subroutine APREP)
+XLEAF = 0.0247, 0.0204, 0.0456, 0.0456,
+
+! Minimum stomatal resistance of vegetation category \f$[s m^{-1}] (r_{s,min})\f$ (**IGNORED if CTEM is on**)
+RSMN=  200.00,  125.00,  85.000,  100.00,
+
+! Reference value of incoming shortwave radiation for vegetation category (used in stomatal 
+!resistance calculation) [W m^{-2}]  (**IGNORED if CTEM is on**)
+QA50 =  30.00,  40.00, 30.00, 30.00,
+
+! Vapour pressure deficit coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ]  (**IGNORED if CTEM is on**)       
+VPDA =  0.65, 0.50, 0.50, 0.50,
+
+! Vapour pressure deficit coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ]  (**IGNORED if CTEM is on**)       
+VPDB =  1.05, 0.60, 1.00, 1.00,
+
+! Soil moisture suction coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ](**IGNORED if CTEM is on**)       
+PSGA = 100.00, 100.00, 100.00, 100.00 ,
+
+! Soil moisture suction coefficient for vegetation category (used in stomatal 
+! resistance calculation) [ - ](**IGNORED if CTEM is on**)       
+PSGB = 5.0000, 5.0000, 5.0000, 5.0000 ,
+
+! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric). Values are derived from the work of Letts et al. (2000)
+
+! Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+THPORG = 0.93, 0.88, 0.83,
+
+! Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+THRORG = 0.275, 0.620, 0.705,
+
+! Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+THMORG = 0.04, 0.15, 0.22,
+
+! Clapp and Hornberger 'b' value for peat soils [ ]
+BORG = 2.7, 6.1, 12.0,
+
+! Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+PSISORG = 0.0103, 0.0102, 0.0101,
+
+! Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
+GRKSORG = 2.8E-4, 2.0E-6, 1.0E-7,
+
+! The next parameters are normally assigned in the GCM but need to be assigned here since this 
+! is an offline run. The names used below are the same as those in the GCM.
+
+! Model physics timestep (s) 
+DELT = 1800.0,
+
+! CANALB parameters:
+
+  ! Average background visible albedo of snow covered canopy (-)
+  ALVSWC = 0.27,     
+
+  ! Average background NIR albedo of snow covered canopy (-)
+  ALIRWC = 0.38,     
+
+  ! Effective overall exctinction coefficient given if visible transmissivity is very small
+  CXTLRG = 1.0E20,   
+
+! CLASSB parameters: 
+
+  ! Look up tables for wet (w) and dry (d) visible (v) and NIR (n) soil albedos based on soil colour index 
+  ALWV(1:10)  = 0.25,0.23,0.21,0.20,0.19,0.18,0.17,0.16,0.15,0.14,
+  ALWV(11:20) = 0.13,0.12,0.11,0.10,0.09,0.08,0.07,0.06,0.05,0.04,
+  ALWN(1:10)  = 0.50,0.46,0.42,0.40,0.38,0.36,0.34,0.32,0.30,0.28,
+  ALWN(11:20) = 0.26,0.24,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08,
+  ALDV(1:10)  = 0.36,0.34,0.32,0.31,0.30,0.29,0.28,0.27,0.26,0.25,
+  ALDV(11:20) = 0.24,0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08,
+  ALDN(1:10)  = 0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,
+  ALDN(11:20) = 0.37,0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16,
+
+! SNINFL parameters:
+
+  ! Maximum water retention capacity of the snow pack (weight percentage)
+  WSNCAP = 0.04, 
+
+! -------------------------------------
 
 ! Biogeochemical (CTEM) parameters
 
@@ -527,7 +736,7 @@ kn(10:12)  =0.46, 0.44, 0.00,
     bsratesc_g = 0.02258,
 
     !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
-    a = 4.0,
+    a_hetr = 4.0,
 
 ! landuse_change_mod.f90 parameters: --------------
 ! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!
@@ -806,6 +1015,20 @@ kn(10:12)  =0.46, 0.44, 0.00,
 
     !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
     roothrsh = 8.0,
+
+! soil_ch4uptake parameters: -----------------------------
+
+    !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
+    D_air = 0.196        
+    
+    !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s^{-1} m^{-2} cm{-1}\f$)
+    g_0 = 6.79051E-3   ! 586.7 / 86400.
+    
+    !< Constant derived in Curry (2007) from comparison against measurements (-)
+    betaCH4 = 0.8      
+      
+    !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
+    k_o = 5.03E-5        
 
 ! turnover.f parameters: ---------------------------------
 

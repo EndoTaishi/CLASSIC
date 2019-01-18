@@ -20,49 +20,49 @@
         metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND.nc' ,     !< location of the model initialization file
+    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters
-    runparams_file = 'configurationFiles/template_run_parameters.txt' ,    !< location of the namelist file containing the model parameters
+    runparams_file = 'configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
 
 ! CTEM (biogeochemistry) switches:
- ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
-                        !< lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
-    icc = 9 ,           !< Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
-    l2max = 3 ,         !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
-    spinfast = 3 ,      !< Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
+ ctem_on = .true. ,     ! set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
+                        ! lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
+    icc = 9 ,           ! Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
+    l2max = 3 ,         ! Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
+    spinfast = 3 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
 
     !CO2 switches:
-        transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
+        transientCO2 = .true. , ! Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
         CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
-        fixedYearCO2 = 1850 ,   !< If transientCO2 = .true., this is ignored.
+        fixedYearCO2 = 1850 ,   ! If transientCO2 = .true., this is ignored.
 
     !CH4 switches:
         ! If you don't care about running with methane, you can just copy your CO2 file (cp CO2file.nc fakeCH4file.nc) and point to it here.
         ! It won't affect the rest of your run. However you do need to have a file specified if CTEM is on.
-        transientCH4 = .true. , !< Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
+        transientCH4 = .true. , ! Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
         CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
         fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
     !Fire switches
-        dofire = .true. ,               !< If true the fire disturbance parameterization is turned on.
+        dofire = .true. ,               ! If true the fire disturbance parameterization is turned on.
 
-            transientPOPD = .true. ,    !< Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
+            transientPOPD = .true. ,    ! Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
             POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017_chunked.nc' ,
-            fixedYearPOPD = 1850 ,      !< If transientPOPD = .true., this is ignored.
+            fixedYearPOPD = 1850 ,      ! If transientPOPD = .true., this is ignored.
 
-            transientLGHT= .true.      !<use lightning strike time series, otherwise use fixedYearLGHT
-            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , !< Location of the netcdf file containing lightning strike values
-            fixedYearLGHT = 1850 ,    !< set the year to use for lightning strikes if transientLGHT is false.
+            transientLGHT= .true.      !use lightning strike time series, otherwise use fixedYearLGHT
+            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , ! Location of the netcdf file containing lightning strike values
+            fixedYearLGHT = 1850 ,    ! set the year to use for lightning strikes if transientLGHT is false.
 
     ! Competition switches:
-        PFTCompetition = .false. ,      !< If true, competition between PFTs for space on a grid cell is implimented
-            inibioclim = .false. ,      !< set this to true if competition between pfts is to be implimented and you have the mean climate values
-                                        !< in the init netcdf file.
-            start_bare = .false.,       !< Set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the
-                                        !< init netcdf file info will be used to set up the run. NOTE: This still keeps the crop fractions
-                                        !< (while setting all pools to zero)
+        PFTCompetition = .false. ,      ! If true, competition between PFTs for space on a grid cell is implimented
+            inibioclim = .false. ,      ! set this to true if competition between pfts is to be implimented and you have the mean climate values
+                                        ! in the init netcdf file.
+            start_bare = .false.,       ! Set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the
+                                        ! init netcdf file info will be used to set up the run. NOTE: This still keeps the crop fractions
+                                        ! (while setting all pools to zero)
 
     ! Land Use switches:
         ! If you wish to use your own PFT fractional covers (specified in the init_file), set fixedYearLUC to -9999, otherwise set it
@@ -81,68 +81,73 @@
         ! to some valid year. If you wish to use only dynamically determined wetland fractions set transientOBSWETF
         ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
         ! dynamically determine wetland extent.
-        transientOBSWETF = .false. ,  !< use observed wetland fraction time series, otherwise use fixedYearOBSWETF
-        OBSWETFFile = '',             !< Location of the netcdf file containing observed wetland fraction
-        fixedYearOBSWETF = -9999 ,    !< set the year to use for observed wetland fraction if transientOBSWETF is false.
+        transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
+        OBSWETFFile = '',             ! Location of the netcdf file containing observed wetland fraction
+        fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
 ! Physics switches:
 
-    ican = 4 ,     !< Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
-    IDISP = 0 ,    !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
-                    !< of the "terrain". if idisp=1, vegetation displacement heights are calculated.
-    IZREF = 2 ,    !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
-                    !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
-    ISLFD = 0 ,    !< if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-level diagnostic calculations
-                    !< is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-level diagnostic calculations.
-                    !< if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-level diagnostic calculations.
-    IPCP = 1 ,     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
-                    !< rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
-                    !< a polynomial curve between 0 C and 6 C.
-    IWF = 0 ,      !< if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4),
-                    !< the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
-    isnoalb = 0 ,  !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
+    ican = 4 ,    ! Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
+    IDISP = 0 ,   ! if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
+                  ! of the "terrain". if idisp=1, vegetation displacement heights are calculated.
+    IZREF = 2 ,   ! if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+                  ! if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
+    ZRFH = 40.0,  ! The reference heights at which the energy variables (air temperature and specific humidity) are provided. When 
+                  ! using field data this is the measurment height. 
+    ZRFM = 40.0,  ! The reference heights at which the momentum variables (wind speed) are provided. When using field data this is the measurment height. 
+    ZBLD = 50.0,  ! The atmospheric blending height.  Technically this variable depends on the length scale of the
+                  ! patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
+    ISLFD = 0 ,   ! if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-level diagnostic calculations
+                  ! is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-level diagnostic calculations.
+                  ! if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-level diagnostic calculations.
+    IPCP = 1 ,    ! if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
+                  ! rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
+                  ! a polynomial curve between 0 C and 6 C.
+    IWF = 0 ,     ! if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4),
+                  ! the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
+    isnoalb = 0 , ! if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
 
  ! Iteration scheme
-    !< ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used.
-    ITC = 1 ,   !< Canopy
-    ITCG = 1 ,  !< Ground under canopy
-    ITG = 1 ,   !< Ground
+    ! ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
+    ! respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used.
+    ITC = 1 ,   ! Canopy
+    ITCG = 1 ,  ! Ground under canopy
+    ITG = 1 ,   ! Ground
 
  ! User-supplied values:
-    !< if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo
-    !< and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the
-    !< corresponding parameter calculated by class is overridden by a user-supplied input value.
-    IPAI = 0 ,  !< Plant area index
-    IHGT = 0 ,  !< Vegetation height
-    IALC = 0 ,  !< Canopy albedo
-    IALS = 0 ,  !< Snow albedo
-    IALG = 0 ,  !< Soil albedo
+    ! if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo
+    ! and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the
+    ! corresponding parameter calculated by class is overridden by a user-supplied input value.
+    IPAI = 0 ,  ! Plant area index
+    IHGT = 0 ,  ! Vegetation height
+    IALC = 0 ,  ! Canopy albedo
+    IALS = 0 ,  ! Snow albedo
+    IALG = 0 ,  ! Soil albedo
 
 ! Output options:
 
     output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
     xmlFile = 'configurationFiles/outputVariableDescriptors_v1.3.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
-    doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
-    dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
+    doperpftoutput = .true. ,   ! Switch for making extra output files that are at the per PFT level
+    dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level
 
-    dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
-    JHHSTD = 166 ,                !< day of the year to start writing the half-hourly output
-    JHHENDD = 185 ,             !< day of the year to stop writing the half-hourly output
-    JHHSTY = 1901 ,             !< simulation year (iyear) to start writing the half-hourly output
-    JHHENDY = 1901 ,            !< simulation year (iyear) to stop writing the half-hourly output
+    dohhoutput = .false. ,      ! Switch for making half hourly output files (annual are always outputted)
+    JHHSTD = 166 ,                ! day of the year to start writing the half-hourly output
+    JHHENDD = 185 ,             ! day of the year to stop writing the half-hourly output
+    JHHSTY = 1901 ,             ! simulation year (iyear) to start writing the half-hourly output
+    JHHENDY = 1901 ,            ! simulation year (iyear) to stop writing the half-hourly output
 
-    dodayoutput = .false. ,     !< Switch for making daily output files (annual are always outputted)
-    JDSTD = 20 ,                 !< day of the year to start writing the daily output
-    JDENDD = 30 ,              !< day of the year to stop writing the daily output
-    JDSTY = 1902 ,              !< simulation year (iyear) to start writing the daily output
-    JDENDY = 1903 ,             !< simulation year (iyear) to stop writing the daily output
+    dodayoutput = .false. ,     ! Switch for making daily output files (annual are always outputted)
+    JDSTD = 20 ,                 ! day of the year to start writing the daily output
+    JDENDD = 30 ,              ! day of the year to stop writing the daily output
+    JDSTY = 1902 ,              ! simulation year (iyear) to start writing the daily output
+    JDENDY = 1903 ,             ! simulation year (iyear) to stop writing the daily output
 
-    domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
-    JMOSTY = 1901 ,             !< Year to start writing out the monthly output files.
+    domonthoutput = .true. ,    ! Switch for making monthly output files (annual are always outputted)
+    JMOSTY = 1901 ,             ! Year to start writing out the monthly output files.
 
-    Comment = ' test '          !< Comment about the run that will be written to the output netcdfs
+    Comment = ' test '          ! Comment about the run that will be written to the output netcdfs
 
  /
 

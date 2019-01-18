@@ -1,7 +1,9 @@
-!> Contains CTEM globally accessible parameters
-module ctem_params
+!> Contains CLASSIC globally accessible parameters
+!!@author J. Melton 
+!!
+module classic_params
 
-!>\ingroup ctem_params_main
+!>\ingroup classic_params_main
 !!@{
 
 ! J. Melton
@@ -21,21 +23,36 @@ module ctem_params
 
 implicit none
 
-
-public :: allocateParamsCTEM
+public :: allocateParamsCLASSIC
 public :: readin_params
 public :: prepareGlobalParams
 
-
 ! Constants
 
-real, parameter :: zero     = 1.0e-20
-real, parameter :: abszero  = 1e-12     !<this one is for runclassctem.f and allocate.f
-real, parameter :: pi       = 3.1415926535898d0
-real, parameter :: earthrad = 6371.22   !<radius of earth, km
-real, parameter :: km2tom2  = 1.0e+06   !<changes from \f$km^2\f$ to \f$m^2\f$
-real, parameter :: deltat   = 1.0       !<CTEM's time step in days
+real, parameter :: zero     = 1.0e-20   !<Defintion of zero
+real, parameter :: abszero  = 1e-12     !<Defintion of zero, this one is for main.f90 and allocate.f
+real, parameter :: earthrad = 6371.22   !< Radius of Earth, km
+real, parameter :: km2tom2  = 1.0e+06   !< Conversion factor from \f$km^2\f$ to \f$m^2\f$
+real, parameter :: gasc = 8.314         !< Gas constant (\f$J mol^{-1} K^{-1}\f$) 
 real, parameter :: convertkgC = 1.201e-8 !< Converts from umolCO2/m2/s to kgC/m2/s
+
+! The next parameters are normally assigned in the GCM but need to be assigned here since this 
+! is an offline run. The names used below are the same as those in the GCM.
+real, parameter :: TFREZ = 273.16       !<Freezing point of water (K) (GCM name: CELZRO)
+real, parameter :: RGAS = 287.04        !< Gas constant ($J kg^{-1} K^{-1}$) (GCM name: GAS)
+real, parameter :: RGASV = 461.50       !< Gas constant for water vapour ($J kg^{-1} K^{-1}$) (GCM name: GASV)
+real, parameter :: GRAV = 9.80616       !< Acceleration due to gravity ($m s^{-1}) (GCM name: G)
+real, parameter :: SBC = 5.66796E-8     !< Stefan-Boltzmann constant ($W m^{-2} K^{-4} $) (GCM name: SIGMA)
+real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air ($J kg^{-1} K^{-1}$) (GCM name: CPRES)
+real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
+real, parameter :: STD_PRESS = 101325.0 !<Standard atmospheric pressure (Pa)
+
+! FLAG below not used anywhere.
+!AI=2.88053E+6/1004.5
+!BI=0.167E+3/1004.5
+!AW=3.15213E+6/1004.5
+!BW=2.38E+3/1004.5
+!SLP=1.0/(T1S-T2S)
 
 ! These month arrays are possibly overwritten in runclassctem due to leap years.
 integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
@@ -43,7 +60,77 @@ integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,3
 integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
 integer, parameter :: nmon = 12 !< Number of months in a year
 
-! ----
+! Additional values for RPN and GCM common blocks:
+
+real, parameter :: DELTA = 0.608      
+real, parameter :: AS = 12.0
+real, parameter :: ASX = 4.7        
+real, parameter :: ANGMAX = 0.85
+real, parameter :: CI = 40.0
+real, parameter :: BS = 1.0
+real, parameter :: BETA = 1.0
+real, parameter :: FACTN = 1.2
+real, parameter :: HMIN = 40.0
+real, parameter :: A = 21.656
+real, parameter :: B = 5418.0
+real, parameter :: EPS1 = 0.622
+real, parameter :: EPS2 = 0.378
+real, parameter :: T1S = 273.16
+real, parameter :: T2S = 233.16
+real, parameter :: RW1 = 53.67957
+real, parameter :: RW2 = -6743.769
+real, parameter :: RW3 = -4.8451
+real, parameter :: RI1 = 23.33086
+real, parameter :: RI2 = -6111.72784
+real, parameter :: RI3 = 0.15215
+real, parameter :: X1 = 0.0
+real, parameter :: X2 = 0.0
+real, parameter :: X3 = 0.0
+real, parameter :: X4 = 0.0
+real, parameter :: X5 = 0.0
+real, parameter :: X6 = 0.0
+real, parameter :: X7 = 0.0
+real, parameter :: X8 = 0.0
+real, parameter :: X9 = 0.0
+real, parameter :: X10 = 0.0
+real, parameter :: X11 = 0.0
+real, parameter :: X12 = 0.0
+real, parameter :: X13 = 0.0
+real, parameter :: X14 = 0.0
+real, parameter :: X15 = 0.0
+real, parameter :: X16 = 0.0
+real, parameter :: K1 = 0
+real, parameter :: K2 = 0
+real, parameter :: K3 = 0
+real, parameter :: K4 = 0
+real, parameter :: K5 = 0
+real, parameter :: K6 = 0
+real, parameter :: K7 = 0
+real, parameter :: K8 = 0
+real, parameter :: K9 = 0
+real, parameter :: K10 = 0
+real, parameter :: K11 = 0
+
+! Biogeochemical parameters:
+real, parameter :: deltat   = 1.0       !<CTEM's time step in days
+real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
+real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
+real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
+
+integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Can be read in from the init file when I have the new snow albedo scheme fully implemented. Leave here for now.
+
+integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
+
+real, parameter  :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
+                            ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
+real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
+
+!> Logical switch for using constant allocation factors (default value is false)
+logical :: consallo = .false.
+
+! --------------------------------------------------------------
+
 ! Read in from the netcdf initialization file:
 integer :: nlat        !< Number of cells we are running, read in from the initialization file. Offline this always 1.
 integer :: nmos        !< Number of mosaic tiles, read in from the initialization file
@@ -55,7 +142,6 @@ integer :: ican              !< Number of CLASS (physics) pfts, read in from the
 integer :: icc               !< Number of CTEM (biogeochemical) pfts, read in from the job options file.
 integer :: l2max             !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs
                              !! associated with a single CLASS PFT. Read in from the job options file.
-
 ! ----
 ! Plant-related parameters that are calculated based on job options
 integer :: icp1              !< ican + 1
@@ -69,23 +155,90 @@ integer, dimension(:), allocatable :: nol2pfts  !< Number of level 2 PFTs calcul
 logical, dimension(:), allocatable :: crop      !< simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
 logical, dimension(:), allocatable :: grass     !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
 
-real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
-real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
-real, parameter :: c2dom   = 450.0    !< gC / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
-real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
-
-integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
-
-real :: gasc = 8.314    !< gas constant (\f$J mol^{-1} K^{-1}\f$)  !COMBAK FLAG is there no global one I can use?
-real :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
-                            ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
-real :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
-
-!> Logical switch for using constant allocation factors (default value is false)
-logical :: consallo = .false.
-
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
+
+! Physics (CLASS) parameters:
+
+real :: VKC    !< Von Karman Constant (-) 
+real :: CT     !< Drag Coefficient for water (-)
+real :: VMIN   !< Minimum wind speed (m s^{-1})
+real :: TCW    !< Thermal conductivity of water ($W m^{-1} K^{-1} $)
+real :: TCICE  !< Thermal conductivity of ice  ($W m^{-1} K^{-1} $)
+real :: TCSAND !< Thermal conductivity of sand particles  ($W m^{-1} K^{-1} $)
+real :: TCCLAY !< Thermal conductivity of fine mineral particles  ($W m^{-1} K^{-1} $)
+real :: TCOM   !< Thermal conductivity of organic matter  ($W m^{-1} K^{-1} $)
+real :: TCDRYS !< Thermal conductivity of dry mineral soil  ($W m^{-1} K^{-1} $) FLAG QUESTION ever used?
+real :: RHOSOL !< Particle density of soil mineral matter ($kg m^{-3}$)
+real :: RHOOM  !< Particle density of soil organic matter ($kg m^{-3}$)
+real :: HCPW   !< Volumetric heat capacity of water ($J m^{-3} K^{-1}$)
+real :: HCPICE !< Volumetric heat capacity of ice ($J m^{-3} K^{-1}$)
+real :: HCPSOL !< Volumetric heat capacity of mineral matter ($J m^{-3} K^{-1}$) FLAG QUESTION ever used?
+real :: HCPOM  !< Volumetric heat capacity of organic matter ($J m^{-3} K^{-1}$)
+real :: HCPSND !< Volumetric heat capacity of sand particles ($J m^{-3} K^{-1}$)
+real :: HCPCLY !< Volumetric heat capacity of fine mineral particles ($J m^{-3} K^{-1}$)
+real :: SPHW   !< Specific heat of water ($J kg^{-1} K^{-1}$)
+real :: SPHICE !< Specific heat of ice  ($J kg^{-1} K^{-1}$)
+real :: SPHVEG !< Specific heat of vegetation matter  ($J kg^{-1} K^{-1}$)
+real :: RHOW   !< Density of water ($kg m^{-3}$) 
+real :: RHOICE !< Density of ice ($kg m^{-3}$)
+real :: TCGLAC !< Thermal conductivity of ice sheets ($W m^{-1} K^{-1}$)
+real :: CLHMLT !< Latent heat of freezing of water ($J kg^{-1}$)
+real :: CLHVAP !< Latent heat of vaporization of water ($J kg^{-1}$)
+real :: ZOLNG  !< Natural log of roughness length of soil (-)
+real :: ZOLNS  !< Natural log of roughness length of snow (-)
+real :: ZOLNI  !< Natural log of roughness length of ice (-)
+real :: ZORATG !< Ratio of soil roughness length for momentum to roughness length for heat (-)
+real :: ALVSI  !< Visible albedo of ice (-)
+real :: ALIRI  !< Near-infrared albedo of ice (-)
+real :: ALVSO  !< Visible albedo of organic matter (-)
+real :: ALIRO  !< Near-infrared albedo of organic matter (-)
+real :: ALBRCK !< Albedo of rock (-)
+
+real, dimension(:,:,:), allocatable  :: GROWYR !< The crop growth descriptor array (see APREP.f for description)
+real, dimension(:), allocatable  :: ZORAT   !<the ratio of the roughness length for momentum to the roughness length for heat
+real, dimension(:), allocatable  :: CANEXT  !< an attenuation coefficient used in calculating the sky view factor for
+                                            !! vegetation canopies (variable c in the documentation for subroutine CANALB)
+real, dimension(:), allocatable  :: XLEAF  !< a leaf dimension factor used in calculating the leaf boundary resistance 
+                                          !! (variable Cl in the documentation for subroutine APREP)
+
+!! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric), see the documentation for subroutine CLASSB. 
+
+real, dimension(:), allocatable  :: THPORG !<Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+real, dimension(:), allocatable  :: THRORG !<Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+real, dimension(:), allocatable  :: THMORG !<Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+real, dimension(:), allocatable  :: BORG !<Clapp and Hornberger 'b' value for peat soils [ ]
+real, dimension(:), allocatable  :: PSISORG !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+real, dimension(:), allocatable  :: GRKSORG !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
+
+! Model physics timestep (s) (GCM name: DELTIM)
+real :: DELT
+
+! CANALB parameters: ----------------------
+real :: ALVSWC     !< Average background visible albedo of snow covered canopy (-)
+real :: ALIRWC     !< Average background NIR albedo of snow covered canopy (-)
+real :: CXTLRG     !< Effective overall exctinction coefficient given if visible transmissivity is very small
+
+! CLASSB parameters:  ----------------------
+
+real, dimension(:), allocatable  :: ALWV !< Lookup tables for wet visible soil albedos based on soil colour index 
+real, dimension(:), allocatable  :: ALWN !< Lookup tables for wet NIR soil albedos based on soil colour index 
+real, dimension(:), allocatable  :: ALDV !< Lookup tables for dry visible soil albedos based on soil colour index 
+real, dimension(:), allocatable  :: ALDN !< Lookup tables for dry NIR soil albedos based on soil colour index 
+
+! DRCOEF parameters: ----------------------
+!FLAG has some but poorly documented COMBAK
+
+! FLXSURFZ parameters: ----------------------
+! FLAG has some but poorly documented COMBAK
+
+! SNINFL parameters: ----------------------
+real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight percentage)
+
+! ----------------------
+! ----------------------
+
+! Biogeochemical (CTEM) parameters:
 
 integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
 character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
@@ -213,7 +366,7 @@ real, dimension(4) :: tanhq10       !< Constants used in tanh formulation of res
 real :: alpha_hetres                !< parameter for finding litter temperature as a weighted average of top soil layer temperature and root temperature
 real :: bsratelt_g                  !< bare ground litter respiration rate at 15 c in kg c/kg c.year
 real :: bsratesc_g                  !< bare ground soil c respiration rates at 15 c in kg c/kg c.year
-real :: a                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
+real :: a_hetr                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
 
 ! landuse_change_mod.f90 parameters: --------------
 
@@ -320,6 +473,13 @@ real, dimension(2) :: coldthrs  !<1. -5 c threshold for initiating "leaf fall" m
                                 !!2.  8 c threshold for initiating "harvest" for crops, the array colddays tracks days corresponding to these thresholds
 real :: roothrsh                !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
 
+! soil_ch4uptake parameters: -----------------------------
+
+real :: D_air    !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
+real :: g_0      !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
+real :: betaCH4  !< Constant derived in Curry (2007) from comparison against measurements (-)
+real :: k_o      !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
+
 ! turnover.f parameters: ---------------------------------
 
 real, dimension(:), allocatable :: stemlife !< Stemlife, turnover time scale for stem for different pfts
@@ -372,13 +532,16 @@ real :: gamma_m                                 !< equivalent co2 fertilization 
 
 character(350)    :: runParamsFile
 logical          :: PFTCompetitionSwitch
+real :: zbldJobOpt,zrfhJobOpt,zrfmJobOpt
+real, dimension(:), allocatable :: RSMN,QA50,VPDA,VPDB,PSGA,PSGB ! These are temporary variables storing these parameters until they are
+                                                                 ! transfered into their ROT structure in read_initialstate
 
 
 ! --------------------------------------------------------------------------
 
 contains
 
-!>\ingroup ctem_params_prepareGlobalParams
+!>\ingroup classic_params_prepareGlobalParams
 !!@{
 !> Initialize and/or read in all global model parameters
 
@@ -386,15 +549,12 @@ subroutine prepareGlobalParams
 
     implicit none
 
-    !> Prepare CLASS parameters
-    CALL CLASSD
-
     !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
     iccp1 = icc + 1
     icp1 = ican + 1
 
     !> Allocate the arrays that store the CTEM parameter values
-    call allocateParamsCTEM
+    call allocateParamsCLASSIC
 
     !> Initialize the CTEM parameters, this reads them in from a namelist file.
     call readin_params
@@ -403,11 +563,11 @@ end subroutine prepareGlobalParams
 !!@}
 ! --------------------------------------------------------------------------
 
-!>\ingroup ctem_params_allocateParamsCTEM
+!>\ingroup classic_params_allocateParamsCLASSIC
 !!@{
 !> Allocate the arrays for CTEM params that require it.
 
-subroutine allocateParamsCTEM()
+subroutine allocateParamsCLASSIC()
 
     implicit none
 
@@ -501,7 +661,6 @@ subroutine allocateParamsCTEM()
             vmax(kk),&
             inico2i(kk),&
             chi(kk),&
-            !rmlcoeff(kk))
             rmlcoeff(kk),&
             omega_compete(kk),&
             epsilonl_compete(kk),&
@@ -513,12 +672,33 @@ subroutine allocateParamsCTEM()
             maxage_compete(kk),&
             drlsrtmx_compete(kk))
 
-end subroutine allocateParamsCTEM
+    allocate(GROWYR(18,4,2),&
+            ZORAT(ican),&
+            CANEXT(ican),&
+            XLEAF(ican),&
+            RSMN(ican), &
+            QA50(ican), &
+            PSGA(ican), &
+            PSGB(ican), &
+            VPDA(ican), &
+            VPDB(ican), &        
+            THPORG(3),&
+            THRORG(3),&
+            THMORG(3),&
+            BORG(3),&
+            PSISORG(3),&
+            GRKSORG(3),&
+            ALWV(soilcolrinds),&
+            ALWN(soilcolrinds),&
+            ALDV(soilcolrinds),&
+            ALDN(soilcolrinds))
+
+end subroutine allocateParamsCLASSIC
 !!@}
 ! --------------------------------------------------------------------------
 
 
-!>\ingroup ctem_params_readin_params
+!>\ingroup classic_params_readin_params
 !!@{
 !> Read in the CTEM parameters from a namelist file. Populate a few parameters
 !! based on what was read in.
@@ -541,6 +721,65 @@ subroutine readin_params
     integer :: isumc,k1c,k2c
 
     namelist /classicparams/ &
+        VKC,&    
+        CT   ,&  
+        VMIN ,&  
+        TCW  ,&  
+        TCICE,&  
+        TCSAND,& 
+        TCCLAY,& 
+        TCOM  ,& 
+        TCDRYS,& 
+        RHOSOL,& 
+        RHOOM ,& 
+        HCPW  ,& 
+        HCPICE,& 
+        HCPSOL,& 
+        HCPOM ,& 
+        HCPSND,& 
+        HCPCLY,& 
+        SPHW  ,& 
+        SPHICE,& 
+        SPHVEG,& 
+        RHOW  ,& 
+        RHOICE,& 
+        TCGLAC,& 
+        CLHMLT,& 
+        CLHVAP,& 
+        ZOLNG  ,&
+        ZOLNS  ,&
+        ZOLNI  ,&
+        ZORATG ,&
+        ALVSI  ,&
+        ALIRI  ,&
+        ALVSO  ,&
+        ALIRO  ,&
+        ALBRCK ,&
+        GROWYR ,&
+        ZORAT  ,& 
+        CANEXT ,& 
+        XLEAF  ,& 
+        RSMN, &
+        QA50, &
+        PSGA, &
+        PSGB, &
+        VPDA, &
+        VPDB, &        
+        THPORG ,&
+        THRORG ,&
+        THMORG ,&
+        BORG ,&
+        PSISORG,&
+        GRKSORG,&
+        DELT,&
+        ALVSWC,&
+        ALIRWC,&
+        CXTLRG,&
+        ALWV,&
+        ALWN,&
+        ALDV,&
+        ALDN,&
+        WSNCAP,&
         modelpft,&
         vegtype, &
         pftlist,&
@@ -619,7 +858,7 @@ subroutine readin_params
         alpha_hetres,&
         bsratelt_g,&
         bsratesc_g,&
-        a,&
+        a_hetr,&
         combust,&
         paper,&
         furniture,&
@@ -678,6 +917,10 @@ subroutine readin_params
         coldlmt,&
         coldthrs,&
         roothrsh,&
+        D_air,&
+        g_0,&
+        betaCH4,&
+        k_o,&
         stemlife,&
         rootlife,&
         stmhrspn,&
@@ -772,9 +1015,9 @@ end subroutine readin_params
 !!@}
 
 !>\file
-!> This module holds CTEM globally accessible parameters
+!> This module holds CLASSIC globally accessible parameters
 !!
-!> These parameters are used in all CTEM subroutines
+!> These parameters are used in all CLASSIC subroutines
 !> via use statements pointing to this module.
 !>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 !>first, then the remaining variables are assigned different variables if competition is on, or not.
@@ -808,4 +1051,4 @@ end subroutine readin_params
 !!respiration of vascular PFTs are modelled the same as in the original CTEM.)
 
 
-end module ctem_params
+end module classic_params

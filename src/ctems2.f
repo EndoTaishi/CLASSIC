@@ -1,6 +1,6 @@
 !>\file
 !! Performs subsequent scatter operation on biogeochemical variables
-!!
+!!@author R. Li, J. Melton, E. Chan 
       subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,
      1      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,
      2      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,
@@ -100,7 +100,7 @@ c     J. Melton
 c      August 4, 2009 scatter operation on CTEM variables.
 c      Rong Li
 c
-      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
+      use classic_params,  only : nlat, nmos, ilg, ignd, ican, icp1,
      1                               icc,iccp1
 
       implicit none

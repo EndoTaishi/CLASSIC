@@ -14,9 +14,10 @@ contains
 !>\ingroup ctemUtil_dayEndCTEMPreparation
 !!@{
 !> Prepare the CTEM input (physics) variables at the end of the day.
+!!@author V.Arora, J. Melton
 subroutine dayEndCTEMPreparation(nml,nday)
 
-    use ctem_params, only : icc,ignd
+    use classic_params, only : icc,ignd
     use ctem_statevars, only : vgat,ctem_tile
 
     implicit none
@@ -163,9 +164,10 @@ end subroutine dayEndCTEMPreparation
 !>\ingroup ctemUtil_accumulateForCTEM
 !!@{
 !> Accumulate the CTEM input (physics) variables at the end of each physics timestep
+!!@author V.Arora, J. Melton
 subroutine accumulateForCTEM(nml)
 
-    use ctem_params, only : icc,ignd
+    use classic_params, only : icc,ignd,DELT,SBC
     use class_statevars, only : class_gat,class_rot
     use ctem_statevars, only : vgat,ctem_tile
 
@@ -175,11 +177,6 @@ subroutine accumulateForCTEM(nml)
     !integer, intent(in) :: delt    !<Timestep in seconds
 
     integer :: i,j
-
-    real :: delt,sbc
-
-    COMMON /CLASS1/ DELT
-    COMMON /CLASS2/ SBC
 
     real, pointer, dimension(:) :: FSIHGAT !<Near-infrared radiation incident on horizontal surface \f$[W m^{-2} ]\f$
     real, pointer, dimension(:) :: FSVHGAT !<Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
@@ -411,9 +408,10 @@ end subroutine accumulateForCTEM
 !!@{
 !> Find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
 !! Also initialize additional variables which are used by CTEM (biogeochemical processes).
+!!@author V.Arora, J. Melton
 subroutine ctemInit(nltest,nmtest)
 
-    use ctem_params, only : icc,ilg
+    use classic_params, only : icc,ilg
     use ctem_statevars, only : vrot,ctem_tile,vgat
     use class_statevars,only : class_rot
     use generalUtils,        only : findDaylength

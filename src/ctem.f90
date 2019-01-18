@@ -1,5 +1,6 @@
 !>\file
 !!Principle driver for CTEM
+!!@author V. Arora, J. Melton, Y. Peng, R. Shrestha
 !!
 !!The basic model structure of CTEM includes three live vegetation components
 !!(leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or
@@ -25,8 +26,7 @@
      &                    popdin, dofire,  isand,  &
      &                   faregat, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &
-     &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
-     &                   leapnow, &
+     &                   ch4conc,  leapnow, &
 !
 !    -------------- inputs used by ctem are above this line ---------
 !
@@ -90,7 +90,7 @@
 !     J. Melton       add a smoothing function for lambda calculation for competition,
 !                     made it so NEP and NBP work with competition on.
 !
-!     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
 !     Dec 6   2012   Make it so competition and luc can function in both
@@ -126,12 +126,12 @@
 !                     fractions. 
 !    -----------------------------------------------------------------
 
-use ctem_params,        only : kk, pi, zero,&
+use classic_params,        only : kk, pi, zero,&
      &                         kn,iccp1, ican, ilg, nlat,&
      &                         ignd, icc, nmos, l2max, grescoef,&
      &                         humicfac,laimin,laimax,lambdamax,&
      &                         crop,repro_fraction,grescoefmoss,&
-     &                         rmortmoss,humicfacmoss
+     &                         rmortmoss,humicfacmoss,GRAV,RHOW,RHOICE
 
 use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
@@ -200,9 +200,6 @@ real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional covera
 real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
 real, dimension(ilg), intent(in) :: wetfrac             !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg,8), intent(in) :: slopefrac         !<
-real, intent(in) :: GRAV                                !<Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.
-real, intent(in) :: RHOW                                !<Density of water ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
-real, intent(in) :: RHOICE                              !<Density of ice ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
 real, dimension(ilg), intent(in) :: anmoss              !< moss net photoysnthesis -daily averaged C fluxes rates (umol/m2/s)
 real, dimension(ilg), intent(in) :: rmlmoss             !< moss maintainance respiration -daily averaged C fluxes rates (umol/m2/s)
 real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily averaged C fluxes rates (umol/m2/s)
@@ -535,7 +532,7 @@ real hutrstep_g(ilg)    !< grid sum of humification from vascualr litter (kgC/m2
 
 !>
 !>     ---------------------------------------------------------------
-!>     Constants and parameters are located in ctem_params.f90
+!>     Constants and parameters are located in classic_params.f90
 !>     -----------------------------------------------------------------
 
 !  ==========================================================================================
@@ -1633,7 +1630,7 @@ do 800 j = 1, icc
 !>Call the mortaliy subroutine which calculates mortality due to reduced growth and aging. exogenous mortality due to fire and other
 !!disturbances and the subsequent litter that is generated is calculated in the disturb subroutine.
 !!
-!!set maxage >0 in ctem_params.f90 to switch on mortality due to age and
+!!set maxage >0 in classic_params.f90 to switch on mortality due to age and
 !!reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.
 !!
 Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&

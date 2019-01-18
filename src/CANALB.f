@@ -1,7 +1,8 @@
 !>\file
 C!Calculates vegetation albedos, transmissivities and
 C!stomatal resistances.
-C!
+!!@author D. Verseghy, M. Lazare, P. Bartlett, R. Harvey, J. Melton
+!
       SUBROUTINE CANALB(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN,
      1                  TRVSCS,TRIRCS,RC,RCS,
      2                  ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB,
@@ -60,6 +61,8 @@ C     * MAR 03/92 - D.VERSEGHY/M.LAZARE. REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CANOPY ALBEDOS AND TRANSMISSIVITIES.
 C
+      use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -146,10 +149,6 @@ C
       REAL ALVSSC(ILG)  !<Visible/near-IR albedo of snow under vegetation [ ]
       REAL ALIRSC(ILG)  !<Visible/near-IR albedo of snow under vegetation [ ]
 C
-C     * OTHER DATA ARRAYS.
-C
-      REAL CANEXT(4),     XLEAF (4)
-C
 C     * WORK ARRAYS.
 C
       REAL CXTEFF(ILG,IC),           RCACC (ILG,IC),
@@ -160,19 +159,9 @@ C
 C     * TEMPORARY VARIABLES.
 C
       REAL SVF,ALVSCX,ALIRCX,ALVSN,ALIRN,ALVSS,ALIRS,
-     1     TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP
+     1     TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP,TRCLRV,
+     2     TRCLDV,TRCLRT,TRCLDT
 C
-C     * COMMON BLOCK AND OTHER PARAMETERS.
-C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
-      REAL ALVSWC,ALIRWC,TRCLRV,TRCLDV,TRCLRT,TRCLDT,CXTLRG
-C                                                                                  
-      COMMON /CLASS1/ DELT,TFREZ                                                  
-      COMMON /CLASS7/ CANEXT,XLEAF
- 
-      DATA ALVSWC,ALIRWC,CXTLRG
-     1    /  0.27,0.38,1.0E20  /
 C----------------------------------------------------------------------
       !>
       !!The transmissivity \f$\tau_c\f$ of a vegetation canopy to shortwave 
@@ -269,9 +258,9 @@ C
 C     * ASSIGN CONSTANT EXPONENTIATION TERMS: EXPMAX1=EXP(-0.4/0.9659),
 C     * EXPMAX2=EXP(-0.4/0.7071),EXPMAX3=EXP(-0.4/0.2588)
 C
-      EXPMAX1=0.6609
-      EXPMAX2=0.5680
-      EXPMAX3=0.2132
+      EXPMAX1=0.6609  !BDCS P?
+      EXPMAX2=0.5680  !BDCS P?
+      EXPMAX3=0.2132  !BDCS P?
       !!
       !>At the beginning of the subroutine, values are assigned to
       !! exponentiation terms and a series of work arrays is
@@ -355,11 +344,11 @@ C
       J=1
       DO 150 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
-              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   
+              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   !BDCS P?
 !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)    
                                  
-              TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*               
+              TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*             !BDCS P?  
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)   
 
               TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
@@ -406,7 +395,7 @@ C
       DO 250 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
               TRCLRV=MIN(EXP(-0.7*PAI(I,J)),EXP(-0.4/COSZS(I)))                   
-              TRCLDV=0.30*MIN(EXP(-0.7*PAI(I,J)),EXPMAX1)             
+              TRCLDV=0.30*MIN(EXP(-0.7*PAI(I,J)),EXPMAX1)             !BDCS P?
      1              +0.50*MIN(EXP(-0.7*PAI(I,J)),EXPMAX2)              
      2              +0.20*MIN(EXP(-0.7*PAI(I,J)),EXPMAX3)              
               TRCLRT=MIN(EXP(-0.4*PAI(I,J)),EXP(-0.4/COSZS(I)))                   
@@ -523,7 +512,7 @@ C
           IF(FC(I).GT.0. .AND. COSZS(I).GT.0.)                     THEN
               TRVSCN(I)=TRVSCN(I)/FC(I)
               TRIRCN(I)=TRIRCN(I)/FC(I)
-              TRVSCN(I)=MIN( TRVSCN(I), 0.90*(1.0-ALVSCN(I)) )
+              TRVSCN(I)=MIN( TRVSCN(I), 0.90*(1.0-ALVSCN(I)) )  !BDCS P?
               TRIRCN(I)=MIN( TRIRCN(I), 0.90*(1.0-ALIRCN(I)) )
           ENDIF
           IF(TRVSCN(I).GT.1. .OR. TRVSCN(I).LT.0.) IPTBAD=I
@@ -544,11 +533,11 @@ C
       J=1
       DO 500 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))
+              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))   !BDCS P?
 !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
                                    
-              TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*               
+              TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*           !BDCS P?    
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
 
               TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))
@@ -799,15 +788,15 @@ C     * OVERLYING BARE SOIL.
 C
       DO 850 I=IL1,IL2
           IF((FCS(I)+FC(I)).GT.0.0)                               THEN
-              IF(TA(I).LE.268.15)                          THEN
-                  RCT(I)=250.
-              ELSEIF(TA(I).LT.278.15)                      THEN
+              IF(TA(I).LE.268.15)                          THEN  !BDCS P?
+                  RCT(I)=250.   !BDCS P?
+              ELSEIF(TA(I).LT.278.15)                      THEN  !BDCS P?
                   RCT(I)=1./(1.-(278.15-TA(I))*.1)
-              ELSEIF(TA(I).GT.313.15)                      THEN
+              ELSEIF(TA(I).GT.313.15)                      THEN  !BDCS P?
                   IF(TA(I).GE.323.15)               THEN
-                      RCT(I)=250.
+                      RCT(I)=250.   !BDCS P?
                   ELSE
-                      RCT(I)=1./(1.-(TA(I)-313.15)*0.1)
+                      RCT(I)=1./(1.-(TA(I)-313.15)*0.1)  !BDCS P?
                   ENDIF
               ELSE
                   RCT(I)=1.

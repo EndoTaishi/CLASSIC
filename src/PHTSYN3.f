@@ -43,7 +43,7 @@
 !!V_\mathrm{m} = \nonumber \\    \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}} {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m}
 !!\qquad (Eqn 4)\f]
 !!
-!!where \f$T_\mathrm{c}\f$ is the canopy temperature (\f$C\f$) and \f$T_{low}\f$ and \f$T_{high}\f$ are PFT-dependent lower and upper temperature limits for photosynthesis (see also ctem_params.f90). \f$f_{25}\f$ is the standard \f$Q_{10}\f$ function at \f$25\,C\f$ (\f$(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}\f$) and \f$V_{max}\f$ is the PFT-dependent maximum rate of carboxylation by the enzyme Rubisco (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$; see also ctem_params.f90). The constant \f$10^{-6}\f$ converts \f$V_{max}\f$ from units of \f${\mu}mol\,CO_2\,m^{-2}\,s^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
+!!where \f$T_\mathrm{c}\f$ is the canopy temperature (\f$C\f$) and \f$T_{low}\f$ and \f$T_{high}\f$ are PFT-dependent lower and upper temperature limits for photosynthesis (see also classic_params.f90). \f$f_{25}\f$ is the standard \f$Q_{10}\f$ function at \f$25\,C\f$ (\f$(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}\f$) and \f$V_{max}\f$ is the PFT-dependent maximum rate of carboxylation by the enzyme Rubisco (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$; see also classic_params.f90). The constant \f$10^{-6}\f$ converts \f$V_{max}\f$ from units of \f${\mu}mol\,CO_2\,m^{-2}\,s^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
 !!
 !!The influence of soil moisture stress is simulated via \f$S_{root}(\theta)\f$, which represents a soil moisture stress term formulated as
 !!\f[
@@ -54,7 +54,7 @@
 !!\label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho,
 !!\qquad (Eqn 6)\f]
 !!
-!!where \f$S_{root}(\theta)\f$ is calculated by weighting \f$S(\theta_i)\f$ with the fraction of roots, \f$r_{i}\f$, in each soil layer \f$i\f$ and \f$\varrho\f$ is a PFT-specific sensitivity to soil moisture stress (unitless; see also ctem_params.f90).  \f$\phi_i\f$ is the degree of soil saturation (soil wetness) given by
+!!where \f$S_{root}(\theta)\f$ is calculated by weighting \f$S(\theta_i)\f$ with the fraction of roots, \f$r_{i}\f$, in each soil layer \f$i\f$ and \f$\varrho\f$ is a PFT-specific sensitivity to soil moisture stress (unitless; see also classic_params.f90).  \f$\phi_i\f$ is the degree of soil saturation (soil wetness) given by
 !!\f[
 !!\label{phitheta} \phi_{i}(\theta_{i}) = \max \left[0, \min \left(1, \frac{\theta_{i} - \theta_{i, wilt}}{\theta_{i, field} - \theta_{i, wilt}} \right) \right],
 !!\qquad (Eqn 7)\f]
@@ -97,7 +97,7 @@
 !!\f[
 !!\label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}),\qquad (Eqn 12)
 !!\f]
-!!which yields the gross primary productivity (\f$G_{canopy}\f$, GPP). \f$k_\mathrm{n}\f$ is the extinction coefficient that describes the nitrogen and time-mean photosynthetically absorbed radiation (\f$PAR\f$) profile along the depth of the canopy (see also ctem_params.f90) (Ingestad and Lund ,1986; \cite Ingestad1986-td Field and Mooney, 1986 \cite Field1986-kd), and \f$LAI\f$ (\f$m^{2}\,leaf\,(m^{2}\,ground)^{-1}\f$) is the leaf area index.
+!!which yields the gross primary productivity (\f$G_{canopy}\f$, GPP). \f$k_\mathrm{n}\f$ is the extinction coefficient that describes the nitrogen and time-mean photosynthetically absorbed radiation (\f$PAR\f$) profile along the depth of the canopy (see also classic_params.f90) (Ingestad and Lund ,1986; \cite Ingestad1986-td Field and Mooney, 1986 \cite Field1986-kd), and \f$LAI\f$ (\f$m^{2}\,leaf\,(m^{2}\,ground)^{-1}\f$) is the leaf area index.
 !!
 !!The net canopy photosynthetic rate, \f$G_{canopy,net}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is calculated by subtracting canopy leaf maintenance respiration costs (\f$R_{mL}\f$; see mainres.f) as
 !!\f[
@@ -162,6 +162,8 @@ C!     INPUTS
 C!
 C!     NOL2MAX   - NUMBER OF LEVEL 2 CTEM PFTs
 C!
+!!@author V. Arora, J. Melton, M. Lazare
+!
       SUBROUTINE PHTSYN3(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC,
      1                     CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND,
      2                        TA,   RMAT,   COSZS, XDIFFUS,  ILG,
@@ -224,18 +226,13 @@ C     *                PREVIOUS VERSION PHTSYN).
 C
 C     ------------------------------------------------------------------
 C
-      use ctem_params, only : KN,TUP,TLOW,alpha_phtsyn,omega_phtsyn,
+      use classic_params, only : KN,TUP,TLOW,alpha_phtsyn,omega_phtsyn,
      1                        ISC4,MM,BB,VPD0,SN,SMSCALE,VMAX,REQITER,
      2                        CO2IMAX,BETA1,BETA2,INICO2I,CHI,RMLCOEFF,
-     3                        GAMMA_W,GAMMA_M
-
+     3                        GAMMA_W,GAMMA_M,TFREZ,ZERO,STD_PRESS
+      
       IMPLICIT NONE
 C
-      INTEGER KK
-!      PARAMETER (KK=12)  !< PRODUCT OF CLASS PFTs AND L2MAX (4 x 3 = 12)
-      PARAMETER (KK=20)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 5 = 20) YW April 13, 2015
-C
-
       INTEGER, DIMENSION(:,:), ALLOCATABLE  :: USESLAI
       INTEGER, DIMENSION(:), ALLOCATABLE    :: SORT
 
@@ -262,8 +259,6 @@ C
      7    CO2LS_SUN, CO2LS_SHA, AILCG_SUN, AILCG_SHA, GC_SUN, GC_SHA,
      8    GCTU_SUN, GCTU_SHA
 
-
-
       INTEGER ILG      !<NO. OF GRID CELLS IN LATITUDE CIRCLE
       INTEGER IC       !<NO. OF CLASS VEGETATION TYPES, 4
       INTEGER I        !<
@@ -271,12 +266,10 @@ C
       INTEGER IL1      !<IL1=1
       INTEGER IL2      !<IL2=ILG
       INTEGER IT_COUNT !<
-      !INTEGER REQITER  !<
       INTEGER IG       !<NO. OF SOIL LAYERS, 3
       INTEGER ICC      !<NO. OF CTEM's PFTs, CURRENTLY 9
       INTEGER LEAFOPT  !<
       INTEGER PS_COUP  !<
-      !INTEGER ISC4(KK) !<
       INTEGER ISNOW    !<INTEGER (0 or 1) TELLING IF PHTSYN IS TO BE RUN OVER CANOPY OVER SNOW OR CANOPY OVER GROUND SUBAREA
       INTEGER K1       !<
       INTEGER K2       !<
@@ -293,11 +286,8 @@ C
       REAL CFLUX(ILG)     !<AERODYNAMIC CONDUCTANCE, M/S
       REAL SLAI(ILG,ICC)  !<SCREEN LEVEL HUMIDITY IN KG/KG - STORAGE LAI. THIS LAI IS USED FOR PHTSYN EVEN IF ACTUAL LAI IS ZERO. ESTIMATE OF NET PHOTOSYNTHESIS BASED ON SLAI IS USED FOR INITIATING LEAF ONSET. SEE PHENOLGY SUBROUTINE FOR MORE DETAILS.
       REAL QA(ILG)        !<
-      !REAL INICO2I(KK)    !<
 C
       REAL CO2CONC(ILG) !<ATMOS. \f$CO_2\f$ IN PPM, AND THEN CONVERT IT TO PARTIAL PRESSURE, PASCALS, CO2A, FOR USE IN THIS SUBROUTINE
-      REAL TFREZ        !<
-      REAL STD_PRESS    !<
       REAL Q10_FUNCN        !<
       REAL Q10_FUNC         !<
       REAL PRESSG(ILG)      !<ATMOS. PRESSURE, PASCALS
@@ -321,7 +311,6 @@ C
       REAL RC(ILG)      !<GRID-AVERAGED STOMATAL RESISTANCE, S/M
       REAL COSZS(ILG)   !<COS OF ZENITH ANGLE
       REAL XDIFFUS(ILG) !<FRACTION OF DIFFUSED PAR
-      REAL ZERO
 C
       REAL TEMP_B
       REAL TEMP_C
@@ -334,7 +323,6 @@ C
       INTEGER ISAND(ILG,IG) !<SAND INDEX.
       REAL DAYL_MAX(ILG)      !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)          !< DAYLENGTH FOR THAT LOCATION
-
       REAL use_vmax
 C
 C     FOR LIMITING CO2 UPTAKE
@@ -346,16 +334,6 @@ C
 C
       REAL TEMP_PHI1, TEMP_PHI2, EA, EASAT, T_TEMP(ILG)
 C     -----------------------------------------------------------------
-! C
-C     FREEZING TEMPERATURE
-      DATA TFREZ/273.16/
-C
-C     STANDARD ATMOS. PRESSURE
-      DATA STD_PRESS/101325.0/
-C
-C     ZERO
-      DATA ZERO/1E-20/
-! C
 C     DECIDE HERE IF WE WANT TO USE SINGLE LEAF OR TWO-LEAF MODEL
 C     CHOOSE 1 FOR SINGLE-LEAF MODEL, AND 2 FOR TWO-LEAF MODEL
 C

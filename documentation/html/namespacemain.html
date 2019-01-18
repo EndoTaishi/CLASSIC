@@ -155,7 +155,7 @@ Functions/Subroutines</h2></td></tr>
 <h3>First set of definitions:</h3>
 <p>Background variables, and prognostic and diagnostic variables normally provided by and/or used by the GCM. The suffix "rot" refers to variables existing on the mosaic grid on the current latitude circle. The suffix "gat" refers to the same variables after they have undergone a "gather" operation in which the two mosaic dimensions are collapsed into one. The suffix "row" refers both to grid-constant input variables. and to grid-averaged diagnostic variables.</p>
 <p>The first dimension element of the "rot" variables refers to the number of grid cells on the current latitude circle. In this stand-alone version, this number is set to 1, the second dimension element of the "rot" variables refers to the maximum number of tiles in the mosaic. The first dimension element in the "gat" variables is given by the product of the first two dimension elements in the "rot" variables.</p>
-<p>The majority of CTEM parameters are stored in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>. Also the CLASS and CTEM variables are stored in modules that we point to in this driver. We access the variables and parameters through use statements for modules:</p>
+<p>The majority of CTEM parameters are stored in <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>. Also the CLASS and CTEM variables are stored in modules that we point to in this driver. We access the variables and parameters through use statements for modules:</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">latitude</td><td>Longitude/latitude of grid cell (degrees)</td></tr>
@@ -168,6 +168,8 @@ Functions/Subroutines</h2></td></tr>
 <p>The parameter JLAT is calculated from DLATROW as the nearest integer value,</p>
 <p>The timestep counter N for the run is initialized to 0, the daily averaging counter NCOUNT is set to 1, and the total number of timesteps in the day NDAY is calculated as the number of seconds in a day (86400) divided by the timestep length DELT.</p>
 <p>The grid-average height for the momentum diagnostic variables, ZDMROW, and for the energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer height of 10 m and to the screen height of 2 m respectively.</p>
+<p>ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables (temperature and specific humidity) are provided. In a run using atmospheric model forcing data, these heights would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.</p>
+<p>ZBLDROW, the atmospheric blending height. Technically this variable depends on the length scale of the patches of roughness elements on the land surface, but this is difficult to ascertain. Usually it is assigned a value of 50 m. The value is read in from the job options file.</p>
 <p>Initialize variables in preparation for the run</p>
 <p>Read in the model initial state</p>
 <p>Read in the inputs for a run with biogeochemical component turned on</p>
@@ -204,7 +206,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemain.html">main</a></li>
-    <li class="footer">Generated on Wed Dec 12 2018 16:42:12 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 18 2019 12:01:32 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

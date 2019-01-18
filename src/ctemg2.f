@@ -1,6 +1,7 @@
 !>\file
 C! Performs subsequent 'gather' operation on CTEM variables for consistency
 !! with physics variables gather operations.
+!!@author R. Li, Y. Wu, E. Chan, J. Melton  
 !!
       subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,
      1      paicgat,
@@ -103,7 +104,7 @@ c     J. Melton
 c     July 28 2009    Gather operation on CTEM variables.
 c     Rong Li
 c 
-      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
+      use classic_params, only : nlat, nmos, ilg, ignd, ican, icp1,
      1                               icc,iccp1
 
       implicit none

@@ -1,5 +1,8 @@
+
+
 !>\file
-!>Wetland and wetland methane subroutine 
+!>Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine 
+!!@author B. Amiro, J. Melton, V. Arora
 !>
 subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
                         thliqg, currlat, &
@@ -10,13 +13,13 @@ subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
 !     31  Aug   2016 - Change how we find wetlands from discrete limits to
 !     V. Arora         smooth function
 !
-!      4  July  2014 - Convert to f90 and bring in ctem_params
+!      4  July  2014 - Convert to f90 and bring in classic_params
 !     J. Melton
 !
 !      9  June. 2010 - this subroutine calculates methane flux
 !     Brian Amiro      from wetlands of a grid cell (i.e. land only)
 
-use ctem_params,        only : wtdryres, ratioch4,lat_thrshld1, &
+use classic_params,        only : wtdryres, ratioch4,lat_thrshld1, &
                                lat_thrshld2, soilw_thrshN, soilw_thrshE, &
                                soilw_thrshS, ilg, ignd
 
@@ -54,7 +57,7 @@ real :: intercept
 
 !>
 !>---------------------------------------------------------------
-!>Constants and parameters are located in ctem_params.f90
+!>Constants and parameters are located in classic_params.f90
 !>-----------------------------------------------------------------
 !>
 !>initialize required arrays to zero

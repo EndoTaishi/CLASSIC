@@ -1,6 +1,6 @@
 !>\file
 !!Calculates various land surface parameters.
-!!@author D. Verseghy, M. Lazare, V. Fortin, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
+!!@author D. Verseghy, M. Lazare, V. Fortin, V. Arora, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
 
 !>
 !!This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS
@@ -148,7 +148,10 @@ C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY
 C     *                         PARAMETERS.
 C
 
-      use ctem_params,        only : zolnmoss
+      use classic_params,        only : zolnmoss,DELT,HCPW,HCPICE,
+     1                 HCPSND,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
+     2                 PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,GROWYR,ZORAT,
+     3                 CANEXT,XLEAF 
 
       IMPLICIT NONE
 C
@@ -279,19 +282,8 @@ C
       REAL BI    (ILG,IG) !<Clapp and Hornberger empirical "b" parameter [ ]
       REAL PSIWLT(ILG,IG) !<Soil moisture suction at wilting point (\f$\Psi\f$ w) [m]
       REAL HCPS  (ILG,IG) !<Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
-
-C
-      INTEGER ISAND (ILG,IG) !<Sand content flag
-
-C
-C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
-C
-
-      REAL GROWYR(18,4,2) !<
       REAL DELZ  (IG)     !<Soil layer thickness [m]
-      REAL ZORAT (4)      !<
-      REAL CANEXT(4)      !<
-      REAL XLEAF (4)      !<
+      INTEGER ISAND (ILG,IG) !<Sand content flag
 C
 C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.
 C
@@ -330,22 +322,6 @@ C
 
       INTEGER ICTEM, M, N, K1, K2, L2MAX, NOL2PFTS(IC)
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL DELT,TFREZ,TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
-     1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,
-     2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,
-     3     ZORATG
-C
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-     1                RHOSOL,RHOOM
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
-      COMMON /CLASS7/ CANEXT,XLEAF
-
 C-----------------------------------------------------------------------
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C
@@ -400,7 +376,7 @@ C
         !!the hemisphere index, NL, is set to 1 for the Eastern Hemisphere, and 2 for the Western Hemisphere. If
         !!the planting date for the modelled area is zero (indicating a location in the tropics), GROWA is set to 1.
         !!Otherwise, GROWA is set to 1 if the day of the year lies between the maturity date and the start of the
-        !!54harvest, and to zero if the day of the year lies between the end of the harvest and the planting date. For
+        !!harvest, and to zero if the day of the year lies between the end of the harvest and the planting date. For
         !!dates in between, the value of GROWA is interpolated between 0 and 1. Checks are performed at the
         !!end to ensure that GROWA is not less than 0 or greater than 1. If the calculated value of GROWA is
         !!vanishingly small, it is set to zero.
@@ -493,9 +469,8 @@ C
       !!areas. For needleleaf and broadleaf trees, HS is set to H. For crops and grass, HS is calculated by
       !!subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
       !!
-
           IF(IHGT.EQ.0) THEN
-              H(I,1)=10.0*EXP(ZOLN(I,1))
+              H(I,1)=10.0*EXP(ZOLN(I,1))  !BDCS P?
               H(I,2)=10.0*EXP(ZOLN(I,2))
               H(I,3)=10.0*EXP(ZOLN(I,3))*GROWA(I)
               H(I,4)=10.0*EXP(ZOLN(I,4))
@@ -567,7 +542,7 @@ C
           ELSE
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
-            AIL(I,1)=PAI(I,1)*0.90
+            AIL(I,1)=PAI(I,1)*0.90   !BDCS P?
             AIL(I,2)=MAX((PAI(I,2)-PAIMIN(I,2)),0.0)
             AIL(I,3)=PAI(I,3)
             AIL(I,4)=PAI(I,4)
@@ -618,7 +593,7 @@ C     *        BARE SOIL:            0.002 M.
 C     *        LOW VEGETATION:       0.003 M.
 C     *        FOREST:               0.01  M.
 C
-      THR_LAI=1.0
+      THR_LAI=1.0  !BDCS P?
       !>
       !!In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is
       !!calculated, for snow-free (FCAN) and snow-covered ground (FCANS). For needleleaf and broadleaf
@@ -661,7 +636,7 @@ C
           ! PAI has a minimum value of 1.0 for all PFTs. This is to prevent
           ! wild canopy temperature values that could occur when the canopy
           ! size is small.
-          do j = 1,4
+          do j = 3,4
            IF(PAI(I,j).LT.THR_LAI) THEN
              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
              PAI (I,j)=THR_LAI
@@ -676,7 +651,7 @@ C
           FCANS(I,2)=FCANMX(I,2)*FSNOW(I)
           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
-          do j = 1,4
+          do j = 3,4
             IF(PAIS(I,j).LT.THR_LAI) THEN
               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
               PAIS (I,j)=THR_LAI
@@ -729,7 +704,7 @@ C
 C
           IF(IWF.EQ.0) THEN
               IF(ISAND(I,1).EQ.-4) THEN
-                  ZPLIMG(I)=0.001
+                  ZPLIMG(I)=0.001  !BDCS P?
               ELSEIF(ISAND(I,1).EQ.-3) THEN
                   ZPLIMG(I)=0.001
               ELSE
@@ -842,8 +817,8 @@ C
               PAICNS(I)=0.0
           ENDIF
 C
-          CWLCAP(I)=0.20*PAICAN(I)
-          CWLCPS(I)=0.20*PAICNS(I)
+          CWLCAP(I)=0.20*PAICAN(I)  !BDCS P?
+          CWLCPS(I)=0.20*PAICNS(I)  !BDCS P?
 C
           RRESID(I)=0.0
           IF(RCAN(I).LT.1.0E-5 .OR. (FC(I)+FCS(I)).LT.1.0E-5) THEN
@@ -871,7 +846,7 @@ C
           ENDIF
 C
           IF(FC(I).GT.0.)                                     THEN
-              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+
+              PAICAN(I)=(0.7*FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+   !BDCS P?
      1                   FCAN(I,3)*PAI(I,3)+FCAN(I,4)*PAI(I,4))/FC(I)
           ELSE
               PAICAN(I)=0.0
@@ -884,8 +859,8 @@ C
               PAICNS(I)=0.0
           ENDIF
 C
-          CWFCAP(I)=6.0*PAICAN(I)*(0.27+46.0/RHOSNI(I))
-          CWFCPS(I)=6.0*PAICNS(I)*(0.27+46.0/RHOSNI(I))
+          CWFCAP(I)=6.0*PAICAN(I)*(0.27+46.0/RHOSNI(I))   !BDCS P?
+          CWFCPS(I)=6.0*PAICNS(I)*(0.27+46.0/RHOSNI(I))   !BDCS P?
 C
           SRESID(I)=0.0
           IF(SNCAN(I).LT.1.0E-5 .OR. (FC(I)+FCS(I)).LT.1.0E-5) THEN
@@ -1031,9 +1006,9 @@ C
       DO 250 I=IL1,IL2
           IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN
               IF(IDISP.EQ.1)   DISP(I)=DISP(I)+FCAN (I,J)*
-     1                                 LOG(0.7*H(I,J))
+     1                                 LOG(0.7*H(I,J))   !BDCS P?
               ZOMLNC(I)=ZOMLNC(I)+FCAN (I,J)/
-     1                  ((LOG(ZBLEND(I)/(0.1*H(I,J))))**2)
+     1                  ((LOG(ZBLEND(I)/(0.1*H(I,J))))**2)   !BDCS P?
               ZOELNC(I)=ZOELNC(I)*
      1                  (0.01*H(I,J)*H(I,J)/ZORAT(IC))**FCAN(I,J)
           ENDIF
@@ -1075,7 +1050,7 @@ C
 !!passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
 !!
 !! In the same loop the roughness length for peatlands is also calculated assuming
-!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in ctem_params.f90)
+!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in classic_params.f90)
 !!
       DO 300 I=IL1,IL2
           IF(FG(I).GT.0.)                                        THEN
@@ -1112,7 +1087,7 @@ C
           IF(Z0ORO(I).GT.1.0E-4) THEN
               LZ0ORO=LOG(Z0ORO(I))
           ELSE
-              LZ0ORO=-10.0
+              LZ0ORO=-10.0            
           ENDIF
           ZOMLNC(I)=MAX(ZOMLNC(I),LZ0ORO)
           ZOMLCS(I)=MAX(ZOMLCS(I),LZ0ORO)
@@ -1158,12 +1133,12 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
               ENDIF     !CTEM MODIFICATION
 C
               IF(IDISP.EQ.0) THEN
-                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7*
+                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.7* !BDCS P?
      1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
      2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
               ENDIF
               IF(IZREF.EQ.2) THEN
-                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1*
+                  CMASSC(I)=CMASSC(I)+RHOAIR(I)*(SPHAIR/SPHVEG)*0.1* !BDCS P?
      1                     (FCAN(I,1)*H(I,1)+FCAN(I,2)*H(I,2)+
      2                      FCAN(I,3)*H(I,3)+FCAN(I,4)*H(I,4))/FC(I)
               ENDIF
@@ -1270,7 +1245,7 @@ C
               IF(ZROOT.LE.(ZBOTW(I,K)-DELZW(I,K)+0.0001))          THEN
                   RMAT(I,J,K)=0.0
               ELSEIF(ZROOT.LE.ZBOTW(I,K))                          THEN
-                  RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-
+                  RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-  !BDCS P?
      1                EXP(-3.0*ZROOT))/(1.0-EXP(-3.0*ZROOT))
               ELSE
                   RMAT(I,J,K)=(EXP(-3.0*(ZBOTW(I,K)-DELZW(I,K)))-

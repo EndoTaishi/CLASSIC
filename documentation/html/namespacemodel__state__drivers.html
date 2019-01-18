@@ -105,21 +105,21 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a0864e6b6afaeae951a26d12fef4d2f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write out the model restart file to netcdf. We only write out the variables that the model influences. This overwrites a pre-existing netcdf file.  <a href="#a0864e6b6afaeae951a26d12fef4d2f42">More...</a><br /></td></tr>
 <tr class="separator:a0864e6b6afaeae951a26d12fef4d2f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a3965f305f082ec630c8e7762d7e22122"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a3965f305f082ec630c8e7762d7e22122">getinput</a> (inputRequested, longitude, latitude)</td></tr>
-<tr class="memdesc:a3965f305f082ec630c8e7762d7e22122"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in a model input from a netcdf file and store the file's time array as well as the input values into memory.  <a href="#a3965f305f082ec630c8e7762d7e22122">More...</a><br /></td></tr>
-<tr class="separator:a3965f305f082ec630c8e7762d7e22122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a388c4833c7d938f4bcb72839be49121c"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a388c4833c7d938f4bcb72839be49121c">getinput</a> (inputRequested, longitude, latitude, projLonInd, projLatInd)</td></tr>
+<tr class="memdesc:a388c4833c7d938f4bcb72839be49121c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in a model input from a netcdf file and store the file's time array as well as the input values into memory.  <a href="#a388c4833c7d938f4bcb72839be49121c">More...</a><br /></td></tr>
+<tr class="separator:a388c4833c7d938f4bcb72839be49121c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a566c0005f80027365025af9f6b17d1fe"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a566c0005f80027365025af9f6b17d1fe">updateinput</a> (inputRequested, yearNeeded, imonth, iday, dom)</td></tr>
 <tr class="memdesc:a566c0005f80027365025af9f6b17d1fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the input field variable based on the present model timestep.  <a href="#a566c0005f80027365025af9f6b17d1fe">More...</a><br /></td></tr>
 <tr class="separator:a566c0005f80027365025af9f6b17d1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:aa1f54e07c9b953fa76892cde43cd0395"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aa1f54e07c9b953fa76892cde43cd0395">getmet</a> (longitude, latitude, nday, delt)</td></tr>
-<tr class="memdesc:aa1f54e07c9b953fa76892cde43cd0395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the meteorological input from a netcdf file It is <b>very</b> important that the files are chunked correctly (for global and regional runs). There is an orders of magnitude slow-up otherwise!  <a href="#aa1f54e07c9b953fa76892cde43cd0395">More...</a><br /></td></tr>
-<tr class="separator:aa1f54e07c9b953fa76892cde43cd0395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bcdccf16ca92869d251020d32e1e398"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a8bcdccf16ca92869d251020d32e1e398">getmet</a> (longitude, latitude, nday, projLonInd, projLatInd)</td></tr>
+<tr class="memdesc:a8bcdccf16ca92869d251020d32e1e398"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the meteorological input from a netcdf file It is <b>very</b> important that the files are chunked correctly (for global and regional runs). There is an orders of magnitude slow-up otherwise!  <a href="#a8bcdccf16ca92869d251020d32e1e398">More...</a><br /></td></tr>
+<tr class="separator:a8bcdccf16ca92869d251020d32e1e398"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a250e1a4a9a115535075497adede17f46"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a250e1a4a9a115535075497adede17f46">updatemet</a> (metTimeIndex, delt, iyear, iday, ihour, imin, metDone)</td></tr>
-<tr class="memdesc:a250e1a4a9a115535075497adede17f46"><td class="mdescLeft">&#160;</td><td class="mdescRight">This transfers the met data of this time step from the read-in array to the instantaneous variables. This also sets iyear to the present year of MET being read in.  <a href="#a250e1a4a9a115535075497adede17f46">More...</a><br /></td></tr>
-<tr class="separator:a250e1a4a9a115535075497adede17f46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1307cad46e02ba87f9308b69652067d0"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a1307cad46e02ba87f9308b69652067d0">updatemet</a> (metTimeIndex, iyear, iday, ihour, imin, metDone)</td></tr>
+<tr class="memdesc:a1307cad46e02ba87f9308b69652067d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">This transfers the met data of this time step from the read-in array to the instantaneous variables. This also sets iyear to the present year of MET being read in.  <a href="#a1307cad46e02ba87f9308b69652067d0">More...</a><br /></td></tr>
+<tr class="separator:a1307cad46e02ba87f9308b69652067d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:aaf94fac699883c97781af896554f4bbf"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#aaf94fac699883c97781af896554f4bbf">deallocinput</a></td></tr>
@@ -439,8 +439,8 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 </div>
 </div>
-<a id="a3965f305f082ec630c8e7762d7e22122"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3965f305f082ec630c8e7762d7e22122">&#9670;&nbsp;</a></span>getinput()</h2>
+<a id="a388c4833c7d938f4bcb72839be49121c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a388c4833c7d938f4bcb72839be49121c">&#9670;&nbsp;</a></span>getinput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -461,7 +461,19 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, intent(in), optional&#160;</td>
-          <td class="paramname"><em>latitude</em>&#160;</td>
+          <td class="paramname"><em>latitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in), optional&#160;</td>
+          <td class="paramname"><em>projLonInd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in), optional&#160;</td>
+          <td class="paramname"><em>projLatInd</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -477,8 +489,8 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 </div>
 </div>
-<a id="aa1f54e07c9b953fa76892cde43cd0395"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1f54e07c9b953fa76892cde43cd0395">&#9670;&nbsp;</a></span>getmet()</h2>
+<a id="a8bcdccf16ca92869d251020d32e1e398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcdccf16ca92869d251020d32e1e398">&#9670;&nbsp;</a></span>getmet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -504,8 +516,14 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>delt</em>&#160;</td>
+          <td class="paramtype">integer, intent(in), optional&#160;</td>
+          <td class="paramname"><em>projLonInd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in), optional&#160;</td>
+          <td class="paramname"><em>projLatInd</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -522,7 +540,8 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">longitude</td><td>Longitude of grid cell of interest</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">latitude</td><td>Latitude of grid cell of interest</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">nday</td><td>Maximum number of physics timesteps in one day</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">delt</td><td>Physics timestep (s) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projlonind</td><td>Longitude index of the cell for projected grid runs</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projlatind</td><td>Latitude index of the cell for projected grid runs </td></tr>
   </table>
   </dd>
 </dl>
@@ -557,8 +576,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 <p>Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on) </p>
 <dl class="section author"><dt>Author</dt><dd>Joe Melton </dd></dl>
-<p>ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables (temperature and specific humidity) are provided. In a run using atmospheric model forcing data, these heights would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW refer to the measurement height of these variables, which is fixed.</p>
-<p>ZBLDROW, the atmospheric blending height. Technically this variable depends on the length scale of the patches of roughness elements on the land surface, but this is difficult to ascertain. Usually it is assigned a value of 50 m.</p>
 <p>GCROW, the GCM surface descriptor variable. For land surfaces (including inland water) it has a value of -1.</p>
 <p>depth, ZSNL, is assigned its operational value of 0.10 m.</p>
 <p>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.</p>
@@ -588,7 +605,14 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <p>Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for names of longitude and latitude.</p>
 <p>calculate the number and indices of the pixels to be calculated</p>
 <p>Try and catch if the user has put in lon values from -180 to 180 or 0 to 360 when the input file expects the opposite.</p>
+<p>Special case, if the domainBounds are 0/0/0/0 then take whole domain</p>
 <p>Based on the domainBounds, we make vectors of the cells to be run.</p>
+<p>On a projected grid we have to use the grid cell indexes to delineate our domain to run over. We then use the indexes to determine the values of longitude and latitude for each grid cell.</p>
+<p>Retrieve dimensions. We assume the file has 'lon' and 'lat' for names of longitude and latitude.</p>
+<p>calculate the number and indices of the pixels to be calculated</p>
+<p>This will get all lon and lat grids as flattened vectors.</p>
+<p>Since the domainBounds are indexes, and not coordinates, we can use them directly.</p>
+<p>Special case, if the domainBounds are 0/0/0/0 then take whole domain</p>
 <p>Save the longitudes and latitudes over the region of interest for making the output files.</p>
 <p>Retrieve the number of soil layers (set ignd!)</p>
 <p>Grab the model domain. We use GC since it is the land cells we want to run the model over. the 'Mask' variable is all land (but we don't run over Antarctica).</p>
@@ -648,8 +672,8 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 
 </div>
 </div>
-<a id="a250e1a4a9a115535075497adede17f46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a250e1a4a9a115535075497adede17f46">&#9670;&nbsp;</a></span>updatemet()</h2>
+<a id="a1307cad46e02ba87f9308b69652067d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1307cad46e02ba87f9308b69652067d0">&#9670;&nbsp;</a></span>updatemet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -659,12 +683,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
           <td>(</td>
           <td class="paramtype">integer, intent(inout)&#160;</td>
           <td class="paramname"><em>metTimeIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>delt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -709,7 +727,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">mettimeindex</td><td>Index to read from met file</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">delt</td><td>Physics timestep (s)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">iyear</td><td>Present year of simulation</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">iday</td><td>Present day of simulation</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ihour</td><td>Present hour of simulation</td></tr>
@@ -761,7 +778,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Wed Dec 12 2018 16:42:12 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 18 2019 12:01:32 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

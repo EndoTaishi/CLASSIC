@@ -50,7 +50,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !
 !     20  Feb 2014  - Adapt to deal with competition on. Bring in code that makes
 !     J. Melton       bare fractions from competition module. Moved parameters to
-!                     ctem_params.f90
+!                     classic_params.f90
 !
 !     4   Jan 2014  - Convert to f90 and include a saturation effect for lightning
 !     J. Melton       strikes
@@ -71,7 +71,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !                     form of disturbance is modelled.
 
 
-use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
+use classic_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         iccp1, standreplace, tolrance, bmasthrs_fire, &
                         lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, &
                         f0, maxsprd, frco2glf, frco2blf, &
@@ -206,7 +206,7 @@ logical, dimension(ilg,icc) :: fire_veg  !<fire occuring logical, Vivek
 real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary variables
 
 !     ------------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
+!     Constants and parameters are located in classic_params.f90
 !     -----------------------------------------------------------------
 
 !>initialize required arrays to zero, or assign value
@@ -705,7 +705,7 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass,&
                       nppveg)
 
-use ctem_params, only : crop, icc, seed, standreplace, grass, zero, &
+use classic_params, only : crop, icc, seed, standreplace, grass, zero, &
                         iccp1, tolrance, numcrops
 
 implicit none
@@ -1069,7 +1069,7 @@ end subroutine burntobare
 !!
 !!where \f$v_{d,max}\f$ (\f$km\,h^{-1}\f$) is the PFT-specific maximum fire spread
 !! rate from Li et al. (2012)\cite Li20121c2, which is set to zero for crop PFTs (see also
-!! ctem_params.f90). The functions \f$g(u)\f$ accounts for the effect of wind
+!! classic_params.f90). The functions \f$g(u)\f$ accounts for the effect of wind
 !! speed and \f$ h(\phi_{r, d})\f$ accounts for the effect of rooting zone and
 !!  duff soil wetness on the fire spread rate, as discussed below.
 !!
@@ -1216,7 +1216,7 @@ end subroutine burntobare
 !!
 !!The PFT-specific combustion factors for leaf (\f$mho_\mathrm{L}\f$), stem
 !!(\f$mho_{\mathrm{S}}\f$), root (\f$mho_{\mathrm{R}}\f$) and litter
-!! (\f$mho_{\mathrm{D}}\f$) components are summarized in ctem_params.f90.
+!! (\f$mho_{\mathrm{D}}\f$) components are summarized in classic_params.f90.
 !! Emission factors for all species of trace gases and aerosols
 !!(\f$CO_2\f$, \f$CO\f$, \f$CH_4\f$, \f$H_2\f$, \f$NHMC\f$, \f$NO_x\f$,
 !! \f$N_2O\f$, total particulate matter, particulate matter less than \f$2.5\,
@@ -1245,7 +1245,7 @@ end subroutine burntobare
 !! describe the rate of change of carbon in model's five pools (however, listed
 !! there without the PFT subscript \f$\alpha\f$). The PFT-specific mortality factors
 !! for leaf (\f$\Theta_\mathrm{L}\f$), stem (\f$\Theta_{\mathrm{S}}\f$) and root
-!! (\f$\Theta_\mathrm{R}\f$) components are listed in ctem_params.f90.
+!! (\f$\Theta_\mathrm{R}\f$) components are listed in classic_params.f90.
 !!
 !!When CTEM is run with prescribed PFT fractional cover, the area of PFTs does not
 !! change and the fire-related emissions of \f$CO_2\f$, other trace gases and aerosols
@@ -1254,7 +1254,7 @@ end subroutine burntobare
 !! through plant mortality creates bare ground, which is subsequently available for
 !! colonization. The creation of bare ground depends on the susceptibility of each
 !! PFT to stand replacing fire (\f$\zeta_\mathrm{r}\f$, fraction) (see also
-!!ctem_params.f90) and the PFT area burned. The fire-related mortality rate,
+!!classic_params.f90) and the PFT area burned. The fire-related mortality rate,
 !!\f$m_{dist}\f$ (\f$day^{-1}\f$), used in mortality.f Eqn. 1, is then
 !!
 !!\f[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha}

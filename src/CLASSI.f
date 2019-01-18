@@ -1,7 +1,8 @@
 !>\file
 C>
 C!Evaluates atmospheric variables and rainfall/snowfall rates over modelled area.
-C!
+!!@author D. Verseghy, M. Lazare, R. Brown, S. Fassnacht, P. Bartlett
+!!
 
       SUBROUTINE CLASSI(VPD,TADP,PADRY,RHOAIR,RHOSNI,
      1                  RPCP,TRPCP,SPCP,TSPCP,
@@ -31,6 +32,8 @@ C     * JUN 27/02 - D.VERSEGHY. ESTIMATE FRACTIONAL CLOUD COVER
 C     *                         AND RAINFALL/SNOWFALL RATES
 C     *                         IF NECESSARY.
 C
+      use classic_params, only : TFREZ,RGAS,RGASV,RHOW
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -69,42 +72,6 @@ C     * TEMPORARY VARIABLES.
 C
       REAL EA,CA,CB,EASAT,CONST
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
-      REAL RGAS     !<Gas constant \f$[J kg^{-1} K^{-1}]\f$
-      REAL RGASV    !<Gas constant for water vapour \f$[J kg^{-1} K^{-1}]\f$
-      REAL GRAV     !<Acceleration due to gravity \f$[m s^{-1}]\f$
-      REAL SBC      !<Stefan-Boltzmann constant \f$[W m^{-2} K^{-4}]\f$
-      REAL VKC      !<Von Karman constant (0.40)
-      REAL CT       !<Drag coefficient for water \f$(1.15 * 10^{-3})\f$
-      REAL VMIN     !<Minimum wind speed \f$(0.1) [m s^{-1}]\f$
-      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
-                    !!\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPOM    !<Volumetric heat capacity of organic matter 
-                    !!\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSND   !<Volumetric heat capacity of sand particles 
-                    !!\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
-                    !!\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
-      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
- 
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
 C----------------------------------------------------------------
 C
 C     * CALCULATION OF ATMOSPHERIC INPUT VARIABLES.
@@ -150,8 +117,8 @@ C
       DO 100 I=IL1,IL2
           EA=QA(I)*PRESSG(I)/(0.622+0.378*QA(I))                              
           IF(TA(I).GE.TFREZ) THEN                                             
-              CA=17.269                                                       
-              CB=35.86                                                        
+              CA=17.269                   !BDCS P?                                    
+              CB=35.86                    !BDCS P?                                    
           ELSE                                                                
               CA=21.874                                                       
               CB=7.66                                                         
@@ -162,7 +129,6 @@ C
           RHOAIR(I)=PADRY(I)/(RGAS*TA(I))+EA/(RGASV*TA(I))                          
           CONST=LOG(EA/611.0)                                          
           TADP(I)=(CB*CONST-CA*TFREZ)/(CONST-CA)
-
 C
 C     * DENSITY OF FRESH SNOW.
 C
@@ -178,11 +144,10 @@ C
           !!\f$\rho_{s,i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
           !!
           IF(TA(I).LE.TFREZ) THEN
-              RHOSNI(I)=67.92+51.25*EXP((TA(I)-TFREZ)/2.59)
+              RHOSNI(I)=67.92+51.25*EXP((TA(I)-TFREZ)/2.59) !BDCS P?
           ELSE
               RHOSNI(I)=MIN((119.17+20.0*(TA(I)-TFREZ)),200.0)
           ENDIF
-
 C
 C     * PRECIPITATION PARTITIONING BETWEEN RAIN AND SNOW.
 C
@@ -242,7 +207,7 @@ C
                   ELSEIF(TA(I).GE.(TFREZ+6.0)) THEN
                       PHASE(I)=0.0
                   ELSE
-                      PHASE(I)=(0.0202*(TA(I)-TFREZ)**6-0.3660*
+                      PHASE(I)=(0.0202*(TA(I)-TFREZ)**6-0.3660*   !BDCS P?
      1                    (TA(I)-TFREZ)**5+2.0399*(TA(I)-TFREZ)**4-
      2                    1.5089*(TA(I)-TFREZ)**3-15.038*
      3                    (TA(I)-TFREZ)**2+4.6664*(TA(I)-TFREZ)+100.0)/

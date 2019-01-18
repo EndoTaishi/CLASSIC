@@ -147,9 +147,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:aee7296af3bc346de7b4349df566c2093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the variable content.  <a href="fileIOModule_8F90.html#aee7296af3bc346de7b4349df566c2093">More...</a><br /></td></tr>
 <tr class="separator:aee7296af3bc346de7b4349df566c2093"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:ab19fe641d576a703fe1c91ed3b0e53ff"><td class="memItemLeft" align="right" valign="top">real function, dimension(:), allocatable, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fileIOModule_8F90.html#ab19fe641d576a703fe1c91ed3b0e53ff">fileiomodule::ncgetdimvalues</a> (fileId, label, start, count)</td></tr>
-<tr class="memdesc:ab19fe641d576a703fe1c91ed3b0e53ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)  <a href="fileIOModule_8F90.html#ab19fe641d576a703fe1c91ed3b0e53ff">More...</a><br /></td></tr>
-<tr class="separator:ab19fe641d576a703fe1c91ed3b0e53ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56d3d63d1b6160375acf805bdbd07770"><td class="memItemLeft" align="right" valign="top">real function, dimension(:), allocatable, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fileIOModule_8F90.html#a56d3d63d1b6160375acf805bdbd07770">fileiomodule::ncgetdimvalues</a> (fileId, label, start, count, start2D, count2D)</td></tr>
+<tr class="memdesc:a56d3d63d1b6160375acf805bdbd07770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)  <a href="fileIOModule_8F90.html#a56d3d63d1b6160375acf805bdbd07770">More...</a><br /></td></tr>
+<tr class="separator:a56d3d63d1b6160375acf805bdbd07770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:acb4801ada22152de1f37fcbc4826e3d1"><td class="memItemLeft" align="right" valign="top"><a id="acb4801ada22152de1f37fcbc4826e3d1"></a>
 real function, dimension(:), allocatable, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fileIOModule_8F90.html#acb4801ada22152de1f37fcbc4826e3d1">fileiomodule::ncget1dvar</a> (fileId, label, start, count)</td></tr>
@@ -201,7 +201,7 @@ real function, dimension(:,:,:,:), allocatable, public&#160;</td><td class="memI
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The File IO Module contains wrappers for accessing netCDF files. It uses precompile directives to determine if a compilation should be serial, using netCDF or parallel, using MPI/PnetCDF. </p>
-<dl class="section author"><dt>Author</dt><dd>Ed Wisernig, Joe Melton</dd></dl>
+<dl class="section author"><dt>Author</dt><dd>E. Wisernig, J. Melton</dd></dl>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a id="file_a4765fc8fa9e640bd4e255fc50df961db"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#file_a4765fc8fa9e640bd4e255fc50df961db">&#9670;&nbsp;</a></span>checknc()</h2>
@@ -550,8 +550,8 @@ real function, dimension(:,:,:,:), allocatable, public&#160;</td><td class="memI
 
 </div>
 </div>
-<a id="file_ab19fe641d576a703fe1c91ed3b0e53ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_ab19fe641d576a703fe1c91ed3b0e53ff">&#9670;&nbsp;</a></span>ncgetdimvalues()</h2>
+<a id="file_a56d3d63d1b6160375acf805bdbd07770"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a56d3d63d1b6160375acf805bdbd07770">&#9670;&nbsp;</a></span>ncgetdimvalues()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -578,7 +578,19 @@ real function, dimension(:,:,:,:), allocatable, public&#160;</td><td class="memI
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, dimension(1), intent(in), optional&#160;</td>
-          <td class="paramname"><em>count</em>&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(2), intent(in), optional&#160;</td>
+          <td class="paramname"><em>start2D</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(2), intent(in), optional&#160;</td>
+          <td class="paramname"><em>count2D</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1136,7 +1148,7 @@ real function, dimension(:,:,:,:), allocatable, public&#160;</td><td class="memI
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="fileIOModule_8F90.html">fileIOModule.F90</a></li>
-    <li class="footer">Generated on Wed Dec 12 2018 16:42:11 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 18 2019 12:01:31 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -9,7 +9,7 @@
 !!
 !!reflects the net effect of four different processes: (1) intrinsic- or age-related mortality, \f$m_{intr}\f$, (2) growth or stress-related mortality, \f$m_{ge}\f$, (3) mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$ and (4) mortality associated with disturbances, \f$m_{dist}\f$.
 !!
-!!Intrinsic- or age-related mortality uses a PFT-specific maximum age, \f$A_{max}\f$ (see also ctem_params.f90), to calculate an annual mortality rate such that only \f$1\,{\%}\f$ of tree PFTs exceed \f$A_{max},\alpha\f$. Intrinsic mortality accounts for processes, whose effect is not explicitly captured in the model including insect damage, hail, wind throw, etc.,
+!!Intrinsic- or age-related mortality uses a PFT-specific maximum age, \f$A_{max}\f$ (see also classic_params.f90), to calculate an annual mortality rate such that only \f$1\,{\%}\f$ of tree PFTs exceed \f$A_{max},\alpha\f$. Intrinsic mortality accounts for processes, whose effect is not explicitly captured in the model including insect damage, hail, wind throw, etc.,
 !!
 !!\f[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}).\qquad (Eqn 2) \f]
 !!
@@ -17,7 +17,7 @@
 !!
 !!\f[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \qquad (Eqn 3)\f]
 !!
-!!where \f$m_{{ge},max}\f$ represents the PFT-specific maximum mortality rate when no growth occurs (see also ctem_params.f90). \f$k_{m}\f$ is a parameter set to \f$0.3\,m^{2}\,(g\,C)^{-1}\f$. \f$g_\mathrm{e}\f$ is the growth efficiency of the PFT (\f$g\,C\,m^{-2}\f$) calculated based on the maximum LAI (\f$L_{\alpha,max}\f$; \f$m^{2}\,m^{-2}\f$) and the increment in stem and root mass over the course of the previous year (\f$\Delta C_\mathrm{S}\f$ and \f$\Delta C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$, respectively) (Waring, 1983) \cite Waring1983-wc
+!!where \f$m_{{ge},max}\f$ represents the PFT-specific maximum mortality rate when no growth occurs (see also classic_params.f90). \f$k_{m}\f$ is a parameter set to \f$0.3\,m^{2}\,(g\,C)^{-1}\f$. \f$g_\mathrm{e}\f$ is the growth efficiency of the PFT (\f$g\,C\,m^{-2}\f$) calculated based on the maximum LAI (\f$L_{\alpha,max}\f$; \f$m^{2}\,m^{-2}\f$) and the increment in stem and root mass over the course of the previous year (\f$\Delta C_\mathrm{S}\f$ and \f$\Delta C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$, respectively) (Waring, 1983) \cite Waring1983-wc
 !!\f[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \qquad (Eqn 4)\f]
 !!
 !!When competition between PFTs is switched on, mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$ (\f$0.25\,yr^{-1}\f$), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in competition_scheme::existence.
@@ -35,7 +35,7 @@ c    + -------------- inputs updated above this line ------------------
      6                     intrmort)
 c    + ------------------outputs above this line ----------------------
 c
-c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 c     J. Melton
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -54,7 +54,7 @@ c
 c     icc       - no. of ctem plant function types, currently 8
 c     ilg       - no. of grid cells in latitude circle
 c
-      use ctem_params,        only : icc, ilg, kk, zero, mxmortge,
+      use classic_params,        only : icc, ilg, kk, zero, mxmortge,
      1                               kmort1, maxage
 c
       implicit none
@@ -86,7 +86,7 @@ c
       real fcancmx(ilg,icc)  !<
 !>
 !!------------------------------------------------------------------
-!!Constants and parameters are located in ctem_params.f90
+!!Constants and parameters are located in classic_params.f90
 !!---------------------------------------------------------------
 !!
 !!initialize required arrays to zero
