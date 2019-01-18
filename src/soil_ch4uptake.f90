@@ -14,7 +14,7 @@ subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
 ! the soil consumption of atmospheric methane at the global scale. Global
 ! Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
 
-use classic_params,  only : ilg,ignd,ican,nlat,wtCH4
+use classic_params,  only : ilg,ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o
 
 implicit none
 
@@ -57,10 +57,10 @@ real :: r_W                             !< Factor to account for wetlands
 real :: THP_tot                         !< temp variable for total porosity \f$(cm^3 cm^{-3})\f$
 
 ! Local parameters:
-real, parameter :: D_air = 0.196        !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
-real, parameter :: g_0 = 586.7 / 86400. !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
-real, parameter :: betaCH4 = 0.8        !< Constant derived in Curry (2007) from comparison against measurements (-)
-real, parameter :: k_o = 5.03E-5        !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
+! real, parameter :: D_air = 0.196        !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
+! real, parameter :: g_0 = 586.7 / 86400. !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
+! real, parameter :: betaCH4 = 0.8        !< Constant derived in Curry (2007) from comparison against measurements (-)
+! real, parameter :: k_o = 5.03E-5        !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
 
 !>---------------------------------------------------------------------
 !> Begin

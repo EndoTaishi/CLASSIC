@@ -47,9 +47,6 @@ real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air ($J kg^{-1} K^{-
 real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
 real, parameter :: STD_PRESS = 101325.0 !<Standard atmospheric pressure (Pa)
 
-!SPHAIR=CPRES FLAG COMBAK
-!CPD=CPRES FLAG COMBAK
-
 ! FLAG below not used anywhere.
 !AI=2.88053E+6/1004.5
 !BI=0.167E+3/1004.5
@@ -121,7 +118,8 @@ real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running comp
 real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
 
-integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
+integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Can be read in from the init file when I have the new snow albedo scheme fully implemented. Leave here for now.
+
 integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
 
 real, parameter  :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
@@ -229,10 +227,10 @@ real, dimension(:), allocatable  :: ALDV !< Lookup tables for dry visible soil a
 real, dimension(:), allocatable  :: ALDN !< Lookup tables for dry NIR soil albedos based on soil colour index 
 
 ! DRCOEF parameters: ----------------------
-!FLAG has 4 but no idea what they are... COMBAK
+!FLAG has some but poorly documented COMBAK
 
 ! FLXSURFZ parameters: ----------------------
-! FLAG has some but no idea what they are... COMBAK
+! FLAG has some but poorly documented COMBAK
 
 ! SNINFL parameters: ----------------------
 real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight percentage)
@@ -474,6 +472,13 @@ integer, dimension(2) :: coldlmt!< No. of days for which some temperature has to
 real, dimension(2) :: coldthrs  !<1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees \n
                                 !!2.  8 c threshold for initiating "harvest" for crops, the array colddays tracks days corresponding to these thresholds
 real :: roothrsh                !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
+
+! soil_ch4uptake parameters: -----------------------------
+
+real :: D_air    !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
+real :: g_0      !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
+real :: betaCH4  !< Constant derived in Curry (2007) from comparison against measurements (-)
+real :: k_o      !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
 
 ! turnover.f parameters: ---------------------------------
 
@@ -912,6 +917,10 @@ subroutine readin_params
         coldlmt,&
         coldthrs,&
         roothrsh,&
+        D_air,&
+        g_0,&
+        betaCH4,&
+        k_o,&
         stemlife,&
         rootlife,&
         stmhrspn,&

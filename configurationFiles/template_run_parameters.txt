@@ -1016,6 +1016,20 @@ kn(10:12)  =0.46, 0.44, 0.00,
     !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
     roothrsh = 8.0,
 
+! soil_ch4uptake parameters: -----------------------------
+
+    !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
+    D_air = 0.196        
+    
+    !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s^{-1} m^{-2} cm{-1}\f$)
+    g_0 = 6.79051E-3   ! 586.7 / 86400.
+    
+    !< Constant derived in Curry (2007) from comparison against measurements (-)
+    betaCH4 = 0.8      
+      
+    !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
+    k_o = 5.03E-5        
+
 ! turnover.f parameters: ---------------------------------
 
     !> Stemlife, turnover time scale for stem for different pfts

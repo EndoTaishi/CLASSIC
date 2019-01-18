@@ -101,18 +101,6 @@ contains
         INTEGER NLANDI  !<Number of modelled areas that are ice sheets
         INTEGER I,J,K,L,M,N
         INTEGER NTLD    !<
-        !INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
-        !INTEGER ITA        !<
-        !INTEGER ITCAN      !<
-        !INTEGER ITD        !<
-        !INTEGER ITAC       !<
-        !INTEGER ITS        !<
-        !INTEGER ITSCR      !<
-        !INTEGER ITD2       !<
-        !INTEGER ITD3       !<
-        !INTEGER ITD4       !<
-        !INTEGER NFS        !<
-        !INTEGER NDRY       !<
 
         ! Pointers
         integer, pointer :: readMetStartYear    !< First year of meteorological forcing to read in from the met file
@@ -121,7 +109,7 @@ contains
         ! they are allocatted in alloc_class_vars in the class_statevars
         ! module and pointed to here.
 
-        ! These will be allocated the dimension: 'ignd' !FLAG in the future change to ilg,ignd.
+        ! These will be allocated the dimension: 'ignd' 
 
         real, pointer, dimension(:) :: DELZ    !<
         real, pointer, dimension(:) :: ZBOT    !<
@@ -686,39 +674,9 @@ contains
 
         ! These will be allocated the dimension: 'nlat,nmos,4'
         real, pointer, dimension(:,:,:)  :: TSFSROT !<
-
-        !
-        !     * ARRAYS ASSOCIATED WITH COMMON BLOCKS.
-        !FLAG! >>> Not in the new structure
-        ! REAL THPORG (  3) !<
-        ! REAL THRORG (  3) !<
-        ! REAL THMORG (  3) !<
-        ! REAL BORG   (  3) !<
-        ! REAL PSISORG(  3) !<
-        ! REAL GRKSORG(  3) !<
-        ! 
-        ! REAL GROWYR (  18,4,2) !< !
-        ! 
-        ! !FLAG! <<< Not in the new structure
-        ! 
-        ! !     * CONSTANTS AND TEMPORARY VARIABLES.
-        ! !
-        ! !REAL EVAPSUM,ALTOT,DECL,DAY,COSZ HOUR,
-        !      !FSSTAR,FLSTAR,GTOUT,QH,QE,TCN,TPN,TSN,TSURF,ZSN,BEG,SNOMLT
         ! 
          real :: CUMSNO
-        ! !
-        ! !     * COMMON BLOCK PARAMETERS.
-        ! !
-        ! REAL X1,X2,X3,X4,G,GAS,X5,X6,CPRES,GASV,X7,CPI,X8,CELZRO,X9,&
-        ! X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,&
-        ! RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,&
-        ! TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,&
-        ! HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
-        ! CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,&
-        ! ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
-        ! ANGMAX
-        ! !
+
         !================= CTEM array declaration ===============================\
         !
         !     Local variables for coupling CLASS and CTEM
@@ -1281,37 +1239,6 @@ contains
         real, pointer, dimension(:) :: anmossac_t
         real, pointer, dimension(:) :: rmlmossac_t
         real, pointer, dimension(:) :: gppmossac_t
-
-        !=======================================================================
-        !     * PHYSICAL CONSTANTS.
-        !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
-        !     * WITHIN THE GCM.
-
-        ! COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5, &
-        !                 X6,    CPRES, GASV,  X7
-        ! COMMON /PARAM1/ CPI,   X8,    CELZRO,X9,    X10,    X11
-        ! COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
-        ! COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,&
-        !                 K6,    K7,    K8,    K9,    K10,    K11
-        ! !
-        ! !     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
-        ! !     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
-        ! !
-        ! COMMON /CLASS1/ DELT,TFREZ
-        ! COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-        ! COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,&
-        ! &                RHOSOL,RHOOM
-        ! COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,&
-        ! &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
-        ! &                TCGLAC,CLHMLT,CLHVAP
-        ! COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-        ! COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI!,ZORAT,ZORATG
-        ! !COMMON /CLASS7/ CANEXT,XLEAF
-        ! COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
-        ! COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
-        ! COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-        !
-        !===================== CTEM ==============================================\
 
         ! Point the CLASS pointers
 
