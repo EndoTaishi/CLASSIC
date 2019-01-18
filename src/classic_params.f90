@@ -11,6 +11,9 @@ module classic_params
 
 ! Change History:
 
+! Sep 2018 - EC - Relocate variables defined in "readin_params" to the main module and allocate them
+!                 in "allocateParamsCTEM". Cray compiler doesn't currently support namelists using 
+!                 dynamic arrays dimensioned by a parameter specified in the main module.
 ! Jun 2017 - JM - Change to using namelist.
 ! Jun 11 2015 - JM - Add in new disturb params (extnmois_duff and extnmois_veg) replacing duff_dry and extnmois.
 ! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
@@ -244,6 +247,18 @@ character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
 character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
 real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient
 
+! Moved definitions in "readin_params" here and allocate via "allocateParamsCTEM".
+
+real, dimension(:), allocatable :: omega_compete
+real, dimension(:), allocatable :: epsilonl_compete
+real, dimension(:), allocatable :: epsilons_compete
+real, dimension(:), allocatable :: epsilonr_compete
+real, dimension(:), allocatable :: bsrtstem_compete
+real, dimension(:), allocatable :: bsrtroot_compete
+real, dimension(:), allocatable :: mxmortge_compete
+real, dimension(:), allocatable :: maxage_compete
+real, dimension(:), allocatable :: drlsrtmx_compete
+
 !allocate.f parameters: ----------
 
 real, dimension(:), allocatable :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
@@ -475,7 +490,6 @@ real :: ratioch4                !< methane to carbon dioxide flux scaling factor
 !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
 !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
 real :: wtdryres
-real :: factor2        !< constant value for secondary (ch4wet2) methane emissions calculation
 real :: lat_thrshld1   !< Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2   !< Boundary with southern zone for wetland determination (degrees North)
 real :: soilw_thrshN   !< Soil wetness threshold in the North zone
@@ -642,7 +656,17 @@ subroutine allocateParamsCLASSIC()
             vmax(kk),&
             inico2i(kk),&
             chi(kk),&
-            rmlcoeff(kk))
+            rmlcoeff(kk),&
+            omega_compete(kk),&
+            epsilonl_compete(kk),&
+            epsilons_compete(kk),&
+            epsilonr_compete(kk),&
+            bsrtstem_compete(kk),&
+            bsrtroot_compete(kk),&
+            mxmortge_compete(kk),&
+            maxage_compete(kk),&
+            drlsrtmx_compete(kk))
+
     allocate(GROWYR(18,4,2),&
             ZORAT(ican),&
             CANEXT(ican),&
@@ -678,15 +702,15 @@ subroutine readin_params
 
     implicit none
 
-    real, dimension(kk):: omega_compete
-    real, dimension(kk):: epsilonl_compete
-    real, dimension(kk):: epsilons_compete
-    real, dimension(kk):: epsilonr_compete
-    real, dimension(kk):: bsrtstem_compete
-    real, dimension(kk):: bsrtroot_compete
-    real, dimension(kk):: mxmortge_compete
-    real, dimension(kk):: maxage_compete
-    real, dimension(kk):: drlsrtmx_compete
+    !real, dimension(kk):: omega_compete
+    !real, dimension(kk):: epsilonl_compete
+    !real, dimension(kk):: epsilons_compete
+    !real, dimension(kk):: epsilonr_compete
+    !real, dimension(kk):: bsrtstem_compete
+    !real, dimension(kk):: bsrtroot_compete
+    !real, dimension(kk):: mxmortge_compete
+    !real, dimension(kk):: maxage_compete
+    !real, dimension(kk):: drlsrtmx_compete
     integer :: i,n
     character(8) :: pftkind
     integer :: isumc,k1c,k2c
@@ -893,7 +917,6 @@ subroutine readin_params
         stmhrspn,&
         ratioch4,&
         wtdryres,&
-        factor2,&
         lat_thrshld1,&
         lat_thrshld2,&
         soilw_thrshN,&

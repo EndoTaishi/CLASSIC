@@ -178,7 +178,15 @@ implicit none
 
           else ! i.e., sand.ne.-3 or -4
 
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thiceg(i,j)))**(-b(i,j))
+            
+            ! We don't place a lower limit on psi as it is only used here and the
+            ! value of psi <= psisat is just used to select a scomotrm value.
+            if (thiceg(i,j) .le. thpor(i,j)) then ! flag new limits
+              psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thiceg(i,j)))**(-b(i,j)) 
+            else      
+              ! if the whole pore space is ice then suction is assumed to be very high.   
+              psi(i,j) = 10000.0
+            end if 
 
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
@@ -472,8 +480,12 @@ do 130 i = il1, il2
                   psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thicec(i,j)))**(-b(i,j))
                 endif
             else
-              ! the 0.005 below prevents a divide by 0 situation.
-              psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
+              if (thicec(i,j) .le. thpor(i,j)) then ! flag new limits
+                     psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thicec(i,j)))**(-b(i,j)) 
+              else 
+                ! if the whole pore space is ice then suction is assumed to be very high. 
+                psi(i,j) = 10000.0
+              end if 
             endif
 
             if(psi(i,j).ge.10000.0) then

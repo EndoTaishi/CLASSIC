@@ -27,7 +27,7 @@ C!@author D. Verseghy, M. Lazare
      J                   VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
      K                   SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
      L                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,
-     M                   ILMOS,JLMOS,
+     M                   DLATGAT,ILMOS,JLMOS,
      N                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,
      O                   TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
      P                   TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT,
@@ -50,7 +50,8 @@ C!@author D. Verseghy, M. Lazare
      +                  TAROW,  QAROW,  PRESROW,PREROW, PADRROW,
      +                  VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
-     +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW)
+     +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW,
+     +                  DLATROW)
 
 C
 C     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT,ASVDROT,
@@ -321,6 +322,7 @@ C
       REAL RHSIROW( NL) !<Density of fresh snow \f$[kg m^{-3}]\f$
       REAL FCLOROW( NL) !<Fractional cloud cover [ ]
       REAL DLONROW( NL) !<Longitude of grid cell (east of Greenwich) [degrees]
+      REAL DLATROW( NL) !<Latitude of grid cell [degrees]
       REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile
                         !!\f$[W m^{-2}]\f$
       REAL GUSTROL (NL) !<Wind gustiness factor  [  ]
@@ -334,7 +336,7 @@ C
 
 C
       REAL  ZRFMGAT(ILG), ZRFHGAT(ILG), ZDMGAT (ILG), ZDHGAT (ILG),
-     1      FSVHGAT(ILG), FSIHGAT(ILG), CSZGAT (ILG),
+     1      FSVHGAT(ILG), FSIHGAT(ILG), CSZGAT (ILG), DLATGAT(ILG),
      2      FSGGAT (ILG), FLGGAT (ILG), FDLGAT (ILG),
      3      ULGAT  (ILG), VLGAT  (ILG), TAGAT  (ILG), QAGAT  (ILG),
      4      PRESGAT(ILG), PREGAT (ILG), PADRGAT(ILG), VPDGAT (ILG),
@@ -415,6 +417,7 @@ C----------------------------------------------------------------------
           RHSIGAT(K)=RHSIROW(ILMOS(K))
           FCLOGAT(K)=FCLOROW(ILMOS(K))
           DLONGAT(K)=DLONROW(ILMOS(K))
+          DLATGAT(K)=DLATROW(ILMOS(K))
           GGEOGAT(K)=GGEOROW(ILMOS(K))
           GUSTGAT(K)=GUSTROL(ILMOS(K))
           RADJGAT(K)=RADJ   (ILMOS(K))

@@ -67,6 +67,7 @@ var classic__params_8f90 =
     [ "coldthrs", "classic__params_8f90.html#a07470b9f0d969291d393e85b47f02dfe", null ],
     [ "combust", "classic__params_8f90.html#aa178af7b3316603795f181606b542af3", null ],
     [ "consallo", "classic__params_8f90.html#ae942c733d208ac42f94549106b0cf5ac", null ],
+    [ "convertkgc", "classic__params_8f90.html#a713ce36df891c05d10182972f07494cf", null ],
     [ "crop", "classic__params_8f90.html#a6af203de7b89084fca1c2a6a88fcccac", null ],
     [ "ct", "classic__params_8f90.html#a4fad56d54b335aa5cc5a14d21b48bf5e", null ],
     [ "cxtlrg", "classic__params_8f90.html#adad70f51f3b6d0fd7790e4cea71a3c44", null ],
