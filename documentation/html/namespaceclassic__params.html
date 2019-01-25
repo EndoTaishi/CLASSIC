@@ -406,12 +406,28 @@ integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 <tr class="separator:a1937dbc0bd0fba20b1394cb4465f265a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6af203de7b89084fca1c2a6a88fcccac"><td class="memItemLeft" align="right" valign="top"><a id="a6af203de7b89084fca1c2a6a88fcccac"></a>
 logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a6af203de7b89084fca1c2a6a88fcccac">crop</a></td></tr>
-<tr class="memdesc:a6af203de7b89084fca1c2a6a88fcccac"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple crop matrix, define the number and position of the crops (NOTE: dimension icc) <br /></td></tr>
+<tr class="memdesc:a6af203de7b89084fca1c2a6a88fcccac"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple crop matrix, define number and position of the crops (NOTE: dimension icc) <br /></td></tr>
 <tr class="separator:a6af203de7b89084fca1c2a6a88fcccac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cbe544f20c49ace2df3e3b60765da4c"><td class="memItemLeft" align="right" valign="top"><a id="a3cbe544f20c49ace2df3e3b60765da4c"></a>
 logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a3cbe544f20c49ace2df3e3b60765da4c">grass</a></td></tr>
 <tr class="memdesc:a3cbe544f20c49ace2df3e3b60765da4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple grass matric, define the number and position of grass (NOTE: dimension icc) <br /></td></tr>
 <tr class="separator:a3cbe544f20c49ace2df3e3b60765da4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac98036ee564952fd0d591342387b4cc4"><td class="memItemLeft" align="right" valign="top"><a id="ac98036ee564952fd0d591342387b4cc4"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac98036ee564952fd0d591342387b4cc4">cl4ctem</a></td></tr>
+<tr class="memdesc:ac98036ee564952fd0d591342387b4cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexing of the CTEM-level PFTs into a CLASS PFT-level array. <br /></td></tr>
+<tr class="separator:ac98036ee564952fd0d591342387b4cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04dce684649235360071af62a0de7dd0"><td class="memItemLeft" align="right" valign="top"><a id="a04dce684649235360071af62a0de7dd0"></a>
+character(5), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a04dce684649235360071af62a0de7dd0">classpfts</a></td></tr>
+<tr class="memdesc:a04dce684649235360071af62a0de7dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">CLASS (physics) PFTs. <br /></td></tr>
+<tr class="separator:a04dce684649235360071af62a0de7dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab457bf39ad7f125d29101b027a243468"><td class="memItemLeft" align="right" valign="top"><a id="ab457bf39ad7f125d29101b027a243468"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ab457bf39ad7f125d29101b027a243468">modelpft</a></td></tr>
+<tr class="memdesc:ab457bf39ad7f125d29101b027a243468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts. <br /></td></tr>
+<tr class="separator:ab457bf39ad7f125d29101b027a243468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb7ae357e001d032f7aa1c69ee603f9b"><td class="memItemLeft" align="right" valign="top"><a id="adb7ae357e001d032f7aa1c69ee603f9b"></a>
+character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#adb7ae357e001d032f7aa1c69ee603f9b">ctempfts</a></td></tr>
+<tr class="memdesc:adb7ae357e001d032f7aa1c69ee603f9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of CTEM-level PFTs. <br /></td></tr>
+<tr class="separator:adb7ae357e001d032f7aa1c69ee603f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4e5b7b29360afcf8a352d01d6e85c3c"><td class="memItemLeft" align="right" valign="top"><a id="ac4e5b7b29360afcf8a352d01d6e85c3c"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac4e5b7b29360afcf8a352d01d6e85c3c">vkc</a></td></tr>
 <tr class="memdesc:ac4e5b7b29360afcf8a352d01d6e85c3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Von Karman Constant (-) <br /></td></tr>
@@ -623,18 +639,6 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a664c7429262f23114f589f07943c357f">wsncap</a></td></tr>
 <tr class="memdesc:a664c7429262f23114f589f07943c357f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum water retention capacity of the snow pack (weight percentage) <br /></td></tr>
 <tr class="separator:a664c7429262f23114f589f07943c357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab457bf39ad7f125d29101b027a243468"><td class="memItemLeft" align="right" valign="top"><a id="ab457bf39ad7f125d29101b027a243468"></a>
-integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ab457bf39ad7f125d29101b027a243468">modelpft</a></td></tr>
-<tr class="memdesc:ab457bf39ad7f125d29101b027a243468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts. <br /></td></tr>
-<tr class="separator:ab457bf39ad7f125d29101b027a243468"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77a8f81363f4ad30f7259e01f57f5f41"><td class="memItemLeft" align="right" valign="top"><a id="a77a8f81363f4ad30f7259e01f57f5f41"></a>
-character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a77a8f81363f4ad30f7259e01f57f5f41">pftlist</a></td></tr>
-<tr class="memdesc:a77a8f81363f4ad30f7259e01f57f5f41"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of PFTs. <br /></td></tr>
-<tr class="separator:a77a8f81363f4ad30f7259e01f57f5f41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6577d3c82c4b7eff811922c717921e6b"><td class="memItemLeft" align="right" valign="top"><a id="a6577d3c82c4b7eff811922c717921e6b"></a>
-character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a6577d3c82c4b7eff811922c717921e6b">vegtype</a></td></tr>
-<tr class="memdesc:a6577d3c82c4b7eff811922c717921e6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of vegetation, options: Tree, Grass, Crop, Shrub. <br /></td></tr>
-<tr class="separator:a6577d3c82c4b7eff811922c717921e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b74fec0837d9da97084df14d8f1c7e3"><td class="memItemLeft" align="right" valign="top"><a id="a9b74fec0837d9da97084df14d8f1c7e3"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a9b74fec0837d9da97084df14d8f1c7e3">kn</a></td></tr>
 <tr class="memdesc:a9b74fec0837d9da97084df14d8f1c7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
@@ -1167,7 +1171,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="separator:a9349dd4f37e04a79463e88731c3f4fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65ad2007d0345149e8983487593a3853"><td class="memItemLeft" align="right" valign="top"><a id="a65ad2007d0345149e8983487593a3853"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a65ad2007d0345149e8983487593a3853">g_0</a></td></tr>
-<tr class="memdesc:a65ad2007d0345149e8983487593a3853"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: <img class="formulaInl" alt="$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}$" src="form_1661.png"/>) <br /></td></tr>
+<tr class="memdesc:a65ad2007d0345149e8983487593a3853"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: <img class="formulaInl" alt="$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}$" src="form_1658.png"/>) <br /></td></tr>
 <tr class="separator:a65ad2007d0345149e8983487593a3853"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95b818619e2b53769535e87df0cdc8a3"><td class="memItemLeft" align="right" valign="top"><a id="a95b818619e2b53769535e87df0cdc8a3"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a95b818619e2b53769535e87df0cdc8a3">betach4</a></td></tr>
@@ -1175,7 +1179,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="separator:a95b818619e2b53769535e87df0cdc8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1afcfcff04116d8e4561e67fc4d2c04"><td class="memItemLeft" align="right" valign="top"><a id="ae1afcfcff04116d8e4561e67fc4d2c04"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ae1afcfcff04116d8e4561e67fc4d2c04">k_o</a></td></tr>
-<tr class="memdesc:ae1afcfcff04116d8e4561e67fc4d2c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base oxidation rate derived in Curry (2007) from comparison against measurements <img class="formulaInl" alt="$(s^{-1})$" src="form_1662.png"/>. <br /></td></tr>
+<tr class="memdesc:ae1afcfcff04116d8e4561e67fc4d2c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base oxidation rate derived in Curry (2007) from comparison against measurements <img class="formulaInl" alt="$(s^{-1})$" src="form_1659.png"/>. <br /></td></tr>
 <tr class="separator:ae1afcfcff04116d8e4561e67fc4d2c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac19c379c92b933e3dbe07c500fadb553"><td class="memItemLeft" align="right" valign="top"><a id="ac19c379c92b933e3dbe07c500fadb553"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac19c379c92b933e3dbe07c500fadb553">stemlife</a></td></tr>
@@ -1333,13 +1337,16 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="memitem:a607d5090e3483de84d533e527b7d0672"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a607d5090e3483de84d533e527b7d0672">prepareglobalparams</a></td></tr>
 <tr class="memdesc:a607d5090e3483de84d533e527b7d0672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize and/or read in all global model parameters.  <a href="#a607d5090e3483de84d533e527b7d0672">More...</a><br /></td></tr>
 <tr class="separator:a607d5090e3483de84d533e527b7d0672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3328061cd648af86291a18040114231"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ad3328061cd648af86291a18040114231">readin_pftnums</a></td></tr>
+<tr class="memdesc:ad3328061cd648af86291a18040114231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the number of PFTs from the parameters namelist file.  <a href="#ad3328061cd648af86291a18040114231">More...</a><br /></td></tr>
+<tr class="separator:ad3328061cd648af86291a18040114231"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a621fec9700c467b535047098d42d4668"><td class="memItemLeft" align="right" valign="top"><a id="a621fec9700c467b535047098d42d4668"></a>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a621fec9700c467b535047098d42d4668">allocateparamsclassic</a> ()</td></tr>
 <tr class="memdesc:a621fec9700c467b535047098d42d4668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate the arrays for CTEM params that require it. <br /></td></tr>
 <tr class="separator:a621fec9700c467b535047098d42d4668"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af848251bbbde37310b9068bb15642350"><td class="memItemLeft" align="right" valign="top"><a id="af848251bbbde37310b9068bb15642350"></a>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#af848251bbbde37310b9068bb15642350">readin_params</a></td></tr>
-<tr class="memdesc:af848251bbbde37310b9068bb15642350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the CTEM parameters from a namelist file. Populate a few parameters based on what was read in. <br /></td></tr>
+<tr class="memdesc:af848251bbbde37310b9068bb15642350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read in the CLASSIC parameters from a namelist file. Populate a few parameters based on what was read in. <br /></td></tr>
 <tr class="separator:af848251bbbde37310b9068bb15642350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -1362,9 +1369,29 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><div class="memdoc">
 
 <p>Initialize and/or read in all global model parameters. </p>
-<p>Assign iccp1 and icp1. icc and ican are read in from the job options file.</p>
+<p>Read in the number of PFTs to be used, this reads them in from the namelist file.</p>
 <p>Allocate the arrays that store the CTEM parameter values</p>
 <p>Initialize the CTEM parameters, this reads them in from a namelist file. </p>
+
+</div>
+</div>
+<a id="ad3328061cd648af86291a18040114231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3328061cd648af86291a18040114231">&#9670;&nbsp;</a></span>readin_pftnums()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine, public classic_params::readin_pftnums </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read in the number of PFTs from the parameters namelist file. </p>
+<p>Assign iccp1 and icp1. icc and ican are read in from the job options file. </p>
 
 </div>
 </div>
@@ -1394,7 +1421,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceclassic__params.html">classic_params</a></li>
-    <li class="footer">Generated on Fri Jan 18 2019 12:01:31 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

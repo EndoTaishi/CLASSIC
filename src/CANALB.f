@@ -12,6 +12,8 @@ C!stomatal resistances.
      6                  ILG,IL1,IL2,JL,IC,ICP1,IG,IALC,
      7                  CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC) 
 
+C     * Mar 28/17 - S.SUN Expand PFTs from 4 to 5 in CLASS
+C     *
 C     * AUG 04/15 - D.VERSEGHY/M.LAZARE. REMOVE FLAG VALUE OF RC FOR 
 C     *                         VERY DRY SOILS.
 C     * SEP 05/14 - P.BARTLETT. INCREASED ALBEDO VALUES FOR SNOW-
@@ -61,7 +63,8 @@ C     * MAR 03/92 - D.VERSEGHY/M.LAZARE. REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CANOPY ALBEDOS AND TRANSMISSIVITIES.
 C
-      use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG
+      use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG,
+     2                           classpfts
 
       IMPLICIT NONE
 C
@@ -338,23 +341,20 @@ C
 C
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER 
 C     * BARE SOIL.
-C
-C     * NEEDLELEAF TREES.
-C
-      J=1
-      DO 150 I=IL1,IL2                                                                                  
+
+      do J = 1, IC
+        select case (classpfts(J))
+        case ('NdlTr') !-------------------------------------------------------
+         DO 150 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
-              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   !BDCS P?
+              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)    
-                                 
               TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*             !BDCS P?  
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)   
-
               TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
 !              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-                                 
               TRCLDT=0.30*EXP(-0.3*PAI(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.3*PAI(I,J)/0.2588)   
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -367,11 +367,7 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCN(I)=TRVSCN(I)+FCAN(I,J)*TRVS(I)
               TRIRCN(I)=TRIRCN(I)+FCAN(I,J)*TRIR(I)
-          ENDIF
-  150 CONTINUE
-C
-      DO 200 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
+
               SVF=EXP(CANEXT(J)*PAI(I,J))
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
@@ -387,12 +383,10 @@ C
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
               ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN
           ENDIF
-  200 CONTINUE
+  150 CONTINUE
 C
-C     * BROADLEAF TREES.
-C
-      J=2
-      DO 250 I=IL1,IL2                                                                                  
+        case ('BdlTr','BdlSh') !-------------------------------------------------------
+         DO 250 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
               TRCLRV=MIN(EXP(-0.7*PAI(I,J)),EXP(-0.4/COSZS(I)))                   
               TRCLDV=0.30*MIN(EXP(-0.7*PAI(I,J)),EXPMAX1)             !BDCS P?
@@ -412,11 +406,7 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCN(I)=TRVSCN(I)+FCAN(I,J)*TRVS(I)
               TRIRCN(I)=TRIRCN(I)+FCAN(I,J)*TRIR(I)
-          ENDIF
-  250 CONTINUE
-C
-      DO 300 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
+
               SVF=EXP(CANEXT(J)*PAI(I,J))
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
@@ -432,29 +422,22 @@ C
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
               ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN
           ENDIF
-  300 CONTINUE
+  250 CONTINUE  
 C
-C     * CROPS AND GRASS.
-C
-      DO 350 J=3,IC
-      DO 350 I=IL1,IL2                                                                                  
+        case ('Crops', 'Grass') !CROPS AND GRASS
+         DO 350 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
              TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
 !              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)    
-
               TRCLDV=0.30*EXP(-0.5*PAI(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.5*PAI(I,J)/0.2588)
-
               TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
 !              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-
-                               
               TRCLDT=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)                
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
-
               IF(TRVS(I).GT.0.0001)                           THEN
                   CXTEFF(I,J)=-LOG(TRVS(I))/MAX(PAI(I,J),1.0E-5)
               ELSE
@@ -464,19 +447,14 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCN(I)=TRVSCN(I)+FCAN(I,J)*TRVS(I)
               TRIRCN(I)=TRIRCN(I)+FCAN(I,J)*TRIR(I)
-          ENDIF
-  350 CONTINUE
-C
-      DO 400 J=3,IC
-      DO 400 I=IL1,IL2                                                     
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
+
               SVF=EXP(CANEXT(J)*PAI(I,J))
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
                   ALVSN=(1.0-SVF)*ALVSCX+SVF*TRVS(I)*ALVSGC(I)
                   ALIRN=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRGC(I)
-              ELSE
+            ELSE !user-specified values read-in.
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ACVDAT(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ACIDAT(I,J)
                   ALVSN=(1.0-SVF)*ALVSCX+SVF*ACVDAT(I,J)
@@ -484,8 +462,14 @@ C
               ENDIF
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
               ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN              
-          ENDIF   
-  400 CONTINUE
+          ENDIF           
+  350 CONTINUE  
+
+        case default
+          print*,'Unknown CLASS PFT in CANALB ',classpfts(J)
+          call XIT('CANALB',-1)
+        end select
+      end do
 C
 C     * TOTAL ALBEDOS.
 C
@@ -502,7 +486,7 @@ C
       IF(IPTBAD.NE.0) THEN
           WRITE(6,6100) IPTBAD,JL,ALVSCN(IPTBAD),ALIRCN(IPTBAD)
  6100     FORMAT('0AT (I,J)= (',I3,',',I3,'), ALVSCN,ALIRCN = ',2F10.5)
-          CALL XIT('CANALB',-1)    
+          CALL XIT('CANALB',-2)    
       ENDIF                                                                                  
 C
 C     * TOTAL TRANSMISSIVITIES.
@@ -525,25 +509,20 @@ C
           CALL XIT('CANALB',-3)    
       ENDIF                                                                                  
 C----------------------------------------------------------------------
-C
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER SNOW.
-C
-C     * NEEDLELEAF TREES.
-C
-      J=1
-      DO 500 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
+      do J = 1,IC
+         select case (classpfts(J))
+         case ('NdlTr') !-------------------------------------------------------
+           DO 500 I=IL1,IL2                                                                                  
+            IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)         THEN
               TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))   !BDCS P?
 !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
-                                   
-              TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*           !BDCS P?    
-     1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
-
+              TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*           
+     1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   !BDCS P?    
               TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-             
               TRCLDT=0.30*EXP(-0.3*PAIS(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.3*PAIS(I,J)/0.2588)   
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -551,11 +530,11 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCS(I)=TRVSCS(I)+FCANS(I,J)*TRVS(I)
               TRIRCS(I)=TRIRCS(I)+FCANS(I,J)*TRIR(I)
-          ENDIF
-  500 CONTINUE
+!          ENDIF
+!  500 CONTINUE
 C
-      DO 550 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
+!      DO 550 I=IL1,IL2                                               
+!          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -568,14 +547,13 @@ C
               ALIRS=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRSC(I)
               ALVSCS(I)=ALVSCS(I)+FCANS(I,J)*ALVSS
               ALIRCS(I)=ALIRCS(I)+FCANS(I,J)*ALIRS
-          ENDIF
-  550 CONTINUE
+            ENDIF
+!  550 CONTINUE
+  500 CONTINUE  
 C
-C     * BROADLEAF TREES.
-C
-      J=2
-      DO 600 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
+         case ('BdlTr','BdlSh') !-------------------------------------------------------
+          DO 600 I=IL1,IL2                                                                                  
+            IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
               TRCLRV=MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/COSZS(I)))                   
               TRCLDV=0.30*MIN(EXP(-0.7*PAIS(I,J)),EXPMAX1)             
      1              +0.50*MIN(EXP(-0.7*PAIS(I,J)),EXPMAX2)              
@@ -589,11 +567,11 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCS(I)=TRVSCS(I)+FCANS(I,J)*TRVS(I)
               TRIRCS(I)=TRIRCS(I)+FCANS(I,J)*TRIR(I)
-          ENDIF
-  600 CONTINUE
+!          ENDIF
+!  600 CONTINUE
 C
-      DO 650 I=IL1,IL2                                               
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
+!      DO 650 I=IL1,IL2                                               
+!          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -606,25 +584,21 @@ C
               ALIRS=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRSC(I)
               ALVSCS(I)=ALVSCS(I)+FCANS(I,J)*ALVSS
               ALIRCS(I)=ALIRCS(I)+FCANS(I,J)*ALIRS
-          ENDIF
-  650 CONTINUE
+            ENDIF
+!  650 CONTINUE
+  600 CONTINUE
 C
-C     * CROPS AND GRASS.
-C
-      DO 700 J=3,IC
+      case ('Crops', 'Grass')  ! CROPS AND GRASS.
       DO 700 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
+            IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
               TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
 !              TRCLRV=EXP(TMP)
-                                   
               TRCLDV=0.30*EXP(-0.5*PAIS(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.5*PAIS(I,J)/0.2588)
-
               TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
-                                    
               TRCLDT=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)                
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -632,12 +606,11 @@ C
               TRIR(I)= 2.*TRTOT-TRVS(I)
               TRVSCS(I)=TRVSCS(I)+FCANS(I,J)*TRVS(I)
               TRIRCS(I)=TRIRCS(I)+FCANS(I,J)*TRIR(I)
-          ENDIF
-  700 CONTINUE
-C
-      DO 750 J=3,IC
-      DO 750 I=IL1,IL2                                                     
-          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
+!          ENDIF
+!  700 CONTINUE
+    
+!      DO 750 I=IL1,IL2                                                     
+!          IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -650,8 +623,15 @@ C
               ALIRS=(1.0-SVF)*ALIRCX+SVF*TRIR(I)*ALIRSC(I)
               ALVSCS(I)=ALVSCS(I)+FCANS(I,J)*ALVSS
               ALIRCS(I)=ALIRCS(I)+FCANS(I,J)*ALIRS
-          ENDIF 
-  750 CONTINUE                                      
+            ENDIF 
+!  750 CONTINUE                                      
+  700 CONTINUE  
+         case default
+           print*,'Unknown CLASS PFT in CANALB ',classpfts(J)
+           call XIT('CANALB',-4)  
+         end select
+         
+      end do
 C
 C     * TOTAL ALBEDOS AND CONSISTENCY CHECKS.
 C
@@ -699,19 +679,19 @@ C
       IF(IPTBAD.NE.0) THEN
           WRITE(6,6400) IPTBAD,JL,TRVSCS(IPTBAD),TRIRCS(IPTBAD)
  6400     FORMAT('0AT (I,J)= (',I3,',',I3,'), TRVSCS,TRIRCS = ',2F10.5)
-          CALL XIT('CANALB',-4)    
+          CALL XIT('CANALB',-5)    
       ENDIF
 C
       IF(IPTBAD.NE.0) THEN
           WRITE(6,6200) IPTBAD,JL,ALVSCS(IPTBAD),ALIRCS(IPTBAD)
  6200     FORMAT('0AT (I,J)= (',I3,',',I3,'), ALVSCS,ALIRCS = ',2F10.5)
-          CALL XIT('CANALB',-2)    
+          CALL XIT('CANALB',-6)    
       ENDIF                                                                                  
 C
       IF(JPTBAD.NE.0) THEN
           WRITE(6,6500) JPTBDI,JL,JPTBAD
  6500     FORMAT('0AT (I,J)= (',I3,',',I3,'), JPTBAD =  ',I5)
-          CALL XIT('CANALB',-5)    
+          CALL XIT('CANALB',-7)    
       ENDIF                      
 C-----------------------------------------------------------------------
       !>

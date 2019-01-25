@@ -150,7 +150,7 @@ contains
             if (.not. fileCreatedOk) then
                 print*,'Failed to create',filename
                 print*,'Aborting'
-                stop
+                stop ! can use stop here as not in MPI part of code.
             end if
         endif
 

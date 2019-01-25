@@ -22,6 +22,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "CLASSZ.f", "CLASSZ_8f.html", "CLASSZ_8f" ],
     [ "competition_mod.f90", "competition__mod_8f90.html", "competition__mod_8f90" ],
     [ "ctem.f90", "ctem_8f90.html", "ctem_8f90" ],
+    [ "ctem_params.f90", "ctem__params_8f90.html", "ctem__params_8f90" ],
     [ "ctem_statevars.f90", "ctem__statevars_8f90.html", "ctem__statevars_8f90" ],
     [ "ctemg1.f", "ctemg1_8f.html", "ctemg1_8f" ],
     [ "ctemg2.f", "ctemg2_8f.html", "ctemg2_8f" ],

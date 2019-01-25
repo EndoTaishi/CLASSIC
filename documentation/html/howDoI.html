@@ -108,14 +108,18 @@ My run won't compile but I didn't do anything I can think of.</h1>
 <p>Sometimes you need to run a 'make clean' to clean out old .mod and .o files that might be causing issues. Do that and then recompile.</p>
 <h1><a class="anchor" id="soilColourIndex"></a>
 initFileConverter tells me I need a soil colour index</h1>
-<p>Soil colour index is described in <a class="el" href="basicInputs.html#soilData">Input Soil Data</a> and used in <a class="el" href="CLASSB_8f.html" title="Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. ">CLASSB.f</a>. A global file of soil colour index produced by Peter Lawrence (NCAR) can be obtained from <a href="ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc">ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc</a> </p>
+<p>Soil colour index is described in <a class="el" href="basicInputs.html#soilData">Input Soil Data</a> and used in <a class="el" href="CLASSB_8f.html" title="Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. ">CLASSB.f</a>. A global file of soil colour index produced by Peter Lawrence (NCAR) can be obtained from <a href="ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc">ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc</a></p>
+<h1><a class="anchor" id="windowsEndings"></a>
+Gotcha for Windows users</h1>
+<p>Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, which Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from <a href="http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html">http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html</a>)</p>
+<p>Any CLASSIC tool that reads in ASCII expects the Linux/Unix line endings. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Jan 18 2019 12:01:31 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

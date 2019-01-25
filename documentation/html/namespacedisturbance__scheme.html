@@ -866,10 +866,10 @@ Functions/Subroutines</h2></td></tr>
 <p>If .not. dofire then we enter here and perform the calculations for the emissions since we might have some from luc.</p>
 <p>We also estimate <img class="formulaInl" alt="$CO_2$" src="form_545.png"/> emissions from each of these components. Note that the litter which is generated due to disturbance is uniformly distributed over the entire area of a given pft, and this essentially thins the vegetation biomass. If PFTCompetition is not on, this does not change the vegetation fractions, if competition is on a fraction will become bare. That is handled in burntobare subroutine called from competition subroutine.</p>
 <p>Calculate the emissions of trace gases and aerosols based upon how much plant matter was burnt</p>
-<p>Sum all pools that will be converted to emissions/aerosols <img class="formulaInl" alt="$(g c/m^2 /day)$" src="form_1648.png"/></p>
+<p>Sum all pools that will be converted to emissions/aerosols <img class="formulaInl" alt="$(g c/m^2 /day)$" src="form_1663.png"/></p>
 <p>Add in the emissions due to luc fires (deforestation) the luc emissions are converted from <img class="formulaInl" alt="$umol co_2 m-2 s-1 to g c m-2$" src="form_561.png"/> (day-1) before adding to tot_emit</p>
-<p>Convert burnt plant matter from carbon to dry organic matter using a conversion factor, assume all parts of the plant has the same ratio of carbon to dry organic matter. units: <img class="formulaInl" alt="$kg dom / m^2 / day$" src="form_1649.png"/></p>
-<p>Convert the dom to emissions/aerosols using emissions factors units: <img class="formulaInl" alt="$g species / m^2 /d$" src="form_1663.png"/> Also convert units to <img class="formulaInl" alt="$kg species / m^2 / s^{-1}$" src="form_1650.png"/></p>
+<p>Convert burnt plant matter from carbon to dry organic matter using a conversion factor, assume all parts of the plant has the same ratio of carbon to dry organic matter. units: <img class="formulaInl" alt="$kg dom / m^2 / day$" src="form_1664.png"/></p>
+<p>Convert the dom to emissions/aerosols using emissions factors units: <img class="formulaInl" alt="$g species / m^2 /d$" src="form_1665.png"/> Also convert units to <img class="formulaInl" alt="$kg species / m^2 / s^{-1}$" src="form_1666.png"/></p>
 <p>FLAG for the optimization of popd effect on fire I am taking the lterm out as the 'temp' var. So I have made tmp be dimension ilg and I overwrite the lterm (which is written to an output file) here in its place. </p>
 
 </div>
@@ -880,7 +880,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedisturbance__scheme.html">disturbance_scheme</a></li>
-    <li class="footer">Generated on Fri Jan 18 2019 12:01:32 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 25 2019 10:41:42 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

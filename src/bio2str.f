@@ -52,6 +52,8 @@ c    4--------------- inputs above this line, outputs below --------
      8                         alnirc,     paic,    slaic,ipeatland)
 c
 c     ----------------------------------------------------------------
+c     16  Aug 2017  - Add BLD COLD-Deciduous shrub 
+c     J. Melton/S. Sun     
 c
 c     2   Jul 2013  - Integreated classic_params module
 c     J. Melton       
@@ -95,7 +97,7 @@ c
      1                               l2max,kk, eta, kappa, kn, lfespany, 
      2                               fracbofg, specsla, abar, avertmas,
      3                               alpha, prcnslai, minslai, mxrtdpth,
-     4                               albvis, albnir           
+     4                               albvis, albnir,classpfts        
 
       implicit none
 
@@ -321,7 +323,16 @@ c
 !>for crops and grasses set the minimum lai to a small number, other
 !!wise class will never run tsolvc and thus phtsyn and ctem will not
 !!be able to grow crops or grasses.
-          if(j.eq.3.or.j.eq.4) ailc(i,j)=max(ailc(i,j),0.1)
+
+          select case(classpfts(j))
+          case('Crops','Grass')
+           ailc(i,j)=max(ailc(i,j),0.1)
+           case ('NdlTr' , 'BdlTr', 'BdlSh') 
+             ! Do nothing for non-grass/crop 
+           case default
+             print*,'Unknown CLASS PFT in bio2str ',classpfts(j)
+             call XIT('bio2str',-1)                                         
+          end select
 c
 240     continue
 230   continue
@@ -359,36 +370,36 @@ c
         k2c = k1c + nol2pfts(j) - 1
         do 260 m = k1c, k2c
           do 270 i = il1, il2
-c          
-          if (j.le.2) then                            ! trees
-           veghght(i,m)=10.0*stemmass(i,m)**0.385
-           veghght(i,m)=min(veghght(i,m),45.0)
-          else if (j.eq.3) then                       ! crops
-           veghght(i,m)=1.0*(stemmass(i,m)+gleafmas(i,m))**0.385
-          else if (j.eq.4) then                       ! grasses
-           veghght(i,m)=3.5*(gleafmas(i,m)+fracbofg*bleafmas(i,m))**0.50   
-          endif
+           select case (classpfts(j))
+             case ('NdlTr','BdlTr') !Trees
+                if (ipeatland(i) .eq. 0) then ! For uplands:
+                  veghght(i,m)=min(10.0*stemmass(i,m)**0.385,45.0)
+                else !peatland trees have a different relation than normal. Max height 10 m.
+                  veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0) 
+                end if
+             case ('BdlSh')
+                if (ipeatland(i) .eq. 0) then ! For uplands:     
+                  veghght(i,m)=min(10.0*stemmass(i,m)**0.385,45.0) !FLAG SET TO TREES!!!!!!
+                else ! peatland shrubs         
+                  veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  
+                end if
+             case ('Crops') ! <Crops
+               veghght(i,m)=1.0*(stemmass(i,m)+gleafmas(i,m))**0.385
+             case ('Grass') ! <Grass
+                if (ipeatland(i) .eq. 0) then ! For uplands:     
+                  veghght(i,m)=3.5*(gleafmas(i,m)+fracbofg*
+     1                         bleafmas(i,m))**0.50   
+                else ! peatland grasses and sedges                  
+                  veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
+     1                           *bleafmas(i,m))**0.3) 
+                end if
+              case default
+                print*,'Unknown CLASS PFT in bio2str ',classpfts(j)
+                call XIT('bio2str',-2)                                                         
+           end select
           lnrghlth(i,m)= log(0.10 * max(veghght(i,m),0.10))
-c
 270       continue
 260     continue
-
-c     ---------------peatland vegetation-----
-        do 280 m = k1c, k2c
-          do 290 i = il1, il2
-            if (ipeatland(i) > 0) then ! For peat tiles:
-               if (j == 1) then !peatland trees have a different relation than normal.
-                 veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0)                 
-               elseif (j == 2 .and. m >= (k2c-1)) then ! shrubs
-                 veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  !last 2 pft in ican2 are shrubs 
-               elseif (j == 4 ) then !grasses and sedges
-                 veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
-     1                               *bleafmas(i,m))**0.3)              
-               endif
-            endif
-290       continue
-280     continue
-c
 250   continue
 c
       k1c=0
@@ -562,7 +573,7 @@ c
            write(6,2300) i,j,rmat_sum
 2300       format(' at (i) = (',i3,'), pft=',i2,' fractions of roots
      &not adding to one. sum  = ',f12.7)
-           call xit('bio2str',-3)
+           call xit('bio2str',-4)
           endif
          endif
 412     continue

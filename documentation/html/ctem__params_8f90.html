@@ -117,10 +117,6 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a0eda7d3a6fad697a660806095840a1fb">ctem_params::deltat</a> = 1.0</td></tr>
 <tr class="memdesc:a0eda7d3a6fad697a660806095840a1fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's time step in days. <br /></td></tr>
 <tr class="separator:a0eda7d3a6fad697a660806095840a1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e38d1074d3b8ff50034ce1eafbae1cc"><td class="memItemLeft" align="right" valign="top"><a id="a9e38d1074d3b8ff50034ce1eafbae1cc"></a>
-real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a9e38d1074d3b8ff50034ce1eafbae1cc">ctem_params::convertkgc</a> = 1.201e-8</td></tr>
-<tr class="memdesc:a9e38d1074d3b8ff50034ce1eafbae1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts from umolCO2/m2/s to kgC/m2/s. <br /></td></tr>
-<tr class="separator:a9e38d1074d3b8ff50034ce1eafbae1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="memItemLeft" align="right" valign="top"><a id="a4ef8efd46b3f253fcaa1d9e7626f63ff"></a>
 integer, dimension(12)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a4ef8efd46b3f253fcaa1d9e7626f63ff">ctem_params::monthdays</a> = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]</td></tr>
 <tr class="memdesc:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">days in each month <br /></td></tr>
@@ -257,6 +253,33 @@ character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valig
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a73890809feceec23d588deabdc5986fd">ctem_params::kn</a></td></tr>
 <tr class="memdesc:a73890809feceec23d588deabdc5986fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
 <tr class="separator:a73890809feceec23d588deabdc5986fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe258f7756428889e2b641744778c248"><td class="memItemLeft" align="right" valign="top"><a id="afe258f7756428889e2b641744778c248"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::omega_compete</b></td></tr>
+<tr class="separator:afe258f7756428889e2b641744778c248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0487bfe54f0a73722a80d817674b88fe"><td class="memItemLeft" align="right" valign="top"><a id="a0487bfe54f0a73722a80d817674b88fe"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::epsilonl_compete</b></td></tr>
+<tr class="separator:a0487bfe54f0a73722a80d817674b88fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451209a4ed3fc89505db07f35c3f2343"><td class="memItemLeft" align="right" valign="top"><a id="a451209a4ed3fc89505db07f35c3f2343"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::epsilons_compete</b></td></tr>
+<tr class="separator:a451209a4ed3fc89505db07f35c3f2343"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a648a7a00e3762cb20ce276775469b65a"><td class="memItemLeft" align="right" valign="top"><a id="a648a7a00e3762cb20ce276775469b65a"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::epsilonr_compete</b></td></tr>
+<tr class="separator:a648a7a00e3762cb20ce276775469b65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bedd6f64dfdb738dbc6f82b31b16e10"><td class="memItemLeft" align="right" valign="top"><a id="a2bedd6f64dfdb738dbc6f82b31b16e10"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bsrtstem_compete</b></td></tr>
+<tr class="separator:a2bedd6f64dfdb738dbc6f82b31b16e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72150a6507e6a5a509e5e1389504b08b"><td class="memItemLeft" align="right" valign="top"><a id="a72150a6507e6a5a509e5e1389504b08b"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bsrtroot_compete</b></td></tr>
+<tr class="separator:a72150a6507e6a5a509e5e1389504b08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece76dcff43df5e5ddbb5b208b0a2f18"><td class="memItemLeft" align="right" valign="top"><a id="aece76dcff43df5e5ddbb5b208b0a2f18"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::mxmortge_compete</b></td></tr>
+<tr class="separator:aece76dcff43df5e5ddbb5b208b0a2f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace4025dfd7bfbb4991cfe069167359ec"><td class="memItemLeft" align="right" valign="top"><a id="ace4025dfd7bfbb4991cfe069167359ec"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::maxage_compete</b></td></tr>
+<tr class="separator:ace4025dfd7bfbb4991cfe069167359ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f138fe36874075845642f90879e0e9a"><td class="memItemLeft" align="right" valign="top"><a id="a0f138fe36874075845642f90879e0e9a"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::drlsrtmx_compete</b></td></tr>
+<tr class="separator:a0f138fe36874075845642f90879e0e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab53002b0b06bff5af5822ebcfeaf285f"><td class="memItemLeft" align="right" valign="top"><a id="ab53002b0b06bff5af5822ebcfeaf285f"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#ab53002b0b06bff5af5822ebcfeaf285f">ctem_params::omega</a></td></tr>
 <tr class="memdesc:ab53002b0b06bff5af5822ebcfeaf285f"><td class="mdescLeft">&#160;</td><td class="mdescRight">omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run) <br /></td></tr>
@@ -538,10 +561,10 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a3b130e3b7506998094c8650ea4d26ff7">ctem_params::bsratesc_g</a></td></tr>
 <tr class="memdesc:a3b130e3b7506998094c8650ea4d26ff7"><td class="mdescLeft">&#160;</td><td class="mdescRight">bare ground soil c respiration rates at 15 c in kg c/kg c.year <br /></td></tr>
 <tr class="separator:a3b130e3b7506998094c8650ea4d26ff7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8822a85e4e8060308fbdb71f7983e926"><td class="memItemLeft" align="right" valign="top"><a id="a8822a85e4e8060308fbdb71f7983e926"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a8822a85e4e8060308fbdb71f7983e926">ctem_params::a</a></td></tr>
-<tr class="memdesc:a8822a85e4e8060308fbdb71f7983e926"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool <br /></td></tr>
-<tr class="separator:a8822a85e4e8060308fbdb71f7983e926"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad532b62934701a87c46a24bb2b81cf49"><td class="memItemLeft" align="right" valign="top"><a id="ad532b62934701a87c46a24bb2b81cf49"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#ad532b62934701a87c46a24bb2b81cf49">ctem_params::a_hetr</a></td></tr>
+<tr class="memdesc:ad532b62934701a87c46a24bb2b81cf49"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool <br /></td></tr>
+<tr class="separator:ad532b62934701a87c46a24bb2b81cf49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa754be19830b01b24a5a992122c67f6f"><td class="memItemLeft" align="right" valign="top"><a id="aa754be19830b01b24a5a992122c67f6f"></a>
 real, dimension(3)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#aa754be19830b01b24a5a992122c67f6f">ctem_params::combust</a></td></tr>
 <tr class="memdesc:aa754be19830b01b24a5a992122c67f6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">how much deforested/chopped off biomass is combusted (these absolutely must add to 1.0!) <br /></td></tr>
@@ -773,6 +796,10 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memdesc:a71227aca2a1e2963319a981847fa2874"><td class="mdescLeft">&#160;</td><td class="mdescRight">ratio of wetland to upland respiration<br />
 Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis. These were summed as "hetrores". This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless) <br /></td></tr>
 <tr class="separator:a71227aca2a1e2963319a981847fa2874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1c91ff7281b9069ec03e8ecc581fef"><td class="memItemLeft" align="right" valign="top"><a id="aba1c91ff7281b9069ec03e8ecc581fef"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#aba1c91ff7281b9069ec03e8ecc581fef">ctem_params::factor2</a></td></tr>
+<tr class="memdesc:aba1c91ff7281b9069ec03e8ecc581fef"><td class="mdescLeft">&#160;</td><td class="mdescRight">constant value for secondary (ch4wet2) methane emissions calculation <br /></td></tr>
+<tr class="separator:aba1c91ff7281b9069ec03e8ecc581fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a63b83e7f97702b648861ae4a586b59"><td class="memItemLeft" align="right" valign="top"><a id="a3a63b83e7f97702b648861ae4a586b59"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__params.html#a3a63b83e7f97702b648861ae4a586b59">ctem_params::lat_thrshld1</a></td></tr>
 <tr class="memdesc:a3a63b83e7f97702b648861ae4a586b59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Northern zone for wetland determination (degrees North) <br /></td></tr>
@@ -905,7 +932,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem__params_8f90.html">ctem_params.f90</a></li>
-    <li class="footer">Generated on Wed Dec 12 2018 16:42:11 for CLASSIC by
+    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

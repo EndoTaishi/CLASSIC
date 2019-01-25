@@ -11,7 +11,7 @@ var searchData=
   ['zolnc',['zolnc',['../structctem__statevars_1_1veg__rot.html#a429181968be41375bc24fa3a467e40d8',1,'ctem_statevars::veg_rot::zolnc()'],['../structctem__statevars_1_1veg__gat.html#a9304bfce535adc97f11cf9fa84f079f6',1,'ctem_statevars::veg_gat::zolnc()']]],
   ['zolng',['zolng',['../namespaceclassic__params.html#ae2b3a4f9308937d9fb421a96e83dcbe3',1,'classic_params']]],
   ['zolni',['zolni',['../namespaceclassic__params.html#a0206968b7e273d88e56f084770ab8137',1,'classic_params']]],
-  ['zolnmoss',['zolnmoss',['../namespaceclassic__params.html#a4f0a9ae8a74f28f91a2ed29bafe6fa36',1,'classic_params']]],
+  ['zolnmoss',['zolnmoss',['../namespaceclassic__params.html#a4f0a9ae8a74f28f91a2ed29bafe6fa36',1,'classic_params::zolnmoss()'],['../namespacectem__params.html#a2ccf9899714e74accc20f0ac2effd33c',1,'ctem_params::zolnmoss()']]],
   ['zolns',['zolns',['../namespaceclassic__params.html#a09b1768fccf531464be0d459d1516df3',1,'classic_params']]],
   ['zorat',['zorat',['../namespaceclassic__params.html#ae4a7e4c7236f0af90fdbabea55f8368c',1,'classic_params']]],
   ['zoratg',['zoratg',['../namespaceclassic__params.html#a82c573236e7eda267ac93fa0f989e284',1,'classic_params']]],

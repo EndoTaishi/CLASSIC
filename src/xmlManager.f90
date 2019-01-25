@@ -6,7 +6,7 @@
 
 module xmlManager
     use outputManager,  only : outputDescriptor, outputDescriptors, descriptorCount, &
-                                variant, variants, variantCount
+                                variant, variants, variantCount, checkFileExists
     use xmlParser,      only : xml_process
     implicit none
     public :: loadoutputDescriptor
@@ -24,11 +24,22 @@ module xmlManager
 
 contains
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
-    !> The [change my name] function parses the XML file using the startfunc, datafunc and endfunc for starting tags, data tags and end tags, respectively.
+    !> The loadoutputDescriptor function parses the XML file using the startfunc, datafunc and endfunc for starting tags, data tags and end tags, respectively.
     subroutine loadoutputDescriptor()
         use ctem_statevars, only : c_switch
         character(:), pointer    :: xmlFile
+        logical                  :: fileExists
         xmlFile         => c_switch%xmlFile
+        ! Check if the xmlFile exists:
+        ! Now make sure the file was properly created
+        fileExists = checkFileExists(xmlFile)
+
+        if (.not. fileExists) then
+            print*,'Missing xml file: ',xmlFile
+            print*,'Aborting'
+            stop ! can use stop here as not in MPI part of code.
+        end if
+        
         call xml_process(xmlFile, attribs, data, startfunc, datafunc, endfunc, 0, error)
     end subroutine loadoutputDescriptor
 

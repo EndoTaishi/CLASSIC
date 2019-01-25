@@ -2,12 +2,6 @@
 
 Version 1 of the CTEM is the terrestrial carbon cycle component of the second generation Canadian Earth System Model (CanESM2) (Arora et al., 2011)\cite Arora2011-79f where it is coupled to version 2.7 of the Canadian Land Surface Scheme (CLASS). CTEM v. 2.0 (Melton and Arora, 2016) \cite Melton2016-zx was coupled to CLASS v. 3.6 (Verseghy, 2012) \cite Verseghy2012-c0e. The coupled CLASS--CTEM model is capable of being run online in the CanESM model or offline, driven by observation-based meteorological forcings. CTEM models terrestrial ecosystem processes for nine PFTs, two of which are crop PFTs (see table below), by tracking the flow of carbon through three living vegetation components (leaves, stem and roots) and two dead carbon pools (litter and soil).
 
-| CLASS PFTs | CTEM PFTs --- | ---| ---| Peatland PFTs | ---|
-|:---------------:|:---------:|----------------|----------------------|:----------------:|------------------|
-| Needleleaf tree | Evergreen | Deciduous |  |  |  |
-| Broadleaf tree | Evergreen | Cold Deciduous | Drought/Dry Decidous | Evergreen Shrubs | Deciduous Shrubs |
-| Crop | \f$C_3\f$ | \f$C_4\f$ |  |  |  |
-| Grass | \f$C_3\f$ | \f$C_4\f$ |  | Sedges |  |
 <!-- \f[
 \begin{table}[]
 \caption{CTEM and peatland PFTs and their mapping to the CLASS PFTs}
@@ -28,6 +22,37 @@ The amount of carbon in these five carbon pools is simulated prognostically (see
 Version 1.0 of CTEM is described in a collection of papers detailing parametrization of photosynthesis, autotrophic and heterotrophic respiration (Arora, 2003) \cite Arora2003-3b7; phenology, carbon allocation, biomass turnover and conversion of biomass to structural attributes (Arora and Boer, 2005) \cite Arora2005-6b1; dynamic root distribution (Arora and Boer, 2003) \cite Arora2003838; and disturbance (fire) (Arora and Boer, 2005) \cite Arora20052ac. These processes are modelled over prescribed fractional coverage of (typically) nine PFTs (Wang et al., 2006) \cite Wang2006-he and determine the structural vegetation dynamics including vegetation biomass, LAI, vegetation height, fraction of roots in each of the three soil layers, leaf onset and offset times and primary \f$CO_2\f$ fluxes of gross primary productivity (GPP) and NPP.
 
 CTEM v. 2.0 is described in Melton and Arora, 2016 \cite Melton2016-zx. CTEM v. 2.0 can be run in two different modes, either (i) using specified fractional coverage of its nine PFTs, or (ii) allowing the fractional coverage of its seven non-crop PFTs to be dynamically determined based on competition between PFTs. The parametrization for simulating competition between PFTs is found in @ref competition_mod.f90 and described in Arora and Boer (2006a,b), \cite Arora2006-ax \cite Arora2006-pp,  Melton and Arora, 2016 \cite Melton2016-zx, and Shrestha et al. (2016) \cite Shrestha2016-do. The fire parametrization has also been refined in the new model version as described in @ref disturb.f90 and Melton and Arora, 2016 \cite Melton2016-zx.
+
+# Plant Functional Types (PFTs) in CLASSIC {#PFTsCLASSIC}
+
+The original PFT scheme of CLASSIC is as follows (parameters for this configuration are found in the configurationFiles/template_run_parameters.txt file):
+
+| CLASS PFTs | CTEM PFTs --- | ---| ---|
+|:---------------:|:---------:|----------------|------------|
+| Needleleaf tree (NdlTr) | Evergreen ('NdlEvgTr') | Deciduous ('NdlDcdTr') |  |
+| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') | 
+| Crop (Crops) | \f$C_3\f$ ('CropC3  ') | \f$C_4\f$ ('CropC4  ')|  |
+| Grass (Grass) | \f$C_3\f$ ('GrassC3 ') | \f$C_4\f$ ('GrassC4 ')|  |
+
+
+The peatland module of CLASSIC (Wu et al. 2016) \cite Wu2016-zt introduced three peatland-specific PFTs. These new PFTs impacted upon the biogeochemistry but are treated like existing CLASS PFTs for the physics calculations (parameters for this configuration are found in the configurationFiles/template_run_parameters_peatlands.txt file):
+
+| CLASS PFTs | CTEM PFTs --- | ---| ---| Peatland PFTs | ---|
+|:---------------:|:---------:|----------------|----------------------|:----------------:|------------------|
+| Needleleaf tree (NdlTr) | Evergreen ('NdlEvgTr') | Deciduous ('NdlDcdTr') |  |  |  |
+| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') | Evergreen Shrubs ('BdlEvgSh') | Deciduous Shrubs ('BdlDCoSh')|
+| Crop | \f$C_3\f$ | \f$C_4\f$ |  |  |  |
+| Grass | \f$C_3\f$ | \f$C_4\f$ |  Sedges ('Sedge   ') |  | |
+
+Shrubs have also been implemented as a fifth CLASS PFT allowing for the model physics to distinguish shrubs from trees. Parameters for this configuration are found in the configurationFiles/template_run_parameters_shrubs.txt file):
+
+| CLASS PFTs | CTEM PFTs --- | ---| ---|
+|:---------------:|:---------:|----------------|------------|
+| Needleleaf tree (NdlTr) | Evergreen ('NdlEvgTr') | Deciduous ('NdlDcdTr') |  |
+| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') | 
+| Crop (Crops) | \f$C_3\f$ ('CropC3  ') | \f$C_4\f$ ('CropC4  ')|  |
+| Grass (Grass) | \f$C_3\f$ ('GrassC3 ') | \f$C_4\f$ ('GrassC4 ')| Sedges ('Sedge   ')  |
+| Broadleaf shrub (BdlSh) | Evergreen Shrubs ('BdlEvgSh') | Deciduous Shrubs ('BdlDCoSh')|  |
 
 
 # Rate change equations for carbon pools {#CTEMRateChgEqns}

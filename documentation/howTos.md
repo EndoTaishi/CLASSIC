@@ -31,3 +31,9 @@ Sometimes you need to run a 'make clean' to clean out old .mod and .o files that
 # initFileConverter tells me I need a soil colour index {#soilColourIndex}
 
 Soil colour index is described in @ref soilData and used in CLASSB.f. A global file of soil colour index produced by Peter Lawrence (NCAR) can be obtained from ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc
+
+# Gotcha for Windows users {#windowsEndings}
+
+Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, which Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html)
+
+Any CLASSIC tool that reads in ASCII expects the Linux/Unix line endings.

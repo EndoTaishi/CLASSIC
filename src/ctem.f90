@@ -131,7 +131,8 @@ use classic_params,        only : kk, pi, zero,&
      &                         ignd, icc, nmos, l2max, grescoef,&
      &                         humicfac,laimin,laimax,lambdamax,&
      &                         crop,repro_fraction,grescoefmoss,&
-     &                         rmortmoss,humicfacmoss,GRAV,RHOW,RHOICE
+     &                         rmortmoss,humicfacmoss,GRAV,RHOW,RHOICE,&
+     &                         classpfts,ctempfts
 
 use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
@@ -1372,9 +1373,16 @@ if (PFTCompetition) then
             lambda(i,j)=max(0.0, min(lambdamax, lambda(i,j)))
 
             !>If tree and leaves still coming out, or if npp is negative, then do not expand
-            if((j.le.5.and.lfstatus(i,j).eq.1).or.nppveg(i,j).lt.0.0 &
-            &.or..not.pftexist(i,j))then
+            if((lfstatus(i,j).eq.1).or.nppveg(i,j).lt.0.0 .or..not.pftexist(i,j))then
+              select case (ctempfts(J))
+              case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
                 lambda(i,j)=0.0
+              case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ') 
+                ! no change.
+              case default
+                print*,'Unknown PFT in ctem.f90 ',ctempfts(J)
+                call XIT('ctem',-1)
+              end select
             endif
 
         501      continue
@@ -1453,7 +1461,7 @@ endif !PFTCompetition
             write(6,1901)'slai     = ',slai(i,j)
 1900        format(a23,i4,a10,i2,a1)
 1902        format(a11,i4)
-            call xit ('ctem',-6)
+            call xit ('ctem',-2)
           endif
 !
           if(stemmass(i,j).lt.0.0)then
@@ -1467,13 +1475,13 @@ endif !PFTCompetition
             write(6,1901)'rmscsveg = ',rmscsveg(i,j)
             write(6,1901)'rmscgveg = ',rmscgveg(i,j)
 1901        format(a11,f12.8)
-            call xit ('ctem',-7)
+            call xit ('ctem',-3)
           endif
 !
           if(rootmass(i,j).lt.0.0)then
             write(6,1900)'rootmass lt zero at i=(',i,') for pft=',j,')' 
             write(6,1901)'rootmass = ',rootmass(i,j)
-            call xit ('ctem',-8)
+            call xit ('ctem',-4)
           endif
 !>
 !!convert net change in leaf, stem, and root biomass into 
@@ -1576,21 +1584,23 @@ do 700 j = 1, ican
     k2 = k1 + nol2pfts(j) - 1
     do 705 m = k1, k2
         do 710 i = il1, il2
-
-            if(j.le.3)then    ! trees and crops
+           select case(classpfts(j))
+           case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh') ! tree, crops and shrub
                 gleafmas(i,m)=gleafmas(i,m)-leaflitr(i,m)
                 if( gleafmas(i,m).lt.0.0) then
                     leaflitr(i,m)=leaflitr(i,m)+gleafmas(i,m)
                     gleafmas(i,m)=0.0
                 endif
-            else              ! grasses
+             case('Grass')
                 bleafmas(i,m)=bleafmas(i,m)-leaflitr(i,m)
                 if( bleafmas(i,m).lt.0.0) then
                     leaflitr(i,m)=leaflitr(i,m)+bleafmas(i,m)
                     bleafmas(i,m)=0.0
                 endif
-            endif
-
+            case default
+              print*,'Unknown CLASS PFT in ctem ',classpfts(j)
+              call XIT('ctem',-5)                                                         
+           end select
 710     continue
 705    continue
 700   continue
@@ -1653,20 +1663,21 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
        k2 = k1 + nol2pfts(j) - 1
        do 835 m = k1, k2
         do 840 i = il1, il2
-!
           stemmass(i,m)=stemmass(i,m)-stemltrm(i,m)
           rootmass(i,m)=rootmass(i,m)-rootltrm(i,m)
           litrmass(i,m)=litrmass(i,m)+stemltrm(i,m)+rootltrm(i,m)  
-!
-          if(j.eq.4)then    ! grasses
-            gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
-            bleafmas(i,m)=bleafmas(i,m)+glealtrm(i,m)
-            glealtrm(i,m)=0.0
-          else              ! trees and crops
-            gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
-          endif
+          select case(classpfts(j))
+            case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')
+              gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
+            case('Grass')    ! grasses
+              gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
+              bleafmas(i,m)=bleafmas(i,m)+glealtrm(i,m)
+              glealtrm(i,m)=0.0
+            case default
+              print*,'Unknown CLASS PFT in ctem ',classpfts(j)
+              call XIT('ctem',-6)                                                                       
+          end select
           litrmass(i,m)=litrmass(i,m)+glealtrm(i,m)
-!
 840     continue
 835    continue 
 830   continue 

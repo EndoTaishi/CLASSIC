@@ -237,16 +237,16 @@ contains
         implicit none
 
         real, intent(inout)                         :: var(:)
-        integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
+      integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
         real                                        :: temp,startpre
         real, allocatable, dimension(:)             :: random
-        integer, allocatable, dimension(:)             :: sort_ind
-        real, allocatable, dimension(:)             :: incomingPre,tmpvar
-        logical                                     :: needDistrib
+        integer, allocatable, dimension(:)          :: sort_ind
+      real, allocatable, dimension(:)             :: incomingPre,tmpvar
+      logical                                     :: needDistrib
       
-        !Set some initial conditions
-        needDistrib=.true.
-        attempts = 1
+      !Set some initial conditions
+      needDistrib=.true.
+      attempts = 1
 
         allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
 
@@ -258,10 +258,10 @@ contains
         ! derived for mm/6h originally.
         var = var * metInputTimeStep
 
-      ! Save the incoming precip for balance check later
+        ! Save the incoming precip for balance check later
       allocate(incomingPre(countr),tmpvar(countr))
-      incomingPre = var
-      
+        incomingPre = var
+
       do while (needDistrib)
         do i = 1, countr/numberPhysInMet
 
@@ -340,7 +340,7 @@ contains
         if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-5) then 
           if (attempts > 3) then            
             print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
-            call XIT('metModule',-1)
+          call XIT('metModule',-1)
           else ! retry, could have just been a bad draw.
             needDistrib = .true.
             attempts = attempts + 1

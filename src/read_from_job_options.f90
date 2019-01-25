@@ -21,7 +21,7 @@ contains
 
         use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
-        use classic_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch,&
+        use classic_params, only : runParamsFile,PFTCompetitionSwitch,&
                                    zbldJobOpt,zrfhJobOpt,zrfmJobOpt
 
         implicit none
@@ -123,7 +123,6 @@ contains
         readMetEndYear, &
         leap, &
         ctem_on, &
-        icc, &
         spinfast, &
         transientCO2, &
         CO2File, &
@@ -157,8 +156,6 @@ contains
         init_file, &
         rs_file_to_overwrite, &
         runparams_file, &
-        ican, &
-        l2max, &
         IDISP, &
         IZREF, &
         ZBLD, &

@@ -472,9 +472,13 @@ C
           HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)
           ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)
           ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)
-          TSFSGAT(K,L)=TSFSROT(ILMOS(K),JLMOS(K),L)
 400   CONTINUE
 
+      do L=1,4 !over the four subareas
+        DO K=1,NML
+          TSFSGAT(K,L)=TSFSROT(ILMOS(K),JLMOS(K),L)
+        end do
+      end do
 C
       DO L = 1, NBS
          DO K = 1, NML

@@ -319,6 +319,8 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
                            annpcp,pftexist,dry_season_length)
 
+!     17  Aug 2017  - Add shrub into existence code
+!     J. Melton/S. Sun  
 !
 !     12  Jun 2014  - Broadleaf cold deciduous now have a tcolmin constraint
 !     J. Melton       and it and broadleaf drought/dry deciduous can not longer
@@ -352,7 +354,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !                     not.
 
 use classic_params, only : zero, kk, icc, ican, tcoldmin, tcoldmax, twarmmax, &
-                        gdd5lmt, aridlmt, dryseasonlmt
+                        gdd5lmt, aridlmt, dryseasonlmt,ctempfts
 
 implicit none
 
@@ -383,88 +385,76 @@ real, dimension(nilg), intent(in) :: dry_season_length !< length of dry season (
 logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !<binary array indicating pfts exist (=1) or not (=0)
 
 ! local variables
-integer :: i,j
+integer :: i,j,k
 
 !> ----------------------------------------------------------------------
 !>     Constants and parameters are located in classic_params.f90
 !> ----------------------------------------------------------------------
 
-!>go through all grid cells and based on bioclimatic parameters
-!>decide if a given pft should exist or not.
+!> Go through all grid cells and based on bioclimatic parameters
+!> decide if a given pft should exist or not.
+  k=0
+  do 100 i = il1, il2
+    do 102 j = 1, icc
+      pftexist(i,j)=.false.
+      if (ctempfts(j) == 'BdlDCoTr') k = j ! save the index of 'BdlDCoTr'
+      select case(ctempfts(j))        
+        case('NdlEvgTr') !>needleleaf evergreen
+          if(tcoldm(i).le.tcoldmax(sort(j)).and. &
+             gdd5(i).ge.gdd5lmt(sort(j)) ) pftexist(i,j)=.true.
 
-      do 100 i = il1, il2
+        case('NdlDcdTr') !>needleleaf deciduous
+          if(tcoldm(i).le.tcoldmax(sort(j)).and.&
+            twarmm(i).le.twarmmax(sort(j)).and. &
+            gdd5(i).ge.gdd5lmt(sort(j))) pftexist(i,j)=.true.
 
-!>needleleaf evergreen
-        j=1
-        if(tcoldm(i).le.tcoldmax(sort(j)).and.gdd5(i).ge.gdd5lmt(sort(j)) ) then
-           pftexist(i,j)=.true.
-        else
-           pftexist(i,j)=.false.
-        endif
-
-!>needleleaf deciduous
-        j=2
-        if(tcoldm(i).le.tcoldmax(sort(j)).and.twarmm(i).le.twarmmax(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)))then
-           pftexist(i,j)=.true.
-        else
-           pftexist(i,j)=.false.
-        endif
-
-!>broadleaf evergreen
-        j=3
+        case('BdlEvgTr') !>broadleaf evergreen
         if(tcoldm(i).ge.tcoldmin(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)))then
-           pftexist(i,j)=.true.
-        else
-           pftexist(i,j)=.false.
-        endif
+           gdd5(i).ge.gdd5lmt(sort(j))) pftexist(i,j)=.true.
 
-!>broadleaf deciduous cold  (see note below pft 5 too)
-        j=4
+        case('BdlDCoTr') !>broadleaf deciduous cold  (see note below 'BdlDDrTr' too)
         if(tcoldm(i).le.tcoldmax(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)).and. tcoldm(i).ge.tcoldmin &
-           (sort(j)))then
-           pftexist(i,j)=.true.
-        else
-           pftexist(i,j)=.false.
-        endif
+           gdd5(i).ge.gdd5lmt(sort(j)).and. &
+           tcoldm(i).ge.tcoldmin (sort(j))) pftexist(i,j)=.true.
 
-!>broadleaf deciduous dry
-        j=5
-        if(tcoldm(i).ge.tcoldmin(sort(j)).and. aridity(i).ge.aridlmt(sort(j)) &
-           .and.dry_season_length(i).ge.dryseasonlmt(sort(j)))then
-           pftexist(i,j)=.true.
-!>We don't want both broadleaf species co-existing so if it has PFT 5
-!>remove PFT 4.
-           pftexist(i,j-1)=.false.
-        else
-           pftexist(i,j)=.false.
-        endif
+        case('BdlDDrTr') !>broadleaf deciduous dry
+        if(tcoldm(i).ge.tcoldmin(sort(j)).and.&
+           aridity(i).ge.aridlmt(sort(j)).and. &
+           dry_season_length(i).ge.dryseasonlmt(sort(j))) pftexist(i,j)=.true.
+           
+           if (k==0) then
+             print*,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays, please switch the order'
+             call XIT('competition:existence',-1)
+           end if 
+           !>We don't want both broadleaf species co-existing so if it has BdlDDrTr
+           !>remove BdlDCoTr. k is the index of BdlDCoTr           
+           pftexist(i,k)=.false.
 
-!>c3 and c4 crops
-        pftexist(i,6)=.true.
-        pftexist(i,7)=.true.
-
-!>c3 grass
-        j=8
+        case('CropC3  ')
+         pftexist(i,j)=.true.
+         
+        case('CropC4  ')
+         pftexist(i,j)=.true.
+         
+        case('GrassC3 ')
 !>if(tcoldm(i).le.tcoldmax(sort(j)))then
            pftexist(i,j)=.true.
-!>else
-!>pftexist(i,j)=.false.
-!>endif
-
-!>c4 grass
-        j=9
+           
+        case('GrassC4 ')       
 !>if(tcoldm(i).ge.tcoldmin(sort(j)))then
            pftexist(i,j)=.true.
-!>else
-!>pftexist(i,j)=.false.
-!>endif
-
-
+           
+        case('BdlDCoSh')
+         if(tcoldm(i).le.tcoldmax(sort(j)).and. &
+            gdd5(i).ge.gdd5lmt(sort(j)).and.&
+            tcoldm(i).ge.tcoldmin(sort(j))) pftexist(i,j)=.true.
+            
+        case default
+         print*,'Unknown CTEM PFT in competition:existence ',ctempfts(j)
+         call XIT('competition:existence',-2)            
+        end select
+102  continue
 100   continue
-
       return
 
 end subroutine existence
@@ -635,9 +625,6 @@ logical, parameter :: arora =.true.  !< modified form of lv eqns with f missing
 logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing and a modified self-thinning term
 
 !     ---------------------------------------------------------------
-
-      if(icc.ne.9)                      call xit('competition',-1)
-      if(ican.ne.4)                       call xit('competition',-2)
 !>
 !>set competition parameters according to the model chosen
 !>
@@ -663,7 +650,6 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !>First, let's adjust the fractions if fire is turned on.
 
     if (dofire) then
-
 
         call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
@@ -881,16 +867,6 @@ do 300 j = k, k+numgrass-1
 310       continue
 305     continue
 300   continue
-        ! Removing grass_ind as it is duplicating the grass var. Replace below
-        ! with bubble sort above. It is more flexible. JM.
-        ! if(usenppvg(i,grass_ind(1)).ge.usenppvg(i,grass_ind(2)))then
-        !   rank(i,grass_ind(1)-numcrops)=grass_ind(1)-numcrops
-        !   rank(i,grass_ind(2)-numcrops)=grass_ind(2)-numcrops
-        ! elseif(usenppvg(i,grass_ind(1)).lt.usenppvg(i,grass_ind(2)))then
-        !   rank(i,grass_ind(1)-numcrops)=grass_ind(2)-numcrops
-        !   rank(i,grass_ind(2)-numcrops)=grass_ind(1)-numcrops
-        ! endif
-!310   continue
 !>
 !!with the ranks of all pfts in all grid cells we can now simulate
 !!competition between them. for lotka-volterra eqns we need a

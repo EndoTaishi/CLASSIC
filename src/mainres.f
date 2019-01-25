@@ -78,7 +78,8 @@ c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts, currently 4
 c
       use classic_params,        only : icc, ilg, ignd, ican, kk, zero, 
-     1                               bsrtstem, bsrtroot, minlvfr
+     1                                 bsrtstem, bsrtroot, minlvfr,
+     2                                 classpfts
 
       implicit none
 c
@@ -154,15 +155,19 @@ c
         k2 = k1 + nol2pfts(j) - 1
         do 125 m = k1, k2
          do 130 i = il1, il2
-          if(j.le.2)then     ! trees
+         select case(classpfts(j))
+          case ('Crops', 'Grass') ! crops and grass
+            livstmfr(i,m) = 1.0
+            livrotfr(i,m) = 1.0
+          case('NdlTr','BdlTr','BdlSh') 
             livstmfr(i,m) = exp(-0.2835*stemmass(i,m))  !following century model              
             livstmfr(i,m) = max(minlvfr,min(livstmfr(i,m),1.0))
             livrotfr(i,m) = exp(-0.2835*rootmass(i,m))               
             livrotfr(i,m) = max(minlvfr,min(livrotfr(i,m),1.0))
-          else                 ! crop and grass are all live
-            livstmfr(i,m) = 1.0
-            livrotfr(i,m) = 1.0
-          endif
+          case default
+            print*,'Unknown CLASS PFT in mainres ',classpfts(j)
+            call XIT('mainres',-1)                 
+          end select
 130     continue 
 125    continue 
 120   continue 
