@@ -232,15 +232,15 @@ contains
 !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
     subroutine precipDistribution(var)
 
-        use classic_params, only : delt,zero
-        
-        implicit none
+      use classic_params, only : delt,zero
+      
+      implicit none
 
-        real, intent(inout)                         :: var(:)
+      real, intent(inout)                         :: var(:)
       integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
-        real                                        :: temp,startpre
-        real, allocatable, dimension(:)             :: random
-        integer, allocatable, dimension(:)          :: sort_ind
+      real                                        :: temp,startpre
+      real, allocatable, dimension(:)             :: random
+      integer, allocatable, dimension(:)          :: sort_ind
       real, allocatable, dimension(:)             :: incomingPre,tmpvar
       logical                                     :: needDistrib
       
@@ -285,7 +285,7 @@ contains
                                     )
 
                 ! Create an array of random numbers
-                call random_number(random)
+                call random_number(random(:))
 
                 ! Create an array of integers from 1 to numberPhysInMet
                 do k = 1,numberPhysInMet
@@ -312,14 +312,20 @@ contains
                 end do
 
                 ! Set all values in random to 0 in preparation for reassignment
-                random = 0.
+                random(:) = 0.
 
                 ! Produces random list of 1s and 0s
                 do j = 1, wetpds
                     call random_number(random(sort_ind(j)))
                 end do
-                random = random / sum(random)
+                
+                random(:) = random(:) / sum(random(:))
 
+                ! Check if random now sums to 1, if not readjust.
+                if (sum(random(:)) /= 1.0) then
+                  random(:) = random(:) / sum(random(:))
+                end if
+                
                 ! Disperse precipitiation randomly across the random indice
                 k = 1
                 do j = start,endpt
@@ -337,10 +343,12 @@ contains
         enddo
 
         ! Balance check that we have conserved our precip
-        if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-5) then 
+        if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-20) then 
           if (attempts > 3) then            
             print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
-          call XIT('metModule',-1)
+            call XIT('metModule',-1)
+            return ! this is needed here in case this is failing before the run even starts. It ensures we don't 
+                   ! get caught in a loop where it keeps failing but not moving on.
           else ! retry, could have just been a bad draw.
             needDistrib = .true.
             attempts = attempts + 1
