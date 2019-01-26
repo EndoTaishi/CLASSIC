@@ -273,7 +273,8 @@ contains
 
             if (var(start) > 0.) then
 
-                startpre = var(start)
+                startpre = var(start) * 1.E6 ! bump this up so we don't have problems due to truncation later.
+                                             ! the numbers can be small so get truncated which leads to no balance.
 
                 ! We expect precipitation for this relation to be in mm/6h
                 wetpds = nint( &
@@ -329,26 +330,26 @@ contains
                 ! Disperse precipitiation randomly across the random indice
                 k = 1
                 do j = start,endpt
-                    ! Assign this time period its precipitation
+                  ! Assign this time period its precipitation
                   tmpvar(j) = random(k) * startpre
-                    !print*,j,k,random(k),startpre,var(j)
-                    k = k + 1
+                  k = k + 1
                 end do
               
             else !No precip, move on.
-                wetpds = 0
+              wetpds = 0
               tmpvar(start:endpt) = 0.
             end if
 
         enddo
 
+        tmpvar = tmpvar * 1E-6 !bump back down so it back in expected units.
+        
         ! Balance check that we have conserved our precip
-        if ((sum(tmpvar)-sum(incomingPre)) .gt. 1.0e-20) then 
+        if ((sum(tmpvar)-sum(incomingPre)) > 1.0e-15) then 
           if (attempts > 3) then            
             print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
             call XIT('metModule',-1)
-            return ! this is needed here in case this is failing before the run even starts. It ensures we don't 
-                   ! get caught in a loop where it keeps failing but not moving on.
+            return ! this is needed here as it ensures we don't get caught in a loop where it keeps failing but not moving on.
           else ! retry, could have just been a bad draw.
             needDistrib = .true.
             attempts = attempts + 1
