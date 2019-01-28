@@ -672,6 +672,11 @@ C
 	           IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
            ENDIF
          case ('NdlTr' , 'BdlTr', 'BdlSh')
+           IF(PAI(I,J).LT.THR_LAI) THEN !FLAG HACK 
+             FCAN(I,J)=FCANMX(I,J)*(1.0-FSNOW(I))*PAI(I,J)
+             PAI (I,J)=THR_LAI
+	           IF(FCAN(I,J).LT.1.0E-5) FCAN(I,J)=0.0
+           END IF
           !Do nothing.
          end select
           end do
@@ -686,6 +691,11 @@ C
              IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
             ENDIF
           case ('NdlTr' , 'BdlTr', 'BdlSh')
+           IF(PAIS(I,J).LT.THR_LAI) THEN !FLAG HACK 
+             FCANS(I,J)=FCANMX(I,J)*FSNOW(I)*PAIS(I,J)
+             PAIS (I,J)=THR_LAI
+             IF(FCANS(I,J).LT.1.0E-5) FCANS(I,J)=0.0
+           END IF
           ! Do nothing
          end select
           end do

@@ -941,7 +941,13 @@
             <standardName>Leaf maintenance respiration</standardName>
             <longName>Leaf maintenance respiration, does not include growth respiration</longName>
             <shortName>rmLeaf</shortName>
-            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
+            <defaultUnits>$[kg C m^{-2} s^{-1} ]$</defaultUnits>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rml_hh_g</nameInCode>
+                <units>$[kg C m^{-2} s^{-1} ]$</units>
+            </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>pft</outputForm>

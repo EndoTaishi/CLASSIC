@@ -474,7 +474,7 @@ C
           ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)
 400   CONTINUE
 
-      do L=1,4 !over the four subareas
+      do L=1,4 !over the four subareas !FLAG HACK - legit bugfix.
         DO K=1,NML
           TSFSGAT(K,L)=TSFSROT(ILMOS(K),JLMOS(K),L)
         end do

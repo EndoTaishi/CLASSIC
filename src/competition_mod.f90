@@ -420,15 +420,17 @@ integer :: i,j,k
         case('BdlDDrTr') !>broadleaf deciduous dry
         if(tcoldm(i).ge.tcoldmin(sort(j)).and.&
            aridity(i).ge.aridlmt(sort(j)).and. &
-           dry_season_length(i).ge.dryseasonlmt(sort(j))) pftexist(i,j)=.true.
+           dry_season_length(i).ge.dryseasonlmt(sort(j))) then
+		pftexist(i,j)=.true.
            
-           if (k==0) then
-             print*,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays, please switch the order'
-             call XIT('competition:existence',-1)
-           end if 
-           !>We don't want both broadleaf species co-existing so if it has BdlDDrTr
-           !>remove BdlDCoTr. k is the index of BdlDCoTr           
-           pftexist(i,k)=.false.
+           	if (k==0) then
+                   print*,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays, please switch the order'
+	           call XIT('competition:existence',-1)
+           	end if 
+           	!>We don't want both broadleaf species co-existing so if it has BdlDDrTr
+           	!>remove BdlDCoTr. k is the index of BdlDCoTr           
+           	pftexist(i,k)=.false.
+	end if
 
         case('CropC3  ')
          pftexist(i,j)=.true.

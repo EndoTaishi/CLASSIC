@@ -45,6 +45,7 @@ classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass'
 
 ! List of CTEM PFTs
 ! **Note: 'BdlDCoTr' should be specified before 'BdlDDrTr' due to some code in competition.
+! As well, specify the crops and the grasses in contiguous blocks with crops before grasses.
 ctempfts = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ',
 
 ! Array telling which vegetation type is c4
