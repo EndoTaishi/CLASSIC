@@ -3,10 +3,9 @@
 !!@author D. Verseghy, M. Lazare, V. Fortin, V. Arora, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
 
 !>
-!!This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS
-!!(needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of
-!!vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized
-!!to zero, and the liquid water suction in the soil is set to an arbitrarily high value.
+!!This subroutine is adaptable to any number of vegetation categories recognized by CLASS
+!!(e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
+!!is performed.
 !!
       SUBROUTINE APREP(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS,
      1            FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN,
@@ -30,8 +29,8 @@
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
      J            ipeatland)
 
-C     * Nov 2018 - J. Melton/S.Sun  Expand PFT from 4 to 5. The 5th PFT is broadleaf cold 
-C                               deciduous shrub. Revert change of JAN 05/16 as the XLEAF
+C     * JAN 2019 - J. Melton    Remove common block parameters, use classic_params instead.
+C     * Nov 2018 - J. Melton/S.Sun  Allow >4 original PFTs. Revert change of JAN 05/16 as the XLEAF
 C                               bug makes this unneccesary.
 C     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
