@@ -11,7 +11,7 @@
 
 # Setting up the runtime environment {#Environ}
 
-To run CLASSIC you can either use your own immediate environment or use our Singularity container (described below). If you use your own immediate environment, the following libraries are required at a minimum:
+To run CLASSIC you can either use your own immediate environment or use our Singularity container (described below). If you use your own immediate environment, the following Linux packages are required at a minimum:
 
 - make
 - libnetcdff-dev
@@ -20,7 +20,9 @@ To run CLASSIC you can either use your own immediate environment or use our Sing
 - netcdf-bin
 - zlib1g
 
-These libraries will allow serial compiling and running of the model. To run in parallel add mpich. To run the documentation tool add doxygen.
+These packages will allow serial compiling and running of the model. To run in parallel add mpich. To run the documentation tool add doxygen.
+
+Note that the above packages are available for Ubuntu/Debian and may have different names under other Linux distros. 
 
 # Running CLASSIC in a Singularity Container {#Containers}
 
@@ -138,19 +140,33 @@ This -B flag can be very useful when using a Vagrant box to run CLASSIC on a Win
 
 # Compiling CLASSIC for serial and parallel simulations {#compilingMod}
 
-CLASSIC's Makefile (/Makefile) is setup to allow easy compilation for serial or parallel model running.
+CLASSIC's Makefile facilitates the compilation of the model code for running in serial mode or in parallel.
 
-There are three options when compiling:
+The basic command "make" (without options) compiles the code for running in serial mode.
 
-- For a serial run, use the command "make mode=serial" or just "make"
-- For a parallel run, use either the command "make mode=parallel"
-- For a supercomputer run, use the command "make mode=supercomputer"
+The "mode" option can be specified on the "make" command line to target different platforms and/or compilation modes as follows:
 
-The serial compilation is presently set to use the GNU compiler (gfortran). Parallel compilation uses the GNU MPI compiler mpif90. The supercomputer compilation is setup for the ECCC supercomputer environment and is unlikely to be useful for non-ECCC users.
+make mode=<mode>
 
-Upon compilation all object (.o) and module (.mod) files are placed in the objectFiles folder. The executable in placed in the bin folder.
+where <mode> is:
+  
+        serial        - compiles code for serial runs (default)
+        parallel      - compiles code for parallel runs
 
-A useful command is 'make clean', which removes all *.o *.mod and the model binary. This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make.
+The serial compilation is presently set to use the GNU compiler (gfortran). 
+
+Parallel compilation uses the MPI wrapper "mpif90". Use "mpif90 -show" to display the pre-configured compiler command for the system. The Makefile is currently set to use the GNU compiler with "mpif90". The settings for the compiler as well as the include/library flags are system dependent and will likely require modification on each system.
+
+There are two additional modes that are particularly useful for users with access to the ECCC supercomputer environment. These are:
+
+        ppp           - compiles code for parallel runs using the Intel compiler on the ECCC pre/post-processing clusters
+        supercomputer - compiles code for parallel runs using the Intel compiler on the ECCC supercomputers
+
+These modes are unlikely to be useful for non-ECCC users.
+
+Upon compilation, all object (.o) and module (.mod) files are placed into an "objectFiles" directory. These directories are labelled with an additional suffix according to the compilation mode used (except for the serial mode case). Executables are placed in the "bin" directory, again labelled according to the compilation mode.
+
+A useful command is 'make clean', which removes all *.o *.mod files (for a specified mode). This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make. Note that a re-compilation will overwrite an existing executable of the same name (i.e. mode) in the "bin" directory.
 
 # Setting up the joboptions file {#setupJobOpts}
 
