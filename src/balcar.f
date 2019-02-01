@@ -37,7 +37,8 @@ c     V. Arora        between the different pools balance properly to
 c                     make sure that conservation of mass is achieved
 c                     with in a specified tolerance.
 c
-      use classic_params,        only : tolrance, icc, ilg, deltat,iccp1
+      use classic_params,        only : tolrance, icc, ilg, deltat,
+     1                                  iccp2,ignd,iccp1
 c
       implicit none
 c
@@ -49,8 +50,8 @@ c
       real rootmass(ilg,icc)  !<pools (after being updated): root mass for each of the 9 ctem pfts
       real gleafmas(ilg,icc)  !<pools (after being updated): green leaf mass for each of the 9 ctem pfts
       real bleafmas(ilg,icc)  !<pools (after being updated): brown leaf mass for each of the 9 ctem pfts
-      real litrmass(ilg,iccp1)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
-      real soilcmas(ilg,iccp1)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
+      real litrmass(ilg,iccp2)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
+      real soilcmas(ilg,iccp2)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
       real ntchlveg(ilg,icc)  !<fluxes for each pft: net change in leaf biomass
       real ntchsveg(ilg,icc)  !<fluxes for each pft: net change in stem biomass
       real ntchrveg(ilg,icc)  !<fluxes for each pft: net change in root biomass the net change is the difference
@@ -63,15 +64,15 @@ c
       real stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses
       real rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses
       real ltrcemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: litter carbon emission losses
-      real ltresveg(ilg,iccp1)!<fluxes for each pft: litter respiration for each pft + bare fraction
-      real scresveg(ilg,iccp1)!<fluxes for each pft: soil c respiration for each pft + bare fraction
-      real humtrsvg(ilg,iccp1)!<fluxes for each pft: humification for each pft + bare fraction
+      real ltresveg(ilg,iccp2)!<fluxes for each pft: litter respiration for each pft + bare fraction
+      real scresveg(ilg,iccp2)!<fluxes for each pft: soil c respiration for each pft + bare fraction
+      real humtrsvg(ilg,iccp2)!<fluxes for each pft: humification for each pft + bare fraction
       real pglfmass(ilg,icc)  !<pools (before being updated): previous green leaf mass
       real pblfmass(ilg,icc)  !<pools (before being updated): previous brown leaf mass
       real pstemass(ilg,icc)  !<pools (before being updated): previous stem mass
       real protmass(ilg,icc)  !<pools (before being updated): previous root mass
-      real plitmass(ilg,iccp1)!<pools (before being updated): previous litter mass
-      real psocmass(ilg,iccp1)!<pools (before being updated): previous soil c mass
+      real plitmass(ilg,iccp2)!<pools (before being updated): previous litter mass
+      real psocmass(ilg,iccp2)!<pools (before being updated): previous soil c mass
       real npp(ilg)           !<grid averaged flux: net primary productivity
       real vgbiomas(ilg)      !<pools (after being updated): grid averaged pools: vegetation biomass
       real pvgbioms(ilg)      !<pools (before being updated): grid average pools: previous vegetation biomass
@@ -102,6 +103,11 @@ c
       real galtcels(ilg)      !<grid averaged flux: carbon emission losses from litter
       real repro_cost_g(ilg)  !<grid averaged flux: amount of C used to generate reproductive tissues
 c
+
+      real  soiltempor  !<
+      real  littempor  !<
+      real scresveg_temp !<
+      real litrestemp !<
       real diff1  !<
       real diff2  !<
 c
@@ -191,10 +197,31 @@ c         endif
           endif
            endif
 280     continue
+
+c
+c     litter over the LUC pool
+c
+        do 290 i = il1, il2
+          littempor=0.
+          litrestemp=0.
+          do k = 1, ignd
+            littempor = littempor + litrmass(i,iccp2)
+            litrestemp = litrestemp + ltresveg(i,iccp2)
+          end do
+          diff1=littempor - plitmass(i,iccp2)
+          diff2=( -litrestemp-humtrsvg(i,iccp2))*
+     &          ( deltat/963.62 )
+
+          if((abs(diff1-diff2)).gt.tolrance)then
+            write(6,2003)i,iccp2,abs(diff1-diff2),tolrance
+            call xit('balcar',-7)
+          endif
+290     continue
+
 !>
-!!soil carbon over the bare fraction
+!!soil carbon
 !!
-      do 300 j = 1, icc+1
+      do 300 j = 1, icc
         do 310 i = il1, il2
          if (ipeatland(i)==0) then !Over the non-peatland regions
           diff1=soilcmas(i,j) - psocmass(i,j)
@@ -212,6 +239,28 @@ c         endif
          endif
 310     continue
 300   continue
+
+c
+c     soil carbon over the bare and LUC fraction
+c
+      do 320 j = iccp1, iccp2
+        do 330 i = il1, il2
+          soiltempor = 0.
+          scresveg_temp = 0.
+          !do k = 1, ignd
+            soiltempor = soiltempor + soilcmas(i,j)!,k)
+            scresveg_temp = scresveg_temp + scresveg(i,j)!,k)
+          !end do
+          diff1=soiltempor - psocmass(i,j)
+          diff2=( humtrsvg(i,j)-scresveg_temp )*(deltat/963.62)
+          if((abs(diff1-diff2)).gt.tolrance)then
+            write(6,2004)i,j,abs(diff1-diff2),tolrance
+2014        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
+     & than our tolerance of ',f12.6,' for soil c')
+            call xit('balcar',-8)
+          endif
+330     continue
+320   continue
 
 !>
 !! Moss C balance

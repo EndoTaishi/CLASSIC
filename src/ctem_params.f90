@@ -157,6 +157,8 @@ real :: bioclimrt                       !< mortality rate (1/year) for pfts that
 
 real, dimension(:), allocatable :: grescoef         !< Growth respiration coefficient
 real, dimension(:), allocatable :: humicfac         !< Humification factor - used for transferring carbon from litter into soil c pool
+real :: humicfac_bg				    !> Humification factor - used for transferring carbon from litter into soil c pool. This is the
+						    !! value used for bare ground or LUC pools.
 real, dimension(:), allocatable :: laimin           !< Minimum lai below which a pft doesn't expand
 real, dimension(:), allocatable :: laimax           !< Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
 real :: lambdamax                       !< Max. fraction of npp that is allocated for reproduction/colonization
@@ -391,6 +393,7 @@ subroutine prepareGlobalParams
 
     !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
     iccp1 = icc + 1
+    iccp2 = icc + 2
     icp1 = ican + 1
 
     !> Allocate the arrays that store the CTEM parameter values
@@ -576,6 +579,7 @@ subroutine readin_params
         bioclimrt,&
         grescoef,&
         humicfac,&
+	humicfac_bg,&
         laimin,&
         laimax,&
         lambdamax,&

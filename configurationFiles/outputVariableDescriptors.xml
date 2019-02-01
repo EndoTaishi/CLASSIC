@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2017/12/18">
+<variableSet type="CLASS" version="1.2" created="2018/10/11">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -197,114 +197,114 @@
             <standardName>Total Run-off</standardName>
             <longName>The total run-off (including drainage through the base of the soil model) per unit area leaving the land portion of the grid cell.</longName>
             <shortName>mrro</shortName>
-            <defaultUnits>mm/year</defaultUnits>
+            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>rofacc_yr</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>rofacc_mo</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>rof_hh</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>rof_hh_t</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
         <variable id="7" includeBareGround="false" dormant="false">
             <standardName>Precipitation</standardName>
             <longName>Preciptiation, includes both solid and liquid phases</longName>
             <shortName>pr</shortName>
-            <defaultUnits>mm/year -fix</defaultUnits>
+            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>preacc_yr</nameInCode>
-                <units>mm/year -fix</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>preacc_mo</nameInCode>
-                <units>mm/year -fix</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>pre_hh</nameInCode>
-                <units>mm/year -fix</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
         <variable id="8" includeBareGround="false" dormant="false">
             <standardName>Evaporation</standardName>
             <longName>Evaporation at surface: flux of water into the atmosphere due to conversion of both liquid and solid phases to vapor (from    underlying surface and vegetation)</longName>
             <shortName>evspsbl</shortName>
-            <defaultUnits>mm/year</defaultUnits>
+            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>evapacc_yr</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>evapacc_mo</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
         <variable id="9" includeBareGround="false" dormant="false">
             <standardName>Water Evaporation from Soil</standardName>
             <longName>Water evaporation from soil (including sublimation)</longName>
             <shortName>evspsblsoi</shortName>
-            <defaultUnits>kg/$m^2$</defaultUnits>
+            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>groundevap</nameInCode>
-                <units>kg/$m^2$</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
         <variable id="10" includeBareGround="false" dormant="false">
             <standardName>Water Evaporation from Canopy</standardName>
             <longName>The canopy evaporation and sublimation; may include dew formation as a negative flux.</longName>
             <shortName>evspsblveg</shortName>
-            <defaultUnits>mm/month</defaultUnits>
+            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>canopyevap</nameInCode>
-                <units>mm/month</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
         <variable id="11" includeBareGround="false" dormant="false">
             <standardName>Transpiration</standardName>
             <longName>Transpiration</longName>
             <shortName>tran</shortName>
-            <defaultUnits>mm/year</defaultUnits>
+            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>transpacc_yr</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>transpacc_mo</nameInCode>
-                <units>mm/year</units>
+                <units>$[kg m^{-2} s^{-1} ]$</units>
             </variant>
         </variable>
         <variable id="12" includeBareGround="false" dormant="false">
@@ -367,6 +367,12 @@
                 <units>$\circ$C</units>
             </variant>
             <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>tbaracc_d</nameInCode>
+                <units>$\circ$C</units>
+            </variant>
+            <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>tbar_hh</nameInCode>
@@ -383,48 +389,60 @@
             <standardName>Liquid water content of soil layer</standardName>
             <longName>In each soil layer, the mass of water in liquid phase. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
             <shortName>mrsll</shortName>
-            <defaultUnits>$m^3$/$m^3$</defaultUnits>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>layer</outputForm>
                 <nameInCode>thlqacc_mo</nameInCode>
-                <units>$m^3$/$m^3$</units>
+                <units>kg$m^{-2}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>thlqacc_d</nameInCode>
+                <units>kg$m^{-2}$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>thlq_hh</nameInCode>
-                <units>$m^3$/$m^3$</units>
+                <units>kg$m^{-2}$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>thlq_hh_t</nameInCode>
-                <units>$m^3$/$m^3$</units>
+                <units>kg$m^{-2}$</units>
             </variant>
         </variable>
         <variable id="16" includeBareGround="false" dormant="false">
             <standardName>Frozen water content of soil layer</standardName>
             <longName>In each soil layer, the mass of water in ice phase. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
             <shortName>mrsfl</shortName>
-            <defaultUnits>$m^3$/$m^3$</defaultUnits>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>layer</outputForm>
                 <nameInCode>thicacc_mo</nameInCode>
-                <units>$m^3$/$m^3$</units>
+                <units>kg$m^{-2}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>thicacc_d</nameInCode>
+                <units>kg$m^{-2}$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>thic_hh</nameInCode>
-                <units>$m^3$/$m^3$</units>
+                <units>kg$m^{-2}$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>thic_hh_t</nameInCode>
-                <units>$m^3$/$m^3$</units>
+                <units>kg$m^{-2}$</units>
             </variant>
         </variable>
         <variable id="17" includeBareGround="false" dormant="false">
@@ -432,6 +450,12 @@
             <longName>Mean active layer depth</longName>
             <shortName>actlyr</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -445,6 +469,12 @@
             <shortName>actlyrmax</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_max_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>actlyr_max_mo</nameInCode>
@@ -456,6 +486,12 @@
             <longName>Minimum Active Layer Depth</longName>
             <shortName>actlyrmin</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>actlyr_min_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -469,6 +505,12 @@
             <shortName>ftable</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ftable_mo</nameInCode>
@@ -481,6 +523,12 @@
             <shortName>ftablemax</shortName>
             <defaultUnits>m</defaultUnits>
             <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_max_yr</nameInCode>
+                <units>m</units>
+            </variant>
+            <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ftable_max_mo</nameInCode>
@@ -492,6 +540,12 @@
             <longName>Minimum depth to frozen water table</longName>
             <shortName>ftablemin</shortName>
             <defaultUnits>m</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ftable_min_yr</nameInCode>
+                <units>m</units>
+            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
@@ -563,12 +617,18 @@
             <standardName>Surface Downwelling Shortwave Radiation</standardName>
             <longName>Surface Downwelling Shortwave Radiative flux in air</longName>
             <shortName>rsds</shortName>
-            <defaultUnits>W/$m^2$</defaultUnits>
+            <defaultUnits>W $m^2$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fsinacc_mo</nameInCode>
+                <units>W $m^2$</units>
+            </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>fss_hh</nameInCode>
-                <units>W/$m^2$</units>
+                <units>W $m^2$</units>
             </variant>
         </variable>
         <variable id="57" includeBareGround="false" dormant="false">
@@ -881,18 +941,48 @@
             <standardName>Leaf maintenance respiration</standardName>
             <longName>Leaf maintenance respiration, does not include growth respiration</longName>
             <shortName>rmLeaf</shortName>
-            <defaultUnits>$[kg m^{-2} s^{-1} ]$</defaultUnits>
+            <defaultUnits>$[kg C m^{-2} s^{-1} ]$</defaultUnits>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rml_hh_g</nameInCode>
+                <units>$[kg C m^{-2} s^{-1} ]$</units>
+            </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>rml_hh</nameInCode>
-                <units>$[kg m^{-2} s^{-1} ]$</units>
+                <units>$[kg C m^{-2} s^{-1} ]$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>rml_hh_t</nameInCode>
-                <units>$[kg m^{-2} s^{-1} ]$</units>
+                <units>$[kg C m^{-2} s^{-1} ]$</units>
+            </variant>
+        </variable>
+        <variable id="78" includeBareGround="false" dormant="false">
+            <standardName>Total Soil Moisture Content</standardName>
+            <longName>the mass per unit area (summed over all soil layers) of water in all phases</longName>
+            <shortName>mrso</shortName>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>mrso_mo</nameInCode>
+                <units>kg$m^{-2}$</units>
+            </variant>
+        </variable>
+        <variable id="79" includeBareGround="false" dormant="false">
+            <standardName>Total water content of soil layer</standardName>
+            <longName>in each soil layer, the mass of water in all phases, including ice. Reported as "missing" for grid cells occupied entirely by "sea"</longName>
+            <shortName>mrsol</shortName>
+            <defaultUnits>kg$m^{-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>mrsol_mo</nameInCode>
+                <units>kg$m^{-2}$</units>
             </variant>
         </variable>
     </group>
@@ -1043,7 +1133,7 @@
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
-                <nameInCode>litrmass_mo</nameInCode>
+                <nameInCode>litrmass_yr</nameInCode>
                 <units>kg C/$m^2$</units>
             </variant>
             <variant>
@@ -1056,6 +1146,12 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>litrmass_mo_g</nameInCode>
+                <units>kg C/$m^2$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>litrmass_mo</nameInCode>
                 <units>kg C/$m^2$</units>
             </variant>
         </variable>
@@ -1153,432 +1249,450 @@
             <standardName>Net Primary Productivity of Biomass Expressed As Carbon</standardName>
             <longName>Carbon Mass Flux out of Atmosphere due to Net Primary Production on Land</longName>
             <shortName>npp</shortName>
-            <defaultUnits>kg C/$m^2$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>npp_yr_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>npp_yr</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>npp_yr_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>npp_mo_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>npp_mo</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>npp_mo_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>npp_d_g</nameInCode>
-                <units>g C/$m^2$/day</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>npp_hh</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>npp_hh_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="32" includeBareGround="false" dormant="false">
             <standardName>Gross Primary Productivity of Biomass Expressed As Carbon</standardName>
             <longName>Carbon Mass Flux out of Atmosphere due to Gross Primary Production on Land</longName>
             <shortName>gpp</shortName>
-            <defaultUnits>kg C/$m^2$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>gpp_yr_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>gpp_yr</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>gpp_yr_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>gpp_mo_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>gpp_mo</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>gpp_mo_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>gpp_d_g</nameInCode>
-                <units>g C/$m^2$/day</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>gpp_hh_g</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>gpp_hh</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>gpp_hh_t</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="33" includeBareGround="true" dormant="false">
             <standardName>Net Carbon Mass Flux out of Atmosphere due to Net Ecosystem Productivity on Land</standardName>
             <longName>Natural flux of CO2 (expressed as a mass flux of carbon) from the atmosphere to the land calculated as the difference between    uptake associated will photosynthesis and the release of CO2 from    the    sum of plant and soil respiration and fire. Positive flux is into    the    land. emissions from natural fires and human ignition fires as    calculated by the fire module of the dynamic vegetation model, but    excluding any CO2 flux from fire included in fLuc (CO2 Flux to    Atmosphere from Land Use Change).</longName>
             <shortName>nep</shortName>
-            <defaultUnits>kg C/$m^2$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>nep_yr_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>nep_yr</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>nep_yr_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>nep_mo_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>nep_mo</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>nep_mo_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>nep_d_g</nameInCode>
-                <units>g C/$m^2$/day</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="34" includeBareGround="true" dormant="false">
             <standardName>Net Carbon Mass Flux out of Atmosphere due to Net Biospheric Productivity on Land</standardName>
             <longName>This is the net mass flux of carbon from atmosphere into land, calculated as photosynthesis MINUS the sum of plant and soil    respiration, carbon fluxes from fire, harvest, grazing and land use    change. Positive flux is into the land.</longName>
             <shortName>nbp</shortName>
-            <defaultUnits>kg C/$m^2$/s</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>nbp_yr_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>nbp_yr</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>nbp_yr_t</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>nbp_mo_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>nbp_mo</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>nbp_mo_t</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>nbp_d_g</nameInCode>
-                <units>g C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="35" includeBareGround="true" dormant="false">
             <standardName>Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration on Land</standardName>
             <longName>Carbon mass flux per unit area into atmosphere due to heterotrophic respiration on land (respiration by consumers)</longName>
             <shortName>rh</shortName>
-            <defaultUnits>kg C/$m^2$/s</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>hetrores_yr_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>hetrores_yr</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>hetrores_yr_t</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>hetrores_mo_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>hetrores_mo</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>hetrores_mo_t</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>hetrores_d_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="36" includeBareGround="false" dormant="false">
             <standardName>Total autotrophic respiration</standardName>
             <longName>Autotrophic Respiration from All Vegetation Pools</longName>
             <shortName>ra</shortName>
-            <defaultUnits>kg C/$m^2$/s</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>autores_yr_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>autores_yr</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>autores_yr_t</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>autores_mo_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>autores_mo</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>autores_mo_t</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>daily</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>autores_d_g</nameInCode>
-                <units>kg C/$m^2$/s</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="37" includeBareGround="true" dormant="false">
             <standardName>Litter heterotrophic respiration</standardName>
             <longName>Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration from Litter on Land</longName>
             <shortName>rhLitter</shortName>
-            <defaultUnits>kg C/$m^2$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>litres_yr_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litres_yr</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>litres_yr_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>litres_mo_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litres_mo</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>litres_mo_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="38" includeBareGround="true" dormant="false">
             <standardName>Soil heterotrophic respiration</standardName>
             <longName>Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration from Soil on Land</longName>
             <shortName>rhSoil</shortName>
-            <defaultUnits>kg C/$m^2$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>soilcres_yr_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>soilcres_yr</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>soilcres_yr_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>soilcres_mo_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>soilcres_mo</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>soilcres_mo_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="39" includeBareGround="false" dormant="false">
             <standardName>Total Carbon Mass Flux from Vegetation to Litter</standardName>
             <longName>Total Carbon Mass Flux from Vegetation to Litter</longName>
             <shortName>fVegLitter</shortName>
-            <defaultUnits>kg C/$m^2$​</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>litrfall_mo_g</nameInCode>
-                <units>kg C/$m^2$​</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litrfallveg_mo</nameInCode>
-                <units>kg C/$m^2$​</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>litrfall_mo_t</nameInCode>
-                <units>kg C/$m^2$​</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="40" includeBareGround="true" dormant="false">
             <standardName>Total Carbon Mass Flux from Litter to Soil</standardName>
             <longName>Total Carbon Mass Flux from Litter to Soil</longName>
             <shortName>fLitterSoil</shortName>
-            <defaultUnits>kg C/$m^2$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>humiftrs_mo_g</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>humiftrsveg_mo</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>humiftrs_mo_t</nameInCode>
-                <units>kg C/$m^2$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="41" includeBareGround="true" dormant="false">
@@ -1603,163 +1717,199 @@
             <standardName>Methane emissions from wetlands</standardName>
             <longName>Methane emissions from specified wetland areas based on heterotrophic respiration</longName>
             <shortName>wetlandCH4spec</shortName>
-            <defaultUnits>g CH$_4$ $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg CH$_4$ $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
-                <nameInCode>ch4wet1_yr_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetSpec_yr_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
-                <nameInCode>ch4wet1_yr_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetSpec_yr_t</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
-                <nameInCode>ch4wet1_mo_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetSpec_mo_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
-                <nameInCode>ch4wet1_mo_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetSpec_mo_t</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetSpec_d_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="50" includeBareGround="false" dormant="false">
             <standardName>Methane emissions from wetlands</standardName>
             <longName>Methane emissions from dynamically determined wetland areas based on heterotrophic respiration</longName>
             <shortName>wetlandCH4dyn</shortName>
-            <defaultUnits>g CH$_4$ $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg CH$_4$ $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
-                <nameInCode>ch4dyn1_yr_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetDyn_yr_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
-                <nameInCode>ch4dyn1_yr_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetDyn_yr_t</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
-                <nameInCode>ch4dyn1_mo_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetDyn_mo_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
-                <nameInCode>ch4dyn1_mo_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <nameInCode>ch4WetDyn_mo_t</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetDyn_d_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="51" includeBareGround="false" dormant="false">
             <standardName>Methane uptake (methanotrophy) by oxic soils</standardName>
             <longName>Methane uptake (methanotrophy) by oxic soils</longName>
             <shortName>soilCH4cons</shortName>
-            <defaultUnits>g CH$_4$ $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg CH$_4$ $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ch4soills_yr_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>ch4soills_yr_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>ch4soills_mo_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4soills_d_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="52" includeBareGround="false" dormant="false">
             <standardName>Fraction of a grid cell covered by wetland</standardName>
             <longName>Fraction of a grid cell covered by wetland. Prognostically determined.</longName>
             <shortName>wetlandFrac</shortName>
-            <defaultUnits>g CH$_4$ $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>Fraction</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>wetfdyn_yr_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>Fraction</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>wetfdyn_yr_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>Fraction</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>wetfdyn_mo_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>Fraction</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>wetfdyn_mo_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>Fraction</units>
+            </variant>
+        </variable>
+        <variable id="80" includeBareGround="false" dormant="false">
+            <standardName>Prescribed wetland fraction</standardName>
+            <longName>Wetland fraction prescribed from an external input file</longName>
+            <shortName>wetlandFracPresc</shortName>
+            <defaultUnits>Fraction</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>wetfpres_mo_g</nameInCode>
+                <units>Fraction</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>wetfpres_mo_t</nameInCode>
+                <units>Fraction</units>
             </variant>
         </variable>
     </group>
-    <group type="land+fire">
+    <group type="land_fire">
         <variable id="42" includeBareGround="false" dormant="false">
             <standardName>Carbon Mass Flux into Atmosphere due to CO2 Emission from Fire</standardName>
             <longName>CO2 emissions (expressed as a CO2 mass flux per unit area) from natural fires and human ignition fires as calculated by the fire module of the dynamic vegetation model, but excluding any CO2 flux from fire included in fLuc (CO2 Flux to Atmosphere from Land Use Change)</longName>
             <shortName>fFire</shortName>
-            <defaultUnits>g CO$_2$ $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>emit_co2_yr_g</nameInCode>
-                <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>emit_co2_yr</nameInCode>
-                <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_co2_yr_t</nameInCode>
-                <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>emit_co2_mo_g</nameInCode>
-                <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>emit_co2_mo</nameInCode>
-                <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_co2_mo_t</nameInCode>
-                <units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="44" includeBareGround="false" dormant="false">
-            <standardName>Percentage of Entire Grid cell that is Covered by Burnt Vegetation (All Classes)</standardName>
-            <longName>Percentage of grid cell burned due to all fires including natural and anthropogenic fires</longName>
+            <standardName>Fraction of Entire Grid cell that is Covered by Burnt Vegetation (All Classes)</standardName>
+            <longName>Fraction of grid cell burned due to all fires including natural and anthropogenic fires</longName>
             <shortName>burntFractionAll</shortName>
             <defaultUnits>fraction</defaultUnits>
             <variant>
@@ -1805,42 +1955,48 @@
             <standardName>Carbon Mass Flux into Atmosphere due to CH4 Emission from Fire</standardName>
             <longName>CH4 emissions (expressed as a CH4 mass flux per unit area) from natural fires and human ignition fires as calculated by the    fire module of the dynamic vegetation model</longName>
             <shortName>fFireCH4</shortName>
-            <defaultUnits>g CH$_4$ $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg CH$_4$ $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>emit_ch4_yr_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>emit_ch4_yr</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_ch4_yr_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>emit_ch4_mo_g</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>emit_ch4_mo</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>emit_ch4_mo_t</nameInCode>
-                <units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_ch4_d_g</nameInCode>
+                <units>kg CH$_4$ $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
     </group>
@@ -1849,126 +2005,156 @@
             <standardName>Deforested biomass that goes into atmosphere as a result of anthropogenic land use change</standardName>
             <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed.</longName>
             <shortName>fDeforestToAtmos</shortName>
-            <defaultUnits>g C $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>luc_emc_yr_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>luc_emc_yr</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>luc_emc_yr_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>luc_emc_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>luc_emc_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>luc_emc_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="46" includeBareGround="false" dormant="false">
             <standardName>Deforested biomass that goes into litter as a result of anthropogenic land use change</standardName>
             <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed and    some transferred to litter.</longName>
             <shortName>fDeforestToLitter</shortName>
-            <defaultUnits>g C $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucltrin_yr_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucltrin_yr</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucltrin_yr_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucltrin_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucltrin_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucltrin_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
         <variable id="47" includeBareGround="false" dormant="false">
             <standardName>Deforested biomass that goes into soil as a result of anthropogenic land use change</standardName>
             <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed and    some transferred to soil.</longName>
             <shortName>fDeforestToSoil</shortName>
-            <defaultUnits>g C $m^{-2}$ year$^{-1}$</defaultUnits>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucsocin_yr_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucsocin_yr</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucsocin_yr_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>lucsocin_mo_g</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>lucsocin_mo</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>tile</outputForm>
                 <nameInCode>lucsocin_mo_t</nameInCode>
-                <units>g C $m^{-2}$ year$^{-1}$</units>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="77" includeBareGround="false" dormant="false">
+            <standardName>Sum of fDeforestToAtmo,  fDeforestToLitter, fDeforestToSoil</standardName>
+            <longName>When land use change results in deforestation of natural vegetation (trees or grasslands) then natural biomass is removed. This is the total amount of C</longName>
+            <shortName>fDeforestTotal</shortName>
+            <defaultUnits>kg C $m^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luctot_yr_g</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>luctot_yr_t</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>luctot_mo_g</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>luctot_mo_t</nameInCode>
+                <units>kg C $m^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
     </group>

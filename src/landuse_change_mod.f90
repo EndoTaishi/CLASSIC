@@ -179,8 +179,8 @@ end subroutine initializeLandCover
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
 !> @author Vivek Arora
-subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
-                        grclarea, pfcancmx, nfcancmx,      iday,    & !2
+subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
+                        grclarea, pfcancmx, nfcancmx,      iday,    & !2    
                        todfrac,yesfrac,interpol,PFTCompetition,leapnow, & !3
 !    ----------------------- inputs above this line -------------
                          gleafmas, bleafmas, stemmass, rootmass,    & !4
@@ -247,8 +247,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
       real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
       real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
-      real soilcmas(nilg,iccp1) !<soil c mass in kg c/m2, for the 9 pfts + bare
-      real litrmass(nilg,iccp1) !<litter mass in kg c/m2, for the 9 pfts + bare
+      real soilcmas(nilg,iccp2) !<soil c mass in kg c/m2, for the 9 pfts + bare
+      real litrmass(nilg,iccp2) !<litter mass in kg c/m2, for the 9 pfts + bare
       real gavgltms(nilg)       !<grid averaged litter mass, kg c/m2
       real gavgscms(nilg)       !<grid averaged soil c mass, kg c/m2
       real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
@@ -435,8 +435,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         gavgscms(i)=0.0
 
 
-        barefrac(i)=1.0
-        pbarefra(i)=1.0
+        barefrac(i)=1.0          
+        pbarefra(i)=1.0           
 
         grsumcom(i)=0.0
         grsumpap(i)=0.0
@@ -557,11 +557,14 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                       *km2tom2)
 320   continue
 
-      do 340 j = 1, iccp1
+      do 340 j = 1, iccp2 !FLAG
+
           if(j.lt.iccp1) then
             term = fcancmy(i,j)
           else if(j.eq.iccp1) then
             term = pbarefra(i)
+          else if(j.eq.iccp2) then
+            term = 1.0  !FLAG
           endif
           totdmas1(i)=totdmas1(i)+ &
                      (term*litrmass(i,j)*grclarea(i)*km2tom2)
@@ -781,6 +784,15 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         grdenlit(i)=grsumlit(i)/(grclarea(i)*km2tom2)
         grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
 
+!>      Now add the C to the gridcell's LUC pools of litter and soil C.
+!!      The fast decaying dead C (litter) and slow (soil C) are kept in
+!!      the first 'soil' layer and iccp2 position. The litter and soil C
+!!      contributions are added to the normal litter and soil C pools below.
+       litrmass(i,iccp2)=litrmass(i,iccp2)+grdenpap(i) !+grdenlit(i)
+       soilcmas(i,iccp2)=soilcmas(i,iccp2)+grdenfur(i) !+grdensoc(i)
+
+
+!     Add any adjusted litter and soilc back their respective pools
 
       do 650 j = 1, icc
           if(fcancmx(i,j).gt.zero)then
@@ -825,11 +837,14 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                      *km2tom2)
 700   continue
 
-      do 710 j = 1, iccp1
+!     FLAG: changed to iccp2
+      do 710 j = 1, iccp2
           if(j.lt.iccp1) then
             term = fcancmx(i,j)
           else if(j.eq.iccp1) then
             term = barefrac(i)
+          else if (j .eq. iccp2) then !FLAG
+            term = 1.0 ! LUC is assumed to cover whole grid cell evenly
           endif
           ntotdms1(i)=ntotdms1(i)+ &
                      (term*litrmass(i,j)*grclarea(i)*km2tom2)
@@ -874,6 +889,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
         gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
         gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
+        gavgltms(i)=gavgltms(i)+ litrmass(i,iccp2) !FLAG
+        gavgscms(i)=gavgscms(i)+ soilcmas(i,iccp2)
+
 !>
 !>just like total amount of carbon must balance, the grid averagred densities must also balance
 !>

@@ -65,8 +65,8 @@ implicit none
                     !<is changed to isnow(ilg) in classt of class version higher than 3.4 for coupling with ctem
       integer isand(ilg,ignd) !<
 
-      real litrmass(ilg,icc+1)!<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
-      real soilcmas(ilg,icc+1)!<soil carbon mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real litrmass(ilg,1)!<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real soilcmas(ilg,1)!<soil carbon mass for the 8 pfts + bare in \f$kg c/m^2\f$
       real tbar(ilg,ignd)     !<soil temperature, k
       real thliq(ilg,ignd)    !<liquid soil moisture content in 3 soil layers
       real zbotw(ilg,ignd)    !<bottom of soil layers
@@ -259,7 +259,7 @@ implicit none
         litrq10 = tanhq10(1) + tanhq10(2)*( tanh( tanhq10(3)*(tanhq10(4)-tempq10l(i))  ) )
 
         q10func = litrq10**(0.1*(litrtemp(i)-273.16-15.0))
-        litres(i)= ltrmoscl(i) * litrmass(i,icc+1)*bsratelt_g*2.64*q10func ! 2.64 converts bsratelt_g from kg c/kg c.year
+        litres(i)= ltrmoscl(i) * litrmass(i,1)*bsratelt_g*2.64*q10func ! 2.64 converts bsratelt_g from kg c/kg c.year
                                                                          ! to u-mol co2/kg c.s
 
 !       respiration from soil c pool
@@ -268,7 +268,7 @@ implicit none
         soilcq10= tanhq10(1) + tanhq10(2)*( tanh( tanhq10(3)*(tanhq10(4)-tempq10s(i))  ) )
 
         q10func = soilcq10**(0.1*(solctemp(i)-273.16-15.0))
-        socres(i)= socmoscl(i)* soilcmas(i,icc+1)*bsratesc_g*2.64*q10func ! 2.64 converts bsratesc_g from kg c/kg c.year
+        socres(i)= socmoscl(i)* soilcmas(i,1)*bsratesc_g*2.64*q10func ! 2.64 converts bsratesc_g from kg c/kg c.year
                                                                           ! to u-mol co2/kg c.s
 
       endif
@@ -334,9 +334,9 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
       real fcan(ilg,icc)      !<fractional coverage of ctem's 9 pfts
       real fct(ilg)           !<sum of all fcan, fcan & fct are not used at this time but could be used at some later stage
-      real litrmass(ilg,icc+1)!<litter mass for the 9 pfts + bare in \f$kg c/m^2\f$
+      real litrmass(ilg,icc)!<litter mass for the 9 pfts in \f$kg c/m^2\f$
       real tbar(ilg,ignd)     !<soil temperature, k
-      real soilcmas(ilg,icc+1)!<soil carbon mass for the 9 pfts + bare in \f$kg c/m^2\f$
+      real soilcmas(ilg,icc)!<soil carbon mass for the 9 pfts e in \f$kg c/m^2\f$
       real thliq(ilg,ignd)    !<liquid soil moisture content in 3 soil layers
       real roottemp(ilg,icc)  !<root temperature as estimated in mainres subroutine
       real zbotw(ilg,ignd)    !<bottom of soil layers

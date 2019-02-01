@@ -99,9 +99,9 @@ c     J. Melton
 
 c      August 4, 2009 scatter operation on CTEM variables.
 c      Rong Li
-c
+c 
       use classic_params,  only : nlat, nmos, ilg, ignd, ican, icp1,
-     1                               icc,iccp1
+     1                               icc,iccp2
 
       implicit none
 c
@@ -141,8 +141,8 @@ c
      2      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc), rootmassrow(nlat,nmos,icc),
      &      pstemmassrow(nlat,nmos,icc), pgleafmassrow(nlat,nmos,icc),
-     4      litrmassrow(nlat,nmos,iccp1),gleafmasrow(nlat,nmos,icc),
-     5      bleafmasrow(nlat,nmos,icc), soilcmasrow(nlat,nmos,iccp1),
+     4      litrmassrow(nlat,nmos,iccp2),gleafmasrow(nlat,nmos,icc),
+     5      bleafmasrow(nlat,nmos,icc), soilcmasrow(nlat,nmos,iccp2),
      6      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
 c
       integer  pandaysrow(nlat,nmos,icc), lfstatusrow(nlat,nmos,icc),
@@ -166,7 +166,7 @@ c
      5      dstcemlsrow(nlat,nmos),       litrfallrow(nlat,nmos),
      6      humiftrsrow(nlat,nmos),       veghghtrow(nlat,nmos,icc),
      7      litrfallvegrow(nlat,nmos,icc),
-     &      humiftrsvegrow(nlat,nmos,iccp1),
+     &      humiftrsvegrow(nlat,nmos,iccp2),
      7      rootdpthrow(nlat,nmos,icc),   rmlrow(nlat,nmos),
      8      rmsrow(nlat,nmos),            rmrrow(nlat,nmos),
      9      tltrleafrow(nlat,nmos,icc),   tltrstemrow(nlat,nmos,icc),
@@ -198,10 +198,10 @@ c
 c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
-      real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),
-     1      nbpvegrow(nlat,nmos,iccp1),hetroresvegrow(nlat,nmos,iccp1),
-     2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
-     3      soilcresvegrow(nlat,nmos,iccp1)
+      real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp2),
+     1      nbpvegrow(nlat,nmos,iccp2),hetroresvegrow(nlat,nmos,iccp2),
+     2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp2),
+     3      soilcresvegrow(nlat,nmos,iccp2)
 c
       real  fcancmxgat(ilg,icc),        rmatcgat(ilg,ican,ignd),
      1      zolncgat(ilg,ican),         paicgat(ilg,ican),
@@ -227,10 +227,10 @@ c
       real  prbfrhucgat(ilg),           extnprobgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),
-     3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),
-     &      pstemmassgat(ilg,icc),      pgleafmassgat(ilg,icc),
-     4      litrmassgat(ilg,iccp1),     gleafmasgat(ilg,icc),
-     5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp1),
+     3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),  
+     &      pstemmassgat(ilg,icc),      pgleafmassgat(ilg,icc),  
+     4      litrmassgat(ilg,iccp2),     gleafmasgat(ilg,icc),
+     5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp2),
      6      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
 c
       integer pandaysgat(ilg,icc),      lfstatusgat(ilg,icc),
@@ -252,7 +252,7 @@ c
      4      socresgat(ilg),            gppgat(ilg),
      5      dstcemlsgat(ilg),          litrfallgat(ilg),
      6      humiftrsgat(ilg),          veghghtgat(ilg,icc),
-     &      litrfallveggat(ilg,icc), humiftrsveggat(ilg,iccp1),
+     &      litrfallveggat(ilg,icc), humiftrsveggat(ilg,iccp2),
      7      rootdpthgat(ilg,icc),      rmlgat(ilg),
      8      rmsgat(ilg),               rmrgat(ilg),
      9      tltrleafgat(ilg,icc),      tltrstemgat(ilg,icc),
@@ -284,10 +284,10 @@ c
 c
       real vgbiomas_veggat(ilg,icc)
 c
-      real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),
-     1     nbpveggat(ilg,iccp1), hetroresveggat(ilg,iccp1),
-     2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
-     3      soilcresveggat(ilg,iccp1)
+      real gppveggat(ilg,icc),        nepveggat(ilg,iccp2),
+     1     nbpveggat(ilg,iccp2), hetroresveggat(ilg,iccp2),
+     2      autoresveggat(ilg,icc),litresveggat(ilg,iccp2),
+     3      soilcresveggat(ilg,iccp2)
 
 c   Methane related variables
        real  ch4WetSpecrow(nlat,nmos),         ch4WetSpecgat(ilg),
@@ -465,7 +465,7 @@ c         fire variables
 c
 101   continue
 c
-      do 102 l=1,iccp1
+      do 102 l=1,iccp2
        do 102 k=1,nml
           litrmassrow(ilmos(k),jlmos(k),l) = litrmassgat(k,l)
           soilcmasrow(ilmos(k),jlmos(k),l) = soilcmasgat(k,l)

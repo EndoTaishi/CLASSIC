@@ -4,6 +4,8 @@ or/.project
 tools/metASCIILoader/.settings
 tools/metASCIILoader/.cproject
 tools/metASCIILoader/.project
+tools/metASCIILoader/*.o
+tools/metASCIILoader/*.mod
 tools/outputVariableEditor/.settings
 tools/outputVariableEditor/.project
 tools/outputVariableEditor/.tern-project
@@ -12,5 +14,4 @@ tools/initFileConverter/*.mod
 bin/CLASSIC
 oldcode
 outputFiles/*
-journal.md
 inputFiles/*

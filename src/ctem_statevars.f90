@@ -4,7 +4,7 @@ module ctem_statevars
 
 ! J. Melton Apr 2015
 
-use classic_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp1, &
+use classic_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp2, &
                     monthend, mmday,modelpft, l2max,deltat, abszero, monthdays,seed, crop, NBS
 
 implicit none
@@ -358,8 +358,8 @@ type veg_rot
 
  ! allocated with nlat,nmos,icc,ignd:
     real, allocatable, dimension(:,:,:,:) :: rmatctem     !<fraction of roots for each of ctem's 9 pfts in each soil layer
-
-! allocated with nlat,nmos,iccp1:
+    
+! allocated with nlat,nmos,iccp2:
     real, allocatable, dimension(:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: nepveg      !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
@@ -390,7 +390,7 @@ type (veg_rot), save, target :: vrot
 type veg_gat
 
     ! This is the basic data structure that contains the state variables
-    ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1}
+    ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp2}
 
     real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -676,7 +676,7 @@ type ctem_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-! allocated with nlat,nmos,icc/iccp1:
+! allocated with nlat,nmos,icc/iccp2:
 
       real, allocatable, dimension(:,:,:)   :: laimaxg_mo    !<
       real, allocatable, dimension(:,:,:)   :: stemmass_mo   !<
@@ -834,7 +834,7 @@ type ctem_annual
 ! c      Annual output for CTEM mosaic variables:
 ! c      (denoted by name ending in "_yr_m")
 !
-! allocated with nlat,nmos,icc/iccp1:
+! allocated with nlat,nmos,icc/iccp2:
 
       real, allocatable, dimension(:,:,:) :: laimaxg_yr   !<
       real, allocatable, dimension(:,:,:) :: stemmass_yr  !<
@@ -990,7 +990,7 @@ contains
 
 subroutine alloc_ctem_vars()
 
-use classic_params, only : ican, icc,iccp1,ilg,nlat,nmos,ignd
+use classic_params, only : ican, icc,iccp2,ilg,nlat,nmos,ignd
 
 implicit none
 
@@ -1141,7 +1141,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
 
-! allocated with nlat,nmos,ican:
+! allocated with nlat,nmos,ican:     
          vrot%zolnc(nlat,nmos,ican),&
          vrot%ailc(nlat,nmos,ican),&
          vrot%cmasvegc(nlat,nmos,ican),&
@@ -1156,18 +1156,18 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
 
  ! allocated with nlat,nmos,icc,ignd:
          vrot%rmatctem(nlat,nmos,icc,ignd),&
-
-! allocated with nlat,nmos,iccp1:
-         vrot%litrmass(nlat,nmos,iccp1),&
-         vrot%soilcmas(nlat,nmos,iccp1),&
-         vrot%nepveg(nlat,nmos,iccp1),&
-         vrot%nbpveg(nlat,nmos,iccp1),&
-         vrot%hetroresveg(nlat,nmos,iccp1),&
-         vrot%litresveg(nlat,nmos,iccp1),&
-         vrot%soilcresveg(nlat,nmos,iccp1),&
-         vrot%humiftrsveg(nlat,nmos,iccp1),&
-
-! allocated with nlat,nmos,{some number}:
+    
+! allocated with nlat,nmos,iccp2:
+         vrot%litrmass(nlat,nmos,iccp2),&
+         vrot%soilcmas(nlat,nmos,iccp2),&
+         vrot%nepveg(nlat,nmos,iccp2),&
+         vrot%nbpveg(nlat,nmos,iccp2),&
+         vrot%hetroresveg(nlat,nmos,iccp2),&
+         vrot%litresveg(nlat,nmos,iccp2),&
+         vrot%soilcresveg(nlat,nmos,iccp2),&
+         vrot%humiftrsveg(nlat,nmos,iccp2),&
+    
+! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
          vrot%slopefrac(nlat,nmos,8),&
 
@@ -1367,15 +1367,15 @@ allocate(vgat%grclarea(ilg),&
          vgat%slaic (ilg,ican),&
          vgat%alirctm (ilg,ican),&
 
-! allocated with ilg, iccp1:
-         vgat%litrmass (ilg,iccp1),&
-         vgat%soilcmas (ilg,iccp1),&
-         vgat%nepveg (ilg,iccp1),&
-         vgat%nbpveg (ilg,iccp1),&
-         vgat%hetroresveg (ilg,iccp1),&
-         vgat%litresveg (ilg,iccp1),&
-         vgat%soilcresveg (ilg,iccp1),&
-         vgat%humiftrsveg (ilg,iccp1),&
+! allocated with ilg, iccp2:
+         vgat%litrmass (ilg,iccp2),&
+         vgat%soilcmas (ilg,iccp2),&
+         vgat%nepveg (ilg,iccp2),&
+         vgat%nbpveg (ilg,iccp2),&
+         vgat%hetroresveg (ilg,iccp2),&
+         vgat%litresveg (ilg,iccp2),&
+         vgat%soilcresveg (ilg,iccp2),&
+         vgat%humiftrsveg (ilg,iccp2),&
 
 ! allocated with ilg,ignd:
 !          vgat%rgmgat(ilg,ignd),&
@@ -1428,15 +1428,15 @@ allocate(vgat%grclarea(ilg),&
          ctem_mo%gpp_mo (nlat,nmos,icc),&
          ctem_mo%vgbiomas_mo (nlat,nmos,icc),&
          ctem_mo%autores_mo (nlat,nmos,icc),&
-         ctem_mo%humiftrsveg_mo (nlat,nmos,iccp1),&
-         ctem_mo%totcmass_mo (nlat,nmos,iccp1),&
-         ctem_mo%litrmass_mo (nlat,nmos,iccp1),&
-         ctem_mo%soilcmas_mo (nlat,nmos,iccp1),&
-         ctem_mo%nep_mo (nlat,nmos,iccp1),&
-         ctem_mo%litres_mo (nlat,nmos,iccp1),&
-         ctem_mo%soilcres_mo (nlat,nmos,iccp1),&
-         ctem_mo%hetrores_mo (nlat,nmos,iccp1),&
-         ctem_mo%nbp_mo (nlat,nmos,iccp1),&
+         ctem_mo%humiftrsveg_mo (nlat,nmos,iccp2),&
+         ctem_mo%totcmass_mo (nlat,nmos,iccp2),&
+         ctem_mo%litrmass_mo (nlat,nmos,iccp2),&
+         ctem_mo%soilcmas_mo (nlat,nmos,iccp2),&
+         ctem_mo%nep_mo (nlat,nmos,iccp2),&
+         ctem_mo%litres_mo (nlat,nmos,iccp2),&
+         ctem_mo%soilcres_mo (nlat,nmos,iccp2),&
+         ctem_mo%hetrores_mo (nlat,nmos,iccp2),&
+         ctem_mo%nbp_mo (nlat,nmos,iccp2),&
          ctem_mo%emit_co2_mo (nlat,nmos,icc),&
          ctem_mo%emit_co_mo (nlat,nmos,icc),&
          ctem_mo%emit_ch4_mo (nlat,nmos,icc),&
@@ -1548,14 +1548,14 @@ allocate(vgat%grclarea(ilg),&
          ctem_yr%gpp_yr (nlat,nmos,icc),&
          ctem_yr%vgbiomas_yr (nlat,nmos,icc),&
          ctem_yr%autores_yr (nlat,nmos,icc),&
-         ctem_yr%totcmass_yr (nlat,nmos,iccp1),&
-         ctem_yr%litrmass_yr (nlat,nmos,iccp1),&
-         ctem_yr%soilcmas_yr (nlat,nmos,iccp1),&
-         ctem_yr%nep_yr (nlat,nmos,iccp1),&
-         ctem_yr%litres_yr (nlat,nmos,iccp1),&
-         ctem_yr%soilcres_yr (nlat,nmos,iccp1),&
-         ctem_yr%hetrores_yr (nlat,nmos,iccp1),&
-         ctem_yr%nbp_yr (nlat,nmos,iccp1),&
+         ctem_yr%totcmass_yr (nlat,nmos,iccp2),&
+         ctem_yr%litrmass_yr (nlat,nmos,iccp2),&
+         ctem_yr%soilcmas_yr (nlat,nmos,iccp2),&
+         ctem_yr%nep_yr (nlat,nmos,iccp2),&
+         ctem_yr%litres_yr (nlat,nmos,iccp2),&
+         ctem_yr%soilcres_yr (nlat,nmos,iccp2),&
+         ctem_yr%hetrores_yr (nlat,nmos,iccp2),&
+         ctem_yr%nbp_yr (nlat,nmos,iccp2),&
          ctem_yr%emit_co2_yr (nlat,nmos,icc),&
          ctem_yr%emit_co_yr (nlat,nmos,icc),&
          ctem_yr%emit_ch4_yr (nlat,nmos,icc),&
@@ -1670,7 +1670,7 @@ end subroutine alloc_ctem_vars
 
 subroutine initrowvars()
 
-use classic_params, only : nlat, nmos, ican, ignd ,icc, iccp1
+use classic_params, only : nlat, nmos, ican, ignd ,icc, iccp2
 
 implicit none
 
@@ -1813,7 +1813,7 @@ integer :: j,k,l,m
 
             end do !icc
             !
-            do l = 1, iccp1
+            do l = 1, iccp2
                 vrot%litrmass(j,k,l)    = 0.0
                 vrot%soilcmas(j,k,l)    = 0.0
                 vrot%hetroresveg(j,k,l) = 0.0
@@ -1822,7 +1822,7 @@ integer :: j,k,l,m
                 vrot%nepveg(j,k,l) = 0.0
                 vrot%nbpveg(j,k,l) = 0.0
                 vrot%humiftrsveg(j,k,l)=0.
-            end do !iccp1
+            end do !iccp2
 
    end do !nmos
  end do !nlat
@@ -1838,7 +1838,7 @@ end subroutine initrowvars
 
 subroutine resetmonthend(nltest,nmtest)
 
-use classic_params, only : iccp1,icc
+use classic_params, only : iccp2,icc
 
 implicit none
 
@@ -1871,9 +1871,9 @@ do i=1,nltest
             ctem_mo%vgbiomas_mo(i,m,j)=0.0
             ctem_mo%totcmass_mo(i,m,j)=0.0
         end do
-            ctem_mo%litrmass_mo(i,m,iccp1)=0.0
-            ctem_mo%soilcmas_mo(i,m,iccp1)=0.0
-            ctem_mo%totcmass_mo(i,m,iccp1)=0.0
+            ctem_mo%litrmass_mo(i,m,iccp2)=0.0
+            ctem_mo%soilcmas_mo(i,m,iccp2)=0.0
+            ctem_mo%totcmass_mo(i,m,iccp2)=0.0
   end do
 end do
 
@@ -1988,12 +1988,12 @@ do i=1,nltest
             ctem_mo%smfuncveg_mo(i,m,j) =0.0
         end do
 
-        ctem_mo%nep_mo(i,m,iccp1)=0.0
-        ctem_mo%nbp_mo(i,m,iccp1)=0.0
-        ctem_mo%hetrores_mo(i,m,iccp1)=0.0
-        ctem_mo%litres_mo(i,m,iccp1)=0.0
-        ctem_mo%soilcres_mo(i,m,iccp1)=0.0
-        ctem_mo%humiftrsveg_mo(i,m,iccp1)=0.0
+        ctem_mo%nep_mo(i,m,iccp2)=0.0
+        ctem_mo%nbp_mo(i,m,iccp2)=0.0
+        ctem_mo%hetrores_mo(i,m,iccp2)=0.0
+        ctem_mo%litres_mo(i,m,iccp2)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp2)=0.0
+        ctem_mo%humiftrsveg_mo(i,m,iccp2)=0.0
 
     end do !nmtest
 end do ! nltest
@@ -2008,7 +2008,7 @@ end subroutine resetmonthend
 
 subroutine resetyearend(nltest,nmtest)
 
-use classic_params, only : iccp1,icc
+use classic_params, only : iccp2,icc
 
 implicit none
 
@@ -2141,14 +2141,14 @@ do i=1,nltest
             ctem_yr%smfuncveg_yr(i,m,j)=0.0
         end do
 
-        ctem_yr%hetrores_yr(i,m,iccp1)=0.0
-        ctem_yr%litres_yr(i,m,iccp1)=0.0
-        ctem_yr%soilcres_yr(i,m,iccp1)=0.0
-        ctem_yr%nep_yr(i,m,iccp1)=0.0
-        ctem_yr%nbp_yr(i,m,iccp1)=0.0
-        ctem_yr%litrmass_yr(i,m,iccp1)=0.0
-        ctem_yr%soilcmas_yr(i,m,iccp1)=0.0
-        ctem_yr%totcmass_yr(i,m,iccp1)=0.0
+        ctem_yr%hetrores_yr(i,m,iccp2)=0.0
+        ctem_yr%litres_yr(i,m,iccp2)=0.0
+        ctem_yr%soilcres_yr(i,m,iccp2)=0.0
+        ctem_yr%nep_yr(i,m,iccp2)=0.0
+        ctem_yr%nbp_yr(i,m,iccp2)=0.0
+        ctem_yr%litrmass_yr(i,m,iccp2)=0.0
+        ctem_yr%soilcmas_yr(i,m,iccp2)=0.0
+        ctem_yr%totcmass_yr(i,m,iccp2)=0.0
 
     end do !nmtest
 end do ! nltest

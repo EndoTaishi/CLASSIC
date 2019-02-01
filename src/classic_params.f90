@@ -146,7 +146,8 @@ integer :: l2max             !< Maximum number of level 2 CTEM PFTs. This is the
 ! ----
 ! Plant-related parameters that are calculated based on job options or parameters
 integer :: icp1              !< ican + 1
-integer :: iccp1             !< iccp1
+integer :: iccp1             !< icc + 1
+integer :: iccp2             !< icc + 2
 integer :: kk                !< product of class pfts and l2max
 integer :: numcrops          !< number of crop pfts
 integer :: numtreepfts       !< number of tree pfts
@@ -314,6 +315,8 @@ real :: bioclimrt                       !< mortality rate (1/year) for pfts that
 
 real, dimension(:), allocatable :: grescoef         !< Growth respiration coefficient
 real, dimension(:), allocatable :: humicfac         !< Humification factor - used for transferring carbon from litter into soil c pool
+real :: humicfac_bg				                           !> Humification factor - used for transferring carbon from litter into soil c pool. This is the
+						                                        !! value used for bare ground or LUC pools.
 real, dimension(:), allocatable :: laimin           !< Minimum lai below which a pft doesn't expand
 real, dimension(:), allocatable :: laimax           !< Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
 real :: lambdamax                       !< Max. fraction of npp that is allocated for reproduction/colonization
@@ -587,6 +590,7 @@ subroutine readin_PFTnums
 
     !> Assign iccp1 and icp1. icc and ican are read in from the job options file.
     iccp1 = icc + 1
+    iccp2 = icc + 2
     icp1 = ican + 1
 
 end subroutine readin_PFTnums
@@ -836,6 +840,7 @@ subroutine readin_params
         bioclimrt,&
         grescoef,&
         humicfac,&
+        humicfac_bg,&
         laimin,&
         laimax,&
         lambdamax,&
