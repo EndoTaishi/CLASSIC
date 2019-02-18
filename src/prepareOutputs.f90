@@ -1842,7 +1842,7 @@ contains
     !> Do some unit conversions for CTEM (biogeochemical processes) so they are ready to be written out
     subroutine convertUnitsCTEM(nltest,nmtest)
 
-        use classic_params, only : icc,ignd,iccp1,wtCH4,convertkgC
+        use classic_params, only : icc,ignd,iccp1,wtCH4,convertkgC,iccp2
         use ctem_statevars,     only :  vrot
         
         implicit none
@@ -1940,12 +1940,12 @@ contains
 
         30          continue ! icc
 
-                !>Now for the bare fraction of the grid cell.
-                hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
-                litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*convertkgC
-                soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*convertkgC
-                nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
-                nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
+                !>Now for the bare fraction of the grid cell and the LUC products pool.
+                hetroresvegrow(i,m,iccp1:iccp2)=hetroresvegrow(i,m,iccp1:iccp2)*convertkgC
+                litresvegrow(i,m,iccp1:iccp2)=litresvegrow(i,m,iccp1:iccp2)*convertkgC
+                soilcresvegrow(i,m,iccp1:iccp2)=soilcresvegrow(i,m,iccp1:iccp2)*convertkgC
+                nepvegrow(i,m,iccp1:iccp2)=nepvegrow(i,m,iccp1:iccp2)*convertkgC
+                nbpvegrow(i,m,iccp1:iccp2)=nbpvegrow(i,m,iccp1:iccp2)*convertkgC
 
                 npprow(i,m)     =npprow(i,m)*convertkgC
                 gpprow(i,m)     =gpprow(i,m)*convertkgC
@@ -2341,60 +2341,6 @@ contains
             slai_t(:,:)=0.0 ; gleafmas_t(:,:) = 0.0 ; bleafmas_t(:,:) = 0.0
             stemmass_t(:,:) = 0.0 ; rootmass_t(:,:) = 0.0 ; litrmass_t(:,:) = 0.0
             soilcmas_t(:,:) = 0.0 ; emit_co2_t(:,:) = 0.0; rmatctem_t(:,:,:)=0.0
-
-    !     !>Then some unit conversions:  
-    ! 
-    !     !! We want to go from umol CO2/m2/s to kg C/m2/s so:
-    !     !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
-    !     !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
-    !     !! convertkgC = 1.201E-8
-    ! 
-    !     do 10 i = 1,nltest
-    !         do 20 m = 1 , nmtest
-    ! 
-    !             nppmossrow(i,m)=nppmossrow(i,m)*convertkgC
-    !             armossrow(i,m)=armossrow(i,m)*convertkgC
-    ! 
-    !             do 30 j=1,icc
-    !                 if (fcancmxrow(i,m,j) .gt.0.0) then
-    ! 
-    !                     gppvegrow(i,m,j)=gppvegrow(i,m,j)* convertkgC
-    !                     nppvegrow(i,m,j)=nppvegrow(i,m,j)*convertkgC
-    !                     nepvegrow(i,m,j)=nepvegrow(i,m,j)*convertkgC
-    !                     nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*convertkgC
-    !                     hetroresvegrow(i,m,j)=hetroresvegrow(i,m,j)*convertkgC
-    !                     autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*convertkgC
-    !                     litresvegrow(i,m,j)=litresvegrow(i,m,j)*convertkgC
-    !                     soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*convertkgC
-    ! 
-    !                 end if
-    ! 
-    ! 30          continue ! icc
-    ! 
-    !             !>Now for the bare fraction of the grid cell.
-    !             hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
-    !             litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*convertkgC
-    !             soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*convertkgC
-    !             nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
-    !             nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
-    ! 
-    !             npprow(i,m)     =npprow(i,m)*convertkgC
-    !             gpprow(i,m)     =gpprow(i,m)*convertkgC
-    !             neprow(i,m)     =neprow(i,m)*convertkgC
-    !             nbprow(i,m)     =nbprow(i,m)*convertkgC
-    !             lucemcomrow(i,m)=lucemcomrow(i,m)*convertkgC
-    !             lucltrinrow(i,m)=lucltrinrow(i,m)*convertkgC
-    !             lucsocinrow(i,m)=lucsocinrow(i,m)*convertkgC
-    !             hetroresrow(i,m)=hetroresrow(i,m)*convertkgC
-    !             autoresrow(i,m) =autoresrow(i,m)*convertkgC
-    !             litresrow(i,m)  =litresrow(i,m)*convertkgC
-    !             socresrow(i,m)  =socresrow(i,m)*convertkgC                
-    !             ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-    !             ch4WetDynrow(i,m) = ch4WetDynrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-    !             ch4soillsrow(i,m) = ch4soillsrow(i,m)*convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-    ! 
-    ! 20      continue
-    ! 10  continue
 
         !>Aggregate to the tile avg vars:
         do 60 i=1,nltest
