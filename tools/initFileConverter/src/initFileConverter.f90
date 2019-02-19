@@ -11,7 +11,7 @@ program initFileConverter
     integer                 :: NLTEST, NMTEST
     character(300)          :: INIFile, CTMFile,charLon, charLat
     character(3)            :: fileType
-    integer                 :: fileId,slopeDimId,iccp1DimId,icctemDimId,icDimId,monthsDimId,layerDimId, &
+    integer                 :: fileId,slopeDimId,iccp2DimId,icctemDimId,icDimId,layerDimId, & !monthsDimId,
                                 icp1DimId,lonDimId,latDimId,tileDimId
     character(50)           :: units
     character(350)          :: long_name
@@ -73,8 +73,8 @@ program initFileConverter
     real, allocatable, dimension(:)  :: GROROT
     integer, allocatable, dimension(:)  :: SOCIROT
 
-    real :: extnprob
-    real :: prbfrhuc
+    !real :: extnprob
+    !real :: prbfrhuc
     real, allocatable, dimension(:,:):: ailcminrow
     real, allocatable, dimension(:,:):: ailcmaxrow
     real, allocatable, dimension(:,:):: dvdfcanrow
@@ -97,7 +97,7 @@ program initFileConverter
     real, allocatable, dimension(:):: dry_season_length
     real, allocatable, dimension(:,:):: litrmassrow
     real, allocatable, dimension(:,:):: soilcmasrow
-    real, allocatable, dimension(:):: mlightng
+    !real, allocatable, dimension(:):: mlightng
     integer, allocatable, dimension(:,:):: lfstatusrow
     integer, allocatable, dimension(:,:):: pandaysrow
     real, allocatable, dimension(:,:):: slopefrac
@@ -239,8 +239,8 @@ contains
         allocate(bleafmasrow(NMTEST,icc))
         allocate(stemmassrow(NMTEST,icc))
         allocate(rootmassrow(NMTEST,icc))
-        allocate(litrmassrow(NMTEST,icc+1))
-        allocate(soilcmasrow(NMTEST,icc+1))
+        allocate(litrmassrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
+        allocate(soilcmasrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
         allocate(lfstatusrow(NMTEST,icc))
         allocate(pandaysrow(NMTEST,icc))
         allocate(slopefrac(NMTEST,8))
@@ -250,7 +250,7 @@ contains
         allocate(dmoss(NMTEST))
 
         allocate(fcancmxrow(nmtest,icc))
-        allocate(mlightng(12))
+        !allocate(mlightng(12))
 
     end subroutine setupArrays
 
@@ -333,23 +333,27 @@ contains
         read(11,*)
 
         do m=1,nmtest
-            read(11,*) (ailcminrow(m,j),j=1,icc)
-            read(11,*) (ailcmaxrow(m,j),j=1,icc)
+            read(11,*) (ailcminrow(m,j),j=1,icc) ! read in but not used.
+            read(11,*) (ailcmaxrow(m,j),j=1,icc) ! read in but not used.
             read(11,*) (dvdfcanrow(m,j),j=1,icc)
             read(11,*) (gleafmasrow(m,j),j=1,icc)
             read(11,*) (bleafmasrow(m,j),j=1,icc)
             read(11,*) (stemmassrow(m,j),j=1,icc)
             read(11,*) (rootmassrow(m,j),j=1,icc)
-            read(11,*) (litrmassrow(m,j),j=1,icc+1)
+            ! There are no legacy CTM files that use icc+2 (include the luc products pool) so 
+            ! assume they only go to icc+1. Put a zero in the icc+2 position later.
+            read(11,*) (litrmassrow(m,j),j=1,icc+1) 
             read(11,*) (soilcmasrow(m,j),j=1,icc+1)
+            litrmassrow(m,icc+2)=0.
+            soilcmasrow(m,icc+2)=0.
             read(11,*) (lfstatusrow(m,j),j=1,icc)
             read(11,*) (pandaysrow(m,j),j=1,icc)
         end do
-            read(11,*) (mlightng(j),j=1,6)  !mean monthly lightning frequency
-            read(11,*) (mlightng(j),j=7,12) !flashes/km2.year, this is spread over other tiles below
-            read(11,*) extnprob
-            read(11,*) prbfrhuc
-            read(11,*) dummy ! was stdaln but not used so dump.
+            !read(11,*) (mlightng(j),j=1,6)  !mean monthly lightning frequency
+            !read(11,*) (mlightng(j),j=7,12) !flashes/km2.year, this is spread over other tiles below
+            !read(11,*) extnprob
+            !read(11,*) prbfrhuc
+            !read(11,*) dummy ! was stdaln but not used so dump.
             !if (compete .and. inibioclim) then  !read in the bioclimatic parameters
             !! read them into the first tile of each grid cell.
             !read(11,*) twarmm(i,1), tcoldm(i,1), gdd5(i,1), aridity(i,1),srplsmon(i,1)
@@ -379,7 +383,7 @@ contains
     subroutine readNamelist
 
         namelist /classicvars/ &
-            GCROW,&
+            !GCROW,&
             FCANROT,&
             FAREROT,&
             !RSMNROT,&
@@ -420,8 +424,8 @@ contains
             RHOSROT,&
             GROROT,&
             SOCIROT, &
-            ailcminrow,&
-            ailcmaxrow,&
+            !ailcminrow,&
+            !ailcmaxrow,&
             fcancmxrow,&
             gleafmasrow,&
             bleafmasrow,&
@@ -431,10 +435,9 @@ contains
             soilcmasrow,&
             lfstatusrow,&
             pandaysrow,&
-            mlightng,&
-            pandaysrow,&
-            extnprob,&
-            prbfrhuc,&
+            !mlightng,&
+            !extnprob,&
+            !prbfrhuc,&
             slopefrac,&
             ipeatlandrow,&
             Cmossmas,&
@@ -460,8 +463,8 @@ contains
         integer :: layer(ignd)
         integer :: ic(ican)
         integer :: icctem(icc)
-        integer :: iccp1(icc+1)
-        integer :: months(12)
+        integer :: iccp2(icc+2)
+        !integer :: months(12)
         integer :: slope(8)
         integer :: indexend
 
@@ -470,8 +473,8 @@ contains
         layer = (/(i, i=1,ignd, 1)/)
         ic = (/(i, i=1,ican, 1)/)
         icctem = (/(i, i=1,icc, 1)/)
-        iccp1 = (/(i, i=1,icc+1, 1)/)
-        months = (/(i, i=1,12, 1)/)
+        iccp2 = (/(i, i=1,icc+2, 1)/)
+        !months = (/(i, i=1,12, 1)/)
         slope = (/(i, i=1,8, 1)/)
 
         ! Filename is going to be the INI file name with .nc as a suffix.
@@ -561,23 +564,23 @@ contains
 
         call ncRedef(fileId)
 
-        ! Define the iccp1 dimension
-        iccp1DimId = ncDefDim(fileId, 'iccp1', size(iccp1))
-        varid = ncDefVar(fileId, 'iccp1', nf90_int, [iccp1DimId])
-        call ncPutAtt(fileId, varId, 'standard_name', charValues = 'biogeochemical (CTEM) PFTs plus bareground')
+        ! Define the iccp2 dimension
+        iccp2DimId = ncDefDim(fileId, 'iccp2', size(iccp2))
+        varid = ncDefVar(fileId, 'iccp2', nf90_int, [iccp2DimId])
+        call ncPutAtt(fileId, varId, 'standard_name', charValues = 'biogeochemical (CTEM) PFTs plus bareground and land use change product pools')
         call ncEndDef(fileId)
-        call ncPutDimValues(fileId, 'iccp1', intValues=iccp1, count = [size(iccp1)])
+        call ncPutDimValues(fileId, 'iccp2', intValues=iccp2, count = [size(iccp2)])
 
         call ncRedef(fileId)
 
         ! Define the months dimension
-        monthsDimId = ncDefDim(fileId, 'months', size(months))
-        varid = ncDefVar(fileId, 'months', nf90_int, [monthsDimId])
-        call ncPutAtt(fileId, varId, 'standard_name', charValues = 'months')
-        call ncEndDef(fileId)
-        call ncPutDimValues(fileId, 'months', intValues=months, count = [size(months)])
-
-        call ncRedef(fileId)
+        ! monthsDimId = ncDefDim(fileId, 'months', size(months))
+        ! varid = ncDefVar(fileId, 'months', nf90_int, [monthsDimId])
+        ! call ncPutAtt(fileId, varId, 'standard_name', charValues = 'months')
+        ! call ncEndDef(fileId)
+        ! call ncPutDimValues(fileId, 'months', intValues=months, count = [size(months)])
+        ! 
+        ! call ncRedef(fileId)
 
         ! Define the slope dimension
         slopeDimId = ncDefDim(fileId, 'slope', size(slope))
@@ -595,7 +598,7 @@ contains
         count = (/1, 1 /)
         call exportVariable('MID',units='-',long_name='Mosaic tile type identifier (1 for land surface, 0 for inland lake)',intvalues=MIDROT)
         call exportVariable('GC',units='-',long_name='GCM surface descriptor - land surfaces (inc. inland water) is -1',intvalues=(/-1/))
-        call exportVariable('nmtest',units='-',long_name='Number of tiles in each grid cell',intvalues=tile)
+        call exportVariable('nmtest',units='-',long_name='Number of tiles in each grid cell',intvalues=(/nmtest/))
         deallocate(dimArray,start,count)
 
     end subroutine makeNetCDF
@@ -610,7 +613,7 @@ contains
         allocate(dimArray(4),start(4),count(4))
         dimArray = (/lonDimId,latDimId,icp1DimId,tileDimId/)
         start = (/1, 1, 1 ,1/)
-        count = (/1, 1, ican+1, 1/)
+        count = (/1, 1, ican+1, nmtest/)
         call exportVariable('FCAN',units='-',long_name='Annual maximum fractional coverage of modelled area (read in for CLASS only runs)',values2D=FCANROT)
         call exportVariable('LNZ0',units='-',long_name='Natural logarithm of maximum vegetation roughness length',values2D=LNZ0ROT)
         call exportVariable('ALIC',units='-',long_name='Average near-IR albedo of vegetation category when fully-leafed',values2D=ALICROT)
@@ -619,7 +622,7 @@ contains
 
         ! ic variables:
         dimArray = (/lonDimId,latDimId,icDimId,tileDimId/)
-        count = (/1, 1, ican, 1/)
+        count = (/1, 1, ican, nmtest/)
         call exportVariable('PAMX',units='m2/m2',long_name='Annual maximum plant area index of vegetation category',values2D=PAMXROT)
         call exportVariable('PAMN',units='m2/m2',long_name='Annual minimum plant area index of vegetation category',values2D=PAMNROT)
         call exportVariable('CMAS',units='$[kg m^{-2} ]$',long_name='Annual maximum canopy mass for vegetation category',values2D=CMASROT)
@@ -634,7 +637,7 @@ contains
 
         ! ignd variables:
         dimArray = (/lonDimId,latDimId,layerDimId,tileDimId/)
-        count = (/1, 1, ignd, 1/)
+        count = (/1, 1, ignd, nmtest/)
         call exportVariable('SAND',units='%',long_name='Percentage sand content',values2D=SANDROT)
         call exportVariable('CLAY',units='%',long_name='Percentage clay content',values2D=CLAYROT)
         call exportVariable('ORGM',units='%',long_name='Percentage organic matter content',values2D=ORGMROT)
@@ -649,7 +652,6 @@ contains
         dimArray = (/layerDimId/)
         count = (/ignd/)
         start = (/1/)
-        print*,DELZ,count,dimArray
         call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values=DELZ)
         deallocate(dimArray,start,count)
 
@@ -699,9 +701,9 @@ contains
             allocate(dimArray(4),start(4),count(4))
             dimArray = (/lonDimId,latDimId,icctemDimId,tileDimId/)
             start = (/1, 1, 1 ,1/)
-            count = (/1, 1, icc, 1/)
-            call exportVariable('ailcmin',units='m2/m2',long_name='Min. LAI for use with CTEM1 option only. Obsolete',values2D=ailcminrow)
-            call exportVariable('ailcmax',units='m2/m2',long_name='Max. LAI for use with CTEM1 option only. Obsolete',values2D=ailcmaxrow)
+            count = (/1, 1, icc, nmtest/)
+            !call exportVariable('ailcmin',units='m2/m2',long_name='Min. LAI for use with CTEM1 option only. Obsolete',values2D=ailcminrow)
+            !call exportVariable('ailcmax',units='m2/m2',long_name='Max. LAI for use with CTEM1 option only. Obsolete',values2D=ailcmaxrow)
             call exportVariable('bleafmas',units='kgC/m2',long_name='Brown leaf mass',values2D=bleafmasrow)
             call exportVariable('gleafmas',units='kgC/m2',long_name='Green leaf mass',values2D=gleafmasrow)
             call exportVariable('stemmass',units='kgC/m2',long_name='Stem mass',values2D=stemmassrow)
@@ -714,7 +716,7 @@ contains
             allocate(dimArray(3),start(3),count(3))
             dimArray = (/lonDimId,latDimId,tileDimId/)
             start = (/1, 1, 1/)
-            count = (/1, 1, 1/)
+            count = (/1, 1, nmtest/)
 
             call exportVariable('ipeatland',units='-',long_name='Peatland flag: 0 = not a peatland, 1= bog, 2 = fen',intvalues=ipeatlandrow)
             call exportVariable('Cmossmas',units='kgC/m2',long_name='C in moss biomass',values=Cmossmas)
@@ -723,13 +725,13 @@ contains
             deallocate(dimArray,start,count)
 
             allocate(dimArray(4),start(4),count(4))
-            dimArray = (/lonDimId,latDimId,tileDimId,slopeDimId/)
+            dimArray = (/lonDimId,latDimId,slopeDimId,tileDimId/)
             start = (/1, 1, 1 ,1/)
-            count = (/1, 1, 1, 8/)
+            count = (/1, 1, 8, nmtest/)
             call exportVariable('slopefrac',units='-',long_name='Slope-based fraction for dynamic wetlands',values2D=slopefrac)
 
             dimArray = (/lonDimId,latDimId,icctemDimId,tileDimId/)
-            count = (/1, 1, icc, 1/)
+            count = (/1, 1, icc, nmtest/)
 
             if (fileType == 'ini') then
                 if (icc .ne. 9 .and. ican .ne. 4) print*,'Warning - expected ICC =9 and ICAN = 4'
@@ -748,22 +750,22 @@ contains
             end if
             call exportVariable('fcancmx',units='-',long_name='PFT fractional coverage per grid cell',values2D=fcancmxrow)
 
-            ! iccp1 variables
-            dimArray = (/lonDimId,latDimId,iccp1DimId,tileDimId/)
-            count = (/1, 1, icc+1, 1/)
+            ! iccp2 variables
+            dimArray = (/lonDimId,latDimId,iccp2DimId,tileDimId/)
+            count = (/1, 1, icc+2, nmtest/)
             call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values2D=litrmassrow)
             call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values2D=soilcmasrow)
 
             deallocate(dimArray,start,count)
 
             ! per month vars
-            allocate(dimArray(3),start(3),count(3))
-            dimArray = (/lonDimId,latDimId,monthsDimId/)
-            start = (/1, 1, 1 /)
-            count = (/1, 1, 12/)
-            call exportVariable('mlightng',units='flashes/km2.year',long_name='mean monthly lightning freq. (total flashes)',values=mlightng)
-
-            deallocate(dimArray,start,count)
+            ! allocate(dimArray(3),start(3),count(3))
+            ! dimArray = (/lonDimId,latDimId,monthsDimId/)
+            ! start = (/1, 1, 1 /)
+            ! count = (/1, 1, 12/)
+            ! call exportVariable('mlightng',units='flashes/km2.year',long_name='mean monthly lightning freq. (total flashes)',values=mlightng)
+            ! 
+            ! deallocate(dimArray,start,count)
 
             ! read(11,*) extnprob
             ! read(11,*) prbfrhuc
@@ -789,6 +791,7 @@ contains
         character(*), intent(in)    :: units
         character(*), intent(in)    :: long_name
         integer                     :: varId, m
+        integer, allocatable        :: incstart(:),usecount(:)
 
         call ncRedef(fileId)
 
@@ -798,24 +801,38 @@ contains
         call ncPutAtt(fileId, varId, 'long_name', charValues = long_name)
         call ncEndDef(fileId)
 
+        allocate(incstart(size(start)))
+        allocate(usecount(size(count)))
+        
         ! Put in data
         if (present(values)) then
             call ncPutVar(fileId, name, realValues = values, start= start, count = count)
         else if (present(values2D)) then
+          ! Need to change the start and count to respect nmtest here. Count is always by tile so set to 1 whereas
+          ! start increments
+            usecount = count
+            usecount(ubound(usecount))=1
             do m = 1,nmtest
-                call ncPutVar(fileId, name, realValues = values2D(m,:), start= start, count = count)
+              incstart = start
+              incstart(ubound(start)) = m          
+                call ncPutVar(fileId, name, realValues = values2D(m,:), start= incstart, count = usecount)
             end do
         else if (present(intvalues)) then
             call ncPutVar(fileId, name, intValues = intvalues, start= start, count = count)
         else if (present(intvalues2D)) then
+            usecount = count
+            usecount(ubound(usecount))=1          
             do m = 1,nmtest
-                call ncPutVar(fileId, name, intValues = intvalues2D(m,:), start= start, count = count)
+                incstart = start
+                incstart(ubound(start)) = m
+                call ncPutVar(fileId, name, intValues = intvalues2D(m,:), start= incstart, count = usecount)
             end do
         else
             print*,'Problem in exportVariable'
         end if
 
-
+        deallocate(usecount,incstart)
+        
     end subroutine exportVariable
 
     ! ------------------------------------------------------------------------------------------------------
