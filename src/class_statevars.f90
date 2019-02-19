@@ -493,9 +493,9 @@ type class_rotated
 
     integer, allocatable, dimension(:,:) :: IGDRROT !<
     integer, allocatable, dimension(:,:) :: MIDROT  !<Mosaic tile type identifier (1 for land surface, 0 for inland lake)
-    real, allocatable, DIMENSION(:,:) :: ALBSROT !<
+    real, allocatable, DIMENSION(:,:) :: ALBSROT !< Snow albedo [ ]
     real, allocatable, dimension(:,:) :: CMAIROT !<
-    real, allocatable, dimension(:,:) :: GROROT  !<
+    real, allocatable, dimension(:,:) :: GROROT  !<Vegetation growth index [ ]
     real, allocatable, dimension(:,:) :: QACROT  !<
     real, allocatable, dimension(:,:) :: RCANROT !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:,:) :: RHOSROT !< Density of snow \f$[kg m^{-3}]\f$

@@ -1,10 +1,9 @@
 Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists {#initTool}
 ========
 
-The initFileConverter program takes in ASCII CLASS initialization files (.INI) and, if required,
-CTEM initialization files (.CTM) and converts them to the newer NetCDF format. It is also possible
-to take in a fortran namelist format. This is the preferred method for site-level users. An example
-namelist file is included in this directory.
+The initFileConverter program takes in ASCII CLASS initialization files (.INI) and, if required, CTEM initialization files (.CTM) and converts them to the newer NetCDF format. It is also possible to take in a fortran namelist format. This is the preferred method for site-level users. 
+
+Two example namelist files are included in this directory. example.nml is for a single tile whereas exampleTwoTile.nml has two tiles in the grid cell.
 
 The expected format of the INI file is:
 <pre><code>
@@ -37,6 +36,7 @@ The expected format of the INI file is:
 **Special Note: The converter expects a soil colour index in the file (highlighted above). Please see the CLASSIC manual for more information.**
 
 * Additionally it is often best to make the snow in the canopy (SCAN), liquid in the canopy (RCAN) zero as they can often lead to instabilities when running the model at a new site for the first time (see CLASSIC manual for more on this).
+* The INI file read-in is not setup to read in > 4 CLASS PFTs or > 9 CTEM PFTs. It is desirable to move to the namelist technique for those cases, or edit the initFileConverter.f90 for your needs.
 
 and the expected CTM format is:
 <pre><code>
