@@ -159,36 +159,36 @@ contains
 
         if (.not. projectedGrid) then
 
-            !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
-            !! names of longitude and latitude.
+            !> Next, retrieve dimensions and allocate arrays to hold the lons and lats.
+            !! We assume the file has 'lon' and 'lat' for names of longitude and latitude.
 
             totlon = ncGetDimLen(initid,'lon')
             totlat = ncGetDimLen(initid,'lat')
 
-            !>calculate the number and indices of the pixels to be calculated
             allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
 
-        myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
-        myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+            !> Read in the coordinate variables from the initialization file.
+            myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
+            myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
 
-        !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
-        !! when the input file expects the opposite.
-        if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
-        end if
-        if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
-        if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
-        end if
-        if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
+            !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
+            !! when the input file expects the opposite.
+            if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
+            if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
 
 ! FLAG - be good to put in a check here but need to do this better.
 !         !> Check that our domain is within the longitude and latitude limits of
@@ -209,40 +209,59 @@ contains
 !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
 !         end if
 
-            !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
+            !> Since the domainBounds are coordinates, need to find the indices corresponding to the domain bounds.
+
             if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
                 myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+                ! Special case, if the domainBounds are 0/0/0/0 then take whole domain.
                 print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
                 xpos(1) = 1
                 xpos(2) = totlon
                 ypos(1) = 1
                 ypos(2) = totlat
-            else ! Use the domain as given
-        !> Based on the domainBounds, we make vectors of the cells to be run.
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
-        xpos(1) = pos(1)
-
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
-        xpos(2) = pos(1)
-
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
-        ypos(1) = pos(1)
-
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
-        ypos(2) = pos(1)
+            else 
+                ! Use the domain as given and obtain the indices of the lons and lats closest to the specified domainBounds.
+                pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
+                xpos(1) = pos(1)
+        
+                pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
+                xpos(2) = pos(1)
+        
+                pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
+                ypos(1) = pos(1)
+        
+                pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
+                ypos(2) = pos(1)
             end if
 
-        myDomain%srtx = minval(xpos)
-        myDomain%srty = minval(ypos)
+            !> Obtain the starting indices of the coordinate vectors.
 
-        if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
-            myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
-        myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+            myDomain%srtx = minval(xpos)
+            myDomain%srty = minval(ypos)
 
-        if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
-            myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
-        myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+            !> Ensure that the starting indices are within the specified bounds of the domain. 
+            !! Note that when the domain is a single point, the 1st/2nd elements of domainBounds are set to the
+            !! the longitude and the 3rd/4th elements are set to the latitude (see read_from_job_options.f90). 
+            !! In this case, the closest grid point to the specified coordinates is used and the check should not be done.
 
+            if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
+                myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
+
+            if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
+                myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
+
+            !> Compute the size of the coordinate vectors.
+
+            myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+            myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
+            !> Ensure that the last index of each vector is within the domain bounds. 
+
+            if (myDomain%allLonValues(maxval(xpos)) > myDomain%domainBounds(2) .and.&
+                myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%cntx = myDomain%cntx - 1
+    
+            if (myDomain%allLatValues(maxval(ypos)) > myDomain%domainBounds(4) .and.&
+                myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%cnty = myDomain%cnty - 1
 
         else ! projected grid
 
