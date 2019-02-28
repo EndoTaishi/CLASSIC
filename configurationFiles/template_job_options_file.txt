@@ -79,8 +79,8 @@
         ! to some valid year. If you wish to use only dynamically determined wetland fractions set transientOBSWETF
         ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
         ! dynamically determine wetland extent.
-        transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
-        OBSWETFFile = '',             ! Location of the netcdf file containing observed wetland fraction
+        transientOBSWETF = .true. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
+        OBSWETFFile = 'inputFiles/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
         fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
 ! Physics switches:

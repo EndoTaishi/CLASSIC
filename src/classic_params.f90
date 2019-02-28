@@ -501,9 +501,9 @@ real :: ratioch4                !< methane to carbon dioxide flux scaling factor
 real :: wtdryres
 real :: lat_thrshld1   !< Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2   !< Boundary with southern zone for wetland determination (degrees North)
-real :: soilw_thrshN   !< Soil wetness threshold in the North zone
-real :: soilw_thrshE   !< Soil wetness threshold in the Equatorial zone
-real :: soilw_thrshS   !< Soil wetness threshold in the South zone
+real, dimension(:), allocatable :: soilw_thrshN   !< Soil wetness threshold in the North zone
+real, dimension(:), allocatable :: soilw_thrshE   !< Soil wetness threshold in the Equatorial zone
+real, dimension(:), allocatable :: soilw_thrshS   !< Soil wetness threshold in the South zone
 
 ! Photosynthesis parameters: --------------------------------------------------
 
@@ -719,6 +719,9 @@ subroutine allocateParamsCLASSIC()
             BORG(3),&
             PSISORG(3),&
             GRKSORG(3),&
+            soilw_thrshN(3),&
+            soilw_thrshE(3),&
+            soilw_thrshS(3),&
             ALWV(soilcolrinds),&
             ALWN(soilcolrinds),&
             ALDV(soilcolrinds),&
