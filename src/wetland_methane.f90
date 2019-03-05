@@ -84,6 +84,8 @@ ch4WetDyn(:)=0.0
 ! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
 ! they are simply multiplicative.
 
+do i = il1, il2 
+  
      if (currlat(i) >= lat_thrshld1) then ! Northern high lats, all area north of lat_thrshld1
         low_mois_lim = soilw_thrshN(1) 
         mid_mois_lim = soilw_thrshN(2) 
@@ -100,16 +102,16 @@ ch4WetDyn(:)=0.0
         !upp_mois_lim = soilw_thrshS(3) 
         upvslow = wtdryres(3)
       end if
-
+print*,currlat(i),upvslow
 !> First calculate for the specified wetland fractions read in from OBSWETFFile
-   do 210 i = il1, il2 
+   
       wetresp(i) = hetrores(i) * upvslow * wetfrac(i)
       ch4WetSpec(i) = ratioch4 * wetresp(i)
-210 continue
+
 !>
 !>Next dynamically find the wetland locations and determine their methane emissions
 !>
-   do 310 i = il1, il2
+   
      porosity = (-0.126 * sand(i,1) + 48.9) / 100.0 ! top soil layer porosity
      soil_wetness = (thliqg(i,1) / porosity)
      soil_wetness = max(0.0, min(soil_wetness, 1.0))
@@ -132,7 +134,7 @@ ch4WetDyn(:)=0.0
      wetresp(i) = hetrores(i) * upvslow * wetfdyn(i)
      ch4WetDyn(i) = ratioch4 * wetresp(i)
 
-310 continue
+end do
 
 return
 end
