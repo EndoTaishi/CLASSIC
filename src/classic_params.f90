@@ -498,7 +498,7 @@ real :: ratioch4                !< methane to carbon dioxide flux scaling factor
 !>Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis.  These were summed as "hetrores".
 !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
 !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
-real :: wtdryres
+real, dimension(:), allocatable :: wtdryres
 real :: lat_thrshld1   !< Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2   !< Boundary with southern zone for wetland determination (degrees North)
 real, dimension(:), allocatable :: soilw_thrshN   !< Soil wetness threshold in the North zone
@@ -719,9 +719,10 @@ subroutine allocateParamsCLASSIC()
             BORG(3),&
             PSISORG(3),&
             GRKSORG(3),&
-            soilw_thrshN(3),&
-            soilw_thrshE(3),&
-            soilw_thrshS(3),&
+            wtdryres(3),&
+            soilw_thrshN(2),&
+            soilw_thrshE(2),&
+            soilw_thrshS(2),&
             ALWV(soilcolrinds),&
             ALWN(soilcolrinds),&
             ALDV(soilcolrinds),&

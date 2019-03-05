@@ -1075,13 +1075,13 @@ kn(10:12)  =0.46, 0.44, 0.00,
     !>Rita Wania's thesis suggests about 0.25, but we get a better agreement to outputs from the Walter's model if we use 0.16.
     !>Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to
     !>know the function, so leave constant for now ratio is \f$mol ch_4\f$ to \f$mol co_2\f$
-    ratioch4     = 0.135, ! New value based on Vivek's work of Aug 2016.
+    ratioch4     = 0.125, ! New value based on Vivek's work of Aug 2016.
 
     !>ratio of wetland to upland respiration\n
     !>Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis.  These were summed as "hetrores".
     !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
     !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
-    wtdryres     = 0.45,
+    wtdryres     = 0.18, 0.42, 0.18
 
     !< Northern zone for wetland determination (degrees North)
     lat_thrshld1 = 40.0,
@@ -1089,14 +1089,14 @@ kn(10:12)  =0.46, 0.44, 0.00,
     !< Boundary with southern zone for wetland determination (degrees North)
     lat_thrshld2 = -35.0,
 
-    !< Soil wetness threshold in the North zone
-    soilw_thrshN = 0.45, 0.65, 0.90,
+    !< Soil wetness thresholds in the North zone
+    soilw_thrshN = 0.45, 0.65
 
-    !< Soil wetness threshold in the Equatorial zone
-    soilw_thrshE = 0.55, 0.85, 0.99,
+    !< Soil wetness thresholds in the Equatorial zone
+    soilw_thrshE = 0.55, 0.85
 
-    !< Soil wetness threshold in the South zone
-    soilw_thrshS = 0.70, 0.85, 0.99
+    !< Soil wetness thresholds in the South zone
+    soilw_thrshS = 0.70, 0.85
 
  ! Photosynthesis parameters: --------------------------------------------------
 

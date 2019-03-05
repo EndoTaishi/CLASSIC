@@ -42,6 +42,7 @@ real, dimension(ilg), intent(out) :: ch4WetDyn    !< methane flux from wetlands 
     
 ! local variables  
 real, dimension(ilg) :: wetresp !<heterotrophic wetland respiration
+real :: upvslow    ! ratio of wetland to upland respiration for this location
 real :: porosity
 real :: soil_wetness
 integer :: i
@@ -73,9 +74,36 @@ ch4WetDyn(:)=0.0
 !>
 !>Estimate the methane flux from wetlands for each grid cell scaling by the wetland fraction in a grid cell
 
+! Set up the latitude bounds based on the paramters read in from the namelist file.
+! If soil wetness meets a latitude specific threshold then the slope based wetland
+!fraction is wet and is an actual wetland, else not. As well the ratio of upland to
+! wetland respiration is assumed to be latitidionally varying. This is intended to
+! reflect the differnt wetland types in the tropics (floodplain types) vs. those in
+! higher latitudes (peatlands). This is a very coarse approximation and should be 
+! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
+! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
+! they are simply multiplicative.
+
+     if (currlat(i) >= lat_thrshld1) then ! Northern high lats, all area north of lat_thrshld1
+        low_mois_lim = soilw_thrshN(1) 
+        mid_mois_lim = soilw_thrshN(2) 
+        !upp_mois_lim = soilw_thrshN(3)
+        upvslow = wtdryres(1)
+     elseif (currlat(i) < lat_thrshld1 .and. currlat(i) >= lat_thrshld2) then ! Tropics
+        low_mois_lim = soilw_thrshE(1) 
+        mid_mois_lim = soilw_thrshE(2) 
+        !upp_mois_lim = soilw_thrshE(3) 
+        upvslow = wtdryres(2)
+     else ! S. Hemi,  everything else below lat_thrshld2
+        low_mois_lim = soilw_thrshS(1) 
+        mid_mois_lim = soilw_thrshS(2) 
+        !upp_mois_lim = soilw_thrshS(3) 
+        upvslow = wtdryres(3)
+      end if
+
 !> First calculate for the specified wetland fractions read in from OBSWETFFile
    do 210 i = il1, il2 
-      wetresp(i) = hetrores(i) * wtdryres * wetfrac(i)
+      wetresp(i) = hetrores(i) * upvslow * wetfrac(i)
       ch4WetSpec(i) = ratioch4 * wetresp(i)
 210 continue
 !>
@@ -86,27 +114,11 @@ ch4WetDyn(:)=0.0
      soil_wetness = (thliqg(i,1) / porosity)
      soil_wetness = max(0.0, min(soil_wetness, 1.0))
 
-!    If soil wetness meets a latitude specific threshold then the slope
-!    based wetland fraction is wet and is an actual wetland, else not.
-
-     if (currlat(i) >= lat_thrshld1) then ! Northern high lats, all area north of lat_thrshld1
-        low_mois_lim = soilw_thrshN(1) 
-        mid_mois_lim = soilw_thrshN(2) 
-        upp_mois_lim = soilw_thrshN(3) 
-     elseif (currlat(i) < lat_thrshld1 .and. currlat(i) >= lat_thrshld2) then ! Tropics
-        low_mois_lim = soilw_thrshE(1) 
-        mid_mois_lim = soilw_thrshE(2) 
-        upp_mois_lim = soilw_thrshE(3) 
-     else ! S. Hemi,  everything else below lat_thrshld2
-        low_mois_lim = soilw_thrshS(1) 
-        mid_mois_lim = soilw_thrshS(2) 
-        upp_mois_lim = soilw_thrshS(3) 
-      end if
 
 !    implement Vivek's new way of modelling WETFDYN
      
      x1 = low_mois_lim * (1. - alpha) + mid_mois_lim * alpha
-     x2 = upp_mois_lim
+     x2 = 1.
      y1 = 0.
      y2 = slopefrac(i,5)
      slope = (y2 - y1) / (x2 - x1)
@@ -117,7 +129,7 @@ ch4WetDyn(:)=0.0
 !    new dynamic calculation
 !    same as ch4WetSpec & 2, but wetfrac replaced by wetfdyn
 
-     wetresp(i) = hetrores(i) * wtdryres * wetfdyn(i)
+     wetresp(i) = hetrores(i) * upvslow * wetfdyn(i)
      ch4WetDyn(i) = ratioch4 * wetresp(i)
 
 310 continue
