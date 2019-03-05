@@ -1,5 +1,6 @@
 !>\file
 !! Checks carbon pools for conservation
+!> @author Vivek Arora
 !!
 !!unless mentioned all pools are in kg c/m2
 !!unless mentioned all fluxes are in units of u-mol co2/m2.sec
@@ -36,7 +37,7 @@ c     V. Arora        between the different pools balance properly to
 c                     make sure that conservation of mass is achieved
 c                     with in a specified tolerance.
 c
-      use ctem_params,        only : tolrance, icc, ilg, deltat,iccp1
+      use classic_params,        only : tolrance, icc, ilg, deltat,iccp1
 c
       implicit none
 c

@@ -1,7 +1,8 @@
 !>\file
 C!Addresses infiltration of rain and meltwater into snow
 C!pack, and snow ripening.
-C!
+!!@author D. Verseghy, M. Lazare
+!
       SUBROUTINE SNINFL(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW,
      1                  HTCS,HMFN,PCPG,ROFN,FI,ILG,IL1,IL2,JL)                      
 C
@@ -24,6 +25,9 @@ C     * AUG 12/91 - D.VERSEGHY. CODE FOR MODEL VERSION GCM7U -
 C     *                         CLASS VERSION 2.0 (WITH CANOPY).
 C     * APR 11/89 - D.VERSEGHY. RAIN INFILTRATION INTO SNOWPACK.
 C
+      use classic_params, only : DELT,TFREZ,HCPW,HCPICE,RHOW,
+     1                           RHOICE,CLHMLT,WSNCAP
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -43,44 +47,15 @@ C
       REAL HMFN  (ILG)  !<Energy associated with freezing or thawing of water in the snow pack \f$[W m^{-2}]\f$
       REAL PCPG  (ILG)  !<Precipitation incident on ground \f$[kg m^{-2} s^{-1}]\f$  
       REAL ROFN  (ILG)  !<Runoff reaching the ground surface from the bottom of the snow pack \f$[kg m^{-2} s^{-1}]\f$
-
 C
 C     * INPUT ARRAYS.
 C
       REAL FI    (ILG)  !<Fractional coverage of subarea in question on modelled area \f$[ ] (X_i)\f$
-
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL RAIN,HRCOOL,HRFREZ,HSNWRM,HSNMLT,ZMELT,ZFREZ,WSNCAP,WAVAIL
+      REAL RAIN,HRCOOL,HRFREZ,HSNWRM,HSNMLT,ZMELT,ZFREZ,WAVAIL
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
-      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257*10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSOL   !<Volumetric heat capacity of mineral matter \f$(2.25*10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPOM    !<Volumetric heat capacity of organic matter \f$(2.50*10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSND   !<Volumetric heat capacity of sand particles \f$(2.13*10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles \f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
-      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
-C                                                                                    
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
-C
-      WSNCAP=0.04
-C      WSNCAP=0.0
 C-----------------------------------------------------------------------
       !>
       !!The rainfall rate, i.e. the liquid water precipitation rate 
@@ -172,8 +147,7 @@ C-----------------------------------------------------------------------
               !!retained in the snow pack, WSNOW. This amount is compared 
               !!to the water retention capacity of the
               !!snow pack, calculated from the maximum retention 
-              !!percentage by weight, WSNCAP (currently set to
-              !!4%). If WAVAIL is greater than the water retention 
+              !!percentage by weight, WSNCAP . If WAVAIL is greater than the water retention 
               !!capacity, WSNOW is set to the capacity value and
               !!the excess is reassigned to ZMELT. Otherwise WSNOW is set 
               !!to WAVAIL and ZMELT is set to zero.

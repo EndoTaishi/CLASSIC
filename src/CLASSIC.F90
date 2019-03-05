@@ -4,9 +4,10 @@
 !! program will either run in MPI mode for use on parallel computing environments or
 !! in serial mode for use in running at single sites.
 !!
-program CLASSIC
+!>@author
+!> Joe Melton and Ed Wisernig
 
-    ! Joe Melton and Ed Wisernig @ 2017
+program CLASSIC
 
 #if PARALLEL
     use mpi
@@ -19,7 +20,7 @@ program CLASSIC
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
     use class_statevars,        only : alloc_class_vars
-    use ctem_params,            only : prepareGlobalParams
+    use classic_params,            only : prepareGlobalParams
 
     implicit none
 
@@ -47,7 +48,7 @@ program CLASSIC
     !! read_initialstate as well as the restart file that is written to later.
     call read_modelsetup
 
-    !> Prepare all of the global parameters such as those in CLASSD and ctem_params
+    !> Prepare all of the global parameters in classic_params
     !! which are read from a namelist file.
     call prepareGlobalParams
 
@@ -107,7 +108,7 @@ contains
                              myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
         enddo
 
-        cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
+        cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells 
 
         if (rank < remainder) print*,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
@@ -120,6 +121,9 @@ contains
 
     subroutine initializeParallelEnvironment
         implicit none
+
+        size=1
+        rank=0
 #if PARALLEL
         call MPI_INIT(ierr)
         time = MPI_WTIME()

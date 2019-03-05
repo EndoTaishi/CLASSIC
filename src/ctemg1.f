@@ -1,7 +1,8 @@
 !>\file
 C! Performs initial 'gather' operation on CTEM variables for consistency
 !! with physics variables gather operations.
-!!
+!!@author R. Li, J. Melton
+
       subroutine ctemg1(  gleafmasgat,  bleafmasgat,  stemmassgat,
      a                    rootmassgat,   fcancmxgat,      zbtwgat,
      b                        dlzwgat,      sdepgat,     ailcggat,
@@ -27,8 +28,7 @@ c     July 5 2009   - gather operation on ctem variables for consistency
 c                   with class' tiled version
 c     Rong Li
 c
-      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1, 
-     1                               icc
+      use classic_params,only : nlat,nmos,ilg,ignd,ican,icp1,icc
 
       implicit none
 c

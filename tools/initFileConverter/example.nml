@@ -8,23 +8,20 @@
  /
 
 &CLASSICVARS
- ZRFHROW=  40.0     ,
- ZRFMROW=  40.000     ,
- ZBLDROW=  50.000     ,
- 
  !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
  GCROW= -1     ,
 
- ! Annual maximum fractional coverage of modelled area (read in for CLASS only runs)
+ ! Annual maximum fractional coverage of modelled area (read in for CLASS only runs), ignored for CTEM on runs. fcancmxrow used instead (see below)
  FCANROT=  0.00, 0.063, 0.023, 0.710 , 0.00,
 
  FAREROT=  1.0000     ,
- RSMNROT=  200.00,  125.00,  85.000,  100.00,
- QA50ROT=  30.00,  40.00, 30.00, 30.00,
- VPDAROT=  0.65, 0.50, 0.50, 0.50,
- VPDBROT=  1.05, 0.60, 1.00, 1.00,
- PSGAROT= 4*100.00       ,
- PSGBROT= 4*5.0000       ,
+ ! The following 6 variables are now read in from the model paramters namelist file. So commented out below.
+ !RSMNROT=  200.00,  125.00,  85.000,  100.00,
+ !QA50ROT=  30.00,  40.00, 30.00, 30.00,
+ !VPDAROT=  0.65, 0.50, 0.50, 0.50,
+ !VPDBROT=  1.05, 0.60, 1.00, 1.00,
+ !PSGAROT= 4*100.00       ,
+ !PSGBROT= 4*5.0000       ,
  ALVCROT= 5*0.0000       ,
  ALICROT= 5*0.0000       ,
  PAMNROT= 4*0.0000       ,
@@ -37,10 +34,11 @@
  ROOTROT= 4*0.0000       ,
  DRNROT= 0.10001     ,
  SDEPROT=  1.7280     ,
- XSLPROT=  4.0001E-002,
- GRKFROT= 0.29999999999999999     ,
- WFSFROT=  2000.0     ,
- WFCIROT=  1.0001E-005,
+ ! The following four variables are not presently in use. Comment out as not needed to be in input file.
+ ! XSLPROT=  4.0001E-002,
+ ! GRKFROT= 0.29999999999999999     ,
+ ! WFSFROT=  2000.0     ,
+ ! WFCIROT=  1.0001E-005,
  MIDROT=   1,
  SANDROT=  47.70,  46.70,  42.000,
  CLAYROT=  24.70,  27.20,  31.80,
@@ -49,7 +47,6 @@
  THLQROT=  0.043, 0.19401, 0.244    ,
  THICROT=  0.00, 0.00, 0.00,
  DELZ= 0.10     , 0.25     ,  3.75     ,
- ZBOT= 0.10     , 0.35     ,  4.10     ,
  TCANROT=  13.740     ,
  TSNOROT=  0.0000     ,
  TPNDROT=  0.0000     ,
@@ -63,7 +60,7 @@
  SOCIROT=         10,
  AILCMINROW= 9*0.0000       ,
  AILCMAXROW= 9*0.0000       ,
- DVDFCANROW=  1.0000     , 3*0.0000       ,  1.0000     , 0.42899999999999999     , 0.57099999999999995     ,
+ fcancmxrow = 1.0000     , 3*0.0000       ,  1.0000     , 0.42899999999999999     , 0.57099999999999995     ,
   0.62900     , 0.37100     ,
  GLEAFMASROW= 4*0.0000       ,  1.2756099999999999E-003,  8.5711999999999997E-002,  1.2745400000000000E-002,  4.1959099999999997E-004,
    4.6757E-002,
@@ -82,4 +79,9 @@
    5.1999999999999998E-002,  2.4000E-002, 2*0.0000       ,
  EXTNPROB= 0.50000     ,
  PRBFRHUC= 0.12000     ,
+ slopefrac= 0., 0., 0., 0., 0., 0., 0., 0.,
+ ipeatlandrow = 0,
+ Cmossmas= 0.,
+ litrmsmoss= 0.,
+ dmoss = 0.
  /

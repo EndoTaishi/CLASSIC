@@ -1,7 +1,17 @@
+!>\file
+!>Calculate the diagnostic values of U, V, T, Q
+!!near the surface (ZU and ZT)
+!!@author Y. Delage, G. Pellerin,B. Bilodeau,R. Sarrazin,G. Pellerin,D. Verseghy,
+!!M. Mackay,F. Seglenieks,P.Bartlett,E.Chan,B.Dugas,J.Melton
+!
       SUBROUTINE DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA,
      1                  H,UE,FTEMP,FVAP,ZU,ZT,LAT,F,IL1,IL2,JL)
 
+      use classic_params, only : AS,ASX,CI,BETA,FACTN,HMIN,ANGMAX,
+     1                           GRAV,SPHAIR,VKC
+
       IMPLICIT NONE
+      
       INTEGER NI,JL
       REAL ZT(NI),ZU(NI)
       REAL UZ(NI),VZ(NI),TZ(NI),QZ(NI),ZA(NI),U(NI),V(NI)
@@ -22,14 +32,14 @@
 * 007      Y. Delage (Sept 00) - Change UE2 by UE
 *                              - Introduce log-linear profile for near-
 *                                 neutral cases
-* 008      D. Verseghy (Nov 02) - Remove unused constant CLM 
+* 008      D. Verseghy (Nov 02) - Remove unused constant CLM
 *                                 from common block CLASSD2
 * 009      M. Mackay (Nov 04) - Change all occurrences of ALOG
 *                               to LOG for greater portability.
 * 010      F. SeglenieKs (Mar 05) - Declare LAT as REAL*8 for
 *                                   consistency
 * 011      P.Bartlett (Mar 06) - Set HI to zero for unstable case
-* 012      E.Chan (Nov 06) - Bracket entire subroutine loop with 
+* 012      E.Chan (Nov 06) - Bracket entire subroutine loop with
 *                            IF(F(J).GT.0.)
 * 013      D.Verseghy (Nov 06) - Convert LAT to regular precision
 * 014      B.Dugas (Jan 09) - "Synchronization" with diasurf2
@@ -66,18 +76,13 @@
 * ZU       heights for computation of wind components
 * ZT       heights for computation of temperature and moisture
 * LAT      LATITUDE
-* F        Fraction of surface type being studied 
+* F        Fraction of surface type being studied
 
       REAL ANG,ANGI,VITS,LZZ0,LZZ0T
       REAL CT,DANG,CM
       REAL XX,XX0,YY,YY0,fh,fm,hi
       REAL RAC3
       INTEGER J,IL1,IL2
-*
-      REAL AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-      COMMON / CLASSD2 / AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-      REAL DELTA,GRAV,KARMAN,CPD
-      COMMON / PHYCON / DELTA,GRAV,KARMAN,CPD
 
       RAC3=SQRT(3.)
 
@@ -113,9 +118,12 @@
      1              )
       ENDIF
 *---------------------------------------------------------------------
-      CT=KARMAN/FH
-      CM=KARMAN/FM
-      TZ(J)=TZ(J)+F(J)*(TG(J)-FTEMP(J)/(CT*UE(J))-GRAV/CPD*ZT(J))
+      !CT=KARMAN/FH
+      !CM=KARMAN/FM
+      CT=VKC/FH
+      CM=VKC/FM
+      
+      TZ(J)=TZ(J)+F(J)*(TG(J)-FTEMP(J)/(CT*UE(J))-GRAV/SPHAIR*ZT(J))
       QZ(J)=QZ(J)+F(J)*(QG(J)-FVAP(J)/(CT*UE(J)))
       VITS=UE(J)/CM
 
@@ -131,7 +139,7 @@
       UZ(J)=UZ(J)+F(J)*VITS*COS(ANG)
       VZ(J)=VZ(J)+F(J)*VITS*SIN(ANG)
 
-      ENDIF 
+      ENDIF
       ENDDO
 
       RETURN

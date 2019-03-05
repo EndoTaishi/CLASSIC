@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['outputmanager',['outputmanager',['../namespaceoutputmanager.html',1,'']]]
+  ['xmlmanager',['xmlmanager',['../namespacexmlmanager.html',1,'']]]
 ];

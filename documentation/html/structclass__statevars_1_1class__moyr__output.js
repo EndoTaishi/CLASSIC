@@ -32,6 +32,8 @@ var structclass__statevars_1_1class__moyr__output =
     [ "groundevap", "structclass__statevars_1_1class__moyr__output.html#ad21ac3ef3b4381e865cf7eedf00affdd", null ],
     [ "hfsacc_mo", "structclass__statevars_1_1class__moyr__output.html#aa4801800274f4ebe5b2b98c2d44aa2e5", null ],
     [ "hfsacc_yr", "structclass__statevars_1_1class__moyr__output.html#a5439c48b8c6137617621a49754200c88", null ],
+    [ "mrso_mo", "structclass__statevars_1_1class__moyr__output.html#a273404f1b511c22f3b5fef62a9bb2adf", null ],
+    [ "mrsol_mo", "structclass__statevars_1_1class__moyr__output.html#a166d7517dc5ba4c770aef088995e03f0", null ],
     [ "preacc_mo", "structclass__statevars_1_1class__moyr__output.html#ac91b3c88203e328754998cbee60d55f2", null ],
     [ "preacc_yr", "structclass__statevars_1_1class__moyr__output.html#ade9e68a834c74f7f804769900cc7c384", null ],
     [ "qevpacc_mo", "structclass__statevars_1_1class__moyr__output.html#aee6b7b4812295dbb318b70cc9fb1cf71", null ],

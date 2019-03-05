@@ -9,12 +9,15 @@ module ctem_params
 
 ! Change History:
 
+! Sep 2018 - EC - Relocate variables defined in "readin_params" to the main module and allocate them
+!                 in "allocateParamsCTEM". Cray compiler doesn't currently support namelists using 
+!                 dynamic arrays dimensioned by a parameter specified in the main module.
 ! Jun 2017 - JM - Change to using namelist.
 ! Jun 11 2015 - JM - Add in new disturb params (extnmois_duff and extnmois_veg) replacing duff_dry and extnmois.
 ! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
-!                    all ctem subroutines except PHTSYN3 keep their parameters here.   
+!                    all ctem subroutines except PHTSYN3 keep their parameters here.
 !
-! Jan 17 2014 - JM - Add in more parameters from ctem.f, phenology.f, and allocate.f. 
+! Jan 17 2014 - JM - Add in more parameters from ctem.f, phenology.f, and allocate.f.
 
 implicit none
 
@@ -32,6 +35,7 @@ real, parameter :: pi       = 3.1415926535898d0
 real, parameter :: earthrad = 6371.22   !<radius of earth, km
 real, parameter :: km2tom2  = 1.0e+06   !<changes from \f$km^2\f$ to \f$m^2\f$
 real, parameter :: deltat   = 1.0       !<CTEM's time step in days
+real, parameter :: convertkgC = 1.201e-8 !< Converts from umolCO2/m2/s to kgC/m2/s
 
 ! These month arrays are possibly overwritten in runclassctem due to leap years.
 integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
@@ -46,46 +50,41 @@ integer :: nmos        !< Number of mosaic tiles, read in from the initializatio
 integer :: ilg         !< nlat x nmos
 integer :: ignd        !< Number of soil layers, read in from the initialization file
 
+! Read in from the job options file:
+integer :: ican              !< Number of CLASS (physics) pfts, read in from the job options file.
+integer :: icc               !< Number of CTEM (biogeochemical) pfts, read in from the job options file.
+integer :: l2max             !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs
+                             !! associated with a single CLASS PFT. Read in from the job options file.
+
 ! ----
-! Plant-related
-integer :: ican        != 4        !< Number of CLASS pfts, read in from the initialization file
-integer :: icp1        != ican + 1 !
-integer :: icc         !=12        !< Number of CTEM pfts (Peatlands add 3: EVG shrub,DCD shrubs, sedge)
-integer :: iccp1       != icc + 1  !
-integer :: l2max       != 5        !
+! Plant-related parameters that are calculated based on job options
+integer :: icp1              !< ican + 1
+integer :: iccp1             !< iccp1
 integer :: kk                !< product of class pfts and l2max
 integer :: numcrops          !< number of crop pfts
 integer :: numtreepfts       !< number of tree pfts
 integer :: numgrass          !< number of grass pfts
 integer :: numshrubs         !< number of shrubs pfts
-
-integer, dimension(:), allocatable :: nol2pfts  !
-
-!> simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
-logical, dimension(:), allocatable :: crop != [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]
-
-!> simple grass matric, define the number and position of grass
-logical, dimension(:), allocatable :: grass != [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.true. ]
-
-integer, dimension(3) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)  !FLAG FLAG get rid of this!
+integer, dimension(:), allocatable :: nol2pfts  !< Number of level 2 PFTs calculated in readin_params
+logical, dimension(:), allocatable :: crop      !< simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
+logical, dimension(:), allocatable :: grass     !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
 
 real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
 real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
-real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+real, parameter :: c2dom   = 450.0    !< gC / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
 
-integer, parameter :: nbs = 4         !
+integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation wavelength bands COMBAK Move to namelist? Useful? FLAG
 
-real :: gasc = 8.314    !< gas constant (\f$J mol^{-1} K^{-1}\f$)  !FLAG is there no global one I can use?
-
+real :: gasc = 8.314    !< gas constant (\f$J mol^{-1} K^{-1}\f$)  !COMBAK FLAG is there no global one I can use?
 real :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
                             ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
-
-real :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !FLAG would be good to make this consistent with global tolerance so only one value.
+real :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
 
 !> Logical switch for using constant allocation factors (default value is false)
 logical :: consallo = .false.
 
+! ============================================================
 ! Read in from the namelist: ---------------------------------
 
 integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
@@ -93,7 +92,19 @@ character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
 character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
 real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient
 
-!allocate.f parameters:
+! Moved definitions in "readin_params" here and allocate via "allocateParamsCTEM".
+
+real, dimension(:), allocatable :: omega_compete
+real, dimension(:), allocatable :: epsilonl_compete
+real, dimension(:), allocatable :: epsilons_compete
+real, dimension(:), allocatable :: epsilonr_compete
+real, dimension(:), allocatable :: bsrtstem_compete
+real, dimension(:), allocatable :: bsrtroot_compete
+real, dimension(:), allocatable :: mxmortge_compete
+real, dimension(:), allocatable :: maxage_compete
+real, dimension(:), allocatable :: drlsrtmx_compete
+
+!allocate.f parameters: ----------
 
 real, dimension(:), allocatable :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
 real, dimension(:), allocatable :: epsilonl         !< Epsilon leaf, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
@@ -114,9 +125,10 @@ real, dimension(:), allocatable :: abar             !< parameter determining ave
 real, dimension(:), allocatable :: avertmas         !< average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile
 real, dimension(:), allocatable :: alpha            !< parameter determining how the roots grow
 real, dimension(:), allocatable :: prcnslai         !< storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
-real, dimension(:), allocatable :: minslai          !< minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
-real, dimension(:), allocatable :: mxrtdpth         !< maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
-                                        !< constrained to realistic values
+real, dimension(:), allocatable :: minslai          !< minimum storage lai. this is what the model uses as lai when growing
+                                                    !!vegetation for scratch. consider these as model seeds.
+real, dimension(:), allocatable :: mxrtdpth         !< maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth
+                                                    !! parameterzation are constrained to realistic values
 real, dimension(:), allocatable :: albvis           !< visible albedos of the ctem pfts
 real, dimension(:), allocatable :: albnir           !< near IR albedos of the 9 ctem pfts
 
@@ -129,7 +141,7 @@ real, dimension(:), allocatable :: albnir           !< near IR albedos of the 9 
 !! deciduous trees measure(s) of aridity (function of precipitation
 !! and potential evaporation) are used.
 
-! existence subroutine:
+! existence subroutine: ----------
 
 real, dimension(:), allocatable :: tcoldmin         !< minimum coldest month temperature
 real, dimension(:), allocatable :: tcoldmax         !< maximum coldest month temperature
@@ -201,7 +213,7 @@ real, dimension(4) :: tanhq10       !< Constants used in tanh formulation of res
 real :: alpha_hetres                !< parameter for finding litter temperature as a weighted average of top soil layer temperature and root temperature
 real :: bsratelt_g                  !< bare ground litter respiration rate at 15 c in kg c/kg c.year
 real :: bsratesc_g                  !< bare ground soil c respiration rates at 15 c in kg c/kg c.year
-real :: a                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
+real :: a_hetr                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
 
 ! landuse_change_mod.f90 parameters: --------------
 
@@ -323,7 +335,6 @@ real :: ratioch4                !< methane to carbon dioxide flux scaling factor
 !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
 !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
 real :: wtdryres
-real :: factor2        !< constant value for secondary (ch4wet2) methane emissions calculation
 real :: lat_thrshld1   !< Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2   !< Boundary with southern zone for wetland determination (degrees North)
 real :: soilw_thrshN   !< Soil wetness threshold in the North zone
@@ -490,7 +501,17 @@ subroutine allocateParamsCTEM()
             vmax(kk),&
             inico2i(kk),&
             chi(kk),&
-            rmlcoeff(kk))
+            !rmlcoeff(kk))
+            rmlcoeff(kk),&
+            omega_compete(kk),&
+            epsilonl_compete(kk),&
+            epsilons_compete(kk),&
+            epsilonr_compete(kk),&
+            bsrtstem_compete(kk),&
+            bsrtroot_compete(kk),&
+            mxmortge_compete(kk),&
+            maxage_compete(kk),&
+            drlsrtmx_compete(kk))
 
 end subroutine allocateParamsCTEM
 !!@}
@@ -506,15 +527,15 @@ subroutine readin_params
 
     implicit none
 
-    real, dimension(kk):: omega_compete
-    real, dimension(kk):: epsilonl_compete
-    real, dimension(kk):: epsilons_compete
-    real, dimension(kk):: epsilonr_compete
-    real, dimension(kk):: bsrtstem_compete
-    real, dimension(kk):: bsrtroot_compete
-    real, dimension(kk):: mxmortge_compete
-    real, dimension(kk):: maxage_compete
-    real, dimension(kk):: drlsrtmx_compete
+    !real, dimension(kk):: omega_compete
+    !real, dimension(kk):: epsilonl_compete
+    !real, dimension(kk):: epsilons_compete
+    !real, dimension(kk):: epsilonr_compete
+    !real, dimension(kk):: bsrtstem_compete
+    !real, dimension(kk):: bsrtroot_compete
+    !real, dimension(kk):: mxmortge_compete
+    !real, dimension(kk):: maxage_compete
+    !real, dimension(kk):: drlsrtmx_compete
     integer :: i,n
     character(8) :: pftkind
     integer :: isumc,k1c,k2c
@@ -598,7 +619,7 @@ subroutine readin_params
         alpha_hetres,&
         bsratelt_g,&
         bsratesc_g,&
-        a,&
+        a_hetr,&
         combust,&
         paper,&
         furniture,&
@@ -662,7 +683,6 @@ subroutine readin_params
         stmhrspn,&
         ratioch4,&
         wtdryres,&
-        factor2,&
         lat_thrshld1,&
         lat_thrshld2,&
         soilw_thrshN,&

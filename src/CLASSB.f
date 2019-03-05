@@ -1,14 +1,15 @@
 C>\file
 !!Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type.
 !!Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
+!!@author D. Verseghy, M. Lazare, V. Fortin, Y. Wu, J. Melton
 !!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
-     2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,            
+     2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)                 
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)
 C
-C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, somehow it worked
+C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, 
 C                               Change to TCCLAY for consistency with rest of model.
 C     * DEC 16/16 - D.VERSEGHY. REMOVE OPTION FOR USING OLD SOIL
 C     *                         WET AND DRY ALBEDOS DETERMINED BY
@@ -78,13 +79,18 @@ C     *                         THERMAL PROPERTIES BASED ON
 C     *                         SAND, CLAY AND ORGANIC MATTER
 C     *                         CONTENT.
 C
-      use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,
-     1                       grksmoss,hcpmoss
+      use classic_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,
+     1                       grksmoss,hcpmoss,THPORG,THRORG,THMORG,BORG,
+     2                       PSISORG,GRKSORG,TCICE,TCSAND,TCCLAY,TCOM,
+     3                       RHOSOL,RHOOM,HCPICE,HCPOM,HCPSND,HCPCLY,
+     4                       ALWV,ALWN,ALDV,ALDN
+     C
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M
+      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M,k
 C
 C     * OUTPUT ARRAYS.
 C
@@ -123,41 +129,10 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL ALWV(20), ALWN(20), ALDV(20), ALDN(20)
-C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL THPORG (3)         !<Peat pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
-      REAL THRORG (3)         !<Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
-      REAL THMORG (3)         !<Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
-      REAL BORG   (3)         !<Clapp and Hornberger 'b' value for peat soils [ ]
-      REAL PSISORG(3)         !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
-      REAL GRKSORG(3)         !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
-C
-      REAL TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
-     1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,SPHW,SPHICE,SPHVEG,
-     2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
-C
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-     1                RHOSOL,RHOOM
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-C
-      DATA ALWV /0.25,0.23,0.21,0.20,0.19,0.18,0.17,0.16,0.15,0.14,0.13,
-     1           0.12,0.11,0.10,0.09,0.08,0.07,0.06,0.05,0.04/
-      DATA ALWN /0.50,0.46,0.42,0.40,0.38,0.36,0.34,0.32,0.30,0.28,0.26,
-     1           0.24,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
-      DATA ALDV /0.36,0.34,0.32,0.31,0.30,0.29,0.28,0.27,0.26,0.25,0.24,
-     1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
-      DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
-     1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
 C---------------------------------------------------------------------
 C
-
 !>
 !!In the first section of code, two integer flags are evaluated: IGDR, the index of the soil layer in which the
 !!bottom of the soil permeable depth, \f$z_b\f$ , occurs; and ISAND, the value of the SAND variable for each soil
@@ -229,8 +204,8 @@ C
 !!depending on soil type. Values of ISAND greater than or equal to zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
 !!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
 !!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
-!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc:
-
+!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc
+!!
 !!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
 !!\f$b = 0.159 X_{clay} + 2.91\f$
 !!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
@@ -314,12 +289,28 @@ C
               THLW(I,M,J)=0.0
               PSIWLT(I,M,J)=0.0
           ELSEIF(ISAND(I,M,J).EQ.-2) THEN
-              THPOR (I,M,J)=THPORG(MIN(J,3))
-              THLRET(I,M,J)=THRORG(MIN(J,3))
-              THLMIN(I,M,J)=THMORG(MIN(J,3))
-              BI    (I,M,J)=BORG(MIN(J,3))
-              PSISAT(I,M,J)=PSISORG(MIN(J,3))
-              GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
+              ! FLAG test!
+              if (j==1) then
+                  k = 1
+              elseif (j == 2 .or. j == 3) then
+                  k = 2
+              else
+                  k = 3
+              end if
+              THPOR (I,M,J)=THPORG(k)
+              THLRET(I,M,J)=THRORG(k)
+              THLMIN(I,M,J)=THMORG(k)
+              BI    (I,M,J)=BORG(k)
+              PSISAT(I,M,J)=PSISORG(k)
+              GRKSAT(I,M,J)=GRKSORG(k)
+
+              !THPOR (I,M,J)=THPORG(MIN(J,3))
+              !THLRET(I,M,J)=THRORG(MIN(J,3))
+              !THLMIN(I,M,J)=THMORG(MIN(J,3))
+              !BI    (I,M,J)=BORG(MIN(J,3))
+              !PSISAT(I,M,J)=PSISORG(MIN(J,3))
+              !GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
+              ! FLAG end test. JM
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
@@ -383,7 +374,7 @@ C
               THSAND=(1.0-THPOR(I,M,J))*VSAND/VTOT
               THORG=(1.0-THPOR(I,M,J))*VORG/VTOT
               THFINE=1.0-THPOR(I,M,J)-THSAND-THORG
-              HCPS(I,M,J)=(HCPSND*THSAND+HCPFIN*THFINE+
+              HCPS(I,M,J)=(HCPSND*THSAND+HCPCLY*THFINE+
      1            HCPOM*THORG)/(1.0-THPOR(I,M,J))
               TCS(I,M,J)=(TCSAND*THSAND+TCOM*THORG+
      1            TCCLAY*THFINE)/(1.0-THPOR(I,M,J))
@@ -405,19 +396,19 @@ C
               ! For MINERAL soil:
               ! Make it so the first layer is considered moss if peatland flag >0.
               ! This overwrites the previous assignments.
-             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
-                  if (j .eq. 1) then ! First layer is moss
-                      thpor(i,m,j)  = thpmoss
-                      thlret(i,m,j) = thrmoss
-                      thlmin(i,m,j) = thmmoss
-                      bi(i,m,j)     = bmoss
-                      psisat(i,m,j) = psismoss
-                      grksat(i,m,j) = grksmoss
-                      hcps(i,m,j) = hcpmoss
-                      tcs(i,m,j) = tcom
+             !if (ipeatland(i,m) .eq. 0 ) then ! Peatland flag, 1= bog, 2 = fen
+            !      if (j .eq. 1) then ! First layer is moss
+            !          thpor(i,m,j)  = thpmoss
+            !          thlret(i,m,j) = thrmoss
+            !          thlmin(i,m,j) = thmmoss
+            !          bi(i,m,j)     = bmoss
+            !          psisat(i,m,j) = psismoss
+            !          grksat(i,m,j) = grksmoss
+            !          hcps(i,m,j) = hcpmoss
+            !          tcs(i,m,j) = tcom
 
-                  end if
-             end if
+            !      end if
+            ! end if
 
           ENDIF
 300   CONTINUE

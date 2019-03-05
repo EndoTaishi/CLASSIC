@@ -2,8 +2,8 @@
 !!Assigns values to pointer vectors relating the location of elements on the "gathered" variable
 !!vectors to elements on the original two-dimensional arrays (latitude circle x mosaic tiles) for land grid
 !!cells.
-!!
-
+!!@author D. Verseghy, M. Lazare, E. Chan
+!
       SUBROUTINE GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
      1                   NML,NMW,GCROW,FAREA,MOSID,
      2                   NL,NM,ILG,IL1,IL2,IM)
@@ -27,9 +27,8 @@ C     * NOV 03/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
 C     * AUG 09/02 - D.VERSEGHY/M.LAZARE. DETERMINE INDICES FOR
 C     *                        GATHER-SCATTER OPERATIONS ON
 C     *                        CURRENT LATITUDE LOOP.
-C     
+C           
       IMPLICIT NONE
-
 C
 C     * INTEGER CONSTANTS.
 C

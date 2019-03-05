@@ -84,14 +84,12 @@ contains
     !> The number of latitudes is always 1 offline while the maximum number of
     !> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
     !> ilg is then calculated from nlat and nmos.
+    !>@author Joe Melton
 
     subroutine read_modelsetup
 
-        ! J. Melton
-        ! Feb 2017
-
         use ctem_statevars,     only : c_switch
-        use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
+        use classic_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
         use outputManager, only : myDomain
 
         implicit none
@@ -113,6 +111,7 @@ contains
         character(350), pointer          :: metFileUv
         character(350), pointer          :: metFilePres
         logical, pointer                 :: ctem_on
+        logical, pointer                 :: projectedGrid
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
         integer, pointer                 :: fixedYearLUC
@@ -126,7 +125,7 @@ contains
         integer, dimension(1) :: pos
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
-        integer :: lonloc,latloc
+        integer :: lonloc,latloc,flattenedIndex,tempIndex
 
         ! point pointers:
         init_file               => c_switch%init_file
@@ -138,6 +137,7 @@ contains
         LUCFile                 => c_switch%LUCFile
         OBSWETFFile             => c_switch%OBSWETFFile
         ctem_on                 => c_switch%ctem_on
+        projectedGrid           => c_switch%projectedGrid
         dofire                  => c_switch%dofire
         lnduseon                => c_switch%lnduseon
         transientOBSWETF        => c_switch%transientOBSWETF
@@ -157,36 +157,38 @@ contains
 
         initid = ncOpen(init_file, NF90_NOWRITE)
 
-        !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
-        !! names of longitude and latitude.
+        if (.not. projectedGrid) then
 
-        totlon = ncGetDimLen(initid,'lon')
-        totlat = ncGetDimLen(initid,'lat')
+            !> Next, retrieve dimensions and allocate arrays to hold the lons and lats.
+            !! We assume the file has 'lon' and 'lat' for names of longitude and latitude.
 
-        !>calculate the number and indices of the pixels to be calculated
-        allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
+            totlon = ncGetDimLen(initid,'lon')
+            totlat = ncGetDimLen(initid,'lat')
 
-        myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
-        myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+            allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
 
-        !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
-        !! when the input file expects the opposite.
-        if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
-        end if
-        if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
-            myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
-        if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
-        end if
-        if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
-            myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
-            print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
-        end if
+            !> Read in the coordinate variables from the initialization file.
+            myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
+            myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
+
+            !> Try and catch if the user has put in lon values from -180 to 180 or 0 to 360
+            !! when the input file expects the opposite.
+            if (myDomain%domainBounds(1) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(1) = 360. + myDomain%domainBounds(1)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) < 0. .and. myDomain%allLonValues(1) >= 0.) then
+                myDomain%domainBounds(2) = 360. + myDomain%domainBounds(2)
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
+            if (myDomain%domainBounds(1) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(1) = myDomain%domainBounds(1) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(1)
+            end if
+            if (myDomain%domainBounds(2) > 180. .and. myDomain%allLonValues(1) < 0.) then
+                myDomain%domainBounds(2) = myDomain%domainBounds(2) - 360.
+                print *,'Based on init_file, adjusted your domain (longitude) to',myDomain%domainBounds(2)
+            end if
 
 ! FLAG - be good to put in a check here but need to do this better.
 !         !> Check that our domain is within the longitude and latitude limits of
@@ -207,29 +209,102 @@ contains
 !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
 !         end if
 
-        !> Based on the domainBounds, we make vectors of the cells to be run.
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
-        xpos(1) = pos(1)
+            !> Since the domainBounds are coordinates, need to find the indices corresponding to the domain bounds.
 
-        pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
-        xpos(2) = pos(1)
+            if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
+                myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+                ! Special case, if the domainBounds are 0/0/0/0 then take whole domain.
+                print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
+                xpos(1) = 1
+                xpos(2) = totlon
+                ypos(1) = 1
+                ypos(2) = totlat
+            else 
+                ! Use the domain as given and obtain the indices of the lons and lats closest to the specified domainBounds.
+                pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
+                xpos(1) = pos(1)
+        
+                pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(2)))
+                xpos(2) = pos(1)
+        
+                pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
+                ypos(1) = pos(1)
+        
+                pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
+                ypos(2) = pos(1)
+            end if
 
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(3)))
-        ypos(1) = pos(1)
+            !> Obtain the starting indices of the coordinate vectors.
 
-        pos = minloc(abs(myDomain%allLatValues - myDomain%domainBounds(4)))
-        ypos(2) = pos(1)
+            myDomain%srtx = minval(xpos)
+            myDomain%srty = minval(ypos)
 
-        myDomain%srtx = minval(xpos)
-        myDomain%srty = minval(ypos)
+            !> Ensure that the starting indices are within the specified bounds of the domain. 
+            !! Note that when the domain is a single point, the 1st/2nd elements of domainBounds are set to the
+            !! the longitude and the 3rd/4th elements are set to the latitude (see read_from_job_options.f90). 
+            !! In this case, the closest grid point to the specified coordinates is used and the check should not be done.
 
-        if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
-            myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
-        myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+            if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and.&
+                myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
 
-        if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
-            myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
-        myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+            if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and.&
+                myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
+
+            !> Compute the size of the coordinate vectors.
+
+            myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+            myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
+            !> Ensure that the last index of each vector is within the domain bounds. 
+
+            if (myDomain%allLonValues(maxval(xpos)) > myDomain%domainBounds(2) .and.&
+                myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%cntx = myDomain%cntx - 1
+    
+            if (myDomain%allLatValues(maxval(ypos)) > myDomain%domainBounds(4) .and.&
+                myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%cnty = myDomain%cnty - 1
+
+        else ! projected grid
+
+          !> On a projected grid we have to use the grid cell indexes to delineate our domain to run
+          !! over. We then use the indexes to determine the values of longitude and latitude for
+          !! each grid cell.
+
+          !> Retrieve dimensions. We assume the file has 'lon' and 'lat' for
+          !! names of longitude and latitude.
+
+          totlon = ncGetDimLen(initid,'lon')
+          totlat = ncGetDimLen(initid,'lat')
+
+          !>calculate the number and indices of the pixels to be calculated
+          allocate(myDomain%allLonValues(totlat*totlon), myDomain%allLatValues(totlat*totlon))
+
+          !> This will get all lon and lat grids as flattened vectors.
+          myDomain%allLonValues = ncGetDimValues(initid, 'lon', count2D = (/totlon,totlat/))
+          myDomain%allLatValues = ncGetDimValues(initid, 'lat', count2D = (/totlon,totlat/))
+
+          !> Since the domainBounds are indexes, and not coordinates, we can use them directly.
+          xpos(1) = myDomain%domainBounds(1)
+          xpos(2) = myDomain%domainBounds(2)
+          ypos(1) = myDomain%domainBounds(3)
+          ypos(2) = myDomain%domainBounds(4)
+
+          !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
+          if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
+              myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+              print*, ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
+              xpos(1) = 1
+              xpos(2) = totlon
+              ypos(1) = 1
+              ypos(2) = totlat
+          end if
+
+          myDomain%srtx = minval(xpos)
+          myDomain%srty = minval(ypos)
+
+          myDomain%cntx = 1 + abs(maxval(xpos) - myDomain%srtx)
+          myDomain%cnty = 1 + abs(maxval(ypos) - myDomain%srty)
+
+        end if
 
         !> Save the longitudes and latitudes over the region of interest for making the
         !! output files.
@@ -239,9 +314,14 @@ contains
                  myDomain%latLandIndex(totsize),&
                  myDomain%lonLandIndex(totsize),&
                  myDomain%latLocalIndex(totsize),&
-                 myDomain%lonLocalIndex(totsize),&
-                 myDomain%latUnique(myDomain%cnty),&
-                 myDomain%lonUnique(myDomain%cntx))
+                 myDomain%lonLocalIndex(totsize))
+        if (.not. projectedGrid) then
+          allocate(myDomain%latUnique(myDomain%cnty),&
+                   myDomain%lonUnique(myDomain%cntx))
+        else
+          allocate(myDomain%latUnique(totsize),&
+                   myDomain%lonUnique(totsize))
+        end if
 
         !> Retrieve the number of soil layers (set ignd!)
         ignd = ncGetDimLen(initid, 'layer')
@@ -251,36 +331,57 @@ contains
         allocate(mask(myDomain%cntx, myDomain%cnty))
         mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty],&
                           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
-
         myDomain%LandCellCount = 0
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
-                if (mask(i,j) .eq. -1) then
-                    !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
-                    !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
-                    myDomain%LandCellCount = myDomain%LandCellCount + 1
-                    myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
-                    myDomain%lonLocalIndex(myDomain%LandCellCount) = i
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
-                    myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
-                    myDomain%latLocalIndex(myDomain%LandCellCount) = j
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                else !keep track of the non-land too for the making of the output files.
-                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                endif
+              if (projectedGrid) then
+                flattenedIndex = (j + myDomain%srty - 2) * totlon + (i + myDomain%srtx - 1)
+                tempIndex = (i - 1) * myDomain%cnty + j
+              end if
+              if (mask(i,j) .eq. -1) then
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
+                  ! , ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
+                myDomain%LandCellCount = myDomain%LandCellCount + 1
+                myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
+                myDomain%lonLocalIndex(myDomain%LandCellCount) = i
+                myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
+                myDomain%latLocalIndex(myDomain%LandCellCount) = j
+                if (.not. projectedGrid) then
+                  myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
+                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
+                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is valid"
+                  myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
+                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                end if
+              else !keep track of the non-land too for the making of the output files.
+                if (.not. projectedGrid) then
+                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
+                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
+                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is NOT valid"
+                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+                end if
+              endif
             enddo
         enddo
 
         if (myDomain%LandCellCount == 0) then
             print*,'=>Your domain is not land my friend.'
-            if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
+            if (.not. projectedGrid) then
+             if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then !point run
                 lonloc = closestCell(initid,'lon',myDomain%domainBounds(1))
                 latloc = closestCell(initid,'lat',myDomain%domainBounds(3))
                 print*,'Closest grid cell is ',myDomain%allLonValues(lonloc),'/',myDomain%allLatValues(latloc)
                 print*,'but that may not be land. Check your input files to be sure'
+              end if
             end if
         end if
 
@@ -345,6 +446,7 @@ contains
     !>\ingroup model_state_drivers_read_initialstate
     !!@{
     !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
+    !>@author Joe Melton
 
     subroutine read_initialstate(lonIndex,latIndex)
 
@@ -353,7 +455,8 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
-        use ctem_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop
+        use classic_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,pi,crop,TFREZ,&
+                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB
 
         implicit none
 
@@ -375,6 +478,7 @@ contains
         real, pointer, dimension(:,:,:) :: PAMXROT
         real, pointer, dimension(:,:,:) :: LNZ0ROT
         real, pointer, dimension(:,:,:) :: CMASROT
+        real, pointer, dimension(:,:) :: CMAIROT !<
         real, pointer, dimension(:,:,:) :: ROOTROT
         real, pointer, dimension(:,:)   :: DRNROT
         real, pointer, dimension(:,:)   :: SDEPROT
@@ -383,6 +487,7 @@ contains
         real, pointer, dimension(:,:)   :: WFSFROT
         real, pointer, dimension(:,:)   :: WFCIROT
         integer, pointer, dimension(:,:)   :: MIDROT
+        real, pointer, dimension(:,:)   :: WSNOROT !<
         real, pointer, dimension(:,:,:) :: SANDROT
         real, pointer, dimension(:,:,:) :: CLAYROT
         real, pointer, dimension(:,:,:) :: ORGMROT
@@ -401,18 +506,19 @@ contains
         real, pointer, dimension(:,:)   :: ALBSROT
         real, pointer, dimension(:,:)   :: RHOSROT
         real, pointer, dimension(:,:)   :: GROROT
-        real, pointer, dimension(:)     :: ZRFHROW !<
-        real, pointer, dimension(:)     :: ZRFMROW !<
         real, pointer, dimension(:)     :: DLATROW !<
         real, pointer, dimension(:)     :: DLONROW !<
         real, pointer, dimension(:)     :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
-        real, pointer, dimension(:)     :: ZBLDROW !<
         real, pointer, dimension(:)     :: RADJROW !<Latitude of grid cell (positive north of equator) [rad]
         real, pointer, dimension(:)     :: Z0ORROW !<
         real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:)   :: SOCIROT
-
         real, pointer, dimension(:,:)   :: TBASROT !<
+        real, pointer, dimension(:,:) :: ZSNLROT !< Limiting snow depth (m)
+        real, pointer, dimension(:,:,:)  :: TSFSROT !<Ground surface temperature over subarea [K]
+        real, pointer, dimension(:,:) :: TACROT  !<Temperature of air within vegetation canopy \f$[K] (T_{ac} )\f$
+        real, pointer, dimension(:,:) :: QACROT  !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ] (q_{ac} )\f$
+        integer, pointer, dimension(:,:,:,:) :: ITCTROT !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
         logical, pointer :: ctem_on
         logical, pointer :: dofire
         logical, pointer :: PFTCompetition
@@ -449,8 +555,8 @@ contains
 
         ! local variables
 
-        integer :: i,m,j
-        real, parameter :: TFREZ = 273.16       !FLAG eventually do a use statement with class params.
+        integer :: i,m,j,n
+        real :: bots
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -485,9 +591,7 @@ contains
         Cmossmas          => vrot%Cmossmas
         litrmsmoss        => vrot%litrmsmoss
         dmoss             => vrot%dmoss
-
         grclarea          => vgat%grclarea
-
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
         RSMNROT           => class_rot%RSMNROT
@@ -521,10 +625,7 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
-        ZRFHROW           => class_rot%ZRFHROW
-        ZRFMROW           => class_rot%ZRFMROW
         GCROW             => class_rot%GCROW
-        ZBLDROW           => class_rot%ZBLDROW
         ALVCROT           => class_rot%ALVCROT
         ALICROT           => class_rot%ALICROT
         PAMNROT           => class_rot%PAMNROT
@@ -539,7 +640,13 @@ contains
         GGEOROW           => class_rot%GGEOROW
         SOCIROT           => class_rot%SOCIROT
         TBASROT           => class_rot%TBASROT
-
+        CMAIROT           => class_rot%CMAIROT
+        WSNOROT           => class_rot%WSNOROT
+        ZSNLROT           => class_rot%ZSNLROT
+        TSFSROT           => class_rot%TSFSROT
+        TACROT            => class_rot%TACROT
+        QACROT            => class_rot%QACROT
+        ITCTROT           => class_rot%ITCTROT
         ! ----------------------------
 
         do i = 1, nlat
@@ -548,19 +655,6 @@ contains
          GGEOROW(i)=0.0
         end do
 
-    !> ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
-    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
-    !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
-    !> refer to the measurement height of these variables, which is fixed.
-
-        ZRFMROW = ncGet1DVar(initid, 'ZRFM', start = [lonIndex, latIndex], count = [1, 1])
-        ZRFHROW = ncGet1DVar(initid, 'ZRFH', start = [lonIndex, latIndex], count = [1, 1])
-
-    !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
-    !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
-
-        ZBLDROW = ncGet1DVar(initid, 'ZBLD', start = [lonIndex, latIndex], count = [1, 1])
-
     !> GCROW, the GCM surface descriptor variable.  For land surfaces (including inland water) it has a value of -1.
 
         GCROW = ncGet1DVar(initid, 'GC', start = [lonIndex, latIndex], count = [1, 1])
@@ -568,10 +662,11 @@ contains
         SDEPROT = ncGet2DVar(initid, 'SDEP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SOCIROT = ncGet2DVar(initid, 'SOCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         FAREROT = ncGet2DVar(initid, 'FARE', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        XSLPROT = ncGet2DVar(initid, 'XSLP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        GRKFROT = ncGet2DVar(initid, 'GRKF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        WFSFROT = ncGet2DVar(initid, 'WFSF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-        WFCIROT = ncGet2DVar(initid, 'WFCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        ! The following four variables are not presently in use. Comment out read so not needed to be in input file.
+        !XSLPROT = ncGet2DVar(initid, 'XSLP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        !GRKFROT = ncGet2DVar(initid, 'GRKF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        !WFSFROT = ncGet2DVar(initid, 'WFSF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        !WFCIROT = ncGet2DVar(initid, 'WFCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         TCANROT = ncGet2DVar(initid, 'TCAN', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         TSNOROT = ncGet2DVar(initid, 'TSNO', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         TPNDROT = ncGet2DVar(initid, 'TPND', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
@@ -590,21 +685,43 @@ contains
         PAMXROT = ncGet3DVar(initid, 'PAMX', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         CMASROT = ncGet3DVar(initid, 'CMAS', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         ROOTROT = ncGet3DVar(initid, 'ROOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        RSMNROT = ncGet3DVar(initid, 'RSMN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        QA50ROT = ncGet3DVar(initid, 'QA50', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        VPDAROT = ncGet3DVar(initid, 'VPDA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        VPDBROT = ncGet3DVar(initid, 'VPDB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        PSGAROT = ncGet3DVar(initid, 'PSGA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
-        PSGBROT = ncGet3DVar(initid, 'PSGB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        ! The following six are parameters that can be made to spatially vary by uncommenting below and including them in the
+        ! model init file. However, in practice these parameters are used with spatially invariable values so are read in from 
+        ! the CLASSIC namelist in classic_params.f90. 
+        !RSMNROT = ncGet3DVar(initid, 'RSMN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !QA50ROT = ncGet3DVar(initid, 'QA50', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !VPDAROT = ncGet3DVar(initid, 'VPDA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !VPDBROT = ncGet3DVar(initid, 'VPDB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !PSGAROT = ncGet3DVar(initid, 'PSGA', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        !PSGBROT = ncGet3DVar(initid, 'PSGB', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        ! Here we apply the values read in from the namelist file:
+        do i = 1, nlat
+          do m = 1, nmos
+            RSMNROT(i,m,:) = RSMN(:)
+            QA50ROT(i,m,:) = QA50(:)
+            VPDAROT(i,m,:) = VPDA(:)
+            VPDBROT(i,m,:) = VPDB(:)
+            PSGAROT(i,m,:) = PSGA(:)
+            PSGBROT(i,m,:) = PSGB(:)
+          end do
+        end do
+      
         SANDROT = ncGet3DVar(initid, 'SAND', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         CLAYROT = ncGet3DVar(initid, 'CLAY', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         ORGMROT = ncGet3DVar(initid, 'ORGM', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         TBARROT = ncGet3DVar(initid, 'TBAR', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         THLQROT = ncGet3DVar(initid, 'THLQ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         THICROT = ncGet3DVar(initid, 'THIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
-        ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
-        DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         ipeatlandrow = ncGet2DVar(initid, 'ipeatland', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+        DELZ = ncGet1DVar(initid, 'DELZ', start = [1], count = [ignd])
+        
+        ! From DELZ we can find ZBOT as:
+        bots=0.
+        do n = 1,ignd
+          bots = bots + delz(n)
+          ZBOT(n) = bots
+        end do
+        
 
         if (.not. ctem_on) then
             FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
@@ -620,8 +737,8 @@ contains
             !else fcancmx is read in instead and fcanrot is derived later.
         end if
 
-!     Complete some initial set up work:
-
+!     Complete some initial set up work. The limiting snow
+!> depth, ZSNL, is assigned its operational value of 0.10 m.
         DO 100 I=1,nlat
             DO 100 M=1,nmos
 
@@ -633,22 +750,20 @@ contains
 
                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
                 TBASROT(I,M)=TBARROT(I,M,IGND)
-                !CMAIROT(I,M)=0.
-                !WSNOROT(I,M)=0.
-                !ZSNLROT(I,M)=0.10
-                !TSFSROT(I,M,1)=TFREZ
-                !TSFSROT(I,M,2)=TFREZ
+                CMAIROT(I,M)=0.
+                WSNOROT(I,M)=0.
+                ZSNLROT(I,M)=0.10
+                TSFSROT(I,M,1)=TFREZ
+                TSFSROT(I,M,2)=TFREZ
+                TSFSROT(I,M,3)=TBARROT(I,M,1)
+                TSFSROT(I,M,4)=TBARROT(I,M,1)
+                TACROT (I,M)=TCANROT(I,M)
+                QACROT (I,M)=0.5E-2
 
-                !TSFSROT(I,M,3)=TBARROT(I,M,1)
-                !TSFSROT(I,M,4)=TBARROT(I,M,1)
-                !TACROT (I,M)=TCANROT(I,M)
-                !QACROT (I,M)=0.5E-2
-
-                !DO 75 K=1,6
-                !    DO 75 L=1,50
-                !        ITCTROT(I,M,K,L)=0
-!75              CONTINUE
 100     CONTINUE
+
+        ! Set the counter for the number of iterations required to solve surface energy balance for the elements of the four subareas to zero.
+        ITCTROT=0
 
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
@@ -783,15 +898,13 @@ contains
     !!@{
     !> Write out the model restart file to netcdf. We only write out the variables that the model
     !! influences. This overwrites a pre-existing netcdf file.
+    !>@author Joe Melton
 
     subroutine write_restart(lonIndex,latIndex)
 
-        ! J. Melton
-        ! Jun 2017
-
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
-        use ctem_params,        only : icc,nmos,ignd,icp1,modelpft,iccp1
+        use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp1
 
         implicit none
 
@@ -945,15 +1058,14 @@ contains
     !!@{
     !>  Read in a model input from a netcdf file and store the file's time array
     !! as well as the input values into memory.
+    !>@author Joe Melton
 
-    subroutine getInput(inputRequested,longitude,latitude)
-
-
+    subroutine getInput(inputRequested,longitude,latitude,projLonInd,projLatInd)
 
         use fileIOModule
-        use generalUtils, only : parseTimeStamp
+        use generalUtils, only : parseTimeStamp,findLeapYears
         use ctem_statevars, only : c_switch,vrot
-        use ctem_params, only : icc,nmos
+        use classic_params, only : icc,nmos
         use outputManager, only : checkForTime
 
         implicit none
@@ -961,10 +1073,13 @@ contains
         character(*), intent(in) :: inputRequested
         real, intent(in), optional :: longitude
         real, intent(in), optional :: latitude
+        integer, intent(in), optional :: projLonInd
+        integer, intent(in), optional :: projLatInd
         integer :: lengthOfFile
         integer :: lonloc,latloc
         integer :: i,arrindex,m,numPFTsinFile,d
         real, dimension(:), allocatable :: fileTime
+        logical, pointer :: projectedGrid
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
         logical, pointer :: transientCH4
@@ -977,14 +1092,18 @@ contains
         integer, pointer :: fixedYearLUC
         logical, pointer :: transientOBSWETF
         integer, pointer :: fixedYearOBSWETF
-
-        real, dimension(5) :: dateTime
-        real :: startLGHTTime,startWETTime
+        logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
 
+        real, dimension(5) :: dateTime
+        real :: startLGHTTime,startWETTime
+        logical :: dummyVar
+        integer :: lastDOY
+        
+        projectedGrid   => c_switch%projectedGrid
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
         transientCH4    => c_switch%transientCH4
@@ -997,6 +1116,7 @@ contains
         fixedYearOBSWETF=> c_switch%fixedYearOBSWETF
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
+        leap            => c_switch%leap
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
@@ -1031,7 +1151,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
-                if (arrindex == 0) stop('getInput says: The CO2 file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1059,7 +1179,7 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
-                if (arrindex == 0) stop('getInput says: The CH4 file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The CH4 file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
@@ -1079,22 +1199,28 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 POPDTime(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
-            lonloc = closestCell(popid,'lon',longitude)
-            latloc = closestCell(popid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(popid,'lon',longitude)
+              latloc = closestCell(popid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             if (transientPOPD) then
                 ! We read in the whole POPD times series and store it.
                 allocate(POPDFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
-
+                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
-                if (arrindex == 0) stop('getInput says: The POPD file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The POPD file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [arrindex,lonloc,latloc], count = [1,1,1])
+                popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,arrindex], count = [1,1,1])
 
             end if
 
@@ -1112,15 +1238,22 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 LGHTTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
-            lonloc = closestCell(lghtid,'lon',longitude)
-            latloc = closestCell(lghtid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(lghtid,'lon',longitude)
+              latloc = closestCell(lghtid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             ! Units expected are "strikes km-2 yr-1"
 
             if (transientLGHT) then
                 ! We read in the whole LGHT times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
                 ! Find the requested day and year in the file.
@@ -1128,17 +1261,21 @@ contains
                 startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
 
                 arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
-                if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
                 ! We read in only the suggested year of daily inputs
+                
+                ! If we are using leap years, check if that year is a leap year
+                call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
+                
                 ! FLAG Not presently set up for leap years!
-                allocate(LGHTFromFile(365))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
+                allocate(LGHTFromFile(lastDOY))
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(LGHTTime)
-                allocate(LGHTTime(365))
-                do d = 1,365
+                allocate(LGHTTime(lastDOY))
+                do d = 1,lastDOY
                     LGHTTime(d) = real(d)
                 end do
 
@@ -1157,30 +1294,35 @@ contains
                 dateTime = parseTimeStamp(fileTime(i))
                 LUCTime(i) = int(dateTime(1)) ! Rewrite putting in only the year
             end do
-            lonloc = closestCell(lucid,'lon',longitude)
-            latloc = closestCell(lucid,'lat',latitude)
+
+            if (.not. projectedGrid) then
+              lonloc = closestCell(lucid,'lon',longitude)
+              latloc = closestCell(lucid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             ! Ensure the file has the expected number of PFTs
             numPFTsinFile = ncGetDimLen(lucid, 'lev')
-            if (numPFTsinFile .ne. icc) stop('getInput says: LUC file does not have expected number of PFTs')
+            if (numPFTsinFile .ne. icc) stop ('getInput says: LUC file does not have expected number of PFTs')
 
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
-                allocate(LUCFromFile(lengthOfFile,icc))
-                !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [1,1,lonloc,latloc], count = [lengthOfFile,icc,1,1])
+                allocate(LUCFromFile(icc,lengthOfFile))
                 LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
-                if (arrindex == 0) stop('getInput says: The LUC file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The LUC file does not contain requested year')
 
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
 
-                if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
+                if (nmos .ne. 1) stop ('getInput for LUC is not setup for more than one tile at present!')
 
-                !fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [arrindex,1,lonloc,latloc], count = [1,icc,1,1])
                 fcancmxrow(i,m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
 
             end if
@@ -1200,13 +1342,19 @@ contains
                 OBSWETFTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
 
-            lonloc = closestCell(obswetid,'lon',longitude)
-            latloc = closestCell(obswetid,'lat',latitude)
+            if (.not. projectedGrid) then
+              lonloc = closestCell(obswetid,'lon',longitude)
+              latloc = closestCell(obswetid,'lat',latitude)
+            else
+              ! For projected grids, we use the index of the cells, not their coordinates.
+              lonloc = projLonInd
+              latloc = projLatInd
+            end if
 
             if (transientOBSWETF) then
                 ! We read in the whole OBSWETF times series and store it.
                 allocate(OBSWETFFromFile(lengthOfFile))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [1,lonloc,latloc], count = [lengthOfFile,1,1])
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
 
@@ -1216,24 +1364,26 @@ contains
 
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,OBSWETFTime,startWETTime)
-                if (arrindex == 0) stop('getInput says: The OBSWETF file does not contain requested year')
+                if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
-                ! FLAG Not presently set up for leap years!
-                allocate(OBSWETFFromFile(365))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [arrindex,lonloc,latloc], count = [365,1,1])
+
+                ! If we are using leap years, check if that year is a leap year
+                call findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
+
+                allocate(OBSWETFFromFile(lastDOY))
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
                 deallocate(OBSWETFTime)
-                allocate(OBSWETFTime(365))
-                do d = 1,365
+                allocate(OBSWETFTime(lastDOY))
+                do d = 1,lastDOY
                     OBSWETFTime(d) = real(d)
                 end do
-
             end if
 
         case default
-            stop('Specify an input kind for getInput')
+            stop ('Specify an input kind for getInput')
 
         end select
 
@@ -1247,17 +1397,19 @@ contains
     !>\ingroup model_state_drivers_updateInput
     !!@{
     !> Update the input field variable based on the present model timestep
+    !>@author Joe Melton
 
-    subroutine updateInput(inputRequested,iyear,imonth,iday,dom)
+    subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot,c_switch,vgat
-        use ctem_params, only : nmos
+        use classic_params, only : nmos
+        use generalUtils, only : abandonCell
 
         implicit none
 
         character(*), intent(in) :: inputRequested
-        integer, intent(in) :: iyear
+        integer, intent(in) :: yearNeeded
         integer, intent(in), optional :: imonth
         integer, intent(in), optional :: iday
         integer, intent(in), optional :: dom            ! day of month
@@ -1273,6 +1425,7 @@ contains
         logical, pointer :: transientLGHT
         integer, pointer :: fixedYearLGHT
         logical, pointer :: transientOBSWETF
+        character(4) :: seqstring
 
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
@@ -1291,38 +1444,58 @@ contains
             lengthTime = size(CO2Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            co2concrow(i,:) = CO2FromFile(arrindex)
+            arrindex = checkForTime(lengthTime,real(CO2Time),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The CO2 file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              co2concrow(i,:) = CO2FromFile(arrindex)
+            end if
 
         case ('CH4')
 
             lengthTime = size(CH4Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CH4Time),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            ch4concrow(i,:) = CH4FromFile(arrindex)
+            arrindex = checkForTime(lengthTime,real(CH4Time),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The CH4 file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              ch4concrow(i,:) = CH4FromFile(arrindex)
+            end if
 
         case ('POPD')
 
             lengthTime = size(POPDTime)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(POPDTime),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            popdinrow(i,:) = POPDFromFile(arrindex)
+            arrindex = checkForTime(lengthTime,real(POPDTime),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The POPD file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              popdinrow(i,:) = POPDFromFile(arrindex)
+            end if
 
         case ('LUC')
 
             lengthTime = size(LUCTime)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
-            i = 1 ! offline nlat is always 1 so just set
-            m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
-            if (nmos > 1) stop('updateInput for LUC only set up for 1 tile at present')
-            nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            arrindex = checkForTime(lengthTime,real(LUCTime),real(yearNeeded))
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The LUC file does not contain requested year: '//seqstring)
+            else
+              i = 1 ! offline nlat is always 1 so just set
+              m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
+              if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
+              nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+            end if
 
        case('LGHT')
 
@@ -1332,25 +1505,26 @@ contains
             lengthTime = size(LGHTTime)
 
             if (transientLGHT) then
-                LGHTTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+                LGHTTimeNow = real(yearNeeded) * 10000. + real(imonth+1) * 100. + real(dom)
             else ! we only need the day
                 LGHTTimeNow = real(iday)
             end if
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,LGHTTime,LGHTTimeNow)
-
-            lightng(1)= LGHTFromFile(arrindex)
-
-            ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
-            ! can just pass the same values across all ilg.
-            do m = 1, size(lightng)
-                lightng(m) = lightng(1)
-            end do
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The LGHT file does not contain requested year: '//seqstring)
+            else
+              lightng(1)= LGHTFromFile(arrindex)
+              ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
+              ! can just pass the same values across all ilg.
+              do m = 1, size(lightng)
+                  lightng(m) = lightng(1)
+              end do
+            end if
 
         case('OBSWETF')
-
-            print*,'OBSWETF in updateInput has not been fully tested, remove this print statement once it has been'
 
             ! This file is daily so we need to find the day we are looking for.
             ! imonth is starting at 0 so add 1 always.
@@ -1358,24 +1532,28 @@ contains
             lengthTime = size(OBSWETFTime)
 
             if (transientOBSWETF) then
-                OBSWTimeNow = real(iyear) * 10000. + real(imonth+1) * 100. + real(dom)
+                OBSWTimeNow = real(yearNeeded) * 10000. + real(imonth+1) * 100. + real(dom)
             else ! we only need the day
                 OBSWTimeNow = real(iday)
             end if
 
             ! Find the requested year in the file.
             arrindex = checkForTime(lengthTime,OBSWETFTime,OBSWTimeNow)
+            if (arrindex == 0) then
+              write (seqstring,'(I0)') yearNeeded
+              call abandonCell('updateInput says: The OBSWETF file does not contain requested year: '//seqstring)
+            else
+              wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
 
-            wetfrac_presgat(1)= OBSWETFFromFile(arrindex)
-
-            ! Since wetland area is presently assumed the same for all tiles, and nlat is
-            ! always 1 offline, then we can just pass the same values across all ilg.
-            do m = 1, size(wetfrac_presgat)
-                wetfrac_presgat(m) = wetfrac_presgat(1)
-            end do
+              ! Since wetland area is presently assumed the same for all tiles, and nlat is
+              ! always 1 offline, then we can just pass the same values across all ilg.
+              do m = 1, size(wetfrac_presgat)
+                  wetfrac_presgat(m) = wetfrac_presgat(1)
+              end do
+            end if
 
         case default
-            stop('specify an input kind for updateInput')
+            stop ('specify an input kind for updateInput')
         end select
 
     end subroutine updateInput
@@ -1386,11 +1564,14 @@ contains
     !>\ingroup model_state_drivers_getMet
     !!@{
     !> Read in the meteorological input from a netcdf file
-    !! It is **very** important that the files have time as the fastest varying dimension.
-    !! There is an orders of magnitude slow-up if the dimensions are out of order!
-    subroutine getMet(longitude,latitude,nday,delt)
+    !! It is **very** important that the files are chunked correctly (for global and regional runs).
+    !! There is an orders of magnitude slow-up otherwise!
+    !>@author Joe Melton
+
+    subroutine getMet(longitude,latitude,nday,projLonInd,projLatInd)
 
         use fileIOModule
+        use classic_params, only : delt
         use ctem_statevars, only : c_switch
         use generalUtils, only : parseTimeStamp,closeEnough
 
@@ -1399,10 +1580,14 @@ contains
         real, intent(in) :: longitude       !< Longitude of grid cell of interest
         real, intent(in) :: latitude        !< Latitude of grid cell of interest
         integer, intent(in) :: nday         !< Maximum number of physics timesteps in one day
-        real, intent(in) :: delt            !< Physics timestep (s)
+
+        integer, intent(in), optional :: projLonInd !< Longitude index of the cell for projected grid runs
+        integer, intent(in), optional :: projLatInd !< Latitude index of the cell for projected grid runs
 
         integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
         integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+        logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+                                            !! regions referenced by the indexes, not coordinates, when running a sub-region
 
         real :: moStart,moEnd,domStart,domEnd !< Assumed start and end months and days of month
         real :: timeStart, timeEnd            !< Calculated start and end in the format:%Y%m%d.%f
@@ -1414,6 +1599,7 @@ contains
         integer :: firstIndex
         real, dimension(5) :: firstTime,secondTime
 
+        projectedGrid     => c_switch%projectedGrid
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
 
@@ -1457,6 +1643,14 @@ contains
             end if
         end do
 
+        !  Error check, if metTime is of shape 0 then your met year start is
+        ! not in your met file so throw an error message
+        if (size(metTime) == 0) then 
+          print*,'***Check readMetStartYear in your joboptions file '
+          print*,'as it appears to be in conflict with your met file'
+          call XIT('model_state_drivers:getMet',-1)
+        end if 
+        
         ! Check that the first day is Jan 1, otherwise warn the user
         firstTime =  parseTimeStamp(metTime(1))
         if (.not. closeEnough(firstTime(5),1.,0.001)) then
@@ -1469,8 +1663,15 @@ contains
         metInputTimeStep = (secondTime(4) - firstTime(4)) * 86400.
 
         ! Find the closest cell to our lon and lat
-        lonloc = closestCell(metFssId,'lon',longitude)
-        latloc = closestCell(metFssId,'lat',latitude)
+        if (.not. projectedGrid) then
+          lonloc = closestCell(metFssId,'lon',longitude)
+          latloc = closestCell(metFssId,'lat',latitude)
+        else
+          ! For projected grids, we use the index of the cells, not their coordinates.
+          ! So the index has been passed in as a real, convert here to an integer.
+          lonloc = projLonInd
+          latloc = projLatInd
+        end if
 
         ! Now read in the whole MET times series and store it for each variable
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
@@ -1478,11 +1679,10 @@ contains
 
         ! NOTE: Carefully check that your incoming inputs are in the expected units!
 
-        ! Also take care here. If you use ncdump on a file it will show the opposite order for the
+        ! WARNING. If you use ncdump on a file it will show the opposite order for the
         ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
         ! var(time,lon,lat) from the perspective of fortran. Pay careful attention!
 
-        !metFss = ncGet1DVar(metFssId, 'Incoming_Short_Wave_Radiation', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
         metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
@@ -1500,16 +1700,17 @@ contains
     !!@{
     !> This transfers the met data of this time step from the read-in array to the
     !! instantaneous variables. This also sets iyear to the present year of MET being read in.
+    !>@author Joe Melton
 
-    subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
+    subroutine updateMet(metTimeIndex,iyear,iday,ihour,imin,metDone)
 
+        use classic_params, only : delt
         use class_statevars, only : class_rot
         use generalUtils, only : parseTimeStamp
 
         implicit none
 
         integer, intent(inout) :: metTimeIndex      !< Index to read from met file
-        real,    intent(in) :: delt                 !< Physics timestep (s)
         integer, intent(out) :: iyear               !< Present year of simulation
         integer, intent(out) :: iday                !< Present day of simulation
         integer, intent(out) :: ihour               !< Present hour of simulation
@@ -1561,6 +1762,13 @@ contains
         PREROW(i)   = metPre(metTimeIndex)
         TAROW(i)    = metTa(metTimeIndex) ! This is converted from the read-in degree C to K in main_driver!
         QAROW(i)    = metQa(metTimeIndex)
+        ! To prevent a divide by zero in CLASSI, we set this lower limit on the specific humidity.
+        if (QAROW(i) .eq. 0.) then 
+          QAROW(i) = 1.E-6
+          print*,'Warning, specific humidity of 0 in your input file. metTimeindex=',metTimeIndex
+          print*,'setting to 1.E-6 g/kg and moving on (updateMet)'
+        end if
+          
         UVROW(i)    = metUv(metTimeIndex)
         PRESROW(i)  = metPres(metTimeIndex)
 
@@ -1577,6 +1785,7 @@ contains
     !>\ingroup model_state_drivers_closestCell
     !!@{
     !> Finds the closest grid cell in the file
+    !>@author Joe Melton
 
     integer function closestCell(ncid,label,gridPoint)
 
@@ -1605,6 +1814,7 @@ contains
     !>\ingroup model_state_drivers_deallocInput
     !!@{
     !> Deallocates the input files arrays
+    !>@author Joe Melton
 
     subroutine deallocInput
 
@@ -1620,6 +1830,9 @@ contains
         if (allocated(LGHTFromFile))  deallocate(LGHTFromFile)
         if (allocated(LUCTime))       deallocate(LUCTime)
         if (allocated(LUCFromFile))   deallocate(LUCFromFile)
+        if (allocated(OBSWETFTime)) deallocate(OBSWETFTime)
+        if (allocated(OBSWETFFromFile)) deallocate(OBSWETFFromFile)
+
         deallocate(metTime,metFss,metFdl,metPre,metPres,metQa,metTa,metUv)
 
     end subroutine deallocInput

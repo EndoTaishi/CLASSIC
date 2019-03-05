@@ -1,5 +1,6 @@
 !>\file
 !! Performs allocation of carbon gained by photosynthesis into plant structural pools
+!!@author Vivek Arora, Joe Melton
 !!
 !!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
 !!biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a
@@ -22,9 +23,12 @@
 !!\f[  W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i})  r_{i}. \hspace{10pt}[Eqn 1]\f]
 !!
 !!The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction
-!!coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also ctem_params.f90), as for trees and crops:
+!!coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also classic_params.f90), as for trees and crops:
+!!
 !!\f[ L = \exp(-k_\mathrm{n} LAI) ;\hspace{10pt}[Eqn 2]\f]
+!!
 !! and for grasses:
+!!
 !!\f[ L = \max\left(0,1-\frac{LAI}{4.5}\right).  \hspace{10pt}[Eqn 3]\f]
 !!
 !!For PFTs with a stem component (i.e. tree and crop PFTs), the fractions of positive NPP
@@ -38,8 +42,8 @@
 !!
 !!The base allocation fractions for each component (leaves -- \f$\epsilon_\mathrm{L}\f$,
 !!stem -- \f$\epsilon_\mathrm{S}\f$, and roots -- \f$\epsilon_\mathrm{R}\f$) are PFT-dependent
-!!(see also ctem_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
-!!The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also ctem_params.f90), determines the sensitivity
+!!(see also classic_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
+!!The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also classic_params.f90), determines the sensitivity
 !!of the allocation scheme to changes in \f$W\f$ and \f$L\f$. Larger values of \f$\omega_\mathrm{a}\f$ yield
 !!higher sensitivity to changes in \f$L\f$ and \f$W\f$.
 !!
@@ -59,13 +63,13 @@
 !!\f[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\f]
 !!
 !!where \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$ and \f$C_\mathrm{L}\f$ are the carbon in the stem,
-!!root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also ctem_params.f90)
+!!root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also classic_params.f90)
 !!and parameter \f$\kappa\f$ has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters
 !!are based on the Frankfurt Biosphere Model (FBM) Ludeke et al. (1994) \cite Ludeke1994-px. This constraint (Eq. 9) is based
 !!on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As
 !!grasses have no stem component, Eq. 9 determines their root to shoot ratio (i.e. the ratio of
 !!belowground to aboveground biomass). The final condition ensures that a minimum realistic root
-!!to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also ctem_params.f90). Root mass
+!!to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also classic_params.f90). Root mass
 !!is required for nutrient and water uptake and support for the aboveground biomass. If the minimum
 !!root to shoot ratio is not being maintained, carbon is allocated preferentially to roots.
 !!
@@ -83,7 +87,7 @@ C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
 C     J. Melton       Fixed that and also brought in isand so that the layers of
 C                     bedrock won't have their rmat used.
 c
-c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 c     J. Melton
 c
 c     5   Jul 2013  - Fixed bug with initializing the variables. Brought in
@@ -98,25 +102,25 @@ c     24  Sep 2012  - Add in checks to prevent calculation of non-present
 c     J. Melton       pfts
 c
 c     05  May 2003  - This subroutine calculates the allocation fractions
-c     V. Arora        for leaf, stem, and root components for ctem's pfts 
+c     V. Arora        for leaf, stem, and root components for ctem's pfts
 c
-c     inputs 
+c     inputs
 c     icc       - no. of ctem plant function types, currently 9
 c     ignd        - no. of soil layers (currently 3)
 c     ilg       - no. of grid cells in latitude circle
 c     ican        - number of class pfts
 c
-
-      use ctem_params,        only : eta, kappa, kn, abszero, icc, ilg,
-     1                               ignd, kk, ican, omega, epsilonl,
+      use classic_params,   only : eta, kappa, kn, abszero, icc, ilg,
+     1                               ignd, ican, omega, epsilonl,
      2                               epsilons, epsilonr, caleaf, castem,
-     3                               caroot, consallo, rtsrmin, aldrlfon
+     3                               caroot, consallo, rtsrmin,aldrlfon,
+     4                               classpfts
 c
       implicit none
       integer il1 !<input: il1=1
       integer il2 !<input: il2=ilg
       integer i, j, k
-      integer lfstatus(ilg,icc) !<input: leaf status. an integer indicating if leaves are  
+      integer lfstatus(ilg,icc) !<input: leaf status. an integer indicating if leaves are
                                 !<in "max. growth", "normal growth", "fall/harvest",
                                 !<or "no leaves" mode. see phenolgy subroutine for more details.
       integer n, k1,  k2,   m
@@ -155,7 +159,7 @@ c
 c
 c
 c     ------------------------------------------------------------------
-c     Constants and parameters are located in ctem_params.f90
+c     Constants and parameters are located in classic_params.f90
 c     ---------------------------------------------------------------
 c
 c     initialize required arrays to 0
@@ -183,14 +187,14 @@ c                             !<will have n cycle in the model
 c
           mnstrtms(i,j)=0.0   !<min. (stem+root) biomass needed to
 c                             !<support leaves
-150     continue                  
+150     continue
 140   continue
 c
-c     initialization ends    
+c     initialization ends
 c
 c     ------------------------------------------------------------------
 !>
-!!Calculate liquid soil moisture content, and wilting and field capacity 
+!!Calculate liquid soil moisture content, and wilting and field capacity
 !!soil moisture contents averaged over the root zone. note that while
 !!the soil moisture content is same under the entire gcm grid cell,
 !!soil moisture averaged over the rooting depth is different for each
@@ -198,7 +202,7 @@ c     ------------------------------------------------------------------
 !!
       do 200 j = 1, icc
         do 210 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           do 215 n = 1, ignd
            if (isand(i,n) .ne. -3) then !Only for non-bedrock
             avTHLW(i,j) = avTHLW(i,j) + THLW(i,n)*rmatctem(i,j,n)
@@ -215,7 +219,7 @@ c     ------------------------------------------------------------------
 200   continue
 
 !>
-!!Using liquid soil moisture content together with wilting and field 
+!!Using liquid soil moisture content together with wilting and field
 !!capacity soil moisture contents averaged over the root zone, find
 !!soil water status.
 !!
@@ -232,12 +236,12 @@ c     ------------------------------------------------------------------
           else
             wtstatus(i,j)=1.0
           endif
-         endif                
+         endif
 240     continue
 230   continue
 !>
 !!Calculate light status as a function of lai and light extinction
-!!parameter. for now set nitrogen status equal to 1, which means 
+!!parameter. for now set nitrogen status equal to 1, which means
 !!nitrogen is non-limiting.
 !!
       k1=0
@@ -250,13 +254,17 @@ c     ------------------------------------------------------------------
        k2 = k1 + nol2pfts(j) - 1
        do 255 m = k1, k2
         do 260 i = il1, il2
-          if(j.eq.4) then  ! grasses
-            ltstatus(i,m)=max(0.0, (1.0-(ailcg(i,m)/4.0)) )
-          else             ! trees and crops
-            ltstatus(i,m)=exp(-kn(sort(m))*ailcg(i,m))
-          endif
+          select case (classpfts(j))
+          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
+               ltstatus(i,m)=exp(-kn(sort(m))*ailcg(i,m))    
+          case ('Grass')  ! grass
+               ltstatus(i,m)=max(0.0,(1.0-(ailcg(i,m)/4.0)))    
+          case default
+            print*,'Unknown CLASS PFT in allocate ',classpfts(j)
+            call XIT('allocate',-1)                 
+          end select
           nstatus(i,m) =1.0
-260     continue 
+260     continue
 255    continue
 250   continue
 !>
@@ -265,7 +273,7 @@ c     ------------------------------------------------------------------
 !!
       do 380 j = 1,icc
         do 390 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           wnstatus(i,j)=min(nstatus(i,j),wtstatus(i,j))
          endif
 390     continue
@@ -274,7 +282,7 @@ c     ------------------------------------------------------------------
 !!now that we know water, light, and nitrogen status we can find
 !!allocation fractions for leaves, stem, and root components. note
 !!that allocation formulae for grasses are different from those
-!!for trees and crops, since there is no stem component in grasses. 
+!!for trees and crops, since there is no stem component in grasses.
 !!
       k1=0
       do 400 j = 1, ican
@@ -287,20 +295,24 @@ c     ------------------------------------------------------------------
        do 405 m = k1, k2
         do 410 i = il1, il2
           n = sort(m)
-          if(j.le.3)then           !trees and crops
-            denom = 1.0 + (omega(n)*( 2.0-ltstatus(i,m)-wnstatus(i,m) ))    
-            afrstem(i,m)=( epsilons(n)+omega(n)*(1.0-ltstatus(i,m)) )/
+          select case (classpfts(j))
+          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
+            denom =1.0+(omega(n)*(2.0-ltstatus(i,m)-wnstatus(i,m)))    
+            afrstem(i,m)=(epsilons(n)+omega(n)*(1.0-ltstatus(i,m)))/
+     &                      denom  
+            afrroot(i,m)=(epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)))/
+     &                      denom  
+            afrleaf(i,m)=epsilonl(n)/denom        
+          case ('Grass') ! grass
+            denom =1.0+(omega(n)*(1.0+ltstatus(i,m)-wnstatus(i,m)))
+            afrleaf(i,m)=(epsilonl(n)+omega(n)*ltstatus(i,m))/denom  
+            afrroot(i,m)=(epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)))/
      &                     denom  
-            afrroot(i,m)=( epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)) )/
-     &                     denom  
-            afrleaf(i,m)=  epsilonl(n)/denom 
-          else if (j.eq.4) then     !grasses
-            denom = 1.0 + (omega(n)*( 1.0+ltstatus(i,m)-wnstatus(i,m) ))
-            afrleaf(i,m)=( epsilonl(n) + omega(n)*ltstatus(i,m) ) /denom  
-            afrroot(i,m)=( epsilonr(n)+omega(n)*(1.0-wnstatus(i,m)) )/
-     &                     denom  
-            afrstem(i,m)= 0.0
-          endif
+            afrstem(i,m)= 0.0    
+          case default
+            print*,'Unknown CLASS PFT in allocate ',classpfts(j)
+            call XIT('allocate',-2)                                 
+          end select
 410     continue
 405    continue
 400   continue
@@ -311,7 +323,7 @@ c     ------------------------------------------------------------------
       if(consallo)then
         do 420 j = 1, icc
           do 421 i = il1, il2
-           if (fcancmx(i,j).gt.0.0) then 
+           if (fcancmx(i,j).gt.0.0) then
             afrleaf(i,j)=caleaf(sort(j))
             afrstem(i,j)=castem(sort(j))
             afrroot(i,j)=caroot(sort(j))
@@ -325,25 +337,25 @@ c     ------------------------------------------------------------------
 
 
       do 430 j = 1, icc
-        do 440 i = il1, il2 
+        do 440 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
-          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero) 
-     &    then  
+          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero)
+     &    then
            write(6,2000) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2000       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',e12.7)
-          call xit('allocate',-2)
+          call xit('allocate',-3)
           endif
          endif
 440     continue
 430   continue
 !>
 !!the allocation fractions calculated above are overridden by two
-!!rules. 
+!!rules.
 !!
-!!rule 1 which states that at the time of leaf onset which corresponds 
-!!to leaf status equal to 1, more c is allocated to leaves so 
-!!that they can grow asap. in addition when leaf status is 
+!!rule 1 which states that at the time of leaf onset which corresponds
+!!to leaf status equal to 1, more c is allocated to leaves so
+!!that they can grow asap. in addition when leaf status is
 !!"fall/harvest" then nothing is allocated to leaves.
 !!
       k1=0
@@ -356,24 +368,30 @@ c     ------------------------------------------------------------------
        k2 = k1 + nol2pfts(j) - 1
        do 505 m = k1, k2
         do 510 i = il1, il2
-         if (fcancmx(i,m).gt.0.0) then 
+         if (fcancmx(i,m).gt.0.0) then
           if(lfstatus(i,m).eq.1) then
             aleaf(i,m)=aldrlfon(sort(m))
-!>
-!!for grasses we use the usual allocation even at leaf onset
-!!
-            if(j.eq.4)then
+
+	           !>for grasses we use the usual allocation even at leaf onset
+             
+            select case (classpfts(j)) 
+            case ('Grass') 
               aleaf(i,m)=afrleaf(i,m)
-            endif
-c
+            case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh') 
+              ! Do nothing for non-grass
+            case default
+              print*,'Unknown CLASS PFT in allocate ',classpfts(j)
+              call XIT('allocate',-4)                               
+            end select
+
             diff  = afrleaf(i,m)-aleaf(i,m)
-            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then 
+            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then
               term1 = afrstem(i,m)/(afrstem(i,m)+afrroot(i,m))
               term2 = afrroot(i,m)/(afrstem(i,m)+afrroot(i,m))
             else
               term1 = 0.0
               term2 = 0.0
-            endif 
+            endif
             astem(i,m) = afrstem(i,m) + diff*term1
             aroot(i,m) = afrroot(i,m) + diff*term2
             afrleaf(i,m)=aleaf(i,m)
@@ -382,13 +400,13 @@ c
           else if(lfstatus(i,m).eq.3)then
             aleaf(i,m)=0.0
             diff  = afrleaf(i,m)-aleaf(i,m)
-            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then 
+            if((afrstem(i,m)+afrroot(i,m)).gt.abszero)then
               term1 = afrstem(i,m)/(afrstem(i,m)+afrroot(i,m))
               term2 = afrroot(i,m)/(afrstem(i,m)+afrroot(i,m))
             else
               term1 = 0.0
               term2 = 0.0
-            endif 
+            endif
             astem(i,m) = afrstem(i,m) + diff*term1
             aroot(i,m) = afrroot(i,m) + diff*term2
             afrleaf(i,m)=aleaf(i,m)
@@ -401,24 +419,24 @@ c
 500   continue
 
 !>
-!!rule 2 overrides rule 1 above and makes sure that we do not allow the 
-!!amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed 
-!!an amount such that the remaining woody biomass cannot support. 
-!!if this happens, allocation to leaves is reduced and most npp 
-!!is allocated to stem and roots, in a proportion based on calculated 
-!!afrstem and afrroot. for grasses this rule essentially constrains 
-!!the root:shoot ratio, meaning that the model grasses can't have 
+!!rule 2 overrides rule 1 above and makes sure that we do not allow the
+!!amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed
+!!an amount such that the remaining woody biomass cannot support.
+!!if this happens, allocation to leaves is reduced and most npp
+!!is allocated to stem and roots, in a proportion based on calculated
+!!afrstem and afrroot. for grasses this rule essentially constrains
+!!the root:shoot ratio, meaning that the model grasses can't have
 !!lots of leaves without having a reasonable amount of roots.
 !!
       do 530 j = 1, icc
         n=sort(j)
         do 540 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
-c         find min. stem+root biomass needed to support the green leaf 
+         if (fcancmx(i,j).gt.0.0) then
+c         find min. stem+root biomass needed to support the green leaf
 c         biomass.
           mnstrtms(i,j)=eta(n)*(gleafmas(i,j)**kappa(n))
 c
-          if( (stemmass(i,j)+rootmass(i,j)).lt.mnstrtms(i,j)) then   
+          if( (stemmass(i,j)+rootmass(i,j)).lt.mnstrtms(i,j)) then
             if( (afrstem(i,j)+afrroot(i,j)).gt.abszero ) then
               aleaf(i,j)=min(0.05,afrleaf(i,j))
               diff  = afrleaf(i,j)-aleaf(i,j)
@@ -447,10 +465,10 @@ c
       do 541 j = 1, icc
         n=sort(j)
         do 542 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           if( (stemmass(i,j)+gleafmas(i,j)).gt.0.05)then
             if( (rootmass(i,j)/(stemmass(i,j)+gleafmas(i,j))).
-     &      lt.rtsrmin(n) ) then  
+     &      lt.rtsrmin(n) ) then
               astem(i,j)=min(0.05,afrstem(i,j))
               diff = afrstem(i,j)-astem(i,j)
               afrstem(i,j)=afrstem(i,j)-diff
@@ -466,15 +484,15 @@ c
 !!
       do 550 j = 1, icc
         do 560 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           if( (afrleaf(i,j).lt.0.0).or.(afrstem(i,j).lt.0.0).or.
      &    (afrroot(i,j).lt.0.0))then
            write(6,2200) i,j
-2200       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions 
-     & negative') 
+2200       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
+     & negative')
            write(6,2100)afrleaf(i,j),afrstem(i,j),afrroot(i,j)
 2100       format(' aleaf = ',f12.9,' astem = ',f12.9,' aroot = ',f12.9)
-           call xit('allocate',-3)
+           call xit('allocate',-5)
           endif
          endif
 560     continue
@@ -482,13 +500,13 @@ c
 c
       do 580 j = 1, icc
         do 590 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
-          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero) 
-     &    then  
+         if (fcancmx(i,j).gt.0.0) then
+          if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero)
+     &    then
            write(6,2300) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2300       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',f12.7)
-           call xit('allocate',-4)
+           call xit('allocate',-6)
           endif
          endif
 590     continue
@@ -496,4 +514,3 @@ c
 c
       return
       end
-

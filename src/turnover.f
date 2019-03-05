@@ -1,7 +1,7 @@
 !>\file
 !!Calculates the litter generated from stem and root turnover
-!!
-!!The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation (\f$kg\,C\,m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem (\f$D_\mathrm{S}\f$) and root (\f$D_\mathrm{R}\f$) components is calculated based on the amount of biomass in the respective components (\f$C_\mathrm{S}, C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also ctem_params.f90) as
+!!@author V. Arora, J. Melton 
+!!The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation (\f$kg\,C\,m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem (\f$D_\mathrm{S}\f$) and root (\f$D_\mathrm{R}\f$) components is calculated based on the amount of biomass in the respective components (\f$C_\mathrm{S}, C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classic_params.f90) as
 !!\f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\f]
 !!
       subroutine turnover (stemmass, rootmass,  lfstatus,    ailcg,
@@ -14,7 +14,7 @@ c    5 ----------- inputs which are updated above this line -----------
 c    7 ------------------outputs above this line ----------------------
 c
 c               
-c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 c     J. Melton
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -31,8 +31,8 @@ c     icc       - no. of ctem plant function types, currently 9
 c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts
 
-      use ctem_params,        only : icc, ilg, ican, kk, zero, stemlife,
-     1                               rootlife, stmhrspn
+      use classic_params, only : icc, ilg, ican, kk, zero, stemlife,
+     1                               rootlife, stmhrspn,classpfts
 c
       implicit none
 c
@@ -65,7 +65,7 @@ c
                              !<also assumed to be harvested and this generates litter.
 !>
 !!------------------------------------------------------------------
-!!Constants and parameters are located in ctem_params.f90
+!!Constants and parameters are located in classic_params.f90
 !!---------------------------------------------------------------
 !!
 !!initialize required arrays to zero
@@ -130,32 +130,35 @@ c
        do 255 m = k1, k2
         do 260 i = il1, il2
          if (fcancmx(i,m).gt.0.0) then
-          if(j.eq.3)then     !>stem/root harvest/death for crops
 c
-            if(lfstatus(i,m).eq.3.and.stmhrlos(i,m).le.zero.and.
-     &      stemmass(i,m).gt.zero)then          
-              stmhrlos(i,m)=stemmass(i,m)*(1.0/stmhrspn)
-            endif
-c
-            if(lfstatus(i,m).eq.3.and.rothrlos(i,m).le.zero.and.
-     &      rootmass(i,m).gt.zero)then          
-              rothrlos(i,m)=rootmass(i,m)*(1.0/stmhrspn)   
-            endif
-c
-            if(stemmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
-     &      lfstatus(i,m).eq.2)then
+          select case (classpfts(j))
+            case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh') 
               stmhrlos(i,m)=0.0
-            endif
-c
-            if(rootmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
-     &      lfstatus(i,m).eq.2)then
               rothrlos(i,m)=0.0
-            endif
-c
-          else
-            stmhrlos(i,m)=0.0
-            rothrlos(i,m)=0.0
-          endif
+            case('Crops')
+              if(lfstatus(i,m).eq.3.and.stmhrlos(i,m).le.zero.and.
+     &          stemmass(i,m).gt.zero)then          
+                stmhrlos(i,m)=stemmass(i,m)*(1.0/stmhrspn)
+              endif
+  
+              if(lfstatus(i,m).eq.3.and.rothrlos(i,m).le.zero.and.
+     &           rootmass(i,m).gt.zero)then          
+                rothrlos(i,m)=rootmass(i,m)*(1.0/stmhrspn)   
+              endif
+  
+              if(stemmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
+     &         lfstatus(i,m).eq.2)then
+                stmhrlos(i,m)=0.0
+              endif
+  
+              if(rootmass(i,m).le.zero.or.lfstatus(i,m).eq.1.or.
+     &           lfstatus(i,m).eq.2)then
+                rothrlos(i,m)=0.0
+              endif
+            case default
+              print*,'Unknown CLASS PFT in turnover ',classpfts(j)
+              call XIT('turnover',-1)                                             
+          end select
          endif
 260     continue
 255    continue   

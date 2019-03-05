@@ -1,10 +1,11 @@
 !
 !> Performs disaggregation of input meteorological forcing arrays to the model physics timestep
+!!@author V. Arora, J. Melton 
 module metDisaggModule
 
     use model_state_drivers, only : metInputTimeStep,metTime,metFss,metFdl,metPre,metTa,metQa,metUv,metPres
     use generalUtils, only : closeEnough,parseTimeStamp
-    use ctem_params, only : pi
+    use classic_params, only : pi
 
     implicit none
 
@@ -31,12 +32,14 @@ contains
 !>\ingroup metDisaggModule_disaggMet
 !!@{
 !> Main subroutine to disaggregate input meteorology to that of the physics timestep
-    subroutine disaggMet(longitude, latitude,delt) ! longitude, latitude
 
+    subroutine disaggMet(longitude, latitude) ! longitude, latitude
+
+        use classic_params, only : delt
+        
         implicit none
 
         real, intent(in)    :: longitude, latitude  !in degrees
-        real, intent(in)    :: delt                 !< Simulation physics timestep
         integer             :: vcount,vcountPlus
 
         !> First check that we should be doing the disaggregation. If we are already
@@ -67,7 +70,7 @@ contains
         !> Expand original MET data to physics timestep. This increases the array size
         !! and puts the old values within the larger array. It also duplicates the first
         !! and last days for the interpolation. This also expands the time array (metTime)
-        call makebig(vcount,vcountPlus,delt)
+        call makebig(vcount,vcountPlus)
 
         !> Perform the interpolations that are either step (for longwave), linear (for
         !! for air temperature, specific humidity, wind, pressure), randomly distributed
@@ -77,12 +80,12 @@ contains
         call linearInterpolation(metQa)
         call linearInterpolation(metUv)
         call linearInterpolation(metPres)
-        call precipDistribution(metPre,delt)
-        call diurnalDistribution(metFss, latitude,delt)
+        call precipDistribution(metPre)
+        call diurnalDistribution(metFss, latitude)
 
         !> Adjust the met arrays for the timezone relative to Greenwich and also
         !! trim off the added two days.
-        call timeShift(timeZone(longitude,delt),vcount,vcountPlus)
+        call timeShift(timeZone(longitude),vcount,vcountPlus)
 
     end subroutine disaggMet
 !!@}
@@ -94,13 +97,14 @@ contains
 !! timesteps on the physics timestep. Also copies the first day and last day values
 !! into the array to give a startday -1 and endday + 1 values for the interpolations.
 !! While we are at it we also expand the time array
-    subroutine makebig(vcount,vcountPlus,delt)
+    subroutine makebig(vcount,vcountPlus)
 
+        use classic_params, only : delt
+        
         implicit none
 
         integer, intent(in) :: vcount
         integer, intent(in) :: vcountPlus
-        real, intent(in) :: delt
         real, allocatable, dimension(:) :: tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres,tmpTime
         integer :: i,j,timePlusTwoDays
 
@@ -226,27 +230,39 @@ contains
 !>\ingroup metDisaggModule_precipDistribution
 !!@{
 !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
-    subroutine precipDistribution(var,delt)
+    subroutine precipDistribution(var)
 
-        implicit none
+      use classic_params, only : delt,zero
+      
+      implicit none
 
-        real, intent(inout)                         :: var(:)
-        real, intent(in)                            :: delt
-        integer                                     :: i, j, k, T,start, endpt, countr,wetpds
-        real                                        :: temp,startpre
-        real, allocatable, dimension(:)             :: random
-        integer, allocatable, dimension(:)             :: sort_ind
+      real, intent(inout)                         :: var(:)
+      integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
+      real                                        :: temp,startpre
+      real, allocatable, dimension(:)             :: random
+      integer, allocatable, dimension(:)          :: sort_ind
+      real, allocatable, dimension(:)             :: incomingPre,tmpvar
+      logical                                     :: needDistrib
+      
+      !Set some initial conditions
+      needDistrib=.true.
+      attempts = 1
 
         allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
 
         countr = size(var)
-
+                
         ! Loop through the metInputTimeStep timesteps (commonly 6 hr)
 
         ! Adjust the precip from mm/s to mm/6h (or mm/3h). The relationship below is
         ! derived for mm/6h originally.
         var = var * metInputTimeStep
 
+        ! Save the incoming precip for balance check later
+      allocate(incomingPre(countr),tmpvar(countr))
+        incomingPre = var
+
+      do while (needDistrib)
         do i = 1, countr/numberPhysInMet
 
             start = (i - 1) * numberPhysInMet + 1
@@ -257,7 +273,8 @@ contains
 
             if (var(start) > 0.) then
 
-                startpre = var(start)
+                startpre = var(start) * 1.E6 ! bump this up so we don't have problems due to truncation later.
+                                             ! the numbers can be small so get truncated which leads to no balance.
 
                 ! We expect precipitation for this relation to be in mm/6h
                 wetpds = nint( &
@@ -269,7 +286,7 @@ contains
                                     )
 
                 ! Create an array of random numbers
-                call random_number(random)
+                call random_number(random(:))
 
                 ! Create an array of integers from 1 to numberPhysInMet
                 do k = 1,numberPhysInMet
@@ -296,35 +313,59 @@ contains
                 end do
 
                 ! Set all values in random to 0 in preparation for reassignment
-                random = 0.
+                random(:) = 0.
 
                 ! Produces random list of 1s and 0s
                 do j = 1, wetpds
                     call random_number(random(sort_ind(j)))
                 end do
-                random = random / sum(random)
+                
+                random(:) = random(:) / sum(random(:))
 
+                ! Check if random now sums to 1, if not readjust.
+                if (sum(random(:)) /= 1.0) then
+                  random(:) = random(:) / sum(random(:))
+                end if
+                
                 ! Disperse precipitiation randomly across the random indice
                 k = 1
                 do j = start,endpt
-                    ! Assign this time period its precipitation
-                    var(j) = random(k) * startpre
-                    !print*,j,k,random(k),startpre,var(j)
-                    k = k + 1
+                  ! Assign this time period its precipitation
+                  tmpvar(j) = random(k) * startpre
+                  k = k + 1
                 end do
-
+              
             else !No precip, move on.
-                wetpds = 0
-                var(start:endpt) = 0.
+              wetpds = 0
+              tmpvar(start:endpt) = 0.
             end if
 
         enddo
 
+        tmpvar = tmpvar * 1E-6 !bump back down so it back in expected units.
+        
+        ! Balance check that we have conserved our precip
+        if ((sum(tmpvar)-sum(incomingPre)) > 1.0e-5) then 
+          if (attempts > 3) then            
+            print*,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
+            call XIT('metModule',-1)
+            return ! this is needed here as it ensures we don't get caught in a loop where it keeps failing but not moving on.
+          else ! retry, could have just been a bad draw.
+            needDistrib = .true.
+            attempts = attempts + 1
+          end if
+        else 
+          ! All is well, finish up.
+          needDistrib = .false.
+        end if
+        
+      end do !needDistrib
+
         ! So we now have the amount of precip in each physics timestep (mm/delt)
         ! we now need to then convert back to mm/s
-        var = var / delt
+      var = tmpvar / delt
 
-        deallocate(random,sort_ind)
+      deallocate(random,sort_ind,incomingPre,tmpvar)
 
     end subroutine precipDistribution
 !!@}
@@ -333,13 +374,14 @@ contains
 !>\ingroup metDisaggModule_diurnalDistribution
 !!@{
 !> Diurnal distribution over the entire timespan
-    subroutine diurnalDistribution(shortWave, latitude,delt)
+    subroutine diurnalDistribution(shortWave, latitude)
 
+        use classic_params, only : delt
+        
         implicit none
 
         real, intent(inout)                         :: shortWave(:)
         real, intent(in)                            :: latitude
-        real, intent(in)                            :: delt
         integer                                     :: i,d, start, endpt, midday
         integer, allocatable                        :: daylightIndYear(:,:)
         real, allocatable                           :: zenithAngYear(:,:)
@@ -367,7 +409,7 @@ contains
                 zenithAngYear(d,:) = zenithAngles(timesteps, d, latRad, 365,shortSteps)
                 ! Find the zenith angle at noon
                 zenithNoon(d) = zenithAngYear(d,midday)
-                daylightIndYear(d,:) = daylightIndices(zenithAngYear(d,:),delt,shortSteps)
+                daylightIndYear(d,:) = daylightIndices(zenithAngYear(d,:),shortSteps)
         end do
 
         d=365 ! We start on day 365 since we have the extra day added on the start
@@ -429,14 +471,15 @@ contains
 !>\ingroup metDisaggModule_daylightIndices
 !!@{
 !> Find day lengths depending on zenith angles
-    function daylightIndices(zenithAngles,delt,countr)
+    function daylightIndices(zenithAngles,countr)
 
+        use classic_params, only : delt
+        
         implicit none
 
         integer                         :: i, daylightCount
         integer, intent(in)             :: countr
         real,  intent(in)               :: zenithAngles(:)
-        real,  intent(in)               :: delt
         integer, allocatable            :: daylightIndices(:)
         real                            :: zenithCos
         real                            :: dayLength
@@ -506,12 +549,13 @@ contains
 !>\ingroup metDisaggModule_timeZone
 !!@{
 !> Find the local timezone relative to Greenwich.
-    real function timeZone(longitude,delt)
+    real function timeZone(longitude)
 
+        use classic_params, only : delt
+        
         implicit none
 
         real,       intent(in)      :: longitude
-        real,       intent(in)      :: delt
 
         !> Each timezone is 15 deg of longitude per hour. So convert our physics
         !! timestep into a minutes equivalent.

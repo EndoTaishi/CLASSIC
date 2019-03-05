@@ -1,7 +1,8 @@
 !>\file
 !>Calls subroutines to perform surface energy budget calculations.
-!>
-
+!!@author D. Verseghy, M. Lazare, K. Abdella, P. Bartlett, M. Namazi, M. MacDonald,
+!! E. Chan, J. Melton, A. Wu, JP Paquin, L Duarte, Y. Delage
+!
       SUBROUTINE CLASST (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1   THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG,
      2   GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -181,6 +182,9 @@ C     *                         HARD-CODED FOR USE ON PCS.
 C     * NOV 05/93 - M.LAZARE.   ADD NEW DIAGNOSTIC OUTPUT FIELD: DRAG.
 C     * JUL 27/93 - D.VERSEGHY/M.LAZARE. PREVIOUS VERSION CLASSTO.
 C
+      use classic_params, only : DELT,TFREZ,GRAV,SBC,VKC,VMIN,HCPICE,
+     1                           HCPW,SPHAIR,RHOW,RHOICE
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -525,24 +529,6 @@ C     * TEMPORARY VARIABLES.
 C
       REAL THTOT,CA,CB,WACSAT,QACSAT,RATIOM,RATIOH,FACTM,FACTH          
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,
-     1     TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,
-     2     HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     3     TCGLAC,CLHMLT,CLHVAP,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,
-     4     BETA,FACTN,HMIN,ANGMAX
-C
-      COMMON /CLASS1/ DELT,TFREZ                                       
-      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
-     1                RHOSOL,RHOOM
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
-      COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-C
 C----------------------------------------------------------------------
 C
 C     * CALCULATION OF ATMOSPHERIC INPUT FIELDS REQUIRED BY CLASS FROM 
@@ -836,7 +822,7 @@ C
                       ZRSLFH(I)=ZREFH(I)-ZOM(I)-DISPS(I)
                       ZDSLM(I)=ZDIAGM(I)-ZOM(I)
                       ZDSLH(I)=ZDIAGH(I)-ZOM(I)
-                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/CPD
+                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/SPHAIR
                   ELSE
                       ZRSLDM(I)=ZREFM(I)+ZOM(I)
                       ZRSLDH(I)=ZREFH(I)+ZOM(I)
@@ -1035,7 +1021,7 @@ C
                       ZRSLFH(I)=ZREFH(I)-ZOM(I)
                       ZDSLM(I)=ZDIAGM(I)-ZOM(I)
                       ZDSLH(I)=ZDIAGH(I)-ZOM(I)
-                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/CPD
+                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/SPHAIR
                   ELSE
                       ZRSLDM(I)=ZREFM(I)+ZOM(I)
                       ZRSLDH(I)=ZREFH(I)+ZOM(I)
@@ -1196,7 +1182,7 @@ C
                       ZRSLFH(I)=ZREFH(I)-ZOM(I)-DISP(I)
                       ZDSLM(I)=ZDIAGM(I)-ZOM(I)
                       ZDSLH(I)=ZDIAGH(I)-ZOM(I)
-                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/CPD
+                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/SPHAIR
                   ELSE
                       ZRSLDM(I)=ZREFM(I)+ZOM(I)
                       ZRSLDH(I)=ZREFH(I)+ZOM(I)
@@ -1382,7 +1368,7 @@ C
                       ZRSLFH(I)=ZREFH(I)-ZOM(I)
                       ZDSLM(I)=ZDIAGM(I)-ZOM(I)
                       ZDSLH(I)=ZDIAGH(I)-ZOM(I)
-                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/CPD
+                      TPOTA(I)=TA(I)+ZRSLFH(I)*GRAV/SPHAIR
                   ELSE
                       ZRSLDM(I)=ZREFM(I)+ZOM(I)
                       ZRSLDH(I)=ZREFH(I)+ZOM(I)

@@ -2,7 +2,8 @@
 C!Calculates canopy interception of rainfall and snowfall,
 C!and determines rainfall/snowfall rates at ground surface as a
 C!result of throughfall and unloading.
-C!   
+!!@author D. Verseghy, M. Lazare, S. Fassnacht, E. Chan, P. Bartlett
+!
       SUBROUTINE CANADD(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP,
      1                  HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF,
      2                  CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP,
@@ -31,6 +32,8 @@ C     *                         PRECIPITATION REACHING GROUND.
 C     *                         ADJUST CANOPY TEMPERATURE AND HEAT
 C     *                         CAPACITY.
 C
+      use classic_params, only : DELT,TFREZ,SPHW,SPHICE,SPHVEG,RHOW
+
       IMPLICIT NONE
 C                                                                
 C     * INTEGER CONSTANTS.
@@ -78,35 +81,7 @@ C     * TEMPORARY VARIABLES.
 C
       REAL RTHRU,RINT,STHRU,SINT,TRCAN,TSCAN,RWXCES,SLOAD,SWXCES,
      1     SNUNLD,CHCAPI,TCANI
-C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL DELT     !<Time step [s]
-      REAL TFREZ    !<Freezing point of water [K]
-      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
-                    !!\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPOM    !<Volumetric heat capacity of organic matter 
-                    !!\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPSND   !<Volumetric heat capacity of sand particles 
-                    !!\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
-                    !!\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
-      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
-      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
-      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
-      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
-      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
-      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
-      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
-C
-      COMMON /CLASS1/ DELT,TFREZ                                                  
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
+
 C-----------------------------------------------------------------------
       !>
       !>The calculations in this subroutine are performed if the rainfall 
@@ -210,7 +185,7 @@ C
               !>
               SLOAD=(CWFCAP(I)-SNOCAN(I))*(1.0-EXP(-SINT/CWFCAP(I)))
               SWXCES=SINT-SLOAD
-              SNUNLD=(SLOAD+SNOCAN(I))*(1.0-EXP(-1.157E-6*DELT))
+              SNUNLD=(SLOAD+SNOCAN(I))*(1.0-EXP(-1.157E-6*DELT))  !BDCS P?
               IF(SWXCES.GT.0. .OR. SNUNLD.GT.0.)                 THEN 
                   SDRIP(I)=(MAX(SWXCES,0.0)+SNUNLD)/(DELT*RHOSNI(I))
                   IF((SDRIP(I)+STHRU).GT.0.)       THEN                                           

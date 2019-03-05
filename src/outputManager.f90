@@ -1,4 +1,9 @@
+!>\file
 !>Central module for all netcdf output file operations
+!!
+!>@author
+!> Joe Melton and Ed Wisernig
+
 module outputManager
 
     use ctem_statevars, only : c_switch
@@ -20,6 +25,7 @@ module outputManager
     public  :: closeNCFiles
     public :: checkForTime
 
+    !> Stores geographic information about the total domain and the region to be simulated
     type simulationDomain
         real, dimension(:), allocatable     :: lonLandCell, latLandCell     !< Long/Lat values of only the land cells in our model domain
         integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   !< Indexes of only the land cells in our model domain for our resolution
@@ -36,7 +42,7 @@ module outputManager
 
     type(simulationDomain) :: myDomain
 
-    !> This data structure is used to set up the output netcdf files.
+    !> Used to set up the output netcdf files.
     type outputDescriptor
         character(80)   :: group                = ''
         character(30)   :: shortName            = ''
@@ -71,10 +77,12 @@ module outputManager
 
     integer :: variableCount = 0, descriptorCount = 0, variantCount = 0 !< Initializes the counter variables
 
-    integer         :: refyr = 1850                     !< Time reference for netcdf output files
-    character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
-    real   :: fill_value = 1.E38             !< Default fill value for missing values in netcdf output files
-    real, dimension(:), allocatable :: timeVect  !< Array of the timesteps in days since refyr for this model run and output file
+    integer         :: refyr                                     !< Time reference for netcdf output files
+    character(30)   :: timestart                                 !< Time reference for netcdf output files
+    real   :: fill_value = 1.E38                                 !< Default fill value for missing values in netcdf output files
+    real, dimension(:), allocatable :: timeVect                  !< Array of the timesteps in days since refyr for this model run and output file
+    
+    real :: consecDays                                        !< Consecutive days since refyr in run. Set by setConsecDays
 
 contains
 
@@ -142,7 +150,7 @@ contains
             if (.not. fileCreatedOk) then
                 print*,'Failed to create',filename
                 print*,'Aborting'
-                stop
+                stop ! can use stop here as not in MPI part of code.
             end if
         endif
 
@@ -235,7 +243,7 @@ contains
 
     !>\ingroup output_validTime
     !>@{
-    !> Determines wether the current variable matches the project configuration
+    !> Determines whether the current variable matches the project configuration
     logical function validTime(timeFreq, descriptor)
 
         implicit none
@@ -291,7 +299,7 @@ contains
 
     !>\ingroup output_getDescriptor
     !>@{
-    !> Retrieve a variable descriptor based on a given key (e.g. shortName)
+    !> Retrieves a variable descriptor based on a given key (e.g. shortName)
     type (outputDescriptor) function getDescriptor(key)
 
         implicit none
@@ -313,7 +321,7 @@ contains
 
     !>\ingroup output_getIdByKey
     !>@{
-    !> Find the id of the variable with the following key
+    !> Finds the id of the variable with the following key
     integer function getIdByKey(key)
 
         implicit none
@@ -333,12 +341,12 @@ contains
 
     !>\ingroup output_createNetCDF
     !>@{
-    ! Create the output netcdf files
+    !> Creates the output netcdf files
     subroutine createNetCDF(fileName, id, outputForm, descriptor, timeFreq, units, nameInCode)
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
-        use ctem_params,        only : ignd,icc,nmos,iccp1
+        use classic_params,        only : ignd,icc,nmos,iccp1
 
         implicit none
 
@@ -351,16 +359,19 @@ contains
 
         character(8)  :: today
         character(10) :: now
+        character(80) :: format_string
         integer                     :: ncid, varid, suffix,i,timeLength
         integer                     :: DimId,lonDimId,latDimId,tileDimId,pftDimId,layerDimId,timeDimId
         real, dimension(2)          :: xrange, yrange
         integer, dimension(:), allocatable :: intArray
 
+        logical, pointer :: projectedGrid
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
                                            !< also accounts for leap years in .MET when cycling over meteorology (metLoop > 1)
 
         ! Point pointers
+        projectedGrid => c_switch%projectedGrid
         leap => c_switch%leap
         Comment => c_switch%Comment
 
@@ -374,20 +385,27 @@ contains
         call ncPutAtt(ncid,nf90_global,'Conventions',charvalues='COARDS') !FLAG remove?
         call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
 
-        !----1 - Longitude
+        !----1 - Longitude and Latitude
 
         lonDimId = ncDefDim(ncid,'lon',myDomain%cntx)
-        varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId])
+        latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
+
+        if (.not. projectedGrid) then
+          varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId])
+        else
+          varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId, latDimId])
+        end if
         call ncPutAtt(ncid,varid,'standard_name',charvalues='Longitude')
         call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
         !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
         !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
-
-        !----2 - Latitude
-        latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
-        varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
+        if (.not. projectedGrid) then
+          varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
+        else
+          varid = ncDefVar(ncid,'lat',nf90_double,[londimId, latDimId])
+        end if
         call ncPutAtt(ncid,varid,'long_name',charvalues='latitude')
         call ncPutAtt(ncid,varid,'standard_name',charvalues='Latitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
@@ -444,6 +462,10 @@ contains
         varid = ncDefVar(ncid,'time',nf90_double,[timeDimId])
 
         call ncPutAtt(ncid,varid,'long_name',charvalues='time')
+        
+        !timestart = "days since "//str(refyr)//"-01-01 00:00"
+        format_string = "(A11,I4,A12)"
+        write (timestart,format_string) "days since ",refyr,"-01-01 00:00"
         call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
 
         if (leap) then
@@ -462,9 +484,15 @@ contains
         deallocate(timeVect) !needs to be deallocated so the next file can allocate it.
 
         ! Fill in the dimension variables and define the model output vars
+        if (.not. projectedGrid) then
+          call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
+          call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
+        else ! projected grid
+          ! Since these are flattened arrays we will use the ncPutVar function which will reshape them
+          call ncPutVar(ncid, 'lon', realValues = myDomain%allLonValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
+          call ncPutVar(ncid, 'lat', realValues = myDomain%allLatValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
 
-        call ncPutDimValues(ncid, 'lon', realValues=myDomain%lonUnique, count=(/myDomain%cntx/))
-        call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
+        end if
 
         select case(trim(outputForm))
             case ("tile")       ! Per tile outputs
@@ -529,7 +557,7 @@ contains
     !---------------------------------------------------------------------------------------
     !>\ingroup output_determineTime
     !>@{
-    !> Determine the time vector for this run. This implictly
+    !> Determines the time vector for this run. This implictly
     !! assumes that leap year meteorological forcing is used for runs with metLoop = 1, otherwise
     !! the timing of the leap years will be off in the output files.
     subroutine determineTime(timeFreq)
@@ -537,7 +565,7 @@ contains
         use fileIOModule
         use ctem_statevars,     only : c_switch
         use generalUtils,       only : findLeapYears
-        use ctem_params,        only : monthend
+        use classic_params,        only : monthend
 
         implicit none
 
@@ -578,6 +606,11 @@ contains
         jmosty          => c_switch%jmosty
 
         lastDOY = 365
+        
+        !  refyr is set to be the start year of the run.
+        refyr = readMetStartYear
+        consecDays = 0.
+        
         select case(trim(timeFreq))
 
             case("annually")
@@ -733,7 +766,7 @@ contains
 
     !>\ingroup output_writeOutput1D
     !>@{
-    ! Write model outputs to already created netcdf files
+    !> Write model outputs to already created netcdf files
     subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
 
         use fileIOModule
@@ -767,7 +800,6 @@ contains
             print*, 'Possible reasons include '// trim(key) // ' not in xml file so no netcdf created'
             print*, 'or mismatch between xml group and model switch for this key. Model run will continue'
             print*, 'without writing this variable.'
-            !stop
             return
         end if
 
@@ -789,6 +821,7 @@ contains
 
             if (posTimeWanted == 0) then
             print*,'missing timestep in output file ',key,localStamp
+            print*,'**Did you set leap=true but give CLASSIC inputs that do not have leap years?'
                 stop
             else
                 timeIndex = posTimeWanted
@@ -807,7 +840,7 @@ contains
 
     !>\ingroup output_checkForTime
     !>@{
-    ! Find if a time period is already in the timeIndex of the file
+    !> Find if a time period is already in the timeIndex of the file
     integer function checkForTime(timeIndex,timeWritten,timeStamp)
 
         implicit none
@@ -830,7 +863,7 @@ contains
 
     !>\ingroup output_closeNCFiles
     !>@{
-    ! Close all output netcdfs or just a select file
+    !> Close all output netcdfs or just a select file
     subroutine closeNCFiles(incid)
 
         use fileIOModule
@@ -868,5 +901,5 @@ contains
     !---------------------------------------------------------------------------------------
 
 !>\namespace output
-
+!>\file
 end module outputManager

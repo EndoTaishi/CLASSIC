@@ -1,3 +1,4 @@
+!>\file
 !>Central module for all heterotrophic respiration-related operations
 module heterotrophic_respiration
 
@@ -16,7 +17,7 @@ contains
 !>\ingroup heterotrophic_respiration_hetresg
 !!@{
 !>Heterotrophic respiration subroutine for bare ground fraction
-
+!> @author Vivek Arora and Joe Melton
 subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
                     il1,      il2,     tbar,  psisat, b, &
                     thliq,    zbotw,   thiceg, &
@@ -40,7 +41,7 @@ subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
 !     J. Melton       behave incorrectly if the soil froze as it thought the water
 !                     was leaving the soil. This is now fixed.
 !
-!     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
 !     23  Jul 2013  - add in module for parameters
@@ -52,7 +53,7 @@ subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
 !                             int was missing some gridcells assigned
 !                             to bedrock in classb
 
-use ctem_params,        only : icc, ilg, ignd, zero, tanhq10, a, &
+use classic_params,        only : icc, ilg, ignd, zero, tanhq10, a_hetr, &
                                      bsratelt_g, bsratesc_g
 
 implicit none
@@ -97,7 +98,7 @@ implicit none
       real tempq10s(ilg)    !<
       real fcoeff           !<
 !     ------------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
+!     Constants and parameters are located in classic_params.f90
 !     ---------------------------------------------------------------
 
 !     initialize required arrays to zero
@@ -138,21 +139,21 @@ implicit none
 
       do 240 i = il1, il2
 
-        zcarbon = 3.0 / a
+        zcarbon = 3.0 / a_hetr
         zcarb_g = 0.0
         do j=1,ignd
           zcarb_g = zcarb_g + delzw(i,j)
         end do
         zcarbon = min(zcarbon,zcarb_g)
-        fcoeff=exp(-a*zcarbon)
-        fracarb(i,1)=1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+        fcoeff=exp(-a_hetr*zcarbon)
+        fracarb(i,1)=1.0-(exp(-a_hetr*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
         do 245 j = 2,ignd
           if (zcarbon <= zbotw(i,j) - delzw(i,j)+0.0001) then
              fracarb(i,j) = 0.0
           elseif (zcarbon <= zbotw(i,j)) then
-             fracarb(i,j) = (exp(-a * zbotw(i,j)-delzw(i,j))-exp(-a*zcarbon))/(1. - exp(-a*zcarbon))
+             fracarb(i,j) = (exp(-a_hetr * zbotw(i,j)-delzw(i,j))-exp(-a_hetr*zcarbon))/(1. - exp(-a_hetr*zcarbon))
           else
-             fracarb(i,j) = (exp(-a * zbotw(i,j)-delzw(i,j))-exp(-a*zbotw(i,j)))/(1. - exp(-a*zcarbon))
+             fracarb(i,j) = (exp(-a_hetr * zbotw(i,j)-delzw(i,j))-exp(-a_hetr*zbotw(i,j)))/(1. - exp(-a_hetr*zcarbon))
           end if
 245       continue
 
@@ -177,7 +178,15 @@ implicit none
 
           else ! i.e., sand.ne.-3 or -4
 
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thiceg(i,j)))**(-b(i,j))
+            
+            ! We don't place a lower limit on psi as it is only used here and the
+            ! value of psi <= psisat is just used to select a scomotrm value.
+            if (thiceg(i,j) .le. thpor(i,j)) then ! flag new limits
+              psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thiceg(i,j)))**(-b(i,j)) 
+            else      
+              ! if the whole pore space is ice then suction is assumed to be very high.   
+              psi(i,j) = 10000.0
+            end if 
 
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
@@ -273,7 +282,7 @@ end subroutine hetresg
 !>\ingroup heterotrophic_respiration_hetresv
 !!@{
 !>Heterotrophic Respiration Subroutine For Vegetated Fraction
-
+!> @author Vivek Arora and Joe Melton
 subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
                       delzw,  thpor, il1, &
                       il2,     tbar,   psisat, b, thliq,  &
@@ -297,7 +306,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
 !     J. Melton       behave incorrectly if the soil froze as it thought the water
 !                     was leaving the soil. This is now fixed.
-!     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 
 !     22  Jul 2013  - Add in module for parameters
@@ -310,7 +319,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !                             to bedrock in classb
 !     ------
 
-      use ctem_params,        only : icc, ilg, ignd, kk, zero, bsratelt,&
+      use classic_params,        only : icc, ilg, ignd, kk, zero, bsratelt,&
                                bsratesc, abar, tanhq10,&
                                alpha_hetres
 
@@ -359,7 +368,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
 
 !     ------------------------------------------------------------------
-!!     Constants and parameters are located in ctem_params.f90
+!!     Constants and parameters are located in classic_params.f90
 !     ---------------------------------------------------------------
 
 !     initialize required arrays to zero
@@ -471,8 +480,12 @@ do 130 i = il1, il2
                   psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thicec(i,j)))**(-b(i,j))
                 endif
             else
-              ! the 0.005 below prevents a divide by 0 situation.
-              psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
+              if (thicec(i,j) .le. thpor(i,j)) then ! flag new limits
+                     psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thicec(i,j)))**(-b(i,j)) 
+              else 
+                ! if the whole pore space is ice then suction is assumed to be very high. 
+                psi(i,j) = 10000.0
+              end if 
             endif
 
             if(psi(i,j).ge.10000.0) then
@@ -603,7 +616,7 @@ end subroutine hetresv
 !!(\f$C_\mathrm{H}\f$ and \f$C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$) and on a PFT-dependent
 !!respiration rate specified at \f$15\,{C}\f$ (\f$\varsigma_\mathrm{H}\f$ and
 !!\f$\varsigma_\mathrm{D}\f$; \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also
-!! ctem_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from
+!! classic_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from
 !!\f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
 !!
 !!The effect of soil moisture is accounted for via dependence on soil matric
@@ -676,7 +689,7 @@ end subroutine hetresv
 !!carbon pool (\f$C_{\mathrm{D} \rightarrow \mathrm{H}}\f$) is modelled as a fraction
 !!of litter respiration (\f$R_{h,D}\f$) as
 !!\f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \f]
-!!where \f$\chi\f$ (see also ctem_params.f90) is the PFT-dependent humification factor
+!!where \f$\chi\f$ (see also classic_params.f90) is the PFT-dependent humification factor
 !!and varies between 0.4 and 0.5. For crops, \f$\chi\f$ is set to 0.1 to account for
 !!reduced transfer of humidified litter to the soil carbon pool which leads to loss in
 !!soil carbon when natural vegetation is converted to croplands. Over the bare ground
@@ -687,5 +700,5 @@ end subroutine hetresv
 !!\f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \f]
 !!
 
-
+!>\file
 end module heterotrophic_respiration

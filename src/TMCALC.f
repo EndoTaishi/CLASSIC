@@ -2,7 +2,7 @@
 !!Calculates overland flow; steps ahead pond and soil layer temperatures, and checks for freezing of
 !!the ponded water and freezing or thawing of liquid or frozen water in the soil layers. Adjusts ponded water temperature,
 !!soil layer temperatures and water stores accordingly.
-!!
+!!@author D. Verseghy, Y. Delage, M. Lazare
 
       SUBROUTINE TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW,
      1                  ALBSNO,RHOSNO,HCPSNO,TBASE,OVRFLW,TOVRFL,
@@ -33,7 +33,7 @@ C     * JUN 20/97 - D.VERSEGHY. CLASS - VERSION 2.7.
 C     *                         MODIFICATIONS TO ALLOW FOR VARIABLE
 C     *                         SOIL PERMEABLE DEPTH.
 C     * JAN 02/96 - D.VERSEGHY. CLASS - VERSION 2.5.
-C     *                         COMPLETION OF ENERGY BALANCE 
+C     *                         COMPLETION OF ENERGY BALANCE
 C     *                         DIAGNOSTICS; INTRODUCE CALCULATION
 C     *                         OF OVERLAND FLOW.
 C     * AUG 30/95 - D.VERSEGHY. CLASS - VERSION 2.4.
@@ -46,12 +46,12 @@ C     * AUG 16/95 - D.VERSEGHY. TWO NEW ARRAYS TO COMPLETE WATER
 C     *                         BALANCE DIAGNOSTICS.
 C     * DEC 22/94 - D.VERSEGHY. CLASS - VERSION 2.3.
 C     *                         REVISE CALCULATIONS OF TBAR AND HTC;
-C     *                         ALLOW SPECIFICATION OF LIMITING POND 
+C     *                         ALLOW SPECIFICATION OF LIMITING POND
 C     *                         DEPTH "PNDLIM" (PARALLEL CHANGES
 C     *                         MADE SIMULTANEOUSLY IN CLASSW).
 C     * NOV 01/93 - D.VERSEGHY. CLASS - VERSION 2.2.
 C     *                         REVISED VERSION WITH IN-LINED CODE
-C     *                         FROM TWCALC AND TFREEZ TO PERMIT 
+C     *                         FROM TWCALC AND TFREEZ TO PERMIT
 C     *                         FREEZING AND THAWING OF SOIL LAYERS
 C     *                         AT THE END OF EACH TIME STEP.
 C     * JUL 30/93 - D.VERSEGHY/M.LAZARE. NEW DIAGNOSTIC FIELDS.
@@ -60,13 +60,16 @@ C     *                                  REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CODE FOR MODEL VERSION GCM7U -
 C     *                         CLASS VERSION 2.0 (WITH CANOPY).
-C     * APR 11/89 - D.VERSEGHY. STORE PONDED WATER INTO FIRST 
+C     * APR 11/89 - D.VERSEGHY. STORE PONDED WATER INTO FIRST
 C     *                         SOIL LAYER LIQUID WATER; STEP
-C     *                         AHEAD SOIL LAYER TEMPERATURES 
+C     *                         AHEAD SOIL LAYER TEMPERATURES
 C     *                         USING CONDUCTION HEAT FLUX
 C     *                         CALCULATED AT TOP AND BOTTOM
 C     *                         OF EACH LAYER.
 C
+      use classic_params, only : DELT,TFREZ,HCPW,HCPICE,HCPSND,RHOW,
+     1                           RHOICE,CLHMLT
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -76,11 +79,11 @@ C
 C     * INPUT/OUTPUT ARRAYS.
 C
       REAL TBAR  (ILG,IG) !<Temperature of soil layer \f$[C] (T_g)\f$
-      REAL THLIQ (ILG,IG) !<Volumetric liquid water content of soil layer \f$(\theta_l) [m^3 m^{-3}]\f$ 
+      REAL THLIQ (ILG,IG) !<Volumetric liquid water content of soil layer \f$(\theta_l) [m^3 m^{-3}]\f$
       REAL THICE (ILG,IG) !<Volumetric frozen water content of soil layer \f$(\theta_i) [m^3 m^{-3}]\f$
       REAL HCP   (ILG,IG) !<Heat capacity of soil layer \f$[J m^{-3} K^{-1}] (C_g)\f$
       REAL HMFG  (ILG,IG) !<Energy associated with freezing or thawing of water in soil layer \f$[W m^{-2}]\f$
-      REAL HTC   (ILG,IG) !<Internal energy change of soil layer due to conduction and/or 
+      REAL HTC   (ILG,IG) !<Internal energy change of soil layer due to conduction and/or
                           !<change in mass \f$[W m^{-2}] (I_g)\f$
 C
       REAL TPOND (ILG) !<Temperature of ponded water \f$[C] (T_p)\f$
@@ -95,7 +98,7 @@ C
       REAL TOVRFL(ILG) !<Temperature of overland flow from top of soil column [K]
       REAL RUNOFF(ILG) !<Total runoff from soil column [m]
       REAL TRUNOF(ILG) !<Temperature of total runoff from soil column [K]
-      REAL HTCS  (ILG) !<Internal energy change of snow pack due to conduction and/or 
+      REAL HTCS  (ILG) !<Internal energy change of snow pack due to conduction and/or
                        !<change in mass \f$[W m^{-2}] (I_s)\f$
       REAL WTRS  (ILG) !<Water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1}]\f$
       REAL WTRG  (ILG) !<Water transferred into or out of the soil \f$[kg m^{-2} s^{-1}]\f$
@@ -117,11 +120,11 @@ C
 C     * SOIL INFORMATION ARRAYS.
 C
       REAL THPOR (ILG,IG) !<Pore volume in soil layer \f$(\theta_p) [m^3 m^{-3}]\f$
-      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after 
+      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after
                           !<freezing or evaporation \f$(\theta_r) [m^3 m^{-3}]\f$
       REAL HCPS  (ILG,IG) !<Heat capacity of soil material \f$[J m^{-3} K^{-1}] (C_m)\f$
       REAL DELZW (ILG,IG) !<Permeable thickness of soil layer \f$(\Delta z_{g,w}) [m]\f$
-      REAL DELZZ (ILG,IG) !<Soil layer thicknesses to bottom of permeable depth 
+      REAL DELZZ (ILG,IG) !<Soil layer thicknesses to bottom of permeable depth
                           !<for standard three-layer configuration,
                           !<or to bottom of thermal depth for multiple layers \f$(\Delta z_{g,z}) [m]\f$
       REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
@@ -134,15 +137,6 @@ C
 C
       REAL GP1,ZFREZ,HADD,HCONV,TTEST,TLIM,HEXCES,THFREZ,THMELT,G3B
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,
-     1     SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
-C
-      COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
-     2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
 C
 C     * CALCULATE SUBSURFACE AND OVERLAND RUNOFF TERMS; ADJUST
@@ -202,7 +196,7 @@ C
      1                 HCPW*THLIQ(I,J)+(TBAR(I,J)+TFREZ)*
      2                 HCPICE*THICE(I,J))*DELZW(I,J)/DELT
               HCP(I,J)=HCPW*THLIQ(I,J)+HCPICE*THICE(I,J)+
-     1                 HCPS(I,J)*(1.-THPOR(I,J))                                                   
+     1                 HCPS(I,J)*(1.-THPOR(I,J))
               TBAR(I,J)=((TBARW(I,J)+TFREZ)*HCPW*THLIQ(I,J)*
      1                  DELZW(I,J)+(TBAR(I,J)+TFREZ)*((HCPICE*
      2                  THICE(I,J)+HCPS(I,J)*(1.-THPOR(I,J)))*
@@ -273,65 +267,65 @@ C
 !!describing transfers of water into or out of the snow and soil respectively.
 !!
       DO 400 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ISAND(I,1).GT.-4 .AND. ZPOND(I).GT.0. 
+          IF(FI(I).GT.0. .AND. ISAND(I,1).GT.-4 .AND. ZPOND(I).GT.0.
      1                   .AND. TPOND(I).LT.0.)
      1                                                              THEN
              HTCS(I)=HTCS(I)-FI(I)*HCPSNO(I)*(TSNOW(I)+TFREZ)*
      1               ZSNOW(I)/DELT
              ZFREZ=0.0
-             HADD=-TPOND(I)*HCPW*ZPOND(I)                                              
-             TPOND(I)=0.0                                                               
-             HCONV=CLHMLT*RHOW*ZPOND(I)                                               
+             HADD=-TPOND(I)*HCPW*ZPOND(I)
+             TPOND(I)=0.0
+             HCONV=CLHMLT*RHOW*ZPOND(I)
              HTC(I,1)=HTC(I,1)-FI(I)*HCPW*TFREZ*ZPOND(I)/DELT
-             IF(HADD.LE.HCONV)             THEN                                                      
-                ZFREZ=HADD/(CLHMLT*RHOW)                                                
-                ZPOND(I)=ZPOND(I)-ZFREZ                                                       
-                ZFREZ=ZFREZ*RHOW/RHOICE                                                 
-                IF(.NOT.(ZSNOW(I).GT.0.0)) ALBSNO(I)=0.50                                     
+             IF(HADD.LE.HCONV)             THEN
+                ZFREZ=HADD/(CLHMLT*RHOW)
+                ZPOND(I)=ZPOND(I)-ZFREZ
+                ZFREZ=ZFREZ*RHOW/RHOICE
+                IF(.NOT.(ZSNOW(I).GT.0.0)) ALBSNO(I)=0.50
                 TSNOW(I)=TSNOW(I)*HCPSNO(I)*ZSNOW(I)/(HCPSNO(I)*ZSNOW(I)
-     1                  +HCPICE*ZFREZ)                    
+     1                  +HCPICE*ZFREZ)
                 RHOSNO(I)=(RHOSNO(I)*ZSNOW(I)+RHOICE*ZFREZ)/(ZSNOW(I)
-     1                   +ZFREZ)                        
+     1                   +ZFREZ)
                 IF(ZSNOW(I).GT.0.0) THEN
                     HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
      1                   (RHOW*ZSNOW(I))
                 ELSE
                     HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE
                 ENDIF
-                ZSNOW(I)=ZSNOW(I)+ZFREZ                                                       
-             ELSE                                                                        
-                HADD=HADD-HCONV                                                         
-                ZFREZ=ZPOND(I)*RHOW/RHOICE                                                 
-                TTEST=-HADD/(HCPICE*ZFREZ)                                              
+                ZSNOW(I)=ZSNOW(I)+ZFREZ
+             ELSE
+                HADD=HADD-HCONV
+                ZFREZ=ZPOND(I)*RHOW/RHOICE
+                TTEST=-HADD/(HCPICE*ZFREZ)
                 IF(ZSNOW(I).GT.0.0) THEN
                     TLIM=MIN(TSNOW(I),TBAR(I,1))
                 ELSE
                     TLIM=MIN(TA(I)-TFREZ,TBAR(I,1))
                 ENDIF
-                IF(TTEST.LT.TLIM)       THEN                                    
-                   HEXCES=HADD+TLIM*HCPICE*ZFREZ                         
-                   GZERO(I)=GZERO(I)-HEXCES/DELT                                             
+                IF(TTEST.LT.TLIM)       THEN
+                   HEXCES=HADD+TLIM*HCPICE*ZFREZ
+                   GZERO(I)=GZERO(I)-HEXCES/DELT
                    HTC(I,1)=HTC(I,1)+FI(I)*(HADD-HEXCES)/DELT
                    TSNOW(I)=(TSNOW(I)*HCPSNO(I)*ZSNOW(I)+
-     1                      TLIM*HCPICE*ZFREZ)          
-     2                      /(HCPSNO(I)*ZSNOW(I)+HCPICE*ZFREZ)                                    
-                ELSE                                                                    
+     1                      TLIM*HCPICE*ZFREZ)
+     2                      /(HCPSNO(I)*ZSNOW(I)+HCPICE*ZFREZ)
+                ELSE
                    TSNOW(I)=(TSNOW(I)*HCPSNO(I)*ZSNOW(I)+TTEST*HCPICE*
-     1                       ZFREZ)/(HCPSNO(I)*ZSNOW(I)+HCPICE*ZFREZ)                                    
+     1                       ZFREZ)/(HCPSNO(I)*ZSNOW(I)+HCPICE*ZFREZ)
                    HTC(I,1)=HTC(I,1)+FI(I)*HADD/DELT
-                ENDIF                                                                   
-                IF(.NOT.(ZSNOW(I).GT.0.0)) ALBSNO(I)=0.50                                     
+                ENDIF
+                IF(.NOT.(ZSNOW(I).GT.0.0)) ALBSNO(I)=0.50
                 RHOSNO(I)=(RHOSNO(I)*ZSNOW(I)+RHOICE*ZFREZ)/(ZSNOW(I)+
-     1                     ZFREZ)                        
+     1                     ZFREZ)
                 IF(ZSNOW(I).GT.0.0) THEN
                     HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
      1                   (RHOW*ZSNOW(I))
                 ELSE
                     HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE
                 ENDIF
-                ZSNOW(I)=ZSNOW(I)+ZFREZ                                                       
-                ZPOND(I)=0.0                                                               
-             ENDIF                                                                       
+                ZSNOW(I)=ZSNOW(I)+ZFREZ
+                ZPOND(I)=0.0
+             ENDIF
              HTC (I,1)=HTC (I,1)+FI(I)*HCPW*TFREZ*ZPOND(I)/DELT
              HMFG(I,1)=HMFG(I,1)-FI(I)*CLHMLT*RHOICE*ZFREZ/DELT
              WTRS(I)=WTRS(I)+FI(I)*ZFREZ*RHOICE/DELT
@@ -379,7 +373,7 @@ C
               ENDIF
   500     CONTINUE
       ENDIF
-C     
+C
 !>
 !!In the 550 loop, the first and second soil layer temperatures are stepped ahead using GZERO, G12 and
 !!G23. (Recall that the calculated heat capacity HCP applies to the permeable thickness DELZW, and the
@@ -403,7 +397,7 @@ C
      2                  DELZW(I,1)))
               TBAR(I,2)=TBAR(I,2)+(G12  (I)-G23(I))*DELT/
      1                  (HCP(I,2)*DELZW(I,2)+HCPSND*(DELZZ(I,2)-
-     2                  DELZW(I,2)))                         
+     2                  DELZW(I,2)))
               IF(IG.EQ.3)                                THEN
                   IF(DELZZ(I,3).GT.0.0)       THEN
                       IF(DELZZ(I,IG).LT.(DELZ(IG)-1.0E-5)) THEN
@@ -412,7 +406,7 @@ C
                           TBAR(I,3)=TBAR(I,3)+(G23(I)-G3B)*DELT/
      1                        (HCP(I,3)*DELZZ(I,3))
                           TBASE(I)=TBASE(I)+(G3B-GGEO(I))*DELT/
-     2                        (HCPSND*(DELZ(3)-DELZZ(I,3)))   
+     2                        (HCPSND*(DELZ(3)-DELZZ(I,3)))
                       ELSE
                           TBAR(I,3)=TBAR(I,3)+(G23(I)-GGEO(I))*DELT/
      1                        (HCP(I,3)*DELZW(I,3))
@@ -425,7 +419,7 @@ C
               ELSE
                   TBAR(I,3)=TBAR(I,3)+G23(I)*DELT/
      1                      (HCP(I,3)*DELZW(I,3)+HCPSND*(DELZ(3)-
-     2                      DELZW(I,3)))                         
+     2                      DELZW(I,3)))
               ENDIF
               GFLUX(I,1)=GZERO(I)
               GFLUX(I,2)=G12(I)
@@ -441,7 +435,7 @@ C
 !!GFLUX at the top of the layer and GGEO at the bottom. For the intermediate layers, TBAR is
 !!calculated using the difference between the GFLUX values at the top and bottom of the layer.
 !!
-      DO 600 J=3,IG                                                               
+      DO 600 J=3,IG
       DO 600 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).GT.-4 .AND. IG.GT.3)   THEN
               HTC(I,J)=HTC(I,J)-FI(I)*(TBAR(I,J)+TFREZ)*(HCP(I,J)*
@@ -450,22 +444,22 @@ C
               IF(J.EQ.3)                                THEN
                   TBAR(I,J)=TBAR(I,J)-GFLUX(I,J+1)*DELT/
      1                      (HCP(I,J)*DELZW(I,J)+HCPSND*(DELZZ(I,J)-
-     2                      DELZW(I,J)))                         
+     2                      DELZW(I,J)))
               ELSEIF(J.EQ.IG)                           THEN
                   TBAR(I,J)=TBAR(I,J)+(GFLUX(I,J)-GGEO(I))*DELT/
      1                      (HCP(I,J)*DELZW(I,J)+HCPSND*(DELZZ(I,J)-
-     2                      DELZW(I,J)))                         
+     2                      DELZW(I,J)))
               ELSE
                   TBAR(I,J)=TBAR(I,J)+(GFLUX(I,J)-GFLUX(I,J+1))*DELT/
      1                  (HCP(I,J)*DELZW(I,J)+HCPSND*(DELZZ(I,J)-
-     2                  DELZW(I,J)))                         
+     2                  DELZW(I,J)))
               ENDIF
               HTC(I,J)=HTC(I,J)+FI(I)*(TBAR(I,J)+TFREZ)*(HCP(I,J)*
      1                    DELZW(I,J)+HCPSND*(DELZZ(I,J)-
      2                    DELZW(I,J)))/DELT
           ENDIF
   600 CONTINUE
-C     
+C
 !>
 !!In the 700 loop, checks are carried out to determine whether, as a result of the forward stepping of the
 !!temperature, TBAR has fallen below 0 C while liquid water still exists in the layer, or risen above 0 C
@@ -494,7 +488,7 @@ C
 !!HMFG and HTC are recalculated to reflect this. HCP is recomputed, and the remaining energy HADD
 !!is applied to increasing the temperature of the soil layer.
 !!
-      DO 700 J=1,IG                                                               
+      DO 700 J=1,IG
       DO 700 I=IL1,IL2
           IF(FI(I).GT.0. .AND. DELZW(I,J).GT.0. .AND. ISAND(I,1).GT.-4)
      1                                                            THEN
@@ -502,21 +496,21 @@ C
      1                    DELZW(I,J)+HCPSND*(DELZZ(I,J)-
      2                    DELZW(I,J)))/DELT
               IF(TBAR(I,J).LT.0. .AND. THLIQ(I,J).GT.THLMIN(I,J))
-     1                                                           THEN                        
+     1                                                           THEN
                   THFREZ=-(HCP(I,J)*DELZW(I,J)+HCPSND*(DELZZ(I,J)-
      1                    DELZW(I,J)))*TBAR(I,J)/(CLHMLT*RHOW*
-     2                    DELZW(I,J))                              
-                  IF(THFREZ.LE.(THLIQ(I,J)-THLMIN(I,J))) THEN                         
+     2                    DELZW(I,J))
+                  IF(THFREZ.LE.(THLIQ(I,J)-THLMIN(I,J))) THEN
                       HMFG(I,J)=HMFG(I,J)-FI(I)*THFREZ*CLHMLT*
      1                          RHOW*DELZW(I,J)/DELT
                       HTC(I,J)=HTC(I,J)-FI(I)*THFREZ*CLHMLT*
      1                          RHOW*DELZW(I,J)/DELT
-                      THLIQ(I,J)=THLIQ(I,J)-THFREZ                                        
-                      THICE(I,J)=THICE(I,J)+THFREZ*RHOW/RHOICE                            
+                      THLIQ(I,J)=THLIQ(I,J)-THFREZ
+                      THICE(I,J)=THICE(I,J)+THFREZ*RHOW/RHOICE
                       HCP(I,J)=HCPW*THLIQ(I,J)+HCPICE*THICE(I,J)+
      1                           HCPS(I,J)*(1.-THPOR(I,J))
-                      TBAR (I,J)=0.0                                                   
-                  ELSE                                                                
+                      TBAR (I,J)=0.0
+                  ELSE
                       HMFG(I,J)=HMFG(I,J)-FI(I)*(THLIQ(I,J)-
      1                    THLMIN(I,J))*CLHMLT*RHOW*DELZW(I,J)/DELT
                       HTC(I,J)=HTC(I,J)-FI(I)*(THLIQ(I,J)-
@@ -524,49 +518,49 @@ C
                       HADD=(THFREZ-(THLIQ(I,J)-THLMIN(I,J)))*CLHMLT*
      1                     RHOW*DELZW(I,J)
                       THICE(I,J)=THICE(I,J)+(THLIQ(I,J)-
-     1                           THLMIN(I,J))*RHOW/RHOICE          
+     1                           THLMIN(I,J))*RHOW/RHOICE
                       THLIQ(I,J)=THLMIN(I,J)
                       HCP(I,J)=HCPW*THLIQ(I,J)+HCPICE*THICE(I,J)+
      1                           HCPS(I,J)*(1.-THPOR(I,J))
                       TBAR (I,J)=-HADD/(HCP(I,J)*DELZW(I,J)+HCPSND*
      1                           (DELZZ(I,J)-DELZW(I,J)))
-                  ENDIF                                                               
+                  ENDIF
               ENDIF
-C                                                                   
-              IF(TBAR(I,J).GT.0. .AND. THICE(I,J).GT.0.)        THEN                           
+C
+              IF(TBAR(I,J).GT.0. .AND. THICE(I,J).GT.0.)        THEN
                   THMELT=(HCP(I,J)*DELZW(I,J)+HCPSND*(DELZZ(I,J)-
      1                    DELZW(I,J)))*TBAR(I,J)/(CLHMLT*RHOICE*
-     2                    DELZW(I,J))                             
-                  IF(THMELT.LE.THICE(I,J))                 THEN 
+     2                    DELZW(I,J))
+                  IF(THMELT.LE.THICE(I,J))                 THEN
                       HMFG(I,J)=HMFG(I,J)+FI(I)*THMELT*CLHMLT*
      1                          RHOICE*DELZW(I,J)/DELT
                       HTC(I,J)=HTC(I,J)+FI(I)*THMELT*CLHMLT*
      1                          RHOICE*DELZW(I,J)/DELT
-                      THICE(I,J)=THICE(I,J)-THMELT                                        
-                      THLIQ(I,J)=THLIQ(I,J)+THMELT*RHOICE/RHOW                            
+                      THICE(I,J)=THICE(I,J)-THMELT
+                      THLIQ(I,J)=THLIQ(I,J)+THMELT*RHOICE/RHOW
                       HCP(I,J)=HCPW*THLIQ(I,J)+HCPICE*THICE(I,J)+
      1                           HCPS(I,J)*(1.-THPOR(I,J))
-                      TBAR (I,J)=0.0                                                   
-                  ELSE                                                                
+                      TBAR (I,J)=0.0
+                  ELSE
                       HMFG(I,J)=HMFG(I,J)+FI(I)*THICE(I,J)*CLHMLT*
      1                          RHOICE*DELZW(I,J)/DELT
                       HTC(I,J)=HTC(I,J)+FI(I)*THICE(I,J)*CLHMLT*
      1                          RHOICE*DELZW(I,J)/DELT
                       HADD=(THMELT-THICE(I,J))*CLHMLT*RHOICE*
      1                          DELZW(I,J)
-                      THLIQ(I,J)=THLIQ(I,J)+THICE(I,J)*RHOICE/RHOW                          
-                      THICE(I,J)=0.0                                                    
+                      THLIQ(I,J)=THLIQ(I,J)+THICE(I,J)*RHOICE/RHOW
+                      THICE(I,J)=0.0
                       HCP(I,J)=HCPW*THLIQ(I,J)+HCPICE*THICE(I,J)+
      1                           HCPS(I,J)*(1.-THPOR(I,J))
                       TBAR (I,J)=HADD/(HCP(I,J)*DELZW(I,J)+HCPSND*
      1                           (DELZZ(I,J)-DELZW(I,J)))
-                  ENDIF                                                               
+                  ENDIF
               ENDIF
               HTC(I,J)=HTC(I,J)+FI(I)*(TBAR(I,J)+TFREZ)*(HCP(I,J)*
      1                    DELZW(I,J)+HCPSND*(DELZZ(I,J)-
      2                    DELZW(I,J)))/DELT
           ENDIF
   700 CONTINUE
-C                                                                                  
-      RETURN                                                                      
-      END 
+C
+      RETURN
+      END

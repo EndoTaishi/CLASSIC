@@ -19,6 +19,7 @@ program initFileConverter
     real :: dummy       ! dummyvar
 
     logical                 :: inclCTEM = .false.   ! True if a .CTM file was provided to the program
+    logical                 :: fromnml = .false.    ! True if we read in from a namelist file
     integer                 :: ignd = 3             ! Number of soil layers in INI file.
     integer                 :: ican = 4
     integer                 :: icc = 9
@@ -58,7 +59,7 @@ program initFileConverter
     real, allocatable, dimension(:,:):: TBARROT
     real, allocatable, dimension(:,:):: THLQROT
     real, allocatable, dimension(:,:):: THICROT
-    real, allocatable, dimension(:,:)   :: DELZ
+    real, allocatable, dimension(:)   :: DELZ
     real, allocatable, dimension(:,:)   :: ZBOT
     real, allocatable, dimension(:)  :: TCANROT
     real, allocatable, dimension(:)  :: TSNOROT
@@ -131,6 +132,7 @@ program initFileConverter
         call loadINIData
     else
         call readNamelist
+        fromnml = .true.
     end if
 
     ! Read in the CTM file
@@ -227,7 +229,7 @@ contains
         allocate(ALBSROT(NMTEST))
         allocate(RHOSROT(NMTEST))
         allocate(GROROT(NMTEST))
-        allocate(DELZ(nmtest,ignd))
+        allocate(DELZ(ignd))
         allocate(ZBOT(nmtest,ignd))
 
         allocate(ailcminrow(NMTEST,icc))
@@ -241,6 +243,12 @@ contains
         allocate(soilcmasrow(NMTEST,icc+1))
         allocate(lfstatusrow(NMTEST,icc))
         allocate(pandaysrow(NMTEST,icc))
+        allocate(slopefrac(NMTEST,8))
+        allocate(ipeatlandrow(NMTEST))
+        allocate(Cmossmas(NMTEST))
+        allocate(litrmsmoss(NMTEST))
+        allocate(dmoss(NMTEST))
+
         allocate(fcancmxrow(nmtest,icc))
         allocate(mlightng(12))
 
@@ -262,6 +270,18 @@ contains
           READ(10,5030) (PSGAROT(M,J),J=1,ICAN),(PSGBROT(M,J),J=1,ICAN)
           READ(10,5040) DRNROT(M),SDEPROT(M),FAREROT(M)
           READ(10,5090) XSLPROT(M),GRKFROT(M),WFSFROT(M),WFCIROT(M),MIDROT(M),SOCIROT(M)
+          ! The soil colour index is a 'relatively' new input requirement. It is possible some older INI files 
+          ! would not have this information in them. If not then throw an error and stop the run.
+          if (SOCIROT(M) == 0) THEN
+            print*,''
+            print*,'*** Error! Your INI/nml file is missing the soil colour index! See CLASSIC Manual for information.***'
+            print*,'>>> Enter a soil colour index (integer) or enter -99 to abort the program:'
+            read(*,*)SOCIROT(M)
+            if (SOCIROT(M) == -99) then
+              print*,'Aborting...'
+              exit 
+            end if
+          end if
           READ(10,5080) (SANDROT(M,J),J=1,ignd)
           READ(10,5080) (CLAYROT(M,J),J=1,ignd)
           READ(10,5080) (ORGMROT(M,J),J=1,ignd)
@@ -271,16 +291,22 @@ contains
 50    CONTINUE
      ! In CLASS 3.6.2, we include this soil info in the INI file.
       DO 25 J=1,IGND
-          READ(10,*) DELZ(1,J),ZBOT(1,J)
+          READ(10,*) DELZ(J),ZBOT(1,J)
  25   CONTINUE
 
     ! DELZ and ZBOT get put the same for all tiles.
     if (nmtest > 1) then
         do m = 2,nmtest
-            delz(m,:) = delz(1,:)
             zbot(m,:) = zbot(1,:)
         end do
     end if
+
+    ! The peatland stuff should not be in any files so put in dummy vals
+    slopefrac(:,:) = 0.
+    ipeatlandrow(:) = 0
+    Cmossmas(:) = 0.
+    litrmsmoss(:) = 0.
+    dmoss(:) = 0.
 
 5040  FORMAT(9F8.3)
 5030  FORMAT(4F8.3,8X,4F8.3)
@@ -329,7 +355,6 @@ contains
             !read(11,*) twarmm(i,1), tcoldm(i,1), gdd5(i,1), aridity(i,1),srplsmon(i,1)
             !read(11,*) defctmon(i,1), anndefct(i,1), annsrpls(i,1), annpcp(i,1), dry_season_length(i,1)
 
-
     end subroutine loadCTMData
 
     ! ------------------------------------------------------------------------------------------------------
@@ -354,18 +379,15 @@ contains
     subroutine readNamelist
 
         namelist /classicvars/ &
-            ZRFHROW,&
-            ZRFMROW,&
-            ZBLDROW,&
             GCROW,&
             FCANROT,&
             FAREROT,&
-            RSMNROT,&
-            QA50ROT,&
-            VPDAROT,&
-            VPDBROT,&
-            PSGAROT,&
-            PSGBROT,&
+            !RSMNROT,&
+            !QA50ROT,&
+            !VPDAROT,&
+            !VPDBROT,&
+            !PSGAROT,&
+            !PSGBROT,&
             ALVCROT,&
             ALICROT,&
             PAMNROT,&
@@ -375,10 +397,10 @@ contains
             ROOTROT,&
             DRNROT,&
             SDEPROT,&
-            XSLPROT,&
-            GRKFROT,&
-            WFSFROT,&
-            WFCIROT,&
+            !XSLPROT,&
+            !GRKFROT,&
+            !WFSFROT,&
+            !WFCIROT,&
             MIDROT,&
             SANDROT,&
             CLAYROT,&
@@ -387,7 +409,6 @@ contains
             THLQROT,&
             THICROT,&
             DELZ,&
-            ZBOT,&
             TCANROT,&
             TSNOROT,&
             TPNDROT,&
@@ -401,7 +422,7 @@ contains
             SOCIROT, &
             ailcminrow,&
             ailcmaxrow,&
-            dvdfcanrow,&
+            fcancmxrow,&
             gleafmasrow,&
             bleafmasrow,&
             stemmassrow,&
@@ -411,8 +432,15 @@ contains
             lfstatusrow,&
             pandaysrow,&
             mlightng,&
+            pandaysrow,&
             extnprob,&
-            prbfrhuc
+            prbfrhuc,&
+            slopefrac,&
+            ipeatlandrow,&
+            Cmossmas,&
+            litrmsmoss,&
+            dmoss
+
 
 
         read(unit=10,nml = classicvars)
@@ -596,12 +624,13 @@ contains
         call exportVariable('PAMN',units='m2/m2',long_name='Annual minimum plant area index of vegetation category',values2D=PAMNROT)
         call exportVariable('CMAS',units='$[kg m^{-2} ]$',long_name='Annual maximum canopy mass for vegetation category',values2D=CMASROT)
         call exportVariable('ROOT',units='m',long_name='Annual maximum rooting depth of vegetation category',values2D=ROOTROT)
-        call exportVariable('RSMN',units='s/m',long_name='Minimum stomatal resistance of vegetation category',values2D=RSMNROT)
-        call exportVariable('QA50',units='W/m2',long_name='Reference value of incoming shortwave radiation (used in stomatal resistance calculation)',values2D=QA50ROT)
-        call exportVariable('VPDA',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDAROT)
-        call exportVariable('VPDB',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDBROT)
-        call exportVariable('PSGA',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGAROT)
-        call exportVariable('PSGB',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGBROT)
+        ! The following are now read in from the model parameter namelist file. 
+        !call exportVariable('RSMN',units='s/m',long_name='Minimum stomatal resistance of vegetation category',values2D=RSMNROT)
+        !call exportVariable('QA50',units='W/m2',long_name='Reference value of incoming shortwave radiation (used in stomatal resistance calculation)',values2D=QA50ROT)
+        !call exportVariable('VPDA',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDAROT)
+        !call exportVariable('VPDB',units='-',long_name='Vapour pressure deficit coefficient (used in stomatal resistance calculation)',values2D=VPDBROT)
+        !call exportVariable('PSGA',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGAROT)
+        !call exportVariable('PSGB',units='-',long_name='Soil moisture suction coefficient (used in stomatal resistance calculation)',values2D=PSGBROT)
 
         ! ignd variables:
         dimArray = (/lonDimId,latDimId,layerDimId,tileDimId/)
@@ -612,11 +641,19 @@ contains
         call exportVariable('TBAR',units='C',long_name='Temperature of soil layers',values2D=TBARROT)
         call exportVariable('THIC',units='m3/m3',long_name='Volumetric frozen water content of soil layers',values2D=THICROT)
         call exportVariable('THLQ',units='m3/m3',long_name='Volumetric liquid water content of soil layers',values2D=THLQROT)
-        call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values2D=DELZ)
-        call exportVariable('ZBOT',units='m',long_name='Depth of bottom of ground layer',values2D=ZBOT)
 
         deallocate(dimArray,start,count)
 
+        ! ignd variables:
+        allocate(dimArray(1),start(1),count(1))
+        dimArray = (/layerDimId/)
+        count = (/ignd/)
+        start = (/1/)
+        print*,DELZ,count,dimArray
+        call exportVariable('DELZ',units='m',long_name='Ground layer thickness',values=DELZ)
+        deallocate(dimArray,start,count)
+
+        
         ! nmtest only variables:
         allocate(dimArray(3),start(3),count(3))
         dimArray = (/lonDimId,latDimId,tileDimId/)
@@ -625,10 +662,10 @@ contains
         call exportVariable('DRN',units='-',long_name='Soil drainage index',values=DRNROT)
         call exportVariable('FARE',units='fraction',long_name='Tile fractional area of gridcell',values=FAREROT)
         call exportVariable('SDEP',units='m',long_name='Soil permeable depth',values=SDEPROT)
-        call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
-        call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
-        call exportVariable('WFCI',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFCIROT)
-        call exportVariable('WFSF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFSFROT)
+        !call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
+        !call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
+        !call exportVariable('WFCI',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFCIROT)
+        !call exportVariable('WFSF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=WFSFROT)
         call exportVariable('SOCI',units='index',long_name='Soil colour index',intvalues=SOCIROT)
         call exportVariable('TCAN',units='C',long_name='Vegetation canopy temperature',values=TCANROT)
         call exportVariable('ALBS',units='-',long_name='Soil drainage index',values=ALBSROT)
@@ -648,14 +685,15 @@ contains
         dimArray = (/lonDimId,latDimId/)
         start = (/1, 1 /)
         count = (/1, 1 /)
-        call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
-        call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
-        call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
+        ! These are now in the joboptions file used to setup a model run.
+        !call exportVariable('ZBLD',units='m',long_name='Atmospheric blending height for surface roughness length averaging',values=(/ZBLDROW/))
+        !call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
+        !call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
         call exportVariable('grclarea',units='km2',long_name='Area of grid cell',values=(/grclarea/))
 
         deallocate(dimArray,start,count)
 
-        if (inclCTEM) then
+        if (inclCTEM .or. fromnml) then
 
             ! icc variables
             allocate(dimArray(4),start(4),count(4))
@@ -670,6 +708,28 @@ contains
             call exportVariable('rootmass',units='kgC/m2',long_name='Root mass',values2D=rootmassrow)
             call exportVariable('lfstatus',units='-',long_name='Leaf status, see Phenology',intvalues2D=lfstatusrow)
             call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
+            deallocate(dimArray,start,count)
+
+            ! Peat vars
+            allocate(dimArray(3),start(3),count(3))
+            dimArray = (/lonDimId,latDimId,tileDimId/)
+            start = (/1, 1, 1/)
+            count = (/1, 1, 1/)
+
+            call exportVariable('ipeatland',units='-',long_name='Peatland flag: 0 = not a peatland, 1= bog, 2 = fen',intvalues=ipeatlandrow)
+            call exportVariable('Cmossmas',units='kgC/m2',long_name='C in moss biomass',values=Cmossmas)
+            call exportVariable('litrmsmoss',units='kgC/m2',long_name='Moss litter mass',values=litrmsmoss)
+            call exportVariable('dmoss',units='m',long_name='Depth of living moss',values=dmoss)
+            deallocate(dimArray,start,count)
+
+            allocate(dimArray(4),start(4),count(4))
+            dimArray = (/lonDimId,latDimId,tileDimId,slopeDimId/)
+            start = (/1, 1, 1 ,1/)
+            count = (/1, 1, 1, 8/)
+            call exportVariable('slopefrac',units='-',long_name='Slope-based fraction for dynamic wetlands',values2D=slopefrac)
+
+            dimArray = (/lonDimId,latDimId,icctemDimId,tileDimId/)
+            count = (/1, 1, icc, 1/)
 
             if (fileType == 'ini') then
                 if (icc .ne. 9 .and. ican .ne. 4) print*,'Warning - expected ICC =9 and ICAN = 4'

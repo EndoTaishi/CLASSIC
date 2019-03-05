@@ -1,120 +1,138 @@
-!>\file 
-!!Photosynthesis and canopy conductance
+!>\file
+!!**Photosynthesis and canopy conductance**
 !!
-!!Net photosynthesis
+!!**Net photosynthesis**
 !!
-!!All biogeochemical processes in CTEM are simulated at a daily time step except gross photosynthetic uptake and associated calculation of canopy conductance, which are simulated on a half hour time step with CLASS. The photosynthesis module of CTEM calculates the net canopy photosynthesis rate, which, together with atmospheric \f$CO_2\f$ concentration and vapour pressure or relative humidity, is used to calculate canopy conductance. This canopy conductance is then used by CLASS in its energy and water balance calculations.
+!!All biogeochemical processes in CLASSIC are simulated at a daily time step except gross photosynthetic uptake and associated calculation of canopy conductance, which are simulated on a half hour time step with CLASS (physics). The photosynthesis module of CLASSIC calculates the net canopy photosynthesis rate, which, together with atmospheric \f$CO_2\f$ concentration and vapour pressure or relative humidity, is used to calculate canopy conductance. This canopy conductance is then used by CLASSIC in its energy and water balance calculations.
 !!
-!!The photosynthesis parametrization is based upon the approach of \cite Farquhar1980-96e and \cite Collatz1991-5bc \cite Collatz1992-jf as implemented in SiB2 \cite Sellers1996-bh and MOSES \cite Cox1999-ia with some minor modifications as described in \cite Arora2003-3b7. \cite Arora2003-3b7 outlines four possible configurations for the model based on choice of a \f$\textit{big-leaf}\f$ or \f$\textit{two-leaf}\f$ (sunlight and shaded leaves) mode and stomatal conductance formulations based on either \cite Ball1987-ou or \cite Leuning1995-ab. The \cite Ball1987-ou formulation uses relative humidity while \cite Leuning1995-ab uses vapour pressure deficit in calculation of canopy conductance. While the model remains capable of all four possible configurations, in practice, the model is usually run using the big-leaf parametrization with the stomatal conductance formulation of \cite Leuning1995-ab, which is the configuration described here. The original description of the CTEM photosynthesis parametrization in \cite Arora2003-3b7 did not include discussion of all the PFTs simulated by CTEM, which we expand upon here and also include changes to the parametrization since version 1.0.
+!!The photosynthesis parametrization is based upon the approach of Farquhar et al. (1980) \cite Farquhar1980-96e and Collatz et al. (1991,1992) \cite Collatz1991-5bc \cite Collatz1992-jf as implemented in SiB2 (Sellers et al. 1996)  \cite Sellers1996-bh and MOSES (Cox et al. 1999) \cite Cox1999-ia with some minor modifications as described in Arora (2003 )\cite Arora2003-3b7. Arora (2003) \cite Arora2003-3b7 outlines four possible configurations for the model based on choice of a \f$\textit{big-leaf}\f$ or \f$\textit{two-leaf}\f$ (sunlight and shaded leaves) mode and stomatal conductance formulations based on either Ball et a. (1987) \cite Ball1987-ou or Leuning (1995) \cite Leuning1995-ab. The Ball et al. (1987) \cite Ball1987-ou formulation uses relative humidity while Leuning (1995) \cite Leuning1995-ab uses vapour pressure deficit in calculation of canopy conductance. While the model remains capable of all four possible configurations, in practice, the model is usually run using the
+!!big-leaf parametrization with the stomatal conductance formulation of \cite Leuning1995-ab, which is the configuration described here. The original description of the CLASSIC photosynthesis
+!! parametrization in Arora (2003) \cite Arora2003-3b7 did not include discussion of all the PFTs simulated by CLASSIC, which we expand upon here.
 !!
-!!The gross leaf photosynthesis rate, \f$G_\mathrm{o}\f$, depends upon the maximum assimilation rate allowed by the light ($J_\mathrm{e}$), Rubisco (\f$J_\mathrm{c}\f$) and transport capacity (\f$J_\mathrm{s}\f$). The limitation placed on \f$G_\mathrm{o}\f$ by the amount of available light is calculated as (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$)
+!!The gross leaf photosynthesis rate, \f$G_\mathrm{o}\f$, depends upon the maximum assimilation rate allowed by the light (\f$J_\mathrm{e}\f$), Rubisco (\f$J_\mathrm{c}\f$) and transport capacity (\f$J_\mathrm{s}\f$). The limitation placed on \f$G_\mathrm{o}\f$ by the amount of available light is calculated as (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$)
 !!
 !!\f[
-!!\label{J_e} J_\mathrm{e} = \begin{cases} \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants\\ \varepsilon\,(1-{\nu})I,\quad C_4 plants, \end{cases}
+!!J_\mathrm{e} = \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants \qquad (Eqn 1)
+!!\f]
+!!\f[
+!!J_\mathrm{e} = \varepsilon\,(1-{\nu})I,\quad C_4 plants,\qquad (Eqn 1)
 !!\f]
 !!
 !!where \f$I\f$ is the incident photosynthetically active radiation (\f$PAR\f$;\f$mol\,photons\,m^{-2}\,s^{-1}\f$), \f${\nu}\f$ is the leaf scattering coefficient, with values of 0.15 and 0.17 for \f$C_3\f$ and \f$C_4\f$ plants, respectively, and \f$\varepsilon\f$ is the quantum efficiency (\f$mol\,{CO_2}\,(mol\,photons)^{-1}\f$; values of 0.08 and 0.04 are used for \f$C_3\f$ and \f$C_4\f$ plants, respectively). \f$c_\mathrm{i}\f$ is the partial pressure of \f$CO_2\f$ in the leaf interior (\f$Pa\f$) and \f$\Gamma\f$ is the \f$CO_2\f$ compensation point (\f$Pa\f$) (described below).
 !!
 !!The Rubisco enzyme limited photosynthesis rate, \f$J_\mathrm{c}\f$, is given by
 !!\f[
-!!\label{J_c} J_\mathrm{c} = \begin{cases} V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\\ V_\mathrm{m}, C_4 plants, \end{cases}
+!!\label{J_c} J_\mathrm{c} = V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\qquad (Eqn 2)
+!!\f]
+!!\f[
+!!J_\mathrm{c} = V_\mathrm{m}, C_4 plants,
+!!\qquad (Eqn 2)
 !!\f]
 !!
 !!where \f$V_\mathrm{m}\f$ is the maximum catalytic capacity of Rubisco (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), adjusted for temperature and soil moisture, as described below. \f$K_\mathrm{o}\f$ and \f$K_\mathrm{c}\f$ are the Michaelis--Menten constants for \f$O_2\f$ and \f$CO_2\f$, respectively. \f$O_\mathrm{a}\f$ is the partial pressure (\f$Pa\f$) of oxygen.
 !!
 !!The transport capacity (\f$J_\mathrm{s}\f$) limitation determines the maximum capacity to transport the products of photosynthesis for \f$C_3\f$ plants, while for \f$C_4\f$ plants it represents \f$CO_2\f$ limitation
 !!\f[
-!!\label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m}, C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p}, C_4 plants \end{array} \right.
-!!\f]
+!!\label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m},\qquad C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p},\qquad C_4 plants \end{array} \right.
+!!\qquad (Eqn 3)\f]
+!!
 !!where \f$p\f$ is surface atmospheric pressure (\f$Pa\f$).
 !!
 !!\f$V_\mathrm{m}\f$ is calculated as
 !!\f[
 !!V_\mathrm{m} = \nonumber \\    \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}} {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m}
-!!\f]
+!!\qquad (Eqn 4)\f]
 !!
-!!where \f$T_\mathrm{c}\f$ is the canopy temperature (\f$C\f$) and \f$T_{low}\f$ and \f$T_{high}\f$ are PFT-dependent lower and upper temperature limits for photosynthesis (see also ctem_params.f90). \f$f_{25}\f$ is the standard \f$Q_{10}\f$ function at \f$25\,C\f$ (\f$(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}\f$) and \f$V_{max}\f$ is the PFT-dependent maximum rate of carboxylation by the enzyme Rubisco (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$; see also ctem_params.f90). The constant \f$10^{-6}\f$ converts \f$V_{max}\f$ from units of \f${\mu}mol\,CO_2\,m^{-2}\,s^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
+!!where \f$T_\mathrm{c}\f$ is the canopy temperature (\f$C\f$) and \f$T_{low}\f$ and \f$T_{high}\f$ are PFT-dependent lower and upper temperature limits for photosynthesis (see also classic_params.f90). \f$f_{25}\f$ is the standard \f$Q_{10}\f$ function at \f$25\,C\f$ (\f$(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}\f$) and \f$V_{max}\f$ is the PFT-dependent maximum rate of carboxylation by the enzyme Rubisco (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$; see also classic_params.f90). The constant \f$10^{-6}\f$ converts \f$V_{max}\f$ from units of \f${\mu}mol\,CO_2\,m^{-2}\,s^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
 !!
 !!The influence of soil moisture stress is simulated via \f$S_{root}(\theta)\f$, which represents a soil moisture stress term formulated as
 !!\f[
 !!S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \vspace*{-4mm}
-!!\f]
+!!\qquad (Eqn 5)\f]
 !!
 !!\f[
 !!\label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho,
-!!\f]
+!!\qquad (Eqn 6)\f]
 !!
-!!where \f$S_{root}(\theta)\f$ is calculated by weighting \f$S(\theta_i)\f$ with the fraction of roots, \f$r_{i}\f$, in each soil layer \f$i\f$ and \f$\varrho\f$ is a PFT-specific sensitivity to soil moisture stress (unitless; see also ctem_params.f90).  \f$\phi_i\f$ is the degree of soil saturation (soil wetness) given by
+!!where \f$S_{root}(\theta)\f$ is calculated by weighting \f$S(\theta_i)\f$ with the fraction of roots, \f$r_{i}\f$, in each soil layer \f$i\f$ and \f$\varrho\f$ is a PFT-specific sensitivity to soil moisture stress (unitless; see also classic_params.f90).  \f$\phi_i\f$ is the degree of soil saturation (soil wetness) given by
 !!\f[
 !!\label{phitheta} \phi_{i}(\theta_{i}) = \max \left[0, \min \left(1, \frac{\theta_{i} - \theta_{i, wilt}}{\theta_{i, field} - \theta_{i, wilt}} \right) \right],
-!!\f]
+!!\qquad (Eqn 7)\f]
 !!
 !!where \f$\theta_{i}\f$ is the volumetric soil moisture (\f$m^{3} water\,(m^{3} soil)^{-1}\f$) of the \f$i\f$th soil layer and \f$\theta_{i,field}\f$ and \f$\theta_{i, wilt}\f$ the soil moisture at field capacity and wilting point, respectively.
 !!
-!!The \f$CO_2\f$ compensation point (\f$\Gamma\f$) is the \f$CO_2\f$ partial pressure where photosynthetic uptake equals the leaf respiratory losses (used in Eqs. \ref{J_e} and \ref{J_c}). \f$\Gamma\f$ is zero for \f$C_4\f$ plants but is sensitive to oxygen partial pressure for \f$C_3\f$ plants as
+!!The \f$CO_2\f$ compensation point (\f$\Gamma\f$) is the \f$CO_2\f$ partial pressure where photosynthetic uptake equals the leaf respiratory losses (used in Eqs. 1 and 2). \f$\Gamma\f$ is zero for \f$C_4\f$ plants but is sensitive to oxygen partial pressure for \f$C_3\f$ plants as
 !!\f[
-!!\label{co2comp} \Gamma = \left\{\begin{array}{l l} \frac{O_\mathrm{a}}{2 \sigma}, C_3 plants\\ 0, C_4 plants, \end{array} \right.
+!!\label{co2comp} \Gamma = \left\{\begin{array}{l l} \frac{O_\mathrm{a}}{2 \sigma}, C_3 plants\\ 0, C_4 plants, \end{array} \right.\qquad (Eqn 8)
 !!\f]
 !!
-!!where \f$\sigma\f$ is the selectivity of Rubisco for \f$CO_2\f$ over \f$O_2\f$ (unitless), estimated by \f$\sigma = 2600f_{25}(0.57)\f$. The \f$CO_2\f$ (\f$K_\mathrm{c}\f$) and \f$O_2\f$ (\f$K_\mathrm{o}\f$) Michaelis--Menten constants used in Eq. (\ref{J_c}) are determined via 
+!!where \f$\sigma\f$ is the selectivity of Rubisco for \f$CO_2\f$ over \f$O_2\f$ (unitless), estimated by \f$\sigma = 2600f_{25}(0.57)\f$. The \f$CO_2\f$ (\f$K_\mathrm{c}\f$) and \f$O_2\f$ (\f$K_\mathrm{o}\f$) Michaelis--Menten constants used in Eq. 2 are determined via
 !!\f[
-!!\label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \\ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2).
+!!\label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \qquad (Eqn 9)
+!!\f]
+!!\f[
+!!\label{K_o} K_o = 3 \times 10^4 f_{25}(1.2).\qquad (Eqn 9)
 !!\f]
 !!
 !!Given the light (\f$J_\mathrm{e}\f$), Rubsico (\f$J_\mathrm{c}\f$) and transportation capacity (\f$J_\mathrm{s}\f$) limiting rates, the leaf-level gross photosynthesis rate, \f$G_\mathrm{o}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is then determined following a minimization based upon smallest roots of the following two quadratic equations
 !!\f[
-!!J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \\ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2},
+!!J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \qquad (Eqn 10)
+!!\f]
+!!\f[
+!! \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2},\qquad (Eqn 10)
 !!\f]
 !!
-!!where \f$\beta_1\f$ is 0.95 and \f$\beta_2\f$ is 0.99. When soil moisture stress is occurring, both the \f$J_\mathrm{s}\f$ and \f$J_\mathrm{c}\f$ terms are reduced since the \f$V_\mathrm{m}\f$ term (Eq. \ref{V_m}) includes the effect of soil moisture stress through the \f$S(\theta)\f$ term and this reduces the leaf-level gross photosynthesis rate.
+!!where \f$\beta_1\f$ is 0.95 and \f$\beta_2\f$ is 0.99. When soil moisture stress is occurring, both the \f$J_\mathrm{s}\f$ and \f$J_\mathrm{c}\f$ terms are reduced since the \f$V_\mathrm{m}\f$ term (Eq. 4) includes the effect of soil moisture stress through the \f$S(\theta)\f$ term and this reduces the leaf-level gross photosynthesis rate.
 !!
-!!The current version of CTEM does not include nutrient constraints on photosynthesis and, as a result, increasing atmospheric \f$CO_2\f$ concentration leads to unconstrained increase in photosynthesis. In natural ecosystems, however, down regulation of photosynthesis occurs due to constraints imposed by availability of nitrogen, as well as phosphorus. To capture this effect, CTEM uses a nutrient limitation term, based on experimental plant growth studies, to down regulate the photosynthetic response to elevated \f$CO_2\f$ concentrations \cite Arora2009-9bc. The parametrization, and its rationale, are fully described in \cite Arora2009-9bc but the basic relations are summarized here. The leaf-level gross photosynthetic rate is scaled by the down-regulation term, \f$\Xi_\mathrm{N}\f$, to yield the nutrient limited leaf level gross photosynthetic rate as
+!!The current version of CTEM does not include nutrient constraints on photosynthesis and, as a result, increasing atmospheric \f$CO_2\f$ concentration leads to unconstrained increase in photosynthesis.
+!!In natural ecosystems, however, down regulation of photosynthesis occurs due to constraints imposed by availability of nitrogen, as well as phosphorus. To capture this effect,
+!! CTEM uses a nutrient limitation term, based on experimental plant growth studies, to down regulate the photosynthetic response to elevated \f$CO_2\f$ concentrations (Arora et al., 2009)\cite Arora2009-9bc. The parametrization, and its rationale, are fully described in Arora et al. (2009) \cite Arora2009-9bc but the basic relations are summarized here. The leaf-level gross photosynthetic rate is scaled by the down-regulation term, \f$\Xi_\mathrm{N}\f$, to yield the nutrient limited leaf level gross photosynthetic rate as
 !!\f[
 !!\label{G_nitro} G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \label{Nthrottle} \Xi_\mathrm{N} = \frac{1 + \gamma_{gd} \ln(c_\mathrm{a}/c_{0})}{1 + \gamma_g \ln(c_\mathrm{a}/c_{0})},
-!!\f]
+!!\qquad (Eqn 11)\f]
 !!
-!!where \f$c_\mathrm{a}\f$ is the atmospheric \f$CO_2\f$ concentration in ppm, \f$c_{0}\f$ is the pre-industrial \f$CO_2\f$ concentration (\f$285.0\,ppm\f$), \f$\gamma_g\f$ is 0.95 \cite Arora2009-9bc. A value of \f$\gamma_{gd}\f$ lower than \f$\gamma_g\f$ ensures that \f$\Xi_\mathrm{N}\f$ gradually decreases from its pre-industrial value of one as \f$c_\mathrm{a}\f$ increases to constrain the rate of increase of photosynthesis with rising atmospheric \f$CO_2\f$ concentrations. CTEM v. 2.0 uses a \f$\gamma_{gd}\f$ value of 0.30 (unitless).
+!!where \f$c_\mathrm{a}\f$ is the atmospheric \f$CO_2\f$ concentration in ppm, \f$c_{0}\f$ is the pre-industrial \f$CO_2\f$ concentration (\f$285.0\,ppm\f$), \f$\gamma_g\f$ is 0.95 (Arora et al. 2009) \cite Arora2009-9bc. A value of \f$\gamma_{gd}\f$ lower than \f$\gamma_g\f$ ensures that \f$\Xi_\mathrm{N}\f$ gradually decreases from its pre-industrial value of one as \f$c_\mathrm{a}\f$ increases to constrain the rate of increase of photosynthesis with rising atmospheric \f$CO_2\f$ concentrations.
 !!
 !!Finally, the leaf-level gross photosynthesis rate, \f$G_{\mathrm{o},N-limited}\f$ is scaled up to the canopy-level, \f$G_{canopy}\f$, by considering the exponential vertical profile of radiation along the depth of the canopy as
 !!\f[
-!!\label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}),
+!!\label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}),\qquad (Eqn 12)
 !!\f]
-!!which yields the gross primary productivity (\f$G_{canopy}\f$, GPP). \f$k_\mathrm{n}\f$ is the extinction coefficient that describes the nitrogen and time-mean photosynthetically absorbed radiation (\f$PAR\f$) profile along the depth of the canopy (see also ctem_params.f90) \cite Ingestad1986-td \cite Field1986-kd, and \f$LAI\f$ (\f$m^{2}\,leaf\,(m^{2}\,ground)^{-1}\f$) is the leaf area index.
+!!which yields the gross primary productivity (\f$G_{canopy}\f$, GPP). \f$k_\mathrm{n}\f$ is the extinction coefficient that describes the nitrogen and time-mean photosynthetically absorbed radiation (\f$PAR\f$) profile along the depth of the canopy (see also classic_params.f90) (Ingestad and Lund ,1986; \cite Ingestad1986-td Field and Mooney, 1986 \cite Field1986-kd), and \f$LAI\f$ (\f$m^{2}\,leaf\,(m^{2}\,ground)^{-1}\f$) is the leaf area index.
 !!
-!!The net canopy photosynthetic rate, \f$G_{canopy,net}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is calculated by subtracting canopy leaf maintenance respiration costs (\f$R_{mL}\f$; see Sect. \ref{maint}) as
+!!The net canopy photosynthetic rate, \f$G_{canopy,net}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is calculated by subtracting canopy leaf maintenance respiration costs (\f$R_{mL}\f$; see mainres.f) as
 !!\f[
-!!\label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}.
+!!\label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}.\qquad (Eqn 13)
 !!\f]
 !!
-!!Coupling of photosynthesis and canopy conductance
+!! **Coupling of photosynthesis and canopy conductance**
 !!
-!!When using the \cite Leuning1995-ab approach for photosynthesis--canopy conductance coupling, canopy conductance (\f$g_\mathrm{c}\f$; \f$mol\,m^{-2}\,s^{-1}\f$) is expressed as a function of the net canopy photosynthesis rate, \f$G_{canopy, net}\f$, as
+!!
+!!When using the Leuning (1995) \cite Leuning1995-ab approach for photosynthesis--canopy conductance coupling, canopy conductance (\f$g_\mathrm{c}\f$; \f$mol\,m^{-2}\,s^{-1}\f$) is expressed as a function of the net canopy photosynthesis rate, \f$G_{canopy, net}\f$, as
 !!\f[
-!!\label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI}
+!!\label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI}\qquad (Eqn 14)
 !!\f]
 !!where \f$p\f$ is the surface atmospheric pressure (\f$Pa\f$), the parameter \f$m\f$ is set to 9.0 for needle-leaved trees, 12.0 for other \f$C_3\f$ plants and 6.0 for \f$C_4\f$ plants, parameter \f$b\f$ is assigned the values of 0.01 and 0.04 for \f$C_3\f$ and \f$C_4\f$ plants, respectively. \f$V\f$ is the vapour pressure deficit (\f$Pa\f$) and the parameter \f$V_\mathrm{o}\f$ is set to \f$2000\,Pa\f$ for trees and \f$1500\,Pa\f$ for crops and grasses. The partial pressure of \f$CO_2\f$ at the leaf surface, \f$c_\mathrm{s}\f$, is found via
 !!\f[
-!!\label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}.
+!!\label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}.\qquad (Eqn 15)
 !!\f]
 !!
-!!Here, \f$c_{ap}\f$ is the atmospheric \f$CO_2\f$ partial pressure (\f$Pa\f$) and \f$g_b\f$ is the aerodynamic conductance estimated by CLASS (\f$mol\,m^{-2}\,s^{-1}\f$). The intra-cellular \f$CO_2\f$ concentration required in Eqs. (\ref{J_e})--(\ref{J_s}) is calculated as
+!!Here, \f$c_{ap}\f$ is the atmospheric \f$CO_2\f$ partial pressure (\f$Pa\f$) and \f$g_b\f$ is the aerodynamic conductance estimated by CLASS (\f$mol\,m^{-2}\,s^{-1}\f$). The intra-cellular \f$CO_2\f$ concentration required in Eqs. 1--3 is calculated as
 !!\f[
-!!\label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}.
+!!\label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}.\qquad (Eqn 16)
 !!\f]
 !!
 !!Since calculations of \f$G_{canopy,net}\f$ and \f$c_\mathrm{i}\f$ depend on each other, the photosynthesis-canopy conductance equations need to be solved iteratively. The initial value of \f$c_\mathrm{i}\f$ used in calculation of \f$G_{canopy,net}\f$ is the value from the previous time step or, in its absence, \f$c_\mathrm{i}\f$ is assumed to be \f$0.7c_{ap}\f$.
 !!
 !!Canopy (\f$g_\mathrm{c}\f$) and aerodynamic (\f$g_b\f$) conductance used in above calculations are expressed in units of \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$ but can be converted to the traditional units of \f$m\,s^{-1}\f$ as follows
 !!\f[
-!!g_\mathrm{c} (m\,s^{-1}) = 0.0224\,\frac{T_\mathrm{c}}{T_\mathrm{f}}\,\frac{p_0}{p}\,g_\mathrm{c} (mol\,m^{-2}\,s^{-1}),
+!!g_\mathrm{c} (m\,s^{-1}) = 0.0224\,\frac{T_\mathrm{c}}{T_\mathrm{f}}\,\frac{p_0}{p}\,g_\mathrm{c} (mol\,m^{-2}\,s^{-1}),\qquad (Eqn 17)
 !!\f]
 !!
 !!where \f$p_0\f$ is the standard atmospheric pressure (\f$101\,325\,Pa\f$) and \f$T_\mathrm{f}\f$ is freezing temperature (\f$273.16\,K\f$).
 !!
+
 !!
-!!
-!!
-C!     1.  SINGLE-LEAF & TWO-LEAF COMBINED VERSION, CAN USE EITHER APPROACH   
+C!     1.  SINGLE-LEAF & TWO-LEAF COMBINED VERSION, CAN USE EITHER APPROACH
 C!     2.  CAN USE EITHER BWB OR LEUNING TYPE STOMATAL CONDUCTANCE FORMULATION
 C!     3.  ALSO, CAN USE SMOOTHED AVERAGE OF THE 3 LIMITING RATES, MIN. OF
 C!         THE 3 LIMITING RATES, OR MIN. OF LIGHT AND RUBSICO RATES.
@@ -141,11 +159,13 @@ C!     8. C3 GREEN GRASS
 C!     9. C4 GREEN GRASS
 C!
 C!     INPUTS
-C! 
+C!
 C!     NOL2MAX   - NUMBER OF LEVEL 2 CTEM PFTs
 C!
-      SUBROUTINE PHTSYN3(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC,  
-     1                     CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND, 
+!!@author V. Arora, J. Melton, M. Lazare
+!
+      SUBROUTINE PHTSYN3(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC,
+     1                     CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND,
      2                        TA,   RMAT,   COSZS, XDIFFUS,  ILG,
      3                       IL1,    IL2,   IG,     ICC,   ISNOW, SLAI,
      4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
@@ -165,12 +185,12 @@ C     *                            than a real that gets cast as INT later.
 C     * APR 11/14 - J. Melton      When at wilting point SM_FUNC should be 0. Was incorrectly set to 0.01
 C     * JAN 15/14 - J. Melton      Fixed bug in SM_FUNC calculation that prevented
 C     *                            higher number PFTs from feeling water stress.
-C     *                            Also have new parameter values in Vmax, SN, and RMLcoef        
+C     *                            Also have new parameter values in Vmax, SN, and RMLcoef
 C     * AUG 16/12 - J. MELTON      Fixed GB constraint, removed incorrect
 C     *                            scaling of RML, made reals being treated
-C     *                            as ints more explicit, changed declaration 
+C     *                            as ints more explicit, changed declaration
 C     *                            of usebb to real. Also changed use of TA to
-C     *                            TCAN for RH and GB calculations to ensure 
+C     *                            TCAN for RH and GB calculations to ensure
 C     *                            consistency with rest of subroutine.
 C     * NOV 15, 2011 - M.LAZARE.   New version for gcm15j+ to support
 C     *                            class_v3.5:
@@ -189,7 +209,7 @@ c     *                            is only defined for fct>0. This modification
 c     *                            has been tested to give bit-for-bit the same
 c     *                            answer. The model runs ok without this for
 c     *                            the usual "noxlfqinitauto=on" but otherwise
-C     *                            crashes without the change.  
+C     *                            crashes without the change.
 C     * APR 23, 2010 - V.ARORA/    PREVIOUS VERSION PHTSYN2 FOR GCM15I:
 C     *                M.LAZARE.   - GAMMA_W NOW 0.25 INSTEAD OF 0.425.
 C     *                            - QA IS NOW INPUT WITH RH AS AN
@@ -203,30 +223,25 @@ C     * 7 SEP.  2001 - PROGRAM TO CALCULATE STOMATAL CONDUCTANCE, TO BE
 C     * V. ARORA       USED BY CLASS, BY ESTIMATING PHOTOSYNTHESIS AND THEN
 C     *                RELATING PHOTOSYNTHESIS TO STOMATAL CONDUCTANCE
 C     *                PREVIOUS VERSION PHTSYN).
-C    
+C
 C     ------------------------------------------------------------------
 C
-      use ctem_params, only : KN,TUP,TLOW,alpha_phtsyn,omega_phtsyn,
+      use classic_params, only : KN,TUP,TLOW,alpha_phtsyn,omega_phtsyn,
      1                        ISC4,MM,BB,VPD0,SN,SMSCALE,VMAX,REQITER,
      2                        CO2IMAX,BETA1,BETA2,INICO2I,CHI,RMLCOEFF,
-     3                        GAMMA_W,GAMMA_M
-
+     3                        GAMMA_W,GAMMA_M,TFREZ,ZERO,STD_PRESS
+      
       IMPLICIT NONE
 C
-      INTEGER KK
-!      PARAMETER (KK=12)  !< PRODUCT OF CLASS PFTs AND L2MAX (4 x 3 = 12)
-      PARAMETER (KK=20)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 5 = 20) YW April 13, 2015 
-C
-
       INTEGER, DIMENSION(:,:), ALLOCATABLE  :: USESLAI
       INTEGER, DIMENSION(:), ALLOCATABLE    :: SORT
-      
+
       REAL, DIMENSION(:), ALLOCATABLE       :: FC_TEST, SIGMA,  TGAMMA,
      1     KC, KO, IPAR, GB, RH, VPD, O2_CONC, CO2A, USEBB
 
       REAL, DIMENSION(:,:), ALLOCATABLE     :: USEAILCG, SM_FUNC,
      1     AVE_SM_FUNC, VMAXC, JE3,SM_FUNC2,TOT_RMAT,
-     2     VMUNS1, VMUNS2, VMUNS3, VMUNS, VM, CO2I, PREV_CO2I, 
+     2     VMUNS1, VMUNS2, VMUNS3, VMUNS, VM, CO2I, PREV_CO2I,
      3     FPAR, JC,  JC1, JC2, JC3, JE, JE1, JE2, JS, A_VEG,
      4     RC_VEG, GCTU, GCMIN, GCMAX, VPD_TERM, CO2LS, GC
 C    -----------------------------------------------------------------
@@ -239,12 +254,10 @@ C
      2    VMUNS_SUN, VMUNS_SHA, VM_SUN, VM_SHA, CO2I_SUN, PREV_CO2I_SUN,
      3    CO2I_SHA, PREV_CO2I_SHA, JC1_SUN, JC1_SHA, JC3_SUN, JC3_SHA,
      4    JC_SUN, JC_SHA, JE1_SUN, JE1_SHA,
-     5    JE2_SUN, JE2_SHA, JE_SUN, JE_SHA, JS_SUN, JS_SHA, 
+     5    JE2_SUN, JE2_SHA, JE_SUN, JE_SHA, JS_SUN, JS_SHA,
      6    A_VEG_SUN, A_VEG_SHA, RML_SUN, RML_SHA, AN_SUN, AN_SHA,
      7    CO2LS_SUN, CO2LS_SHA, AILCG_SUN, AILCG_SHA, GC_SUN, GC_SHA,
      8    GCTU_SUN, GCTU_SHA
-
-
 
       INTEGER ILG      !<NO. OF GRID CELLS IN LATITUDE CIRCLE
       INTEGER IC       !<NO. OF CLASS VEGETATION TYPES, 4
@@ -253,12 +266,10 @@ C
       INTEGER IL1      !<IL1=1
       INTEGER IL2      !<IL2=ILG
       INTEGER IT_COUNT !<
-      !INTEGER REQITER  !<
       INTEGER IG       !<NO. OF SOIL LAYERS, 3
       INTEGER ICC      !<NO. OF CTEM's PFTs, CURRENTLY 9
       INTEGER LEAFOPT  !<
       INTEGER PS_COUP  !<
-      !INTEGER ISC4(KK) !<
       INTEGER ISNOW    !<INTEGER (0 or 1) TELLING IF PHTSYN IS TO BE RUN OVER CANOPY OVER SNOW OR CANOPY OVER GROUND SUBAREA
       INTEGER K1       !<
       INTEGER K2       !<
@@ -275,20 +286,9 @@ C
       REAL CFLUX(ILG)     !<AERODYNAMIC CONDUCTANCE, M/S
       REAL SLAI(ILG,ICC)  !<SCREEN LEVEL HUMIDITY IN KG/KG - STORAGE LAI. THIS LAI IS USED FOR PHTSYN EVEN IF ACTUAL LAI IS ZERO. ESTIMATE OF NET PHOTOSYNTHESIS BASED ON SLAI IS USED FOR INITIATING LEAF ONSET. SEE PHENOLGY SUBROUTINE FOR MORE DETAILS.
       REAL QA(ILG)        !<
-      !REAL INICO2I(KK)    !<
 C
       REAL CO2CONC(ILG) !<ATMOS. \f$CO_2\f$ IN PPM, AND THEN CONVERT IT TO PARTIAL PRESSURE, PASCALS, CO2A, FOR USE IN THIS SUBROUTINE
-      !REAL ALPHA(KK)    !<
-      !REAL OMEGA(KK)    !<
-      !REAL SMSCALE(KK)  !<
-      REAL TFREZ        !<
-      REAL STD_PRESS    !<
-C
-      !REAL VMAX(KK)         !<
-      !REAL KN(KK)           !<
-      !REAL TUP(KK)          !<
       REAL Q10_FUNCN        !<
-      !REAL TLOW(KK)         !<
       REAL Q10_FUNC         !<
       REAL PRESSG(ILG)      !<ATMOS. PRESSURE, PASCALS
       REAL RML_VEG(ILG,ICC) !<LEAF RESPIRATION RATE, u MOL CO2/M2.S FOR EACH PFT
@@ -307,228 +307,33 @@ C
                             !<FCANCMX DOESN'T CHANGE, UNLESS OF COURSE ITS CHANGED BY LAND USE CHANGE OR DYNAMIC VEGETATION.
       REAL Q10_FUNCD        !<
 C
-      !REAL MM(KK)
-      !REAL BB(KK)
-      !REAL VPD0(KK)
       REAL Q10
       REAL RC(ILG)      !<GRID-AVERAGED STOMATAL RESISTANCE, S/M
-      !REAL CO2IMAX
       REAL COSZS(ILG)   !<COS OF ZENITH ANGLE
       REAL XDIFFUS(ILG) !<FRACTION OF DIFFUSED PAR
-      REAL ZERO
-      !REAL RMLCOEFF(KK)
-C        
+C
       REAL TEMP_B
       REAL TEMP_C
       REAL TEMP_R
       REAL TEMP_Q1
       REAL TEMP_Q2
       REAL TEMP_JP
-      !REAL BETA1
-      !REAL BETA2
       REAL TEMP_AN
-C    
+C
       INTEGER ISAND(ILG,IG) !<SAND INDEX.
-      !INTEGER SN(KK)
       REAL DAYL_MAX(ILG)      !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)          !< DAYLENGTH FOR THAT LOCATION
-
       REAL use_vmax
 C
 C     FOR LIMITING CO2 UPTAKE
 C
-      !REAL CHI(KK)
       REAL DELTA_CO2(ILG)
       REAL N_EFFECT(ILG)
-      !REAL GAMMA_W
-      !REAL GAMMA_M
       LOGICAL SMOOTH, MIN2, MIN3
 C
 C
       REAL TEMP_PHI1, TEMP_PHI2, EA, EASAT, T_TEMP(ILG)
 C     -----------------------------------------------------------------
-C
-C     CONSTANTS AND PARAMETERS USED IN THE PHOTOSYNTHESIS MODEL. ALSO
-C     NOTE THE STRUCTURE OF VECTORS WHICH CLEARLY SHOWS THE CLASS
-C     PFTs (ALONG ROWS) AND CTEM SUB-PFTs (ALONG COLUMNS)
-C
-C     NEEDLE LEAF |  EVG       DCD       ---
-C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY   EVG-SHU   DCD-SHU  !!YW April 13, 2015 
-C     CROPS       |   C3        C4       ---
-C     GRASSES     |   C3        C4       ---
-C
-! C     CANOPY LIGHT/NITROGEN EXTINCTION COEFFICIENT - THIS BASICALLY
-! C     ASSUMES THAT MEAN PROFILE OF NITROGEN IS SAME AS THAT FOR
-! C     TIME MEAN PROFILE OF RADIATION - THE ASSUMPTION MADE BY SINGLE
-! C     BIG-LEAF MODELS
-! C      DATA   KN/0.50, 0.50, 0.00,
-! C     &          0.50, 0.50, 0.50,
-! C     &          0.40, 0.48, 0.00,
-! C     &          0.46, 0.44, 0.00/
-!       DATA KN/ 0.50, 0.50, 0.00, 0.00, 0.00, !YW April 13, 2015 add 2 colums
-!      &         0.50, 0.50, 0.50, 0.50, 0.50,
-!      &         0.40, 0.48, 0.00, 0.00, 0.00,
-!      &         0.46, 0.44, 0.46, 0.00, 0.00/
-! C
-! C     LOWER AND UPPER TEMPERATURE LIMITS FOR PHOTOSYNTHESIS, KELVIN
-! C     LOWER LIMIT IN CELCIUS /-5, -5, --,
-! C                              0,  0,  0,
-! C                             -3,  5, --,
-! C                             -1, 10, --/
-!       DATA TLOW/268.1, 268.1, 0.000, 0.000, 0.000,
-!      &          273.1, 273.1, 273.1, 271.1, 271.1,     !(Tanja et al. 2003) 5 days average air T above 4.3
-!      &          270.1, 278.1, 0.000, 0.000, 0.000,     !as the threshold of spring PSN for boreal forests.
-!      &          272.1, 283.1, 272.1, 0.000, 0.000/     !YW April 22, 2015
-! C
-! C     UPPER LIMIT IN CELCIUS /34, 34, --,
-! C                             45, 37, 37,
-! C                             42, 42, --,
-! C                             40, 50, --/
-! C    JM CHANGED PFT 3 TO 45 DEG FOLLOWING
-! C    ITO AND OIKAWA 2000.
-!       DATA  TUP/307.1, 307.1, 0.000, 0.000, 0.000,
-!      &          318.1, 310.1, 310.1, 307.1, 307.1,
-!      &          315.1, 315.1, 0.000, 0.000, 0.000,
-!      &          313.1, 323.1, 313.1, 0.000, 0.000/
-! C
-! C     ARRAY TELLING WHICH VEGETATION TYPE IS C4
-!       DATA  ISC4/0, 0, 0, 0, 0,
-!      &           0, 0, 0, 0, 0,
-!      &           0, 1, 0, 0, 0,
-!      &           0, 1, 0, 0, 0/
-! C
-! C     QUANTUM EFFICIENCIES, VALUES OF 0.08 & 0.04 ARE USED FOR C3 AND
-! C     C4 PLANTS, RESPECTIVELY
-!       DATA  ALPHA/0.08, 0.08, 0.00, 0.00, 0.00,
-!      &            0.08, 0.08, 0.08, 0.08, 0.08,
-!      &            0.08, 0.04, 0.00, 0.00, 0.00,
-!      &            0.08, 0.04, 0.08, 0.00, 0.00/
-! C
-! C     LEAF SCATTERING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
-! C     FOR C3 AND C4 PLANTS, RESPECTIVELY
-!       DATA  OMEGA/0.15, 0.15, 0.00, 0.00, 0.00,
-!      &            0.15, 0.15, 0.15, 0.15, 0.15,
-!      &            0.15, 0.17, 0.00, 0.00, 0.00,
-!      &            0.15, 0.17, 0.15, 0.00, 0.00/
-! C
-! C     PARAMETER M USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
-! C     COUPLING.
-! C
-!       DATA  MM/9.0, 9.0, 0.0, 0.0, 0.0,
-!      &        12.0,12.0,12.0, 12.0, 12.0,         !YW May 05, 2015  PFT6&7 were 9.0
-!      &        12.0, 6.0, 0.0, 0.0, 0.0,
-!      &        12.0, 6.0, 12.0, 0.0, 0.0/
-! C
-! C     PARAMETER B USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
-! C     COUPLING.
-!       DATA  BB/0.01, 0.01, 0.00, 0.00, 0.00,
-!      &         0.01, 0.01, 0.01, 0.01, 0.01,
-!      &         0.01, 0.04, 0.00, 0.00, 0.00,
-!      &         0.01, 0.04, 0.01, 0.00, 0.00/
-! C
-! C     PARAMETER VPD0 USED IN LEUNING TYPE PHOTOSYNTHESIS - STOMATAL
-! C     CONDUCTANCE COUPLING, IN PASCALS
-!       DATA VPD0/2000., 2000., 0.000,  0.000, 0.000,
-!      &          2000., 2000., 2000.,  2000., 2000.,
-!      &          1500., 1500., 0.000,  0.000, 0.000,
-!      &          1500., 1500., 1500.,  0.000, 0.000/
-! C
-! C     EXPONENT FOR SOIL MOISTURE STRESS. FOR SN EQUAL TO 1, PHOTOSYNTHESIS
-! C     DECREASES LINEARLY WITH SOIL MOISTURE, AND OF COURSE NON-LINEARLY
-! C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
-! C     NOT START DECREASING UNTIL SOIL MOISTURE IS ABOUT HALF WAY BETWEEN
-! C     WILTING POINT AND FIELD CAPACITY.
-! C
-!       DATA SN/2, 2, 0, 0, 0,
-!      &        4, 2, 2, 2, 2,
-!      &        2, 2, 0, 0, 0,
-!      &        2, 2, 2, 0, 0/      !sedge may take up a higher value as it adapts to wet condition well YW May 13, 2015
-!
-! c    ---in 1.6 PEATLAND version less moisture limit ,in original ctem 1.6
-! c    version sn = 20.0 for all pfts
-! C         data sn/20.0,       20.0,          0.00,
-! C     &           20.0,       20.0,          0.00,
-! C     &          0.00,        0.00,          0.00,
-! C     &          100.0,       100.0,         100.00/
-! c    ------YW March 27, 2015 -------------------------------------------
-!
-! C
-! C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
-! C     THIS CAN BE USED TO SIMULATE THE EFFECT OF IRRIGATION FOR CROPS.
-! C
-!       DATA SMSCALE/0.0, 0.0, 0.0, 0.0, 0.0,
-!      &             0.0, 0.0, 0.0, 0.0, 0.0,
-!      &             0.1, 0.1, 0.0, 0.0, 0.0,
-!      &             0.0, 0.0, 0.0, 0.0, 0.0/
-! C
-! C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
-! C     VALUES ARE MAINLY DERIVED FROM \cite Kattge20090c0 WHICH
-! C     DOESN'T INCLUDE C4. Also see \cite Alton2017-pd
-!       DATA VMAX/42.0E-06, 47.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
-!      &          35.0E-06, 57.0E-06, 40.0E-06, 60.0E-06, 50.0E-06,     !YW April 17, 2015
-!      &          55.0E-06, 40.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
-!      &          75.0E-06, 15.0E-06, 40.0E-06, 0.00E-06, 0.00E-06/     !YW May 06, 2015 sedge=PFT12
-!
-! C     NEEDLE LEAF |  EVG       DCD       ---
-! C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
-! C     CROPS       |   C3        C4       ---
-! C     GRASSES     |   C3        C4       ---
-!
-! C
-! C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
-!       DATA  REQITER/10/
-! C
-! C     MAX. INTERCELLULAR CO2 CONCENTRATION, PASCALS
-!       DATA CO2IMAX/2000.00/
-! C
-! C     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
-!       DATA BETA1/0.950/
-!       DATA BETA2/0.990/
-! C
-! C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
-!       DATA  INICO2I/0.65, 0.65, 0.00, 0.00, 0.00,
-!      &              0.65, 0.65, 0.65, 0.65, 0.65,
-!      &              0.65, 0.37, 0.00, 0.00, 0.00,
-!      &              0.65, 0.37, 0.65, 0.00, 0.00/
-! C
-! C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
-!       DATA  RMLCOEFF/0.015, 0.021, 0.000, 0.000, 0.000,
-!      &               0.025, 0.015, 0.015, 0.025, 0.020,     !pft7 WAS 0.021 YW May 05, 2015
-!      &               0.015, 0.025, 0.000, 0.000, 0.000,
-!      &               0.013, 0.025, 0.015, 0.000, 0.000/
-!
-! c    In 1.6 version use the following -------------------------------\
-! c    data rmlcoeff   /0.020,  0.020,    0.000,
-! c     &                0.012,      0.015,    0.000,
-! c     &                0.000,      0.000,    0.000,
-! c     &                0.013,  0.013,   0.013/
-! c    YW March 27, 2015 -----------------------------------------------/
-! C
-C     FREEZING TEMPERATURE
-      DATA TFREZ/273.16/
-C
-C     STANDARD ATMOS. PRESSURE
-      DATA STD_PRESS/101325.0/
-C
-C     ZERO
-      DATA ZERO/1E-20/
-! C
-! C     ADDITIONAL PARAMETERS FOR TWO-LEAF MODEL
-! C     LEAF ANGLE DISTRIBUTION
-!       DATA  CHI/0.01,  0.01, 0.00, 0.00, 0.00,
-!      &          0.17,  0.17, 0.17, 0.17, 0.17,    !YW May 4th
-!      &         -0.30, -0.30, 0.00, 0.00, 0.00,
-!      &         -0.30, -0.30,-0.30, 0.00, 0.00/
-! C
-! C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
-! C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
-!       DATA GAMMA_W/0.17/  ! New value from Sept 2014, old was 0.45. JM.
-! C
-! C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
-! C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
-!       DATA GAMMA_M/0.95/
-
-C     --------------------------------------------------------------
 C     DECIDE HERE IF WE WANT TO USE SINGLE LEAF OR TWO-LEAF MODEL
 C     CHOOSE 1 FOR SINGLE-LEAF MODEL, AND 2 FOR TWO-LEAF MODEL
 C
@@ -767,9 +572,9 @@ C     INITIALIZATION ENDS
 C
 C     -------------------------------------------------------------------
 !>
-!!IF LAI IS LESS THAN SLAI THAN WE USE STORAGE LAI TO PHOTOSYNTHESIZE. HOWEVER, WE DO NOT USE THE STOMATAL 
+!!IF LAI IS LESS THAN SLAI THAN WE USE STORAGE LAI TO PHOTOSYNTHESIZE. HOWEVER, WE DO NOT USE THE STOMATAL
 !!RESISTANCE ESTIMATED IN THIS CASE, BECAUSE STORAGE LAI IS AN IMAGINARY LAI, AND WE SET STOMATAL RESISTANCE
-!!TO ITS MAX. NOTE THAT THE CONCEPT OF STORAGE/IMAGINARY LAI IS USED FOR PHENOLOGY PURPOSES AND THIS 
+!!TO ITS MAX. NOTE THAT THE CONCEPT OF STORAGE/IMAGINARY LAI IS USED FOR PHENOLOGY PURPOSES AND THIS
 !!IMAGINARY LAI ACTS AS MODEL SEEDS.
 !!
       DO 340 J = 1, ICC
@@ -783,7 +588,7 @@ C     -------------------------------------------------------------------
 350     CONTINUE
 340   CONTINUE
 !>
-!!SET MIN. AND MAX. VALUES FOR STOMATAL CONDUCTANCE. WE MAKE SURE THAT MAX. STOMATAL RESISTANCE IS AROUND 
+!!SET MIN. AND MAX. VALUES FOR STOMATAL CONDUCTANCE. WE MAKE SURE THAT MAX. STOMATAL RESISTANCE IS AROUND
 !!5000 S/M AND MIN. STOMATAL RESISTANCE IS 51 S/M.
 !!
       DO 360 J = 1, ICC
@@ -804,7 +609,7 @@ C
 370     CONTINUE
 360   CONTINUE
 !>
-!!IF WE ARE USING LEUNING TYPE PHOTOSYNTHESIS-STOMATAL CONDUCTANCE COUPLING WE NEED VAPOR PRESSURE DEFICIT 
+!!IF WE ARE USING LEUNING TYPE PHOTOSYNTHESIS-STOMATAL CONDUCTANCE COUPLING WE NEED VAPOR PRESSURE DEFICIT
 !!AS WELL. CALCULATE THIS FROM THE RH AND AIR TEMPERATURE WE HAVE. WE FIND E_SAT, E, AND VPD IN PASCALS.
 !!
       IF(PS_COUP.EQ.2)THEN
@@ -823,7 +628,7 @@ C
               CA=21.874
               CB=7.66
           ENDIF
-          EA     = QA(I)*PRESSG(I)/(0.622+0.378*QA(I))  
+          EA     = QA(I)*PRESSG(I)/(0.622+0.378*QA(I))
           EASAT  = 611.0*EXP(CA*(TCAN(I)-TFREZ)/(TCAN(I)-CB))
           RH(I)  = EA/EASAT
           VPD(I) = EASAT-EA
@@ -850,7 +655,7 @@ C>
 C!ESTIMATE PARTIAL PRESSURE OF \f$CO_2\f$ AND IPAR
 C!
       DO 460 I = IL1, IL2
-       IF(FC(I).GT.0.)                                          THEN 
+       IF(FC(I).GT.0.)                                          THEN
 C>CONVERT CO2CONC FROM PPM TO PASCALS
         CO2A(I)=CO2CONC(I)*PRESSG(I)/1E+06
 C>CHANGE PAR FROM W/M^2 TO MOL/M^2.S
@@ -861,7 +666,7 @@ C>
         IPAR_SUN(I) = QSWV(I)*4.6*1E-06
         IPAR_SHA(I) = QSWV(I)*4.6*1E-06* XDIFFUS(I)
        ENDIF
-460   CONTINUE  
+460   CONTINUE
 C
       K1 = 0
       DO 480 J = 1,IC
@@ -897,7 +702,7 @@ C>ALSO FIND SUNLIT AND SHADED LAI
      &        ( 1.0-EXP( -1.0*KB(I,M)*USEAILCG(I,M) ) )
             AILCG_SHA(I,M)=USEAILCG(I,M) - AILCG_SUN(I,M)
 C>
-C>FOLLOWING FEW LINES TO MAKE SURE THAT ALL LEAVES ARE SHADED WHEN XDIFFUS EQUALS 1. NOT DOING 
+C>FOLLOWING FEW LINES TO MAKE SURE THAT ALL LEAVES ARE SHADED WHEN XDIFFUS EQUALS 1. NOT DOING
 !!SO GIVES ERRATIC RESULTS WHEN TWO LEAF OPTION IS USED
 !!
             IF(XDIFFUS(I).GT.0.99)THEN
@@ -908,21 +713,21 @@ C
            ENDIF
           ENDIF
 C>
-C>FIND FPAR - FACTOR FOR SCALING PHOTOSYNTHESIS TO CANOPY BASED ON ASSUMPTION THAT NITROGEN IS 
-!!OPTIMALLY DISTRIBUTED. THE TWO-LEAF MODEL IS NOT THAT DIFFERENT FROM THE SINGLE-LEAF MODEL. 
-!!ALL WE DO IS USE TWO SCALING FACTORS (I.E. SCALING FROM LEAF TO CANOPY) INSTEAD OF ONE, AND 
-!!THUS PERFORM CALCULATIONS TWICE, AND IN THE END ADD CONDUCTANCE AND NET PHOTOSYNTHESIS FROM 
+C>FIND FPAR - FACTOR FOR SCALING PHOTOSYNTHESIS TO CANOPY BASED ON ASSUMPTION THAT NITROGEN IS
+!!OPTIMALLY DISTRIBUTED. THE TWO-LEAF MODEL IS NOT THAT DIFFERENT FROM THE SINGLE-LEAF MODEL.
+!!ALL WE DO IS USE TWO SCALING FACTORS (I.E. SCALING FROM LEAF TO CANOPY) INSTEAD OF ONE, AND
+!!THUS PERFORM CALCULATIONS TWICE, AND IN THE END ADD CONDUCTANCE AND NET PHOTOSYNTHESIS FROM
 !!THE TWO LEAVES TO GET THE TOTAL.
 !!
           FPAR(I,M)=(1.0/KN(SORT(M)))*(1.0-EXP(-KN(SORT(M))
      &               *USEAILCG(I,M)))
-      
+
           IF(LEAFOPT.EQ.2)THEN
             FPAR_SUN(I,M) = ( 1.0/(KN(SORT(M))+KB(I,M)) )*
      &        ( 1.0-EXP( -1.*(KN(SORT(M))+KB(I,M))*USEAILCG(I,M) ) )
             FPAR_SHA(I,M) = FPAR(I,M) - FPAR_SUN(I,M)
 C>
-!!IF ALL RADIATION IS DIFFUSED, THEN ALL LEAVES ARE SHADED, AND WE ADJUST FPARs ACCORDINGLY. 
+!!IF ALL RADIATION IS DIFFUSED, THEN ALL LEAVES ARE SHADED, AND WE ADJUST FPARs ACCORDINGLY.
 !!WITHOUT THIS THE TWO LEAF MODELS MAY BEHAVE ERRATICALLY
 !!
             IF(XDIFFUS(I).GT.0.99)THEN
@@ -1009,15 +814,15 @@ C>
 C>WILTING POINT CORRESPONDS TO MATRIC POTENTIAL OF 150 M
 C>FIELD CAPACITY CORRESPONDS TO HYDARULIC CONDUCTIVITY OF
 C>0.10 MM/DAY -> 1.157x1E-09 M/S
-C> 
+C>
       DO 500 J = 1, IG
         DO 510 I = IL1, IL2
-C         
+C
           IF(ISAND(I,J) .EQ. -3 .OR. ISAND(I,J) .EQ. -4)THEN
-            SM_FUNC(I,J)=0.0 
+            SM_FUNC(I,J)=0.0
           ELSE ! I.E., ISAND.NE.-3 OR -4
            IF(THLIQ(I,J).LE.THLW(I,J)) THEN
-            SM_FUNC(I,J)=0.0   
+            SM_FUNC(I,J)=0.0
            ELSE IF(THLIQ(I,J).GT.THLW(I,J) .AND.
      &      THLIQ(I,J).LT.THFC(I,J)) THEN
             SM_FUNC(I,J)=(THLIQ(I,J)-THLW(I,J))/
@@ -1027,8 +832,8 @@ C
            ENDIF
 C
           ENDIF ! ISAND.EQ.-3 OR -4
-510     CONTINUE 
-500   CONTINUE 
+510     CONTINUE
+500   CONTINUE
 C
       K1=0
       DO 520 J = 1, IC
@@ -1047,7 +852,7 @@ C
      &                 *SMSCALE(SORT(M))
            AVE_SM_FUNC(I,M)=AVE_SM_FUNC(I,M)+SM_FUNC2(I,N)*RMAT(I,M,N)
            TOT_RMAT(I,M) = TOT_RMAT(I,M) + RMAT(I,M,N)
-           
+
           ENDIF
 535      CONTINUE
 
@@ -1205,12 +1010,12 @@ C
      &        ( CO2I_SHA(I,J)+ (2.0*TGAMMA(I)) )
 
             IF (ISC4(SORT(J))) THEN
-              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J) 
+              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)
               JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)
             ELSE
-              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)* 
+              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)*
      &                    JE2_SUN(I,J)
-              JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)*JE2_SHA(I,J)    
+              JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)*JE2_SHA(I,J)
             ENDIF
            ENDIF
           ENDIF
@@ -1257,7 +1062,7 @@ C>
         TEMP_C = 1.0 + TEMP_R * (GAMMA_M)
         N_EFFECT(I) = TEMP_B / TEMP_C
 C>LIMIT N_EFFECT TO MAX OF 1.0 SO THAT NO UP-REGULATION OCCURS
-        N_EFFECT(I) = MIN(1.0, N_EFFECT(I)) 
+        N_EFFECT(I) = MIN(1.0, N_EFFECT(I))
 641   CONTINUE
 C>
 C>FIND THE SMOOTHED AVERAGE OF THREE PHOTOSYNTHETIC RATES JC, JE,
@@ -1392,7 +1197,7 @@ C
            IF(COSZS(I).GT.0.0)THEN
             RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCD
            ELSE
-            RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCN 
+            RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCN
            ENDIF
            AN_VEG(I,J) = A_VEG(I,J) - RML_VEG(I,J)
           ELSE IF(LEAFOPT.EQ.2)THEN
@@ -1400,8 +1205,8 @@ C
             RML_SUN(I,J) = RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCD
             RML_SHA(I,J) = RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCD
            ELSE
-            RML_SUN(I,J)=RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCN 
-            RML_SHA(I,J)=RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCN 
+            RML_SUN(I,J)=RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCN
+            RML_SHA(I,J)=RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCN
            ENDIF
            AN_SUN(I,J) = A_VEG_SUN(I,J) - RML_SUN(I,J)
            AN_SHA(I,J) = A_VEG_SHA(I,J) - RML_SHA(I,J)
@@ -1628,9 +1433,7 @@ C>
 820   CONTINUE
 C
       DO 840 I = IL1, IL2
-        FC_TEST(I)=FCANC(I,1)+FCANC(I,2)+FCANC(I,3)+FCANC(I,4)+
-     &             FCANC(I,5)+FCANC(I,6)+FCANC(I,7)+FCANC(I,8)+
-     &             FCANC(I,9)
+      	FC_TEST(I) = SUM(FCANC(I,:))
         IF(FC_TEST(I).GT.ZERO)THEN
           RC(I)=RC(I)/FC_TEST(I)
         ELSE
@@ -1717,5 +1520,3 @@ C
 
       RETURN
       END
-
-

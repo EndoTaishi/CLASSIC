@@ -1,3 +1,4 @@
+!>\file
 !> Parses command line arguments to program and reads in joboptions file.
 module readjobopts
 
@@ -14,16 +15,21 @@ contains
     !> Reads from the joboptions file, assigns the model switches, and determines the geographic domain
     !! of the simulation. All switches are described in the configurationFiles/template_job_options_file.txt file
     !! and also the user manual (housed in type ctem_switches in ctem_statevars.f90.
+    !> @author Joe Melton
 
     subroutine read_from_job_options
 
         use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
-        use ctem_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch
+        use classic_params, only : runParamsFile,PFTCompetitionSwitch,&
+                                   zbldJobOpt,zrfhJobOpt,zrfmJobOpt
 
         implicit none
 
         ! -------------
+
+        logical, pointer :: projectedGrid
+
         ! ctem model switches
 
         integer, pointer :: metLoop
@@ -106,16 +112,17 @@ contains
         character(350) :: jobfile
         character(350) :: argbuff
         integer :: argcount, iargc
+        real :: ZBLD,ZRFH,ZRFM 
 
         ! Order of the namelist and order in the file don't have to match.
 
         namelist /joboptions/ &
+        projectedGrid, &
         metLoop, &
         readMetStartYear, &
         readMetEndYear, &
         leap, &
         ctem_on, &
-        icc, &
         spinfast, &
         transientCO2, &
         CO2File, &
@@ -149,10 +156,11 @@ contains
         init_file, &
         rs_file_to_overwrite, &
         runparams_file, &
-        ican, &
-        l2max, &
         IDISP, &
         IZREF, &
+        ZBLD, &
+        ZRFH, &
+        ZRFM, &
         ISLFD, &
         IPCP, &
         ITC, &
@@ -184,6 +192,7 @@ contains
         Comment
 
         ! Point pointers:
+        projectedGrid   => c_switch%projectedGrid
         metLoop         => c_switch%metLoop
         readMetStartYear=> c_switch%readMetStartYear
         readMetEndYear  => c_switch%readMetEndYear
@@ -277,6 +286,9 @@ contains
             write(*,*)'- longitude/longitude/latitude/latitude '
             write(*,*)'  e.g. 90/105/30/45 '
             write(*,*)' '
+            write(*,*)' **If you are running a projected grid you must'
+            write(*,*)' use the grid cell indices, not coordinates!** '
+            write(*,*)' '
             stop
         end if
 
@@ -296,6 +308,9 @@ contains
         ! Assign some vars that are passed out
         runParamsFile = runparams_file
         PFTCompetitionSwitch = PFTCompetition
+        zbldJobOpt =ZBLD
+        zrfhJobOpt =ZRFH
+        zrfmJobOpt =ZRFM
 
         end subroutine read_from_job_options
 !!@}
@@ -304,6 +319,7 @@ contains
 !>\ingroup readjobopts_parsecoords
 !!@{
 !> Parses a coordinate string
+!> @author Joe Melton
 
 subroutine parsecoords(coordstring,val)
 
@@ -342,4 +358,5 @@ end subroutine parsecoords
 !>\namespace readjobopts
 !> Parses command line arguments to program and reads in joboptions file.
 
+!>\file
 end module readjobopts

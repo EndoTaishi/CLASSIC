@@ -1,5 +1,6 @@
 !> Calculates maintenance respiration, over a given sub-area, for stem and root components.
 !! leaf respiration is estimated within the phtsyn subroutine.
+!!@author V. Arora, J. Melton 
 !!
 !!Autotrophic respiration (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$) is composed of maintenance, \f$R_\mathrm{m}\f$, and growth respirations, \f$R_\mathrm{g}\f$,
 !!\f[
@@ -16,7 +17,7 @@
 !!\f]
 !!where \f$\varsigma_\mathrm{L}\f$ is set to 0.015 and 0.025 for \f$C_3\f$ and \f$C_4\f$ plants, respectively, \f$f_{PAR}\f$ scales respiration from the leaf to the canopy level, similar to Eq. (\ref{G_canopy}), and the \f$f_{25}(Q_10d,n)\f$ function accounts for different temperature sensitivities of leaf respiration during day (\f$d\f$) and night (\f$n\f$). \cite Pons2003-f26 and \cite Xu2003-d75 suggest lower temperature sensitivity for leaf respiration during the day compared to night, and therefore we use values of \f$Q_10d=1.3\f$ and \f$Q_10n=2.0\f$ for day and night, respectively.
 !!
-!!Maintenance respiration from the stem and root components is estimated based on PFT-specific base respiration rates (\f$\varsigma_\mathrm{S}\f$ and \f$\varsigma_\mathrm{R}\f$ specified at \f$15\,C\f$, \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also ctem_params.f90) that are modified to account for temperature response following a \f$Q_{10}\f$ function. Maintenance respiration from stem and root components, \f$R_{m\{S,R\}}\f$, is calculated as
+!!Maintenance respiration from the stem and root components is estimated based on PFT-specific base respiration rates (\f$\varsigma_\mathrm{S}\f$ and \f$\varsigma_\mathrm{R}\f$ specified at \f$15\,C\f$, \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also classic_params.f90) that are modified to account for temperature response following a \f$Q_{10}\f$ function. Maintenance respiration from stem and root components, \f$R_{m\{S,R\}}\f$, is calculated as
 !!\f[
 !!\label{r_msr} R_{\mathrm{m},i} = 2.64 \times 10^{-6}\varsigma_{i}l_{\mathrm{v}, i}C_{i}f_{15}(Q_{10}),\quad i = \mathrm{S}, \mathrm{R},
 !!\f]
@@ -57,7 +58,7 @@ c     change history:
 
 !     J. Melton 22  Jul 2015 - Loops 180 and 190 were not set up for > 3 soil layers. Fixed.
 !
-c     J. Melton 17  Jan 2014 - Moved parameters to global file (ctem_params.f90)
+c     J. Melton 17  Jan 2014 - Moved parameters to global file (classic_params.f90)
 c
 c     J. Melton 22  Jul 2013 - Add in module for parameters
 C     
@@ -76,8 +77,9 @@ c     ignd      - no. of soil layers
 c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts, currently 4
 c
-      use ctem_params,        only : icc, ilg, ignd, ican, kk, zero, 
-     1                               bsrtstem, bsrtroot, minlvfr
+      use classic_params,        only : icc, ilg, ignd, ican, kk, zero, 
+     1                                 bsrtstem, bsrtroot, minlvfr,
+     2                                 classpfts
 
       implicit none
 c
@@ -113,7 +115,7 @@ c
       logical consq10 !<
 !>
 !>---------------------------------------------------
-!!Constants and parameters are located in ctem_params.f90
+!!Constants and parameters are located in classic_params.f90
 !!
 !!set the following switch to .true. for using constant temperature
 !!indepedent q10 specified below
@@ -153,15 +155,19 @@ c
         k2 = k1 + nol2pfts(j) - 1
         do 125 m = k1, k2
          do 130 i = il1, il2
-          if(j.le.2)then     ! trees
+         select case(classpfts(j))
+          case ('Crops', 'Grass') ! crops and grass
+            livstmfr(i,m) = 1.0
+            livrotfr(i,m) = 1.0
+          case('NdlTr','BdlTr','BdlSh') 
             livstmfr(i,m) = exp(-0.2835*stemmass(i,m))  !following century model              
             livstmfr(i,m) = max(minlvfr,min(livstmfr(i,m),1.0))
             livrotfr(i,m) = exp(-0.2835*rootmass(i,m))               
             livrotfr(i,m) = max(minlvfr,min(livrotfr(i,m),1.0))
-          else                 ! crop and grass are all live
-            livstmfr(i,m) = 1.0
-            livrotfr(i,m) = 1.0
-          endif
+          case default
+            print*,'Unknown CLASS PFT in mainres ',classpfts(j)
+            call XIT('mainres',-1)                 
+          end select
 130     continue 
 125    continue 
 120   continue 

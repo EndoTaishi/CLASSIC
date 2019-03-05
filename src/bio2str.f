@@ -1,9 +1,10 @@
 !>\file
 !! Converts biomass to structural attributes
+!!@author V. Arora, J. Melton, Y. Peng 
 !!
 !!The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root (\f$C_R\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
 !!
-!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_L\f$; see also ctem_params.f90)
+!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_L\f$; see also classic_params.f90)
 !!
 !!\f[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \f]
 !!
@@ -36,7 +37,7 @@
 !!The parameter \f$\iota\f$ that describes the exponential root distribution is calculated as
 !!\f[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \f]
 !!
-!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_R}\f$ the average root biomass derived from Jackson et al. (1996) \cite Jackson1996-va (see also ctem_params.f90). Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
+!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_R}\f$ the average root biomass derived from Jackson et al. (1996) \cite Jackson1996-va (see also classic_params.f90). Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
 !!
 !!The rooting depth \f$d_R\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_R\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_R\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
 !!
@@ -51,8 +52,10 @@ c    4--------------- inputs above this line, outputs below --------
      8                         alnirc,     paic,    slaic,ipeatland)
 c
 c     ----------------------------------------------------------------
+c     16  Aug 2017  - Add BLD COLD-Deciduous shrub 
+c     J. Melton/S. Sun     
 c
-c     2   Jul 2013  - Integreated ctem_params module
+c     2   Jul 2013  - Integreated classic_params module
 c     J. Melton       
 c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
@@ -90,11 +93,11 @@ c                     of the grid cell. only roughness lengths over the
 c                     vegetated fraction are updated
 c
 
-      use ctem_params,        only : ignd, icc, ilg, ican, abszero,
+      use classic_params,        only : ignd, icc, ilg, ican, abszero,
      1                               l2max,kk, eta, kappa, kn, lfespany, 
      2                               fracbofg, specsla, abar, avertmas,
      3                               alpha, prcnslai, minslai, mxrtdpth,
-     4                               albvis, albnir           
+     4                               albvis, albnir,classpfts        
 
       implicit none
 
@@ -156,7 +159,7 @@ c
       integer ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
       
 c     ---------------------------------------------------------------
-!>     Constants and parameters are located in ctem_params.f90
+!>     Constants and parameters are located in classic_params.f90
 !!
 !!    class' original root parameterization has deeper roots than ctem's
 !!    default values based on literature. in the coupled model this leads
@@ -320,7 +323,16 @@ c
 !>for crops and grasses set the minimum lai to a small number, other
 !!wise class will never run tsolvc and thus phtsyn and ctem will not
 !!be able to grow crops or grasses.
-          if(j.eq.3.or.j.eq.4) ailc(i,j)=max(ailc(i,j),0.1)
+
+          select case(classpfts(j))
+          case('Crops','Grass')
+           ailc(i,j)=max(ailc(i,j),0.1)
+           case ('NdlTr' , 'BdlTr', 'BdlSh') 
+             ! Do nothing for non-grass/crop 
+           case default
+             print*,'Unknown CLASS PFT in bio2str ',classpfts(j)
+             call XIT('bio2str',-1)                                         
+          end select
 c
 240     continue
 230   continue
@@ -358,36 +370,36 @@ c
         k2c = k1c + nol2pfts(j) - 1
         do 260 m = k1c, k2c
           do 270 i = il1, il2
-c          
-          if (j.le.2) then                            ! trees
-           veghght(i,m)=10.0*stemmass(i,m)**0.385
-           veghght(i,m)=min(veghght(i,m),45.0)
-          else if (j.eq.3) then                       ! crops
-           veghght(i,m)=1.0*(stemmass(i,m)+gleafmas(i,m))**0.385
-          else if (j.eq.4) then                       ! grasses
-           veghght(i,m)=3.5*(gleafmas(i,m)+fracbofg*bleafmas(i,m))**0.50   
-          endif
+           select case (classpfts(j))
+             case ('NdlTr','BdlTr') !Trees
+                if (ipeatland(i) .eq. 0) then ! For uplands:
+                  veghght(i,m)=min(10.0*stemmass(i,m)**0.385,45.0)
+                else !peatland trees have a different relation than normal. Max height 10 m.
+                  veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0) 
+                end if
+             case ('BdlSh')
+                if (ipeatland(i) .eq. 0) then ! For uplands:     
+                  veghght(i,m)=min(10.0*stemmass(i,m)**0.385,45.0) !FLAG SET TO TREES!!!!!!
+                else ! peatland shrubs         
+                  veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  
+                end if
+             case ('Crops') ! <Crops
+               veghght(i,m)=1.0*(stemmass(i,m)+gleafmas(i,m))**0.385
+             case ('Grass') ! <Grass
+                if (ipeatland(i) .eq. 0) then ! For uplands:     
+                  veghght(i,m)=3.5*(gleafmas(i,m)+fracbofg*
+     1                         bleafmas(i,m))**0.50   
+                else ! peatland grasses and sedges                  
+                  veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
+     1                           *bleafmas(i,m))**0.3) 
+                end if
+              case default
+                print*,'Unknown CLASS PFT in bio2str ',classpfts(j)
+                call XIT('bio2str',-2)                                                         
+           end select
           lnrghlth(i,m)= log(0.10 * max(veghght(i,m),0.10))
-c
 270       continue
 260     continue
-
-c     ---------------peatland vegetation-----
-        do 280 m = k1c, k2c
-          do 290 i = il1, il2
-            if (ipeatland(i) > 0) then ! For peat tiles:
-               if (j == 1) then !peatland trees have a different relation than normal.
-                 veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0)                 
-               elseif (j == 2 .and. m >= (k2c-1)) then ! shrubs
-                 veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  !last 2 pft in ican2 are shrubs 
-               elseif (j == 4 ) then !grasses and sedges
-                 veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
-     1                               *bleafmas(i,m))**0.3)              
-               endif
-            endif
-290       continue
-280     continue
-c
 250   continue
 c
       k1c=0
@@ -561,7 +573,7 @@ c
            write(6,2300) i,j,rmat_sum
 2300       format(' at (i) = (',i3,'), pft=',i2,' fractions of roots
      &not adding to one. sum  = ',f12.7)
-           call xit('bio2str',-3)
+           call xit('bio2str',-4)
           endif
          endif
 412     continue

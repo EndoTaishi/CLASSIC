@@ -1,6 +1,7 @@
 !>\file
 !!Calculates visible and near-IR ground albedos.
-!!
+!!@author D. Verseghy, M. Lazare
+!
       SUBROUTINE GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
      1                 ALGWV,ALGWN,ALGDV,ALGDN,
      2                 THLIQ,FSNOW,ALVSU,ALIRU,FCMXU,                   
@@ -53,6 +54,8 @@ C     *                         ALBEDOS BASED ON TEXTURE AND SURFACE
 C     *                         WETNESS. (SET TO ICE ALBEDOS OVER
 C     *                         CONTINENTAL ICE SHEETS.)
 C
+      use classic_params, only : ALVSI,ALIRI,ALVSO,ALIRO
+      
       IMPLICIT NONE
 C                
 C     * INTEGER CONSTANTS.
@@ -87,15 +90,6 @@ C     * TEMPORARY VARIABLES.
 C
       REAL FURB,ALBSOL
 C
-C     * COMMON BLOCK PARAMETERS.
-C
-      REAL ALVSI    !<Visible albedo of ice (0.95)
-      REAL ALIRI    !<Near-infrared albedo of ice (0.73)
-      REAL ALVSO    !<Visible albedo of organic matter (0.05)
-      REAL ALIRO    !<Near-infrared albedo of organic matter (0.30)
-      REAL ALBRCK   !<Albedo of rock (0.27) 
-C
-      COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
 C---------------------------------------------------------------------
       !>
       !!If the ISAND flag for the surface soil layer is greater than or

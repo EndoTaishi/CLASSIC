@@ -3,11 +3,9 @@ var structctem__statevars_1_1ctem__tileavg__monthly =
     [ "autores_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a207551c4ce7586a3ae1ccdb542c557ee", null ],
     [ "bterm_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a6cc8f8587c5d71cd341f76b29c5becd7", null ],
     [ "burnfrac_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a2342be28657577f60a741bcb018a2ee2", null ],
-    [ "ch4dyn1_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a8fff116bb19c21ec0880be6d76975270", null ],
-    [ "ch4dyn2_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a2bd7eb993074f1bc8fa0ef901b38447e", null ],
     [ "ch4soills_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a497388412a8b5cd61378ab370d318f47", null ],
-    [ "ch4wet1_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a2ce4d143bc2526dbc2cef120dbed07e5", null ],
-    [ "ch4wet2_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a306a6f8f3f5fce2a7e911b0cd0a1fe58", null ],
+    [ "ch4wetdyn_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a07e25f7770ff5074e1be2c3b3b2e7867", null ],
+    [ "ch4wetspec_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a53f81b4662930cd07def132679652176", null ],
     [ "emit_bc_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a92225f87065bae641ca9b4fda91e5383", null ],
     [ "emit_ch4_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#adff09db54f4f178bd8fb57f503c1ff72", null ],
     [ "emit_co2_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a78c245a7fa58e18499ad54c9c438cb31", null ],
@@ -43,5 +41,6 @@ var structctem__statevars_1_1ctem__tileavg__monthly =
     [ "totcmass_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a339d0f4b5c4b27cace2bfcbef1cd3529", null ],
     [ "vgbiomas_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a3534ab918158acf0e87021d353bec560", null ],
     [ "wetfdyn_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#af233a6194f7defb630490648f35b5c16", null ],
+    [ "wetfpres_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a5351501975c98067ee6e0de3662e689e", null ],
     [ "wind_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a9d7a806e45c554eb6392627e435e2bdb", null ]
 ];
