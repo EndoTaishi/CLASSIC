@@ -102,7 +102,7 @@ do i = il1, il2
         !upp_mois_lim = soilw_thrshS(3) 
         upvslow = wtdryres(3)
       end if
-print*,currlat(i),upvslow
+
 !> First calculate for the specified wetland fractions read in from OBSWETFFile
    
       wetresp(i) = hetrores(i) * upvslow * wetfrac(i)

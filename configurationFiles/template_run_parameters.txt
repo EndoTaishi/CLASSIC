@@ -1081,7 +1081,7 @@ kn(10:12)  =0.46, 0.44, 0.00,
     !>Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis.  These were summed as "hetrores".
     !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
     !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
-    wtdryres     = 0.18, 0.42, 0.18,
+    wtdryres     = 0.23, 0.37, 0.23,
 
     !< Northern zone for wetland determination (degrees North)
     lat_thrshld1 = 40.0,
