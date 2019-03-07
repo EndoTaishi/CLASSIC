@@ -565,14 +565,14 @@ contains
         use fileIOModule
         use ctem_statevars,     only : c_switch
         use generalUtils,       only : findLeapYears
-        use classic_params,        only : monthend
+        use classic_params,        only : monthend,DELT
 
         implicit none
 
         character(*), intent(in)              :: timeFreq
         real, allocatable, dimension(:) :: temptime
         integer :: totsteps, totyrs, i, st, en, j, m, cnt, totyrs2
-        integer :: lastDOY, length, styr, endyr
+        integer :: lastDOY, length, styr, endyr,numsteps
         logical :: leapnow
 
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
@@ -662,21 +662,13 @@ contains
                 !Take the possible number of years then trim based on jdsty and jdendy
                 styr = readMetStartYear
 
-!                if (readMetStartYear < jdsty) then
-!                    totyrs = (readMetStartYear + totyrs - 1) - jdsty
-!                    styr = jdsty
-!                end if
-!
-!                if ((readMetStartYear + totyrs - 1) > jdendy) then
-!                    totyrs = jdendy -styr + 1
-!                end if
-
-
                 endyr = readMetStartYear + totyrs - 1
 
                 if ( jdsty>endyr .or. jdendy>endyr  .or. jdsty<readMetStartYear .or. jdendy<readMetStartYear)  then
                    write(*,*)'It seems you are requesting daily output outside the simulated years of'
-                   write(*,*)styr,' and ',endyr
+                   write(*,*)styr,' to ',endyr
+                   print*,'Requested was:'
+                   print*,jdsty,' to ',jdendy
                    stop
                 end if
 
@@ -714,42 +706,45 @@ contains
 
                 ! Sanity check on jhhsty and jhhendy
                 if ((readMetStartYear + totyrs - 1) < jhhsty .or. readMetStartYear > jhhendy) then
-                    print*,'**addTime says: Check your daily output file start and end points, they are outside the range of this run'
+                    print*,'**addTime says: Check your half-hourly output file start and end points, they are outside the range of this run'
                     stop
                 end if
 
-                !Take the possible number of years then trim based on jhhsty and jhhendy
+                !Take the possible number of years then trim based on jdsty and jdendy
                 styr = readMetStartYear
-                if (readMetStartYear < jhhsty) then
-                    totyrs = (readMetStartYear + totyrs - 1) - jhhsty
-                    styr = jhhsty
+
+                endyr = readMetStartYear + totyrs - 1
+
+                if ( jhhsty>endyr .or. jhhendy>endyr  .or. jhhsty<readMetStartYear .or. jhhendy<readMetStartYear)  then
+                   write(*,*)'It seems you are requesting half-hourly output outside the simulated years of'
+                   write(*,*)styr,' to ',endyr
+                   print*,'Requested was:'
+                   print*,jhhsty,' to ',jhhendy
+                   stop
                 end if
 
-                if ((readMetStartYear + totyrs - 1) > jhhendy) then
-                    totyrs = jhhendy -styr + 1
-                end if
+                totyrs2=jhhendy - jhhsty + 1
 
-                ! Now determine the total number of timesteps (halfhours) across all years
+                ! Now determine the total number of timesteps (half-hours) across all years
                 totsteps = 0
                 allocate(timeVect(0))
                 cnt=0
-                ! Create the time vector to write to the file
-                do i = 1, totyrs
+                numsteps=int(86400./DELT)
+                do i = jhhsty+1, totyrs2+jhhsty
                     if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
                     st = max(1, jhhstd)-1  !minus 1 since we are referencing the 01-01 day of refyr
                     en = min(jhhendd, lastDOY)-1 !minus 1 since we are referencing the 01-01 day of refyr
-                    totsteps = totsteps + (en - st + 1) * 48 ! 48 half hours in a day. !FLAG change this if delt is not half-hour
-
+                    totsteps = totsteps + (en - st + 1) * numsteps
                     allocate(temptime(totsteps))
                     length = size(timeVect)
                     if (i > 1) then
                         temptime(1 : length) = timeVect
                     end if
                     do j = st,en
-                        do m = 1,48 !FLAG change this if delt is not half-hour
-                            cnt=cnt+1
-                            temptime(cnt) = (styr + i - 1 - refyr) * lastDOY + j + (m - 1) / 48. !FLAG change this if delt is not half-hour
-                        end do
+                      do m = 1,numsteps
+                        cnt=cnt+1
+                        temptime(cnt) = (i - 1 - refyr) * lastDOY + j + (m - 1) / real(numsteps)
+                      end do
                     end do
                     call move_alloc(temptime,timeVect)
                 end do
