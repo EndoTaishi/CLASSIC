@@ -249,8 +249,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
       real soilcmas(nilg,iccp2) !<soil c mass in kg c/m2, for the 9 pfts + bare
       real litrmass(nilg,iccp2) !<litter mass in kg c/m2, for the 9 pfts + bare
-      real gavgltms(nilg)       !<grid averaged litter mass, kg c/m2
-      real gavgscms(nilg)       !<grid averaged soil c mass, kg c/m2
+      real gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
+      real gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
       real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
       real fcancmy(nilg,icc)    !<
       real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
@@ -289,9 +289,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real ntotlmas(nilg) !<total c mass (live) after luc treatment
       real ntotdms1(nilg) !<total c mass (dead) litter after luc treatment
       real lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
-      real pvgbioms(nilg) !<
-      real pgavltms(nilg) !<
-      real pgavscms(nilg) !<
+      real pvgbioms(nilg) !<Vegetation biomass on entering subroutine
+      real pgavltms(nilg) !<Litter mass on entering subroutine
+      real pgavscms(nilg) !<Soil C mass on entering subroutine
+      real pluclitpool(nilg) !<LUC paper pool on entering subroutine
+      real plucscpool(nilg) !<LUC furniture pool on entering subroutine
+
       real redubmas2      !<
       real lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
       real lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
@@ -311,7 +314,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       if(interpol) then !> perform interpolation
        do 110 j = 1, icc
         do 111 i = il1, il2
-          if (PFTCompetition .and. .not. crop(j)) then !FLAG!! JM. ADDED if loop JUL 11 2016 TEST!!!
+          if (PFTCompetition .and. .not. crop(j)) then 
             nfcancmx(i,j)=yesfrac(i,j)
             pfcancmx(i,j)=yesfrac(i,j)
           end if
@@ -346,8 +349,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
 111     continue
 110    continue
-      else !> use provided values but still check
-!>they are not -ve
+else !> use provided values but still check they are not negative
        do 115 j = 1, icc
         do 116 i = il1, il2
           fcancmx(i,j) = todfrac(i,j)
@@ -429,6 +431,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
         pgavltms(i)=gavgltms(i)  ! temporary arrays
         pgavscms(i)=gavgscms(i)
+        pluclitpool(i) = litrmass(i,iccp2) 
+        plucscpool(i) = soilcmas(i,iccp2)
 
         vgbiomas(i)=0.0
         gavgltms(i)=0.0
@@ -490,7 +494,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 300   continue
 !>
 !>check if the interpol didn't mess up the barefrac. if so, take the
-!!extra amount from the pft with the largest area. jm apr 24 2013.
+!!extra amount from the pft with the largest area. 
 !!but you can't take it from crops!
       pftarrays=0.
 
@@ -523,7 +527,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 310   continue
 !>
 !>check if the interpol didn't mess up the pbarefra. if so, take the
-!!extra amount from the pft with the largest area. jm apr 24 2013.
+!!extra amount from the pft with the largest area.
 !!but you can't take it from crops!
          if (pbarefra(i).lt.0.0) then
            k=1
@@ -557,14 +561,14 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                       *km2tom2)
 320   continue
 
-      do 340 j = 1, iccp2 !FLAG
+      do 340 j = 1, iccp2 
 
           if(j.lt.iccp1) then
             term = fcancmy(i,j)
           else if(j.eq.iccp1) then
             term = pbarefra(i)
-          else if(j.eq.iccp2) then
-            term = 1.0  !FLAG
+          else if(j.eq.iccp2) then !LUC product pools cover entire cell.
+            term = 1.0
           endif
           totdmas1(i)=totdmas1(i)+ &
                      (term*litrmass(i,j)*grclarea(i)*km2tom2)
@@ -666,7 +670,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           endif
 570   continue
 !>
-!>if bare fraction increases then spread its litter and soil c uniformly over the increased fraction
+!>if bare fraction increases then spread its litter and soil c
+!> uniformly over the increased fraction
 !>
         if(bareiord(i).eq.1)then
           term = pbarefra(i)/barefrac(i)
@@ -788,30 +793,45 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !!      The fast decaying dead C (litter) and slow (soil C) are kept in
 !!      the first 'soil' layer and iccp2 position. The litter and soil C
 !!      contributions are added to the normal litter and soil C pools below.
-       litrmass(i,iccp2)=litrmass(i,iccp2)+grdenpap(i) !+grdenlit(i)
-       soilcmas(i,iccp2)=soilcmas(i,iccp2)+grdenfur(i) !+grdensoc(i)
-
+       litrmass(i,iccp2)=litrmass(i,iccp2)+grdenpap(i) +grdenlit(i)
+       soilcmas(i,iccp2)=soilcmas(i,iccp2)+grdenfur(i) +grdensoc(i)
 
 !     Add any adjusted litter and soilc back their respective pools
 
+!       do 650 j = 1, icc
+!           if(fcancmx(i,j).gt.zero)then
+!             litrmass(i,j)=litrmass(i,j)!+grdenpap(i)+grdenlit(i)
+!             soilcmas(i,j)=soilcmas(i,j)!+grdenfur(i)+grdensoc(i)
+!           else
+!             gleafmas(i,j)=0.0
+!             bleafmas(i,j)=0.0
+!             stemmass(i,j)=0.0
+!             rootmass(i,j)=0.0
+!             litrmass(i,j)=0.0
+!             soilcmas(i,j)=0.0
+!           endif
+! 650   continue
+
       do 650 j = 1, icc
-          if(fcancmx(i,j).gt.zero)then
-            litrmass(i,j)=litrmass(i,j)+grdenpap(i)+grdenlit(i)
-            soilcmas(i,j)=soilcmas(i,j)+grdenfur(i)+grdensoc(i)
-          else
+          if(fcancmx(i,j).lt.zero)then
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
             stemmass(i,j)=0.0
             rootmass(i,j)=0.0
             litrmass(i,j)=0.0
             soilcmas(i,j)=0.0
-          endif
+          end if 
 650   continue
 
-        if(barefrac(i).gt.zero)then
-          litrmass(i,iccp1)=litrmass(i,iccp1)+grdenpap(i)+grdenlit(i)
-          soilcmas(i,iccp1)=soilcmas(i,iccp1)+grdenfur(i)+grdensoc(i)
-        else
+        ! if(barefrac(i).gt.zero)then
+        !   litrmass(i,iccp1)=litrmass(i,iccp1)!+grdenpap(i)+grdenlit(i)
+        !   soilcmas(i,iccp1)=soilcmas(i,iccp1)!+grdenfur(i)+grdensoc(i)
+        ! else
+        !   litrmass(i,iccp1)=0.0
+        !   soilcmas(i,iccp1)=0.0
+        ! endif
+
+        if(barefrac(i).lt.zero)then
           litrmass(i,iccp1)=0.0
           soilcmas(i,iccp1)=0.0
         endif
@@ -837,14 +857,13 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                      *km2tom2)
 700   continue
 
-!     FLAG: changed to iccp2
       do 710 j = 1, iccp2
           if(j.lt.iccp1) then
             term = fcancmx(i,j)
           else if(j.eq.iccp1) then
             term = barefrac(i)
-          else if (j .eq. iccp2) then !FLAG
-            term = 1.0 ! LUC is assumed to cover whole grid cell evenly
+          else if(j.eq.iccp2) then !assumed to be over entire area for LUC product pools
+            term = 1.0
           endif
           ntotdms1(i)=ntotdms1(i)+ &
                      (term*litrmass(i,j)*grclarea(i)*km2tom2)
@@ -889,15 +908,15 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
         gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
         gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
-        gavgltms(i)=gavgltms(i)+ litrmass(i,iccp2) !FLAG
-        gavgscms(i)=gavgscms(i)+ soilcmas(i,iccp2)
 
 !>
 !>just like total amount of carbon must balance, the grid averagred densities must also balance
 !>
-       if( abs(pvgbioms(i)+pgavltms(i)+pgavscms(i)- &
-              vgbiomas(i)-gavgltms(i)-gavgscms(i)- &
-              grdencom(i)).gt.tolrance ) then
+       if( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i)&
+              + pluclitpool(i) + plucscpool(i) &
+              - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
+              - litrmass(i,iccp2) - soilcmas(i,iccp2) &
+              - grdencom(i)) > tolrance ) then
            write(6,*)'iday = ',iday
            write(6,*)'at grid cell = ',i
            write(6,*)'pbarefra(i) = ',pbarefra(i)
@@ -908,14 +927,14 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'pvgbioms(i) = ',pvgbioms(i)
            write(6,*)'pgavltms(i) = ',pgavltms(i)
            write(6,*)'pgavscms(i) = ',pgavscms(i)
+           write(6,*)'pluclitpool(i) = ',pluclitpool(i)
+           write(6,*)'plucscpool(i) = ',plucscpool(i)
            write(6,*)'vgbiomas(i) = ',vgbiomas(i)
            write(6,*)'gavgltms(i) = ',gavgltms(i)
            write(6,*)'gavgscms(i) = ',gavgscms(i)
            write(6,*)'grdencom(i) = ',grdencom(i)
-           write(6,*)'pvgbioms + pgavltms + pgavscms = ', &
-                   (pvgbioms(i)+pgavltms(i)+pgavscms(i))
-           write(6,*)'vgbiomas + gavgltms + gavgscms + grdencom = ', &
-         (vgbiomas(i)+gavgltms(i)+gavgscms(i)+ grdencom(i))
+           write(6,*)'litrmass(i,iccp2) = ',litrmass(i,iccp2)
+           write(6,*)'soilcmas(i,iccp2) = ',soilcmas(i,iccp2)
          write(6,*)'diff = ',abs((pvgbioms(i)+pgavltms(i)+pgavscms(i)) &
           -(vgbiomas(i)+gavgltms(i)+gavgscms(i)+ grdencom(i)))
            write(6,*)'tolrance = ',tolrance
@@ -1115,13 +1134,13 @@ end subroutine adjust_fracs_comp
 !>\namespace landuse_change
 !>Central module for all land use change operations
 !!
-!!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416 and briefly
-!! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
+!!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416.
+!! When the area of crop PFTs changes, CTEM generates LUC emissions.
 !! In the simulation where fractional coverage of PFTs is specified, the changes in
 !! fractional coverage of crop PFTs are made consistent with changes in the
 !! fractional coverage of natural non-crop PFTs. That is, an increase or decrease
 !! in the area of crop PFTs is associated with a corresponding decrease or increase
-!! in the area of non-crop PFTs. This approach is taken by \cite Wang2006-he, which
+!! in the area of non-crop PFTs. This approach is taken by Wang et al. (2006) \cite Wang2006-he, which
 !! allows one to reconstruct historical land cover given a spatial data set of
 !!changes in crop area over the historical period and an estimate of potential
 !! natural land cover for the pre-industrial period (as described in Sect.
@@ -1129,7 +1148,7 @@ end subroutine adjust_fracs_comp
 !! fractional coverage of crop PFTs is specified. Similar to a simulation with
 !!prescribed PFT fractions, when the area of crop PFTs increases, the fractional
 !! coverage of non-crop PFTs is decreased in proportion to their existing coverage
-!! \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
+!! (Wang et al. (2006) \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
 !! PFT fractions, when the area of crop PFTs decreases then the generated bare
 !!fraction is available for recolonization by non-crop PFTs.
 !!
@@ -1147,7 +1166,8 @@ end subroutine adjust_fracs_comp
 !!To account for the timescales involved, the fraction allocated to slash or pulp
 !! and paper products is transferred to the model's litter pool and the fraction
 !! allocated to long-lasting wood products is allocated to the model's soil carbon
-!! pool. Land use change associated with a decrease in the area of natural
+!! pool. While they are place in the litter and soil carbon pools, these LUC products
+!! are kept separate to allow accurate accounting. Land use change associated with a decrease in the area of natural
 !! vegetation thus redistributes carbon from living vegetation to dead litter
 !! and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct
 !! burning of the deforested biomass. The net result is positive LUC carbon

@@ -904,7 +904,7 @@ contains
 
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
-        use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp2
+        use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp2,TFREZ
 
         implicit none
 
@@ -953,9 +953,6 @@ contains
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
-
-        ! local variables
-        real, parameter :: TFREZ = 273.16
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on

@@ -346,7 +346,7 @@ contains
 
         use fileIOModule
         use ctem_statevars,     only : c_switch
-        use classic_params,        only : ignd,icc,nmos,iccp2
+        use classic_params,        only : ignd,icc,nmos,iccp1
 
         implicit none
 
@@ -431,7 +431,7 @@ contains
             case("pft")         ! Per PFT outputs
 
                 if (descriptor%includeBareGround) then
-                    pftDimId = ncDefDim(ncid,'pft',iccp2)
+                    pftDimId = ncDefDim(ncid,'pft',iccp1)
                 else
                     pftDimId = ncDefDim(ncid,'pft',icc)
                 end if
@@ -505,9 +505,9 @@ contains
             case("pft")         ! Per PFT outputs
 
                 if (descriptor%includeBareGround) then
-                    allocate(intArray(iccp2))
-                    intArray=identityVector(iccp2)
-                    call ncPutDimValues(ncid, 'pft', intValues=intArray, count=(/iccp2/))
+                    allocate(intArray(iccp1))
+                    intArray=identityVector(iccp1)
+                    call ncPutDimValues(ncid, 'pft', intValues=intArray, count=(/iccp1/))
                 else
                     allocate(intArray(icc))
                     intArray=identityVector(icc)

@@ -321,12 +321,12 @@ real, dimension(ilg,icc), intent(out) :: rmlveg         !<
 real, dimension(ilg,icc), intent(out) :: gppveg         !<
 real, dimension(ilg,icc), intent(out) :: nppveg         !<npp for individual pfts,  u-mol co2/m2.sec
 real, dimension(ilg,icc), intent(out) :: rgveg          !<
-real, dimension(ilg,iccp2), intent(out) :: nepveg       !<
-real, dimension(ilg,iccp2), intent(out) :: nbpveg       !<
-real, dimension(ilg,iccp2), intent(out) :: ltresveg     !<
-real, dimension(ilg,iccp2), intent(out) :: scresveg     !<
-real, dimension(ilg,iccp2), intent(out) :: hetrsveg     !<
-real, dimension(ilg,iccp2), intent(out) :: humtrsvg     !<
+real, dimension(ilg,iccp1), intent(out) :: nepveg       !<
+real, dimension(ilg,iccp1), intent(out) :: nbpveg       !<
+real, dimension(ilg,iccp2), intent(out) :: ltresveg     !<fluxes for each pft: litter respiration for each pft + bare fraction
+real, dimension(ilg,iccp2), intent(out) :: scresveg     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
+real, dimension(ilg,iccp1), intent(out) :: hetrsveg     !<
+real, dimension(ilg,iccp2), intent(out) :: humtrsvg     !<transfer of humidified litter from litter to soil c pool per PFT.
 real, dimension(ilg,icc), intent(out) :: autoresveg     !<
 real, dimension(ilg,icc), intent(out) :: litrfallveg    !<
 real, dimension(ilg,icc), intent(out) :: roottemp       !<root temperature, k
@@ -495,8 +495,6 @@ real hetr_for_w(ilg)                    !< Heterotrophic respiration to be used 
 real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
 integer :: botlyr                       !< bottom layer of the unfrozen soil column
 real :: frznrtlit                       !< fraction of root distribution in frozen layers
-real ltrsbrluc(ilg) !<
-real scrsbrluc(ilg) !<
 !
 real tbarccs(ilg,ignd) !<
 real rootlitr(ilg,icc) !<
@@ -633,199 +631,6 @@ if (PFTCompetition) then
      &                  lucemcom, lucltrin, lucsocin)
         endif !lnduseon
 
-!   else ! onetile_perPFT is True
-! !>
-! !!Land use change and competition for mosaics needs mapping and
-! !!unmapping of the pfts. Composite does not require these extra steps.
-! !!
-! !!Check if number of mosaics is equal to the number of pfts plus one bare, e.g., nmos=iccp1
-! !!
-!         if (nmos.ne.iccp1) then
-!          write(*,2050) 'number of mosaics, nmos= ',nmos,&
-!      &                 ' is not equal to the number of pfts plus',&
-!      &                 ' one bare, iccp1= ',iccp1
-!          write(*,2051) 'competition works properly only when all pfts',&
-!      &                 ' and bare are considered. (onetile_perPFT is set to true!)'
-!          call xit ('ctem',-11)
-!         endif
-! 2050    format(a25,i2,a40,a18,i2,a1)
-! 2051    format(a45,a40)
-! !>
-! !!check for fcancmx(i,j). this should be either 0 or 1 for competition to work.
-! !!
-!         do j=1, icc
-!          do i=il1, il2
-!           if(fcancmx(i,j).ne.1.0 .and. fcancmx(i,j).ne.0.0) then
-!            write(*,2100) &
-!      &                'mosaic ',i,' has pft fraction: ', &
-!      &                'fcancmx(',i,',',j,')=',fcancmx(i,j)
-!            write(*,2101) &
-!      &                'mosaic competition and luc work only when ',&
-!      &                'each mosaic is 100% occupied with one pft'
-!            call xit ('ctem',-12)
-!           endif
-!          enddo
-!         enddo
-! 2100    format(a7,i2,a19,a8,i2,a1,i2,a2,f8.3)
-! 2101    format(a40,a40)
-! !>
-! !!competition_map scatters and maps the array with indices of (ilg,icc) to (nlat,icc) for preparation for competition
-! !!
-!           call competition_map(    nml,    ilmos,   jlmos,   grclarea,&
-!      &                         faregat,   fcancmx,  nppveg,  geremort,&
-!      &                         intrmort, gleafmas, bleafmas, stemmass,&
-!      &                         rootmass, litrmass, soilcmas,&
-!      &                         pftexist,   lambda,  bmasveg,burnvegf,&
-!      &                         add2allo,       cc,       mm,   fcanmx,&
-!      &                         vgbiomas, gavgltms, gavgscms,&
-!      &                               ta,   precip,   netrad,    tcurm,&
-!      &                         srpcuryr, dftcuryr,   tmonth, anpcpcur, &
-!      &                          anpecur,  gdd5cur, surmncur, defmncur,&
-!      &                         srplscur, defctcur,   twarmm,   tcoldm,&
-!      &                             gdd5,  aridity, srplsmon, defctmon,&
-!      &                         anndefct, annsrpls,   annpcp,&
-!      &                      dry_season_length,&
-!      &                         lucemcom, lucltrin, lucsocin, pfcancmx,&
-!      &                         nfcancmx, pstemmass, pgleafmass,&
-! !    ------------------- inputs above this line ---------------------
-!      &                        netradrow,&
-! !    ------------------- intermediate and saved above this line -----
-!      &                         fare_cmp,    nppveg_cmp,  geremort_cmp,&
-!      &                     intrmort_cmp,  gleafmas_cmp,  bleafmas_cmp,&
-!      &                     stemmass_cmp,  rootmass_cmp,  litrmass_cmp,&
-!      &                     soilcmas_cmp,  pftexist_cmp,    lambda_cmp,&
-!      &                      bmasveg_cmp,burnvegf_cmp,  add2allo_cmp,&
-!      &                           cc_cmp,        mm_cmp,    fcanmx_cmp,&
-!      &                     vgbiomas_cmp,  grclarea_cmp,&
-!      &                     gavgltms_cmp,  gavgscms_cmp,&
-!      &                           ta_cmp,    precip_cmp,    netrad_cmp, &
-!      &                        tcurm_cmp,  srpcuryr_cmp,  dftcuryr_cmp,&
-!      &                       tmonth_cmp,  anpcpcur_cmp,   anpecur_cmp, &
-!      &                      gdd5cur_cmp,  surmncur_cmp,  defmncur_cmp,&
-!      &                     srplscur_cmp,  defctcur_cmp,    twarmm_cmp, &
-!      &                       tcoldm_cmp,      gdd5_cmp,   aridity_cmp,&
-!      &                     srplsmon_cmp,  defctmon_cmp,  anndefct_cmp,&
-!      &                     annsrpls_cmp,    annpcp_cmp,&
-!      &                     dry_season_length_cmp,&
-!      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,&
-!      &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,&
-!      &                     pgleafmass_cmp )
-! !    ------------------- outputs above this line --------------------
-!
-!         if (PFTCompetition) then
-!
-! !>Calculate bioclimatic parameters for estimating pfts existence
-!
-!          call  bioclim (iday,       ta_cmp,    precip_cmp,  netrad_cmp,&
-!      &                    1,         nlat,          nlat,   leapnow, &
-!      &            tcurm_cmp, srpcuryr_cmp,  dftcuryr_cmp,  inibioclim,&
-!      &           tmonth_cmp, anpcpcur_cmp,   anpecur_cmp, gdd5cur_cmp,&
-!      &         surmncur_cmp, defmncur_cmp,  srplscur_cmp,defctcur_cmp,&
-!      &           twarmm_cmp,   tcoldm_cmp,      gdd5_cmp, aridity_cmp,&
-!      &         srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
-!      &           annpcp_cmp, dry_season_length_cmp)
-!
-!
-!        if (inibioclim) then
-! !>
-! !!If first day of year then based on updated bioclimatic parameters find if pfts can exist
-! !!or not. If .not. inibioclim then it is the first year of a run that you do not have the
-! !!climatological means already in the CTM file. After one year inibioclim is set to true and
-! !!the climatological means are used from the first year.
-! !!
-!           call existence(iday,            1,         nlat,         nlat,&
-!      &                   sort,     nol2pfts,      &
-!      &             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
-!      &           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
-!      &             annpcp_cmp, pftexist_cmp,&
-!      &             dry_season_length_cmp)
-! !>
-! !!call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts
-! !!
-!          call competition (iday,          1,          nlat,        nlat,&
-!      &               nol2pfts,   nppveg_cmp, dofire, leapnow, &
-!      &           pftexist_cmp, geremort_cmp, intrmort_cmp,&
-!      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
-!      &           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,&
-!      &             burnvegf_cmp,       sort, pstemmass_cmp,&
-!      &            pgleafmass_cmp,    &
-! !    ------------------- inputs above this line -------------------
-!      &               fare_cmp,   fcanmx_cmp, vgbiomas_cmp, gavgltms_cmp,&
-!      &           gavgscms_cmp,   bmasveg_cmp,&
-! !    ------------------- updates above this line ------------------
-!      &           add2allo_cmp,      cc_cmp,      mm_cmp)
-! !    ------------------- outputs above this line ------------------
-!
-!          end if !inibioclim
-!
-!         endif !PFTCompetition check
-!
-!         if(lnduseon)then
-!
-!          do i = il1, nlat
-!            do j = 1, icc
-!             yesfrac_mos(i,j)=fare_cmp(i,j)
-!            enddo
-!          enddo
-!
-!          call luc(il1,      nlat,     nlat,     nol2pfts, &
-!      &           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,&
-!      &           todfrac_cmp,  yesfrac_mos,   .true., PFTCompetition, leapnow,&
-!      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
-!      &           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,&
-!      &           gavgscms_cmp,     fare_cmp,   fcanmx_cmp,&
-!      &           lucemcom_cmp, lucltrin_cmp, lucsocin_cmp)
-!
-!         endif !lnduseon check
-! !>
-! !!Competition_unmap unmaps and gathers the array with
-! !!indices (nlat,icc) back to (ilg,icc) after competition is done
-! !!
-!         call competition_unmap( nml,      ilmos,    jlmos,   nol2pfts,&
-!      &                           fare_cmp,   nppveg_cmp, geremort_cmp,&
-!      &                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,&
-!      &                       stemmass_cmp, rootmass_cmp, litrmass_cmp,&
-!      &                       soilcmas_cmp, pftexist_cmp,   lambda_cmp,&
-!      &                        bmasveg_cmp,burnvegf_cmp, add2allo_cmp,&
-!      &                             cc_cmp,       mm_cmp,   fcanmx_cmp,&
-!      &                       vgbiomas_cmp, grclarea_cmp, &
-!      &                       gavgltms_cmp, gavgscms_cmp,&
-!      &                             ta_cmp,   precip_cmp,   netrad_cmp, &
-!      &                          tcurm_cmp, srpcuryr_cmp, dftcuryr_cmp,&
-!      &                         tmonth_cmp, anpcpcur_cmp,  anpecur_cmp, &
-!      &                        gdd5cur_cmp, surmncur_cmp, defmncur_cmp,&
-!      &                       srplscur_cmp, defctcur_cmp,   twarmm_cmp, &
-!      &                         tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
-!      &                       srplsmon_cmp, defctmon_cmp, anndefct_cmp,&
-!      &                       annsrpls_cmp,   annpcp_cmp,&
-!      &                     dry_season_length_cmp,&
-!      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,&
-!      &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,&
-!      &                      pgleafmass_cmp,&
-! !    ------------------- inputs above this line ---------------------
-!      &                            netradrow,&
-! !    ------------------- saved for intermediate above this line -----
-!      &                        faregat,  fcancmx,    nppveg, geremort,  &
-!      &                       intrmort, gleafmas,  bleafmas, stemmass,&
-!      &                       rootmass, litrmass,  soilcmas, grclarea,&
-!      &                        pftexist,  lambda,   bmasveg,burnvegf,&
-!      &                        add2allo,      cc,        mm,   fcanmx,&
-!      &                        vgbiomas, gavgltms, gavgscms,&
-!      &                     ta,  precip,   netrad,    tcurm, srpcuryr,&
-!      &                        dftcuryr ,  tmonth, anpcpcur,  anpecur, &
-!      &                         gdd5cur, surmncur, defmncur, srplscur,  &
-!      &                        defctcur,   twarmm,   tcoldm,     gdd5, &
-!      &                         aridity, srplsmon, defctmon, anndefct,&
-!      &                        annsrpls,   annpcp,&
-!      &                         dry_season_length,&
-!      &                         lucemcom, lucltrin, lucsocin, pfcancmx,&
-!      &                         nfcancmx, pstemmass, pgleafmass )
-! !    ------------------- updates above this line --------------------
-!
-!   endif ! onetile_perPFT true/false
-!
-! endif !PFTCompetition/lnduseon
-
 !     ---------------------------------------------------------------
 !>
 !>initialize required arrays to zero
@@ -849,7 +654,7 @@ do 100 i = il1, il2
     dstcemls1(i)=0.0     !<grid ave. carbon emission losses due to disturbance, vegetation
     dstcemls2(i)=0.0     !<grid ave. carbon emission losses due to disturbance, total
     dstcemls3(i)=0.0     !<grid ave. carbon emission losses due to disturbance, litter
-    galtcels(i)=0.0      !<grid ave. litter fire emission losses (redundant, same as dstcemls3)
+    galtcels(i)=0.0      !<grid ave. litter fire emission losses (redundant, same as dstcemls3) FLAG
     fc(i)=0.0            !<fraction of canopy over ground subarea
     fcs(i)=0.0           !<fraction of canopy over snow subarea
     fg(i)=0.0            !<fraction of bare ground subarea
@@ -863,9 +668,9 @@ do 100 i = il1, il2
     humtrsvg(i,iccp1:iccp2)=0.0  !<humified rate the bare fraction
     ltresveg(i,iccp1:iccp2)=0.0  !<litter respiration rate over bare fraction
     scresveg(i,iccp1:iccp2)=0.0  !<soil c respiration rate over bare fraction
-    hetrsveg(i,iccp1:iccp2)=0.0  !<heterotrophic resp. rate over bare fraction
-    nbpveg(i,iccp1:iccp2) = 0.0  !<net biome productity for bare fraction
-    nepveg(i,iccp1:iccp2) = 0.0  !<net ecosystem productity for bare fraction
+    hetrsveg(i,iccp1)=0.0  !<heterotrophic resp. rate over bare fraction
+    nbpveg(i,iccp1) = 0.0  !<net biome productity for bare fraction
+    nepveg(i,iccp1 ) = 0.0  !<net ecosystem productity for bare fraction
     !        expnbaln(i)=0.0        !amount of c related to spatial expansion !Not used JM Jun 2014
     repro_cost_g(i)=0.0    !<amount of C for production of reproductive tissues
 100   continue
@@ -1174,14 +979,17 @@ call  hetresg  (litrmass(:,iccp1), soilcmas(:,iccp1),    delzw, thpor, &
      &                     isand,&
      &                   ltrsbrgs, scrsbrgs)
 !
-!     find heterotrophic respiration rates for the LUC litter and soilc pools
-!
-call  hetresg  (litrmass(:,iccp2), soilcmas(:,iccp2),    delzw, thpor, &
+!  Find heterotrophic respiration rates for the LUC litter and soilc pools
+!  The LUC litter and soil C respiration rates are assumed to
+!  be applied over the entire tile but kept in layer 1  
+
+  call  hetresg  (litrmass(:,iccp2), soilcmas(:,iccp2),    delzw, thpor, &
      &                      il1, il2,  tbargs, psisat, bi,  &
      &                   thliqg,      zbotw,  thiceg, &
      &                      fgs,        1,&
      &                     isand,&
-     &                   ltrsbrluc, scrsbrluc)
+     &                   ltresveg(:,iccp2), scresveg(:,iccp2))
+
 !>
 !! When peatlands are simulated find the peat heterotrophic respiration
 
@@ -1229,15 +1037,6 @@ do 355 i = il1, il2
             hetrsveg(i,iccp1)= 0.0
     endif
 
-    ! Also do the LUC litter and soil C respiration rates. These are assumed to
-    ! be applied over the entire grid cell but kept in layer 1  !FLAG new Jan 2016 JM.
-    ltresveg(i,iccp2) = ltrsbrluc(i)
-    scresveg(i,iccp2) = scrsbrluc(i)
-    hetrsveg(i,iccp2) = hetrsveg(i,iccp2) + ltresveg(i,iccp2) + scresveg(i,iccp2)
-
-    nepveg(i,iccp1) = 0. - hetrsveg(i,iccp1)
-    nepveg(i,iccp2) = 0. - hetrsveg(i,iccp2)
-
 355   continue
 !>
 !!Find grid averaged litter and soil c respiration rates
@@ -1255,20 +1054,9 @@ do 360 j = 1,icc
 !!    the grid sum but no bareground values as we assume peatlands have no bareground.
 !
       do 380 i = il1, il2
-          if (ipeatland(i) ==0) then
+          if (ipeatland(i) == 0) then
               litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
               socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
-
-	    ! Save the litter respiration (without LUC respiration) for wetland subroutine
-	    ! FLAG! This is treating peatlands disctinctly from wetlands! JM Jul 2018.
-	    litr_for_w(i) = litres(i)   ! FLAG In the future we need to put this per layer for wetlands (if we want to get fancier with oxidation...)
-	    ! Save the soil C respiration (without LUC respiration) for wetland subroutine
-	    solc_for_w(i) = socres(i)
-
-
-            ! Now add in the LUC pools (which are kept in the first layer)
-            litres(i)=litres(i) + ltresveg(i,iccp2)
-            socres(i)=socres(i)+ scresveg(i,iccp2)
 
           else  ! peatlands
               litres(i) = litres(i)+ litresmoss(i) !add the moss litter, which is assumed to cover whole tile.
@@ -1318,11 +1106,10 @@ do 440 j = 1, icc
 450     continue
 440   continue
 
-!> But over the bare fraction there is no live root. Same with LUC pools.
+!> But over the bare fraction there is no live root.
 
 do 460 i = il1, il2
     soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
-    soilrsvg(i,iccp2)=soilrsvg(i,iccp2) + ltresveg(i,iccp2) + scresveg(i,iccp2) !FLAG
 460   continue
 
 !>Find grid averaged humification and soil respiration rates
@@ -1343,8 +1130,6 @@ do 470 i = il1, il2
           if (ipeatland(i) ==0 ) then !non peatland
             soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
             humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
-            soilresp(i)=soilresp(i) + soilrsvg(i,iccp2) !FLAG
-            humiftrs(i)=humiftrs(i) + humtrsvg(i,iccp2)
           else !peatland
             soilresp(i) = socres(i)+litres(i)+rmr(i) !moss root and litter respiration. No bareground!
 
@@ -1788,9 +1573,8 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 1010    continue
 
 !       For accounting purposes, we also need to account for the bare fraction
-!       and LUC pool NBP. Since there is no fire on the bare, we use 0.
-          nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0.
-          nbpveg(i,iccp2)  =nepveg(i,iccp2)   - 0.  !FLAG
+!       NBP. Since there is no fire on the bare, we use 0.
+        nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0.
 
 1000  continue
 !>
@@ -1813,10 +1597,11 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 1040    continue
 1030  continue
 !
-
+!       For the NBP, we include the disturbance emissions as well as respiration from the paper (litter) and furniture
+!       (soil carbon) pools (LUC product pools).
       do 1041 i = il1, il2
-        nbp(i)=nep(i)-dstcemls2(i)
-        dstcemls3(i)=dstcemls2(i)-dstcemls1(i)
+        nbp(i)=nep(i)-dstcemls2(i)-ltresveg(i,iccp2) - scresveg(i,iccp2)
+        dstcemls3(i)=dstcemls2(i)-dstcemls1(i)  !litter is total - vegetation.
 1041  continue
 !>
 !!calculate total litter fall from each component (leaves, stem, and root) from all causes (normal
@@ -1871,10 +1656,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
           ! Add the bare fraction dead C
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
-          ! and the LUC dead C
-          gavgltms(i)=gavgltms(i) + litrmass(i,iccp2) !FLAG
-          gavgscms(i)=gavgscms(i) + soilcmas(i,iccp2) !FLAG
-
+             
           else
              litrmsmoss(i)= litrmsmoss(i)+litrfallmoss(i)-&
       &                     ltrestepmoss(i)-humstepmoss(i)     !kg/m2

@@ -1133,27 +1133,28 @@ do 300 j = k, k+numgrass-1
 !!becomes litter is now spread over the whole grid cell. all biomass from fraction that dies due to mortality is
 !!also distributed over the litter pool of whole grid cell.
 !!
-            incrlitr(i,j) = abs(chngfrac(i,j))*(gleafmas(i,j)+ &
-               bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
+            incrlitr(i,j) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
+                            + bleafmas(i,j) + stemmass(i,j) &
+                            + rootmass(i,j) + litrmass(i,j))
 
             ! Not in use. JM Jun 2014.
             !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
             incrlitr(i,j) = incrlitr(i,j)
-            grsumlit(i)=grsumlit(i)+incrlitr(i,j)
+            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
 
 !           Chop off soil c from the fraction that goes down and
 !           spread it uniformly over the soil c pool of entire grid cell
 
-            incrsolc(i,j)=abs(chngfrac(i,j))*soilcmas(i,j)
-            grsumsoc(i)=grsumsoc(i)+incrsolc(i,j)
+            incrsolc(i,j) = abs(chngfrac(i,j)) * soilcmas(i,j)
+            grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
 
           else if(fraciord(i,j).eq.0)then
 
             ! Not in use. JM Jun 2014.
 !           all npp used for expansion becomes litter
             !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j)
-            incrlitr(i,j) =0.
-            grsumlit(i)=grsumlit(i)+incrlitr(i,j)
+            incrlitr(i,j) = 0.
+            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
 
           endif
 
@@ -1573,6 +1574,8 @@ end subroutine competition
 !!consistent with invasion of the sub-dominant PFT \f$\beta\f$ being unaffected by
 !! the fractional coverage of the dominant PFT \f$\alpha\f$.
 !!
+!! Carbon in the land use change (LUC) product pools is assumed to be unaffected by 
+!! competition and thus is not influenced by any shifts in the PFT distribution.
 !!
 !! # Colonization rate
 !!

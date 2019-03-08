@@ -101,7 +101,7 @@ c      August 4, 2009 scatter operation on CTEM variables.
 c      Rong Li
 c 
       use classic_params,  only : nlat, nmos, ilg, ignd, ican, icp1,
-     1                               icc,iccp2
+     1                               icc,iccp2,iccp1
 
       implicit none
 c
@@ -198,8 +198,8 @@ c
 c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
-      real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp2),
-     1      nbpvegrow(nlat,nmos,iccp2),hetroresvegrow(nlat,nmos,iccp2),
+      real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),
+     1      nbpvegrow(nlat,nmos,iccp1),hetroresvegrow(nlat,nmos,iccp1),
      2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp2),
      3      soilcresvegrow(nlat,nmos,iccp2)
 c
@@ -284,8 +284,8 @@ c
 c
       real vgbiomas_veggat(ilg,icc)
 c
-      real gppveggat(ilg,icc),        nepveggat(ilg,iccp2),
-     1     nbpveggat(ilg,iccp2), hetroresveggat(ilg,iccp2),
+      real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),
+     1     nbpveggat(ilg,iccp1), hetroresveggat(ilg,iccp1),
      2      autoresveggat(ilg,icc),litresveggat(ilg,iccp2),
      3      soilcresveggat(ilg,iccp2)
 
@@ -465,18 +465,22 @@ c         fire variables
 c
 101   continue
 c
-      do 102 l=1,iccp2
+      do 102 l=1,iccp1
        do 102 k=1,nml
-          litrmassrow(ilmos(k),jlmos(k),l) = litrmassgat(k,l)
-          soilcmasrow(ilmos(k),jlmos(k),l) = soilcmasgat(k,l)
           hetroresvegrow(ilmos(k),jlmos(k),l) = hetroresveggat(k,l)
-          litresvegrow(ilmos(k),jlmos(k),l) = litresveggat(k,l)
-          soilcresvegrow(ilmos(k),jlmos(k),l) = soilcresveggat(k,l)
           nepvegrow(ilmos(k),jlmos(k),l)    = nepveggat(k,l)
           nbpvegrow(ilmos(k),jlmos(k),l)    = nbpveggat(k,l)
-          humiftrsvegrow(ilmos(k),jlmos(k),l) = humiftrsveggat(k,l)
-
 102   continue
+
+      do 103 l=1,iccp2
+       do 103 k=1,nml
+          litrmassrow(ilmos(k),jlmos(k),l) = litrmassgat(k,l)
+          soilcmasrow(ilmos(k),jlmos(k),l) = soilcmasgat(k,l)
+          litresvegrow(ilmos(k),jlmos(k),l) = litresveggat(k,l)
+          soilcresvegrow(ilmos(k),jlmos(k),l) = soilcresveggat(k,l)
+          humiftrsvegrow(ilmos(k),jlmos(k),l) = humiftrsveggat(k,l)
+103   continue
+
 c
       do 106 l=1,2     !2 pfts (ndl dcd & crops)
        do 106 k=1,nml

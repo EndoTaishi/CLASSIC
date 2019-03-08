@@ -2,8 +2,9 @@
 !! Checks carbon pools for conservation
 !> @author Vivek Arora
 !!
-!!unless mentioned all pools are in kg c/m2
-!!unless mentioned all fluxes are in units of u-mol co2/m2.sec
+!! To check C budget we go through each pool for each vegetation type.
+!! Unless mentioned all pools are in kg c/m2 and all fluxes are in units
+!! of u-mol co2/m2.sec
 !!
        subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,
      1                     litrmass, soilcmas, ntchlveg, ntchsveg,
@@ -103,7 +104,6 @@ c
       real galtcels(ilg)      !<grid averaged flux: carbon emission losses from litter
       real repro_cost_g(ilg)  !<grid averaged flux: amount of C used to generate reproductive tissues
 c
-
       real  soiltempor  !<
       real  littempor  !<
       real scresveg_temp !<
@@ -112,9 +112,9 @@ c
       real diff2  !<
 c
 !>
-!!to check c budget we go through each pool for each vegetation type.
+!! To check C budget we go through each pool for each vegetation type.
 !!
-!!green and brown leaves
+!! Green and brown leaves
 !!
       do 100 j = 1, icc
         do 110 i = il1, il2
@@ -131,9 +131,9 @@ c
 c         endif
 110     continue
 100   continue
-!>
-!!stem
-!!
+!
+! Stem
+!
       do 150 j = 1, icc
         do 160 i = il1, il2
           diff1=stemmass(i,j) - pstemass(i,j)
@@ -148,9 +148,9 @@ c         endif
 c         endif
 160     continue
 150   continue
-!>
-!!root
-!!
+!
+! Root
+!
       do 200 j = 1, icc
         do 210 i = il1, il2
           diff1=rootmass(i,j) - protmass(i,j)
@@ -165,9 +165,9 @@ c         endif
 c         endif
 210     continue
 200   continue
-!>
-!!litter over all pfts
-!!
+!
+! Litter over all pfts
+!
       do 250 j = 1, icc
         do 260 i = il1, il2
           diff1=litrmass(i,j) - plitmass(i,j)
@@ -183,31 +183,31 @@ c         endif
 c         endif
 260     continue
 250   continue
-!>
-!!litter over the bare fraction
-!!
+!
+! Litter over the bare fraction
+!
         do 280 i = il1, il2
            if (ipeatland(i)==0) then !Over the non-peatland areas.
-          diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
-          diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
+          diff1=litrmass(i,iccp1) - plitmass(i,iccp1)
+          diff2=( -ltresveg(i,iccp1)-humtrsvg(i,iccp1))*
      &          ( deltat/963.62 )
           if((abs(diff1-diff2)).gt.tolrance)then
-            write(6,2003)i,icc+1,abs(diff1-diff2),tolrance
+            write(6,2003)i,iccp1,abs(diff1-diff2),tolrance
             call xit('balcar',-6)
           endif
            endif
 280     continue
 
-c
-c     litter over the LUC pool
-c
+!
+! Litter over the LUC pool
+!
         do 290 i = il1, il2
           littempor=0.
           litrestemp=0.
-          do k = 1, ignd
+          !do k = 1, ignd
             littempor = littempor + litrmass(i,iccp2)
             litrestemp = litrestemp + ltresveg(i,iccp2)
-          end do
+          !end do
           diff1=littempor - plitmass(i,iccp2)
           diff2=( -litrestemp-humtrsvg(i,iccp2))*
      &          ( deltat/963.62 )
@@ -218,9 +218,9 @@ c
           endif
 290     continue
 
-!>
-!!soil carbon
-!!
+!
+! Soil carbon for the vegetated areas
+!
       do 300 j = 1, icc
         do 310 i = il1, il2
          if (ipeatland(i)==0) then !Over the non-peatland regions
@@ -240,9 +240,9 @@ c
 310     continue
 300   continue
 
-c
-c     soil carbon over the bare and LUC fraction
-c
+!
+! Soil carbon over the bare area and LUC product pool
+!
       do 320 j = iccp1, iccp2
         do 330 i = il1, il2
           soiltempor = 0.
@@ -262,9 +262,9 @@ c
 330     continue
 320   continue
 
-!>
-!! Moss C balance
-!!
+!
+! Moss C balance
+!
        do 400 i = il1, il2
            if (ipeatland(i).gt. 0) then !Peatlands only
                diff1 = Cmossmas(i)- pCmossmas(i)
@@ -279,9 +279,9 @@ c
      1         'than our tolerance of ',f12.6,' for moss carbon')
                     call xit('balcar',-11)
                endif
-!>
-!! Moss litter pool C balance
-!!
+!
+! Moss litter pool C balance
+!
                diff1 = litrmsmoss(i)- plitrmsmoss(i)
                diff2 = litrfallmoss(i)-ltrestepmoss(i)-humicmosstep(i)
                if((abs(diff1-diff2)).gt.tolrance)then
@@ -297,12 +297,11 @@ c
                endif
           endif
 400     continue
-
-!>
-!!grid averaged fluxes must also balance
-!!
-!!vegetation biomass
-!!
+!
+! Grid averaged fluxes must also balance
+!
+! Vegetation biomass
+!
       do 350 i = il1, il2
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
@@ -324,9 +323,9 @@ c
           call xit('balcar',-8)
         endif
 350   continue
-!>
-!!litter
-!!
+!
+! Litter
+!
       do 380 i = il1, il2
         diff1=gavgltms(i)-pgavltms(i)
         diff2=(litrfall(i)-litres(i)-humiftrs(i)-galtcels(i)
@@ -347,9 +346,9 @@ c
           call xit('balcar',-9)
         endif
 380   continue
-!>
-!!soil carbon
-!!
+!
+! Soil carbon
+!
       do 390 i = il1, il2
         diff1=gavgscms(i)-pgavscms(i)
         diff2=(humiftrs(i)-socres(i))*(deltat/963.62)
@@ -364,6 +363,6 @@ c
           call xit('balcar',-10)
         endif
 390   continue
-c
+
       return
       end

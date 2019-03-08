@@ -1941,11 +1941,12 @@ contains
         30          continue ! icc
 
                 !>Now for the bare fraction of the grid cell and the LUC products pool.
-                hetroresvegrow(i,m,iccp1:iccp2)=hetroresvegrow(i,m,iccp1:iccp2)*convertkgC
+                hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
+                nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
+                nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
+
                 litresvegrow(i,m,iccp1:iccp2)=litresvegrow(i,m,iccp1:iccp2)*convertkgC
                 soilcresvegrow(i,m,iccp1:iccp2)=soilcresvegrow(i,m,iccp1:iccp2)*convertkgC
-                nepvegrow(i,m,iccp1:iccp2)=nepvegrow(i,m,iccp1:iccp2)*convertkgC
-                nbpvegrow(i,m,iccp1:iccp2)=nbpvegrow(i,m,iccp1:iccp2)*convertkgC
 
                 npprow(i,m)     =npprow(i,m)*convertkgC
                 gpprow(i,m)     =gpprow(i,m)*convertkgC
@@ -2758,7 +2759,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
                                     resetmonthend,ctem_mo
-        use classic_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed
+        use classic_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed,iccp2
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -2862,6 +2863,8 @@ contains
         real, pointer, dimension(:,:) :: ch4WetDyn_mo_t
         real, pointer, dimension(:,:) :: ch4soills_mo_t
         real, pointer, dimension(:,:) :: wind_mo_t
+        real, pointer, dimension(:,:) :: fProductDecomp_mo_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
+
 
         logical, pointer, dimension(:,:,:) :: pftexistrow
         real, pointer, dimension(:,:,:) :: gppvegrow
@@ -2956,7 +2959,8 @@ contains
         real, pointer, dimension(:) :: wetfpres_mo_g
         real, pointer, dimension(:) :: ch4WetDyn_mo_g
         real, pointer, dimension(:) :: ch4soills_mo_g
-
+        real, pointer, dimension(:) :: cProduct_mo_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
+        real, pointer, dimension(:) :: fProductDecomp_mo_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-
         ! local
         integer :: i,m,j,nt
         real :: barefrac
@@ -3058,6 +3062,7 @@ contains
         ch4WetDyn_mo_t        =>ctem_tile_mo%ch4WetDyn_mo_t
         ch4soills_mo_t        =>ctem_tile_mo%ch4soills_mo_t
         wind_mo_t             =>ctem_tile_mo%wind_mo_t
+        fProductDecomp_mo_t   =>ctem_tile_mo%fProductDecomp_mo_t
 
         gppvegrow         => vrot%gppveg
         nepvegrow         => vrot%nepveg
@@ -3151,6 +3156,8 @@ contains
         wetfpres_mo_g       =>ctem_grd_mo%wetfpres_mo_g
         ch4WetDyn_mo_g      =>ctem_grd_mo%ch4WetDyn_mo_g
         ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
+        cProduct_mo_g       =>ctem_grd_mo%cProduct_mo_g
+        fProductDecomp_mo_g =>ctem_grd_mo%fProductDecomp_mo_g
 
         !> ------------
 
@@ -3224,7 +3231,10 @@ contains
             ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)*oneOverDPM
             lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)*oneOverDPM
             !wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
-
+            
+            fProductDecomp_mo_t(i,m) = fProductDecomp_mo_t(i,m) &
+                                      + (soilcresvegrow(i,m,iccp2) + litresvegrow(i,m,iccp2)) * oneOverDPM
+            
     863     continue ! m
 
         do 865 nt=1,nmon
@@ -3277,6 +3287,11 @@ contains
                     rootmass_mo_g(i)=rootmass_mo_g(i)+rootmass_mo_t(i,m)*FAREROT(i,m)
                     totcmass_mo_g(i)=totcmass_mo_g(i)+totcmass_mo_t(i,m)*FAREROT(i,m)
 
+                    ! Including the LUC product pools. They are per tile values and 
+                    ! are assumed to occupy the whole tile.
+                    cProduct_mo_g(i) = cProduct_mo_g(i) &
+                                       + (litrmassrow(i,m,iccp2) + soilcmasrow(i,m,iccp2))*FAREROT(i,m)
+                    
     866             continue  !nmtest loop.
 
             endif ! mmday (mid-month instantaneous value)
@@ -3287,18 +3302,6 @@ contains
                 ndmonth=(monthend(nt+1)-monthend(nt))*nday
 
                 do 900 m = 1,nmtest
-
-
-                    !> Convert some quantities into per day values
-                    !wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*oneOverDPM
-                    !wetfpres_mo_t(i,m)=wetfpres_mo_t(i,m)*oneOverDPM
-                    !lterm_mo_t(i,m)=lterm_mo_t(i,m)*oneOverDPM
-                    !wind_mo_t(i,m) = wind_mo_t(i,m)*oneOverDPM
-                    ! do j = 1, icc
-                    !     bterm_mo(i,m,j)=bterm_mo(i,m,j)*oneOverDPM
-                    !     mterm_mo(i,m,j)=mterm_mo(i,m,j)*oneOverDPM
-                    !     smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) *oneOverDPM
-                    ! end do
 
                     barefrac=1.0
 
@@ -3341,7 +3344,7 @@ contains
                     hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,iccp1)*barefrac
                     litres_mo_t(i,m)  =litres_mo_t(i,m) +litres_mo(i,m,iccp1)*barefrac
                     soilcres_mo_t(i,m)=soilcres_mo_t(i,m)+soilcres_mo(i,m,iccp1)*barefrac
-                    humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,iccp1)*barefrac
+                    humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,iccp1)*barefrac                    
 
                     !> Find the monthly outputs at the per grid cell level from the outputs at the per tile level
                     npp_mo_g(i)=npp_mo_g(i)+npp_mo_t(i,m)*FAREROT(i,m)
@@ -3380,6 +3383,8 @@ contains
                     mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_t(i,m)*FAREROT(i,m)
                     litrfall_mo_g(i)=litrfall_mo_g(i)+litrfall_mo_t(i,m)*FAREROT(i,m)
                     humiftrs_mo_g(i)=humiftrs_mo_g(i)+humiftrs_mo_t(i,m)*FAREROT(i,m)
+                    
+                    fProductDecomp_mo_g(i) = fProductDecomp_mo_g(i) + fProductDecomp_mo_t(i,m)*FAREROT(i,m)
 
     900             continue
 
@@ -3431,6 +3436,8 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_g' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_g(i)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_mo_g' ,timeStamp,'fDeforestTotal',&
                                       [lucsocin_mo_g(i)+lucltrin_mo_g(i)+luc_emc_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'fProductDecomp_mo_g' ,timeStamp,'fProductDecomp',[fProductDecomp_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'cProduct_mo_g' ,timeStamp,'cProduct',[cProduct_mo_g(i)])
                 end if
 
                 if (PFTCompetition) then
@@ -3450,18 +3457,18 @@ contains
                         m = 1
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo' ,timeStamp,'lai', [laimaxg_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo',timeStamp,'cVeg',[vgbiomas_mo(i,m,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[litrmass_mo(i,m,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[soilcmas_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[litrmass_mo(i,m,1:iccp1)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[soilcmas_mo(i,m,1:iccp1)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo'     ,timeStamp,'npp',[npp_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo'     ,timeStamp,'gpp',[gpp_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo'     ,timeStamp,'nep',[nep_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo'     ,timeStamp,'nbp',[nbp_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo',timeStamp,'rh',[hetrores_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo' ,timeStamp,'ra',[autores_mo(i,m,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[litres_mo(i,m,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[soilcres_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[litres_mo(i,m,1:iccp1)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[soilcres_mo(i,m,1:iccp1)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i,m,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,1:iccp1)])
                         if (dofire .or. lnduseon) then
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo' ,timeStamp,'fFireCH4',[emit_ch4_mo(i,m,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo' ,timeStamp,'fFire',[emit_co2_mo(i,m,:)])
@@ -3488,7 +3495,7 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[litres_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[soilcres_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
-                        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,1:iccp1)])
                         
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_t(i,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
@@ -3538,7 +3545,7 @@ contains
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                         resetyearend
-        use classic_params, only : icc,iccp1,seed
+        use classic_params, only : icc,iccp1,seed,iccp2
         use outputManager, only : writeOutput1D,consecDays
 
         implicit none
@@ -3638,7 +3645,7 @@ contains
         real, pointer, dimension(:,:) :: ch4soills_yr_t
         real, pointer, dimension(:,:) :: veghght_yr_t
         real, pointer, dimension(:,:) :: peatdep_yr_t
-
+        real, pointer, dimension(:,:) :: fProductDecomp_yr_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
         logical, pointer, dimension(:,:,:) :: pftexistrow
         real, pointer, dimension(:,:,:) :: gppvegrow
@@ -3730,6 +3737,8 @@ contains
         real, pointer, dimension(:) :: ch4soills_yr_g
         real, pointer, dimension(:) :: veghght_yr_g
         real, pointer, dimension(:) :: peatdep_yr_g
+        real, pointer, dimension(:) :: cProduct_yr_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
+        real, pointer, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-
 
         ! local
         integer :: i,m,j,nt
@@ -3820,13 +3829,13 @@ contains
         lucsocin_yr_t         =>ctem_tile_yr%lucsocin_yr_t
         mterm_yr_t            =>ctem_tile_yr%mterm_yr_t
         lucltrin_yr_t         =>ctem_tile_yr%lucltrin_yr_t
-        ch4WetSpec_yr_t          =>ctem_tile_yr%ch4WetSpec_yr_t
+        ch4WetSpec_yr_t       =>ctem_tile_yr%ch4WetSpec_yr_t
         wetfdyn_yr_t          =>ctem_tile_yr%wetfdyn_yr_t
-        ch4WetDyn_yr_t          =>ctem_tile_yr%ch4WetDyn_yr_t
+        ch4WetDyn_yr_t        =>ctem_tile_yr%ch4WetDyn_yr_t
         ch4soills_yr_t        =>ctem_tile_yr%ch4soills_yr_t
         veghght_yr_t          =>ctem_tile_yr%veghght_yr_t
         peatdep_yr_t          =>ctem_tile_yr%peatdep_yr_t
-
+        fProductDecomp_yr_t   =>ctem_tile_yr%fProductDecomp_yr_t
 
         pftexistrow       => vrot%pftexist
         gppvegrow         => vrot%gppveg
@@ -3913,12 +3922,15 @@ contains
         bterm_yr_g            =>ctem_grd_yr%bterm_yr_g
         lterm_yr_g            =>ctem_grd_yr%lterm_yr_g
         mterm_yr_g            =>ctem_grd_yr%mterm_yr_g
-        ch4WetSpec_yr_g          =>ctem_grd_yr%ch4WetSpec_yr_g
+        ch4WetSpec_yr_g       =>ctem_grd_yr%ch4WetSpec_yr_g
         wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
-        ch4WetDyn_yr_g          =>ctem_grd_yr%ch4WetDyn_yr_g
+        ch4WetDyn_yr_g        =>ctem_grd_yr%ch4WetDyn_yr_g
         ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
         veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
         peatdep_yr_g          =>ctem_grd_yr%peatdep_yr_g
+        cProduct_yr_g         =>ctem_grd_yr%cProduct_yr_g
+        fProductDecomp_yr_g   =>ctem_grd_yr%fProductDecomp_yr_g
+        
         !------------
 
         !> Accumulate yearly outputs
@@ -3982,6 +3994,9 @@ contains
         ch4WetSpec_yr_t(i,m) = ch4WetSpec_yr_t(i,m)+ch4WetSpecrow(i,m)*oneOverDPY
         ch4WetDyn_yr_t(i,m) = ch4WetDyn_yr_t(i,m)+ch4WetDynrow(i,m)*oneOverDPY
         ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m)+ch4soillsrow(i,m)*oneOverDPY
+
+        fProductDecomp_yr_t(i,m) = fProductDecomp_yr_t(i,m) &
+                                  + (soilcresvegrow(i,m,iccp2) + litresvegrow(i,m,iccp2)) * oneOverDPY
 
     883     continue ! m
 
@@ -4102,6 +4117,11 @@ contains
                 ch4soills_yr_g(i) = ch4soills_yr_g(i)+ch4soills_yr_t(i,m)*FAREROT(i,m)
                 veghght_yr_g(i) = veghght_yr_g(i) + veghght_yr_t(i,m)*FAREROT(i,m)
 
+                ! Including the LUC product pools. They are per tile values and 
+                ! are assumed to occupy the whole tile.
+                cProduct_yr_g(i) = cProduct_yr_g(i) &
+                                   + (litrmassrow(i,m,iccp2) + soilcmasrow(i,m,iccp2))*FAREROT(i,m)
+
     900         continue !m
 
             !>Write to annual output files:
@@ -4172,6 +4192,8 @@ contains
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_yr_g' ,timeStamp,'fDeforestTotal',&
                                   [lucsocin_yr_g(i)+lucltrin_yr_g(i)+luc_emc_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'fProductDecomp_yr_g' ,timeStamp,'fProductDecomp',[fProductDecomp_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'cProduct_yr_g' ,timeStamp,'cProduct',[cProduct_yr_g(i)])
             end if
 
             if (doperpftoutput) then
@@ -4185,8 +4207,8 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr',timeStamp,'cRoot',[rootmass_yr(i,m,:)])
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,:)])
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,1:iccp1)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,1:iccp1)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr',timeStamp,'cLand',[totcmass_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr'     ,timeStamp,'npp',[npp_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i,m,:)])
@@ -4194,8 +4216,8 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,:)])
-                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,1:iccp1)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,1:iccp1)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
 
                     if (dofire .or. lnduseon) then

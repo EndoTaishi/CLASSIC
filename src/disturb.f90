@@ -309,8 +309,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>Root biomass is not used to initiate fire. For example if
 !>the last fire burned all grass leaves, and some of the roots
 !>were left, its unlikely these roots could catch fire. 
-!>          Here we ignore the LUC litrmass on iccp2. We only consider the litrmass
-!>          on layer 1 as the rest are buried.
+!>Here we ignore the LUC litrmass on iccp2 and the litter on the bare ground 
+!>(iccp1). We only consider the litrmass on layer 1 as the rest are buried.
 
            biomass(i,j)=gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+ &
                       litrmass(i,j)
