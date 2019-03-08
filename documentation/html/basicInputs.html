@@ -94,9 +94,10 @@ $(document).ready(function(){initNavTree('basicInputs.html','');});
 <li><a class="el" href="basicInputs.html#soilData">Input Soil Data</a></li>
 <li><a class="el" href="basicInputs.html#initProgVar">Initialization of Prognostic Variables</a><ul>
 <li><a class="el" href="basicInputs.html#initPhysProgVar">Initialization of Physics Prognostic Variables</a></li>
-<li><a class="el" href="basicInputs.html#initCTEMProgVar">Initialization of Biogeochemical Prognostic Variables</a> <hr/>
-</li>
+<li><a class="el" href="basicInputs.html#initCTEMProgVar">Initialization of Biogeochemical Prognostic Variables</a></li>
 </ul>
+</li>
+<li><a class="el" href="basicInputs.html#exModSets">Example model setups</a> <hr/>
 </li>
 </ol>
 <h1><a class="anchor" id="forcingData"></a>
@@ -154,7 +155,8 @@ Input Vegetation Data</h1>
 <p>CLASSIC can be run with either dynamic vegetation (CTEM+CLASS) or a physics only simulation (CLASS). The model inputs differ between the two configurations with some input vegetation data for a CLASS-only run ignored when CTEM is turned on. As well CTEM requires some additional inputs not needed for CLASS-only runs as described below.</p>
 <h2><a class="anchor" id="vegCLASSonly"></a>
 Required vegetation data</h2>
-<p>The typical four main vegetation categories for the model physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass (ican = 4). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a larger dimension of 5 rather than 4 (ican + 1). For each of the CLASS PFTs the following data are required for each mosaic tile over each grid cell or modelled area (<b>NOTE</b>: When CTEM is turned on, i.e. dynamic vegetation is desired and the variables indicated in bold font are overwritten by CTEM during model run (specifically in <a class="el" href="APREP_8f.html">APREP.f</a>). FCANROT may be overwritten if land use change or competition between PFTs is turned on.)</p>
+<p>The typical four main vegetation categories for the model physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass (e.g. ican = 4). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a larger dimension of ican + 1 rather than ican. The model is capable of extensions beyond these initial four PFTs, however there are checks in the model code that look for known PFTs (e.g. 'NdlTr' , 'BdlTr', 'Crops', 'Grass'). If a PFT is introduced that is not known, the model will bail and let the user know where the PFT check failed. This is designed to prevent poorly considered additions and ensure developers are aware of where the different PFTs branch in the code.</p>
+<p>For each of the CLASS PFTs the following data are required for each mosaic tile over each grid cell or modelled area (<b>NOTE</b>: When CTEM is turned on, i.e. dynamic vegetation is desired and the variables indicated in bold font are overwritten by CTEM during model run (specifically in <a class="el" href="APREP_8f.html">APREP.f</a>). FCANROT may be overwritten if land use change or competition between PFTs is turned on.)</p>
 <ol type="1">
 <li>ALICROT Average near-IR albedo of vegetation category when fully-leafed [ ]</li>
 <li>ALVCROT Average visible albedo of vegetation category when fully-leafed [ ]</li>
@@ -201,7 +203,7 @@ Input Soil Data</h1>
 <ul>
 <li>DELZ Layer thickness [m]</li>
 </ul>
-<p>The standard operational configuration for CLASS consists of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. CLASSIC supports other options: the second and third soil layers may be replaced with a larger number of thinner layers, and/or the bottom of the soil profile may be extended below 4.10 m. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems. As a rule of thumb, the thicknesses of layers should be limited to <img class="formulaInl" alt="$\geq$" src="form_272.png"/> 0.10 m.</p>
+<p>The standard operational configuration for CLASS used to consist of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. Now, CLASSIC supports any number and thickness of ground layers. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems. As a rule of thumb, the thicknesses of layers should be limited to <img class="formulaInl" alt="$\geq$" src="form_272.png"/> 0.10 m. DELZ is the same across all grid cells.</p>
 <p>For each of the modelled soil layers on each of the mosaic tiles, the following texture data are required:</p>
 <ul>
 <li>CLAYROT Percentage clay content</li>
@@ -214,9 +216,9 @@ Input Soil Data</h1>
 Percent Sand</div></div>
 <ul>
 <li>For mineral soils, the percentages of sand, clay and organic matter content need not add up to 100%, since the residual is assigned to silt content. If the exact sand, clay and organic matter contents are not known, estimates can be made for the general soil type on the basis of the standard USDA texture triangle shown above. Organic matter contents in mineral soils are typically not more than a few percent.</li>
-<li>If the layer consists of rock, SANDROT is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, CLAYROT and ORGMROT are not used and are set to zero.</li>
+<li>If the layer consists of bed rock, SANDROT is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, CLAYROT and ORGMROT are not used and are set to zero.</li>
 <li>Highly organic soils have different behaviour if the area is being modelled as a peatland:<ul>
-<li>If the peatland flag is 0, that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one, SANDROT, CLAYROT and ORGMROT are used differently. The sand content is assigned a flag value of -2, and the organic matter content may be assigned a flag value of 1, 2 or 3 depending on whether the peat texture is fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[55]</a>). The current default is for the first layer to be assumed as fibric, the second as hemic and any lower layers as sapric. CLAYROT is not used and is set to zero.</li>
+<li>If the peatland flag is 0, that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one (generally takes as a &gt; 30% organic matter), SANDROT, CLAYROT and ORGMROT are used differently. The sand content is assigned a flag value of -2. The peat texture is assigned to be fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[55]</a>). The current default is for the first layer to be assumed as fibric, the second and third as hemic and any lower layers as sapric until bedrock or a sand value &gt; 0 is reached. CLAYROT is not used and can be set to zero.</li>
 <li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see <a class="el" href="CLASSB_8f.html">CLASSB.f</a>)</li>
 </ul>
 </li>
@@ -225,13 +227,13 @@ Percent Sand</div></div>
 <p>For each of the mosaic tiles over the modelled area, the following surface parameters must be specified:</p>
 <ul>
 <li>DRNROT Soil drainage index<ul>
-<li>The drainage index, DRNROT, is usually set to 0.005 except in cases of deep soils where it is desired to suppress drainage from the bottom of the soil profile (e.g. in bogs, or in deep soils with a high water table). In such cases it is set to 0.</li>
+<li>The drainage index, DRNROT, is usually set to 0.005 except in cases of deep soils where it is desired to suppress drainage from the bottom of the soil profile (e.g. in bogs, or in deep soils with a high water table). In such cases it is set to 0. A value of 1 is freely draining.</li>
 </ul>
 </li>
 <li>FAREROT Fractional coverage of mosaic tile on the modelled area (also discussed <a class="el" href="compvsmosaic.html">here</a>)</li>
 <li>MIDROT Mosaic tile type identifier (1 for land surface, 0 for inland lake) (also discussed <a class="el" href="compvsmosaic.html">here</a>)</li>
 <li>SDEPROT Soil permeable depth [m]<ul>
-<li>The soil permeable depth, i.e. the depth to bedrock, may be less than the modelled thermal depth of the soil profile. If the depth to bedrock occurs within a soil layer, CLASS assigns the specified mineral or organic soil characteristics to the part of the layer above bedrock, and values corresponding to rock to the portion below. All layers fully below SDEPROT are treated as rock.</li>
+<li>The soil permeable depth, i.e. the depth to bedrock, may be less than the modelled thermal depth of the soil profile. If the depth to bedrock occurs within a soil layer, CLASS assigns the specified mineral or organic soil characteristics to the part of the layer above bedrock, and values corresponding to rock to the portion below. All layers fully below SDEPROT are treated as rock. These layers should be given a sand value of -3.</li>
 </ul>
 </li>
 <li>SOCIROT Soil colour index<ul>
@@ -251,7 +253,7 @@ Percent Sand</div></div>
 </ul>
 </li>
 </ul>
-<p>Four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used.</p>
+<p>Four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used (Presently they are not read in).</p>
 <ul>
 <li>grclarea Area of grid cell <img class="formulaInl" alt="$[km^{2} ]$" src="form_1567.png"/></li>
 </ul>
@@ -317,7 +319,7 @@ Initialization of Biogeochemical Prognostic Variables</h2>
 </li>
 <li>soilcmas Soil C mass per soil layer <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/></li>
 <li>litrmass Litter mass per soil layer <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/><ul>
-<li>Both litrmass and soilcmas are per PFT but also for bare ground (dimension is icc + 1, where icc is the number of CTEM PFTs)</li>
+<li>Both litrmass and soilcmas are per PFT but also the arrays contain two additional values: <b>bareground (icc + 1)</b>, where icc is the number of CTEM PFTs), and the <b>land use change (LUC) product pool (icc + 2)</b>. Soil C can be within the bare ground when land use change, competition or fire create bare ground that used to have vegetation. That C then continues to respire even though the vegetation have left that area. The LUC product pool represent the C that is converted into LUC products (soil C is 'furniture'- effectively a long lived C storage pool for the C removed from the landscape due to LUC whereas litter is 'paper', a short lived pool). The LUC C respires in response to environmental cues similar to litter and soil C in a manner similar to that material being in a landfill, for e.g.</li>
 </ul>
 </li>
 </ul>
@@ -328,17 +330,32 @@ Initialization of Biogeochemical Prognostic Variables</h2>
 </ul>
 </li>
 <li>pandays Days with positive net photosynthesis [Days]<ul>
-<li>The phenology subroutine of CTEM tracks days with positive net photosynthesis to initiate leaf onset. When net photosynthesis is positive for seven days, favourable weather is assumed to arrive and, leaf onset begins. If this variable is set to 7 then the model will think that favourable weather has arrived. When initializing from bare ground with no vegetation set this variable to 0. </li>
+<li>The phenology subroutine of CTEM tracks days with positive net photosynthesis to initiate leaf onset. When net photosynthesis is positive for seven days, favourable weather is assumed to arrive and, leaf onset begins. If this variable is set to 7 then the model will think that favourable weather has arrived. When initializing from bare ground with no vegetation set this variable to 0.</li>
 </ul>
 </li>
 </ul>
+<h1><a class="anchor" id="exModSets"></a>
+Example model setups</h1>
+<p>Here are a few example situations for physics only runs (CLASS alone).</p>
+<ol type="1">
+<li>sum(FCAN) = 1 and FARE &gt; 0 - Simulate all vegetated ground and no bare ground. If FCAN(ican+1) &gt; 0 this includes some urban area.</li>
+<li>sum(FCAN) &lt; 1 and FARE &gt; 0 - Simulate vegetated ground and some bare ground (1 - sum(FCAN)). If FCAN(ican+1) &gt; 0 this includes some urban area.</li>
+<li>sum(FCAN) = 0 and FARE &gt; 0 - Only simulate bare ground.</li>
+<li>sum(FCAN) = 0 and FARE = 0 - Don't simulate this cell, it is a lake or something.</li>
+</ol>
+<p>Variations of <b>bare ground</b>:</p><ol type="1">
+<li>If SAND = -4 then this cell is a glacier. Set all ground layers SAND to -4.</li>
+<li>If SAND = -3 then this layer is rock. The SAND flag can differ per layer so you may have permeable soils underlain by bedrock in which case your soil will have SAND values &gt; 0 but your bedrock layers should be SAND = -3. If the whole ground column is rock then all layers should be set to -3.</li>
+<li>If SAND = -2 then this layer is peat.</li>
+</ol>
+<p>If biogeochemistry is turned on (CTEM on) then we have a subtle difference in that fcancmx is used and determines the fcan(1:ican) values. Assumedly if you have some vegetation then at least one ground layer should be soil (SAND &gt; 0). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

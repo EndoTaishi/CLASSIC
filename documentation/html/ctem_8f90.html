@@ -451,7 +451,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp1), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
@@ -469,7 +469,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp1), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
@@ -907,7 +907,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp1), intent(out)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(out)&#160;</td>
           <td class="paramname"><em>humtrsvg</em>, </td>
         </tr>
         <tr>
@@ -1207,13 +1207,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp1), intent(out)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(out)&#160;</td>
           <td class="paramname"><em>ltresveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp1), intent(out)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(out)&#160;</td>
           <td class="paramname"><em>scresveg</em>, </td>
         </tr>
         <tr>
@@ -1494,6 +1494,9 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">litres</td><td>litter respiration</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">socres</td><td>soil carbon respiration</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">nppveg</td><td>npp for individual pfts, u-mol co2/m2.sec</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ltresveg</td><td>fluxes for each pft: litter respiration for each pft + bare fraction</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">scresveg</td><td>soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">humtrsvg</td><td>transfer of humidified litter from litter to soil c pool per PFT.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">roottemp</td><td>root temperature, k</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">emit_co2</td><td>carbon dioxide emitted from biomass burning in g of compound</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">emit_co</td><td>carbon monoxide emitted from biomass burning in g of compound</td></tr>
@@ -1556,10 +1559,10 @@ Functions/Subroutines</h2></td></tr>
 <p>Find grid averaged litter and soil c respiration rates</p>
 <pre class="fragment">add moss and peat soil respiration to the grid
 In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
-bareground (iccp1) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
+bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
 the grid sum but no bareground values as we assume peatlands have no bareground. </pre><p>Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.</p>
 <p>Convert u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/> respired over the model time step</p>
-<p>Update litter and soil c pools </p><pre class="fragment">     Next we add bareground litter mass and humification for non-peatlands. In
+<p>Update litter and soil c pools </p><pre class="fragment">     Next we add bareground and LUC pool litter mass and humification for non-peatlands. In
      peatlands there is no bareground litter mass since it is the moss layer. </pre><p>Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.</p>
 <p>But over the bare fraction there is no live root.</p>
 <p>Find grid averaged humification and soil respiration rates </p><pre class="fragment">After aggregation of humification and soil respiration rates for non-peatlands
@@ -1611,7 +1614,7 @@ the grid sum but no bareground values as we assume peatlands have no bareground.
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem_8f90.html">ctem.f90</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

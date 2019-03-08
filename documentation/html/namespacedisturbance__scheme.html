@@ -312,13 +312,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp1), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp1), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
@@ -460,7 +460,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
@@ -810,7 +810,7 @@ Functions/Subroutines</h2></td></tr>
 <li>Dependence on total biomass</li>
 </ol>
 <p>don't allow it to bring in crops since they are not allowed to burn.</p>
-<p>Root biomass is not used to initiate fire. For example if the last fire burned all grass leaves, and some of the roots were left, its unlikely these roots could catch fire.</p>
+<p>Root biomass is not used to initiate fire. For example if the last fire burned all grass leaves, and some of the roots were left, its unlikely these roots could catch fire. Here we ignore the LUC litrmass on iccp2 and the litter on the bare ground (iccp1). We only consider the litrmass on layer 1 as the rest are buried.</p>
 <p>Find average biomass over the vegetated fraction</p>
 <p>Sum up the vegetated area</p>
 <p>calculate bterm for individual PFTs as well</p>
@@ -880,7 +880,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedisturbance__scheme.html">disturbance_scheme</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:42 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

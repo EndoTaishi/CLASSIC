@@ -84,7 +84,8 @@ $(document).ready(function(){initNavTree('initTool.html','');});
 <div class="title">Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The initFileConverter program takes in ASCII CLASS initialization files (.INI) and, if required, CTEM initialization files (.CTM) and converts them to the newer NetCDF format. It is also possible to take in a fortran namelist format. This is the preferred method for site-level users. An example namelist file is included in this directory.</p>
+<div class="textblock"><p>The initFileConverter program takes in ASCII CLASS initialization files (.INI) and, if required, CTEM initialization files (.CTM) and converts them to the newer NetCDF format. It is also possible to take in a fortran namelist format. This is the preferred method for site-level users.</p>
+<p>Two example namelist files are included in this directory. example.nml is for a single tile whereas exampleTwoTile.nml has two tiles in the grid cell.</p>
 <p>The expected format of the INI file is: </p><pre><code>
       Testing Site,          !this line ignored in initFileConverter
   J. Melton                  !this line ignored in initFileConverter
@@ -113,6 +114,7 @@ $(document).ready(function(){initNavTree('initTool.html','');});
 </code></pre><p><b>Special Note: The converter expects a soil colour index in the file (highlighted above). Please see the CLASSIC manual for more information.</b></p>
 <ul>
 <li>Additionally it is often best to make the snow in the canopy (SCAN), liquid in the canopy (RCAN) zero as they can often lead to instabilities when running the model at a new site for the first time (see CLASSIC manual for more on this).</li>
+<li>The INI file read-in is not setup to read in &gt; 4 CLASS PFTs or &gt; 9 CTEM PFTs. It is desirable to move to the namelist technique for those cases, or edit the initFileConverter.f90 for your needs.</li>
 </ul>
 <p>and the expected CTM format is: </p><pre><code>
  CTEM INITIALIZATION FILE. CTEM's 9 PFTs ARE                                    !this line ignored in initFileConverter
@@ -148,7 +150,7 @@ $(document).ready(function(){initNavTree('initTool.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -1666,3 +1666,5 @@
 \form#1665:$g species / m^2 /d$
 \form#1666:$kg species / m^2 / s^{-1}$
 \form#1667:$(\mu mol CH4 m^{-2} s^{-1})$
+\form#1668:$[kg C m^{-2}]$
+\form#1669:$[kg C m^{-2} s^{-1}]$

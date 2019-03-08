@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('APREP_8f.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a5fe4fa336815bc509d646edae0744405"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="APREP_8f.html#a5fe4fa336815bc509d646edae0744405">aprep</a> (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, FRAINC, FSNOWC, FRAICS, FSNOCS, RAICAN, RAICNS, SNOCAN, SNOCNS, DISP, DISPS, ZOMLNC, ZOMLCS, ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, CHCAP, CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, FROOT, FROOTS, WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS, PSIGND, FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX, PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN, GROWTH, ZSNOW, TSNOW, FSNOW, RHOSNO, SNO, Z0ORO, ZBLEND, ZPLMG0, ZPLMS0, TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ, DELZW, ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS, ISAND, ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP, IZREF, IWF, IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA, GROWN, GROWB, RRESID, SRESID, FRTOT, FRTOTS, FCANCMX, ICTEM, ctem_on, RMATC, AILC, PAIC, AILCG, L2MAX, NOL2PFTS, AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC, SLAIC, ipeatland)</td></tr>
-<tr class="memdesc:a5fe4fa336815bc509d646edae0744405"><td class="mdescLeft">&#160;</td><td class="mdescRight">This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS (needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized to zero, and the liquid water suction in the soil is set to an arbitrarily high value.  <a href="#a5fe4fa336815bc509d646edae0744405">More...</a><br /></td></tr>
+<tr class="memdesc:a5fe4fa336815bc509d646edae0744405"><td class="mdescLeft">&#160;</td><td class="mdescRight">This subroutine is adaptable to any number of vegetation categories recognized by CLASS (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort number of is performed.  <a href="#a5fe4fa336815bc509d646edae0744405">More...</a><br /></td></tr>
 <tr class="separator:a5fe4fa336815bc509d646edae0744405"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -912,7 +912,7 @@ Functions/Subroutines</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS (needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized to zero, and the liquid water suction in the soil is set to an arbitrarily high value. </p>
+<p>This subroutine is adaptable to any number of vegetation categories recognized by CLASS (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort number of is performed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">fc</td><td>Subarea fractional coverage of modelled area (X) [ ]</td></tr>
@@ -1036,7 +1036,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="APREP_8f.html">APREP.f</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:40 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:48 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

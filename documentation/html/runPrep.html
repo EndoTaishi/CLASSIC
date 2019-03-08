@@ -96,7 +96,7 @@ $(document).ready(function(){initNavTree('runPrep.html','');});
 </ol>
 <h1><a class="anchor" id="Environ"></a>
 Setting up the runtime environment</h1>
-<p>To run CLASSIC you can either use your own immediate environment or use our Singularity container (described below). If you use your own immediate environment, the following libraries are required at a minimum:</p>
+<p>To run CLASSIC you can either use your own immediate environment or use our Singularity container (described below). If you use your own immediate environment, the following Linux packages are required at a minimum:</p>
 <ul>
 <li>make</li>
 <li>libnetcdff-dev</li>
@@ -105,7 +105,8 @@ Setting up the runtime environment</h1>
 <li>netcdf-bin</li>
 <li>zlib1g</li>
 </ul>
-<p>These libraries will allow serial compiling and running of the model. To run in parallel add mpich. To run the documentation tool add doxygen.</p>
+<p>These packages will allow serial compiling and running of the model. To run in parallel add mpich. To run the documentation tool add doxygen.</p>
+<p>Note that the above packages are available for Ubuntu/Debian and may have different names under other Linux distros.</p>
 <h1><a class="anchor" id="Containers"></a>
 Running CLASSIC in a Singularity Container</h1>
 <h2>What are containers?</h2>
@@ -187,16 +188,19 @@ Running CLASSIC in a Singularity Container</h1>
 </pre><p>This -B flag can be very useful when using a Vagrant box to run CLASSIC on a Windows, Mac or even Linux machine. The -B flag can point to the <a href="https://www.vagrantup.com/docs/synced-folders/basic_usage.html">synced folder</a>.</p>
 <h1><a class="anchor" id="compilingMod"></a>
 Compiling CLASSIC for serial and parallel simulations</h1>
-<p>CLASSIC's Makefile (/Makefile) is setup to allow easy compilation for serial or parallel model running.</p>
-<p>There are three options when compiling:</p>
-<ul>
-<li>For a serial run, use the command "make mode=serial" or just "make"</li>
-<li>For a parallel run, use either the command "make mode=parallel"</li>
-<li>For a supercomputer run, use the command "make mode=supercomputer"</li>
-</ul>
-<p>The serial compilation is presently set to use the GNU compiler (gfortran). Parallel compilation uses the GNU MPI compiler mpif90. The supercomputer compilation is setup for the ECCC supercomputer environment and is unlikely to be useful for non-ECCC users.</p>
-<p>Upon compilation all object (.o) and module (.mod) files are placed in the objectFiles folder. The executable in placed in the bin folder.</p>
-<p>A useful command is 'make clean', which removes all *.o *.mod and the model binary. This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make.</p>
+<p>CLASSIC's Makefile facilitates the compilation of the model code for running in serial mode or in parallel.</p>
+<p>The basic command "make" (without options) compiles the code for running in serial mode.</p>
+<p>The "mode" option can be specified on the "make" command line to target different platforms and/or compilation modes as follows:</p>
+<p>make mode=&lt;mode&gt;</p>
+<p>where &lt;mode&gt; is: </p><pre class="fragment">    serial        - compiles code for serial runs (default)
+    parallel      - compiles code for parallel runs
+</pre><p>The serial compilation is presently set to use the GNU compiler (gfortran).</p>
+<p>Parallel compilation uses the MPI wrapper "mpif90". Use "mpif90 -show" to display the pre-configured compiler command for the system. The Makefile is currently set to use the GNU compiler with "mpif90". The settings for the compiler as well as the include/library flags are system dependent and will likely require modification on each system.</p>
+<p>There are two additional modes that are particularly useful for users with access to the ECCC supercomputer environment. These are: </p><pre class="fragment">    ppp           - compiles code for parallel runs using the Intel compiler on the ECCC pre/post-processing clusters
+    supercomputer - compiles code for parallel runs using the Intel compiler on the ECCC supercomputers
+</pre><p>These modes are unlikely to be useful for non-ECCC users.</p>
+<p>Upon compilation, all object (.o) and module (.mod) files are placed into an "objectFiles" directory. These directories are labelled with an additional suffix according to the compilation mode used (except for the serial mode case). Executables are placed in the "bin" directory, again labelled according to the compilation mode.</p>
+<p>A useful command is 'make clean', which removes all *.o *.mod files (for a specified mode). This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make. Note that a re-compilation will overwrite an existing executable of the same name (i.e. mode) in the "bin" directory.</p>
 <h1><a class="anchor" id="setupJobOpts"></a>
 Setting up the joboptions file</h1>
 <p>The joboptions file controls the model configuration, inputs files used, and model outputs. The template joboptions file is located in the configurationFiles folder. Use this as your starting point.</p>
@@ -337,7 +341,7 @@ Setting up the joboptions file</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

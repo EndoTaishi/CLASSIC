@@ -18,6 +18,7 @@ var structctem__statevars_1_1ctem__tileavg__monthly =
     [ "emit_pm25_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#afc21a7894de70039dac650bebe963233", null ],
     [ "emit_tc_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a854f79e346c56aede63314b6053a5e65", null ],
     [ "emit_tpm_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a77e8ffdab738a7ec4467eacc70ef9ea2", null ],
+    [ "fproductdecomp_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#a394b2ab8ce87338404c99e62a913eb36", null ],
     [ "gpp_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#ab7e85dfa919728e73a61a7d325f0d590", null ],
     [ "hetrores_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#aff8739e701f8f06d718219473861a2ed", null ],
     [ "humiftrs_mo_t", "structctem__statevars_1_1ctem__tileavg__monthly.html#ac639be16592d36ef5e23806622be98a9", null ],

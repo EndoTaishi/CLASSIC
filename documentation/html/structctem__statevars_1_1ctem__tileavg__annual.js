@@ -18,6 +18,7 @@ var structctem__statevars_1_1ctem__tileavg__annual =
     [ "emit_pm25_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#ab761ea9a618dab18dc2a4a48b4b598c5", null ],
     [ "emit_tc_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#ad6f5f88d04b14e8f931aca15092b7c04", null ],
     [ "emit_tpm_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#a57da7fe576670dcb3891df67311e9c3c", null ],
+    [ "fproductdecomp_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#a7f20e69f08303d0722ce60d3cfe8aeed", null ],
     [ "gpp_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#ad81c4caa181e28b5ceb94aec7d635c72", null ],
     [ "hetrores_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#af083440547c8fca3e33881dacf14cf45", null ],
     [ "laimaxg_yr_t", "structctem__statevars_1_1ctem__tileavg__annual.html#a3fd6b679466e3b9886b00183246fc13d", null ],

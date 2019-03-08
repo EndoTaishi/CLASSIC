@@ -18,7 +18,8 @@ var index =
       [ "Initialization of Prognostic Variables", "basicInputs.html#initProgVar", [
         [ "Initialization of Physics Prognostic Variables", "basicInputs.html#initPhysProgVar", null ],
         [ "Initialization of Biogeochemical Prognostic Variables", "basicInputs.html#initCTEMProgVar", null ]
-      ] ]
+      ] ],
+      [ "Example model setups", "basicInputs.html#exModSets", null ]
     ] ],
     [ "Additional inputs depending on model configuration", "CTEMaddInputs.html", [
       [ "Atmospheric carbon dioxide concentration", "CTEMaddInputs.html#initCO2", null ],
@@ -35,7 +36,8 @@ var index =
     [ "Creation and formatting of model input files", "makeInputFiles.html", [
       [ "Preparation of files for meteorological inputs", "makeInputFiles.html#makeMet", null ],
       [ "Preparation of the model initialization file", "makeInputFiles.html#makeInit", null ],
-      [ "Making input files for other input variables", "makeInputFiles.html#makeOther", null ]
+      [ "Making input files for other input variables", "makeInputFiles.html#makeOther", null ],
+      [ "Some notes on input file format", "makeInputFiles.html#inputFileForm", null ]
     ] ],
     [ "Preparing a CLASSIC run", "runPrep.html", [
       [ "Setting up the runtime environment", "runPrep.html#Environ", null ],

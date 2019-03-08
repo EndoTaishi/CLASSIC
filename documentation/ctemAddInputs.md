@@ -172,6 +172,39 @@ Eight slope based fractions a read in from the model initialization file for cal
 
 **Daily** values of wetland fraction are used for modelling methane emissions from wetlands.
 
+          netcdf gcp-ch4_wetlands_1838-2017_t63_final_daily {
+          dimensions:
+                  time = UNLIMITED ; // (65700 currently)
+                  lat = 64 ;
+                  lon = 128 ;
+          variables:
+                  double Fw(time, lat, lon) ;
+                          Fw:long_name = "Fraction inundated" ;
+                          Fw:units = "**fraction**" ;
+                          Fw:grid_type = "gaussian" ;
+                          Fw:_FillValue = -9999. ;
+                          Fw:missing_value = -9999. ;
+                          Fw:_Storage = "chunked" ;
+                          Fw:_ChunkSizes = 65700, 8, 16 ;
+                  double lat(lat) ;
+                          lat:standard_name = "latitude" ;
+                          lat:long_name = "latitude" ;
+                          lat:units = "degrees_north" ;
+                          lat:axis = "Y" ;
+                          lat:_Storage = "contiguous" ;
+                  double lon(lon) ;
+                          lon:standard_name = "longitude" ;
+                          lon:long_name = "longitude" ;
+                          lon:units = "degrees_east" ;
+                          lon:axis = "X" ;
+                          lon:_Storage = "contiguous" ;
+                  double time(time) ;
+                          time:standard_name = "time" ;
+                          time:long_name = "time" ;
+                          time:units = "**day as %Y%m%d.%f**" ;
+                          time:calendar = "365_day" ;
+                          time:_Storage = "chunked" ;
+                          time:_ChunkSizes = 65700 ;
 
 
 
@@ -251,3 +284,4 @@ The LUC file contains an **annual** time series of fractional coverage of each o
         		time:_Storage = "chunked" ;
         		time:_ChunkSizes = 319 ;
         		time:_Endianness = "little" ;
+

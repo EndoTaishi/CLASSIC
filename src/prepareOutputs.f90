@@ -4119,6 +4119,9 @@ contains
 
                 ! Including the LUC product pools. They are per tile values and 
                 ! are assumed to occupy the whole tile.
+                fProductDecomp_yr_g(i) = fProductDecomp_yr_g(i)&
+                                   + fProductDecomp_yr_t(i,m) * FAREROT(i,m)
+
                 cProduct_yr_g(i) = cProduct_yr_g(i) &
                                    + (litrmassrow(i,m,iccp2) + soilcmasrow(i,m,iccp2))*FAREROT(i,m)
 

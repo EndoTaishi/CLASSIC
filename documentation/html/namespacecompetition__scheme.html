@@ -152,6 +152,7 @@ Functions/Subroutines</h2></td></tr>
 </p>
 <p>In Eqs. 10 and 11, as long as <img class="formulaInl" alt="$m_1&gt; 0$" src="form_475.png"/> and <img class="formulaInl" alt="$c_2 &gt; 0$" src="form_476.png"/>, then PFT 2 will always exist and equilibrium coexistence is possible. Values of parameter <img class="formulaInl" alt="$b$" src="form_449.png"/> between 1 and 0 yield equilibrium values of <img class="formulaInl" alt="$f_2$" src="form_469.png"/> that vary between 0 (Eq. 8) and those obtained using Eq. 11. <img class="formulaInl" alt="$b=0$" src="form_470.png"/> yields a maximum value of equilibrium <img class="formulaInl" alt="$f_2$" src="form_469.png"/> allowing PFT 2 to coexist maximally.</p>
 <p>In the standard L&ndash;V equations for predator&ndash;prey interactions coexistence is possible because the predator depends on prey for its food and so the predator population suffers as the prey population declines. This is in contrast to the application of the equations for competition between PFTs where the dominant PFT does not depend on sub-dominant PFTs for its existence and is thus able to exclude them completely. The PFTs interact with each other through the invasion term <img class="formulaInl" alt="$(-c_{\beta} \delta_{\beta,\alpha} f_\alpha f^b_\beta)$" src="form_477.png"/> in Eq. 1, where <img class="formulaInl" alt="$\delta_{\alpha,\beta} = 1$" src="form_478.png"/> or <img class="formulaInl" alt="$0$" src="form_56.png"/> depending on whether PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> can or cannot invade PFT <img class="formulaInl" alt="$\beta$" src="form_452.png"/>, respectively, as mentioned earlier. This interaction through invasion is represented by <img class="formulaInl" alt="$-c_1 f_1 f_2$" src="form_479.png"/> in Eq. 6 (for <img class="formulaInl" alt="$b=1$" src="form_480.png"/>) and by <img class="formulaInl" alt="$-c_1 f_2$" src="form_481.png"/> in Eq. 9 (for <img class="formulaInl" alt="$b=0$" src="form_470.png"/>). The magnitude of this interaction thus depends on the value of parameter $b$. When $b=1$ the interaction is proportional to the product of the fractional coverage of the two PFTs ( <img class="formulaInl" alt="$f_1 f_2$" src="form_482.png"/>). When <img class="formulaInl" alt="$b=0$" src="form_470.png"/>, the interaction is proportional to the fractional coverage of the PFT being invaded ( <img class="formulaInl" alt="$f_2$" src="form_469.png"/>). The use of <img class="formulaInl" alt="$b=0$" src="form_470.png"/> thus reduces the product term <img class="formulaInl" alt="$f_{\alpha}^b f_{\beta}$" src="form_461.png"/> to <img class="formulaInl" alt="$f_\beta$" src="form_483.png"/> and implies that the invasion of sub-dominant PFT <img class="formulaInl" alt="$\beta$" src="form_452.png"/> does not depend on the current fractional coverage of the dominant PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/>. This case may be thought of as corresponding to the general availability of the seeds of the dominant PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> that may germinate and invade the coverage of the sub-dominant PFT <img class="formulaInl" alt="$\beta$" src="form_452.png"/> provided the climate is favourable, even if PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> does not exist in the grid cell, i.e. <img class="formulaInl" alt="$f_\alpha = 0$" src="form_484.png"/> (in the case where <img class="formulaInl" alt="$f_\alpha = 0$" src="form_484.png"/>, the PFT is always assumed to have a dormant seed bank in the grid cell given the long lifetimes of seeds and their wide dispersion). In contrast, in the standard version of the L&ndash;V equations, as implemented for predator&ndash;prey interactions, <img class="formulaInl" alt="$b$" src="form_449.png"/> always equals <img class="formulaInl" alt="$1$" src="form_485.png"/> since the amount of predation, and hence the reduction in the number of prey, depends on the product of the number of predators and the number of prey. Using <img class="formulaInl" alt="$b=0$" src="form_470.png"/> is thus consistent with invasion of the sub-dominant PFT <img class="formulaInl" alt="$\beta$" src="form_452.png"/> being unaffected by the fractional coverage of the dominant PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/>.</p>
+<p>Carbon in the land use change (LUC) product pools is assumed to be unaffected by competition and thus is not influenced by any shifts in the PFT distribution.</p>
 <h1>Colonization rate</h1>
 <p>The PFT-dependent colonization rate ( <img class="formulaInl" alt="$c_\alpha$" src="form_443.png"/>; <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) is calculated based on the fraction ( <img class="formulaInl" alt="$\Lambda_\alpha$" src="form_486.png"/>) of positive NPP ( <img class="formulaInl" alt="$kg\,C\,m^{-2}\,day^{-1}$" src="form_487.png"/>) that is used for spatial expansion</p>
 <p class="formulaDsp">
@@ -520,13 +521,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp1), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp1), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
@@ -867,7 +868,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacecompetition__scheme.html">competition_scheme</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

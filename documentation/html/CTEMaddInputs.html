@@ -236,8 +236,40 @@ Orographic information for dynamic wetland scheme</h1>
       slopefrac:long_name = "Slope-based fraction for dynamic wetlands" ;
 </pre><h1><a class="anchor" id="initWetArea"></a>
 Prescribed wetland area</h1>
-<p><b>Daily</b> values of wetland fraction are used for modelling methane emissions from wetlands.</p>
-<h1><a class="anchor" id="initPeat"></a>
+<p><b>Daily</b> values of wetland fraction are used for modelling methane emissions from wetlands. </p><pre class="fragment">      netcdf gcp-ch4_wetlands_1838-2017_t63_final_daily {
+      dimensions:
+              time = UNLIMITED ; // (65700 currently)
+              lat = 64 ;
+              lon = 128 ;
+      variables:
+              double Fw(time, lat, lon) ;
+                      Fw:long_name = "Fraction inundated" ;
+                      Fw:units = "**fraction**" ;
+                      Fw:grid_type = "gaussian" ;
+                      Fw:_FillValue = -9999. ;
+                      Fw:missing_value = -9999. ;
+                      Fw:_Storage = "chunked" ;
+                      Fw:_ChunkSizes = 65700, 8, 16 ;
+              double lat(lat) ;
+                      lat:standard_name = "latitude" ;
+                      lat:long_name = "latitude" ;
+                      lat:units = "degrees_north" ;
+                      lat:axis = "Y" ;
+                      lat:_Storage = "contiguous" ;
+              double lon(lon) ;
+                      lon:standard_name = "longitude" ;
+                      lon:long_name = "longitude" ;
+                      lon:units = "degrees_east" ;
+                      lon:axis = "X" ;
+                      lon:_Storage = "contiguous" ;
+              double time(time) ;
+                      time:standard_name = "time" ;
+                      time:long_name = "time" ;
+                      time:units = "**day as %Y%m%d.%f**" ;
+                      time:calendar = "365_day" ;
+                      time:_Storage = "chunked" ;
+                      time:_ChunkSizes = 65700 ;
+</pre><h1><a class="anchor" id="initPeat"></a>
 Peatland variables</h1>
 <p>Peatlands are simulated following the parameterization of <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a>. The peatland areas are specified by a ipeatland flag in the initialization file: </p><pre class="fragment">    float ipeatland(tile, lat, lon) ;
       ipeatland:_FillValue = -999.f ;
@@ -307,7 +339,7 @@ Land use change (LUC)</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:41 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:49 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

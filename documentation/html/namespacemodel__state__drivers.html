@@ -602,11 +602,14 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <p>Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 offline while the maximum number of mosaics (nmos), the number of soil layers (ignd), are read from the netcdf. ilg is then calculated from nlat and nmos. </p>
 <dl class="section author"><dt>Author</dt><dd>Joe Melton </dd></dl>
 <p>First, open initial conditions file.</p>
-<p>Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for names of longitude and latitude.</p>
-<p>calculate the number and indices of the pixels to be calculated</p>
+<p>Next, retrieve dimensions and allocate arrays to hold the lons and lats. We assume the file has 'lon' and 'lat' for names of longitude and latitude.</p>
+<p>Read in the coordinate variables from the initialization file.</p>
 <p>Try and catch if the user has put in lon values from -180 to 180 or 0 to 360 when the input file expects the opposite.</p>
-<p>Special case, if the domainBounds are 0/0/0/0 then take whole domain</p>
-<p>Based on the domainBounds, we make vectors of the cells to be run.</p>
+<p>Since the domainBounds are coordinates, need to find the indices corresponding to the domain bounds.</p>
+<p>Obtain the starting indices of the coordinate vectors.</p>
+<p>Ensure that the starting indices are within the specified bounds of the domain. Note that when the domain is a single point, the 1st/2nd elements of domainBounds are set to the the longitude and the 3rd/4th elements are set to the latitude (see <a class="el" href="read__from__job__options_8f90.html" title="Parses command line arguments to program and reads in joboptions file. ">read_from_job_options.f90</a>). In this case, the closest grid point to the specified coordinates is used and the check should not be done.</p>
+<p>Compute the size of the coordinate vectors.</p>
+<p>Ensure that the last index of each vector is within the domain bounds.</p>
 <p>On a projected grid we have to use the grid cell indexes to delineate our domain to run over. We then use the indexes to determine the values of longitude and latitude for each grid cell.</p>
 <p>Retrieve dimensions. We assume the file has 'lon' and 'lat' for names of longitude and latitude.</p>
 <p>calculate the number and indices of the pixels to be calculated</p>
@@ -778,7 +781,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Fri Jan 25 2019 10:41:42 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 8 2019 14:41:50 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
