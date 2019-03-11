@@ -55,7 +55,7 @@ Fill in the **Standard Name**, **Short Name**, **Long Name**, **Units** fields a
 ### Variants editor
 In the variants editor, the user can find a list of all of the existing variables. Click on one to find a detailed description of the variable as well as a list of potential variants. Check the box for a particular variant you're interested in and enter the desired **name in code**.
 
-***Warning**: Unchecking the box next to a variant and navigating to a different tab will remove any text entered in the **name in code** field*
+_**Warning**: Unchecking the box next to a variant and navigating to a different tab will remove any text entered in the **name in code** field_
 
 You may also use the search bar at the top of the window to find a specific keyword in your list of variables, and/or use the **Make All Variables Dormant** button to make all currently-active variables inactive.
 
