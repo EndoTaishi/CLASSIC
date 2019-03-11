@@ -40,6 +40,7 @@ function sceneSetup() {
 	$('button#search').on('click', refreshColours);
 	$('input#search').on('change', refreshColours);
 	$('input#search').on('keypress', refreshColours);
+	$('button#makeAllDormant').on('click', makeAllDormant);
 		
 	$('#accordion').accordion({
 		collapsible : true
@@ -58,6 +59,17 @@ function sceneSetup() {
 			}
 		}
 	});
+}
+
+// for all variables in the "Configure Variables" tab that are currently active, force them to be dormant
+function makeAllDormant() {
+	for (var v = 0; v < variables.length; v++) {
+		if (!$('input#' + variables[v].id + '.variableCheckboxInput.dormant')[0].checked) {
+			variables[v].dormant = true;
+			$('input#' + variables[v].id + '.variableCheckboxInput.dormant')[0].checked = true;
+		}
+	}
+	refreshColours();
 }
 
 function refreshDormancy() {
@@ -460,7 +472,7 @@ function enable(id) {
 
 function disable(id) {
 	$('input#' + id + '.nameInCode')[0].disabled = true;
-	$('input#' + id + '.nameInCode')[0].value = '';
+	//$('input#' + id + '.nameInCode')[0].value = '';
 	$('input#' + id + '.variantUnits')[0].disabled = true;
 	//$('input#' + id + '.variantUnits')[0].value = '';
 }
