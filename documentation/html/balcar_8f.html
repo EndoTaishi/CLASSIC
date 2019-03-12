@@ -92,16 +92,16 @@ $(document).ready(function(){initNavTree('balcar_8f.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a922db81c881d66b3cf76a5a72ea4586a"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balcar_8f.html#a922db81c881d66b3cf76a5a72ea4586a">balcar</a> (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro_cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro_cost_g, npp, autores, hetrores, gpp, nep, litres, socres, dstcemls, nbp, litrfall, humiftrs, il1, il2, ipeatland, Cmossmas, pCmossmas, nppmosstep, litrfallmoss, litrmsmoss, plitrmsmoss, ltrestepmoss, humicmosstep)</td></tr>
-<tr class="separator:a922db81c881d66b3cf76a5a72ea4586a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b53f7c92e213ee376e95ee52bddfe95"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balcar_8f.html#a4b53f7c92e213ee376e95ee52bddfe95">balcar</a> (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro_cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro_cost_g, autores, hetrores, gpp, litres, socres, dstcemls, litrfall, humiftrs, il1, il2, ipeatland, Cmossmas, pCmossmas, nppmosstep, litrfallmoss, litrmsmoss, plitrmsmoss, ltrestepmoss, humicmosstep)</td></tr>
+<tr class="separator:a4b53f7c92e213ee376e95ee52bddfe95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Checks carbon pools for conservation. </p>
 <dl class="section author"><dt>Author</dt><dd>Vivek Arora</dd></dl>
-<p>To check C budget we go through each pool for each vegetation type. Unless mentioned all pools are in kg c/m2 and all fluxes are in units of u-mol co2/m2.sec </p>
+<p>To check C budget we go through each pool for each vegetation type. Unless mentioned all pools are in kg C/m2 and all fluxes are in units of u-mol CO2/m2.sec </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="a922db81c881d66b3cf76a5a72ea4586a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a922db81c881d66b3cf76a5a72ea4586a">&#9670;&nbsp;</a></span>balcar()</h2>
+<a id="a4b53f7c92e213ee376e95ee52bddfe95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b53f7c92e213ee376e95ee52bddfe95">&#9670;&nbsp;</a></span>balcar()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,12 +320,6 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>npp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>autores</em>, </td>
         </tr>
         <tr>
@@ -344,12 +338,6 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>nep</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>litres</em>, </td>
         </tr>
         <tr>
@@ -363,12 +351,6 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>dstcemls</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>nbp</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -485,7 +467,6 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">protmass</td><td>pools (before being updated): previous root mass</td></tr>
     <tr><td class="paramname">plitmass</td><td>pools (before being updated): previous litter mass</td></tr>
     <tr><td class="paramname">psocmass</td><td>pools (before being updated): previous soil c mass</td></tr>
-    <tr><td class="paramname">npp</td><td>grid averaged flux: net primary productivity</td></tr>
     <tr><td class="paramname">vgbiomas</td><td>pools (after being updated): grid averaged pools: vegetation biomass</td></tr>
     <tr><td class="paramname">pvgbioms</td><td>pools (before being updated): grid average pools: previous vegetation biomass</td></tr>
     <tr><td class="paramname">gavgltms</td><td>pools (after being updated): grid averaged pools: litter mass</td></tr>
@@ -495,11 +476,9 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">autores</td><td>grid averaged flux: autotrophic respiration</td></tr>
     <tr><td class="paramname">hetrores</td><td>grid averaged flux: heterotrophic respiration</td></tr>
     <tr><td class="paramname">gpp</td><td>grid averaged flux: gross primary productivity</td></tr>
-    <tr><td class="paramname">nep</td><td>grid averaged flux: net primary productivity</td></tr>
     <tr><td class="paramname">litres</td><td>grid averaged flux: litter respiration</td></tr>
     <tr><td class="paramname">socres</td><td>grid averaged flux: soil carbon respiration</td></tr>
     <tr><td class="paramname">dstcemls</td><td>grid averaged flux: carbon emission losses due to disturbance, mainly fire</td></tr>
-    <tr><td class="paramname">nbp</td><td>grid averaged flux: net biome productivity</td></tr>
     <tr><td class="paramname">litrfall</td><td>grid averaged flux: combined (leaves, stem, and root) total litter fall rate</td></tr>
     <tr><td class="paramname">humiftrs</td><td>grid averaged flux: humification</td></tr>
     <tr><td class="paramname">repro_cost</td><td>pools (after being updated): amount of C transferred to litter due to reproductive tissues</td></tr>
@@ -528,7 +507,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="balcar_8f.html">balcar.f</a></li>
-    <li class="footer">Generated on Fri Mar 8 2019 14:41:48 for CLASSIC by
+    <li class="footer">Generated on Tue Mar 12 2019 15:42:13 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -123,9 +123,9 @@ integer, parameter :: nbs = 4         !<Number of modelled shortwave radiation w
 
 integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
 
-real, parameter  :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
+real, parameter  :: tolrance = 0.0001 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
                             ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
-real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !IDEA FLAG would be good to make this consistent with global tolerance so only one value.
+real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC)
 
 !> Logical switch for using constant allocation factors (default value is false)
 logical :: consallo = .false.

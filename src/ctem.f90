@@ -616,20 +616,24 @@ if (PFTCompetition) then
 !!
     if (lnduseon) then
 
-         do j = 1, icc
-           do i = il1, il2
-             yesfrac_comp(i,j)=fcancmx(i,j)
-           enddo
+       do j = 1, icc
+         do i = il1, il2
+           yesfrac_comp(i,j)=fcancmx(i,j)
          enddo
+       enddo
 
-         call luc(    il1,      il2,   ilg,  nol2pfts, &
-     &                  grclarea, pfcancmx, nfcancmx,     iday,&
-     &            todfrac,yesfrac_comp,.true.,PFTCompetition,leapnow,&
-     &                  gleafmas, bleafmas, stemmass, rootmass,&
-     &                  litrmass, soilcmas, vgbiomas, gavgltms,&
-     &                  gavgscms,  fcancmx,   fcanmx,&
-     &                  lucemcom, lucltrin, lucsocin)
-        endif !lnduseon
+       call luc(    il1,      il2,   ilg,  nol2pfts, &
+              &       grclarea, pfcancmx, nfcancmx,     iday,&
+              & todfrac,yesfrac_comp,.true.,PFTCompetition,leapnow,&
+              &       gleafmas, bleafmas, stemmass, rootmass,&
+              &       litrmass, soilcmas, vgbiomas, gavgltms,&
+              &       gavgscms,  fcancmx,   fcanmx,&
+              &       lucemcom, lucltrin, lucsocin)
+    else
+      lucemcom = 0.
+      lucltrin = 0.
+      lucsocin = 0.
+    endif !lnduseon
 
 !     ---------------------------------------------------------------
 !>
@@ -1561,14 +1565,12 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !!
       do 1000 i = il1, il2
         do 1010 j = 1, icc
-          dscemlv1(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +&
-     &                  rtcaemls(i,j)
-          dscemlv2(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +&
-     &                  rtcaemls(i,j) + ltrcemls(i,j)
+          dscemlv1(i,j) = glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) + rtcaemls(i,j)
+          dscemlv2(i,j) = dscemlv1(i,j) + ltrcemls(i,j)
 
 !         convert \f$kg c/m^2\f$ emitted in one day into u mol co2/m2.sec before
 !         subtracting emission losses from nep.
-          nbpveg(i,j)  =nepveg(i,j)   - dscemlv2(i,j)*(963.62/deltat)
+          nbpveg(i,j)  =nepveg(i,j) - dscemlv2(i,j)*(963.62/deltat)
 
 1010    continue
 
@@ -1583,13 +1585,10 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !!
       do 1030 j = 1,icc
         do 1040 i = il1, il2
-          dstcemls1(i)=dstcemls1(i) +&
-     &     fcancmx(i,j)*dscemlv1(i,j)*(963.62/deltat)
-          dstcemls2(i)=dstcemls2(i) +&
-     &     fcancmx(i,j)*dscemlv2(i,j)*(963.62/deltat)
-          galtcels(i)=galtcels(i) +&
-     &     fcancmx(i,j)*ltrcemls(i,j)*(963.62/deltat)
-          glcaemls(i,j)=glcaemls(i,j)*(963.62/deltat)
+          dstcemls1(i) = dstcemls1(i) + fcancmx(i,j) * dscemlv1(i,j) * (963.62 / deltat)
+          dstcemls2(i) = dstcemls2(i) + fcancmx(i,j) * dscemlv2(i,j) * (963.62 / deltat)
+          galtcels(i)  = galtcels(i) + fcancmx(i,j) * ltrcemls(i,j) * (963.62 / deltat)
+          glcaemls(i,j)= glcaemls(i,j)*(963.62/deltat)
           blcaemls(i,j)=blcaemls(i,j)*(963.62/deltat)
           stcaemls(i,j)=stcaemls(i,j)*(963.62/deltat)
           rtcaemls(i,j)=rtcaemls(i,j)*(963.62/deltat)
@@ -1598,10 +1597,10 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 1030  continue
 !
 !       For the NBP, we include the disturbance emissions as well as respiration from the paper (litter) and furniture
-!       (soil carbon) pools (LUC product pools).
+!       (soil carbon) pools (LUC product pools). Also include here the instantaneous emissions due to LUC.
       do 1041 i = il1, il2
-        nbp(i)=nep(i)-dstcemls2(i)-ltresveg(i,iccp2) - scresveg(i,iccp2)
-        dstcemls3(i)=dstcemls2(i)-dstcemls1(i)  !litter is total - vegetation.
+        nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2))* (963.62 / deltat) - lucemcom(i)
+        dstcemls3(i) = dstcemls2(i) - dstcemls1(i)  !litter is total - vegetation.
 1041  continue
 !>
 !!calculate total litter fall from each component (leaves, stem, and root) from all causes (normal
@@ -1686,9 +1685,9 @@ if(spinfast.eq.1)then
 &                    plitmass, psocmass, vgbiomas,  reprocost,&
 &                    pvgbioms, gavgltms, pgavltms,  gavgscms,&
 &                    pgavscms, galtcels, repro_cost_g,&
-&                         npp,  autores, hetrores,       gpp,&
-&                         nep,   litres,   socres, dstcemls1,&
-&                         nbp, litrfall, humiftrs,&
+&                    autores , hetrores,      gpp,&
+&                    litres  ,   socres, dstcemls1,&
+&                    litrfall, humiftrs,&
 &                         il1,       il2, &
 &             ipeatland, Cmossmas, pCmossmas, &
 &             nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss, &

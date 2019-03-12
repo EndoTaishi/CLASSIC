@@ -2386,6 +2386,10 @@ contains
                 gpp_g(i) =gpp_g(i) + gpprow(i,m)*FAREROT(i,m)
                 npp_g(i) =npp_g(i) + npprow(i,m)*FAREROT(i,m)
                 nep_g(i) =nep_g(i) + neprow(i,m)*FAREROT(i,m)
+                ! NOTE: This NBP will include LUC product pool contributions 
+                ! since it is the nbprow varialbe. nbpveg variable does not 
+                ! include LUC contributions since they exist at the tile level 
+                ! not at the PFT level.
                 nbp_g(i) =nbp_g(i) + nbprow(i,m)*FAREROT(i,m)
                 autores_g(i) =autores_g(i) +autoresrow(i,m)*FAREROT(i,m)
                 hetrores_g(i)=hetrores_g(i)+hetroresrow(i,m)*FAREROT(i,m)
@@ -2870,6 +2874,7 @@ contains
         real, pointer, dimension(:,:,:) :: gppvegrow
         real, pointer, dimension(:,:,:) :: nepvegrow
         real, pointer, dimension(:,:,:) :: nbpvegrow
+        real, pointer, dimension(:,:)   :: nbprow
         real, pointer, dimension(:,:,:) :: nppvegrow
         real, pointer, dimension(:,:,:) :: hetroresvegrow
         real, pointer, dimension(:,:,:) :: autoresvegrow
@@ -3067,6 +3072,7 @@ contains
         gppvegrow         => vrot%gppveg
         nepvegrow         => vrot%nepveg
         nbpvegrow         => vrot%nbpveg
+        nbprow            => vrot%nbp
         nppvegrow         => vrot%nppveg
         hetroresvegrow    => vrot%hetroresveg
         autoresvegrow     => vrot%autoresveg
@@ -3185,6 +3191,8 @@ contains
                 npp_mo(i,m,j)=npp_mo(i,m,j)+nppvegrow(i,m,j)*oneOverDPM
                 gpp_mo(i,m,j)=gpp_mo(i,m,j)+gppvegrow(i,m,j)*oneOverDPM
                 nep_mo(i,m,j)=nep_mo(i,m,j)+nepvegrow(i,m,j)*oneOverDPM
+                ! NOTE: This NBP does not include LUC product pool contributions since they are 
+                ! not per PFT but rather per tile
                 nbp_mo(i,m,j)=nbp_mo(i,m,j)+nbpvegrow(i,m,j)*oneOverDPM
                 hetrores_mo(i,m,j)=hetrores_mo(i,m,j)+hetroresvegrow(i,m,j)*oneOverDPM
                 autores_mo(i,m,j) =autores_mo(i,m,j)+autoresvegrow(i,m,j)*oneOverDPM
@@ -3311,7 +3319,7 @@ contains
                         npp_mo_t(i,m)=npp_mo_t(i,m)+npp_mo(i,m,j)*fcancmxrow(i,m,j)
                         gpp_mo_t(i,m)=gpp_mo_t(i,m)+gpp_mo(i,m,j)*fcancmxrow(i,m,j)
                         nep_mo_t(i,m)=nep_mo_t(i,m)+nep_mo(i,m,j)*fcancmxrow(i,m,j)
-                        nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,j)*fcancmxrow(i,m,j)
+                        !nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,j)*fcancmxrow(i,m,j)
                         hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,j)*fcancmxrow(i,m,j)
                         autores_mo_t(i,m) =autores_mo_t(i,m)+autores_mo(i,m,j)*fcancmxrow(i,m,j)
                         litres_mo_t(i,m)  =litres_mo_t(i,m) +litres_mo(i,m,j)*fcancmxrow(i,m,j)
@@ -3340,11 +3348,17 @@ contains
                     end do !j
 
                     nep_mo_t(i,m)=nep_mo_t(i,m)+nep_mo(i,m,iccp1)*barefrac
-                    nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,iccp1)*barefrac
+                    !nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,iccp1)*barefrac
                     hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,iccp1)*barefrac
                     litres_mo_t(i,m)  =litres_mo_t(i,m) +litres_mo(i,m,iccp1)*barefrac
                     soilcres_mo_t(i,m)=soilcres_mo_t(i,m)+soilcres_mo(i,m,iccp1)*barefrac
-                    humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,iccp1)*barefrac                    
+                    humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,iccp1)*barefrac    
+                    
+                    ! NOTE: NBP is a special case here. The LUC product pool contributions are not  
+                    ! per PFT, they exist uniformly across a tile, so they are not inclued in the 
+                    ! nbp_mo calculation. Instead we need to use the nbp, not nbpveg variable
+                    ! for per tile and per gridcell outputting. 
+                    nbp_mo_t(i,m) = nbprow(i,m)
 
                     !> Find the monthly outputs at the per grid cell level from the outputs at the per tile level
                     npp_mo_g(i)=npp_mo_g(i)+npp_mo_t(i,m)*FAREROT(i,m)
@@ -3462,6 +3476,8 @@ contains
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo'     ,timeStamp,'npp',[npp_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo'     ,timeStamp,'gpp',[gpp_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo'     ,timeStamp,'nep',[nep_mo(i,m,:)])
+                        ! NOTE: This NBP does not include LUC product pool contributions since they are 
+                        ! not per PFT but rather per tile
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo'     ,timeStamp,'nbp',[nbp_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo',timeStamp,'rh',[hetrores_mo(i,m,:)])
                         call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo' ,timeStamp,'ra',[autores_mo(i,m,:)])
@@ -3651,6 +3667,7 @@ contains
         real, pointer, dimension(:,:,:) :: gppvegrow
         real, pointer, dimension(:,:,:) :: nepvegrow
         real, pointer, dimension(:,:,:) :: nbpvegrow
+        real, pointer, dimension(:,:)   :: nbprow
         real, pointer, dimension(:,:,:) :: nppvegrow
         real, pointer, dimension(:,:,:) :: hetroresvegrow
         real, pointer, dimension(:,:,:) :: autoresvegrow
@@ -3841,6 +3858,7 @@ contains
         gppvegrow         => vrot%gppveg
         nepvegrow         => vrot%nepveg
         nbpvegrow         => vrot%nbpveg
+        nbprow            => vrot%nbp
         nppvegrow         => vrot%nppveg
         hetroresvegrow    => vrot%hetroresveg
         autoresvegrow     => vrot%autoresveg
@@ -3948,6 +3966,8 @@ contains
                 npp_yr(i,m,j)=npp_yr(i,m,j)+nppvegrow(i,m,j)*oneOverDPY
                 gpp_yr(i,m,j)=gpp_yr(i,m,j)+gppvegrow(i,m,j)*oneOverDPY
                 nep_yr(i,m,j)=nep_yr(i,m,j)+nepvegrow(i,m,j)*oneOverDPY
+                ! NOTE: This NBP does not include LUC product pool contributions since they are 
+                ! not per PFT but rather per tile
                 nbp_yr(i,m,j)=nbp_yr(i,m,j)+nbpvegrow(i,m,j)*oneOverDPY
                 emit_co2_yr(i,m,j)=emit_co2_yr(i,m,j)+emit_co2row(i,m,j)*oneOverDPY
                 emit_co_yr(i,m,j)=emit_co_yr(i,m,j)+emit_corow(i,m,j)*oneOverDPY
@@ -3998,6 +4018,12 @@ contains
         fProductDecomp_yr_t(i,m) = fProductDecomp_yr_t(i,m) &
                                   + (soilcresvegrow(i,m,iccp2) + litresvegrow(i,m,iccp2)) * oneOverDPY
 
+        ! NOTE: NBP is a special case here. The LUC product pool contributions are not  
+        ! per PFT, they exist uniformly across a tile, so they are not included in the 
+        ! nbp_yr calculation. Instead we need to use the nbp, not nbpveg variable
+        ! for per tile and per gridcell outputting. 
+        nbp_yr_t(i,m) = nbp_yr_t(i,m) + nbprow(i,m) * oneOverDPY
+
     883     continue ! m
 
         if (iday.eq.lastDOY) then
@@ -4023,10 +4049,10 @@ contains
                 soilcmas_yr(i,m,iccp1)=soilcmasrow(i,m,iccp1)
                 totcmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
 
-
                 barefrac=1.0
 
                 !> Add values to the per tile vars
+                ! NOTE: This implictly assumes that the fcancmx is only changing annually!
                 do j=1,icc
 
                     laimaxg_yr_t(i,m)=laimaxg_yr_t(i,m)+ laimaxg_yr(i,m,j)*fcancmxrow(i,m,j)
@@ -4039,7 +4065,7 @@ contains
                     npp_yr_t(i,m)=npp_yr_t(i,m)+npp_yr(i,m,j)*fcancmxrow(i,m,j)
                     gpp_yr_t(i,m)=gpp_yr_t(i,m)+gpp_yr(i,m,j)*fcancmxrow(i,m,j)
                     nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,j)*fcancmxrow(i,m,j)
-                    nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,j)*fcancmxrow(i,m,j)
+                    !nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,j)*fcancmxrow(i,m,j)
                     emit_co2_yr_t(i,m)=emit_co2_yr_t(i,m)+emit_co2_yr(i,m,j)*fcancmxrow(i,m,j)
                     emit_co_yr_t(i,m)=emit_co_yr_t(i,m)+emit_co_yr(i,m,j)*fcancmxrow(i,m,j)
                     emit_ch4_yr_t(i,m)=emit_ch4_yr_t(i,m)+emit_ch4_yr(i,m,j)*fcancmxrow(i,m,j)
@@ -4072,7 +4098,7 @@ contains
                 litres_yr_t(i,m)  =litres_yr_t(i,m)  +litres_yr(i,m,iccp1)*barefrac
                 soilcres_yr_t(i,m)=soilcres_yr_t(i,m)+soilcres_yr(i,m,iccp1)*barefrac
                 nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,iccp1)*barefrac
-                nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,iccp1)*barefrac
+                !nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,iccp1)*barefrac
                 totcmass_yr_t(i,m) = totcmass_yr_t(i,m)+(litrmass_yr(i,m,iccp1) + soilcmas_yr(i,m,iccp1))*barefrac
 
                 !> Add values to the per gridcell vars
@@ -4216,6 +4242,8 @@ contains
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr'     ,timeStamp,'npp',[npp_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr'     ,timeStamp,'nep',[nep_yr(i,m,:)])
+                    ! NOTE: This NBP does not include LUC product pool contributions since they are 
+                    ! not per PFT but rather per tile
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
                     call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])

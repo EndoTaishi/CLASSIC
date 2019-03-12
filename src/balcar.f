@@ -3,8 +3,8 @@
 !> @author Vivek Arora
 !!
 !! To check C budget we go through each pool for each vegetation type.
-!! Unless mentioned all pools are in kg c/m2 and all fluxes are in units
-!! of u-mol co2/m2.sec
+!! Unless mentioned all pools are in kg C/m2 and all fluxes are in units
+!! of u-mol CO2/m2.sec
 !!
        subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,
      1                     litrmass, soilcmas, ntchlveg, ntchsveg,
@@ -15,9 +15,9 @@
      6                     plitmass, psocmass, vgbiomas, repro_cost,
      7                     pvgbioms, gavgltms, pgavltms, gavgscms,
      8                     pgavscms, galtcels, repro_cost_g,
-     9                          npp,  autores, hetrores,      gpp,
-     a                          nep,   litres,   socres, dstcemls,
-     b                          nbp, litrfall, humiftrs,
+     9                     autores , hetrores,      gpp,
+     a                     litres  ,   socres, dstcemls,
+     b                     litrfall, humiftrs,
      c                          il1,      il2,
      1                          ipeatland, Cmossmas, pCmossmas,
      2              nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss,
@@ -74,7 +74,6 @@ c
       real protmass(ilg,icc)  !<pools (before being updated): previous root mass
       real plitmass(ilg,iccp2)!<pools (before being updated): previous litter mass
       real psocmass(ilg,iccp2)!<pools (before being updated): previous soil c mass
-      real npp(ilg)           !<grid averaged flux: net primary productivity
       real vgbiomas(ilg)      !<pools (after being updated): grid averaged pools: vegetation biomass
       real pvgbioms(ilg)      !<pools (before being updated): grid average pools: previous vegetation biomass
       real gavgltms(ilg)      !<pools (after being updated): grid averaged pools: litter mass
@@ -83,12 +82,10 @@ c
       real pgavscms(ilg)      !<pools (before being updated): grid average pools: previous soil c mass
       real autores(ilg)       !<grid averaged flux: autotrophic respiration
       real hetrores(ilg)      !<grid averaged flux: heterotrophic respiration
-      real gpp(ilg)           !<grid averaged flux: gross primary productivity
-      real nep(ilg)           !<grid averaged flux: net primary productivity
+      real gpp(ilg)           !<grid averaged flux: gross primary productivity    
       real litres(ilg)        !<grid averaged flux: litter respiration
       real socres(ilg)        !<grid averaged flux: soil carbon respiration
       real dstcemls(ilg)      !<grid averaged flux: carbon emission losses due to disturbance, mainly fire
-      real nbp(ilg)           !<grid averaged flux: net biome productivity
       real litrfall(ilg)      !<grid averaged flux: combined (leaves, stem, and root) total litter fall rate
       real humiftrs(ilg)      !<grid averaged flux: humification
       real repro_cost(ilg,icc)!<pools (after being updated): amount of C transferred to litter due to reproductive tissues

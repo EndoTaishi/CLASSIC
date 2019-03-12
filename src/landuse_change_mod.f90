@@ -790,60 +790,44 @@ else !> use provided values but still check they are not negative
         grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
 
 !>      Now add the C to the gridcell's LUC pools of litter and soil C.
-!!      The fast decaying dead C (litter) and slow (soil C) are kept in
+!!      The fast decaying dead LUC C (paper) and slow (furniture) are kept in
 !!      the first 'soil' layer and iccp2 position. The litter and soil C
 !!      contributions are added to the normal litter and soil C pools below.
-       litrmass(i,iccp2)=litrmass(i,iccp2)+grdenpap(i) +grdenlit(i)
-       soilcmas(i,iccp2)=soilcmas(i,iccp2)+grdenfur(i) +grdensoc(i)
+       litrmass(i,iccp2)=litrmass(i,iccp2) + grdenpap(i)
+       soilcmas(i,iccp2)=soilcmas(i,iccp2) + grdenfur(i)
 
 !     Add any adjusted litter and soilc back their respective pools
 
-!       do 650 j = 1, icc
-!           if(fcancmx(i,j).gt.zero)then
-!             litrmass(i,j)=litrmass(i,j)!+grdenpap(i)+grdenlit(i)
-!             soilcmas(i,j)=soilcmas(i,j)!+grdenfur(i)+grdensoc(i)
-!           else
-!             gleafmas(i,j)=0.0
-!             bleafmas(i,j)=0.0
-!             stemmass(i,j)=0.0
-!             rootmass(i,j)=0.0
-!             litrmass(i,j)=0.0
-!             soilcmas(i,j)=0.0
-!           endif
-! 650   continue
-
       do 650 j = 1, icc
-          if(fcancmx(i,j).lt.zero)then
+          if(fcancmx(i,j).gt.zero)then
+            litrmass(i,j) = litrmass(i,j) + grdenlit(i)
+            soilcmas(i,j) = soilcmas(i,j) + grdensoc(i)
+          else
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
             stemmass(i,j)=0.0
             rootmass(i,j)=0.0
             litrmass(i,j)=0.0
             soilcmas(i,j)=0.0
-          end if 
+          endif
 650   continue
 
-        ! if(barefrac(i).gt.zero)then
-        !   litrmass(i,iccp1)=litrmass(i,iccp1)!+grdenpap(i)+grdenlit(i)
-        !   soilcmas(i,iccp1)=soilcmas(i,iccp1)!+grdenfur(i)+grdensoc(i)
-        ! else
-        !   litrmass(i,iccp1)=0.0
-        !   soilcmas(i,iccp1)=0.0
-        ! endif
-
-        if(barefrac(i).lt.zero)then
+        if(barefrac(i).gt.zero)then
+          litrmass(i,iccp1) = litrmass(i,iccp1) + grdenlit(i)
+          soilcmas(i,iccp1) = soilcmas(i,iccp1) + grdensoc(i)
+        else
           litrmass(i,iccp1)=0.0
           soilcmas(i,iccp1)=0.0
         endif
 
+
 !>the combusted c is used to find the c flux that we can release into the atmosphere.
 
-        lucemcom(i)=grdencom(i)
-!>this is flux in kg c/m2.day that will be emitted
-        lucltrin(i)=grdenpap(i) ! flux in kg c/m2.day
-        lucsocin(i)=grdenfur(i) ! flux in kg c/m2.day
+        lucemcom(i)=grdencom(i) ! this is flux in kg C/m2.day that will be emitted
+        lucltrin(i)=grdenpap(i) ! flux in kg C/m2.day
+        lucsocin(i)=grdenfur(i) ! flux in kg C/m2.day
 
-!>convert all land use change fluxes to u-mol co2-c/m2.sec
+!>convert all land use change fluxes to u-mol CO2-C/m2.sec
         lucemcom(i)=lucemcom(i)*963.62
         lucltrin(i)=lucltrin(i)*963.62
         lucsocin(i)=lucsocin(i)*963.62
@@ -1167,7 +1151,8 @@ end subroutine adjust_fracs_comp
 !! and paper products is transferred to the model's litter pool and the fraction
 !! allocated to long-lasting wood products is allocated to the model's soil carbon
 !! pool. While they are place in the litter and soil carbon pools, these LUC products
-!! are kept separate to allow accurate accounting. Land use change associated with a decrease in the area of natural
+!! are kept separate to allow accurate accounting. Land use change associated 
+!! with a decrease in the area of natural
 !! vegetation thus redistributes carbon from living vegetation to dead litter
 !! and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct
 !! burning of the deforested biomass. The net result is positive LUC carbon
