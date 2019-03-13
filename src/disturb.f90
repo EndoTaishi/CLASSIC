@@ -658,8 +658,11 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>Sum all pools that will be converted to emissions/aerosols \f$(g c/m^2 /day)\f$
            tot_emit = (glcaemls(i,j) + blcaemls(i,j) + rtcaemls(i,j)+ stcaemls(i,j) + ltrcemls(i,j)) * 1000.0
 
-!>Add in the emissions due to luc fires (deforestation)
-!>the luc emissions are converted from \f$umol co_2 m-2 s-1 to g c m-2\f$ (day-1) before adding to tot_emit
+!> Add in the emissions due to luc fires (deforestation)
+!! the luc emissions are converted from \f$umol co_2 m-2 s-1 to 
+!! g c m-2\f$ (day-1) before adding to tot_emit. NOTE: This tot_emit is 
+!! not what is used to calculate NBP so the LUC emissions are accounted for
+!! in ctem.f90, not here. This here is for model outputting.
            tot_emit = tot_emit + (lucemcom(i) / 963.62 * 1000.0)
 
 !>Convert burnt plant matter from carbon to dry organic matter using

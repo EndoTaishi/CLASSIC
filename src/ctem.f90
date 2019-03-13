@@ -489,9 +489,6 @@ real soilrsvg(ilg,iccp2) !<
 real ltrestep(ilg,iccp2) !<
 real screstep(ilg,iccp2) !<
 real hutrstep(ilg,iccp2) !<
-real litr_for_w(ilg)                    !< Litter C to be used by wetlands (no LUC products)
-real solc_for_w(ilg)                    !< Soil C to be used by wetlands (no LUC products)
-real hetr_for_w(ilg)                    !< Heterotrophic respiration to be used by wetlands (no LUC products)
 real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
 integer :: botlyr                       !< bottom layer of the unfrozen soil column
 real :: frznrtlit                       !< fraction of root distribution in frozen layers
@@ -1085,11 +1082,12 @@ do 420 j = 1, iccp2 !FLAG
         litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+humicfac(sort(j))))
         hutrstep(i,j)=(humicfac(sort(j))* ltrestep(i,j))
     else
-!>         Next we add bareground and LUC pool litter mass and humification for non-peatlands. In
-!!         peatlands there is no bareground litter mass since it is the moss layer.
+!>         Next we add bareground and LUC pool litter mass and humification for non-peatlands.
         if (ipeatland(i) == 0) then
             litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+humicfac_bg))
             hutrstep(i,j)=(humicfac_bg * ltrestep(i,j))
+        !else for peatlands:
+        ! In peatlands there is no bareground litter mass since it is the moss layer.
         endif
 
     endif
@@ -1555,13 +1553,13 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 
 !    ------------------------------------------------------------------
 !>
-!>Calculate nbp (net biome production) for each pft by taking into account
-!!C emission losses. The disturbance routine produces emissions due to fire
-!!and it also calculates emissions due to LUC. These LUC carbon emissions due to
-!!combustion associated with LUC are first estimated in LUC. This flux is spread out over
-!!the whole year and is therefore subtracted to get NBP of each pft
-!!as well as the grid averaged value of NBP. Also LUC related combustion flux
-!!is assumed to be spread uniformly over the grid cell and thus reduces NBP of each PFT
+!> Calculate NBP (net biome production) for each pft by taking into account
+!! C emission losses. The disturbance routine produces emissions due to fire
+!! and while the land use change subroutine calculates emissions due to LUC. 
+!! The LUC related combustion flux is assumed to be spread uniformly over the
+!! tile as it is no longer associated with any one PFT. To calculate the NBP 
+!! we do not subtract LUC emissions from the PFT-level NBP but we do subtract 
+!! it from the per tile NBP. 
 !!
       do 1000 i = il1, il2
         do 1010 j = 1, icc
@@ -1580,8 +1578,9 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 
 1000  continue
 !>
-!!Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. convert all emission losses from \f$kg c/m^2\f$
-!!emitted in 1 day to u-mol co2/m2.sec. calculate grid averaged carbon emission losses from litter.
+!! Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. 
+!! Convert all emission losses from \f$kg c/m^2\f$ emitted in 1 day to u-mol co2/m2.sec.
+!! Calculate grid averaged carbon emission losses from litter.
 !!
       do 1030 j = 1,icc
         do 1040 i = il1, il2
@@ -1596,20 +1595,22 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 1040    continue
 1030  continue
 !
-!       For the NBP, we include the disturbance emissions as well as respiration from the paper (litter) and furniture
-!       (soil carbon) pools (LUC product pools). Also include here the instantaneous emissions due to LUC.
+!       For the tile-level NBP, we include the disturbance emissions as well as
+!       respiration from the paper (litter) and furniture (soil carbon) pools (LUC
+!       product pools). Also include here the instantaneous emissions due to LUC.
       do 1041 i = il1, il2
-        nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2))* (963.62 / deltat) - lucemcom(i)
+        nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2)) - lucemcom(i)
         dstcemls3(i) = dstcemls2(i) - dstcemls1(i)  !litter is total - vegetation.
 1041  continue
 !>
-!!calculate total litter fall from each component (leaves, stem, and root) from all causes (normal
-!!turnover, drought and cold stress for leaves, mortality, and disturbance) for use in balcar subroutine
+!! Calculate total litter fall from each component (leaves, stem, and root)
+!!  from all causes (normal turnover, drought and cold stress for leaves, mortality, 
+!! and disturbance) for use in balcar subroutine
 !!
       do 1050 j = 1,icc
         do 1060 i = il1, il2
-!>
-!>units here are \f$kg c/m^2 .day\f$
+          
+        ! units here are \f$kg c/m^2 .day\f$
          tltrleaf(i,j)=leaflitr(i,j)+glealtrm(i,j)+glfltrdt(i,j)+&
      &                 blfltrdt(i,j)
          tltrstem(i,j)=stemlitr(i,j)+stemltrm(i,j)+stemltdt(i,j)

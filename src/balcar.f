@@ -123,7 +123,7 @@ c
             write(6,2000)i,j,abs(diff1-diff2),tolrance
 2000        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for leaves')
-            call xit('balcar',-2)
+            call xit('balcar',-1)
           endif
 c         endif
 110     continue
@@ -140,7 +140,7 @@ c         endif
             write(6,2001)i,j,abs(diff1-diff2),tolrance
 2001        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for stem')
-            call xit('balcar',-3)
+            call xit('balcar',-2)
           endif
 c         endif
 160     continue
@@ -157,7 +157,7 @@ c         endif
             write(6,2002)i,j,abs(diff1-diff2),tolrance
 2002        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for root')
-            call xit('balcar',-4)
+            call xit('balcar',-3)
           endif
 c         endif
 210     continue
@@ -175,7 +175,7 @@ c         endif
             write(6,2003)i,j,abs(diff1-diff2),tolrance
 2003        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for litter')
-            call xit('balcar',-5)
+            call xit('balcar',-4)
           endif
 c         endif
 260     continue
@@ -190,7 +190,7 @@ c         endif
      &          ( deltat/963.62 )
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,iccp1,abs(diff1-diff2),tolrance
-            call xit('balcar',-6)
+            call xit('balcar',-5)
           endif
            endif
 280     continue
@@ -211,7 +211,7 @@ c         endif
 
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,iccp2,abs(diff1-diff2),tolrance
-            call xit('balcar',-7)
+            call xit('balcar',-6)
           endif
 290     continue
 
@@ -274,7 +274,7 @@ c         endif
                    write(6,2008)i,abs(diff1-diff2),tolrance
 2008           format('at (i)= (',i3,'),',f12.6,' is greater'
      1         'than our tolerance of ',f12.6,' for moss carbon')
-                    call xit('balcar',-11)
+                    call xit('balcar',-9)
                endif
 !
 ! Moss litter pool C balance
@@ -290,7 +290,7 @@ c         endif
                    write(6,2009)i,abs(diff1-diff2),tolrance
 2009               format('at (i)= (',i3,'),',f12.6,' is greater
      1             than our tolerance of ',f12.6,' for moss litter')
-                   call xit('balcar',-12)
+                   call xit('balcar',-10)
                endif
           endif
 400     continue
@@ -317,7 +317,7 @@ c         endif
 2005      format('at (i)= (',i3,'),',f12.6,' is greater
      & than our tolerance of ',f12.6,' for vegetation biomass')
           write(90,*)    abs(diff1-diff2),tolrance
-          call xit('balcar',-8)
+          call xit('balcar',-11)
         endif
 350   continue
 !
@@ -340,7 +340,7 @@ c         endif
           write(*,*)i,abs(diff1-diff2),tolrance
 2006      format('at (i)= (',i3,'),',f12.6,' is greater
      & than our tolerance of ',f12.6,' for litter mass')
-          call xit('balcar',-9)
+          call xit('balcar',-12)
         endif
 380   continue
 !
@@ -357,7 +357,7 @@ c         endif
           write(6,2007)i,abs(diff1-diff2),tolrance
 2007      format('at (i)= (',i3,'),',f12.6,' is greater
      & than our tolerance of ',f12.6,' for soil c mass')
-          call xit('balcar',-10)
+          call xit('balcar',-13)
         endif
 390   continue
 
