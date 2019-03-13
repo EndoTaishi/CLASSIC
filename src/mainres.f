@@ -43,9 +43,9 @@
 !!
 
       subroutine mainres (  fcan,      fct,     stemmass,   rootmass, 
-     1                       il1, il2, leapnow,
-     2                       tcan,         tbar,   rmatctem,
-     3                      sort, nol2pfts,        isand,
+     1                       il1,      il2,         ilg,    leapnow,
+     2                       tcan,     tbar,    rmatctem,
+     3                      sort,  nol2pfts,       isand,
 c    -------------- inputs above this line, outputs below ----------
      4                      rmsveg, rmrveg,     roottemp)
 c
@@ -77,12 +77,13 @@ c     ignd      - no. of soil layers
 c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts, currently 4
 c
-      use classic_params,        only : icc, ilg, ignd, ican, kk, zero, 
+      use classic_params,        only : icc, ignd, ican, kk, zero, 
      1                                 bsrtstem, bsrtroot, minlvfr,
      2                                 classpfts
 
       implicit none
 c
+      integer ilg !<
       integer il1 !<il1=1
       integer il2 !<il2=ilg
       integer i, j, k

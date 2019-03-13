@@ -25,15 +25,18 @@
 !!The annual mortality rates for \f$m_{intr}\f$, \f$m_{ge}\f$ and \f$m_{bioclim}\f$ are converted to daily rates and applied at the daily time step of the model. \f$m_{dist}\f$ is calculated by the fire module of the model (when switched on) based on daily area burned for each PFT as summarized in disturbance_scheme::disturb. In practice, the \f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha\f$ term of competition_scheme Eqn 1  is implemented right after area burnt is calculated.
 !!
 !!
-      subroutine mortalty (stemmass, rootmass,    ailcg, gleafmas,
-     1                     bleafmas,     il1,  il2, leapnow,
-     2                     iday, sort,  fcancmx,
+      subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,
+     1                     bleafmas,        il1,      il2,       ilg,
+     2                      leapnow,       iday,     sort,   fcancmx,
 c    + ------------------ inputs above this line ----------------------
-     4                     lystmmas, lyrotmas, tymaxlai, grwtheff,
+     4                     lystmmas,   lyrotmas, tymaxlai,  grwtheff,
 c    + -------------- inputs updated above this line ------------------
-     5                     stemltrm, rootltrm, glealtrm, geremort,
+     5                     stemltrm,  rootltrm,  glealtrm,  geremort,
      6                     intrmort)
 c    + ------------------outputs above this line ----------------------
+c
+c     07  Dec 2018  - Pass ilg back in as an argument
+c     V. Arora
 c
 c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
 c     J. Melton
@@ -54,11 +57,12 @@ c
 c     icc       - no. of ctem plant function types, currently 8
 c     ilg       - no. of grid cells in latitude circle
 c
-      use classic_params,        only : icc, ilg, kk, zero, mxmortge,
+      use classic_params,        only : icc, kk, zero, mxmortge,
      1                               kmort1, maxage
 c
       implicit none
 c
+      integer ilg    !<
       integer il1    !<il1=1
       integer il2    !<il2=ilg
       integer i, j, k

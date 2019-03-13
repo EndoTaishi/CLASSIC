@@ -18,14 +18,14 @@ contains
 !> Calculates bioclimatic parameters required to determine existance of PFTs
 !!@author V. Arora, J. Melton, R. Shrestha
 
-subroutine  bioclim (   iday,        ta,   precip,   netrad, &
-                              il1,       il2,      nilg,  leapnow, &
-                            tcurm,  srpcuryr, dftcuryr,  inibioclim, &
-                           tmonth,  anpcpcur,  anpecur,   gdd5cur, &
-                         surmncur,  defmncur, srplscur,  defctcur, &
-                           twarmm,    tcoldm,     gdd5,  aridity, &
-                         srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,  dry_season_length)
+subroutine  bioclim (  iday,        ta,       precip,     netrad,  &
+                        il1,       il2,         nilg,    leapnow,  &
+                      tcurm,  srpcuryr,     dftcuryr, inibioclim,  &
+                     tmonth,  anpcpcur,      anpecur,    gdd5cur,  &
+                   surmncur,  defmncur,     srplscur,   defctcur,  &
+                     twarmm,    tcoldm,         gdd5,    aridity,  &
+                   srplsmon,  defctmon,     anndefct,   annsrpls,  &
+                     annpcp,       dry_season_length)
 
 !
 !     10  Jun 2014  - Add in new dry_season_length variable
@@ -314,10 +314,10 @@ end subroutine bioclim
 !!@author V. Arora, J. Melton
 
 subroutine  existence(  iday,       il1,      il2,      nilg, &
-                             sort,  nol2pfts,                 &
-                           twarmm,    tcoldm,     gdd5,  aridity, &
-                         srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,pftexist,dry_season_length)
+                        sort,  nol2pfts,   twarmm,    tcoldm, &
+                        gdd5,  aridity,  srplsmon,  defctmon, &
+                    anndefct, annsrpls,    annpcp,  pftexist, &
+                    dry_season_length)
 
 !     17  Aug 2017  - Add shrub into existence code
 !     J. Melton/S. Sun  
@@ -469,15 +469,18 @@ end subroutine existence
 !! forms. either option may be used.
 !!@author V. Arora, J. Melton, Y. Peng
 
-subroutine competition(  iday,      il1,       il2,      nilg, &
-                          nol2pfts,   nppveg,   dofire, leapnow, &
-                          pftexist,  geremort, intrmort, &
-                          gleafmas, bleafmas,  stemmass, rootmass, &
-                          litrmass, soilcmas,  grclarea,   lambda, &
-                           burnvegf,     sort, pstemmass, pgleafmass, &
-                           fcancmx,   fcanmx,  vgbiomas, gavgltms, &
-                          gavgscms,  bmasveg,   &
-                          add2allo,        colrate,        mortrate)
+subroutine competition(  iday,       il1,        il2,       nilg, &
+                     nol2pfts,    nppveg,     dofire,    leapnow, &
+                     pftexist,  geremort,   intrmort,             &
+                     gleafmas,  bleafmas,   stemmass,   rootmass, &
+                     litrmass,  soilcmas,   grclarea,     lambda, &
+                     burnvegf,      sort,  pstemmass, pgleafmass, &
+!    ------------------- inputs above this line -------------------
+                      fcancmx,    fcanmx,   vgbiomas,   gavgltms, &
+                     gavgscms,   bmasveg,                         &
+!    ------------------- updates above this line ------------------
+                     add2allo,   colrate,   mortrate)
+ !    ------------------- outputs above this line -----------------
 
 !     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We
 !     J. Melton       now have a constant reproductive cost

@@ -18,12 +18,12 @@ contains
 !!@{
 !>Heterotrophic respiration subroutine for bare ground fraction
 !> @author Vivek Arora and Joe Melton
-subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
-                    il1,      il2,     tbar,  psisat, b, &
-                    thliq,    zbotw,   thiceg, &
-                    frac,    isnow,      isand, &
+subroutine hetresg (litrmass,  soilcmas,   delzw,    thpor,    &
+                         il1,       il2,     ilg,     tbar,    &
+                       psisat,        b,   thliq,    zbotw,    &
+                       thiceg,     frac,   isnow,    isand,    &
 !    -------------- inputs above this line, outputs below -------------
-                      litres,   socres)
+                       litres,   socres)
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !           Heterotrophic Respiration Subroutine For Bare Fraction
@@ -53,11 +53,12 @@ subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
 !                             int was missing some gridcells assigned
 !                             to bedrock in classb
 
-use classic_params,        only : icc, ilg, ignd, zero, tanhq10, a_hetr, &
+use classic_params,        only : icc, ignd, zero, tanhq10, a_hetr, &
                                      bsratelt_g, bsratesc_g
 
 implicit none
 
+      integer ilg   !<
       integer il1   !<il1=1
       integer il2   !<il2=ilg
       integer i,j,k
@@ -283,13 +284,13 @@ end subroutine hetresg
 !!@{
 !>Heterotrophic Respiration Subroutine For Vegetated Fraction
 !> @author Vivek Arora and Joe Melton
-subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
-                      delzw,  thpor, il1, &
-                      il2,     tbar,   psisat, b, thliq,  &
-                     roottemp,    zbotw,     sort, &
-                     isand, thicec, ipeatland, &
+subroutine hetresv ( fcan,      fct,   litrmass, soilcmas,  &
+                    delzw,    thpor,        il1,      il2,  &
+                      ilg,     tbar,     psisat,    thliq,  &
+                 roottemp,    zbotw,       sort,        b,  &
+                     isand,  thicec,  ipeatland,            &
 !    -------------- inputs above this line, outputs below -------------
-                    ltresveg, scresveg)
+                  ltresveg, scresveg)
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -319,12 +320,13 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !                             to bedrock in classb
 !     ------
 
-      use classic_params,        only : icc, ilg, ignd, kk, zero, bsratelt,&
+      use classic_params,        only : icc, ignd, kk, zero, bsratelt,&
                                bsratesc, abar, tanhq10,&
                                alpha_hetres
 
       implicit none
 
+      integer ilg       !<
       integer il1       !<il1=1
       integer il2       !<il2=ilg
       integer i, j, k

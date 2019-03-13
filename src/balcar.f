@@ -16,14 +16,17 @@
      7                     pvgbioms, gavgltms, pgavltms, gavgscms,
      8                     pgavscms, galtcels, repro_cost_g,
      9                     autores , hetrores,      gpp,
-     a                     litres  ,   socres, dstcemls,
+     a                       litres,   socres, dstcemls,
      b                     litrfall, humiftrs,
-     c                          il1,      il2,
+     c                         il1,      il2,          ilg,
      1                          ipeatland, Cmossmas, pCmossmas,
-     2              nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss,
-     3              ltrestepmoss,humicmosstep)
+     2                  nppmosstep, litrfallmoss,    litrmsmoss, 
+     3                 plitrmsmoss, ltrestepmoss,  humicmosstep)
 
 c     -----------------------------------------------------------------
+c
+c     07  Dec 2018  - Pass ilg back in as an argument
+c     V. Arora
 c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
 c     V. Arora        subroutines were changed for compatibility with class
@@ -38,11 +41,12 @@ c     V. Arora        between the different pools balance properly to
 c                     make sure that conservation of mass is achieved
 c                     with in a specified tolerance.
 c
-      use classic_params,        only : tolrance, icc, ilg, deltat,
+      use classic_params,        only : tolrance, icc, deltat,
      1                                  iccp2,ignd,iccp1
 c
       implicit none
 c
+      integer ilg !<
       integer il1 !<other variables: il1=1
       integer il2 !<other variables: il2=ilg
       integer i, j, k

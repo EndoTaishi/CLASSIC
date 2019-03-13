@@ -5,7 +5,7 @@
 !!\f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\f]
 !!
       subroutine turnover (stemmass, rootmass,  lfstatus,    ailcg,
-     1                          il1,      il2,   leapnow,
+     1                          il1,      il2,       ilg,  leapnow,
      2                         sort, nol2pfts,  fcancmx,
 c    3 ------------------ inputs above this line ----------------------   
      4                     stmhrlos, rothrlos,
@@ -14,7 +14,10 @@ c    5 ----------- inputs which are updated above this line -----------
 c    7 ------------------outputs above this line ----------------------
 c
 c               
-c     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
+c     06  Dec 2018  - Pass ilg back in as an argument 
+c     V. Arora        
+c
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -31,11 +34,12 @@ c     icc       - no. of ctem plant function types, currently 9
 c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts
 
-      use classic_params, only : icc, ilg, ican, kk, zero, stemlife,
+      use classic_params, only : icc, ican, kk, zero, stemlife,
      1                               rootlife, stmhrspn,classpfts
 c
       implicit none
 c
+      integer ilg !<
       integer il1 !<il1=1
       integer il2 !<il2=ilg
       integer i, j, k

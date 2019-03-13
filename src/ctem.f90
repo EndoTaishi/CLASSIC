@@ -13,22 +13,29 @@
 !!in the following sections.
 
       subroutine     ctem( fcancmx,    fsnow,     sand,      clay,  &
-     &                      il1,       il2,      iday,      radj, &
+     &                  ilg,   il1,      il2,     iday,      radj,  &
      &                       tcano,    tcans,    tbarc,    tbarcs,    &
      &                       tbarg,   tbargs,       ta,     delzw,&
      &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    &
      &                       zbotw,   thliqc,   thliqg,    deltat,&
-     &                       uwind,    vwind,  lightng,  prbfrhuc, &
-     &                    extnprob,     tbar, &
-     &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
+     &                       uwind,    vwind,  lightng,      tbar,  &
+     &                    nol2pfts, pfcancmx, nfcancmx,             &
      &                      thicec, soildpth, spinfast,   todfrac,&
-     &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
-     &                    popdin, dofire,  isand,  &
-     &                   faregat, wetfrac, slopefrac,&
-     &                       bi,     thpor,    thiceg, currlat, &
-     &                   ch4conc,  leapnow, &
+     &                      netrad,   precip,    psisat,            &
+     &                    grclarea,   popdin,    isand,             &
+     &                    wetfrac, slopefrac,       bi,             &
+     &                      thpor,    thiceg,   currlat,  ch4conc,  &
+     &                       THFC,      THLW,     thliq,  thice,    &
+     &                       GRAV,      RHOW,    RHOICE,            &
+     &                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  &
+     &                   wtable,                                    &
 !
-!    -------------- inputs used by ctem are above this line ---------
+!    ------------- logical switches determining model behaviour 
+!
+     &               PFTCompetition,  dofire,  lnduseon,  inibioclim,  &
+     &                      leapnow,                                   &
+!
+!    -------------- all inputs used by ctem are above this line ---------
 !
      &                    stemmass, rootmass, litrmass,  gleafmas,&
      &                    bleafmas, soilcmas,    ailcg,      ailc,&
@@ -38,39 +45,53 @@
      &                    gavgltms, gavgscms, stmhrlos,      slai, &
      &                     bmasveg, cmasvegc, colddays,  rothrlos,&
      &                      fcanmx,   alvisc,   alnirc,   gavglai,&
-     &                       tcurm, srpcuryr, dftcuryr,inibioclim,&
+     &                    Cmossmas, litrmsmoss,     peatdep,               &
+!
+!    ------------- the following are all competition related variables ---
+!
+     &                    geremort,   intrmort,   pstemmass,    pgleafmass, &
+     &                       tcurm,   srpcuryr,    dftcuryr,      lambda,   &
      &                      tmonth, anpcpcur,  anpecur,   gdd5cur,&
      &                    surmncur, defmncur, srplscur,  defctcur,&
-     &                    geremort, intrmort,   lambda,  &
-     &                    pftexist, twarmm,    tcoldm,       gdd5,&
      &                     aridity, srplsmon, defctmon,  anndefct,&
      &                    annsrpls,  annpcp,dry_season_length,&
-     &                    burnvegf, pstemmass, pgleafmass,&
+     &                    pftexist,   twarmm,       tcoldm,         gdd5,   &
+!
+!    -------------- inputs updated by ctem are above this line ------
+!    ------------- these include all prognostic variables -----------
+!
+!    
+!    --------- and finally all output is below this line ------------------
+!
+!    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----\
      &                        npp,       nep, hetrores,   autores,&
      &                   soilresp,        rm,       rg,       nbp,&
      &                     litres,    socres,      gpp, dstcemls1,&
      &                   litrfall,  humiftrs,  veghght,  rootdpth,&
-     &                   litrfallveg,  humtrsvg, &
      &                        rml,       rms,      rmr,  tltrleaf,&
      &                   tltrstem,  tltrroot, leaflitr,  roottemp,&
-     &                    afrleaf,   afrstem,  afrroot,  wtstatus,&
-     &                   ltstatus,  burnfrac, smfunc_veg, lucemcom,&
-     &                   lucltrin,  lucsocin,   nppveg,  &
-     &                   dstcemls3, paicgat,  slaicgat,    &
-     &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
+     &                   burnfrac,                 lucemcom,    lucltrin,   &
+     &                   lucsocin,   dstcemls3,                             &
+     &                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   &
+     &                                 paicgat,    slaicgat,                &
+     &                    emit_co2,   emit_ch4                              & 
+!    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----/
+
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
+     &                 ,  emit_co,   emit_nmhc,  smfunc_veg,                &
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
      &                    emit_tpm, emit_tc,  emit_oc,    emit_bc,&
-     &                  bterm_veg,    lterm, mterm_veg,        &
-     &                         cc,       mm,&
+     &                  bterm_veg,      lterm,    mterm_veg,  burnvegf,     &
+
+     &                litrfallveg,    humtrsvg,    ltstatus,      nppveg,   &
+     &                    afrleaf,     afrstem,     afrroot,    wtstatus,   &
      &                      rmlveg,  rmsveg,   rmrveg,    rgveg,&
      &                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,&
      &                  hetrsveg,autoresveg, ltresveg, scresveg,&
-     &                 nml,    ilmos, jlmos,  ch4WetSpec,  &
-     &                 wetfdyn, ch4WetDyn, ch4soills, &
-     &                 ipeatland, anmoss,rmlmoss,gppmoss, &
-     &                 Cmossmas,litrmsmoss, wtable, &
-     &                    THFC,THLW,thliq,thice,&
-     &                nppmoss,armoss,peatdep)
+     &                    nppmoss,     armoss,                              &
+     &                         cc,         mm                               &
+!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----/
+     &                  )
 
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM)

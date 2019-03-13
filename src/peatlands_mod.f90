@@ -342,22 +342,25 @@ end subroutine mosspht
 !!@{
 !> Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)
 !> @author Yuanqiao Wu
-subroutine  hetres_peat(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable,&
-                 tbar, thliq, thice,thpor,bi,zbotw,delzw,psisat,&
+subroutine  hetres_peat(    il1,          il2,          ilg,   ipeatland,   &
+                          isand,   litrmsmoss,      peatdep,      wtable,   &
+                           tbar,        thliq,        thice,       thpor,   & 
+                             bi,        zbotw,        delzw,      psisat,   &
                 litresms, socresp, resoxic, resanoxic)
-                
+
+
 !   History:
 
 ! J. Melton Sep 26 2016
 !   - Bring into rest of model and model formatting, convert to doxygen compatible code
 !   ----------------------------------
 
-use classic_params,      only :icc, ilg,ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms,TFREZ
+use classic_params,      only :icc, ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms,TFREZ
 
 implicit none
 
 !     inputs
-integer, intent(in) :: il1, il2
+integer, intent(in) :: il1, il2, ilg
 integer, dimension(ilg,ignd), intent(in) :: isand   !<
 integer, dimension(ilg), intent(in) :: ipeatland    !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
 real, dimension(ilg), intent(in) :: peatdep         !<

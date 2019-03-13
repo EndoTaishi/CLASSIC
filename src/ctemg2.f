@@ -406,7 +406,7 @@ c
           co2i1csgat(k,l)  = co2i1csrow(ilmos(k),jlmos(k),l)
           co2i2cggat(k,l)  = co2i2cgrow(ilmos(k),jlmos(k),l)
           co2i2csgat(k,l)  = co2i2csrow(ilmos(k),jlmos(k),l)
-          slaigat(k,l)     = slairow(ilmos(k),jlmos(k),l)
+!         slaigat(k,l)     = slairow(ilmos(k),jlmos(k),l)
           ancsveggat(k,l)  = ancsvegrow(ilmos(k),jlmos(k),l)
           ancgveggat(k,l)  = ancgvegrow(ilmos(k),jlmos(k),l)
           rmlcsveggat(k,l) = rmlcsvegrow(ilmos(k),jlmos(k),l)
@@ -430,10 +430,10 @@ c
           lyrotmasgat(k,l) = lyrotmasrow(ilmos(k),jlmos(k),l)
           tymaxlaigat(k,l) = tymaxlairow(ilmos(k),jlmos(k),l)
           stmhrlosgat(k,l) = stmhrlosrow(ilmos(k),jlmos(k),l)
-          bmasveggat(k,l)  = bmasvegrow(ilmos(k),jlmos(k),l)
+!         bmasveggat(k,l)  = bmasvegrow(ilmos(k),jlmos(k),l)
           rothrlosgat(k,l) = rothrlosrow(ilmos(k),jlmos(k),l)
-          veghghtgat(k,l)  = veghghtrow(ilmos(k),jlmos(k),l)
-          rootdpthgat(k,l) = rootdpthrow(ilmos(k),jlmos(k),l)
+!         veghghtgat(k,l)  = veghghtrow(ilmos(k),jlmos(k),l)
+!         rootdpthgat(k,l) = rootdpthrow(ilmos(k),jlmos(k),l)
           tltrleafgat(k,l) = tltrleafrow(ilmos(k),jlmos(k),l)
           tltrstemgat(k,l) = tltrstemrow(ilmos(k),jlmos(k),l)
           tltrrootgat(k,l) = tltrrootrow(ilmos(k),jlmos(k),l)
@@ -493,14 +493,14 @@ c
 c
       do 201 l=1,ican
        do 201 k=1,nml
-          ailcgat(k,l)     = ailcrow(ilmos(k),jlmos(k),l)
-          zolncgat(k,l)    = zolncrow(ilmos(k),jlmos(k),l)
-          cmasvegcgat(k,l) = cmasvegcrow(ilmos(k),jlmos(k),l)
-          paicgat(k,l)     = paicrow(ilmos(k),jlmos(k),l)
-          slaicgat(k,l)    = slaicrow(ilmos(k),jlmos(k),l)
+!         ailcgat(k,l)     = ailcrow(ilmos(k),jlmos(k),l)
+!         zolncgat(k,l)    = zolncrow(ilmos(k),jlmos(k),l)
+!         cmasvegcgat(k,l) = cmasvegcrow(ilmos(k),jlmos(k),l)
+!         paicgat(k,l)     = paicrow(ilmos(k),jlmos(k),l)
+!         slaicgat(k,l)    = slaicrow(ilmos(k),jlmos(k),l)
 c
-          alvsctmgat(k,l)  = alvsctmrow(ilmos(k),jlmos(k),l)
-          alirctmgat(k,l)  = alirctmrow(ilmos(k),jlmos(k),l)
+!         alvsctmgat(k,l)  = alvsctmrow(ilmos(k),jlmos(k),l)
+!         alirctmgat(k,l)  = alirctmrow(ilmos(k),jlmos(k),l)
 201   continue
 c
       do 250 l=1,ignd
@@ -516,13 +516,13 @@ c
       do 280 l=1,icc
        do 280 m=1,ignd
         do 280 k=1,nml
-          rmatctemgat(k,l,m) = rmatctemrow(ilmos(k),jlmos(k),l,m)
+!         rmatctemgat(k,l,m) = rmatctemrow(ilmos(k),jlmos(k),l,m)
 280   continue
 c
       do 290 l=1,ican
        do 290 m=1,ignd
         do 290 k=1,nml
-          rmatcgat(k,l,m) = rmatcrow(ilmos(k),jlmos(k),l,m)
+!         rmatcgat(k,l,m) = rmatcrow(ilmos(k),jlmos(k),l,m)
 290   continue
 c
       do 300 k=1,nml 

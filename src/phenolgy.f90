@@ -94,22 +94,25 @@
 !!
 !!
 !!
-subroutine phenolgy(gleafmas, bleafmas,  &
-             &           il1,      il2, leapnow,  tbar, &
-             &          thliq,   THLW,  THFC,       ta,&
-             &           anveg,     iday,     radl, roottemp,&
-             &       rmatctem, stemmass, rootmass,     sort,&
-             &       nol2pfts,  fcancmx, isand, &
+subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, &
+             &            ilg,   leapnow,  tbar, thice, &
+             &          thliq,      THLW,  THFC,    ta,&
+             &           anveg,     iday,  radl,roottemp,&
+             &       rmatctem, stemmass, rootmass,  sort,&
+             &       nol2pfts,  fcancmx, isand,&
 !     ------------------ inputs above this line ----------------------
-             &       flhrloss, leaflitr, lfstatus,  pandays,&
-             &       colddays,thice)
+             &       flhrloss,  leaflitr,  lfstatus,  pandays, &
+             &       colddays)
 !     --- variables which are updated and outputs above this line ----
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !               Phenology, Leaf Turnover & Mortality Subroutine
 !
+!     06  Dec 2018  - Pass ilg back in as an argument + minor reorganization
+!     V. Arora        of arguments
+!
 !     7   Nov 2016  - Allow adaptions due to peatland scheme of Yuanqiao Wu.
-
+!
 !     14  Jan 2016  - There was a bit of hardwired code for 3 soil layers, that has been
 !                     fixed to allow >3.
 
@@ -138,7 +141,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
 !     ican      - number of class pfts
 !
       use classic_params,        only : kn, pi, zero, kappa, eta, lfespany,&
-     &                               fracbofg, specsla,ilg,ignd,icc,&
+     &                               fracbofg, specsla,ignd,icc,&
      &                               ican, cdlsrtmx, drlsrtmx, drgta,&
      &                               colda, lwrthrsh, dayschk, coldlmt,&
      &                               coldthrs, harvthrs, flhrspan,&
@@ -147,6 +150,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
      
       implicit none
 !
+      integer ilg                 !<
       integer il1                 !<il1=1
       integer il2                 !<il2=ilg
       integer i, j, k

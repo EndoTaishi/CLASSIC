@@ -3,18 +3,24 @@
 !!@author J. Melton 
 !! Coded up based on \cite Curry2007-du.
 
-subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
-     &                     THIC,PSIS,GRAV,FCAN, &
-     &                     wetfdyn,wetfracgrd,isand,RHOW,RHOICE, &
-     &                     atm_CH4,CH4_soills)
+subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, &
+     &                     bi,    thlq,     thic,     psis, &
+     &                   GRAV,    fcan,  wetfdyn,  wetfrac, &
+     &                  isand,    RHOW,   RHOICE,  atm_CH4, &
+     &                    thp,                              &
+! ----------------- inputs above this line, outputs below ----
+     &             CH4_soills)
 
 !History:
 
-! J. Melton. Dec 22 2015 - Coded up based on C. Curry (2007) Modelling the
-! the soil consumption of atmospheric methane at the global scale. Global
-! Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
+!  06  Dec 2018  - Pass ilg back in as an argument + minor reorganization
+!  V. Arora        of arguments
 
-use classic_params,  only : ilg,ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o
+!  J. Melton. Dec 22 2015 - Coded up based on C. Curry (2007) Modelling the
+!  the soil consumption of atmospheric methane at the global scale. Global
+!  Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
+
+use classic_params,  only : ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o
 
 implicit none
 
@@ -26,15 +32,16 @@ real, dimension(ilg,ignd), intent(in) :: THLQ     !< Fractional water content (-
 real, dimension(ilg,ignd), intent(in) :: THIC     !< Fractional ice content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: PSIS     !< Soil moisture suction at saturation (m)
 real, dimension(ilg,ican), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
-real, dimension(nlat), intent(in) :: wetfracgrd   !< Prescribed fraction of wetlands in a grid cell
+real, dimension(nlat), intent(in) :: wetfrac   !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
 real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
 real, intent(in) :: GRAV                          !< Acceleration due to gravity \f$(m s^{-1})\f$
 real, intent(in) :: RHOW                          !< Density of water \f$(kg m^{-3})\f$
 real, intent(in) :: RHOICE                        !< Density of ice \f$(kg m^{-3})\f$
 integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
-integer, intent(in) :: IL1
-integer, intent(in) :: IL2
+integer, intent(in) :: il1
+integer, intent(in) :: il2
+integer, intent(in) :: ilg
 real, dimension(ilg), intent(out) :: CH4_soills   !< Methane uptake into the soil column \f$(\mu mol CH4 m^{-2} s^{-1})\f$
 
 ! GRAV, RHOW, and RHOICE are the same as in the commonblocks:
@@ -137,8 +144,8 @@ do 10 i = IL1, IL2
 
     !> Find the flux correction due to wetlands
 
-    if (wetfracgrd(i) > 0.) then  !> Use the prescribed wetland fractions
-        r_W = 1.0 - wetfracgrd(i)
+    if (wetfrac(i) > 0.) then  !> Use the prescribed wetland fractions
+        r_W = 1.0 - wetfrac(i)
     else !> use the dynamically determined wetland area
         r_W = 1.0 - wetfdyn(i)
     end if

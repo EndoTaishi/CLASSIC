@@ -4,11 +4,11 @@
 !>Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine 
 !!@author B. Amiro, J. Melton, V. Arora
 !>
-subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
-                        thliqg, currlat, &
-                        sand,  slopefrac, &  
+subroutine wetland_methane (hetrores,     il1,       il2,     ilg,  & 
+                             wetfrac,  thliqg,   currlat,    sand,  &
+                           slopefrac,      ta,                      &  
 ! inputs above this line, outputs below -------------
-                       ch4WetSpec,  wetfdyn, ch4WetDyn)
+                          ch4WetSpec, wetfdyn, ch4WetDyn)
 
 !     20  Feb   2019 - Update code to allow namelist of params. Remove no CH4 flux if soils are
 !     J. Melton        frozen condition.
@@ -23,10 +23,11 @@ subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
 
 use classic_params,        only : wtdryres, ratioch4,lat_thrshld1, &
                                lat_thrshld2, soilw_thrshN, soilw_thrshE, &
-                               soilw_thrshS, ilg, ignd
+                               soilw_thrshS, ignd
 
 implicit none
 
+integer, intent(in) :: ilg                      !< 
 integer, intent(in) :: il1                      !< il1=1
 integer, intent(in) :: il2                      !< il2=ilg
 real, dimension(ilg), intent(in) :: hetrores    !< heterotrophic respiration from main ctem program calculated as sum of litres + socres
