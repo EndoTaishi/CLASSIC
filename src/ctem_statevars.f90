@@ -656,13 +656,17 @@ type tracersType
   
   ! allocated with nlat,nmos:
   real, allocatable, dimension(:,:) :: tracerCO2rot !< Atmopspheric tracer CO2 concentration (units vary)
-  
-  ! real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  ! real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  ! real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  ! real, allocatable, dimension(:,:) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  ! real, allocatable, dimension(:,:) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
-  ! real, allocatable, dimension(:,:) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
+  real, allocatable, dimension(:,:) :: mossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+  real, allocatable, dimension(:,:) :: mossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+
+  ! allocated with nlat,nmos,icc:
+  real, allocatable, dimension(:,:,:) :: gLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: bLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: stemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: rootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  ! allocated with nlat,nmos,iccp2:
+  real, allocatable, dimension(:,:,:) :: litrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
 end type tracersType
 
@@ -1114,6 +1118,11 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%nfcancmx(nlat,nmos,icc),&
          vrot%anveg   (nlat,nmos,icc),&
          vrot%rmlveg  (nlat,nmos,icc),&
+         
+         tracer%gLeafMassrot(nlat,nmos,icc),&
+         tracer%bLeafMassrot(nlat,nmos,icc),&
+         tracer%stemMassrot(nlat,nmos,icc),&
+         tracer%rootMassrot(nlat,nmos,icc),&
 
 ! allocated with nlat,nmos:
          vrot%gavglai (nlat,nmos),&
@@ -1185,6 +1194,8 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%pdd(nlat,nmos),&
          
          tracer%tracerCO2rot(nlat,nmos),&
+         tracer%mossCMassrot(nlat,nmos),&
+         tracer%mossLitrMassrot(nlat,nmos),&
 
 ! allocated with nlat,nmos,ican:     
          vrot%zolnc(nlat,nmos,ican),&
@@ -1213,6 +1224,9 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
         vrot%litresveg(nlat,nmos,iccp2),&
         vrot%soilcresveg(nlat,nmos,iccp2),&
         vrot%humiftrsveg(nlat,nmos,iccp2),&
+
+        tracer%litrMassrot(nlat,nmos,iccp2),&
+        tracer%soilCMassrot(nlat,nmos,iccp2),&
     
 ! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
