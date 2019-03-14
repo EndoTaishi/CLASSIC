@@ -2302,7 +2302,7 @@ contains
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
-            if (useTracer > 0) print*,'need inputs!'
+            if (useTracer > 0) call getInput('tracerCO2') ! tracer atmospheric values            
             if (.not. projectedGrid) then
               !regular lon/lat grid
               if (dofire) call getInput('POPD',longitude,latitude) ! Population density
@@ -2483,6 +2483,7 @@ contains
                     if (ctem_on) then
 
                         if (transientCO2) call updateInput('CO2',runyr)
+                        if (useTracer > 0 .and. transientCO2) call updateInput('tracerCO2',runyr)
                         if (transientCH4) call updateInput('CH4',runyr)
                         if (dofire .and. transientPOPD) call updateInput('POPD',runyr)
                         if (lnduseon) then

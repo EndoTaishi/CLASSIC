@@ -651,18 +651,22 @@ end type veg_gat
 type (veg_gat), save, target :: vgat
 
 !=================================================================================
-! type tracersType
-!   !   Simple tracer variables. Only allocated and used if useTracer > 0.
-!   real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-!   real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-!   real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-!   real, allocatable, dimension(:,:) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-!   real, allocatable, dimension(:,:) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
-!   real, allocatable, dimension(:,:) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
-! 
-! end type tracersType
-! 
-! type (tracersType), save, target :: tracer
+type tracersType
+  !   Simple tracer variables. Only allocated and used if useTracer > 0.
+  
+  ! allocated with nlat,nmos:
+  real, allocatable, dimension(:,:) :: tracerCO2rot !< Atmopspheric tracer CO2 concentration (units vary)
+  
+  ! real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  ! real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  ! real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  ! real, allocatable, dimension(:,:) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  ! real, allocatable, dimension(:,:) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
+  ! real, allocatable, dimension(:,:) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
+
+end type tracersType
+
+type (tracersType), save, target :: tracer
 
 !=================================================================================
 !> CTEM's variables per tile
@@ -1179,6 +1183,8 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%armoss(nlat,nmos),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
+         
+         tracer%tracerCO2rot(nlat,nmos),&
 
 ! allocated with nlat,nmos,ican:     
          vrot%zolnc(nlat,nmos,ican),&

@@ -23,6 +23,8 @@ module model_state_drivers
 
     integer, dimension(:), allocatable :: CO2Time           !< The time (years) from the CO2File
     real, dimension(:), allocatable :: CO2FromFile          !< The array of CO2 values (ppm) from the CO2File
+    integer, dimension(:), allocatable :: tracerCO2Time     !< The time (years) from the tracerCO2File
+    real, dimension(:), allocatable :: tracerCO2FromFile    !< The array of tracerCO2 values (varied units) from the tracerCO2File    
     integer, dimension(:), allocatable :: CH4Time           !< The time (years) from the CH4File
     real, dimension(:), allocatable :: CH4FromFile          !< The array of CH4 values (ppm) from the CH4File
     integer, dimension(:), allocatable :: POPDTime          !< The time (years) from the population density file
@@ -61,6 +63,8 @@ module model_state_drivers
     integer :: rsid                                 !> netcdf file id for the model restart file
     integer :: co2id                                !> netcdf file id for the CO2 input file
     character(80) :: co2VarName                  !> Name of variable in file
+    integer :: tracerco2id                                !> netcdf file id for the CO2 input file
+    character(80) :: tracerco2VarName                  !> Name of variable in file    
     integer :: ch4id                                !> netcdf file id for the CH4 input file
     character(80) :: ch4VarName                  !> Name of variable in file
     integer :: popid                                !> netcdf file id for the population density input file
@@ -98,6 +102,7 @@ contains
         character(350), pointer          :: init_file
         character(350), pointer          :: rs_file_to_overwrite
         character(350), pointer          :: CO2File
+        character(350), pointer          :: tracerCO2File
         character(350), pointer          :: CH4File
         character(350), pointer          :: POPDFile
         character(350), pointer          :: LGHTFile
@@ -110,7 +115,8 @@ contains
         character(350), pointer          :: metFileQa
         character(350), pointer          :: metFileUv
         character(350), pointer          :: metFilePres
-        logical, pointer                 :: ctem_on
+        integer, pointer                 :: useTracer
+        logical, pointer                 :: ctem_on        
         logical, pointer                 :: projectedGrid
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
@@ -131,6 +137,8 @@ contains
         init_file               => c_switch%init_file
         rs_file_to_overwrite    => c_switch%rs_file_to_overwrite
         CO2File                 => c_switch%CO2File
+        tracerCO2File           => c_switch%tracerCO2File
+        useTracer               => c_switch%useTracer
         CH4File                 => c_switch%CH4File
         POPDFile                => c_switch%POPDFile
         LGHTFile                => c_switch%LGHTFile
@@ -406,6 +414,17 @@ contains
             co2VarName = ncGetVarName(co2id)
             ch4id = ncOpen(CH4File, nf90_nowrite)
             ch4VarName = ncGetVarName(ch4id)
+            if (useTracer > 0) then 
+              ! Use this opportunity to error check. Presently only useTracer == 1
+              ! if valid so if given (useTracer > 1), bail and write message.
+              if (useTracer > 1) then  
+                print*,'>>> Presently only valid useTracer options are 0 or 1. You'
+                print*,'gave a value of',useTracer,'. Please retry with a valid value'
+                stop 
+              end if 
+              tracerco2id = ncOpen(tracerCO2File, nf90_nowrite)
+              tracerco2VarName = ncGetVarName(tracerco2id)
+            end if 
             if (dofire) then
                 popid = ncOpen(POPDFile, nf90_nowrite)
                 popVarName = ncGetVarName(popid)
@@ -1061,7 +1080,7 @@ contains
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp,findLeapYears
-        use ctem_statevars, only : c_switch,vrot
+        use ctem_statevars, only : c_switch,vrot,tracer
         use classic_params, only : icc,nmos
         use outputManager, only : checkForTime
 
@@ -1091,6 +1110,7 @@ contains
         integer, pointer :: fixedYearOBSWETF
         logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
+        real, pointer, dimension(:,:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
@@ -1115,6 +1135,7 @@ contains
         fixedYearLUC    => c_switch%fixedYearLUC
         leap            => c_switch%leap
         co2concrow      => vrot%co2conc
+        tracerco2conc   => tracer%tracerCO2rot
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         fcancmxrow      => vrot%fcancmx
@@ -1153,6 +1174,34 @@ contains
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 co2concrow(i,:) = ncGet1DVar(CO2id, trim(co2VarName), start = [arrindex], count = [1])
+            end if
+
+        case ('tracerCO2') ! tracer Carbon dioxide atmospheric values. 
+        
+            lengthOfFile = ncGetDimLen(tracerco2id, 'time')
+            allocate(fileTime(lengthOfFile))
+            allocate(tracerCO2Time(lengthOfFile))
+        
+            fileTime = ncGet1DVar(tracerCO2id, 'time', start = [1], count = [lengthOfFile])
+        
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(fileTime(i))
+                tracerCO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
+            end do
+        
+            if (transientCO2) then
+                ! We read in the whole CO2 times series and store it.
+                allocate(tracerCO2FromFile(lengthOfFile))
+                tracerCO2FromFile = ncGet1DVar(tracerCO2id, trim(tracerco2VarName), start = [1], count = [lengthOfFile])
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(tracerCO2Time),real(fixedYearCO2))
+                if (arrindex == 0) stop ('getInput says: The tracer CO2 file does not contain requested year')
+        
+                ! We read in only the suggested year
+                i = 1 ! offline nlat is always 1 so just set
+                tracerco2conc(i,:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
             end if
 
         case ('CH4') ! Methane concentration
@@ -1379,34 +1428,6 @@ contains
                 end do
             end if
 
-          ! case ('tracerCO2') ! tracer Carbon dioxide atmospheric values. 
-          ! 
-          !     lengthOfFile = ncGetDimLen(co2id, 'time')
-          !     allocate(fileTime(lengthOfFile))
-          !     allocate(CO2Time(lengthOfFile))
-          ! 
-          !     fileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthOfFile])
-          ! 
-          !     ! Parse these into just years (expected format is "day as %Y%m%d.%f")
-          !     do i = 1, lengthOfFile
-          !         dateTime = parseTimeStamp(fileTime(i))
-          !         CO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
-          !     end do
-          ! 
-          !     if (transientCO2) then
-          !         ! We read in the whole CO2 times series and store it.
-          !         allocate(CO2FromFile(lengthOfFile))
-          !         CO2FromFile = ncGet1DVar(CO2id, trim(co2VarName), start = [1], count = [lengthOfFile])
-          !     else
-          !         ! Find the requested year in the file.
-          !         arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
-          !         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
-          ! 
-          !         ! We read in only the suggested year
-          !         i = 1 ! offline nlat is always 1 so just set
-          !         co2concrow(i,:) = ncGet1DVar(CO2id, trim(co2VarName), start = [arrindex], count = [1])
-          !     end if
-
         case default
             stop ('Specify an input kind for getInput')
 
@@ -1427,7 +1448,7 @@ contains
     subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
 
         use outputManager, only : checkForTime
-        use ctem_statevars, only : vrot,c_switch,vgat
+        use ctem_statevars, only : vrot,c_switch,vgat,tracer
         use classic_params, only : nmos
         use generalUtils, only : abandonCell
 
@@ -1441,6 +1462,7 @@ contains
         integer :: arrindex,lengthTime,i,m
         real :: LGHTTimeNow,OBSWTimeNow
         real, pointer, dimension(:,:) :: co2concrow
+        real, pointer, dimension(:,:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: nfcancmxrow
@@ -1453,6 +1475,7 @@ contains
         character(4) :: seqstring
 
         co2concrow      => vrot%co2conc
+        tracerco2conc   => tracer%tracerCO2rot
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         nfcancmxrow     => vrot%nfcancmx
@@ -1478,6 +1501,20 @@ contains
               co2concrow(i,:) = CO2FromFile(arrindex)
             end if
 
+          case ('tracerCO2')
+
+              lengthTime = size(tracerCO2Time)
+
+              ! Find the requested year in the file.
+              arrindex = checkForTime(lengthTime,real(tracerCO2Time),real(yearNeeded))
+              if (arrindex == 0) then
+                write (seqstring,'(I0)') yearNeeded
+                call abandonCell('updateInput says: The tracerCO2 file does not contain requested year: '//seqstring)
+              else
+                i = 1 ! offline nlat is always 1 so just set
+                tracerco2conc(i,:) = tracerCO2FromFile(arrindex)
+              end if
+              
         case ('CH4')
 
             lengthTime = size(CH4Time)
