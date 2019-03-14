@@ -38,6 +38,8 @@ contains
         integer, pointer :: readMetEndYear
         logical, pointer :: lnduseon
         integer, pointer :: spinfast
+        integer, pointer :: useTracer
+        character(:), pointer :: tracerCO2file
         logical, pointer :: transientCO2
         character(:), pointer :: CO2File
         integer, pointer :: fixedYearCO2
@@ -124,6 +126,8 @@ contains
         leap, &
         ctem_on, &
         spinfast, &
+        useTracer, &
+        tracerCO2file, &
         transientCO2, &
         CO2File, &
         fixedYearCO2, &
@@ -201,6 +205,8 @@ contains
         LUCFile         => c_switch%LUCFile
         fixedYearLUC    => c_switch%fixedYearLUC
         spinfast        => c_switch%spinfast
+        useTracer       => c_switch%useTracer
+        tracerCO2file   => c_switch%tracerCO2file
         transientCO2    => c_switch%transientCO2
         CO2File         => c_switch%CO2File
         fixedYearCO2    => c_switch%fixedYearCO2

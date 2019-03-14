@@ -1,5 +1,17 @@
 !> Contains the biogeochemistry-related variable type structures.
 !!@author J. Melton 
+!! Variable types herein:
+!! 1. c_switch (ctem_switches) - Switches for running the model, read from the joboptions file
+!! 2. vrot (veg_rot) - CTEM's 'rot' vars
+!! 3. vgat (veg_gat) - CTEM's 'gat' vars
+!! 4. ctem_tile (ctem_tile_level) - CTEM's variables per tile
+!! 5. ctem_mo (ctem_monthly) - CTEM's variables monthly averaged (per pft)
+!! 6. ctem_grd_mo (ctem_gridavg_monthly)  - CTEM's grid average monthly values
+!! 7. ctem_tile_mo (ctem_tileavg_monthly) - CTEM's variables per tile monthly values
+!! 8. ctem_yr (ctem_annual) - CTEM's average annual values (per PFT)
+!! 9. ctem_grd_yr (ctem_gridavg_annual) - CTEM's grid average annual values
+!! 10. ctem_tile_yr (ctem_tileavg_annual) - CTEM's variables per tile annual values
+
 module ctem_statevars
 
 ! J. Melton Apr 2015
@@ -9,15 +21,15 @@ use classic_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp2,iccp1, 
 
 implicit none
 
-public :: alloc_ctem_vars
-public :: initrowvars
-public :: resetmonthend
-public :: resetyearend
-public :: resetMosaicAccum
+public :: alloc_ctem_vars ! Allocate the biogeochemistry (CTEM) variables in preparation for a simulation
+public :: initrowvars     ! Initializes 'row' variables
+public :: resetmonthend   ! Resets monthly variables at month end in preparation for next month
+public :: resetyearend    ! Resets annual variables in preparation for next year
+public :: resetMosaicAccum! Resets physics accumulator variables (used as input to CTEM) after CTEM has been called
 
 
 !=================================================================================
-!>switches for running the model, read from the joboptions file
+!> Switches for running the model, read from the joboptions file
 type ctem_switches
 
     logical :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
@@ -29,6 +41,13 @@ type ctem_switches
 
     integer :: spinfast         !< set this to a number >1 (up to ~10) to spin up soil carbon pool faster, set to 1
                                 !< for final production simulations
+    integer :: useTracer        !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme. 
+    character(350) :: tracerCO2file !< Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
+                                !! and fixedYearCO2 switches to determine how it is read in.
     integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
     integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
 
@@ -185,7 +204,7 @@ end type ctem_switches
 type (ctem_switches), save, target :: c_switch
 
 !=================================================================================
-!>CTEM's 'rot' vars
+!> CTEM's 'rot' vars
 type veg_rot
 
     logical, allocatable, dimension(:,:,:) :: pftexist  !<logical array indicating pfts exist (t) or not (f)
@@ -632,7 +651,21 @@ end type veg_gat
 type (veg_gat), save, target :: vgat
 
 !=================================================================================
-!>CTEM's variables per tile
+! type tracersType
+!   !   Simple tracer variables. Only allocated and used if useTracer > 0.
+!   real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+!   real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+!   real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+!   real, allocatable, dimension(:,:) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+!   real, allocatable, dimension(:,:) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
+!   real, allocatable, dimension(:,:) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
+! 
+! end type tracersType
+! 
+! type (tracersType), save, target :: tracer
+
+!=================================================================================
+!> CTEM's variables per tile
 type ctem_tile_level
 
 !   Tile-level variables (denoted by an ending of "_t")

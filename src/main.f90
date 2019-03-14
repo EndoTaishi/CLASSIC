@@ -685,6 +685,11 @@ contains
 
         integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
                                      !< soil carbon pool faster
+       integer, pointer :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                     !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                     !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                     !! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
+                                     !! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme.                                      
         integer, pointer :: metLoop !< no. of times the .met file is to be read. this
                                         !< option is useful to see how ctem's c pools
                                         !< equilibrate when driven with same climate data
@@ -1789,6 +1794,7 @@ contains
         jmosty            => c_switch%jmosty
         metLoop           => c_switch%metLoop
         spinfast          => c_switch%spinfast
+        useTracer         => c_switch%useTracer
         IDISP             => c_switch%IDISP
         IZREF             => c_switch%IZREF
         ISLFD             => c_switch%ISLFD
@@ -2285,7 +2291,7 @@ contains
         ZBLDROW(:) = zbldJobOpt
         
         !> Initialize variables in preparation for the run
-        call initrowvars
+        call initrowvars        
         call resetAccVars(nlat,nmos)
         call resetMosaicAccum
 
@@ -2296,6 +2302,7 @@ contains
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
+            if (useTracer > 0) print*,'need inputs!'
             if (.not. projectedGrid) then
               !regular lon/lat grid
               if (dofire) call getInput('POPD',longitude,latitude) ! Population density

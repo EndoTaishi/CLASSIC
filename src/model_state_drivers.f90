@@ -1379,6 +1379,34 @@ contains
                 end do
             end if
 
+          ! case ('tracerCO2') ! tracer Carbon dioxide atmospheric values. 
+          ! 
+          !     lengthOfFile = ncGetDimLen(co2id, 'time')
+          !     allocate(fileTime(lengthOfFile))
+          !     allocate(CO2Time(lengthOfFile))
+          ! 
+          !     fileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthOfFile])
+          ! 
+          !     ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+          !     do i = 1, lengthOfFile
+          !         dateTime = parseTimeStamp(fileTime(i))
+          !         CO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
+          !     end do
+          ! 
+          !     if (transientCO2) then
+          !         ! We read in the whole CO2 times series and store it.
+          !         allocate(CO2FromFile(lengthOfFile))
+          !         CO2FromFile = ncGet1DVar(CO2id, trim(co2VarName), start = [1], count = [lengthOfFile])
+          !     else
+          !         ! Find the requested year in the file.
+          !         arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
+          !         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
+          ! 
+          !         ! We read in only the suggested year
+          !         i = 1 ! offline nlat is always 1 so just set
+          !         co2concrow(i,:) = ncGet1DVar(CO2id, trim(co2VarName), start = [arrindex], count = [1])
+          !     end if
+
         case default
             stop ('Specify an input kind for getInput')
 
