@@ -5,9 +5,8 @@
 
 subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, &
      &                     bi,    thlq,     thic,     psis, &
-     &                   GRAV,    fcan,  wetfdyn,  wetfrac, &
-     &                  isand,    RHOW,   RHOICE,  atm_CH4, &
-     &                    thp,                              &
+     &                   fcan,  wetfdyn,  wetfrac, &
+     &                  isand,   atm_CH4, thp,     &
 ! ----------------- inputs above this line, outputs below ----
      &             CH4_soills)
 
@@ -20,7 +19,8 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, &
 !  the soil consumption of atmospheric methane at the global scale. Global
 !  Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
 
-use classic_params,  only : ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o
+use classic_params,  only : ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o,&
+                            GRAV,RHOW,RHOICE
 
 implicit none
 
@@ -35,9 +35,9 @@ real, dimension(ilg,ican), intent(in) :: FCAN     !< Fractional coverage of vege
 real, dimension(nlat), intent(in) :: wetfrac   !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
 real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
-real, intent(in) :: GRAV                          !< Acceleration due to gravity \f$(m s^{-1})\f$
-real, intent(in) :: RHOW                          !< Density of water \f$(kg m^{-3})\f$
-real, intent(in) :: RHOICE                        !< Density of ice \f$(kg m^{-3})\f$
+!real, intent(in) :: GRAV                          !< Acceleration due to gravity \f$(m s^{-1})\f$
+!real, intent(in) :: RHOW                          !< Density of water \f$(kg m^{-3})\f$
+!real, intent(in) :: RHOICE                        !< Density of ice \f$(kg m^{-3})\f$
 integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
 integer, intent(in) :: il1
 integer, intent(in) :: il2

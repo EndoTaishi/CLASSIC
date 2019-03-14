@@ -2846,7 +2846,6 @@ contains
                         &        wetfrac_presgat,slopefracgat,       BIGAT,                &
                         &               THPGAT,   thicegacc_t,    DLATGAT,  ch4concgat,    &
                         &              THFCGAT,       THLWGAT, thliqacc_t,  thiceacc_t,    &
-                        &                GRAV,           RHOW,     RHOICE,                 &
                         &        ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &
                         &           wtablegat,                                             &
                         !
@@ -2873,8 +2872,6 @@ contains
                         &             tcurm,       srpcuryr,        dftcuryr,       lambdagat,    &
                         &                 tmonth,    anpcpcur,      anpecur,     gdd5cur,&
                         &               surmncur,    defmncur,     srplscur,    defctcur,&
-                        &            geremortgat, intrmortgat,    lambdagat,&
-                        &            pftexistgat,   twarmmgat,    tcoldmgat,     gdd5gat,&
                         &             ariditygat, srplsmongat,  defctmongat, anndefctgat,&
                         &            annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
                         &       pftexistgat,      twarmmgat,       tcoldmgat,         gdd5gat,    &
@@ -2889,7 +2886,6 @@ contains
                         &            soilcrespgat,       rmgat,       rggat,      nbpgat,&
                         &              litresgat,    socresgat,     gppgat, dstcemlsgat,&
                         &            litrfallgat,  humiftrsgat, veghghtgat, rootdpthgat,&
-                        &            litrfallveggat,  humiftrsveggat,&
                         &                 rmlgat,      rmsgat,     rmrgat,  tltrleafgat,&
                         &            tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,&
                         &       burnfracgat,                      lucemcomgat,     lucltringat, &

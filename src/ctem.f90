@@ -26,7 +26,6 @@
      &                    wetfrac, slopefrac,       bi,             &
      &                      thpor,    thiceg,   currlat,  ch4conc,  &
      &                       THFC,      THLW,     thliq,  thice,    &
-     &                       GRAV,      RHOW,    RHOICE,            &
      &                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  &
      &                   wtable,                                    &
 !
@@ -97,6 +96,9 @@
 !             Canadian Terrestrial Ecosystem Model (CTEM)
 !             Main Ctem Subroutine Compatible With CLASS
 
+!     28  Nov 2018  - Clean up argument list before implementation in AGCM
+!     V. Arora        
+!
 !     14  Mar 2016  - Remove grid cell area calculation to the driver. This will
 !     J. Melton       harmonize this subroutine with the coupled code.
 !
@@ -150,7 +152,7 @@
 !    -----------------------------------------------------------------
 
 use classic_params,        only : kk, pi, zero,&
-     &                         kn,iccp1, ican, ilg, nlat,&
+     &                         kn,iccp1, ican, nlat,&
      &                         ignd, icc, nmos, l2max, grescoef,&
      &                         humicfac,laimin,laimax,lambdamax,&
      &                         crop,repro_fraction,grescoefmoss,&
@@ -176,6 +178,7 @@ integer, intent(in) :: iday                             !<day of year
 integer, intent(in) ::  spinfast                        !<spinup factor for soil carbon whose default value is 1. as this factor increases the
                                                         !<soil c pool will come into equilibrium faster. reasonable value for spinfast is
                                                         !<between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.
+integer, intent(in) :: ilg                              !<ilg=no. of grid cells in latitude circle
 integer, intent(in) :: il1                              !<il1=1
 integer, intent(in) :: il2                              !<il2=ilg (no. of grid cells in latitude circle)
 integer, dimension(ilg,ignd), intent(in) :: isand       !<
@@ -216,10 +219,8 @@ real, dimension(ilg), intent(in) :: vwind               !< v wind speed, m/s
 real, dimension(ilg), intent(in) ::  precip             !<daily precipitation (mm/day)
 real, dimension(ilg), intent(in) ::  netrad             !<daily net radiation (w/m2)
 real, dimension(ilg), intent(in) :: lightng             !< total lightning frequency, flashes/km2.year
-real, dimension(ilg), intent(in) :: prbfrhuc            !< probability of fire due to human causes
 real, dimension(ilg,icc), intent(in) :: pfcancmx        !<previous year's fractional coverages of pfts
 real, dimension(ilg,icc), intent(in) :: nfcancmx        !<next year's fractional coverages of pfts
-real, dimension(ilg), intent(in) ::  faregat            !<
 real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
 real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
 real, dimension(ilg), intent(in) :: wetfrac             !< Prescribed fraction of wetlands in a grid cell
@@ -243,7 +244,6 @@ real, dimension(ilg,icc), intent(inout) :: ancsveg      !< net photosynthetic ra
 real, dimension(ilg,icc), intent(inout) :: ancgveg      !< net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
 real, dimension(ilg,icc), intent(inout) :: rmlcsveg     !< leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
 real, dimension(ilg,icc), intent(inout) :: rmlcgveg     !< leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
-real, dimension(ilg), intent(inout) :: extnprob         !< fire extingusinging probability
 real, dimension(ilg,icc), intent(inout) :: fcancmx      !< max. fractional coverage of ctem's 9 pfts, but this can be
                                                         !< modified by land-use change, and competition between pfts
 real, dimension(ilg,ican,ignd), intent(inout) :: rmatc  !<fraction of roots for each of class' 4 pfts in each soil layer
@@ -603,10 +603,10 @@ if (PFTCompetition) then
 !!are used from the first year.
 !!
         call existence(iday,            1,         il2, ilg,&
-     &                     sort,     nol2pfts,        &
-     &                   twarmm,   tcoldm,     gdd5,  aridity,&
-     &                   srplsmon, defctmon, anndefct, annsrpls,&
-     &                   annpcp, pftexist, dry_season_length )
+     &                 sort,     nol2pfts,    twarmm,     tcoldm,  &    
+     &                 gdd5,      aridity,  srplsmon,   defctmon,  &
+     &             anndefct,     annsrpls,    annpcp,   pftexist,  &
+     &     dry_season_length )
 !>
 !!Call competition subroutine which on the basis of previous day's
 !!npp estimates changes in fractional coverage of pfts
@@ -642,7 +642,8 @@ if (PFTCompetition) then
 
        call luc(    il1,      il2,   ilg,  nol2pfts, &
               &       grclarea, pfcancmx, nfcancmx,     iday,&
-              & todfrac,yesfrac_comp,.true.,PFTCompetition,leapnow,&
+     &            todfrac,  yesfrac_comp,     .true.,  PFTCompetition,  &
+     &            leapnow,                                              &
               &       gleafmas, bleafmas, stemmass, rootmass,&
               &       litrmass, soilcmas, vgbiomas, gavgltms,&
               &       gavgscms,  fcancmx,   fcanmx,&
@@ -832,7 +833,7 @@ do 170 i = il1, il2
 !!Find maintenance respiration for canopy over snow sub-area in umol co2/m2/sec
 !!
 call   mainres (fcancs,      fcs,     stemmass,   rootmass,       &
-     &                  il1, il2, leapnow, &
+     &                  il1, il2, ilg, leapnow, &
      &                    ta,       tbarcs,   rmatctem,&
      &                  sort, nol2pfts,        isand,&
      &              rmscsveg, rmrcsveg,     rttempcs)
@@ -840,7 +841,7 @@ call   mainres (fcancs,      fcs,     stemmass,   rootmass,       &
 !>Find maintenance respiration for canopy over ground sub-area
 
 call   mainres ( fcanc,       fc,     stemmass,   rootmass,       &
-     &                   il1, il2, leapnow, &
+     &                   il1, il2, ilg, leapnow, &
      &                    ta,        tbarc,   rmatctem,&
      &                  sort, nol2pfts,        isand,&
      &              rmscgveg, rmrcgveg,     rttempcg)
@@ -944,6 +945,8 @@ do 320 j = 1,icc
 320   continue
 !
 !>    Add moss GPP and rml to the grid/tile average C fluxes
+!>    for grid cells which have peatlands
+!
 do 335 i = il1, il2
     if (ipeatland(i) > 0) then
         rgmoss(i) = anmoss(i)*grescoefmoss
@@ -967,10 +970,18 @@ do 335 i = il1, il2
 !! Find heterotrophic respiration rates (umol co2/m2/sec) for canopy
 !! over snow subarea
 
+! CAUTION says Vivek
+! Note that ipeatland is passed to hetresv to calculate psi (matric potential)
+! in a different way if ipeatland(i)=1. psi is used to calculated soil moisture
+! dependence scalars for litter and soil cabron respiration in hetresv. Yet, 
+! soil carbon respiration for gridcells/tiles which are peatlands is overwritten
+! below in loop 380 by socres_peat(i) making passing of ipeatland to hetresv and
+! calculation of psi in a different way useless.
+
 call    hetresv ( fcancs,      fcs, litrmass(:,1:icc), soilcmas(:,1:icc),&
-     &                      delzw, thpor, il1,&
-     &                      il2,   tbarcs, psisat, bi,  thliqc,&
-     &                     rttempcs,    zbotw,     sort,&
+     &                      delzw, thpor, il1, il2, &
+     &                      ilg,   tbarcs, psisat, thliqc,&
+     &                     rttempcs,    zbotw, sort,bi,  &
      &                     isand, thicec, ipeatland, &
      &                 ltrsvgcs, scrsvgcs)
 
@@ -978,27 +989,26 @@ call    hetresv ( fcancs,      fcs, litrmass(:,1:icc), soilcmas(:,1:icc),&
 !! Find heterotrophic respiration rates for canopy over ground subarea
 
 call    hetresv ( fcanc,      fc, litrmass(:,1:icc), soilcmas(:,1:icc),&
-     &                      delzw, thpor, il1,&
-     &                      il2,   tbarc, psisat, bi,  thliqc,&
-     &                     rttempcg,    zbotw,     sort,&
+     &                      delzw, thpor, il1, il2, &
+     &                      ilg,   tbarc, psisat,  thliqc,&
+     &                     rttempcg,    zbotw,  sort,bi, &
      &                     isand, thicec,ipeatland, &
      &                 ltrsvgcg, scrsvgcg)
 !>
 !! Find heterotrophic respiration rates from bare ground subarea
 
-call  hetresg  (litrmass(:,iccp1), soilcmas(:,iccp1),   delzw,  thpor, &
-     &                      il1,  il2, tbarg, psisat, bi,&
-     &                   thliqg,      zbotw, thiceg,   &
-     &                       fg,        0, isand,&
+call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1), delzw,thpor,&
+     &               il1,       il2,       ilg,   tbarg,    &
+     &            psisat,        bi,    thliqg,   zbotw,    &
+     &            thiceg,        fg,        0,    isand,    &
      &                   ltrsbrg,  scrsbrg)
 !>
 !! Find heterotrophic respiration rates from snow over ground subarea
 
-call  hetresg  (litrmass(:,iccp1), soilcmas(:,iccp1),    delzw, thpor, &
-     &                      il1, il2,  tbargs, psisat, bi,  &
-     &                   thliqg,      zbotw,  thiceg, &
-     &                      fgs,        1,&
-     &                     isand,&
+call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1),delzw,thpor,&
+     &               il1,       il2,       ilg,  tbargs,    &
+     &            psisat,        bi,    thliqg,   zbotw,    &
+     &            thiceg,       fgs,        1,    isand,    &
      &                   ltrsbrgs, scrsbrgs)
 !
 !  Find heterotrophic respiration rates for the LUC litter and soilc pools
@@ -1006,7 +1016,7 @@ call  hetresg  (litrmass(:,iccp1), soilcmas(:,iccp1),    delzw, thpor, &
 !  be applied over the entire tile but kept in layer 1  
 
   call  hetresg  (litrmass(:,iccp2), soilcmas(:,iccp2),    delzw, thpor, &
-     &                      il1, il2,  tbargs, psisat, bi,  &
+     &                      il1, il2, ilg, tbargs, psisat, bi,  &
      &                   thliqg,      zbotw,  thiceg, &
      &                      fgs,        1,&
      &                     isand,&
@@ -1015,9 +1025,12 @@ call  hetresg  (litrmass(:,iccp1), soilcmas(:,iccp1),    delzw, thpor, &
 !>
 !! When peatlands are simulated find the peat heterotrophic respiration
 
-call  hetres_peat(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable, &
-        &   tbar, thliq,thice, thpor,bi,zbotw, delzw,psisat,  &
-        &    litresmoss, socres_peat, resoxic, resanoxic)
+
+call hetres_peat       (    il1,          il2,          ilg,   ipeatland,   &
+                          isand,   litrmsmoss,      peatdep,      wtable,   &
+                           tbar,        thliq,        thice,       thpor,   &
+                             bi,        zbotw,        delzw,      psisat,   &
+                     litresmoss,  socres_peat,      resoxic,   resanoxic)
 
 !>
 !!Find vegetation averaged litter and soil c respiration rates
@@ -1082,6 +1095,14 @@ do 360 j = 1,icc
 
           else  ! peatlands
               litres(i) = litres(i)+ litresmoss(i) !add the moss litter, which is assumed to cover whole tile.
+!
+!              CAUTION says Vivek
+!              Note that the following line overwrites socres(i) calculated above in loop 370, although
+!              socres(i) is based on scresveg(i,j) which isn't modified. Similarly, the implementation
+!              of peatlands also means hetrores(i), calculated below, is now inconsistent with hetrsveg(i,j).
+!              The implementation of peatlands is based on overwriting variables without making things
+!              consistent. Of course, overwriting variables is not advised because it makes things confusing. 
+!
               socres(i) = socres_peat(i) ! since this is only peatland on this tile, use just the peat value.
           endif
               hetrores(i)= litres(i)+socres(i)
@@ -1154,6 +1175,12 @@ do 470 i = il1, il2
             soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
             humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
           else !peatland
+! 
+!             CAUTION says Vivek
+!             Here again soilresp(i) is overwritten with socres(i)=socres_peat(i) as calculated
+!             above in loop 380. This makes soilresp(i) inconsistent with soilrsvg(i,j) for
+!             peatland gridcells/tile.      
+ 
             soilresp(i) = socres(i)+litres(i)+rmr(i) !moss root and litter respiration. No bareground!
 
 !    calculate moss time step C fluxes, '/365*deltat' convert year-1
@@ -1177,27 +1204,33 @@ do 470 i = il1, il2
 !     ------------------------------------------------------------------
 
 !>Find CH4 wetland area (if not prescribed) and emissions:
-    call  wetland_methane (hetrores, il1, il2, ta, wetfrac,&
-     &                     thliqg, currlat,&  
-     &                     sand,  slopefrac, &
-     &                  ch4WetSpec,    wetfdyn, ch4WetDyn)
+     call  wetland_methane (hetrores,       il1,       il2,      ilg,  &
+     &                      wetfrac,    thliqg,   currlat,     sand,  &  
+     &                    slopefrac,        ta,                       &
+     &                   ch4WetSpec,   wetfdyn, ch4WetDyn)
+
 
 !> Calculate the methane that is oxidized by the soil sink
-    call soil_ch4uptake(il1,il2,tbar,thpor,bi,thliqg, &
-     &                     thicec,psisat,GRAV,fcan, &
-     &                     wetfdyn,wetfrac,isand,RHOW, &
-     &                     RHOICE,ch4conc,ch4soills)
+    call soil_ch4uptake(        il1,       il2,       ilg,     tbar,  &
+     &                           bi,    thliqg,     thicec,  psisat,  &
+     &                         fcan,    wetfdyn, wetfrac,  &
+     &                        isand,   ch4conc,  &
+     &                        thpor,                                  &
+! ------------------------- inputs above this line, outputs below ----
+     &                    ch4soills)
 
 !    -------------------------------------------------------------------
 
 !>Estimate allocation fractions for leaf, stem, and root components.
 
        call allocate (lfstatus,   thliqc,    ailcg,     ailcb,&
-     &                     il1, il2,     sand,     clay,  &
-     &                    rmatctem,   gleafmas, stemmass, rootmass,     &
-     &                       sort,    nol2pfts,  fcancmx, isand, &
+     &                     il1,        il2,       ilg,       sand,  &
+     &                    clay,   rmatctem,  gleafmas,   stemmass,  &
+     &                rootmass,       sort,    nol2pfts,  fcancmx,  &
+     &                   isand,       THFC,       THLW,             & 
+! --------------------- inputs above this line, outputs below ------------
      &                     afrleaf,  afrstem,  afrroot, &
-     &                     wtstatus, ltstatus, THFC, THLW) ! Added missing THFC/THLW, EC Jan 17,2017.
+     &                    wtstatus, ltstatus) 
 
 
 !>
@@ -1412,14 +1445,16 @@ do 680 j = 1, ignd
 !!status, calculates leaf litter, and converts green grass into brown.
 !!
 
-call phenolgy(gleafmas, bleafmas, &
-     &                         il1,      il2,  leapnow,tbarccs,&
+call phenolgy(gleafmas,   bleafmas,        il1,        il2,    &
+     &             ilg,    leapnow,    tbarccs,     thicec,    &
      &                      thliqc,     THLW,     THFC,       ta,&
      &                    pheanveg,     iday,     radj, roottemp,&
      &                    rmatctem, stemmass, rootmass,     sort,&
      &                    nol2pfts,  fcancmx,  isand, &
+!     ------------------ inputs above this line ----------------------
      &                    flhrloss, leaflitr, lfstatus,  pandays,&
-     &                    colddays,thicec)
+     &                    colddays)
+!     --- variables which are updated and outputs above this line ----
 !
 !    -------------------------------------------------------------------
 !>
@@ -1427,10 +1462,13 @@ call phenolgy(gleafmas, bleafmas, &
 !!and root turnover is calculated in the turnover subroutine.
 !!
 call turnover (stemmass, rootmass,  lfstatus,    ailcg,&
-     &                          il1,      il2,   leapnow,&
+     &              il1,       il2,       ilg,  leapnow,  &
      &                         sort, nol2pfts,  fcancmx,&
+!  ------------------ inputs above this line ----------------------
      &                     stmhrlos, rothrlos,&
+! ----------- inputs which are updated above this line -----------
      &                     stemlitr, rootlitr)
+! ------------------outputs above this line ----------------------
 
 !>Update green leaf biomass for trees and crops and brown leaf biomass for grasses
 
@@ -1504,12 +1542,18 @@ do 800 j = 1, icc
 !!set maxage >0 in classic_params.f90 to switch on mortality due to age and
 !!reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.
 !!
-Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
-     &                     bleafmas,      il1, il2, leapnow, &
-     &                         iday,     sort,  fcancmx,  &
-     &                     lystmmas,     lyrotmas, tymaxlai,&
-     &                     grwtheff, stemltrm,     rootltrm, glealtrm,&
-     &                     geremort, intrmort)
+
+call       mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  &
+     &               bleafmas,        il1,      il2,        ilg,  &
+     &                leapnow,       iday,     sort,    fcancmx,  &
+! ----------------- inputs above this line ----------------------
+     &               lystmmas,   lyrotmas, tymaxlai,   grwtheff,  &
+! -------------- inputs updated above this line ------------------
+     &               stemltrm,   rootltrm, glealtrm,   geremort,  &
+     &               intrmort)
+! ------------------outputs above this line ----------------------
+
+
 !>
 !>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
 !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
@@ -1557,20 +1601,29 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                      thliqc,    THLW,      THFC,    uwind,&
      &                       vwind,  lightng,  fcancmx, litrmass,&
-     &                    prbfrhuc, rmatctem, extnprob, &
+     &                    rmatctem,     ilg,           &
      &                         il1,      il2,     sort, nol2pfts,&
      &                    grclarea,   thicec,   popdin, lucemcom,&
      &                      dofire,  currlat,     iday, fsnow,&
      &                       isand,  &
-!    in above, out below
+
+!    ------------------- inputs above this line ---------------------
+!    ------------ outputs below are the primary outputs -------------
+
      &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
      &                    glcaemls, rtcaemls, stcaemls,&
-     &                    blcaemls, ltrcemls, burnfrac,smfunc_veg,&
-     &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
+     &                    blcaemls,   ltrcemls,   burnfrac,               &
+     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4,   &
+
+!    ------------ outputs below are the secondary outputs -------------
+!                         which may be omitted in AGCM
+
+     &                    emit_co,  emit_nmhc,                           &
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
      &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
      &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
-     &                    pstemmass, pgleafmass )
+     &                   smfunc_veg                                       & 
+     &                   )
 
 !    ------------------------------------------------------------------
 !>
@@ -1706,14 +1759,14 @@ if(spinfast.eq.1)then
 &                    pglfmass, pblfmass, pstemass,  protmass,&
 &                    plitmass, psocmass, vgbiomas,  reprocost,&
 &                    pvgbioms, gavgltms, pgavltms,  gavgscms,&
-&                    pgavscms, galtcels, repro_cost_g,&
-&                    autores , hetrores,      gpp,&
-&                    litres  ,   socres, dstcemls1,&
-&                    litrfall, humiftrs,&
-&                         il1,       il2, &
-&             ipeatland, Cmossmas, pCmossmas, &
-&             nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss, &
-&             ltrestepmoss,humstepmoss)
+&                    pgavscms, galtcels, repro_cost_g,       &
+&                     autores, hetrores,      gpp,    &
+&                      litres,   socres, dstcemls1,    &
+&                    litrfall, humiftrs,                 &
+&                         il1,      il2,      ilg,     &
+&                   ipeatland, Cmossmas, pCmossmas,                &
+&                  nppmosstep, litrfallmoss, litrmsmoss,&
+&                 plitrmsmoss, ltrestepmoss, humstepmoss)
 
 endif
 
@@ -1722,12 +1775,14 @@ endif
 !>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass.
 !>
 call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
-     &                            il1,      il2, fcancmx,    zbotw,&
-     &                          delzw, nol2pfts,  soildpth,&
+     &              il1,        il2,        ilg,      zbotw,  &
+     &            delzw,   nol2pfts,   soildpth,    fcancmx,  &
+     &        ipeatland,                                      &
+! --------------- inputs above this line, outputs below --------
      &                          ailcg,    ailcb,     ailc,    zolnc,&
      &                          rmatc, rmatctem,     slai,  bmasveg,&
      &                       cmasvegc,  veghght, rootdpth,   alvisc,&
-     &                         alnirc,  paicgat,  slaicgat,ipeatland )
+     &           alnirc,    paicgat,   slaicgat)
 
 !>
 !>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str
