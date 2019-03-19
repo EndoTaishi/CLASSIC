@@ -901,6 +901,9 @@ subroutine readin_params
         bsratelt_g,&
         bsratesc_g,&
         a_hetr,&
+        r_depthredu, &
+        tcrit, &
+        frozered, &
         combust,&
         paper,&
         furniture,&
@@ -959,6 +962,9 @@ subroutine readin_params
         coldlmt,&
         coldthrs,&
         roothrsh,&
+        cryodiffus, &
+        biodiffus, &
+        kterm, &
         D_air,&
         g_0,&
         betaCH4,&
