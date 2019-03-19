@@ -141,9 +141,10 @@ c
      2      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc), rootmassrow(nlat,nmos,icc),
      &      pstemmassrow(nlat,nmos,icc), pgleafmassrow(nlat,nmos,icc),
-     4      litrmassrow(nlat,nmos,iccp2),gleafmasrow(nlat,nmos,icc),
-     5      bleafmasrow(nlat,nmos,icc), soilcmasrow(nlat,nmos,iccp2),
-     6      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
+     4      litrmassrow(nlat,nmos,iccp2,ignd),
+     5      gleafmasrow(nlat,nmos,icc), bleafmasrow(nlat,nmos,icc), 
+     6      soilcmasrow(nlat,nmos,iccp2,ignd),
+     7      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
 c
       integer  pandaysrow(nlat,nmos,icc), lfstatusrow(nlat,nmos,icc),
      1         colddaysrow(nlat,nmos,2)
@@ -200,8 +201,9 @@ c
 c
       real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),
      1      nbpvegrow(nlat,nmos,iccp1),hetroresvegrow(nlat,nmos,iccp1),
-     2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp2),
-     3      soilcresvegrow(nlat,nmos,iccp2)
+     2      autoresvegrow(nlat,nmos,icc),
+     3      litresvegrow(nlat,nmos,iccp2,ignd),
+     3      soilcresvegrow(nlat,nmos,iccp2,ignd)
 c
       real  fcancmxgat(ilg,icc),        rmatcgat(ilg,ican,ignd),
      1      zolncgat(ilg,ican),         paicgat(ilg,ican),
@@ -229,8 +231,8 @@ c
      2      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),
      3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),  
      &      pstemmassgat(ilg,icc),      pgleafmassgat(ilg,icc),  
-     4      litrmassgat(ilg,iccp2),     gleafmasgat(ilg,icc),
-     5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp2),
+     4      litrmassgat(ilg,iccp2,ignd),     gleafmasgat(ilg,icc),
+     5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp2,ignd),
      6      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
 c
       integer pandaysgat(ilg,icc),      lfstatusgat(ilg,icc),
@@ -286,8 +288,8 @@ c
 c
       real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),
      1     nbpveggat(ilg,iccp1), hetroresveggat(ilg,iccp1),
-     2      autoresveggat(ilg,icc),litresveggat(ilg,iccp2),
-     3      soilcresveggat(ilg,iccp2)
+     2      autoresveggat(ilg,icc),litresveggat(ilg,iccp2,ignd),
+     3      soilcresveggat(ilg,iccp2,ignd)
 
 c   Methane related variables
        real  ch4WetSpecrow(nlat,nmos),         ch4WetSpecgat(ilg),
@@ -474,10 +476,12 @@ c
 
       do 103 l=1,iccp2
        do 103 k=1,nml
-          litrmassrow(ilmos(k),jlmos(k),l) = litrmassgat(k,l)
-          soilcmasrow(ilmos(k),jlmos(k),l) = soilcmasgat(k,l)
-          litresvegrow(ilmos(k),jlmos(k),l) = litresveggat(k,l)
-          soilcresvegrow(ilmos(k),jlmos(k),l) = soilcresveggat(k,l)
+         do m = 1,ignd
+          litrmassrow(ilmos(k),jlmos(k),l,m) = litrmassgat(k,l,m)
+          soilcmasrow(ilmos(k),jlmos(k),l,m) = soilcmasgat(k,l,m)
+          litresvegrow(ilmos(k),jlmos(k),l,m) = litresveggat(k,l,m)
+          soilcresvegrow(ilmos(k),jlmos(k),l,m)=soilcresveggat(k,l,m)
+         end do
           humiftrsvegrow(ilmos(k),jlmos(k),l) = humiftrsveggat(k,l)
 103   continue
 

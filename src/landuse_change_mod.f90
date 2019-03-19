@@ -192,6 +192,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !
 !     ----------------------------------------------------------------
 !
+!      8  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
+!     J. Melton       carbon pools
+!
+!     19  Jan 2016  - Implemented new LUC litter and soil C pools
+!     J. Melton
+
 !     31  Jan 2014  - Moved parameters to global file (classic_params.f90)
 !     J. Melton
 !
@@ -220,7 +226,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       use classic_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
                                      tolrnce1, tolrance, crop, numcrops, &
-                                     minbare,classpfts
+                                     minbare, iccp2, ignd
 
       implicit none
 
@@ -248,8 +254,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
       real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
       real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
-      real soilcmas(nilg,iccp2) !<soil c mass in kg c/m2, for the 9 pfts + bare
-      real litrmass(nilg,iccp2) !<litter mass in kg c/m2, for the 9 pfts + bare
+      real soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
+      real litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
       real gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
       real gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
       real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
@@ -264,8 +270,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real combustc(nilg,icc)   !<total carbon from deforestation- combustion
       real paperc(nilg,icc)     !<total carbon from deforestation- paper
       real furnturc(nilg,icc)   !<total carbon from deforestation- furniture
-      real incrlitr(nilg,icc)   !<
-      real incrsolc(nilg,icc)   !<
+      real incrlitr             !<
+      real incrsolc             !<
       real chopedbm(nilg)       !<chopped off biomass
       real compdelfrac(nilg,icc)!<with competition on, this is the change in pft frac per timestep
 
@@ -275,14 +281,14 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real grsumcom(nilg) !<grid sum of combustion carbon for all pfts that are chopped
       real grsumpap(nilg) !<grid sum of paper carbon for all pfts that are chopped
       real grsumfur(nilg) !<grid sum of furniture carbon for all pfts that are chopped
-      real grsumlit(nilg) !<grid sum of litter carbon for all pfts that are chopped
-      real grsumsoc(nilg) !<grid sum of soil c carbon for all pfts that are chopped
+      real grsumlit(nilg,ignd) !<grid sum of litter carbon for all pfts that are chopped
+      real grsumsoc(nilg,ignd) !<grid sum of soil c carbon for all pfts that are chopped
       real pbarefra(nilg) !<initialize previous years's bare fraction to 1.0
       real grdencom(nilg) !<grid averaged densities for combustion carbon
       real grdenpap(nilg) !<grid averaged densities for paper carbon
       real grdenfur(nilg) !<grid averaged densities for furniture carbon
-      real grdenlit(nilg) !<grid averaged densities for litter carbon
-      real grdensoc(nilg) !<grid averaged densities for soil c carbon
+      real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
+      real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
       real totcmass(nilg) !<total c mass (live+dead)
       real totlmass(nilg) !<total c mass (live)
       real totdmas1(nilg) !<total c mass (dead) litter
@@ -432,38 +438,43 @@ else !> use provided values but still check they are not negative
         pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
         pgavltms(i)=gavgltms(i)  ! temporary arrays
         pgavscms(i)=gavgscms(i)
-        pluclitpool(i) = litrmass(i,iccp2) 
-        plucscpool(i) = soilcmas(i,iccp2)
+        pluclitpool(i) = litrmass(i,iccp2,1)  !LUC product pools are stored in first layer.
+        plucscpool(i) = soilcmas(i,iccp2,1) !LUC product pools are stored in first layer.
 
         vgbiomas(i)=0.0
         gavgltms(i)=0.0
         gavgscms(i)=0.0
 
 
+        grsumcom(i)=0.0          ! grid sum of combustion carbon for all
+                                 ! pfts that are chopped
+        grsumpap(i)=0.0          ! similarly for paper, 
+        grsumfur(i)=0.0          ! furniture,
+        do k = 1,ignd
+            grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
+            grsumsoc(i,k)=0.0          ! soil c
+            grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
+            grdensoc(i,k)=0.0          ! soil c
+        end do
+
+        grdencom(i)=0.0          ! grid averaged densities for combustion carbon,
+        grdenpap(i)=0.0          ! paper,
+        grdenfur(i)=0.0          ! furniture, 
+
+        totcmass(i)=0.0          ! total c mass (live+dead)
+        totlmass(i)=0.0          ! total c mass (live)
+        totdmas1(i)=0.0          ! total c mass (dead) litter
+        totdmas2(i)=0.0          ! total c mass (dead) soil c
+
         barefrac(i)=1.0          
         pbarefra(i)=1.0           
 
-        grsumcom(i)=0.0
-        grsumpap(i)=0.0
-        grsumfur(i)=0.0
-        grsumlit(i)=0.0
-        grsumsoc(i)=0.0
 
-        grdencom(i)=0.0
-        grdenpap(i)=0.0
-        grdenfur(i)=0.0
-        grdenlit(i)=0.0
-        grdensoc(i)=0.0
+        ntotcmas(i)=0.0          ! total c mass (live+dead)
+        ntotlmas(i)=0.0          ! total c mass (live)
+        ntotdms1(i)=0.0          ! total c mass (dead) litter
+        ntotdms2(i)=0.0          ! total c mass (dead) soil c
 
-        totcmass(i)=0.0
-        totlmass(i)=0.0
-        totdmas1(i)=0.0
-        totdmas2(i)=0.0
-
-        ntotcmas(i)=0.0
-        ntotlmas(i)=0.0
-        ntotdms1(i)=0.0
-        ntotdms2(i)=0.0
 
         lucemcom(i)=0.0
         lucltrin(i)=0.0
@@ -571,10 +582,12 @@ else !> use provided values but still check they are not negative
           else if(j.eq.iccp2) then !LUC product pools cover entire cell.
             term = 1.0
           endif
+          do 342 k = 1, ignd
           totdmas1(i)=totdmas1(i)+ &
-                     (term*litrmass(i,j)*grclarea(i)*km2tom2)
+                     (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
           totdmas2(i)=totdmas2(i)+ &
-                     (term*soilcmas(i,j)*grclarea(i)*km2tom2)
+                     (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
+342       continue
 340   continue
 
         totcmass(i)=totlmass(i)+totdmas1(i)+totdmas2(i)
@@ -666,8 +679,10 @@ else !> use provided values but still check they are not negative
             bleafmas(i,j)=bleafmas(i,j)*term
             stemmass(i,j)=stemmass(i,j)*term
             rootmass(i,j)=rootmass(i,j)*term
-            litrmass(i,j)=litrmass(i,j)*term
-            soilcmas(i,j)=soilcmas(i,j)*term
+            do 572 k = 1, ignd
+              litrmass(i,j,k)=litrmass(i,j,k)*term
+              soilcmas(i,j,k)=soilcmas(i,j,k)*term
+572         continue
           endif
 570   continue
 !>
@@ -676,8 +691,10 @@ else !> use provided values but still check they are not negative
 !>
         if(bareiord(i).eq.1)then
           term = pbarefra(i)/barefrac(i)
-          litrmass(i,iccp1)=litrmass(i,iccp1)*term
-          soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
+          do 582 k = 1, ignd
+          litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
+          soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
+582       continue
         endif
 !>
 !>if any of the pfts fractional coverage decreases, then we chop the
@@ -734,16 +751,16 @@ else !> use provided values but still check they are not negative
 !>off pft needs to be assimilated, and so does soil c from
 !>the chopped off fraction of the chopped pft
 !>
-              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
-                       *litrmass(i,m)*km2tom2
-              incrlitr(i,m)=redubmas1
+              do 622 k = 1,ignd
+                incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+                        *litrmass(i,m,k)*km2tom2
 
-              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
-                       *soilcmas(i,m)*km2tom2
-              incrsolc(i,m)=redubmas1
+                incrsolc=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+                        *soilcmas(i,m,k)*km2tom2
 
-              grsumlit(i)=grsumlit(i)+incrlitr(i,m)
-              grsumsoc(i)=grsumsoc(i)+incrsolc(i,m)
+                grsumlit(i,k)=grsumlit(i,k)+incrlitr
+                grsumsoc(i,k)=grsumsoc(i,k)+incrsolc
+622           continue
             endif
 
 610     continue
@@ -753,15 +770,16 @@ else !> use provided values but still check they are not negative
 !!from the decreased fraction and add it to grsumlit & grsumsoc for spreading over the whole grid cell
 !!
         if(bareiord(i).eq.-1)then
-
+          do 632 k = 1, ignd
           redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
-                   *litrmass(i,iccp1)*km2tom2
+                    *litrmass(i,iccp1,k)*km2tom2
 
           redubmas2=(pbarefra(i)-barefrac(i))*grclarea(i) &
-                   *soilcmas(i,iccp1)*km2tom2
+                    *soilcmas(i,iccp1,k)*km2tom2
 
-          grsumlit(i)=grsumlit(i)+redubmas1
-          grsumsoc(i)=grsumsoc(i)+redubmas2
+            grsumlit(i,k)=grsumlit(i,k)+redubmas1
+            grsumsoc(i,k)=grsumsoc(i,k)+redubmas2
+632       continue
         endif
 
 !>calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) & grsumfur(i)
@@ -787,38 +805,41 @@ else !> use provided values but still check they are not negative
         grdencom(i)=grsumcom(i)/(grclarea(i)*km2tom2)
         grdenpap(i)=grsumpap(i)/(grclarea(i)*km2tom2)
         grdenfur(i)=grsumfur(i)/(grclarea(i)*km2tom2)
-        grdenlit(i)=grsumlit(i)/(grclarea(i)*km2tom2)
-        grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
+        do k = 1,ignd
+            grdenlit(i,k)=grsumlit(i,k)/(grclarea(i)*km2tom2)
+            grdensoc(i,k)=grsumsoc(i,k)/(grclarea(i)*km2tom2)
+        end do
 
 !>      Now add the C to the gridcell's LUC pools of litter and soil C.
 !!      The fast decaying dead LUC C (paper) and slow (furniture) are kept in
 !!      the first 'soil' layer and iccp2 position. The litter and soil C
 !!      contributions are added to the normal litter and soil C pools below.
-       litrmass(i,iccp2)=litrmass(i,iccp2) + grdenpap(i)
-       soilcmas(i,iccp2)=soilcmas(i,iccp2) + grdenfur(i)
+       litrmass(i,iccp2,1)=litrmass(i,iccp2,1)+grdenpap(i) 
+       soilcmas(i,iccp2,1)=soilcmas(i,iccp2,1)+grdenfur(i) 
+
 
 !     Add any adjusted litter and soilc back their respective pools
 
       do 650 j = 1, icc
           if(fcancmx(i,j).gt.zero)then
-            litrmass(i,j) = litrmass(i,j) + grdenlit(i)
-            soilcmas(i,j) = soilcmas(i,j) + grdensoc(i)
+                litrmass(i,j,:)=litrmass(i,j,:)+grdenlit(i,:) 
+                soilcmas(i,j,:)=soilcmas(i,j,:)+grdensoc(i,:) 
           else
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
             stemmass(i,j)=0.0
             rootmass(i,j)=0.0
-            litrmass(i,j)=0.0
-            soilcmas(i,j)=0.0
+            litrmass(i,j,:)=0.0  ! set all soil layers to 0
+            soilcmas(i,j,:)=0.0
           endif
 650   continue
 
         if(barefrac(i).gt.zero)then
-          litrmass(i,iccp1) = litrmass(i,iccp1) + grdenlit(i)
-          soilcmas(i,iccp1) = soilcmas(i,iccp1) + grdensoc(i)
+            litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
+            soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
         else
-          litrmass(i,iccp1)=0.0
-          soilcmas(i,iccp1)=0.0
+          litrmass(i,iccp1,:)=0.0 ! set all soil layers to 0
+          soilcmas(i,iccp1,:)=0.0
         endif
 
 
@@ -850,10 +871,12 @@ else !> use provided values but still check they are not negative
           else if(j.eq.iccp2) then !assumed to be over entire area for LUC product pools
             term = 1.0
           endif
+          do k = 1, ignd
           ntotdms1(i)=ntotdms1(i)+ &
-                     (term*litrmass(i,j)*grclarea(i)*km2tom2)
+                     (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
           ntotdms2(i)=ntotdms2(i)+ &
-                     (term*soilcmas(i,j)*grclarea(i)*km2tom2)
+                     (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
+          end do
 710   continue
 
         ntotcmas(i)=ntotlmas(i)+ntotdms1(i)+ntotdms2(i)
@@ -887,12 +910,16 @@ else !> use provided values but still check they are not negative
       do 750 j = 1, icc
           vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
                      bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
-          gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
+          do k = 1, ignd
+            gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
+            gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+          end do
 750   continue
 
-        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
-        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
+        do k = 1,ignd
+            gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1,k) )
+            gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1,k) )
+        end do
 
 !>
 !>just like total amount of carbon must balance, the grid averagred densities must also balance
@@ -900,7 +927,7 @@ else !> use provided values but still check they are not negative
        if( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i)&
               + pluclitpool(i) + plucscpool(i) &
               - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
-              - litrmass(i,iccp2) - soilcmas(i,iccp2) &
+              - litrmass(i,iccp2,1) - soilcmas(i,iccp2,1) &
               - grdencom(i)) > tolrance ) then
            write(6,*)'iday = ',iday
            write(6,*)'at grid cell = ',i
@@ -918,8 +945,6 @@ else !> use provided values but still check they are not negative
            write(6,*)'gavgltms(i) = ',gavgltms(i)
            write(6,*)'gavgscms(i) = ',gavgscms(i)
            write(6,*)'grdencom(i) = ',grdencom(i)
-           write(6,*)'litrmass(i,iccp2) = ',litrmass(i,iccp2)
-           write(6,*)'soilcmas(i,iccp2) = ',soilcmas(i,iccp2)
          write(6,*)'diff = ',abs((pvgbioms(i)+pgavltms(i)+pgavscms(i)) &
           -(vgbiomas(i)+gavgltms(i)+gavgscms(i)+ grdencom(i)))
            write(6,*)'tolrance = ',tolrance
@@ -1119,7 +1144,8 @@ end subroutine adjust_fracs_comp
 !>\namespace landuse_change
 !>Central module for all land use change operations
 !!
-!!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416.
+!!The land use change (LUC) module of CTEM is based on
+!! (Arora and Boer, 2010) \cite Arora2010-416.
 !! When the area of crop PFTs changes, CTEM generates LUC emissions.
 !! In the simulation where fractional coverage of PFTs is specified, the changes in
 !! fractional coverage of crop PFTs are made consistent with changes in the
@@ -1133,7 +1159,8 @@ end subroutine adjust_fracs_comp
 !! fractional coverage of crop PFTs is specified. Similar to a simulation with
 !!prescribed PFT fractions, when the area of crop PFTs increases, the fractional
 !! coverage of non-crop PFTs is decreased in proportion to their existing coverage
-!! (Wang et al. (2006) \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
+!! (Wang et al. (2006) \cite Wang2006-he. Alternatively, and in contrast to the
+!! simulation with prescribed
 !! PFT fractions, when the area of crop PFTs decreases then the generated bare
 !!fraction is available for recolonization by non-crop PFTs.
 !!

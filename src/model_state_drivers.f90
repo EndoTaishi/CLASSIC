@@ -554,8 +554,8 @@ contains
         real, pointer, dimension(:,:,:) :: bleafmasrow          !< Brown leaf mass for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: stemmassrow          !< Stem mass for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: rootmassrow          !< Root mass for each of the CTEM pfts, \f$kg c/m^2\f$
-        real, pointer, dimension(:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-        real, pointer, dimension(:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: pstemmassrow         !< Stem mass from previous timestep, is value before fire. used by burntobare subroutine
         real, pointer, dimension(:,:,:) :: pgleafmassrow        !< Green leaf mass from previous timestep, is value before fire. used by burntobare subroutine
         real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -852,10 +852,10 @@ contains
                 end do
             end if
 
-            !litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
-            !soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
-            litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
-            soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
+            litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
+            soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+            !litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
+            !soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
             
             ! If a tracer is being used, read in those values.
             if (useTracer > 0) then 
@@ -935,8 +935,8 @@ contains
                         lfstatusrow(i,m,1)=2
 
                         do j = 1,iccp2
-                            litrmassrow(i,m,j)=0.0
-                            soilcmasrow(i,m,j)=0.0
+                            litrmassrow(i,m,j,1:ignd)=0.0
+                            soilcmasrow(i,m,j,1:ignd)=0.0
                         enddo
                     end do ! nmtest
                 enddo !nltest
@@ -1002,14 +1002,17 @@ contains
         real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
         real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
         real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
-        real, pointer, dimension(:,:,:) :: litrmassrow
-        real, pointer, dimension(:,:,:) :: soilcmasrow
+        real, pointer, dimension(:,:,:,:) :: litrmassrow
+        real, pointer, dimension(:,:,:,:) :: soilcmasrow
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
+        ! local
+        integer :: k
+        
         ! point pointers:
         ctem_on           => c_switch%ctem_on
         PFTCompetition    => c_switch%PFTCompetition
@@ -1075,8 +1078,10 @@ contains
             call ncPut3DVar(rsid, 'bleafmas', bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'rootmass', rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos])
-            call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos])
+            do k = 1, ignd
+              call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos, k])
+              call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos, k])
+            end do
             call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'pandays', real(pandaysrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])

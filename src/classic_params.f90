@@ -374,6 +374,10 @@ real :: alpha_hetres                !< parameter for finding litter temperature 
 real :: bsratelt_g                  !< bare ground litter respiration rate at 15 c in kg c/kg c.year
 real :: bsratesc_g                  !< bare ground soil c respiration rates at 15 c in kg c/kg c.year
 real :: a_hetr                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
+real :: r_depthredu                 !< Following Lawrence et al. Environ. Res. Lett.,2015. we adopt 10.0 as our value, controls
+                                    !!  decomposition at depth to account for observed reductions that are independent of temp and moisture.
+real :: tcrit                       !< temperature below which respiration is inhibited. [ C ]
+real :: frozered                    !< factor to reduce respiration by for temps below tcrit
 
 ! landuse_change_mod.f90 parameters: --------------
 
@@ -479,6 +483,14 @@ integer, dimension(2) :: coldlmt!< No. of days for which some temperature has to
 real, dimension(2) :: coldthrs  !<1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees \n
                                 !!2.  8 c threshold for initiating "harvest" for crops, the array colddays tracks days corresponding to these thresholds
 real :: roothrsh                !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
+
+! Turbation (in soilC_processes.f90) parameters: ---------------------------------
+
+real :: cryodiffus            !< Diffusivity (or simply the rate of the cryoturbation) \f$(m^2/d)\f$
+                              !! value from \cite Koven2011-796 - 5 cm2/yr. 
+real :: biodiffus             !< Diffusivity (or simply the rate of the bioturbation) \f$(m^2/d)\f$
+                              !! value from \cite Koven2011-796 - 1 cm2/yr.                                   
+real :: kterm                 !< Constant used in determination of depth at which cryoturbation ceases
 
 ! soil_ch4uptake parameters: -----------------------------
 

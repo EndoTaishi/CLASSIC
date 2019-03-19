@@ -17,14 +17,12 @@ contains
 !=============================================================================================================
 
 !>\ingroup turbation
+!> @author Joe Melton
 !!@{
 
 subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast,litrmass,soilcmas)
 
-
-! J. Melton. May 30 2016.
-
-use ctem_params,        only : icc, ilg, ignd, iccp2, iccp1, zero,tolrance,deltat, &
+use classic_params,        only : icc, ilg, ignd, iccp2, iccp1, zero,tolrance,deltat, &
                                 cryodiffus, biodiffus, kterm
 
 implicit none
@@ -222,6 +220,7 @@ end subroutine turbation
 !>@}
 !=============================================================================================================
 !>\ingroup tridiag
+!> @author Joe Melton
 subroutine tridiag(a,b,c,r,u)
 
 ! Subroutine to solve triadiagonal system of equations
@@ -231,7 +230,6 @@ subroutine tridiag(a,b,c,r,u)
 !in the first and last elements, respectively.
 
 !Based on Numerical Recipes in Fortran 90
-
 
 ! J. Melton, May 30 2016
 

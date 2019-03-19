@@ -2,13 +2,19 @@
 !! Converts biomass to structural attributes
 !!@author V. Arora, J. Melton, Y. Peng 
 !!
-!!The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root (\f$C_R\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
+!!The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root
+!! (\f$C_R\f$) components is used to calculate the structural attributes of vegetation
+!! for the energy and water balance calculations by CLASS.
 !!
-!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_L\f$; see also classic_params.f90)
+!!Leaf biomass is converted to LAI using specific leaf area
+!! (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed
+!! to be a function of leaf lifespan (\f$\tau_L\f$; see also classic_params.f90)
 !!
 !!\f[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \f]
 !!
-!!where \f$\gamma_L\f$ is a constant with value equal to \f$25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}\f$. The vegetation height (\f$H\f$; \f$m\f$) is calculated for tree, crop and grass PFTs as
+!!where \f$\gamma_L\f$ is a constant with value equal to \f$25\,m^2\,(kg\,C)^{-1}\,
+!!yr^{0.5}\f$. The vegetation height (\f$H\f$; \f$m\f$) is calculated for tree, crop
+!! and grass PFTs as
 !!
 !!\f$ H = \min (10.0C_S^{0.385},45) \f$ for trees
 !!
@@ -16,7 +22,12 @@
 !!
 !!\f$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} \f$ for  grasses
 !!
-!!where \f$C_{L,g}\f$ is the green leaf biomass and \f$C_{L,b}\f$ is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly \f$(\tau_{L,b} = 0.1\,\tau_L\f$).
+!!where \f$C_{L,g}\f$ is the green leaf biomass and \f$C_{L,b}\f$ is the brown
+!! leaf biomass that is scaled by 0.55 to reduce its contribution to the plant
+!! height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of
+!! green grass leaves, due to normal aging or stress from drought and/or cold, does
+!! not contribute to litter pool directly as the leaves first turn brown. The brown
+!! leaves themselves turnover to litter relatively rapidly \f$(\tau_{L,b} = 0.1\,\tau_L\f$).
 !!
 !! In peatlands the vegetation height is calculated as (Wu et al. 2016) \cite Wu2016-zt
 !!
@@ -30,22 +41,37 @@
 !!
 !!\f$ f_R(z) = 1 - \exp(-\iota z) \f$
 !!
-!!Rooting depth (\f$d_R\f$; \f$m\f$), which is defined to be the depth containing \f$99\,{\%}\f$ of the root mass, is found by setting \f$z\f$ equal to \f$d_R\f$ and \f$f_R = 0.99\f$, which yields
+!!Rooting depth (\f$d_R\f$; \f$m\f$), which is defined to be the depth 
+!!containing \f$99\,{\%}\f$ of the root mass, is found by setting \f$z\f$ equal 
+!!to \f$d_R\f$ and \f$f_R = 0.99\f$, which yields
 !!
 !!\f[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \f]
 !!
 !!The parameter \f$\iota\f$ that describes the exponential root distribution is calculated as
 !!\f[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \f]
 !!
-!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_R}\f$ the average root biomass derived from Jackson et al. (1996) \cite Jackson1996-va (see also classic_params.f90). Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
+!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution 
+!! profile parameter and \f$\overline{C_R}\f$ the average root biomass derived 
+!! from Jackson et al. (1996) \cite Jackson1996-va (see also classic_params.f90).
+!! Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than
+!! \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the 
+!!PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper
+!! (shallower) root profile than the mean root profile.
 !!
-!!The rooting depth \f$d_R\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_R\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_R\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
+!!The rooting depth \f$d_R\f$ is checked to ensure it does not exceed the soil 
+!!depth or extend into perennially frozen soil. If so, \f$d_R\f$ is set to the soil depth or mean
+!!annual maximum active layer depth (based on e-folding time of 5 years), whichever is shallower, 
+!! and \f$\iota\f$ is recalculated
+!! as \f$\iota = 4.605/d_R\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term).
+!! The new value of \f$\iota\f$ is used to determine the root distribution profile 
+!!adjusted to the shallower depth. Finally, the root distribution profile is used 
+!!to calculate fraction of roots in each of the model's soil layers.
 !!
 !!
       subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,  
      1                            il1,      il2,      ilg,    zbotw,
      2                          delzw, nol2pfts,  soildpth, fcancmx,
-     3                      ipeatland,
+     3                      ipeatland,actlyr_yr,
 !    4--------------- inputs above this line, outputs below --------
      5                          ailcg,    ailcb,     ailc,    zolnc,
      6                          rmatc, rmatctem,     slai,  bmasveg,
@@ -154,6 +180,7 @@ c
       real useb(ilg,icc)         !< 
       real zroot                 !< 
       real soildpth(ilg)         !<input: soil depth (m)
+      real, dimension(ilg), intent(in) :: actlyr_yr           !< annual maximum active layer depth (m)
       real etmp(ilg,icc,ignd)    !<
       real totala(ilg,icc)       !<
       real rmat_sum              !< 
@@ -451,18 +478,21 @@ c
             usealpha(i,m)=alpha(sort(m))
             rootdpth(i,m) = (4.605*(rootmass(i,m)**alpha(sort(m))))/b(m)
 !>
-!!if estimated rooting depth is greater than soil depth, or
-!!the maximum rooting depth then adjust rooting depth and
-!!parameter alpha
+!!if estimated rooting depth is greater than the perennially-frozen
+!!soil depth, the permeable soil depth or the maximum rooting depth
+!!then adjust rooting depth and parameter alpha. The soildepth is
+!!the permeable soil depth from the initialization file, zbotw is the
+!!bottom of the soil layer that soil depth lies within.
 !!
-!!also find "a" (parameter determining root profile). this is 
+!!Also find "a" (parameter determining root profile). this is
 !!the "a" which depends on time varying root biomass 
 !!
-
-            if(rootdpth(i,m).gt.min(soildpth(i),zbotw(i,ignd),
-     1                                mxrtdpth(sort(m))))then
-              rootdpth(i,m) = min(soildpth(i),zbotw(i,ignd),
-     1                                  mxrtdpth(sort(m)))
+            if(rootdpth(i,m).gt.min(soildpth(i),
+     1                              actlyr_yr(i),
+     2                              zbotw(i,ignd),
+     3                              mxrtdpth(sort(m)))) then
+              rootdpth(i,m) = min(soildpth(i),actlyr_yr(i),
+     1                            zbotw(i,ignd),mxrtdpth(sort(m)))
               if(rootdpth(i,m).le.abszero)then
                 a(i,m)=100.0
               else

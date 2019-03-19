@@ -383,12 +383,12 @@ real, allocatable, dimension(:,:,:) :: nepveg      !<net ecosystem productity fo
 real, allocatable, dimension(:,:,:) :: nbpveg      !<net biome productity for bare fraction OR net biome productity for each pft
 real, allocatable, dimension(:,:,:) :: hetroresveg !<
 
-! allocated with nlat,nmos,iccp2:
-    real, allocatable, dimension(:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: litresveg   !<
-    real, allocatable, dimension(:,:,:) :: soilcresveg !<
-    real, allocatable, dimension(:,:,:) :: humiftrsveg !<
+! allocated with nlat,nmos,iccp2,ignd:
+    real, allocatable, dimension(:,:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:,:) :: litresveg   !<
+    real, allocatable, dimension(:,:,:,:) :: soilcresveg !<
+    real, allocatable, dimension(:,:,:,:) :: humiftrsveg !<
 
 ! allocated with nlat,nmos,{some number}:
     integer, allocatable, dimension(:,:,:):: colddays          !<cold days counter for tracking days below a certain
@@ -458,8 +458,8 @@ type veg_gat
     real, allocatable, dimension(:,:) :: stmhrlos   !<stem harvest loss for crops, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: rmatc    !<fraction of roots for each of class' 4 pfts in each soil layer
     real, allocatable, dimension(:,:,:) :: rmatctem !<fraction of roots for each of ctem's 9 pfts in each soil layer
-    real, allocatable, dimension(:,:) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: vgbiomas_veg !<vegetation biomass for each pft
 
     real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide (kg <species> $m^{-2}$$s^{-1}$)
@@ -567,8 +567,8 @@ type veg_gat
     real, allocatable, dimension(:,:) :: nppveg     !<npp for individual pfts, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: hetroresveg!<
     real, allocatable, dimension(:,:) :: autoresveg !<
-    real, allocatable, dimension(:,:) :: litresveg  !<
-    real, allocatable, dimension(:,:) :: soilcresveg!<
+    real, allocatable, dimension(:,:,:) :: litresveg  !<
+    real, allocatable, dimension(:,:,:) :: soilcresveg!<
     real, allocatable, dimension(:,:) :: rmlvegacc  !<
     real, allocatable, dimension(:,:) :: rmsveg     !<stem maintenance resp. rate for each pft
     real, allocatable, dimension(:,:) :: rmrveg     !<root maintenance resp. rate for each pft
@@ -729,11 +729,7 @@ type ctem_monthly
       real, allocatable, dimension(:,:,:)   :: vgbiomas_mo   !<
       real, allocatable, dimension(:,:,:)   :: autores_mo    !<
       real, allocatable, dimension(:,:,:) :: totcmass_mo   !<
-      real, allocatable, dimension(:,:,:) :: litrmass_mo   !<
-      real, allocatable, dimension(:,:,:) :: soilcmas_mo   !<
       real, allocatable, dimension(:,:,:) :: nep_mo        !<
-      real, allocatable, dimension(:,:,:) :: litres_mo     !<
-      real, allocatable, dimension(:,:,:) :: soilcres_mo   !<
       real, allocatable, dimension(:,:,:) :: hetrores_mo   !<
       real, allocatable, dimension(:,:,:) :: nbp_mo        !<
       real, allocatable, dimension(:,:,:) :: emit_co2_mo  !<
@@ -752,6 +748,11 @@ type ctem_monthly
       real, allocatable, dimension(:,:,:) :: bterm_mo     !<
       real, allocatable, dimension(:,:,:) :: mterm_mo     !<
       real, allocatable, dimension(:,:,:) :: smfuncveg_mo !<
+! allocated with nlat,nmos,icc/iccp1/iccp2,ignd:
+      real, allocatable, dimension(:,:,:,:) :: litrmass_mo   !<
+      real, allocatable, dimension(:,:,:,:) :: soilcmas_mo   !<
+      real, allocatable, dimension(:,:,:,:) :: litres_mo     !<
+      real, allocatable, dimension(:,:,:,:) :: soilcres_mo   !<
 
 end type ctem_monthly
 
@@ -767,8 +768,6 @@ type ctem_gridavg_monthly
     real, allocatable, dimension(:) :: laimaxg_mo_g  !<
     real, allocatable, dimension(:) :: stemmass_mo_g !<
     real, allocatable, dimension(:) :: rootmass_mo_g !<
-    real, allocatable, dimension(:) :: litrmass_mo_g !<
-    real, allocatable, dimension(:) :: soilcmas_mo_g !<
     real, allocatable, dimension(:) :: litrfall_mo_g !<
     real, allocatable, dimension(:) :: humiftrs_mo_g !<
     real, allocatable, dimension(:) :: npp_mo_g      !<
@@ -777,8 +776,6 @@ type ctem_gridavg_monthly
     real, allocatable, dimension(:) :: nbp_mo_g      !<
     real, allocatable, dimension(:) :: hetrores_mo_g !<
     real, allocatable, dimension(:) :: autores_mo_g  !<
-    real, allocatable, dimension(:) :: litres_mo_g   !<
-    real, allocatable, dimension(:) :: soilcres_mo_g !<
     real, allocatable, dimension(:) :: vgbiomas_mo_g !<
     real, allocatable, dimension(:) :: totcmass_mo_g !<
     real, allocatable, dimension(:) :: emit_co2_mo_g !<
@@ -809,6 +806,12 @@ type ctem_gridavg_monthly
     real, allocatable, dimension(:) :: cProduct_mo_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, allocatable, dimension(:) :: fProductDecomp_mo_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
+! allocated with nlat,ignd:
+    real, allocatable, dimension(:,:) :: litrmass_mo_g !<
+    real, allocatable, dimension(:,:) :: soilcmas_mo_g !<
+    real, allocatable, dimension(:,:) :: litres_mo_g   !<
+    real, allocatable, dimension(:,:) :: soilcres_mo_g !<
+
 end type ctem_gridavg_monthly
 
 type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
@@ -831,11 +834,7 @@ type ctem_tileavg_monthly
       real, allocatable, dimension(:,:) :: vgbiomas_mo_t !<
       real, allocatable, dimension(:,:) :: autores_mo_t  !<
       real, allocatable, dimension(:,:) :: totcmass_mo_t !<
-      real, allocatable, dimension(:,:) :: litrmass_mo_t !<
-      real, allocatable, dimension(:,:) :: soilcmas_mo_t !<
       real, allocatable, dimension(:,:) :: nep_mo_t      !<
-      real, allocatable, dimension(:,:) :: litres_mo_t   !<
-      real, allocatable, dimension(:,:) :: soilcres_mo_t !<
       real, allocatable, dimension(:,:) :: hetrores_mo_t !<
       real, allocatable, dimension(:,:) :: nbp_mo_t      !<
       real, allocatable, dimension(:,:) :: emit_co2_mo_t !<
@@ -866,6 +865,12 @@ type ctem_tileavg_monthly
       real, allocatable, dimension(:,:) :: wind_mo_t     !<
       real, allocatable, dimension(:,:) :: fProductDecomp_mo_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
+      ! allocated with nlat,nmos,ignd:
+      real, allocatable, dimension(:,:,:) :: litrmass_mo_t !<
+      real, allocatable, dimension(:,:,:) :: soilcmas_mo_t !<
+      real, allocatable, dimension(:,:,:) :: litres_mo_t   !<
+      real, allocatable, dimension(:,:,:) :: soilcres_mo_t !<
+
 end type ctem_tileavg_monthly
 
 type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
@@ -888,11 +893,7 @@ type ctem_annual
       real, allocatable, dimension(:,:,:) :: vgbiomas_yr  !<
       real, allocatable, dimension(:,:,:) :: autores_yr   !<
       real, allocatable, dimension(:,:,:) :: totcmass_yr!<
-      real, allocatable, dimension(:,:,:) :: litrmass_yr!<
-      real, allocatable, dimension(:,:,:) :: soilcmas_yr!<
       real, allocatable, dimension(:,:,:) :: nep_yr     !<
-      real, allocatable, dimension(:,:,:) :: litres_yr  !<
-      real, allocatable, dimension(:,:,:) :: soilcres_yr!<
       real, allocatable, dimension(:,:,:) :: hetrores_yr!<
       real, allocatable, dimension(:,:,:) :: nbp_yr     !<
       real, allocatable, dimension(:,:,:) :: emit_co2_yr  !<
@@ -913,6 +914,13 @@ type ctem_annual
       real, allocatable, dimension(:,:,:) :: smfuncveg_yr !<
       real, allocatable, dimension(:,:,:) :: veghght_yr   !<
 
+      ! allocated with nlat,nmos,iccp2,ignd:
+      real, allocatable, dimension(:,:,:,:) :: litrmass_yr!<
+      real, allocatable, dimension(:,:,:,:) :: soilcmas_yr!<
+      real, allocatable, dimension(:,:,:,:) :: litres_yr  !<
+      real, allocatable, dimension(:,:,:,:) :: soilcres_yr!<
+      
+
 end type ctem_annual
 
 type (ctem_annual), save, target :: ctem_yr
@@ -928,16 +936,12 @@ type ctem_gridavg_annual
     real, allocatable, dimension(:) :: laimaxg_yr_g  !<
     real, allocatable, dimension(:) :: stemmass_yr_g !<
     real, allocatable, dimension(:) :: rootmass_yr_g !<
-    real, allocatable, dimension(:) :: litrmass_yr_g !<
-    real, allocatable, dimension(:) :: soilcmas_yr_g !<
     real, allocatable, dimension(:) :: npp_yr_g      !<
     real, allocatable, dimension(:) :: gpp_yr_g      !<
     real, allocatable, dimension(:) :: nep_yr_g      !<
     real, allocatable, dimension(:) :: nbp_yr_g      !<
     real, allocatable, dimension(:) :: hetrores_yr_g !<
     real, allocatable, dimension(:) :: autores_yr_g  !<
-    real, allocatable, dimension(:) :: litres_yr_g   !<
-    real, allocatable, dimension(:) :: soilcres_yr_g !<
     real, allocatable, dimension(:) :: vgbiomas_yr_g !<
     real, allocatable, dimension(:) :: totcmass_yr_g !<
     real, allocatable, dimension(:) :: emit_co2_yr_g !<
@@ -969,6 +973,12 @@ type ctem_gridavg_annual
     real, allocatable, dimension(:) :: cProduct_yr_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, allocatable, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
+! allocated with nlat,ignd:
+    real, allocatable, dimension(:,:) :: litrmass_yr_g !<
+    real, allocatable, dimension(:,:) :: soilcmas_yr_g !<
+    real, allocatable, dimension(:,:) :: litres_yr_g   !<
+    real, allocatable, dimension(:,:) :: soilcres_yr_g !<
+
 end type ctem_gridavg_annual
 
 type (ctem_gridavg_annual), save, target :: ctem_grd_yr
@@ -989,11 +999,7 @@ type ctem_tileavg_annual
       real, allocatable, dimension(:,:) :: vgbiomas_yr_t !<
       real, allocatable, dimension(:,:) :: autores_yr_t  !<
       real, allocatable, dimension(:,:) :: totcmass_yr_t !<
-      real, allocatable, dimension(:,:) :: litrmass_yr_t !<
-      real, allocatable, dimension(:,:) :: soilcmas_yr_t !<
       real, allocatable, dimension(:,:) :: nep_yr_t      !<
-      real, allocatable, dimension(:,:) :: litres_yr_t   !<
-      real, allocatable, dimension(:,:) :: soilcres_yr_t !<
       real, allocatable, dimension(:,:) :: hetrores_yr_t !<
       real, allocatable, dimension(:,:) :: nbp_yr_t      !<
       real, allocatable, dimension(:,:) :: emit_co2_yr_t !<
@@ -1023,6 +1029,12 @@ type ctem_tileavg_annual
       real, allocatable, dimension(:,:) :: veghght_yr_t  !<
       real, allocatable, dimension(:,:) :: peatdep_yr_t  !<
       real, allocatable, dimension(:,:) :: fProductDecomp_yr_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
+
+! allocated with nlat,nmos,ignd:
+      real, allocatable, dimension(:,:,:) :: litrmass_yr_t !<
+      real, allocatable, dimension(:,:,:) :: soilcmas_yr_t !<
+      real, allocatable, dimension(:,:,:) :: litres_yr_t   !<
+      real, allocatable, dimension(:,:,:) :: soilcres_yr_t !<
 
 end type ctem_tileavg_annual
 
@@ -1218,12 +1230,12 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%nbpveg(nlat,nmos,iccp1),&
          vrot%hetroresveg(nlat,nmos,iccp1),&
 
-! allocated with nlat,nmos,iccp2:
-        vrot%litrmass(nlat,nmos,iccp2),&
-        vrot%soilcmas(nlat,nmos,iccp2),&
-        vrot%litresveg(nlat,nmos,iccp2),&
-        vrot%soilcresveg(nlat,nmos,iccp2),&
-        vrot%humiftrsveg(nlat,nmos,iccp2),&
+! allocated with nlat,nmos,iccp2,ignd:
+        vrot%litrmass(nlat,nmos,iccp2,ignd),&
+        vrot%soilcmas(nlat,nmos,iccp2,ignd),&
+        vrot%litresveg(nlat,nmos,iccp2,ignd),&
+        vrot%soilcresveg(nlat,nmos,iccp2,ignd),&
+        vrot%humiftrsveg(nlat,nmos,iccp2,ignd),&
 
         tracer%litrMassrot(nlat,nmos,iccp2),&
         tracer%soilCMassrot(nlat,nmos,iccp2),&
@@ -1433,12 +1445,12 @@ allocate(vgat%grclarea(ilg),&
          vgat%nbpveg (ilg,iccp1),&
          vgat%hetroresveg (ilg,iccp1),&
 
-! allocated with ilg, iccp2:
-        vgat%litrmass (ilg,iccp2),&
-        vgat%soilcmas (ilg,iccp2),&
-        vgat%litresveg (ilg,iccp2),&
-        vgat%soilcresveg (ilg,iccp2),&
-        vgat%humiftrsveg (ilg,iccp2),&
+! allocated with ilg, iccp2,ignd:
+        vgat%litrmass (ilg,iccp2,ignd),&
+        vgat%soilcmas (ilg,iccp2,ignd),&
+        vgat%litresveg (ilg,iccp2,ignd),&
+        vgat%soilcresveg (ilg,iccp2,ignd),&
+        vgat%humiftrsveg (ilg,iccp2),&  !FLAG maybe add ignd later.
 
 ! allocated with ilg,ignd:
 !          vgat%rgmgat(ilg,ignd),&
@@ -1493,11 +1505,11 @@ allocate(vgat%grclarea(ilg),&
          ctem_mo%autores_mo (nlat,nmos,icc),&
          ctem_mo%humiftrsveg_mo (nlat,nmos,iccp2),&
          ctem_mo%totcmass_mo (nlat,nmos,iccp1),&
-         ctem_mo%litrmass_mo (nlat,nmos,iccp2),&
-         ctem_mo%soilcmas_mo (nlat,nmos,iccp2),&
+         ctem_mo%litrmass_mo (nlat,nmos,iccp2,ignd),&
+         ctem_mo%soilcmas_mo (nlat,nmos,iccp2,ignd),&
+         ctem_mo%litres_mo (nlat,nmos,iccp2,ignd),&
+         ctem_mo%soilcres_mo (nlat,nmos,iccp2,ignd),&
          ctem_mo%nep_mo (nlat,nmos,iccp1),&
-         ctem_mo%litres_mo (nlat,nmos,iccp2),&
-         ctem_mo%soilcres_mo (nlat,nmos,iccp2),&
          ctem_mo%hetrores_mo (nlat,nmos,iccp1),&
          ctem_mo%nbp_mo (nlat,nmos,iccp1),&
          ctem_mo%emit_co2_mo (nlat,nmos,icc),&
@@ -1520,8 +1532,8 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_mo%laimaxg_mo_g (nlat),&
          ctem_grd_mo%stemmass_mo_g (nlat),&
          ctem_grd_mo%rootmass_mo_g (nlat),&
-         ctem_grd_mo%litrmass_mo_g (nlat),&
-         ctem_grd_mo%soilcmas_mo_g (nlat),&
+         ctem_grd_mo%litrmass_mo_g (nlat,ignd),&
+         ctem_grd_mo%soilcmas_mo_g (nlat,ignd),&
          ctem_grd_mo%litrfall_mo_g (nlat),&
          ctem_grd_mo%humiftrs_mo_g (nlat),&
          ctem_grd_mo%npp_mo_g (nlat),&
@@ -1530,8 +1542,8 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_mo%nbp_mo_g (nlat),&
          ctem_grd_mo%hetrores_mo_g (nlat),&
          ctem_grd_mo%autores_mo_g (nlat),&
-         ctem_grd_mo%litres_mo_g (nlat),&
-         ctem_grd_mo%soilcres_mo_g (nlat),&
+         ctem_grd_mo%litres_mo_g (nlat,ignd),&
+         ctem_grd_mo%soilcres_mo_g (nlat,ignd),&
          ctem_grd_mo%vgbiomas_mo_g (nlat),&
          ctem_grd_mo%totcmass_mo_g (nlat),&
          ctem_grd_mo%emit_co2_mo_g (nlat),&
@@ -1572,11 +1584,11 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_mo%vgbiomas_mo_t (nlat,nmos),&
          ctem_tile_mo%autores_mo_t (nlat,nmos),&
          ctem_tile_mo%totcmass_mo_t (nlat,nmos),&
-         ctem_tile_mo%litrmass_mo_t (nlat,nmos),&
-         ctem_tile_mo%soilcmas_mo_t (nlat,nmos),&
+         ctem_tile_mo%litrmass_mo_t (nlat,nmos,ignd),&
+         ctem_tile_mo%soilcmas_mo_t (nlat,nmos,ignd),&
          ctem_tile_mo%nep_mo_t (nlat,nmos),&
-         ctem_tile_mo%litres_mo_t (nlat,nmos),&
-         ctem_tile_mo%soilcres_mo_t (nlat,nmos),&
+         ctem_tile_mo%litres_mo_t (nlat,nmos,ignd),&
+         ctem_tile_mo%soilcres_mo_t (nlat,nmos,ignd),&
          ctem_tile_mo%hetrores_mo_t (nlat,nmos),&
          ctem_tile_mo%nbp_mo_t (nlat,nmos),&
          ctem_tile_mo%emit_co2_mo_t (nlat,nmos),&
@@ -1615,11 +1627,11 @@ allocate(vgat%grclarea(ilg),&
          ctem_yr%vgbiomas_yr (nlat,nmos,icc),&
          ctem_yr%autores_yr (nlat,nmos,icc),&
          ctem_yr%totcmass_yr (nlat,nmos,iccp1),&
-         ctem_yr%litrmass_yr (nlat,nmos,iccp2),&
-         ctem_yr%soilcmas_yr (nlat,nmos,iccp2),&
+         ctem_yr%litrmass_yr (nlat,nmos,iccp2,ignd),&
+         ctem_yr%soilcmas_yr (nlat,nmos,iccp2,ignd),&
          ctem_yr%nep_yr (nlat,nmos,iccp1),&
-         ctem_yr%litres_yr (nlat,nmos,iccp2),&
-         ctem_yr%soilcres_yr (nlat,nmos,iccp2),&
+         ctem_yr%litres_yr (nlat,nmos,iccp2,ignd),&
+         ctem_yr%soilcres_yr (nlat,nmos,iccp2,ignd),&
          ctem_yr%hetrores_yr (nlat,nmos,iccp1),&
          ctem_yr%nbp_yr (nlat,nmos,iccp1),&
          ctem_yr%emit_co2_yr (nlat,nmos,icc),&
@@ -1643,16 +1655,16 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_yr%laimaxg_yr_g (nlat),&
          ctem_grd_yr%stemmass_yr_g (nlat),&
          ctem_grd_yr%rootmass_yr_g (nlat),&
-         ctem_grd_yr%litrmass_yr_g (nlat),&
-         ctem_grd_yr%soilcmas_yr_g (nlat),&
+         ctem_grd_yr%litrmass_yr_g (nlat,ignd),&
+         ctem_grd_yr%soilcmas_yr_g (nlat,ignd),&
          ctem_grd_yr%npp_yr_g (nlat),&
          ctem_grd_yr%gpp_yr_g (nlat),&
          ctem_grd_yr%nep_yr_g (nlat),&
          ctem_grd_yr%nbp_yr_g (nlat),&
          ctem_grd_yr%hetrores_yr_g (nlat),&
          ctem_grd_yr%autores_yr_g (nlat),&
-         ctem_grd_yr%litres_yr_g (nlat),&
-         ctem_grd_yr%soilcres_yr_g (nlat),&
+         ctem_grd_yr%litres_yr_g (nlat,ignd),&
+         ctem_grd_yr%soilcres_yr_g (nlat,ignd),&
          ctem_grd_yr%vgbiomas_yr_g (nlat),&
          ctem_grd_yr%totcmass_yr_g (nlat),&
          ctem_grd_yr%emit_co2_yr_g (nlat),&
@@ -1692,11 +1704,11 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_yr%vgbiomas_yr_t (nlat,nmos),&
          ctem_tile_yr%autores_yr_t (nlat,nmos),&
          ctem_tile_yr%totcmass_yr_t (nlat,nmos),&
-         ctem_tile_yr%litrmass_yr_t (nlat,nmos),&
-         ctem_tile_yr%soilcmas_yr_t (nlat,nmos),&
+         ctem_tile_yr%litrmass_yr_t (nlat,nmos,ignd),&
+         ctem_tile_yr%soilcmas_yr_t (nlat,nmos,ignd),&
          ctem_tile_yr%nep_yr_t (nlat,nmos),&
-         ctem_tile_yr%litres_yr_t (nlat,nmos),&
-         ctem_tile_yr%soilcres_yr_t (nlat,nmos),&
+         ctem_tile_yr%litres_yr_t (nlat,nmos,ignd),&
+         ctem_tile_yr%soilcres_yr_t (nlat,nmos,ignd),&
          ctem_tile_yr%hetrores_yr_t (nlat,nmos),&
          ctem_tile_yr%nbp_yr_t (nlat,nmos),&
          ctem_tile_yr%emit_co2_yr_t (nlat,nmos),&
@@ -1738,165 +1750,135 @@ end subroutine alloc_ctem_vars
 
 subroutine initrowvars()
 
-use classic_params, only : nlat, nmos, ican, ignd ,icc, iccp2, iccp1
-
 implicit none
 
-integer :: j,k,l,m
+!nlat,nmos
+  vrot%co2conc    = 0.0
+  vrot%npp        = 0.0
+  vrot%nep        = 0.0
+  vrot%hetrores   = 0.0
+  vrot%autores    = 0.0
+  vrot%soilcresp  = 0.0
+  vrot%rm         = 0.0
+  vrot%rg         = 0.0
+  vrot%nbp        = 0.0
+  vrot%litres     = 0.0
+  vrot%socres     = 0.0
+  vrot%gpp        = 0.0
+  vrot%dstcemls   = 0.0
+  vrot%dstcemls3  = 0.0
+  vrot%litrfall   = 0.0
+  vrot%humiftrs   = 0.0
+  vrot%canres     = 0.0
+  vrot%rml        = 0.0
+  vrot%rms        = 0.0
+  vrot%rmr        = 0.0
+  vrot%lucemcom   = 0.0
+  vrot%lucltrin   = 0.0
+  vrot%lucsocin   = 0.0
+  vrot%burnfrac   = 0.0
+  vrot%lterm      = 0.0
+  vrot%cfluxcg    = 0.0
+  vrot%cfluxcs    = 0.0
+  vrot%ch4WetSpec = 0.0
+  vrot%wetfdyn    = 0.0
+  vrot%ch4WetDyn  = 0.0
+  vrot%ch4_soills = 0.0
+  vrot%nppmoss    = 0.0
+  vrot%rmlmoss    = 0.0
+  vrot%gppmoss    = 0.0
+  vrot%anmoss     = 0.0
+  vrot%armoss     = 0.0
+  vrot%peatdep    = 0.0
+  vrot%pdd        = 0.0
 
- do j = 1,nlat
+  vrot%ZOLNC      = 0.0
+  vrot%AILC       = 0.0
+  vrot%CMASVEGC   = 0.0
+  vrot%ALVSCTM    = 0.0
+  vrot%ALIRCTM    = 0.0
+  vrot%CSUM       = 0.0
+  vrot%PAIC       = 0.0
+  vrot%SLAIC      = 0.0
+  vrot%RMATC      = 0.0
 
-   do k = 1,nmos
+  vrot%smfuncveg  = 0.0
+  vrot%gleafmas   = 0.
+  vrot%bleafmas   = 0.
+  vrot%stemmass   = 0.
+  vrot%rootmass   = 0.
+  vrot%pstemmass  = 0.
+  vrot%pgleafmass = 0.
+  vrot%litrfallveg = 0.
+  vrot%bterm       = 0.0
+  vrot%mterm       = 0.0
+  vrot%ailcg       = 0.0
+  vrot%ailcgs      = 0.0
+  vrot%fcancs      = 0.0
+  vrot%fcanc       = 0.0
+  vrot%fcancmx     = 0.0
+  vrot%co2i1cg     = 0.0
+  vrot%co2i1cs     = 0.0
+  vrot%co2i2cg     = 0.0
+  vrot%co2i2cs     = 0.0
+  vrot%ancsveg     = 0.0
+  vrot%ancgveg     = 0.0
+  vrot%rmlcsveg    = 0.0
+  vrot%rmlcgveg    = 0.0
+  vrot%stemmass    = 0.0
+  vrot%rootmass    = 0.0
+  vrot%ailcb       = 0.0
+  vrot%grwtheff    = 0.0
+  vrot%bmasveg     = 0.0
+  vrot%tltrleaf    = 0.0
+  vrot%tltrstem    = 0.0
+  vrot%tltrroot    = 0.0
+  vrot%leaflitr    = 0.0
+  vrot%roottemp    = 0.0
+  vrot%afrleaf     = 0.0
+  vrot%afrstem     = 0.0
+  vrot%afrroot     = 0.0
+  vrot%wtstatus    = 0.0
+  vrot%ltstatus    = 0.0
+  vrot%pfcancmx    = 0.0
+  vrot%nfcancmx    = 0.0
+  vrot%nppveg      = 0.0
+  vrot%veghght     = 0.0
+  vrot%rootdpth    = 0.0
+  vrot%gleafmas    = 0.0
+  vrot%bleafmas    = 0.0
+  vrot%anveg       = 0.0
+  vrot%rmlveg      = 0.0
+  vrot%rmlvegacc   = 0.0
+  vrot%rmsveg      = 0.0
+  vrot%rmrveg      = 0.0
+  vrot%rgveg       = 0.0
+  vrot%vgbiomas_veg= 0.0
+  vrot%gppveg      = 0.0
+  vrot%autoresveg  = 0.0
+  vrot%emit_co2    = 0.0
+  vrot%emit_co     = 0.0
+  vrot%emit_ch4    = 0.0
+  vrot%emit_nmhc   = 0.0
+  vrot%emit_h2     = 0.0
+  vrot%emit_nox    = 0.0
+  vrot%emit_n2o    = 0.0
+  vrot%emit_pm25   = 0.0
+  vrot%emit_tpm    = 0.0
+  vrot%emit_tc     = 0.0
+  vrot%emit_oc     = 0.0
+  vrot%emit_bc     = 0.0
+  vrot%burnvegf    = 0.0
 
-        vrot%co2conc(j,k)          = 0.0
-        vrot%npp(j,k)              = 0.0
-        vrot%nep(j,k)              = 0.0
-        vrot%hetrores(j,k)         = 0.0
-        vrot%autores(j,k)          = 0.0
-        vrot%soilcresp(j,k)        = 0.0
-        vrot%rm(j,k)               = 0.0
-        vrot%rg(j,k)               = 0.0
-        vrot%nbp(j,k)              = 0.0
-        vrot%litres(j,k)           = 0.0
-        vrot%socres(j,k)           = 0.0
-        vrot%gpp(j,k)              = 0.0
-        vrot%dstcemls(j,k)         = 0.0
-        vrot%dstcemls3(j,k)        = 0.0
-        vrot%litrfall(j,k)         = 0.0
-        vrot%humiftrs(j,k)         = 0.0
-        vrot%canres(j,k)           = 0.0
-        vrot%rml(j,k)              = 0.0
-        vrot%rms(j,k)              = 0.0
-        vrot%rmr(j,k)              = 0.0
-        vrot%lucemcom(j,k)         = 0.0
-        vrot%lucltrin(j,k)         = 0.0
-        vrot%lucsocin(j,k)         = 0.0
-        vrot%burnfrac(j,k)         = 0.0
-        vrot%lterm(j,k)            = 0.0
-        vrot%cfluxcg(j,k)          = 0.0
-        vrot%cfluxcs(j,k)          = 0.0
-        vrot%ch4WetSpec(j,k)          = 0.0
-        vrot%wetfdyn(j,k)          = 0.0
-        vrot%ch4WetDyn(j,k)          = 0.0
-        vrot%ch4_soills(j,k)       = 0.0
-
-        vrot%nppmoss(j,k)           = 0.0
-        vrot%rmlmoss(j,k)           = 0.0
-        vrot%gppmoss(j,k)           = 0.0
-        vrot%anmoss(j,k)            = 0.0
-        vrot%armoss(j,k)            = 0.0
-        vrot%peatdep(j,k)           = 0.0
-        vrot%pdd(j,k)               = 0.0
-
-        do l=1,ican
-            vrot%ZOLNC(j,k,l)        = 0.0
-            vrot%AILC(j,k,l)         = 0.0
-            vrot%CMASVEGC(j,k,l)     = 0.0
-            vrot%ALVSCTM(j,k,l)      = 0.0
-            vrot%ALIRCTM(j,k,l)      = 0.0
-            vrot%CSUM(j,k,l)            = 0.0
-            vrot%PAIC(j,k,l)         = 0.0
-            vrot%SLAIC(j,k,l)        = 0.0
-
-            do m = 1, 3
-                vrot%RMATC(j,k,l,m)    = 0.0
-            end do
-
-        end do
-
-        do l = 1,icc
-
-            vrot%smfuncveg(j,k,l)         = 0.0
-            vrot%gleafmas(j,k,l) = 0.
-            vrot%bleafmas(j,k,l) = 0.
-            vrot%stemmass(j,k,l) = 0.
-            vrot%rootmass(j,k,l) = 0.
-            vrot%pstemmass(j,k,l) = 0.
-            vrot%pgleafmass(j,k,l) = 0.
-            vrot%litrfallveg(j,k,l)=0.
-            vrot%bterm(j,k,l)        = 0.0
-            vrot%mterm(j,k,l)        = 0.0
-            vrot%ailcg(j,k,l)        = 0.0
-            vrot%ailcgs(j,k,l)       = 0.0
-            vrot%fcancs(j,k,l)       = 0.0
-            vrot%fcanc(j,k,l)        = 0.0
-            vrot%fcancmx(j,k,l)      = 0.0
-            vrot%co2i1cg(j,k,l)      = 0.0
-            vrot%co2i1cs(j,k,l)      = 0.0
-            vrot%co2i2cg(j,k,l)      = 0.0
-            vrot%co2i2cs(j,k,l)      = 0.0
-            vrot%ancsveg(j,k,l)      = 0.0
-            vrot%ancgveg(j,k,l)      = 0.0
-            vrot%rmlcsveg(j,k,l)     = 0.0
-            vrot%rmlcgveg(j,k,l)     = 0.0
-            vrot%stemmass(j,k,l)     = 0.0
-            vrot%rootmass(j,k,l)     = 0.0
-            vrot%ailcb(j,k,l)        = 0.0
-            vrot%grwtheff(j,k,l)     = 0.0
-            !vrot%dvdfcan(j,k,l)      = 0.0
-            vrot%bmasveg(j,k,l)      = 0.0
-            vrot%tltrleaf(j,k,l)     = 0.0
-            vrot%tltrstem(j,k,l)     = 0.0
-            vrot%tltrroot(j,k,l)     = 0.0
-            vrot%leaflitr(j,k,l)     = 0.0
-            vrot%roottemp(j,k,l)     = 0.0
-            vrot%afrleaf(j,k,l)      = 0.0
-            vrot%afrstem(j,k,l)      = 0.0
-            vrot%afrroot(j,k,l)      = 0.0
-            vrot%wtstatus(j,k,l)     = 0.0
-            vrot%ltstatus(j,k,l)     = 0.0
-            vrot%pfcancmx(j,k,l)     = 0.0
-            vrot%nfcancmx(j,k,l)     = 0.0
-            vrot%nppveg(j,k,l)       = 0.0
-            vrot%veghght(j,k,l)      = 0.0
-            vrot%rootdpth(j,k,l)     = 0.0
-            vrot%gleafmas(j,k,l)     = 0.0
-            vrot%bleafmas(j,k,l)     = 0.0
-            vrot%anveg(j,k,l)        = 0.0
-            vrot%rmlveg(j,k,l)       = 0.0
-            vrot%rmlvegacc(j,k,l)    = 0.0
-            vrot%rmsveg(j,k,l)       = 0.0
-            vrot%rmrveg(j,k,l)       = 0.0
-            vrot%rgveg(j,k,l)        = 0.0
-            vrot%vgbiomas_veg(j,k,l) = 0.0
-            vrot%gppveg(j,k,l) = 0.0
-            vrot%autoresveg(j,k,l) = 0.0
-            vrot%emit_co2(j,k,l)         =0.0
-            vrot%emit_co(j,k,l)          =0.0
-            vrot%emit_ch4(j,k,l)         =0.0
-            vrot%emit_nmhc(j,k,l)        =0.0
-            vrot%emit_h2(j,k,l)          =0.0
-            vrot%emit_nox(j,k,l)         =0.0
-            vrot%emit_n2o(j,k,l)         =0.0
-            vrot%emit_pm25(j,k,l)        =0.0
-            vrot%emit_tpm(j,k,l)         =0.0
-            vrot%emit_tc(j,k,l)          =0.0
-            vrot%emit_oc(j,k,l)          =0.0
-            vrot%emit_bc(j,k,l)          =0.0
-            vrot%burnvegf(j,k,l)         =0.0
-
-                do m = 1, ignd
-                    vrot%rmatctem(j,k,l,m) = 0.0
-                end do
-
-            end do !icc
-            !
-            do l = 1, iccp1
-                vrot%hetroresveg(j,k,l) = 0.0
-                vrot%nepveg(j,k,l) = 0.0
-                vrot%nbpveg(j,k,l) = 0.0
-            end do !iccp1
-
-            do l = 1, iccp2
-                vrot%litrmass(j,k,l)    = 0.0
-                vrot%soilcmas(j,k,l)    = 0.0
-                vrot%litresveg(j,k,l) = 0.0
-                vrot%soilcresveg(j,k,l) = 0.0
-                vrot%humiftrsveg(j,k,l)=0.
-            end do !iccp2
-
-   end do !nmos
- end do !nlat
+  vrot%rmatctem    = 0.0
+  vrot%hetroresveg = 0.0
+  vrot%nepveg      = 0.0
+  vrot%nbpveg      = 0.0
+  vrot%litrmass    = 0.0
+  vrot%soilcmas    = 0.0
+  vrot%litresveg   = 0.0
+  vrot%soilcresveg = 0.0
+  vrot%humiftrsveg = 0.0
 
 end subroutine initrowvars
 !!@}
@@ -1909,7 +1891,7 @@ end subroutine initrowvars
 
 subroutine resetmonthend(nltest,nmtest)
 
-use classic_params, only : iccp2,icc,iccp1
+use classic_params, only : iccp2,icc,iccp1,ignd
 
 implicit none
 
@@ -1923,31 +1905,31 @@ integer :: i,m,j
 do i=1,nltest
     ctem_grd_mo%stemmass_mo_g(i)=0.0
     ctem_grd_mo%rootmass_mo_g(i)=0.0
-    ctem_grd_mo%litrmass_mo_g(i)=0.0
-    ctem_grd_mo%soilcmas_mo_g(i)=0.0
+    ctem_grd_mo%litrmass_mo_g(i,1:ignd)=0.0
+    ctem_grd_mo%soilcmas_mo_g(i,1:ignd)=0.0
     ctem_grd_mo%vgbiomas_mo_g(i)=0.0
     ctem_grd_mo%totcmass_mo_g(i)=0.0
   do m = 1, nmtest
         ctem_tile_mo%stemmass_mo_t(i,m)=0.0
         ctem_tile_mo%rootmass_mo_t(i,m)=0.0
-        ctem_tile_mo%litrmass_mo_t(i,m)=0.0
-        ctem_tile_mo%soilcmas_mo_t(i,m)=0.0
+        ctem_tile_mo%litrmass_mo_t(i,m,1:ignd)=0.0
+        ctem_tile_mo%soilcmas_mo_t(i,m,1:ignd)=0.0
         ctem_tile_mo%vgbiomas_mo_t(i,m)=0.0
         ctem_tile_mo%totcmass_mo_t(i,m)=0.0
         do j = 1,icc
             ctem_mo%stemmass_mo(i,m,j)=0.0
             ctem_mo%rootmass_mo(i,m,j)=0.0
-            ctem_mo%litrmass_mo(i,m,j)=0.0
-            ctem_mo%soilcmas_mo(i,m,j)=0.0
+            ctem_mo%litrmass_mo(i,m,j,1:ignd)=0.0
+            ctem_mo%soilcmas_mo(i,m,j,1:ignd)=0.0
             ctem_mo%vgbiomas_mo(i,m,j)=0.0
             ctem_mo%totcmass_mo(i,m,j)=0.0
         end do
         ctem_mo%totcmass_mo(i,m,iccp1)=0.0
-        ctem_mo%litrmass_mo(i,m,iccp1)=0.0
-        ctem_mo%soilcmas_mo(i,m,iccp1)=0.0
+        ctem_mo%litrmass_mo(i,m,iccp1,1:ignd)=0.0
+        ctem_mo%soilcmas_mo(i,m,iccp1,1:ignd)=0.0
 
-        ctem_mo%litrmass_mo(i,m,iccp2)=0.0
-        ctem_mo%soilcmas_mo(i,m,iccp2)=0.0
+        ctem_mo%litrmass_mo(i,m,iccp2,1:ignd)=0.0
+        ctem_mo%soilcmas_mo(i,m,iccp2,1:ignd)=0.0
   end do
 end do
 
@@ -1961,8 +1943,8 @@ do i=1,nltest
     ctem_grd_mo%nbp_mo_g(i)=0.0
     ctem_grd_mo%hetrores_mo_g(i)=0.0
     ctem_grd_mo%autores_mo_g(i)=0.0
-    ctem_grd_mo%litres_mo_g(i)=0.0
-    ctem_grd_mo%soilcres_mo_g(i)=0.0
+    ctem_grd_mo%litres_mo_g(i,1:ignd)=0.0
+    ctem_grd_mo%soilcres_mo_g(i,1:ignd)=0.0
     ctem_grd_mo%litrfall_mo_g(i)=0.0
     ctem_grd_mo%humiftrs_mo_g(i)=0.0
     ctem_grd_mo%emit_co2_mo_g(i)=0.0
@@ -2002,8 +1984,8 @@ do i=1,nltest
         ctem_tile_mo%nbp_mo_t(i,m)=0.0
         ctem_tile_mo%hetrores_mo_t(i,m)=0.0
         ctem_tile_mo%autores_mo_t(i,m)=0.0
-        ctem_tile_mo%litres_mo_t(i,m)=0.0
-        ctem_tile_mo%soilcres_mo_t(i,m)=0.0
+        ctem_tile_mo%litres_mo_t(i,m,1:ignd)=0.0
+        ctem_tile_mo%soilcres_mo_t(i,m,1:ignd)=0.0
         ctem_tile_mo%litrfall_mo_t(i,m)=0.0
         ctem_tile_mo%humiftrs_mo_t(i,m)=0.0
         ctem_tile_mo%emit_co2_mo_t(i,m)=0.0
@@ -2043,8 +2025,8 @@ do i=1,nltest
             ctem_mo%nbp_mo(i,m,j)=0.0
             ctem_mo%hetrores_mo(i,m,j)=0.0
             ctem_mo%autores_mo(i,m,j)=0.0
-            ctem_mo%litres_mo(i,m,j)=0.0
-            ctem_mo%soilcres_mo(i,m,j)=0.0
+            ctem_mo%litres_mo(i,m,j,1:ignd)=0.0
+            ctem_mo%soilcres_mo(i,m,j,1:ignd)=0.0
             ctem_mo%litrfallveg_mo(i,m,j)=0.0
             ctem_mo%humiftrsveg_mo(i,m,j)=0.0
             ctem_mo%emit_co2_mo(i,m,j)=0.0
@@ -2068,12 +2050,12 @@ do i=1,nltest
         ctem_mo%nep_mo(i,m,iccp1)=0.0
         ctem_mo%nbp_mo(i,m,iccp1)=0.0
         ctem_mo%hetrores_mo(i,m,iccp1)=0.0
-        ctem_mo%litres_mo(i,m,iccp1)=0.0
-        ctem_mo%soilcres_mo(i,m,iccp1)=0.0
+        ctem_mo%litres_mo(i,m,iccp1,1:ignd)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp1,1:ignd)=0.0
         ctem_mo%humiftrsveg_mo(i,m,iccp1)=0.0
 
-        ctem_mo%litres_mo(i,m,iccp2)=0.0
-        ctem_mo%soilcres_mo(i,m,iccp2)=0.0
+        ctem_mo%litres_mo(i,m,iccp2,1:ignd)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp2,1:ignd)=0.0
         ctem_mo%humiftrsveg_mo(i,m,iccp2)=0.0
 
     end do !nmtest
@@ -2089,7 +2071,7 @@ end subroutine resetmonthend
 
 subroutine resetyearend(nltest,nmtest)
 
-use classic_params, only : iccp2,icc,iccp1
+use classic_params, only : iccp2,icc,iccp1,ignd
 
 implicit none
 
@@ -2103,8 +2085,8 @@ do i=1,nltest
     ctem_grd_yr%laimaxg_yr_g(i)=0.0
     ctem_grd_yr%stemmass_yr_g(i)=0.0
     ctem_grd_yr%rootmass_yr_g(i)=0.0
-    ctem_grd_yr%litrmass_yr_g(i)=0.0
-    ctem_grd_yr%soilcmas_yr_g(i)=0.0
+    ctem_grd_yr%litrmass_yr_g(i,1:ignd)=0.0
+    ctem_grd_yr%soilcmas_yr_g(i,1:ignd)=0.0
     ctem_grd_yr%vgbiomas_yr_g(i)=0.0
     ctem_grd_yr%totcmass_yr_g(i)=0.0
     ctem_grd_yr%veghght_yr_g(i)=0.0
@@ -2114,8 +2096,8 @@ do i=1,nltest
     ctem_grd_yr%nbp_yr_g(i)=0.0
     ctem_grd_yr%hetrores_yr_g(i)=0.0
     ctem_grd_yr%autores_yr_g(i)=0.0
-    ctem_grd_yr%litres_yr_g(i)=0.0
-    ctem_grd_yr%soilcres_yr_g(i)=0.0
+    ctem_grd_yr%litres_yr_g(i,1:ignd)=0.0
+    ctem_grd_yr%soilcres_yr_g(i,1:ignd)=0.0
     ctem_grd_yr%emit_co2_yr_g(i)=0.0
     ctem_grd_yr%emit_co_yr_g(i)=0.0
     ctem_grd_yr%emit_ch4_yr_g(i)=0.0
@@ -2149,8 +2131,8 @@ do i=1,nltest
         ctem_tile_yr%laimaxg_yr_t(i,m)=0.0
         ctem_tile_yr%stemmass_yr_t(i,m)=0.0
         ctem_tile_yr%rootmass_yr_t(i,m)=0.0
-        ctem_tile_yr%litrmass_yr_t(i,m)=0.0
-        ctem_tile_yr%soilcmas_yr_t(i,m)=0.0
+        ctem_tile_yr%litrmass_yr_t(i,m,1:ignd)=0.0
+        ctem_tile_yr%soilcmas_yr_t(i,m,1:ignd)=0.0
         ctem_tile_yr%vgbiomas_yr_t(i,m)=0.0
         ctem_tile_yr%totcmass_yr_t(i,m)=0.0
         ctem_tile_yr%veghght_yr_t(i,m)=0.0
@@ -2160,8 +2142,8 @@ do i=1,nltest
         ctem_tile_yr%nbp_yr_t(i,m)=0.0
         ctem_tile_yr%hetrores_yr_t(i,m)=0.0
         ctem_tile_yr%autores_yr_t(i,m)=0.0
-        ctem_tile_yr%litres_yr_t(i,m)=0.0
-        ctem_tile_yr%soilcres_yr_t(i,m)=0.0
+        ctem_tile_yr%litres_yr_t(i,m,1:ignd)=0.0
+        ctem_tile_yr%soilcres_yr_t(i,m,1:ignd)=0.0
         ctem_tile_yr%emit_co2_yr_t(i,m)=0.0
         ctem_tile_yr%emit_co_yr_t(i,m)=0.0
         ctem_tile_yr%emit_ch4_yr_t(i,m)=0.0
@@ -2194,8 +2176,8 @@ do i=1,nltest
             ctem_yr%laimaxg_yr(i,m,j)=0.0
             ctem_yr%stemmass_yr(i,m,j)=0.0
             ctem_yr%rootmass_yr(i,m,j)=0.0
-            ctem_yr%litrmass_yr(i,m,j)=0.0
-            ctem_yr%soilcmas_yr(i,m,j)=0.0
+            ctem_yr%litrmass_yr(i,m,j,1:ignd)=0.0
+            ctem_yr%soilcmas_yr(i,m,j,1:ignd)=0.0
             ctem_yr%vgbiomas_yr(i,m,j)=0.0
             ctem_yr%totcmass_yr(i,m,j)=0.0
             ctem_yr%veghght_yr(i,m,j)=0.0
@@ -2205,8 +2187,8 @@ do i=1,nltest
             ctem_yr%nbp_yr(i,m,j)=0.0
             ctem_yr%hetrores_yr(i,m,j)=0.0
             ctem_yr%autores_yr(i,m,j)=0.0
-            ctem_yr%litres_yr(i,m,j)=0.0
-            ctem_yr%soilcres_yr(i,m,j)=0.0
+            ctem_yr%litres_yr(i,m,j,1:ignd)=0.0
+            ctem_yr%soilcres_yr(i,m,j,1:ignd)=0.0
             ctem_yr%emit_co2_yr(i,m,j)=0.0
             ctem_yr%emit_co_yr(i,m,j)=0.0
             ctem_yr%emit_ch4_yr(i,m,j)=0.0
@@ -2226,20 +2208,18 @@ do i=1,nltest
         end do
 
         ctem_yr%hetrores_yr(i,m,iccp1)=0.0
-        ctem_yr%litres_yr(i,m,iccp1)=0.0
-        ctem_yr%soilcres_yr(i,m,iccp1)=0.0
+        ctem_yr%litres_yr(i,m,iccp1,1:ignd)=0.0
+        ctem_yr%soilcres_yr(i,m,iccp1,1:ignd)=0.0
         ctem_yr%nep_yr(i,m,iccp1)=0.0
         ctem_yr%nbp_yr(i,m,iccp1)=0.0        
-        ctem_yr%litrmass_yr(i,m,iccp1)=0.0
-        ctem_yr%soilcmas_yr(i,m,iccp1)=0.0
+        ctem_yr%litrmass_yr(i,m,iccp1,1:ignd)=0.0
+        ctem_yr%soilcmas_yr(i,m,iccp1,1:ignd)=0.0
         ctem_yr%totcmass_yr(i,m,iccp1)=0.0
-        ctem_yr%litres_yr(i,m,iccp1)=0.0
-        ctem_yr%soilcres_yr(i,m,iccp1)=0.0
 
-        ctem_yr%litrmass_yr(i,m,iccp2)=0.0
-        ctem_yr%soilcmas_yr(i,m,iccp2)=0.0
-        ctem_yr%litres_yr(i,m,iccp2)=0.0
-        ctem_yr%soilcres_yr(i,m,iccp2)=0.0
+        ctem_yr%litrmass_yr(i,m,iccp2,1:ignd)=0.0
+        ctem_yr%soilcmas_yr(i,m,iccp2,1:ignd)=0.0
+        ctem_yr%litres_yr(i,m,iccp2,1:ignd)=0.0
+        ctem_yr%soilcres_yr(i,m,iccp2,1:ignd)=0.0
 
     end do !nmtest
 end do ! nltest

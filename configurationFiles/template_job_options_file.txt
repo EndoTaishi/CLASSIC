@@ -37,7 +37,7 @@
                             !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
                             ! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
                             ! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme. 
-        tracerCO2file = ''  ! Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
+        tracerCO2file = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc'  ! Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
                             ! and fixedYearCO2 switches to determine how it is read in.
 
     !CO2 switches:

@@ -121,7 +121,7 @@ real :: vwind(ilg)         !<wind speed, \f$m/s\f$
 real :: fcancmx(ilg,icc)   !<fractional coverages of ctem's 9 pfts
 real :: lightng(ilg)       !<total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
                            !<to ground lightning is some fixed fraction of total lightning.
-real :: litrmass(ilg,iccp2)!<litter mass for each of the 9 pfts
+real :: litrmass(ilg,iccp2,ignd)!<litter mass for each of the 9 pfts
 real :: prbfrhuc(ilg)      !<probability of fire due to human causes
 real :: extnprob(ilg)      !<fire extinguishing probability
 real :: rmatctem(ilg,icc,ignd) !<fraction of roots in each soil layer for each pft
@@ -325,7 +325,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>(iccp1). We only consider the litrmass on layer 1 as the rest are buried.
 
            biomass(i,j)=gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+ &
-                      litrmass(i,j)
+                      litrmass(i,j,1)
 
 !>Find average biomass over the vegetated fraction
            avgbmass(i) = avgbmass(i)+biomass(i,j)*fcancmx(i,j)
@@ -414,8 +414,9 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
       do 381 j = 1, icc
         do 382 i = il1, il2
            !> duff fraction for each PFT, Vivek
+           !> We only consider the first layer litter
             if (biomass(i,j) .gt. 0. .and. fsnow(i) .eq. 0.) then
-               duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j)) / biomass(i,j)
+               duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j,1)) / biomass(i,j)
             end if
 
            !> \f$drgtstrs(i,j)\f$ is \f$\phi_{root}\f$ in Melton and Arora GMDD (2015) paper
@@ -631,14 +632,22 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
             blcaemls(i,j)= frco2blf(n) *bleafmas(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
             stcaemls(i,j)= frco2stm(n) *stemmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
             rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-            ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
+            ! The burned litter comes from the first layer
+            ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j,1) *(burnarea_veg(i,j) /pftareab(i,j))
 
 !>Update the pools:
             gleafmas(i,j)=gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)
             bleafmas(i,j)=bleafmas(i,j) - blfltrdt(i,j) - blcaemls(i,j)
             stemmass(i,j)=stemmass(i,j) - stemltdt(i,j) - stcaemls(i,j)
             rootmass(i,j)=rootmass(i,j) - rootltdt(i,j) - rtcaemls(i,j)
-            litrmass(i,j)=litrmass(i,j) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) + rootltdt(i,j) - ltrcemls(i,j)
+
+            ! The burned litter is placed on the top litter layer except for the root litter which
+            ! goes into litter layers according to the root distribution.
+            litrmass(i,j,1)=litrmass(i,j,1) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
+                            + rootltdt(i,j)*rmatctem(i,j,1) - ltrcemls(i,j)
+            do k = 2, ignd
+                litrmass(i,j,k)=litrmass(i,j,k) + rootltdt(i,j)*rmatctem(i,j,k)
+            end do
 
 !>Output the burned area per PFT (the units here are burned fraction of each PFTs area. So
 !>if a PFT has 50% gridcell cover and 50% of that burns it will have a burnvegf of 0.5 (which
@@ -724,7 +733,7 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
                       nppveg)
 
 use classic_params, only : crop, icc, seed, standreplace, grass, zero, &
-                        iccp1, tolrance, numcrops,iccp2
+                        iccp1, tolrance, numcrops,iccp2,ignd
 
 implicit none
 
@@ -743,8 +752,8 @@ real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf carbon mas
 real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(inout) :: rootmass    !< roots carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for individual pfts,  \f$u-mol co_2/m^2.sec\f$
-real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
 real, dimension(nilg,icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
 
@@ -754,8 +763,8 @@ real :: pftfraca_old
 real :: term                                  !< temp variable for change in fraction due to fire
 real, dimension(nilg) :: pbarefra             !< bare fraction prior to fire
 real, dimension(nilg) :: barefrac             !< bare fraction of grid cell
-real, dimension(nilg) :: litr_lost            !< litter that is transferred to bare
-real, dimension(nilg) :: soilc_lost           !< soilc that is transferred to bare
+real, dimension(nilg,ignd) :: litr_lost            !< litter that is transferred to bare 
+real, dimension(nilg,ignd) :: soilc_lost           !< soilc that is transferred to bare
 real, dimension(nilg) :: vgbiomas_temp        !< grid averaged vegetation biomass for internal checks, \f$kg c/m^2\f$
 real, dimension(nilg) :: gavgltms_temp        !< grid averaged litter mass for internal checks, \f$kg c/m^2\f$
 real, dimension(nilg) :: gavgscms_temp        !< grid averaged soil c mass for internal checks, \f$kg c/m^2\f$
@@ -773,8 +782,8 @@ do 10 i = il1, il2
         vgbiomas_temp(i)=0.0
         gavgltms_temp(i)=0.0
         gavgscms_temp(i)=0.0
-        litr_lost(i)=0.0
-        soilc_lost(i)=0.0
+        litr_lost(i,:)=0.0
+        soilc_lost(i,:)=0.0
 10  continue
 !>
 !>  Account for disturbance creation of bare ground. This occurs with relatively low
@@ -856,9 +865,10 @@ do 10 i = il1, il2
 !>remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
 !>our carbon balance works out.
             frac_chang = pftfracb(i,j) - pftfraca(i,j)
-            litr_lost(i)= litr_lost(i) + litrmass(i,j) * frac_chang
-            soilc_lost(i)= soilc_lost(i) + soilcmas(i,j) * frac_chang
-
+            do k = 1, ignd
+                litr_lost(i,k)= litr_lost(i,k) + litrmass(i,j,k) * frac_chang
+                soilc_lost(i,k)= soilc_lost(i,k) + soilcmas(i,j,k) * frac_chang
+            end do
         ! else
 
         !    no changes
@@ -873,8 +883,10 @@ do 10 i = il1, il2
        if (shifts_occur(i)) then !>only do checks if we actually shifted fractions here.
 
         if(barefrac(i).ge.zero .and. barefrac(i) .gt. pbarefra(i))then
-          litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)
-          soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
+          do k = 1, ignd
+            litrmass(i,iccp1,k) = (litrmass(i,iccp1,k)*pbarefra(i) + litr_lost(i,k)) / barefrac(i)
+            soilcmas(i,iccp1,k) = (soilcmas(i,iccp1,k)*pbarefra(i) + soilc_lost(i,k)) / barefrac(i)
+          end do
         else if (barefrac(i) .lt. 0.) then
 
           write(6,*)' In burntobare you have negative bare area, which should be impossible...'
@@ -895,14 +907,18 @@ do 10 i = il1, il2
 
           vgbiomas_temp(i)=vgbiomas_temp(i)+fcancmx(i,j)*(gleafmas(i,j)+&
           bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j)
-          gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j)
+          do k = 1, ignd
+            gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j,k)
+            gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j,k)
+          end do
 
 250    continue
 
-        !>then add the bare ground in.
-        gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1)
-        gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1)
+        !then add the bare ground in.
+        do k = 1, ignd  !FLAG I think we can keep this as per grid like this. JM Feb 8 2016.
+            gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1,k)
+            gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1,k)
+        end do
 
         if(abs(vgbiomas_temp(i)-pvgbioms(i)).gt.tolrance)then
           write(6,*)'grid averaged biomass densities do not balance'

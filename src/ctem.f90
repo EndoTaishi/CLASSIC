@@ -27,7 +27,7 @@
      &                      thpor,    thiceg,   currlat,  ch4conc,  &
      &                       THFC,      THLW,     thliq,  thice,    &
      &                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  &
-     &                   wtable,                                    &
+     &                   wtable,    actlyr,  actlyr_yr,&
 !
 !    ------------- logical switches determining model behaviour 
 !
@@ -102,6 +102,9 @@
 !     14  Mar 2016  - Remove grid cell area calculation to the driver. This will
 !     J. Melton       harmonize this subroutine with the coupled code.
 !
+!      8  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
+!     J. Melton       carbon pools
+!
 !     3   Feb 2016  - Bring in onetile_perPFT switch so now in mosaic mode the
 !     J. Melton       tiles in a grid cell are treated independently by competition
 !                     and LUC.
@@ -164,6 +167,7 @@ use competition_scheme, only : bioclim, existence, competition
 use disturbance_scheme, only : disturb
 use heterotrophic_respiration, only : hetresg, hetresv
 use peatlands_mod, only : hetres_peat,peatDayEnd
+use soilC_processes, only : turbation
 
 implicit none
 
@@ -231,6 +235,9 @@ real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily avera
 real, dimension(ilg), intent(in) :: wtable              !< water table (m)
 real, dimension(ilg,ignd), intent(in) :: THFC           !<
 real, dimension(ilg,ignd), intent(in) :: THLW           !<
+real, dimension(ilg), intent(in) :: actlyr              !< active layer depth (m)
+real, dimension(ilg), intent(in) :: actlyr_yr           !< annual maximum active layer depth (m)
+
 !
 !     updates
 !
@@ -270,10 +277,10 @@ real, dimension(ilg), intent(inout) :: anndefct         !<annual water deficit (
 real, dimension(ilg), intent(inout) :: annsrpls         !<annual water surplus (mm)
 real, dimension(ilg,icc), intent(inout) :: stemmass     !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real, dimension(ilg,icc), intent(inout) :: rootmass     !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-real, dimension(ilg,iccp2), intent(inout) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+real, dimension(ilg,iccp2,ignd), intent(inout) :: litrmass  !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
 real, dimension(ilg,icc), intent(inout) :: gleafmas     !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real, dimension(ilg,icc), intent(inout) :: bleafmas     !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-real, dimension(ilg,iccp2), intent(inout) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+real, dimension(ilg,iccp2,ignd), intent(inout) :: soilcmas  !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
 real, dimension(ilg,icc), intent(inout) :: ailcg        !<green lai for ctem's 9 pfts
 real, dimension(ilg,ican), intent(inout) :: ailc        !<lumped lai for class' 4 pfts
 real, dimension(ilg,icc,ignd), intent(inout) :: rmatctem!<fraction of roots for each of ctem's 9 pfts in each soil layer
@@ -344,8 +351,8 @@ real, dimension(ilg,icc), intent(out) :: nppveg         !<npp for individual pft
 real, dimension(ilg,icc), intent(out) :: rgveg          !<
 real, dimension(ilg,iccp1), intent(out) :: nepveg       !<
 real, dimension(ilg,iccp1), intent(out) :: nbpveg       !<
-real, dimension(ilg,iccp2), intent(out) :: ltresveg     !<fluxes for each pft: litter respiration for each pft + bare fraction
-real, dimension(ilg,iccp2), intent(out) :: scresveg     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
+real, dimension(ilg,iccp2,ignd), intent(out) :: ltresveg     !<fluxes for each pft: litter respiration for each pft + bare fraction
+real, dimension(ilg,iccp2,ignd), intent(out) :: scresveg     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
 real, dimension(ilg,iccp1), intent(out) :: hetrsveg     !<
 real, dimension(ilg,iccp2), intent(out) :: humtrsvg     !<transfer of humidified litter from litter to soil c pool per PFT.
 real, dimension(ilg,icc), intent(out) :: autoresveg     !<
@@ -415,8 +422,8 @@ real gleafmas_cmp(nlat,icc)  !<
 real bleafmas_cmp(nlat,icc)  !<
 real stemmass_cmp(nlat,icc)  !<
 real rootmass_cmp(nlat,icc)  !<
-real litrmass_cmp(nlat,iccp2)!<
-real soilcmas_cmp(nlat,iccp2)!<
+real litrmass_cmp(nlat,iccp2,ignd)!<
+real soilcmas_cmp(nlat,iccp2,ignd)!<
 real lambda_cmp(nlat,icc)    !<
 real bmasveg_cmp(nlat,icc)   !<
 real burnvegf_cmp(nlat,icc)  !<
@@ -498,18 +505,18 @@ real rttempcg(ilg,icc) !<
 real pheanveg(ilg,icc) !<
 real pancsveg(ilg,icc) !<
 real pancgveg(ilg,icc) !<
-real ltrsvgcs(ilg,icc)   !<
-real ltrsvgcg(ilg,icc)   !<
-real scrsvgcs(ilg,icc)   !<
-real scrsvgcg(ilg,icc)   !<
-real ltrsbrg(ilg)        !<
-real scrsbrg(ilg)        !<
-real ltrsbrgs(ilg)       !<
-real scrsbrgs(ilg)       !<
+real ltrsvgcs(ilg,icc,ignd)   !<
+real ltrsvgcg(ilg,icc,ignd)   !<
+real scrsvgcs(ilg,icc,ignd)   !<
+real scrsvgcg(ilg,icc,ignd)   !<
+real ltrsbrg(ilg,ignd)        !<
+real scrsbrg(ilg,ignd)        !<
+real ltrsbrgs(ilg,ignd)       !<
+real scrsbrgs(ilg,ignd)       !<
 real soilrsvg(ilg,iccp2) !<
-real ltrestep(ilg,iccp2) !<
-real screstep(ilg,iccp2) !<
-real hutrstep(ilg,iccp2) !<
+real ltrestep(ilg,iccp2,ignd) !<
+real screstep(ilg,iccp2,ignd) !<
+real hutrstep(ilg,iccp2,ignd) !<
 real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
 integer :: botlyr                       !< bottom layer of the unfrozen soil column
 real :: frznrtlit                       !< fraction of root distribution in frozen layers
@@ -616,8 +623,8 @@ if (PFTCompetition) then
      &                    pftexist, geremort, intrmort,&
      &                    gleafmas, bleafmas, stemmass, rootmass,&
      &                    litrmass, soilcmas, grclarea,   lambda,&
-     &                    burnvegf, sort,  pstemmass, &
-     &                    pgleafmass,&
+     &                    burnvegf, sort,  pstemmass, pgleafmass,&
+     &                    rmatctem,&
 !    ------------------- inputs above this line -------------------
      &                    fcancmx,   fcanmx, vgbiomas, gavgltms,&
      &                    gavgscms, bmasveg,  &
@@ -685,12 +692,14 @@ do 100 i = il1, il2
     tbarccs(i,1)=0.0     !<avg. soil temperature over canopy over snow
     tbarccs(i,2)=0.0     !<and canopy over ground subareas.
     tbarccs(i,3)=0.0     !<over bare fraction of the grid cell
-    screstep(i,iccp1:iccp2)=0.0  !<soil c respiration in \f$kg c/m^2\f$ over the time step
-    ltrestep(i,iccp1:iccp2)=0.0  !<litter c respiration in \f$kg c/m^2\f$ over the time step
-    soilrsvg(i,iccp1:iccp2)=0.0  !<soil respiration over the bare fraction
-    humtrsvg(i,iccp1:iccp2)=0.0  !<humified rate the bare fraction
-    ltresveg(i,iccp1:iccp2)=0.0  !<litter respiration rate over bare fraction
-    scresveg(i,iccp1:iccp2)=0.0  !<soil c respiration rate over bare fraction
+    do k = 1, ignd
+      screstep(i,iccp1:iccp2,k)=0.0  !<soil c respiration in \f$kg c/m^2\f$ over the time step
+      ltrestep(i,iccp1:iccp2,k)=0.0  !<litter c respiration in \f$kg c/m^2\f$ over the time step
+      ltresveg(i,iccp1:iccp2,k)=0.0  !<litter respiration rate over bare fraction
+      scresveg(i,iccp1:iccp2,k)=0.0  !<soil c respiration rate over bare fraction
+    end do
+    humtrsvg(i,iccp1:iccp2)=0.0  !<humified rate the bare fraction !FLAG per layer?
+    soilrsvg(i,iccp1:iccp2)=0.0  !<soil respiration over the bare fraction !FLAG per layer?
     hetrsveg(i,iccp1)=0.0  !<heterotrophic resp. rate over bare fraction
     nbpveg(i,iccp1) = 0.0  !<net biome productity for bare fraction
     nepveg(i,iccp1 ) = 0.0  !<net ecosystem productity for bare fraction
@@ -715,15 +724,17 @@ do 110 j = 1,icc
         nppveg(i,j)=0.0    !<net primary productity for each pft
         nbpveg(i,j)=0.0    !<net biome productity for each pft
         nepveg(i,j)=0.0    !<net ecosystem productity for each pft
-        ltresveg(i,j)=0.0  !<litter respiration rate for each pft
-        scresveg(i,j)=0.0  !<soil c respiration rate for each pft
         hetrsveg(i,j)=0.0  !<heterotrophic resp. rate for each pft
         soilrsvg(i,j)=0.0  !<soil respiration rate for each pft
         humtrsvg(i,j)=0.0  !<humification rate for each pft
         litrfallveg(i,j)=0.0 !<litter fall in \f$kg c/m^2\f$ for each pft
-        screstep(i,j)=0.0  !<soil c respiration in \f$kg c/m^2\f$ over the tim
-        ltrestep(i,j)=0.0  !<litter c respiration in \f$kg c/m^2\f$ over the t
-        hutrstep(i,j)=0.0  !<humification rate in \f$kg c/m^2\f$ over the time
+        do k = 1, ignd
+          screstep(i,j,k)=0.0  !<soil c respiration in \f$kg c/m^2\f$ over the tim
+          ltrestep(i,j,k)=0.0  !<litter c respiration in \f$kg c/m^2\f$ over the t
+          hutrstep(i,j,k)=0.0  !<humification rate in \f$kg c/m^2\f$ over the time
+          ltresveg(i,j,k)=0.0  !<litter respiration rate for each pft
+          scresveg(i,j,k)=0.0  !<soil c respiration rate for each pft
+        end do
         roottemp(i,j)=0.0  !<root temperature
         nppvgstp(i,j)=0.0  !<npp (\f$kg c/m^2\f$) sequestered over the model time step
         gppvgstp(i,j)=0.0  !<gpp (\f$kg c/m^2\f$) sequestered over the model time step
@@ -755,31 +766,31 @@ psocmass = 0.0
 
 do 130 j = 1, icc
     do 140 i = il1, il2
-        pglfmass(i,j)=gleafmas(i,j)    !<green leaf mass from last time step
-        pblfmass(i,j)=bleafmas(i,j)    !<brown leaf mass from last time step
-        pstemass(i,j)=stemmass(i,j)    !<stem mass from last time step
-        protmass(i,j)=rootmass(i,j)    !<root mass from last time step
-        !do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
-            plitmass(i,j)=plitmass(i,j) + litrmass(i,j)!,k)    !litter mass from last time step
-            psocmass(i,j)=psocmass(i,j) + soilcmas(i,j)!,k)    !soil c mass from last time step
-        !end do
+        pglfmass(i,j)=gleafmas(i,j)    ! green leaf mass from last time step
+        pblfmass(i,j)=bleafmas(i,j)    ! brown leaf mass from last time step
+        pstemass(i,j)=stemmass(i,j)    ! stem mass from last time step
+        protmass(i,j)=rootmass(i,j)    ! root mass from last time step
+        do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
+            plitmass(i,j)=plitmass(i,j) + litrmass(i,j,k)    !litter mass from last time step
+            psocmass(i,j)=psocmass(i,j) + soilcmas(i,j,k)    !soil c mass from last time step
+        end do
 140     continue
 130   continue
 !
 do 145 i = il1, il2
-    pvgbioms(i)=vgbiomas(i)          !<vegetation biomass from last time step
+    pvgbioms(i)=vgbiomas(i)          ! vegetation biomass from last time step
     vgbiomas(i)= 0.0
-    pgavltms(i)=gavgltms(i)          !<litter mass from last time step
+    pgavltms(i)=gavgltms(i)          ! litter mass from last time step
     gavgltms(i)=0.0
-    pgavscms(i)=gavgscms(i)          !<soil c mass from last time step
+    pgavscms(i)=gavgscms(i)          ! soil c mass from last time step
     gavgscms(i)=0.0
-    litrfall(i)=0.0                  !<combined total litter fall rate
-    gavglai (i)=0.0                  !<grid averaged green lai
+    litrfall(i)=0.0                  ! combined total litter fall rate
+    gavglai (i)=0.0                  ! grid averaged green lai
     do j = iccp1, iccp2 ! do over the bare fraction and the LUC pool
-        !do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
-            plitmass(i,j)=plitmass(i,j) + litrmass(i,j)!,k)  !litter mass over bare fraction
-            psocmass(i,j)=psocmass(i,j) + soilcmas(i,j)!,k)  !soil c mass over bare fraction
-        !end do
+        do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
+            plitmass(i,j)=plitmass(i,j) + litrmass(i,j,k)  !litter mass over bare fraction
+            psocmass(i,j)=psocmass(i,j) + soilcmas(i,j,k)  !soil c mass over bare fraction
+        end do
     end do
 
     pCmossmas(i)  = Cmossmas(i)
@@ -978,36 +989,36 @@ do 335 i = il1, il2
 ! below in loop 380 by socres_peat(i) making passing of ipeatland to hetresv and
 ! calculation of psi in a different way useless.
 
-call    hetresv ( fcancs,      fcs, litrmass(:,1:icc), soilcmas(:,1:icc),&
+call    hetresv ( fcancs,      fcs, litrmass(:,1:icc,:), soilcmas(:,1:icc,:),&
      &                      delzw, thpor, il1, il2, &
      &                      ilg,   tbarcs, psisat, thliqc,&
-     &                     rttempcs,    zbotw, sort,bi,  &
+     &                     sort,bi,  &
      &                     isand, thicec, ipeatland, &
      &                 ltrsvgcs, scrsvgcs)
 
 !>
 !! Find heterotrophic respiration rates for canopy over ground subarea
 
-call    hetresv ( fcanc,      fc, litrmass(:,1:icc), soilcmas(:,1:icc),&
+call    hetresv ( fcanc,      fc, litrmass(:,1:icc,:), soilcmas(:,1:icc,:),&
      &                      delzw, thpor, il1, il2, &
      &                      ilg,   tbarc, psisat,  thliqc,&
-     &                     rttempcg,    zbotw,  sort,bi, &
+     &                     sort,bi, &
      &                     isand, thicec,ipeatland, &
      &                 ltrsvgcg, scrsvgcg)
 !>
 !! Find heterotrophic respiration rates from bare ground subarea
 
-call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1), delzw,thpor,&
+call  hetresg  (litrmass(:,iccp1,:),soilcmas(:,iccp1,:), delzw,thpor,&
      &               il1,       il2,       ilg,   tbarg,    &
-     &            psisat,        bi,    thliqg,   zbotw,    &
+     &            psisat,        bi,    thliqg,    &
      &            thiceg,        fg,        0,    isand,    &
      &                   ltrsbrg,  scrsbrg)
 !>
 !! Find heterotrophic respiration rates from snow over ground subarea
 
-call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1),delzw,thpor,&
+call  hetresg  (litrmass(:,iccp1,:),soilcmas(:,iccp1,:),delzw,thpor,&
      &               il1,       il2,       ilg,  tbargs,    &
-     &            psisat,        bi,    thliqg,   zbotw,    &
+     &            psisat,        bi,    thliqg,   &
      &            thiceg,       fgs,        1,    isand,    &
      &                   ltrsbrgs, scrsbrgs)
 !
@@ -1015,12 +1026,12 @@ call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1),delzw,thpor,&
 !  The LUC litter and soil C respiration rates are assumed to
 !  be applied over the entire tile but kept in layer 1  
 
-  call  hetresg  (litrmass(:,iccp2), soilcmas(:,iccp2),    delzw, thpor, &
+  call  hetresg  (litrmass(:,iccp2,:), soilcmas(:,iccp2,:),    delzw, thpor, &
      &                      il1, il2, ilg, tbargs, psisat, bi,  &
-     &                   thliqg,      zbotw,  thiceg, &
+     &                   thliqg,   thiceg, &
      &                      fgs,        1,&
      &                     isand,&
-     &                   ltresveg(:,iccp2), scresveg(:,iccp2))
+     &                   ltresveg(:,iccp2,:), scresveg(:,iccp2,:))
 
 !>
 !! When peatlands are simulated find the peat heterotrophic respiration
@@ -1037,22 +1048,26 @@ call hetres_peat       (    il1,          il2,          ilg,   ipeatland,   &
 !!using values from canopy over ground and canopy over snow subareas
 !!
 do 340 j = 1, icc
-  do 350 i = il1, il2
+  do 345 i = il1, il2
     if( (fcanc(i,j)+fcancs(i,j)).gt.zero) then
-        ltresveg(i,j)= (fcanc(i,j)*ltrsvgcg(i,j) + &
-    &        fcancs(i,j)*ltrsvgcs(i,j)) / ( fcanc(i,j) + fcancs(i,j))
-        scresveg(i,j)= (fcanc(i,j)*scrsvgcg(i,j) + &
-    &        fcancs(i,j)*scrsvgcs(i,j)) / ( fcanc(i,j) + fcancs(i,j))
-        hetrsveg(i,j) =  ltresveg(i,j) + scresveg(i,j)
+    do 350 k = 1,ignd
+
+        ltresveg(i,j,k)= (fcanc(i,j)*ltrsvgcg(i,j,k) + &
+    &        fcancs(i,j)*ltrsvgcs(i,j,k)) / ( fcanc(i,j) + fcancs(i,j))
+        scresveg(i,j,k)= (fcanc(i,j)*scrsvgcg(i,j,k) + &
+    &        fcancs(i,j)*scrsvgcs(i,j,k)) / ( fcanc(i,j) + fcancs(i,j))
+        ! hetrsveg is kept per PFT and tile (not per layer) at the moment.
+        hetrsveg(i,j) =  hetrsveg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
+350      continue
 
     else
-        ltresveg(i,j)= 0.0
-        scresveg(i,j)= 0.0
+      ltresveg(i,j,:)= 0.0
+      scresveg(i,j,:)= 0.0
         hetrsveg(i,j)= 0.0
     endif
     nepveg(i,j)=nppveg(i,j)-hetrsveg(i,j)
 
-350     continue
+345     continue
 340   continue
 !>
 !!Find litter and soil c respiration rates averaged over the bare
@@ -1060,15 +1075,18 @@ do 340 j = 1, icc
 !!
 do 355 i = il1, il2
     if( (fg(i)+fgs(i)).gt.zero) then
-            ltresveg(i,iccp1)= (fg(i)*ltrsbrg(i) + &
-        &      fgs(i)*ltrsbrgs(i)) / ( fg(i) + fgs(i) )
-            scresveg(i,iccp1)= (fg(i)*scrsbrg(i) + &
-        &      fgs(i)*scrsbrgs(i)) / ( fg(i) + fgs(i) )
-            hetrsveg(i,iccp1) =  ltresveg(i,iccp1) + scresveg(i,iccp1)
-            nepveg(i,iccp1)=0.-hetrsveg(i,iccp1)
+      do k = 1,ignd
+            ltresveg(i,iccp1,k)= (fg(i)*ltrsbrg(i,k) + &
+        &      fgs(i)*ltrsbrgs(i,k)) / ( fg(i) + fgs(i) )
+            scresveg(i,iccp1,k)= (fg(i)*scrsbrg(i,k) + &
+        &      fgs(i)*scrsbrgs(i,k)) / ( fg(i) + fgs(i) )
+            ! hetrsveg is kept per PFT and tile (not per layer) at the moment.
+            hetrsveg(i,iccp1) =  hetrsveg(i,iccp1) + ltresveg(i,iccp1,k) + scresveg(i,iccp1,k)
+      end do
+      nepveg(i,iccp1)=0.-hetrsveg(i,iccp1)
     else
-            ltresveg(i,iccp1)= 0.0
-            scresveg(i,iccp1)= 0.0
+        ltresveg(i,iccp1,:)= 0.0
+        scresveg(i,iccp1,:)= 0.0
             hetrsveg(i,iccp1)= 0.0
     endif
 
@@ -1078,8 +1096,10 @@ do 355 i = il1, il2
 !!
 do 360 j = 1,icc
   do 370 i = il1, il2
-    litres(i)=litres(i)+fcancmx(i,j)*ltresveg(i,j)
-    socres(i)=socres(i)+fcancmx(i,j)*scresveg(i,j)
+    do k = 1 , ignd
+      litres(i)=litres(i)+fcancmx(i,j)*ltresveg(i,j,k)
+      socres(i)=socres(i)+fcancmx(i,j)*scresveg(i,j,k)
+    end do
 370     continue
 360   continue
 !>
@@ -1090,8 +1110,10 @@ do 360 j = 1,icc
 !
       do 380 i = il1, il2
           if (ipeatland(i) == 0) then
-              litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
-              socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
+            do k = 1,ignd
+              litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1,k))
+              socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1,k))
+            end do
 
           else  ! peatlands
               litres(i) = litres(i)+ litresmoss(i) !add the moss litter, which is assumed to cover whole tile.
@@ -1114,46 +1136,56 @@ do 360 j = 1,icc
 !!
 do 420 j = 1, iccp2 !FLAG
   do 430 i = il1, il2
+   do 435 k = 1, ignd
 
 !>Convert u mol co2/m2.sec -> \f$kg c/m^2\f$ respired over the model time step
-    ltrestep(i,j)=ltresveg(i,j)*(1.0/963.62)*deltat
-    screstep(i,j)=scresveg(i,j)*(1.0/963.62)*deltat
+    ltrestep(i,j,k)=ltresveg(i,j,k)*(1.0/963.62)*deltat
+    screstep(i,j,k)=scresveg(i,j,k)*(1.0/963.62)*deltat
 
 !>Update litter and soil c pools
     if (j < iccp1) then
-        litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+humicfac(sort(j))))
-        hutrstep(i,j)=(humicfac(sort(j))* ltrestep(i,j))
+        litrmass(i,j,k) = litrmass(i,j,k) - (ltrestep(i,j,k) * (1.0+humicfac(sort(j))))
+        hutrstep(i,j,k) = humicfac(sort(j)) * ltrestep(i,j,k)
     else
 !>         Next we add bareground and LUC pool litter mass and humification for non-peatlands.
         if (ipeatland(i) == 0) then
-            litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+humicfac_bg))
-            hutrstep(i,j)=(humicfac_bg * ltrestep(i,j))
+            litrmass(i,j,k)=litrmass(i,j,k)-(ltrestep(i,j,k)*(1.0+humicfac_bg))
+            hutrstep(i,j,k)= humicfac_bg * ltrestep(i,j,k)
         !else for peatlands:
         ! In peatlands there is no bareground litter mass since it is the moss layer.
         endif
 
     endif
 !
-    humtrsvg(i,j)=hutrstep(i,j)*(963.62/deltat) ! u-mol co2/m2.sec
-    soilcmas(i,j)=soilcmas(i,j) + real(spinfast) * (hutrstep(i,j) -  screstep(i,j))
+    ! humtrsvg kept as per tile/per pft (not per layer)
+    humtrsvg(i,j)=humtrsvg(i,j) + hutrstep(i,j,k)*(963.62/deltat) ! u-mol co2/m2.sec
 
-    if(litrmass(i,j).lt.zero) litrmass(i,j)=0.0
-    if(soilcmas(i,j).lt.zero) soilcmas(i,j)=0.0
+    soilcmas(i,j,k)=soilcmas(i,j,k) + real(spinfast) * (hutrstep(i,j,k) -  screstep(i,j,k))
+
+    if(litrmass(i,j,k).lt.zero) litrmass(i,j,k)=0.0
+    if(soilcmas(i,j,k).lt.zero) soilcmas(i,j,k)=0.0
+435      continue
 430     continue
 420   continue
 
 !>Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.
 
 do 440 j = 1, icc
-  do 450 i = il1, il2
-    soilrsvg(i,j)=ltresveg(i,j)+scresveg(i,j)+rmrveg(i,j)
+  do 445 i = il1, il2
+    do 450 k = 1, ignd
+        ! soilrsvg kept as per pft/per tile for now (not per layer)
+        soilrsvg(i,j)=soilrsvg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
 450     continue
+       soilrsvg(i,j)=soilrsvg(i,j) + rmrveg(i,j)
+445    continue
 440   continue
 
 !> But over the bare fraction there is no live root.
 
 do 460 i = il1, il2
-    soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
+  do 465 k = 1, ignd
+    soilrsvg(i,iccp1)=soilrsvg(i,iccp1) + ltresveg(i,iccp1,k)+scresveg(i,iccp1,k)
+465    continue
 460   continue
 
 !>Find grid averaged humification and soil respiration rates
@@ -1162,7 +1194,9 @@ do 470 i = il1, il2
   do 480 j = 1,icc
     soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
     humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
-    hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j) ! Added from YW's code, otherwise causes xit(-10) in balcar. EC Dec 23 2016.
+    do k = 1,ignd
+      hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j,k) ! Added from YW's code, otherwise causes xit(-10) in balcar. EC Dec 23 2016.
+    end do
 480     continue
 
 !
@@ -1521,17 +1555,61 @@ do 780 j = 1, icc
     endif
 790     continue
 780   continue
-!>
-!>Update litter pool with leaf litter calculated in the phenology
-!>subroutine and stem and root litter calculated in the turnover
-!>subroutine. Also add the reproduction carbon directly to the litter pool
-!>
-do 800 j = 1, icc
-  do 810 i = il1, il2
-    litrmass(i,j)=litrmass(i,j) + leaflitr(i,j) + stemlitr(i,j) +&
-&                  rootlitr(i,j) + reprocost(i,j)*(1.0/963.62)&
-&                       *deltat
+
+!! Update litter pool with leaf litter calculated in the phenology
+!! subroutine and stem and root litter calculated in the turnover
+!! subroutine. Also add the reproduction carbon directly to the litter pool
+
+do 800 i = il1, il2
+
+    !! We only add to non-perennially frozen soil layers so first check which layers are
+    !! unfrozen and then do the allotment appropriately. For defining which
+    !! layers are frozen, we use the active layer depth.
+
+    ! Find the bottom of the unfrozen soil column:
+    botlyr = 1 ! we assume if the first layer is frozen that it still can
+                 ! accept the root litter. So initialize to 1.
+    do k = 1,ignd
+        if(actlyr(i) < zbotw(i,k)) exit
+          botlyr = k
+    end do
+
+    do 805 j = 1, icc
+
+      ! Now we take the root distribution and adjust it to the soil profile we have
+      ! that is unfrozen
+
+      unfrzrt = 0.
+      if (botlyr == ignd) then !if the botlyr is the bottom of the soil column then just set to original
+                               ! and move on.
+           unfrzrt(:) = rmatctem(i,j,:)
+      else ! there is some frozen soil so adjust how the root litter is distibuted
+        frznrtlit = sum(rmatctem(i,j,botlyr+1:ignd)) !determine how much of the distribution is in the frozen layers
+        do k = 1, botlyr
+            unfrzrt(k) = rmatctem(i,j,k) + rmatctem(i,j,k) / (1. - frznrtlit) * frznrtlit
+        end do
+      end if
+
+      do 810 k = 1, ignd
+
+        if (k == 1) then
+          ! The first layer gets the leaf and stem litter as well as the reprocost,
+          ! which is assumed to be cones/seeds. The root litter is given in proportion
+          ! to the adjusted root distribution
+          litrmass(i,j,k)=litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
+                  + rootlitr(i,j) * unfrzrt(k) + reprocost(i,j)*(1.0/963.62) *deltat
+          ! litrmass(i,j,k)=litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
+          !         + rootlitr(i,j) * rmatctem(i,j,k) + reprocost(i,j)*(1.0/963.62) *deltat
+
+
+        else ! the lower soil layers get the roots, in the proportion that they
+             ! are in the unfrozen soil column.
+          litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * unfrzrt(k)
+           ! litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
+        end if
+
 810     continue
+805    continue
 800   continue
 
 !    ------------------------------------------------------------------
@@ -1570,7 +1648,6 @@ call       mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  &
         do 840 i = il1, il2
           stemmass(i,m)=stemmass(i,m)-stemltrm(i,m)
           rootmass(i,m)=rootmass(i,m)-rootltrm(i,m)
-          litrmass(i,m)=litrmass(i,m)+stemltrm(i,m)+rootltrm(i,m)  
           select case(classpfts(j))
             case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')
               gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
@@ -1582,7 +1659,19 @@ call       mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  &
               print*,'Unknown CLASS PFT in ctem ',classpfts(j)
               call XIT('ctem',-6)                                                                       
           end select
-          litrmass(i,m)=litrmass(i,m)+glealtrm(i,m)
+
+          do 845 k = 1, ignd
+
+           if (k == 1) then
+             ! The first layer gets the leaf and stem litter. The root litter is given in proportion
+             ! to the root distribution
+             litrmass(i,m,k)=litrmass(i,m,k)+stemltrm(i,m)+rootltrm(i,m)*rmatctem(i,m,k)+glealtrm(i,m)
+           else
+             litrmass(i,m,k)=litrmass(i,m,k)+rootltrm(i,m)*rmatctem(i,m,k)
+           end if
+
+845      continue
+
 840     continue
 835    continue
 830   continue
@@ -1673,7 +1762,8 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !       respiration from the paper (litter) and furniture (soil carbon) pools (LUC
 !       product pools). Also include here the instantaneous emissions due to LUC.
       do 1041 i = il1, il2
-        nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2)) - lucemcom(i)
+        nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2,1) + scresveg(i,iccp2,1))&
+                 - lucemcom(i)
         dstcemls3(i) = dstcemls2(i) - dstcemls1(i)  !litter is total - vegetation.
 1041  continue
 !>
@@ -1708,13 +1798,17 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &     tltrstem(i,j)+tltrroot(i,j))
           ! store the per PFT litterfall for outputting.
           litrfallveg(i,j)=(tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j))
-          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
 
-          if (ipeatland(i)==0) then ! Non-peatlands
-               gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-          !else
-             !Peatland soil C is calculated from peat depth (peatdep) in the peatland
-          endif
+          do k = 1, ignd
+            gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
+            if (ipeatland(i)==0) then ! Non-peatlands
+              gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+            !else
+              !Peatland soil C is calculated from peat depth (peatdep) in the peatland
+            endif
+          end do
+
+
           vgbiomas_veg(i,j)=gleafmas(i,j)+&
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
 1110    continue
@@ -1727,10 +1821,11 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !
       do 1020 i = il1, il2
           if (ipeatland(i)==0) then
-          ! Add the bare fraction dead C
-             gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
-             gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
-             
+            do 1025 k  = 1, ignd
+              ! Add the bare fraction dead C
+              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1,k))
+              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1,k))
+1025    continue             
           else
              litrmsmoss(i)= litrmsmoss(i)+litrfallmoss(i)-&
       &                     ltrestepmoss(i)-humstepmoss(i)     !kg/m2
@@ -1744,6 +1839,13 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
           endif
 1020  continue
+
+!     -----------------------------------------------------------------
+!     Allow cryoturbation and bioturbation to move the soil C between
+!     layers. Since this is neither consuming nor adding C, this does not
+!     affect our C balance in balcar.
+        call turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast,litrmass,soilcmas)
+
 !     -----------------------------------------------------------------
 !>
 !>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145)

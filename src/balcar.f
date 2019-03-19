@@ -55,8 +55,8 @@ c
       real rootmass(ilg,icc)  !<pools (after being updated): root mass for each of the 9 ctem pfts
       real gleafmas(ilg,icc)  !<pools (after being updated): green leaf mass for each of the 9 ctem pfts
       real bleafmas(ilg,icc)  !<pools (after being updated): brown leaf mass for each of the 9 ctem pfts
-      real litrmass(ilg,iccp2)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
-      real soilcmas(ilg,iccp2)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
+      real litrmass(ilg,iccp2,ignd)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
+      real soilcmas(ilg,iccp2,ignd)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
       real ntchlveg(ilg,icc)  !<fluxes for each pft: net change in leaf biomass
       real ntchsveg(ilg,icc)  !<fluxes for each pft: net change in stem biomass
       real ntchrveg(ilg,icc)  !<fluxes for each pft: net change in root biomass the net change is the difference
@@ -69,8 +69,8 @@ c
       real stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses
       real rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses
       real ltrcemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: litter carbon emission losses
-      real ltresveg(ilg,iccp2)!<fluxes for each pft: litter respiration for each pft + bare fraction
-      real scresveg(ilg,iccp2)!<fluxes for each pft: soil c respiration for each pft + bare fraction
+      real ltresveg(ilg,iccp2,ignd)!<fluxes for each pft: litter respiration for each pft + bare fraction 
+      real scresveg(ilg,iccp2,ignd)!<fluxes for each pft: soil c respiration for each pft + bare fraction
       real humtrsvg(ilg,iccp2)!<fluxes for each pft: humification for each pft + bare fraction
       real pglfmass(ilg,icc)  !<pools (before being updated): previous green leaf mass
       real pblfmass(ilg,icc)  !<pools (before being updated): previous brown leaf mass
@@ -171,9 +171,17 @@ c         endif
 !
       do 250 j = 1, icc
         do 260 i = il1, il2
-          diff1=litrmass(i,j) - plitmass(i,j)
+          littempor = 0.
+          litrestemp=0.
+          do k = 1,ignd
+           littempor = littempor + litrmass(i,j,k)
+           litrestemp = litrestemp + ltresveg(i,j,k)
+          end do
+
+          diff1=littempor - plitmass(i,j)
+
           diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j)-
-     &      ltresveg(i,j)-humtrsvg(i,j)-ltrcemls(i,j)
+     &      litrestemp-humtrsvg(i,j)-ltrcemls(i,j)
      &      + repro_cost(i,j))*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,j,abs(diff1-diff2),tolrance
@@ -188,15 +196,19 @@ c         endif
 ! Litter over the bare fraction
 !
         do 280 i = il1, il2
-           if (ipeatland(i)==0) then !Over the non-peatland areas.
-          diff1=litrmass(i,iccp1) - plitmass(i,iccp1)
-          diff2=( -ltresveg(i,iccp1)-humtrsvg(i,iccp1))*
+          littempor=0.
+          litrestemp=0.
+          do k = 1, ignd
+            littempor = littempor + litrmass(i,iccp1,k)
+            litrestemp = litrestemp + ltresveg(i,iccp1,k)
+          end do
+          diff1=littempor - plitmass(i,iccp1)
+          diff2=( -litrestemp-humtrsvg(i,iccp1))*
      &          ( deltat/963.62 )
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,iccp1,abs(diff1-diff2),tolrance
             call xit('balcar',-5)
           endif
-           endif
 280     continue
 
 !
@@ -205,10 +217,10 @@ c         endif
         do 290 i = il1, il2
           littempor=0.
           litrestemp=0.
-          !do k = 1, ignd
-            littempor = littempor + litrmass(i,iccp2)
-            litrestemp = litrestemp + ltresveg(i,iccp2)
-          !end do
+          do k = 1, ignd
+            littempor = littempor + litrmass(i,iccp2,k)
+            litrestemp = litrestemp + ltresveg(i,iccp2,k)
+          end do
           diff1=littempor - plitmass(i,iccp2)
           diff2=( -litrestemp-humtrsvg(i,iccp2))*
      &          ( deltat/963.62 )
@@ -224,20 +236,24 @@ c         endif
 !
       do 300 j = 1, icc
         do 310 i = il1, il2
-         if (ipeatland(i)==0) then !Over the non-peatland regions
-          diff1=soilcmas(i,j) - psocmass(i,j)
-          diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)
+          soiltempor = 0.
+          scresveg_temp = 0.
+          do k = 1, ignd
+            soiltempor = soiltempor + soilcmas(i,j,k)
+            scresveg_temp = scresveg_temp + scresveg(i,j,k)
+          end do
+          diff1=soiltempor - psocmass(i,j)
+          diff2=( humtrsvg(i,j)-scresveg_temp )*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
-            write(6,3001)'soilCmas(',i,')=',soilcmas(i,j)
+            !write(6,3001)'soilCmas(',i,')=',soilcmas(i,j)
             write(6,3001)'psocmass(',i,')=',psocmass(i,j)
             write(6,3001)'humtr(',i,')=',humtrsvg(i,j)*(deltat/963.62)
-            write(6,3001)'scres(',i,')=',scresveg(i,j)*(deltat/963.62)
+            !write(6,3001)'scres(',i,')=',scresveg(i,j,k)*(deltat/963.62)
             write(6,2004)i,j,abs(diff1-diff2),tolrance
 2004        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for soil c')
             call xit('balcar',-7)
           endif
-         endif
 310     continue
 300   continue
 
@@ -248,10 +264,10 @@ c         endif
         do 330 i = il1, il2
           soiltempor = 0.
           scresveg_temp = 0.
-          !do k = 1, ignd
-            soiltempor = soiltempor + soilcmas(i,j)!,k)
-            scresveg_temp = scresveg_temp + scresveg(i,j)!,k)
-          !end do
+          do k = 1, ignd
+            soiltempor = soiltempor + soilcmas(i,j,k)
+            scresveg_temp = scresveg_temp + scresveg(i,j,k)
+          end do
           diff1=soiltempor - psocmass(i,j)
           diff2=( humtrsvg(i,j)-scresveg_temp )*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then

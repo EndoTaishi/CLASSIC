@@ -411,7 +411,7 @@ end subroutine accumulateForCTEM
 !!@author V.Arora, J. Melton
 subroutine ctemInit(nltest,nmtest)
 
-    use classic_params, only : icc,ilg
+    use classic_params, only : icc,ilg,ignd,iccp1
     use ctem_statevars, only : vrot,ctem_tile,vgat
     use class_statevars,only : class_rot
     use generalUtils,        only : findDaylength
@@ -421,7 +421,7 @@ subroutine ctemInit(nltest,nmtest)
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
 
-    integer :: i,m,j
+    integer :: i,m,j,k
 
     real, pointer, dimension(:,:,:) :: co2i1cgrow
     real, pointer, dimension(:,:,:) :: co2i1csrow
@@ -467,8 +467,8 @@ subroutine ctemInit(nltest,nmtest)
     real, pointer, dimension(:,:,:) :: bleafmasrow        !
     real, pointer, dimension(:,:,:) :: stemmassrow        !
     real, pointer, dimension(:,:,:) :: rootmassrow        !
-    real, pointer, dimension(:,:,:) :: litrmassrow
-    real, pointer, dimension(:,:,:) :: soilcmasrow
+    real, pointer, dimension(:,:,:,:) :: litrmassrow
+    real, pointer, dimension(:,:,:,:) :: soilcmasrow
     real, pointer, dimension(:,:,:) :: fcancmxrow
     real, pointer, dimension(:,:) :: peatdeprow
     real, pointer, dimension(:) :: anmossac_t
@@ -582,10 +582,12 @@ subroutine ctemInit(nltest,nmtest)
                 vgbiomasrow(i,m)=vgbiomasrow(i,m)+fcancmxrow(i,m,j)*&
                     &        (gleafmasrow(i,m,j)+stemmassrow(i,m,j)+&
                     &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))
+              do k = 1,ignd
                 gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)*&
-                    &                       litrmassrow(i,m,j)
+                    &                       litrmassrow(i,m,j,k)
                 gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)*&
-                    &         soilcmasrow(i,m,j)
+                    &         soilcmasrow(i,m,j,k)
+              end do !ignd
                 grwtheffrow(i,m,j)=100.0   !set growth efficiency to some large number
                                                         !so that no growth related mortality occurs in
                                                         !first year
@@ -598,12 +600,14 @@ subroutine ctemInit(nltest,nmtest)
     do 117 i = 1,nltest
         do 117 m = 1,nmtest
             if (ipeatlandrow(i,m)==0) then ! NON-peatland tile
+              do k = 1,ignd
                 gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
                         fcanrot(i,m,2)-fcanrot(i,m,3)-&
-                        fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
+                        fcanrot(i,m,4))*litrmassrow(i,m,iccp1,k)
                 gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-&
                         fcanrot(i,m,2)-fcanrot(i,m,3)-&
-                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
+                        fcanrot(i,m,4))*soilcmasrow(i,m,iccp1,k)
+              end do
             else !peatland tile
                 gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
                 peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth

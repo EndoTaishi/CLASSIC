@@ -865,8 +865,8 @@ contains
         real, pointer, dimension(:,:,:) :: stmhrlosrow
         real, pointer, dimension(:,:,:,:) :: rmatcrow
         real, pointer, dimension(:,:,:,:) :: rmatctemrow
-        real, pointer, dimension(:,:,:) :: litrmassrow
-        real, pointer, dimension(:,:,:) :: soilcmasrow
+        real, pointer, dimension(:,:,:,:) :: litrmassrow
+        real, pointer, dimension(:,:,:,:) :: soilcmasrow
         real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
 
         real, pointer, dimension(:,:,:) :: emit_co2row
@@ -946,14 +946,14 @@ contains
         real, pointer, dimension(:,:,:) :: nppvegrow
         real, pointer, dimension(:,:,:) :: hetroresvegrow
         real, pointer, dimension(:,:,:) :: autoresvegrow
-        real, pointer, dimension(:,:,:) :: litresvegrow
-        real, pointer, dimension(:,:,:) :: soilcresvegrow
+        real, pointer, dimension(:,:,:,:) :: litresvegrow
+        real, pointer, dimension(:,:,:,:) :: soilcresvegrow
         real, pointer, dimension(:,:,:) :: rmlvegaccrow
         real, pointer, dimension(:,:,:) :: rmsvegrow
         real, pointer, dimension(:,:,:) :: rmrvegrow
         real, pointer, dimension(:,:,:) :: rgvegrow
         real, pointer, dimension(:,:,:) :: litrfallvegrow
-        real, pointer, dimension(:,:,:) :: humiftrsvegrow
+        real, pointer, dimension(:,:,:,:) :: humiftrsvegrow
 
         real, pointer, dimension(:,:,:) :: rothrlosrow
         real, pointer, dimension(:,:,:) :: pfcancmxrow
@@ -1028,8 +1028,8 @@ contains
         real, pointer, dimension(:,:) :: stmhrlosgat
         real, pointer, dimension(:,:,:) :: rmatcgat
         real, pointer, dimension(:,:,:) :: rmatctemgat
-        real, pointer, dimension(:,:) :: litrmassgat
-        real, pointer, dimension(:,:) :: soilcmasgat
+        real, pointer, dimension(:,:,:) :: litrmassgat
+        real, pointer, dimension(:,:,:) :: soilcmasgat
         real, pointer, dimension(:,:) :: vgbiomas_veggat
 
         real, pointer, dimension(:,:) :: emit_co2gat
@@ -1107,8 +1107,8 @@ contains
         real, pointer, dimension(:,:) :: nppveggat
         real, pointer, dimension(:,:) :: hetroresveggat
         real, pointer, dimension(:,:) :: autoresveggat
-        real, pointer, dimension(:,:) :: litresveggat
-        real, pointer, dimension(:,:) :: soilcresveggat
+        real, pointer, dimension(:,:,:) :: litresveggat
+        real, pointer, dimension(:,:,:) :: soilcresveggat
         real, pointer, dimension(:,:) :: rmlvegaccgat
         real, pointer, dimension(:,:) :: rmsveggat
         real, pointer, dimension(:,:) :: rmrveggat

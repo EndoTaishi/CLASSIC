@@ -475,6 +475,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, &
                      gleafmas,  bleafmas,   stemmass,   rootmass, &
                      litrmass,  soilcmas,   grclarea,     lambda, &
                      burnvegf,      sort,  pstemmass, pgleafmass, &
+                     rmatctem, &
 !    ------------------- inputs above this line -------------------
                       fcancmx,    fcanmx,   vgbiomas,   gavgltms, &
                      gavgscms,   bmasveg,                         &
@@ -482,6 +483,9 @@ subroutine competition(  iday,       il1,        il2,       nilg, &
                      add2allo,   colrate,   mortrate)
  !    ------------------- outputs above this line -----------------
 
+!      9  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
+!     J. Melton       carbon pools
+!
 !     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We
 !     J. Melton       now have a constant reproductive cost
 !
@@ -507,7 +511,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, &
 !     V. Arora        pFTs based on Lotka-Volterra eqns. ot its modified
 !                     forms. either option may be used.
 !
-!                     PFTs that may exist are allowed to PFTCompetition for
+!                     PFTs that may exist are allowed to compete for
 !                     available space in a grid cell. pfts that can't
 !                     exist based on long term bioclimatic parameters
 !                     are slowly killed by increasing their mortality.
@@ -542,14 +546,15 @@ real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that 
 real, dimension(nilg,icc), intent(in) :: burnvegf       !< fractional areas burned, for 9 ctem pfts
 real, dimension(nilg,icc), intent(in) :: pstemmass      !< stem mass from previous timestep, is value before fire. used by burntobare subroutine
 real, dimension(nilg,icc), intent(in) :: pgleafmass     !< root mass from previous timestep, is value before fire. used by burntobare subroutine
+real, dimension(nilg,icc,ignd), intent(in) :: rmatctem  ! fraction of roots for each of ctem's 9 pfts in each soil layer
 real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
 real, dimension(nilg,icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
 real, dimension(nilg,ican), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
 real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
@@ -598,8 +603,8 @@ real, dimension(nilg) :: mincfrac
 real, dimension(nilg,icc) :: pbiomasvg, biomasvg
 real, dimension(nilg,icc) :: putaside
 real, dimension(nilg,icc) :: nppvegar
-real, dimension(nilg,iccp1) :: pltrmass
-real, dimension(nilg,iccp1) :: psocmass
+real, dimension(nilg,iccp1,ignd) :: pltrmass
+real, dimension(nilg,iccp1,ignd) :: psocmass
 real, dimension(nilg,iccp1) :: deadmass
 real, dimension(nilg,iccp1) :: pdeadmas
 real, dimension(nilg) :: barefrac
@@ -607,7 +612,7 @@ real, dimension(nilg,icc) :: usebmsvg
 real, dimension(nilg,iccp1) ::ownsolc, ownlitr
 real, dimension(nilg,icc) :: baresolc
 real, dimension(nilg,icc) :: barelitr, baresoilc
-real, dimension(nilg,iccp1) :: incrlitr, incrsolc
+real, dimension(nilg,iccp1,ignd) :: incrlitr, incrsolc
 real, dimension(nilg) :: pvgbioms
 real, dimension(nilg) :: pgavltms
 real, dimension(nilg) :: pgavscms
@@ -615,7 +620,7 @@ real, dimension(nilg) :: add2dead
 real, dimension(nilg) :: gavgputa
 real, dimension(nilg) :: gavgnpp
 real, dimension(nilg) :: pbarefra
-real, dimension(nilg) :: grsumlit, grsumsoc
+real, dimension(nilg,ignd) :: grsumlit, grsumsoc
 
 !     ---------------------------------------------------------------
 !     Constants and parameters are located in classic_params.f90
@@ -679,8 +684,10 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
           pblfmass(i,j)=bleafmas(i,j) ! changes so that we can make sure
           protmass(i,j)=rootmass(i,j) ! mass balance is preserved.
           pstmmass(i,j)=stemmass(i,j)
-          pltrmass(i,j)=litrmass(i,j)
-          psocmass(i,j)=soilcmas(i,j)
+          do k = 1,ignd
+            pltrmass(i,j,k)=litrmass(i,j,k)
+            psocmass(i,j,k)=soilcmas(i,j,k)
+          end do
           pfcancmx(i,j)=fcancmx(i,j)
 
           colrate(i,j)=0.0         ! colonization rate
@@ -700,8 +707,8 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
           barelitr(i,j)=0.0    ! kg c of litter added to bare fraction
           baresolc(i,j)=0.0    ! and same for soil c
           fraciord(i,j)=0
-          incrlitr(i,j)=0.0
-          incrsolc(i,j)=0.0
+          incrlitr(i,j,:)=0.0
+          incrsolc(i,j,:)=0.0
           ownlitr(i,j)=0.0
           ownsolc(i,j)=0.0
 160     continue
@@ -737,20 +744,22 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
         vgbiomas(i)=0.0
         gavgltms(i)=0.0
         gavgscms(i)=0.0
-        pltrmass(i,iccp1)=litrmass(i,iccp1)
-        psocmass(i,iccp1)=soilcmas(i,iccp1)
+        do k = 1,ignd
+          pltrmass(i,iccp1,k)=litrmass(i,iccp1,k)
+          psocmass(i,iccp1,k)=soilcmas(i,iccp1,k)
+        end do
         deadmass(i,iccp1)=0.0
         pdeadmas(i,iccp1)=0.0
         add2dead(i)=0.0
         gavgputa(i)=0.0 ! grid averaged value of c put aside for allocation
         gavgnpp(i)=0.0  ! grid averaged npp kg c/m2 for balance purposes
         bareiord(i)=0
-        grsumlit(i)=0.0
-        grsumsoc(i)=0.0
+        grsumlit(i,:)=0.0
+        grsumsoc(i,:)=0.0
         ownlitr(i,iccp1)=0.0
         ownsolc(i,iccp1)=0.0
-        incrlitr(i,iccp1)=0.0
-        incrsolc(i,iccp1)=0.0
+        incrlitr(i,iccp1,:)=0.0
+        incrsolc(i,iccp1,:)=0.0
 
 150   continue
 !>
@@ -1096,8 +1105,10 @@ do 300 j = k, k+numgrass-1
             bleafmas(i,j) = bleafmas(i,j)*term
             stemmass(i,j) = stemmass(i,j)*term
             rootmass(i,j) = rootmass(i,j)*term
-            litrmass(i,j) = litrmass(i,j)*term
-            soilcmas(i,j) = soilcmas(i,j)*term
+            do k = 1,ignd
+              litrmass(i,j,k) = litrmass(i,j,k)*term
+              soilcmas(i,j,k) = soilcmas(i,j,k)*term
+
 
 !           only a fraction of npp becomes litter which for simplicity
 !           and for now we spread over the whole grid cell
@@ -1122,42 +1133,56 @@ do 300 j = k, k+numgrass-1
 
             ! Not in use. JM Jun 2014.
             !incrlitr(i,j) = term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-            incrlitr(i,j) = 0.
-            grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
+              incrlitr(i,j,k) = 0.
+              grsumlit(i,k)=grsumlit(i,k)+incrlitr(i,j,k)
+            end do
 !           ! Not in use. JM Jun 2014. -rest put aside for allocation
 !           add2allo(i,j) = add2allo(i,j)* max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*&
 !                          (pfcancmx(i,j)/fcancmx(i,j))
             add2allo(i,j) = 0.
 
           else if(fraciord(i,j).eq.-1)then ! Contract
-!>
-!!All npp used for expansion becomes litter plus there is additional mortality of the standing biomass. the npp that
-!!becomes litter is now spread over the whole grid cell. all biomass from fraction that dies due to mortality is
-!!also distributed over the litter pool of whole grid cell.
-!!
-            incrlitr(i,j) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
-                            + bleafmas(i,j) + stemmass(i,j) &
-                            + rootmass(i,j) + litrmass(i,j))
+
+            do k = 1,ignd
+    !           All npp used for expansion becomes litter plus there is
+    !           additional mortality of the standing biomass. the npp that
+    !           becomes litter is now spread over the whole grid cell.
+    !           all biomass from fraction that dies due to mortality is
+    !           also distributed over the litter pool of whole grid cell.
+
+    !           FLAG, Put the incrlitr in the first layer (from the leaves and stems)
+    !           but the roots and litr must be put in the proper soil layers. To do
+    !           this we bring in the rmatctem for the root placement. JM Feb 2016
+                if (k == 1) then
+                incrlitr(i,j,k) = abs(chngfrac(i,j))*(gleafmas(i,j)+ &
+                    bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)*rmatctem(i,j,k)+litrmass(i,j,k))
+                else
+                incrlitr(i,j,k) = abs(chngfrac(i,j))*(rootmass(i,j)*rmatctem(i,j,k)+litrmass(i,j,k))
+                end if
 
             ! Not in use. JM Jun 2014.
             !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-            incrlitr(i,j) = incrlitr(i,j)
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
+
+                incrlitr(i,j,k) = incrlitr(i,j,k)
+                grsumlit(i,k)=grsumlit(i,k)+incrlitr(i,j,k)
 
 !           Chop off soil c from the fraction that goes down and
 !           spread it uniformly over the soil c pool of entire grid cell
 
-            incrsolc(i,j) = abs(chngfrac(i,j)) * soilcmas(i,j)
-            grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
+                incrsolc(i,j,k)=abs(chngfrac(i,j))*soilcmas(i,j,k)
+                grsumsoc(i,k)=grsumsoc(i,k)+incrsolc(i,j,k)
+
+            end do
+
 
           else if(fraciord(i,j).eq.0)then
 
             ! Not in use. JM Jun 2014.
 !           all npp used for expansion becomes litter
             !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j)
-            incrlitr(i,j) = 0.
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
+            incrlitr(i,j,:) =0.
+            grsumlit(i,:)=grsumlit(i,:)+incrlitr(i,j,:) !FLAG this right?
 
           endif
 
@@ -1172,19 +1197,19 @@ do 300 j = k, k+numgrass-1
 !!
       do 680 i = il1, il2
         if(bareiord(i).eq.-1)then !decrease in bare area
+          do k = 1,ignd
+            incrlitr(i,iccp1,k) =(pbarefra(i)-barefrac(i))*litrmass(i,iccp1,k)
+            grsumlit(i,k)=grsumlit(i,k)+incrlitr(i,iccp1,k)
 
-          incrlitr(i,iccp1) =(pbarefra(i)-barefrac(i))*litrmass(i,iccp1)
-          grsumlit(i)=grsumlit(i)+incrlitr(i,iccp1)
-
-          incrsolc(i,iccp1) = (pbarefra(i)-barefrac(i))*soilcmas(i,iccp1)
-          grsumsoc(i)=grsumsoc(i)+incrsolc(i,iccp1)
-
+            incrsolc(i,iccp1,k) = (pbarefra(i)-barefrac(i))*soilcmas(i,iccp1,k)
+            grsumsoc(i,k)=grsumsoc(i,k)+incrsolc(i,iccp1,k)
+          end do
         else if(bareiord(i).eq.1)then ! increase in bare area
-
+          do k = 1,ignd
           term = pbarefra(i)/barefrac(i)
-          litrmass(i,iccp1)=litrmass(i,iccp1)*term
-          soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
-
+            litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
+            soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
+          end do
         endif
 680   continue
 !>
@@ -1196,21 +1221,34 @@ do 300 j = k, k+numgrass-1
         do 691 i = il1, il2
           if(.not. pftexist(i,j).and.fcancmx(i,j).lt.1.0e-05)then
 
-            incrlitr(i,j)=incrlitr(i,j)+fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
-              +stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
-            grsumlit(i) = grsumlit(i)+ incrlitr(i,j)
-
-            incrsolc(i,j)=incrsolc(i,j)+fcancmx(i,j)*soilcmas(i,j)
-            grsumsoc(i)=grsumsoc(i)+incrsolc(i,j)
-
             barefrac(i)=barefrac(i)+fcancmx(i,j)
+            term = (barefrac(i)-fcancmx(i,j))/barefrac(i)
+
+           do k = 1,ignd
+    !           FLAG, Put the incrlitr in the first layer (from the leaves and stems)
+    !           but the roots and litr must be put in the proper soil layers. To do
+    !           this we bring in the rmatctem for the root placement. JM Feb 2016
+
+                if (k == 1) then
+                  incrlitr(i,j,k)=incrlitr(i,j,k)+fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
+                               +stemmass(i,j)+rootmass(i,j)*rmatctem(i,j,k)+litrmass(i,j,k))
+                else
+                  incrlitr(i,j,k)=incrlitr(i,j,k)+fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
+                                +stemmass(i,j)+rootmass(i,j)*rmatctem(i,j,k)+litrmass(i,j,k))
+                end if
+
+                grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
+
+                incrsolc(i,j,k)=incrsolc(i,j,k)+fcancmx(i,j)*soilcmas(i,j,k)
+                grsumsoc(i,k)=grsumsoc(i,k)+incrsolc(i,j,k)
 
 !>adjust litter and soil c mass densities for increase in
 !>barefrac over the bare fraction.
 
-            term = (barefrac(i)-fcancmx(i,j))/barefrac(i)
-            litrmass(i,iccp1) = litrmass(i,iccp1)*term
-            soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
+                litrmass(i,iccp1,k) = litrmass(i,iccp1,k)*term
+                soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k)*term
+
+            end do
 
             fcancmx(i,j)=0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27
 
@@ -1223,26 +1261,26 @@ do 300 j = k, k+numgrass-1
       do 700 j = 1, icc
         do 701 i = il1, il2
           if(fcancmx(i,j).gt.zero)then
-            litrmass(i,j)=litrmass(i,j)+grsumlit(i)
-            soilcmas(i,j)=soilcmas(i,j)+grsumsoc(i)
+            litrmass(i,j,:)=litrmass(i,j,:)+grsumlit(i,:)
+            soilcmas(i,j,:)=soilcmas(i,j,:)+grsumsoc(i,:)
           else
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
             stemmass(i,j)=0.0
-            rootmass(i,j)=0.0
-            litrmass(i,j)=0.0
-            soilcmas(i,j)=0.0
+            rootmass(i,j)=0.0  !FLAG, should I set rmatctem to zero here too? JM Feb 2016.
+            litrmass(i,j,:)=0.0
+            soilcmas(i,j,:)=0.0
           endif
 701     continue
 700   continue
 
       do 720 i = il1, il2
         if(barefrac(i).gt.zero)then
-          litrmass(i,iccp1)=litrmass(i,iccp1)+grsumlit(i)
-          soilcmas(i,iccp1)=soilcmas(i,iccp1)+grsumsoc(i)
+          litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grsumlit(i,:)
+          soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grsumsoc(i,:)
         else
-          litrmass(i,iccp1)=0.0
-          soilcmas(i,iccp1)=0.0
+          litrmass(i,iccp1,:)=0.0
+          soilcmas(i,iccp1,:)=0.0
         endif
 720   continue
 
@@ -1275,14 +1313,18 @@ do 300 j = k, k+numgrass-1
         do 801 i = il1, il2
           vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
                      bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
-          gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
+          do k = 1, ignd
+            gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
+            gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+          end do
 801     continue
 800   continue
 
       do 810 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
-        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
+        do k = 1, ignd
+          gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1,k) )
+          gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1,k) )
+        end do
 810   continue
 !>
 !>and finally we check the c balance. we were supposed to use a
@@ -1305,13 +1347,15 @@ do 300 j = k, k+numgrass-1
 
           gavgputa(i) = gavgputa(i) + putaside(i,j)
 
+          do k = 1,ignd
 !         litter added to bare
-          barelitr(i,j)=grsumlit(i)*fcancmx(i,j)
-          ownlitr(i,j)=incrlitr(i,j)
+            barelitr(i,j)=barelitr(i,j) + grsumlit(i,k)*fcancmx(i,j)
+            ownlitr(i,j)= ownlitr(i,j) + incrlitr(i,j,k)
 
 !         soil c added to bare
-          baresolc(i,j)=grsumsoc(i)*fcancmx(i,j)
-          ownsolc(i,j)=incrsolc(i,j)
+            baresolc(i,j)=baresolc(i,j) + grsumsoc(i,k)*fcancmx(i,j)
+            ownsolc(i,j)=ownsolc(i,j) + incrsolc(i,j,k)
+          end do
 
           add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
 
@@ -1322,8 +1366,10 @@ do 300 j = k, k+numgrass-1
 
           gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
-          deadmass(i,j)=fcancmx(i,j)*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pfcancmx(i,j)*(pltrmass(i,j)+psocmass(i,j))
+          do k = 1, ignd
+            deadmass(i,j)=deadmass(i,j) + fcancmx(i,j)*(litrmass(i,j,k)+soilcmas(i,j,k))
+            pdeadmas(i,j)=pdeadmas(i,j) + pfcancmx(i,j)*(pltrmass(i,j,k)+psocmass(i,j,k))
+          end do
 
 !!total mass before competition
           befrmass=pbiomasvg(i,j)+nppvegar(i,j)+pdeadmas(i,j)
@@ -1372,13 +1418,15 @@ do 300 j = k, k+numgrass-1
 
       j = iccp1
         do 851 i = il1, il2
-          deadmass(i,j)=barefrac(i)*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pbarefra(i)*(pltrmass(i,j)+psocmass(i,j))
+          do k = 1,ignd
+            deadmass(i,j)= deadmass(i,j) + barefrac(i)*(litrmass(i,j,k)+soilcmas(i,j,k))
+            pdeadmas(i,j)= pdeadmas(i,j) + pbarefra(i)*(pltrmass(i,j,k)+psocmass(i,j,k))
 
-          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i)
+            add2dead(i)= add2dead(i) + (grsumlit(i,k)+grsumsoc(i,k))*barefrac(i)
 
-          ownlitr(i,j)=incrlitr(i,j)
-          ownsolc(i,j)=incrsolc(i,j)
+            ownlitr(i,j)= ownlitr(i,j) + incrlitr(i,j,k)
+            ownsolc(i,j)= ownsolc(i,j) + incrsolc(i,j,k)
+          end do
 
           befrmass=pdeadmas(i,j)+add2dead(i)
           aftrmass=deadmass(i,j)+ownlitr(i,j)+ownsolc(i,j)
