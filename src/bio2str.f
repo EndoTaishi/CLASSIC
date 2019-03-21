@@ -71,7 +71,7 @@
       subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,  
      1                            il1,      il2,      ilg,    zbotw,
      2                          delzw, nol2pfts,  soildpth, fcancmx,
-     3                      ipeatland,actlyr_yr,
+     3                      ipeatland,maxAnnualActLyr,
 !    4--------------- inputs above this line, outputs below --------
      5                          ailcg,    ailcb,     ailc,    zolnc,
      6                          rmatc, rmatctem,     slai,  bmasveg,
@@ -180,7 +180,7 @@ c
       real useb(ilg,icc)         !< 
       real zroot                 !< 
       real soildpth(ilg)         !<input: soil depth (m)
-      real, dimension(ilg), intent(in) :: actlyr_yr           !< annual maximum active layer depth (m)
+      real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< annual maximum active layer depth (m)
       real etmp(ilg,icc,ignd)    !<
       real totala(ilg,icc)       !<
       real rmat_sum              !< 
@@ -204,7 +204,7 @@ c     ---------------------------------------------------------------
 c
 c     initialization
 c
-         rmatctem(:,:,:)=0.0 !il1:il2,icc,ignd
+        rmatctem(:,:,:)=0.0 !il1:il2,icc,ignd
         etmp(:,:,:)    =0.0 !il1:il2,icc,ignd
         rmatc(:,:,:)   =0.0 !il1:il2,ican,ignd
         ailc(:,:)=0.0       !il1:il2,ican
@@ -488,10 +488,10 @@ c
 !!the "a" which depends on time varying root biomass 
 !!
             if(rootdpth(i,m).gt.min(soildpth(i),
-     1                              actlyr_yr(i),
+     1                              maxAnnualActLyr(i),
      2                              zbotw(i,ignd),
      3                              mxrtdpth(sort(m)))) then
-              rootdpth(i,m) = min(soildpth(i),actlyr_yr(i),
+              rootdpth(i,m) = min(soildpth(i),maxAnnualActLyr(i),
      1                            zbotw(i,ignd),mxrtdpth(sort(m)))
               if(rootdpth(i,m).le.abszero)then
                 a(i,m)=100.0

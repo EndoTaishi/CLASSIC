@@ -36,6 +36,7 @@ The expected format of the INI file is:
 **Special Note: The converter expects a soil colour index in the file (highlighted above). Please see the CLASSIC manual for more information.**
 
 * Additionally it is often best to make the snow in the canopy (SCAN), liquid in the canopy (RCAN) zero as they can often lead to instabilities when running the model at a new site for the first time (see CLASSIC manual for more on this).
+* Any variables that are new to the initfile are set to default values (usually 0) if not in the INI or CTM files. They can, however, be set in the example namelist files.
 * The INI file read-in is not setup to read in > 4 CLASS PFTs or > 9 CTEM PFTs. It is desirable to move to the namelist technique for those cases, or edit the initFileConverter.f90 for your needs.
 
 and the expected CTM format is:

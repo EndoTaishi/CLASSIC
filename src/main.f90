@@ -262,6 +262,7 @@ contains
         real, pointer, dimension(:) :: WTRGGAT !<Diagnosed residual water transferred into or out of the soil \f$[kg m^{-2} s^{-1} ]\f$
         real, pointer, dimension(:) :: WTRSGAT !<Diagnosed residual water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1} ]\f$
         real, pointer, dimension(:) :: wtableGAT!<Depth of water table in soil [m]
+        real, pointer, dimension(:) :: maxAnnualActLyrGAT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
         real, pointer, dimension(:) :: QLWOGAT !<
         real, pointer, dimension(:) :: SFRHGAT !<
         real, pointer, dimension(:) :: FTEMP   !<
@@ -500,7 +501,7 @@ contains
         real, pointer, dimension(:) :: GUSTROL !<
         real, pointer, dimension(:) :: DEPBROW !<
         real, pointer, dimension(:) :: WTABROW !<  FLAG make so only one of WTABROW and wtableROW ! JM.
-        real, pointer, dimension(:) :: wtableROW !<Depth of water table in soil [m]
+        real, pointer, dimension(:) :: wtableROW !<Depth of water table in soil [m]      
 
         ! These will be allocated the dimension: 'nlat,nmos'
 
@@ -610,6 +611,7 @@ contains
         real, pointer, dimension(:,:) :: WTRSROT !<
         real, pointer, dimension(:,:) :: SFRHROT !<
         real, pointer, dimension(:,:) :: wtableROT !<Depth of water table in soil [m]
+        real, pointer, dimension(:,:) :: maxAnnualActLyrROT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
 
         ! There will be allocated the dimension: 'nlat,nmos,ignd'
         integer, pointer, dimension(:,:,:) :: ISNDROT !<
@@ -1394,6 +1396,7 @@ contains
         WTRGGAT => class_gat%WTRGGAT
         WTRSGAT => class_gat%WTRSGAT
         wtableGAT => class_gat%wtableGAT
+        maxAnnualActLyrGAT => class_gat%maxAnnualActLyrGAT
         QLWOGAT => class_gat%QLWOGAT
         SFRHGAT => class_gat%SFRHGAT
         FTEMP => class_gat%FTEMP
@@ -1610,6 +1613,7 @@ contains
         DEPBROW => class_rot%DEPBROW
         WTABROW => class_rot%WTABROW  !FLAG
         wtableROW => class_rot%wtableROW  !FLAG
+        maxAnnualActLyrROT => class_rot%maxAnnualActLyrROT  
         IGDRROT => class_rot%IGDRROT
         MIDROT => class_rot%MIDROT
         ALBSROT => class_rot%ALBSROT
@@ -2105,10 +2109,10 @@ contains
         rmrgat            => vgat%rmr
 
         slopefracgat      => vgat%slopefrac
-        ch4WetSpecgat        => vgat%ch4WetSpec
+        ch4WetSpecgat     => vgat%ch4WetSpec
         wetfdyngat        => vgat%wetfdyn
         wetfrac_presgat   => vgat%wetfrac_pres
-        ch4WetDyngat        => vgat%ch4WetDyn
+        ch4WetDyngat      => vgat%ch4WetDyn
         ch4soillsgat      => vgat%ch4_soills
 
         lucemcomgat       => vgat%lucemcom
@@ -2373,7 +2377,8 @@ contains
                 ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,&
                 bmasveggat,cmasvegcgat,veghghtgat,&
                 rootdpthgat,alvsctmgat,alirctmgat,&
-                paicgat,    slaicgat, faregat, ipeatlandgat,&
+                paicgat,    slaicgat, faregat, &
+                ipeatlandgat,maxAnnualActLyrGAT, &
                 ilmos,jlmos,iwmos,jwmos,&
                 nml,&
                 gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,&
@@ -2381,12 +2386,13 @@ contains
                 ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,&
                 bmasvegrow,cmasvegcrow,veghghtrow,&
                 rootdpthrow,alvsctmrow,alirctmrow,&
-                paicrow,    slaicrow, FAREROT,ipeatlandrow)
+                paicrow,    slaicrow, FAREROT,&
+                ipeatlandrow,maxAnnualActLyrROT)
 
             call bio2str( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
                                     1,           nml,          ilg,      zbtwgat, &
                               dlzwgat,      nol2pfts,      sdepgat,   fcancmxgat, &
-                         ipeatlandgat,                                            &
+                         ipeatlandgat,maxAnnualActLyrGAT, &
 !                 --------------- inputs above this line, outputs below --------
                              ailcggat,      ailcbgat,      ailcgat,     zolncgat, &
                              rmatcgat,   rmatctemgat,      slaigat,   bmasveggat, &
@@ -2552,7 +2558,7 @@ contains
                   VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,&
                   SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,&
                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,&
-                  DLATGAT,ILMOS,JLMOS,&
+                  DLATGAT,maxAnnualActLyrGAT,ILMOS,JLMOS,&
                   NML,NLAT,NTLD,NMOS,ILG,IGND,ICAN,ICAN+1,NBS,&
                   TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,&
                   TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT,&
@@ -2576,7 +2582,7 @@ contains
                   VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,&
                   SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,&
                   GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW,&
-                  DLATROW )
+                  DLATROW,maxAnnualActLyrROT )
 
             !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
             !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
@@ -2855,7 +2861,7 @@ contains
                         &               THPGAT,   thicegacc_t,    DLATGAT,  ch4concgat,    &
                         &              THFCGAT,       THLWGAT, thliqacc_t,  thiceacc_t,    &
                         &        ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &
-                        &           wtablegat,                                             &
+                        &           wtablegat,   maxAnnualActLyrGAT,                                          &
                         !
                         ! -----------  logical switches determining model behaviour
                         !
@@ -3144,7 +3150,7 @@ contains
 
                 ! Determine the active layer depth and depth to the frozen water table.
                 ! This only occurs once per day since they don't change rapidly.
-                call findPermafrostVars(nmtest,nltest)
+                call findPermafrostVars(nmtest,nltest,iday)
 
             end if !ncount eq nday
 

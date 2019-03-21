@@ -95,8 +95,8 @@ program initFileConverter
     real, allocatable, dimension(:):: annsrpls
     real, allocatable, dimension(:):: annpcp
     real, allocatable, dimension(:):: dry_season_length
-    real, allocatable, dimension(:,:):: litrmassrow
-    real, allocatable, dimension(:,:):: soilcmasrow
+    real, allocatable, dimension(:,:,:):: litrmassrow
+    real, allocatable, dimension(:,:,:):: soilcmasrow
     !real, allocatable, dimension(:):: mlightng
     integer, allocatable, dimension(:,:):: lfstatusrow
     integer, allocatable, dimension(:,:):: pandaysrow
@@ -105,6 +105,7 @@ program initFileConverter
     real, allocatable, dimension(:):: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:):: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
     real, allocatable, dimension(:):: dmoss             !<depth of living moss (m)
+    real, allocatable, dimension(:) :: maxAnnualActLyr  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
 
     !----------
 
@@ -239,8 +240,8 @@ contains
         allocate(bleafmasrow(NMTEST,icc))
         allocate(stemmassrow(NMTEST,icc))
         allocate(rootmassrow(NMTEST,icc))
-        allocate(litrmassrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
-        allocate(soilcmasrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
+        allocate(litrmassrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
+        allocate(soilcmasrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
         allocate(lfstatusrow(NMTEST,icc))
         allocate(pandaysrow(NMTEST,icc))
         allocate(slopefrac(NMTEST,8))
@@ -248,6 +249,7 @@ contains
         allocate(Cmossmas(NMTEST))
         allocate(litrmsmoss(NMTEST))
         allocate(dmoss(NMTEST))
+        allocate(maxAnnualActLyr(NMTEST))
 
         allocate(fcancmxrow(nmtest,icc))
         !allocate(mlightng(12))
@@ -308,6 +310,10 @@ contains
     litrmsmoss(:) = 0.
     dmoss(:) = 0.
 
+    ! The active layer depth won't be in any init files:
+    ! so set to a very deep value.
+    maxAnnualActLyr(:) = 999.
+    
 5040  FORMAT(9F8.3)
 5030  FORMAT(4F8.3,8X,4F8.3)
 5050  FORMAT(6F10.2)
@@ -322,7 +328,7 @@ contains
 
     subroutine loadCTMData()
 
-        integer :: m,j
+        integer :: m,j,maxlayer,k
 
         !>Read from CTEM initialization file (.CTM)
         open(unit = 11, file = CTMFile, form = 'formatted', status = 'old', action = 'read')
@@ -342,12 +348,24 @@ contains
             read(11,*) (rootmassrow(m,j),j=1,icc)
             ! There are no legacy CTM files that use icc+2 (include the luc products pool) so 
             ! assume they only go to icc+1. Put a zero in the icc+2 position later.
-            read(11,*) (litrmassrow(m,j),j=1,icc+1) 
-            read(11,*) (soilcmasrow(m,j),j=1,icc+1)
-            litrmassrow(m,icc+2)=0.
-            soilcmasrow(m,icc+2)=0.
+            ! Also no CTM files will have per layer values so just put all in layer 1,
+            read(11,*) (litrmassrow(m,j,1),j=1,icc+1) 
+            read(11,*) (soilcmasrow(m,j,1),j=1,icc+1)
+            litrmassrow(m,icc+2,1)=0.
+            soilcmasrow(m,icc+2,1)=0.
             read(11,*) (lfstatusrow(m,j),j=1,icc)
             read(11,*) (pandaysrow(m,j),j=1,icc)
+        
+        ! Distribute the litter and soil C across the top layers since we are now per layer
+        ! this is just to speed up the time to equilibrium.
+        maxlayer = min(5,ignd-1)
+        do k = 1,maxlayer
+          do j = 1, icc+1
+            litrmassrow(m,j,k) = litrmassrow(m,j,1) / real(maxlayer)
+            soilcmasrow(m,j,k) = soilcmasrow(m,j,1) / real(maxlayer)
+          end do 
+        end do
+        
         end do
             !read(11,*) (mlightng(j),j=1,6)  !mean monthly lightning frequency
             !read(11,*) (mlightng(j),j=7,12) !flashes/km2.year, this is spread over other tiles below
@@ -442,7 +460,8 @@ contains
             ipeatlandrow,&
             Cmossmas,&
             litrmsmoss,&
-            dmoss
+            dmoss,&
+            maxAnnualActLyr
 
 
 
@@ -607,7 +626,7 @@ contains
 
     subroutine exportData
 
-        integer :: m
+        integer :: m,k
 
         ! icp1 variables:
         allocate(dimArray(4),start(4),count(4))
@@ -712,7 +731,7 @@ contains
             call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
             deallocate(dimArray,start,count)
 
-            ! Peat vars
+            ! Peat vars and active layer depths
             allocate(dimArray(3),start(3),count(3))
             dimArray = (/lonDimId,latDimId,tileDimId/)
             start = (/1, 1, 1/)
@@ -722,6 +741,7 @@ contains
             call exportVariable('Cmossmas',units='kgC/m2',long_name='C in moss biomass',values=Cmossmas)
             call exportVariable('litrmsmoss',units='kgC/m2',long_name='Moss litter mass',values=litrmsmoss)
             call exportVariable('dmoss',units='m',long_name='Depth of living moss',values=dmoss)
+            call exportVariable('maxAnnualActLyr',units='m',long_name='Active layer depth maximum over the e-folding period specified by parameter eftime',values=maxAnnualActLyr)
             deallocate(dimArray,start,count)
 
             allocate(dimArray(4),start(4),count(4))
@@ -751,11 +771,11 @@ contains
             call exportVariable('fcancmx',units='-',long_name='PFT fractional coverage per grid cell',values2D=fcancmxrow)
 
             ! iccp2 variables
-            dimArray = (/lonDimId,latDimId,iccp2DimId,tileDimId/)
-            count = (/1, 1, icc+2, nmtest/)
-            call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values2D=litrmassrow)
-            call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values2D=soilcmasrow)
-
+            dimArray = (/lonDimId,latDimId,iccp2DimId,layerDimId,tileDimId/)
+            start = (/1, 1, 1 ,1, 1/)
+            count = (/1, 1, icc+2, ignd, nmtest/)
+            call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values3D=litrmassrow)
+            call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values3D=soilcmasrow)
             deallocate(dimArray,start,count)
 
             ! per month vars
@@ -784,13 +804,13 @@ contains
 
     ! ------------------------------------------------------------------------------------------------------
 
-    subroutine exportVariable(name,units,long_name,values,values2D,intvalues,intvalues2D)
+    subroutine exportVariable(name,units,long_name,values,values2D,values3D,intvalues,intvalues2D)
         character(*), intent(in)    :: name
-        real, intent(in),optional   :: values(:),values2D(:,:)
+        real, intent(in),optional   :: values(:),values2D(:,:),values3D(:,:,:)
         integer, intent(in), optional :: intvalues(:),intvalues2D(:,:)
         character(*), intent(in)    :: units
         character(*), intent(in)    :: long_name
-        integer                     :: varId, m
+        integer                     :: varId, m, k,icnum(1)
         integer, allocatable        :: incstart(:),usecount(:)
 
         call ncRedef(fileId)
@@ -817,6 +837,24 @@ contains
               incstart(ubound(start)) = m          
                 call ncPutVar(fileId, name, realValues = values2D(m,:), start= incstart, count = usecount)
             end do
+        else if (present(values3D)) then
+          ! Need to change the start and count to respect nmtest here. Count is always by tile so set to 1 whereas
+          ! start increments
+          !count = (/1, 1, icc+2, ignd, nmtest/)
+          ! assume the extra dim is ignd
+            usecount = count
+            icnum = usecount(ubound(usecount)-1)
+            usecount(ubound(usecount))=1
+            usecount(ubound(usecount)-1)=1            
+            do m = 1,nmtest        
+              do k = 1, icnum(1)       
+                incstart = start
+                incstart(ubound(start)) = m          
+                incstart(ubound(start)-1) = k
+                call ncPutVar(fileId, name, realValues = values3D(m,:,k), start= incstart, count = usecount)
+              end do
+            end do
+            
         else if (present(intvalues)) then
             call ncPutVar(fileId, name, intValues = intvalues, start= start, count = count)
         else if (present(intvalues2D)) then

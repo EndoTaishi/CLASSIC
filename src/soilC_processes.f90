@@ -62,6 +62,7 @@ real :: alit                                        !< total litter mass after t
 real :: kactlyr                                     !< temp var
 real :: termr                                       !< temp var
 real :: amount                                      !< temp var
+real :: botthick                                    !< temp var
 real :: diffus                                      !< diffusion coefficient used (either cryodiffus or biodiffus)
 !----
 
@@ -73,7 +74,7 @@ do i = il1, il2
       if(isand(i,l).eq.-3.or.isand(i,l).eq.-4) exit
       botlyr = l
     end do
-
+    
     !> Next if the grid cell has some permeable soil (i.e. is not bedrock or ice) then take what was found to
     !! be the bottom soil layer and
     if (botlyr > 0) then
@@ -117,7 +118,16 @@ do i = il1, il2
             ! The final interface is at the bottom of the soil column and the bedrock, so the soilC/litter is 0 there.
             soilcinter(botlyr) = 0.
             littinter(botlyr) = 0.
-            depthinter(botlyr) = zbotw(i,botlyr)
+
+            ! Check for special case where the soil is permeable all the way to the bottom 
+            ! so botlyr = ignd. In that case botlyr is now greater than ignd.
+            if (botlyr <= ignd) then 
+              botthick = zbotw(i,botlyr)
+            else
+              botthick = zbotw(i,ignd)
+            end if
+
+            depthinter(botlyr) = botthick
 
             !> Next, determine the effective diffusion coefficient for each soil layer. This follows \cite Koven2011-796
             !! It is assumed that there is a linear dependence on depth beyond the active layer
@@ -138,7 +148,8 @@ do i = il1, il2
                 if (depthinter(l) < actlyr(i)) then ! shallow so vigorous cryoturb.
                     effectiveD(l) = diffus * real(spinfast)
                 else if (depthinter(l) > actlyr(i) .and. depthinter(l) < kactlyr) then ! linear reduction in diffusion coef.
-                    effectiveD(l) = diffus * (1. - (depthinter(l) - actlyr(i))/((kterm - 1.) * actlyr(i))) * real(spinfast)
+                    effectiveD(l) = diffus * (1. - (depthinter(l) - actlyr(i)) &
+                                    / ((kterm - 1.) * actlyr(i))) * real(spinfast)
                 else !too deep, no cryoturbation assumed
                     effectiveD(l) = 0.
                 end if
@@ -163,8 +174,10 @@ do i = il1, il2
                 avect(l) = -termr
                 bvect(l) = 2. * (1. + termr)
                 cvect(l) = -termr
-                rvect_sc(l) = termr * soilcinter(l-1) + 2. * (1. - termr) * soilcinter(l) +  termr * soilcinter(l+1)
-                rvect_lt(l) = termr * littinter(l-1) + 2. * (1. - termr) * littinter(l) +  termr * littinter(l+1)
+                rvect_sc(l) = termr * soilcinter(l-1) + 2. * (1. - termr) &
+                             * soilcinter(l) +  termr * soilcinter(l+1)
+                rvect_lt(l) = termr * littinter(l-1) + 2. * (1. - termr) &
+                             * littinter(l) +  termr * littinter(l+1)
 
             end do
 

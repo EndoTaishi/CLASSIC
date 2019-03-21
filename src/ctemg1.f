@@ -9,8 +9,8 @@ C! Performs initial 'gather' operation on CTEM variables for consistency
      c           ailcbgat,    ailcgat,     zolncgat,     rmatcgat,
      d        rmatctemgat,    slaigat,   bmasveggat,  cmasvegcgat,
      e         veghghtgat,rootdpthgat,   alvsctmgat,   alirctmgat,
-     f            paicgat,   slaicgat,   faregat,    actlyr_yrgat,
-     1       ipeatlandgat,
+     f            paicgat,   slaicgat,   faregat,    
+     1       ipeatlandgat, maxAnnualActLyrGAT,
      g              ilmos,      jlmos,       iwmos,         jwmos,
      h                nml,
      i        gleafmasrow,bleafmasrow, stemmassrow,   rootmassrow,
@@ -18,9 +18,8 @@ C! Performs initial 'gather' operation on CTEM variables for consistency
      k           ailcgrow,   ailcbrow,     ailcrow,      zolncrow,
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
-     n         alirctmrow,    paicrow,    slaicrow,  FAREROT,
-     1         actlyr_yrrow,
-     o         ipeatlandrow)
+     n         alirctmrow,    paicrow,    slaicrow,  FAREROT,         
+     o         ipeatlandrow, maxAnnualActLyrROT)
 
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -57,7 +56,7 @@ c
      a      rootdpthgat(ilg,icc),
      b      alvsctmgat(ilg,ican),   alirctmgat(ilg,ican),
      c         paicgat(ilg,ican),     slaicgat(ilg,ican),
-     d         actlyr_yrgat(ilg)
+     d         maxAnnualActLyrGAT(ilg)
       integer    ipeatlandgat(ilg)
 c
       real  gleafmasrow(nlat,nmos,icc),     bleafmasrow(nlat,nmos,icc),
@@ -73,7 +72,7 @@ c
      a      rootdpthrow(nlat,nmos,icc),
      b      alvsctmrow(nlat,nmos,ican),     alirctmrow(nlat,nmos,ican),
      c         paicrow(nlat,nmos,ican),       slaicrow(nlat,nmos,ican),
-     d         actlyr_yrrow(nlat,nmos)
+     d         maxAnnualActLyrROT(nlat,nmos)
       integer  ipeatlandrow(nlat,nmos)
 c
 c----------------------------------------------------------------------
@@ -81,7 +80,7 @@ c----------------------------------------------------------------------
           sdepgat(k)=sdeprow(ilmos(k),jlmos(k))
           ipeatlandgat(k)=ipeatlandrow(ilmos(k),jlmos(k))   
           faregat(k) = FAREROT(ilmos(k), jlmos(k))
-          actlyr_yrgat(k) = actlyr_yrrow(ilmos(k), jlmos(k))
+          maxAnnualActLyrGAT(k) = maxAnnualActLyrROT(ilmos(k), jlmos(k))
 100   continue
           
 c

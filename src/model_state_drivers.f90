@@ -537,6 +537,7 @@ contains
         real, pointer, dimension(:,:,:)  :: TSFSROT !<Ground surface temperature over subarea [K]
         real, pointer, dimension(:,:) :: TACROT  !<Temperature of air within vegetation canopy \f$[K] (T_{ac} )\f$
         real, pointer, dimension(:,:) :: QACROT  !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ] (q_{ac} )\f$
+        real, pointer, dimension(:,:)  :: maxAnnualActLyr  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
         integer, pointer, dimension(:,:,:,:) :: ITCTROT !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
         logical, pointer :: ctem_on
         logical, pointer :: dofire
@@ -689,6 +690,8 @@ contains
         TACROT            => class_rot%TACROT
         QACROT            => class_rot%QACROT
         ITCTROT           => class_rot%ITCTROT
+        maxAnnualActLyr   => class_rot%maxAnnualActLyrROT
+        
         ! ----------------------------
 
         do i = 1, nlat
@@ -720,6 +723,7 @@ contains
         RHOSROT = ncGet2DVar(initid, 'RHOS', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         GROROT = ncGet2DVar(initid, 'GRO', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         MIDROT = ncGet2DVar(initid, 'MID', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format=[nlat, nmos])
+        maxAnnualActLyr = ncGet2DVar(initid, 'maxAnnualActLyr', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         LNZ0ROT = ncGet3DVar(initid, 'LNZ0', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         ALVCROT = ncGet3DVar(initid, 'ALVC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         ALICROT = ncGet3DVar(initid, 'ALIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
@@ -727,6 +731,7 @@ contains
         PAMXROT = ncGet3DVar(initid, 'PAMX', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         CMASROT = ncGet3DVar(initid, 'CMAS', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         ROOTROT = ncGet3DVar(initid, 'ROOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        
         ! The following six are parameters that can be made to spatially vary by uncommenting below and including them in the
         ! model init file. However, in practice these parameters are used with spatially invariable values so are read in from 
         ! the CLASSIC namelist in classic_params.f90. 
@@ -853,7 +858,7 @@ contains
             end if
 
             litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
-            soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+            soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
             !litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
             !soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
             
@@ -983,6 +988,7 @@ contains
         real, pointer, dimension(:,:)   :: ALBSROT
         real, pointer, dimension(:,:)   :: RHOSROT
         real, pointer, dimension(:,:)   :: GROROT
+        real, pointer, dimension(:,:)   :: maxAnnualActLyr  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
 
         logical, pointer :: ctem_on
         logical, pointer :: PFTCompetition
@@ -1054,6 +1060,7 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
+        maxAnnualActLyr   => class_rot%maxAnnualActLyrROT
 
         call ncPut2DVar(rsid, 'FARE', FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
@@ -1070,6 +1077,7 @@ contains
         call ncPut2DVar(rsid, 'ALBS', ALBSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'RHOS', RHOSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'GRO', GROROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'maxAnnualActLyr', maxAnnualActLyr, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
         if (ctem_on) then
 
@@ -1079,8 +1087,8 @@ contains
             call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'rootmass', rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             do k = 1, ignd
-              call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos, k])
-              call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos, k])
+              call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+              call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
             end do
             call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'pandays', real(pandaysrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])

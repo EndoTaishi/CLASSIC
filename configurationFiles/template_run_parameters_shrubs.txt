@@ -1136,14 +1136,18 @@ kn(13:15) = 0.50, 0.50, 0.00,
 
     !< Diffusivity (or simply the rate of the cryoturbation) \f$(m^2/d)\f$
     !! value from \cite Koven2011-796 - 5 cm2/yr. 
-    cryodiffus = 0.0005 / 365.0,           
+    cryodiffus = 1.36986E-6,           
 
     !< Diffusivity (or simply the rate of the bioturbation) \f$(m^2/d)\f$
     !! value from \cite Koven2011-796 - 1 cm2/yr. 
-    biodiffus = 0.0001 / 365.0,            
+    biodiffus = 2.73972E-7,
                                                             
     !< Constant used in determination of depth at which cryoturbation ceases                                                            
-    kterm = 3.0,                           
+    kterm = 3.0,       
+
+    !< e-folding time scale for updating mean active layer depth used in determining the depth 
+    !! roots can penetrate. (years)
+    eftime = 10.0,        
 
 ! turnover.f parameters: ---------------------------------
 

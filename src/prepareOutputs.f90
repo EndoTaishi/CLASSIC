@@ -1761,7 +1761,6 @@ contains
             FTABLE_MAX_YR(I) = max(FTABLE_MAX_YR(I), FTABLE_tmp)
             FTABLE_MIN_YR(I) = min(FTABLE_MIN_YR(I), FTABLE_tmp)
 
-
     828     CONTINUE
 
         IF (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY)  THEN

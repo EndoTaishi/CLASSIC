@@ -32,7 +32,7 @@
     spinfast = 1 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
     
     ! Model tracer 
-        useTracer = 1 ,     ! useTracer = 0, the tracer code is not used. 
+        useTracer = 0 ,     ! useTracer = 0, the tracer code is not used. 
                             ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                             !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
                             ! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 

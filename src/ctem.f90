@@ -27,7 +27,7 @@
      &                      thpor,    thiceg,   currlat,  ch4conc,  &
      &                       THFC,      THLW,     thliq,  thice,    &
      &                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  &
-     &                   wtable,    actlyr,  actlyr_yr,&
+     &                   wtable,   maxAnnualActLyr,&
 !
 !    ------------- logical switches determining model behaviour 
 !
@@ -235,8 +235,7 @@ real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily avera
 real, dimension(ilg), intent(in) :: wtable              !< water table (m)
 real, dimension(ilg,ignd), intent(in) :: THFC           !<
 real, dimension(ilg,ignd), intent(in) :: THLW           !<
-real, dimension(ilg), intent(in) :: actlyr              !< active layer depth (m)
-real, dimension(ilg), intent(in) :: actlyr_yr           !< annual maximum active layer depth (m)
+real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
 
 !
 !     updates
@@ -1570,7 +1569,7 @@ do 800 i = il1, il2
     botlyr = 1 ! we assume if the first layer is frozen that it still can
                  ! accept the root litter. So initialize to 1.
     do k = 1,ignd
-        if(actlyr(i) < zbotw(i,k)) exit
+        if(maxAnnualActLyr(i) < zbotw(i,k)) exit
           botlyr = k
     end do
 
@@ -1844,8 +1843,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !     Allow cryoturbation and bioturbation to move the soil C between
 !     layers. Since this is neither consuming nor adding C, this does not
 !     affect our C balance in balcar.
-        call turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast,litrmass,soilcmas)
-
+        call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast,litrmass,soilcmas)
 !     -----------------------------------------------------------------
 !>
 !>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145)
@@ -1879,13 +1877,12 @@ endif
 call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
      &              il1,        il2,        ilg,      zbotw,  &
      &            delzw,   nol2pfts,   soildpth,    fcancmx,  &
-     &        ipeatland,                                      &
+     &        ipeatland,  maxAnnualActLyr,                    &
 ! --------------- inputs above this line, outputs below --------
      &                          ailcg,    ailcb,     ailc,    zolnc,&
      &                          rmatc, rmatctem,     slai,  bmasveg,&
      &                       cmasvegc,  veghght, rootdpth,   alvisc,&
      &           alnirc,    paicgat,   slaicgat)
-
 !>
 !>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str
 !>

@@ -491,6 +491,12 @@ real :: cryodiffus            !< Diffusivity (or simply the rate of the cryoturb
 real :: biodiffus             !< Diffusivity (or simply the rate of the bioturbation) \f$(m^2/d)\f$
                               !! value from \cite Koven2011-796 - 1 cm2/yr.                                   
 real :: kterm                 !< Constant used in determination of depth at which cryoturbation ceases
+real :: eftime                !< e-folding time scale for updating mean active layer depth used in determining the depth 
+                              !! roots can penetrate. (years)
+                              
+real :: efoldfact             !<Calculated factor used in determining the e-folding time of average active layer depth.
+                              !! this is calculated based on the eftime parameter.
+
 
 ! soil_ch4uptake parameters: -----------------------------
 
@@ -965,6 +971,7 @@ subroutine readin_params
         cryodiffus, &
         biodiffus, &
         kterm, &
+        eftime, &
         D_air,&
         g_0,&
         betaCH4,&
@@ -1062,7 +1069,7 @@ subroutine readin_params
           call XIT('classic_params',-1)
         end select
     end do
-
+    
     !Overwrite the prescribed vars with the compete ones if competition is on.
     if (PFTCompetitionSwitch) then
         omega = omega_compete
@@ -1075,6 +1082,9 @@ subroutine readin_params
         maxage = maxage_compete
         drlsrtmx = drlsrtmx_compete
     end if
+    
+    ! Determine the efoldfact parameter which is calculated from eftime.    
+    efoldfact = exp(-1.0 / eftime)
 
 end subroutine readin_params
 !!@}

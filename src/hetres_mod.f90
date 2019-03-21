@@ -680,7 +680,7 @@ do 100 j = 1, icc
 
 !!         Apply a step reduction in q10func when the soil layer freezes. This is to reflect the
 !!         lost mobility of the population due to less liquid water
-          if (tbar(i,j)-273.16 > tcrit) then
+          if (tbar(i,k)-273.16 > tcrit) then
               q10func = litrq10**(0.1*(tbar(i,k)-273.16-15.0))
           else
               q10func = litrq10**(0.1*(tbar(i,k)-273.16-15.0)) * frozered
@@ -690,7 +690,7 @@ do 100 j = 1, icc
           !! soil microbial population dynamics, pore-scale oxygen availability, mineral sorption,
           !! priming effects, and other unrepresented processes. This is following Lawrence et al.
           !! Enviro Res Lett 2015. We apply this for all soils.
-          reduceatdepth = exp(- delzw(i,j)/ r_depthredu)
+          reduceatdepth = exp(- delzw(i,k)/ r_depthredu)
 
           ! 2.64 converts bsratelt from kg c/kg c.year to u-mol co2/kg c.s
           ltresveg(i,j,k)= ltrmoscl(i,k) * litrmass(i,j,k)*bsratelt(sort(j))*2.64*q10func * reduceatdepth
@@ -700,7 +700,7 @@ do 100 j = 1, icc
           tempq10s=tbar(i,k)-273.16
           soilcq10= tanhq10(1) + tanhq10(2)*( tanh( tanhq10(3)*(tanhq10(4)-tempq10s)  ) )
 
-          if (tbar(i,j)-273.16 > tcrit) then
+          if (tbar(i,k)-273.16 > tcrit) then
             q10func = soilcq10**(0.1*(tbar(i,k)-273.16-15.0))
           else
             q10func = soilcq10**(0.1*(tbar(i,k)-273.16-15.0)) * frozered

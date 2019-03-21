@@ -132,18 +132,36 @@
  rootmassrow(1,1:9)= 4*0.0,  8.07E-002,  4.437E-002,  2.6639E-003,  9.209E-002, 1.217,
  
  ! Litter mass for each of the CTEM pfts, bare ground, and the land use change product pool  [kg C m^-2 ]
- litrmassrow(1,1:9)= 4*0.0,  3.91E-002, 0.132,  1.43, 8.01E-002, 0.645, 
+ ! These can all be set to 0 and the model will determine the litter contents 
+ litrmassrow(1,1:9,1)= 0.0, 0.0, 0.0, 0.0, 0.298, 0.132, 1.43, 0.750, 0.645, 
+ litrmassrow(1,1:9,2)= 0.0, 0.0, 0.0, 0.0, 0.198, 0.082, 0.63, 0.50, 0.45, 
+ litrmassrow(1,1:9,3)= 0.0, 0.0, 0.0, 0.0, 0.08,  0.02,  0.3, 0.0, 0.005, 
+ 
  ! Bareground is only used when competition or land use change creates bare ground Can otherwise be set to 0. (array position icc+1)
- litrmassrow(1,10)=0.0,
+ litrmassrow(1,10,1)=0.0,
+ litrmassrow(1,10,2)=0.0,
+ litrmassrow(1,10,3)=0.0,
+ 
  ! The land use change product pool is only used when land use change is turned on. Can otherwise be set to 0. (array position icc+2)
- litrmassrow(1,11)=0.0,
+ litrmassrow(1,11,1)=0.0,
+ litrmassrow(1,11,2)=0.0,
+ litrmassrow(1,11,3)=0.0,
 
  ! Soil carbon mass for each of the CTEM pfts, bare ground, and the land use change product pool  [kg C m^-2 ]
- soilcmasrow(1,1:9)= 4*0.0,  0.298, 0.132,  1.43, 0.750, 0.645, 
+ ! These can all be set to 0 and the model will determine the soil C contents 
+ soilcmasrow(1,1:9,1)= 0.0, 0.0, 0.0, 0.0, 0.298, 0.132, 1.43, 0.750, 0.645, 
+ soilcmasrow(1,1:9,2)= 0.0, 0.0, 0.0, 0.0, 0.198, 0.082, 0.63, 0.50, 0.45, 
+ soilcmasrow(1,1:9,3)= 0.0, 0.0, 0.0, 0.0, 0.08,  0.02,  0.3, 0.0, 0.005, 
+ 
  ! Bareground is only used when competition or land use change creates bare ground Can otherwise be set to 0. (array position icc+1)
- soilcmasrow(1,10)=0.0,
+ soilcmasrow(1,10,1)=0.0,
+ soilcmasrow(1,10,2)=0.0,
+ soilcmasrow(1,10,3)=0.0,
+ 
  ! The land use change product pool is only used when land use change is turned on. Can otherwise be set to 0. (array position icc+2)
- soilcmasrow(1,11)=0.0,
+ soilcmasrow(1,11,1)=0.0,
+ soilcmasrow(1,11,2)=0.0,
+ soilcmasrow(1,11,3)=0.0,
 
  ! Leaf phenology status [ ] (1 = max growth, 2 = normal growth, 3 = leaf fall, 4 = no leaves)
  lfstatusrow(1,1:9)= 4*4,1,2*2, 2*1,
@@ -165,6 +183,11 @@
  litrmsmoss= 0.,
  
  ! Depth of living moss [ m ]
- dmoss = 0.
+ dmoss = 0.,
+ 
+ !< Active layer depth maximum over the e-folding period specified by parameter eftime [m]. It will be calculated 
+ ! as the model runs so this value can just be set to some deep depth.
+ maxAnnualActLyr = 999.
+ 
  
  /
