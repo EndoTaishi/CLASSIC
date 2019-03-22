@@ -562,8 +562,8 @@ contains
         real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: tracerRootMass       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-        real, pointer, dimension(:,:,:) :: tracerLitrMass       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-        real, pointer, dimension(:,:,:) :: tracerSoilCMass      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerLitrMass       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerSoilCMass      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
         real, pointer, dimension(:,:) :: tracerMossCMass      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: tracerMossLitrMass   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
@@ -867,8 +867,8 @@ contains
               tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
               tracerStemMass = ncGet3DVar(initid, 'tracerStemMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
               tracerRootMass = ncGet3DVar(initid, 'tracerRootMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-              tracerLitrMass = ncGet3DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
-              tracerSoilCMass = ncGet3DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
+              tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
+              tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
               tracerMossCMass = ncGet2DVar(initid, 'tracerMossCMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
               tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])              
             end if
@@ -962,7 +962,7 @@ contains
 
     subroutine write_restart(lonIndex,latIndex)
 
-        use ctem_statevars,     only : c_switch,vrot
+        use ctem_statevars,     only : c_switch,vrot,tracer
         use class_statevars,    only : class_rot
         use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp2,TFREZ
 
@@ -992,11 +992,20 @@ contains
         logical, pointer :: ctem_on
         logical, pointer :: PFTCompetition
         logical, pointer :: lnduseon
+        integer, pointer :: useTracer
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
         real, pointer, dimension(:,:,:) :: stemmassrow          !
         real, pointer, dimension(:,:,:) :: rootmassrow          !
+        real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerRootMass       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerLitrMass       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerSoilCMass      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:) :: tracerMossCMass      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: tracerMossLitrMass   !< Tracer mass in moss litter, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
         real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
         real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
@@ -1022,6 +1031,7 @@ contains
         ctem_on           => c_switch%ctem_on
         PFTCompetition    => c_switch%PFTCompetition
         lnduseon          => c_switch%lnduseon
+        useTracer         => c_switch%useTracer
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -1044,6 +1054,14 @@ contains
         Cmossmas          => vrot%Cmossmas
         litrmsmoss        => vrot%litrmsmoss
         dmoss             => vrot%dmoss
+        tracerGLeafMass   => tracer%gLeafMassrot
+        tracerBLeafMass   => tracer%bLeafMassrot
+        tracerStemMass    => tracer%stemMassrot
+        tracerRootMass    => tracer%rootMassrot
+        tracerLitrMass    => tracer%litrMassrot
+        tracerSoilCMass   => tracer%soilCMassrot
+        tracerMossCMass   => tracer%mossCMassrot
+        tracerMossLitrMass => tracer%mossLitrMassrot
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
         TBARROT           => class_rot%TBARROT
@@ -1094,6 +1112,20 @@ contains
             call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
             call ncPut2DVar(rsid, 'litrmsmoss', litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
             call ncPut2DVar(rsid, 'dmoss', dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+
+            ! If a tracer is being used, read in those values.
+            if (useTracer > 0) then 
+              call ncPut3DVar(rsid, 'tracerGLeafMass', tracerGLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              call ncPut3DVar(rsid, 'tracerBLeafMass', tracerBLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              call ncPut3DVar(rsid, 'tracerStemMass', tracerStemMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              call ncPut3DVar(rsid, 'tracerRootMass', tracerRootMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              do k = 1, ignd
+                call ncPut3DVar(rsid, 'tracerLitrMass', tracerLitrMass(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+                call ncPut3DVar(rsid, 'tracerSoilCMass', tracerSoilCMass(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+              end do
+              call ncPut2DVar(rsid, 'tracerMossCMass', tracerMossCMass, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+              call ncPut2DVar(rsid, 'tracerMossLitrMass', tracerMossLitrMass, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+            end if
 
             if (PFTCompetition) then
 

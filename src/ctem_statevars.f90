@@ -664,9 +664,9 @@ type tracersType
   real, allocatable, dimension(:,:,:) :: bLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
   real, allocatable, dimension(:,:,:) :: stemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
   real, allocatable, dimension(:,:,:) :: rootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-  ! allocated with nlat,nmos,iccp2:
-  real, allocatable, dimension(:,:,:) :: litrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-  real, allocatable, dimension(:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  ! allocated with nlat,nmos,iccp2,ignd:
+  real, allocatable, dimension(:,:,:,:) :: litrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
 end type tracersType
 
@@ -1237,8 +1237,8 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
         vrot%soilcresveg(nlat,nmos,iccp2,ignd),&
         vrot%humiftrsveg(nlat,nmos,iccp2,ignd),&
 
-        tracer%litrMassrot(nlat,nmos,iccp2),&
-        tracer%soilCMassrot(nlat,nmos,iccp2),&
+        tracer%litrMassrot(nlat,nmos,iccp2,ignd),&
+        tracer%soilCMassrot(nlat,nmos,iccp2,ignd),&
     
 ! allocated with nlat,nmos,{some number}: 
          vrot%colddays(nlat,nmos,2),&
