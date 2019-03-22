@@ -20,7 +20,7 @@
         metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2.nc' ,     !< location of the model initialization file
+    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2-ignd-actlyr.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters
@@ -29,7 +29,9 @@
 ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     ! set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         ! lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
-    spinfast = 1 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
+    spinfast = 1 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final
+                        ! round of spin up and transient runs. Setting to 1 also causes the calling of the balcar subroutine.
+                        ! Balcar checks for conservation of carbon.
     
     ! Model tracer 
         useTracer = 0 ,     ! useTracer = 0, the tracer code is not used. 
@@ -135,7 +137,7 @@
     output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
     xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
-    doperpftoutput = .true. ,   ! Switch for making extra output files that are at the per PFT level
+    doperpftoutput = .false. ,   ! Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level
 
     dohhoutput = .false. ,      ! Switch for making half hourly output files (annual are always outputted)

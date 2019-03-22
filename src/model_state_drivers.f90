@@ -162,7 +162,6 @@ contains
         ! ------------
 
         !> First, open initial conditions file.
-
         initid = ncOpen(init_file, NF90_NOWRITE)
 
         if (.not. projectedGrid) then

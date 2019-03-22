@@ -4292,6 +4292,9 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'litrMassPerLay_yr_g',timeStamp,'cLitterperlay',[litrmass_yr_g(i,:)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilCMasPerLay_yr_g',timeStamp,'cSoilperlay',[soilcmas_yr_g(i,:)])
+
             ! Make the bulk litter and soil C pool and respiration temporary variables:  
             allocate(bulkLitterCarbon(1))
             allocate(bulkSoilCarbon(1))             

@@ -180,7 +180,7 @@ c
       real useb(ilg,icc)         !< 
       real zroot                 !< 
       real soildpth(ilg)         !<input: soil depth (m)
-      real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< annual maximum active layer depth (m)
+      real, dimension(ilg), intent(in) :: maxAnnualActLyr   !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
       real etmp(ilg,icc,ignd)    !<
       real totala(ilg,icc)       !<
       real rmat_sum              !< 
