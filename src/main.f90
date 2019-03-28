@@ -1167,19 +1167,19 @@ contains
         real, pointer, dimension(:) :: uvaccgat_t
         real, pointer, dimension(:) :: vvaccgat_t
         real, pointer, dimension(:,:) :: tbaraccgat_t
-        real, pointer, dimension(:,:) :: tbarcacc_t
-        real, pointer, dimension(:,:) :: tbarcsacc_t
-        real, pointer, dimension(:,:) :: tbargacc_t
-        real, pointer, dimension(:,:) :: tbargsacc_t
-        real, pointer, dimension(:,:) :: thliqcacc_t
-        real, pointer, dimension(:,:) :: thliqgacc_t
+        ! real, pointer, dimension(:,:) :: tbarcacc_t
+        ! real, pointer, dimension(:,:) :: tbarcsacc_t
+        ! real, pointer, dimension(:,:) :: tbargacc_t
+        ! real, pointer, dimension(:,:) :: tbargsacc_t
+        ! real, pointer, dimension(:,:) :: thliqcacc_t
+        ! real, pointer, dimension(:,:) :: thliqgacc_t
         real, pointer, dimension(:,:) :: thliqacc_t
-        real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-        real, pointer, dimension(:,:) :: thicecacc_t
-        real, pointer, dimension(:,:) :: thicegacc_t
-        real, pointer, dimension(:,:) :: ancsvgac_t
+        real, pointer, dimension(:,:) :: thiceacc_t  
+        ! real, pointer, dimension(:,:) :: thicecacc_t
+        ! real, pointer, dimension(:,:) :: thicegacc_t
+        ! ! real, pointer, dimension(:,:) :: ancsvgac_t
         real, pointer, dimension(:,:) :: ancgvgac_t
-        real, pointer, dimension(:,:) :: rmlcsvga_t
+        ! real, pointer, dimension(:,:) :: rmlcsvga_t
         real, pointer, dimension(:,:) :: rmlcgvga_t
 
         !============= CTEM array declaration done =============================/
@@ -2213,19 +2213,19 @@ contains
         uvaccgat_t        => ctem_tile%uvaccgat_t
         vvaccgat_t        => ctem_tile%vvaccgat_t
         tbaraccgat_t      => ctem_tile%tbaraccgat_t
-        tbarcacc_t        => ctem_tile%tbarcacc_t
-        tbarcsacc_t       => ctem_tile%tbarcsacc_t
-        tbargacc_t        => ctem_tile%tbargacc_t
-        tbargsacc_t       => ctem_tile%tbargsacc_t
-        thliqcacc_t       => ctem_tile%thliqcacc_t
-        thliqgacc_t       => ctem_tile%thliqgacc_t
+        ! tbarcacc_t        => ctem_tile%tbarcacc_t
+        ! tbarcsacc_t       => ctem_tile%tbarcsacc_t
+        ! tbargacc_t        => ctem_tile%tbargacc_t
+        ! tbargsacc_t       => ctem_tile%tbargsacc_t
+        ! thliqcacc_t       => ctem_tile%thliqcacc_t
+        ! thliqgacc_t       => ctem_tile%thliqgacc_t
         thliqacc_t        => ctem_tile%thliqacc_t
         thiceacc_t        => ctem_tile%thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-        thicecacc_t       => ctem_tile%thicecacc_t
-        thicegacc_t       => ctem_tile%thicegacc_t
-        ancsvgac_t        => ctem_tile%ancsvgac_t
+        ! thicecacc_t       => ctem_tile%thicecacc_t
+        ! thicegacc_t       => ctem_tile%thicegacc_t
+        ! ancsvgac_t        => ctem_tile%ancsvgac_t
         ancgvgac_t        => ctem_tile%ancgvgac_t
-        rmlcsvga_t        => ctem_tile%rmlcsvga_t
+        ! rmlcsvga_t        => ctem_tile%rmlcsvga_t
         rmlcgvga_t        => ctem_tile%rmlcgvga_t
         anmossac_t        => ctem_tile%anmossac_t
         rmlmossac_t       => ctem_tile%rmlmossac_t
@@ -2378,7 +2378,7 @@ contains
 
             call bio2str( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
                                     1,           nml,          ilg,      zbtwgat, &
-                              dlzwgat,      nol2pfts,      sdepgat,   fcancmxgat, &
+                              dlzwgat,       sdepgat,   fcancmxgat, &
                          ipeatlandgat,                                            &
 !                 --------------- inputs above this line, outputs below --------
                              ailcggat,      ailcbgat,      ailcgat,     zolncgat, &
@@ -2834,17 +2834,15 @@ contains
                     ! and uses daily accumulated values of variables simulated by CLASS.
                     call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,&
                         &           ilg,      1,        nml,        iday,    radjgat,     &
-                        &          tcanoaccgat_t,  tcansacc_t, tbarcacc_t,tbarcsacc_t,&
-                        &             tbargacc_t, tbargsacc_t, taaccgat_t,    dlzwgat,&
-                        &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,&
-                        &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,&
+                        &             taaccgat_t,    dlzwgat, ancgvgac_t,   rmlcgvga_t,&
+                        &                zbtwgat, &
                         &             uvaccgat_t,  vvaccgat_t,    lightng, tbaraccgat_t,   &
-                        &               nol2pfts, pfcancmxgat, nfcancmxgat,                &
-                        &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
+                        &            pfcancmxgat, nfcancmxgat,                &
+                        &               sdepgat,    spinfast,   todfrac,&
                         &             netrad_gat,  preacc_gat,   PSISGAT,                  &
                         &              grclarea,    popdingat,     isndgat,                &
                         &        wetfrac_presgat,slopefracgat,       BIGAT,                &
-                        &               THPGAT,   thicegacc_t,    DLATGAT,  ch4concgat,    &
+                        &               THPGAT,        DLATGAT,  ch4concgat,    &
                         &              THFCGAT,       THLWGAT, thliqacc_t,  thiceacc_t,    &
                         &        ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &
                         &           wtablegat,                                             &

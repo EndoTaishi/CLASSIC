@@ -45,7 +45,7 @@
       subroutine mainres (  fcan,      fct,     stemmass,   rootmass, 
      1                       il1,      il2,         ilg,    leapnow,
      2                       tcan,     tbar,    rmatctem,
-     3                      sort,  nol2pfts,       isand,
+     3                      sort,   isand,
 c    -------------- inputs above this line, outputs below ----------
      4                      rmsveg, rmrveg,     roottemp)
 c
@@ -79,7 +79,7 @@ c     ican      - number of class pfts, currently 4
 c
       use classic_params,        only : icc, ignd, ican, kk, zero, 
      1                                 bsrtstem, bsrtroot, minlvfr,
-     2                                 classpfts
+     2                                 classpfts,nol2pfts
 
       implicit none
 c
@@ -89,7 +89,7 @@ c
       integer i, j, k
       integer sort(icc) !<index for correspondence between 9 pfts and 12 values in the parameter vectors
       integer n
-      integer nol2pfts(ican) !<number of level 2 ctem pfts
+      
       integer k1,   k2,  m
       integer isand(ilg,ignd) !<flag for bedrock or ice in a soil layer
       logical leapnow        !< true if this year is a leap year. Only used if the switch 'leap' is true.

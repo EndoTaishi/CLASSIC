@@ -43,19 +43,11 @@ subroutine dayEndCTEMPreparation(nml,nday)
     real, pointer, dimension(:) :: uvaccgat_t       !<
     real, pointer, dimension(:) :: vvaccgat_t       !<
     real, pointer, dimension(:,:) :: tbaraccgat_t!<
-    real, pointer, dimension(:,:) :: tbarcacc_t  !<
-    real, pointer, dimension(:,:) :: tbarcsacc_t !<
-    real, pointer, dimension(:,:) :: tbargacc_t  !<
-    real, pointer, dimension(:,:) :: tbargsacc_t !<
-    real, pointer, dimension(:,:) :: thliqcacc_t !<
-    real, pointer, dimension(:,:) :: thliqgacc_t !<
     real, pointer, dimension(:,:) :: thliqacc_t  !<
-    real, pointer, dimension(:,:) :: thicecacc_t !<
-    real, pointer, dimension(:,:) :: thicegacc_t !<
-    real, pointer, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-    real, pointer, dimension(:,:) :: ancsvgac_t
+    real, pointer, dimension(:,:) :: thiceacc_t  !< 
+    ! real, pointer, dimension(:,:) :: ancsvgac_t
     real, pointer, dimension(:,:) :: ancgvgac_t
-    real, pointer, dimension(:,:) :: rmlcsvga_t
+    ! real, pointer, dimension(:,:) :: rmlcsvga_t
     real, pointer, dimension(:,:) :: rmlcgvga_t
     integer, pointer, dimension(:) :: ipeatlandgat
 
@@ -76,19 +68,11 @@ subroutine dayEndCTEMPreparation(nml,nday)
 !     preacc_gat        => vgat%preacc_gat
     ipeatlandgat      => vgat%ipeatland
     tbaraccgat_t      => ctem_tile%tbaraccgat_t
-    tbarcacc_t        => ctem_tile%tbarcacc_t
-    tbarcsacc_t       => ctem_tile%tbarcsacc_t
-    tbargacc_t        => ctem_tile%tbargacc_t
-    tbargsacc_t       => ctem_tile%tbargsacc_t
-    thliqcacc_t       => ctem_tile%thliqcacc_t
-    thliqgacc_t       => ctem_tile%thliqgacc_t
     thliqacc_t        => ctem_tile%thliqacc_t
     thiceacc_t        => ctem_tile%thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-    thicecacc_t       => ctem_tile%thicecacc_t
-    thicegacc_t       => ctem_tile%thicegacc_t
-    ancsvgac_t        => ctem_tile%ancsvgac_t
+    ! ancsvgac_t        => ctem_tile%ancsvgac_t
     ancgvgac_t        => ctem_tile%ancgvgac_t
-    rmlcsvga_t        => ctem_tile%rmlcsvga_t
+    ! rmlcsvga_t        => ctem_tile%rmlcsvga_t
     rmlcgvga_t        => ctem_tile%rmlcgvga_t
     fsnowacc_t        => ctem_tile%fsnowacc_t
     tcansacc_t        => ctem_tile%tcansacc_t
@@ -126,23 +110,14 @@ subroutine dayEndCTEMPreparation(nml,nday)
 
         do 831 j=1,ignd
             tbaraccgat_t(i,j)=tbaraccgat_t(i,j)/real(nday)
-            tbarcacc_t(i,j) = tbaraccgat_t(i,j)
-            tbarcsacc_t(i,j) = tbaraccgat_t(i,j)
-            tbargacc_t(i,j) = tbaraccgat_t(i,j)
-            tbargsacc_t(i,j) = tbaraccgat_t(i,j)
-            !
-            thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
-            thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
-            thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
-            thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
-            thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
-            thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+            thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) 
+            thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) 
     831 continue
 
         do 832 j = 1, icc
-            ancsvgac_t(i,j)=ancsvgac_t(i,j)/real(nday)
+            ! ancsvgac_t(i,j)=ancsvgac_t(i,j)/real(nday)
             ancgvgac_t(i,j)=ancgvgac_t(i,j)/real(nday)
-            rmlcsvga_t(i,j)=rmlcsvga_t(i,j)/real(nday)
+            ! rmlcsvga_t(i,j)=rmlcsvga_t(i,j)/real(nday)
             rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
     832 continue
 
@@ -203,14 +178,6 @@ subroutine accumulateForCTEM(nml)
     real, pointer, dimension(:) :: FSGGGAT !<Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
     real, pointer, dimension(:,:) :: TBARGAT !<Temperature of soil layers [K]
     real, pointer, dimension(:) :: FSGSGAT !<Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:,:) :: TBARC  !<
-    real, pointer, dimension(:,:) :: TBARG  !<
-    real, pointer, dimension(:,:) :: TBARCS !<
-    real, pointer, dimension(:,:) :: TBARGS !<
-    real, pointer, dimension(:,:) :: THLIQC !<
-    real, pointer, dimension(:,:) :: THLIQG !<
-    real, pointer, dimension(:,:) :: THICEC !<
-    real, pointer, dimension(:,:) :: THICEG !<
     real, pointer, dimension(:) :: FSGVGAT !<Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
     real, pointer, dimension(:,:) :: THICGAT !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, pointer, dimension(:,:) :: THLQGAT !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -243,19 +210,11 @@ subroutine accumulateForCTEM(nml)
     real, pointer, dimension(:) :: uvaccgat_t       !<
     real, pointer, dimension(:) :: vvaccgat_t       !<
     real, pointer, dimension(:,:) :: tbaraccgat_t!<
-    real, pointer, dimension(:,:) :: tbarcacc_t  !<
-    real, pointer, dimension(:,:) :: tbarcsacc_t !<
-    real, pointer, dimension(:,:) :: tbargacc_t  !<
-    real, pointer, dimension(:,:) :: tbargsacc_t !<
-    real, pointer, dimension(:,:) :: thliqcacc_t !<
-    real, pointer, dimension(:,:) :: thliqgacc_t !<
     real, pointer, dimension(:,:) :: thliqacc_t  !<
-    real, pointer, dimension(:,:) :: thicecacc_t !<
-    real, pointer, dimension(:,:) :: thicegacc_t !<
-    real, pointer, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-    real, pointer, dimension(:,:) :: ancsvgac_t
+    real, pointer, dimension(:,:) :: thiceacc_t  !< 
+    ! real, pointer, dimension(:,:) :: ancsvgac_t
     real, pointer, dimension(:,:) :: ancgvgac_t
-    real, pointer, dimension(:,:) :: rmlcsvga_t
+    ! real, pointer, dimension(:,:) :: rmlcsvga_t
     real, pointer, dimension(:,:) :: rmlcgvga_t
     integer, pointer, dimension(:) :: ipeatlandgat
 
@@ -273,19 +232,11 @@ subroutine accumulateForCTEM(nml)
     preacc_gat        => vgat%preacc_gat
     ipeatlandgat      => vgat%ipeatland
     tbaraccgat_t      => ctem_tile%tbaraccgat_t
-    tbarcacc_t        => ctem_tile%tbarcacc_t
-    tbarcsacc_t       => ctem_tile%tbarcsacc_t
-    tbargacc_t        => ctem_tile%tbargacc_t
-    tbargsacc_t       => ctem_tile%tbargsacc_t
-    thliqcacc_t       => ctem_tile%thliqcacc_t
-    thliqgacc_t       => ctem_tile%thliqgacc_t
     thliqacc_t        => ctem_tile%thliqacc_t
-    thiceacc_t        => ctem_tile%thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-    thicecacc_t       => ctem_tile%thicecacc_t
-    thicegacc_t       => ctem_tile%thicegacc_t
-    ancsvgac_t        => ctem_tile%ancsvgac_t
+    thiceacc_t        => ctem_tile%thiceacc_t  
+    ! ancsvgac_t        => ctem_tile%ancsvgac_t
     ancgvgac_t        => ctem_tile%ancgvgac_t
-    rmlcsvga_t        => ctem_tile%rmlcsvga_t
+    ! rmlcsvga_t        => ctem_tile%rmlcsvga_t
     rmlcgvga_t        => ctem_tile%rmlcgvga_t
     fsnowacc_t        => ctem_tile%fsnowacc_t
     tcansacc_t        => ctem_tile%tcansacc_t
@@ -322,14 +273,6 @@ subroutine accumulateForCTEM(nml)
     FSGGGAT => class_gat%FSGGGAT
     TBARGAT => class_gat%TBARGAT
     FSGSGAT => class_gat%FSGSGAT
-    TBARC => class_gat%TBARC
-    TBARG => class_gat%TBARG
-    TBARCS => class_gat%TBARCS
-    TBARGS => class_gat%TBARGS
-    THLIQC => class_gat%THLIQC
-    THLIQG => class_gat%THLIQG
-    THICEC => class_gat%THICEC
-    THICEG => class_gat%THICEG
     FSGVGAT => class_gat%FSGVGAT
     THICGAT => class_gat%THICGAT
     THLQGAT => class_gat%THLQGAT
@@ -364,27 +307,15 @@ subroutine accumulateForCTEM(nml)
 
         do 710 j=1,ignd
             tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
-            tbarcacc_t(i,j)=tbarcacc_t(i,j)+tbarc(i,j)
-            tbarcsacc_t(i,j)=tbarcsacc_t(i,j)+tbarcs(i,j)
-            tbargacc_t(i,j)=tbargacc_t(i,j)+tbarg(i,j)
-            tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
-            thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
-            thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
-            thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
-            ! FLAG: Needs to be reviewed. EC Dec 23 2016.
-            ! YW's original variables were thlqaccgat_m/thicaccgat_m.
-            ! The following 2 variables needs to be passed via ctem to hetres_peat
-            ! (otherwise causes a floating exception at line 863 of peatlands_mod).
-            thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
-            thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
-            thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017.
+            thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) 
+            thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) 
 710                 continue
 
         do 713 j = 1, icc
-            ancsvgac_t(i,j)=ancsvgac_t(i,j)+ancsveggat(i,j)
-            ancgvgac_t(i,j)=ancgvgac_t(i,j)+ancgveggat(i,j)
-            rmlcsvga_t(i,j)=rmlcsvga_t(i,j)+rmlcsveggat(i,j)
-            rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
+            ! ancsvgac_t(i,j)=0. !ancsvgac_t(i,j)+ancsveggat(i,j)
+            ancgvgac_t(i,j)=ancgvgac_t(i,j)+(1. - fsnogat(i)) * ancgveggat(i,j) + fsnogat(i) * ancsveggat(i,j)
+            ! rmlcsvga_t(i,j)=0. !rmlcsvga_t(i,j)+rmlcsveggat(i,j)
+            rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+(1. - fsnogat(i)) * rmlcgveggat(i,j)+ fsnogat(i) * rmlcsveggat(i,j)
 713                 continue
 
         !    -accumulate moss C fluxes to tile level then daily----
@@ -431,21 +362,13 @@ subroutine ctemInit(nltest,nmtest)
     real, pointer, dimension(:) :: fsnowacc_t
     real, pointer, dimension(:) :: tcansacc_t
     real, pointer, dimension(:) :: taaccgat_t
-    real, pointer, dimension(:,:) :: ancsvgac_t
+    ! real, pointer, dimension(:,:) :: ancsvgac_t
     real, pointer, dimension(:,:) :: ancgvgac_t
-    real, pointer, dimension(:,:) :: rmlcsvga_t
+    ! real, pointer, dimension(:,:) :: rmlcsvga_t
     real, pointer, dimension(:,:) :: rmlcgvga_t
     real, pointer, dimension(:,:)  :: todfrac
-    real, pointer, dimension(:,:) :: tbarcacc_t
-    real, pointer, dimension(:,:) :: tbarcsacc_t
-    real, pointer, dimension(:,:) :: tbargacc_t
-    real, pointer, dimension(:,:) :: tbargsacc_t
-    real, pointer, dimension(:,:) :: thliqcacc_t
-    real, pointer, dimension(:,:) :: thliqgacc_t
     real, pointer, dimension(:,:) :: thliqacc_t
-    real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-    real, pointer, dimension(:,:) :: thicecacc_t
-    real, pointer, dimension(:,:) :: thicegacc_t
+    real, pointer, dimension(:,:) :: thiceacc_t  
     real, pointer, dimension(:,:) :: vgbiomasrow
     real, pointer, dimension(:,:) :: gavgltmsrow
     real, pointer, dimension(:,:) :: gavgscmsrow
@@ -489,21 +412,13 @@ subroutine ctemInit(nltest,nmtest)
     fsnowacc_t        => ctem_tile%fsnowacc_t
     tcansacc_t        => ctem_tile%tcansacc_t
     taaccgat_t        => ctem_tile%taaccgat_t
-    ancsvgac_t        => ctem_tile%ancsvgac_t
+    ! ancsvgac_t        => ctem_tile%ancsvgac_t
     ancgvgac_t        => ctem_tile%ancgvgac_t
-    rmlcsvga_t        => ctem_tile%rmlcsvga_t
+    ! rmlcsvga_t        => ctem_tile%rmlcsvga_t
     rmlcgvga_t        => ctem_tile%rmlcgvga_t
     todfrac           => vgat%todfrac
-    tbarcacc_t        => ctem_tile%tbarcacc_t
-    tbarcsacc_t       => ctem_tile%tbarcsacc_t
-    tbargacc_t        => ctem_tile%tbargacc_t
-    tbargsacc_t       => ctem_tile%tbargsacc_t
-    thliqcacc_t       => ctem_tile%thliqcacc_t
-    thliqgacc_t       => ctem_tile%thliqgacc_t
     thliqacc_t        => ctem_tile%thliqacc_t
     thiceacc_t        => ctem_tile%thiceacc_t
-    thicecacc_t       => ctem_tile%thicecacc_t
-    thicegacc_t       => ctem_tile%thicegacc_t
     vgbiomasrow       => vrot%vgbiomas
     gavglairow        => vrot%gavglai
     gavgltmsrow       => vrot%gavgltms
@@ -548,21 +463,13 @@ subroutine ctemInit(nltest,nmtest)
     fsnowacc_t(:)=0.0         !daily accu. fraction of snow
     tcansacc_t(:)=0.0         !daily accu. canopy temp. over snow
     taaccgat_t(:)=0.0
-    ancsvgac_t(:,:)=0.0    !daily accu. net photosyn. for canopy over snow subarea
+    ! ancsvgac_t(:,:)=0.0    !daily accu. net photosyn. for canopy over snow subarea
     ancgvgac_t(:,:)=0.0    !daily accu. net photosyn. for canopy over ground subarea
-    rmlcsvga_t(:,:)=0.0    !daily accu. leaf respiration for canopy over snow subarea
+    ! rmlcsvga_t(:,:)=0.0    !daily accu. leaf respiration for canopy over snow subarea
     rmlcgvga_t(:,:)=0.0    !daily accu. leaf respiration for canopy over ground subarea
     todfrac(:,:)=0.0
-    tbarcacc_t (:,:)=0.0
-    tbarcsacc_t(:,:)=0.0
-    tbargacc_t (:,:)=0.0
-    tbargsacc_t(:,:)=0.0
-    thliqcacc_t(:,:)=0.0
-    thliqgacc_t(:,:)=0.0
     thliqacc_t(:,:)=0.0
     thiceacc_t(:,:)=0.0
-    thicecacc_t(:,:)=0.0
-    thicegacc_t(:,:)=0.0
     vgbiomasrow(:,:)=0.0
     gavglairow(:,:)=0.0
     gavgltmsrow(:,:)=0.0

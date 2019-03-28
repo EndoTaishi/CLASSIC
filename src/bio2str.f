@@ -44,7 +44,7 @@
 !!
       subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,  
      1                            il1,      il2,      ilg,    zbotw,
-     2                          delzw, nol2pfts,  soildpth, fcancmx,
+     2                          delzw, soildpth, fcancmx,
      3                      ipeatland,
 !    4--------------- inputs above this line, outputs below --------
      5                          ailcg,    ailcb,     ailc,    zolnc,
@@ -98,7 +98,7 @@ c
      1                               l2max,kk, eta, kappa, kn, lfespany, 
      2                               fracbofg, specsla, abar, avertmas,
      3                               alpha, prcnslai, minslai, mxrtdpth,
-     4                               albvis, albnir,classpfts        
+     4                               albvis, albnir,classpfts, nol2pfts        
 
       implicit none
 
@@ -106,7 +106,6 @@ c
       integer il1 !<input: il1=1
       integer il2 !<input: il2=ilg
       integer i, j, k, m, n, k1c, k2c
-      integer nol2pfts(ican) !<input: number of level 2 pfts
       integer icount
       integer sort(icc)
       integer kend

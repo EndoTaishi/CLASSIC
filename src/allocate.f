@@ -77,7 +77,7 @@
       subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb,
      1                         il1,      il2,      ilg,      sand,  
      2                        clay,  rmatctem, gleafmas, stemmass, 
-     3                    rootmass,      sort, nol2pfts,  fcancmx, 
+     3                    rootmass,      sort,  fcancmx, 
      4                       isand,      THFC,     THLW,
 C    5 -------------- inputs above this line, outputs below -----------------
      6                     afrleaf,  afrstem,  afrroot,
@@ -117,7 +117,7 @@ c
      1                               ignd, ican, omega, epsilonl,
      2                               epsilons, epsilonr, caleaf, castem,
      3                               caroot, consallo, rtsrmin,aldrlfon,
-     4                               classpfts
+     4                               classpfts, nol2pfts
 c
       implicit none
       integer ilg !<
@@ -131,7 +131,6 @@ c
 c
       integer sort(icc) !<input: index for correspondence between 9 pfts and the
                         !<12 values in parameters vectors
-      integer nol2pfts(ican) !<input: number of level 2 ctem pfts
       integer isand(ilg,ignd)
 c
       real   ailcg(ilg,icc) !<input: green or live leaf area index

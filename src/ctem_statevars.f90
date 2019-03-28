@@ -649,21 +649,21 @@ type ctem_tile_level
 
 ! allocated with ilg,ignd:
       real, allocatable, dimension(:,:) :: tbaraccgat_t!<
-      real, allocatable, dimension(:,:) :: tbarcacc_t  !<
-      real, allocatable, dimension(:,:) :: tbarcsacc_t !<
-      real, allocatable, dimension(:,:) :: tbargacc_t  !<
-      real, allocatable, dimension(:,:) :: tbargsacc_t !<
-      real, allocatable, dimension(:,:) :: thliqcacc_t !<
-      real, allocatable, dimension(:,:) :: thliqgacc_t !<
+      ! real, allocatable, dimension(:,:) :: tbarcacc_t  !<
+      ! real, allocatable, dimension(:,:) :: tbarcsacc_t !<
+      ! real, allocatable, dimension(:,:) :: tbargacc_t  !<
+      ! real, allocatable, dimension(:,:) :: tbargsacc_t !<
+      ! real, allocatable, dimension(:,:) :: thliqcacc_t !<
+      ! real, allocatable, dimension(:,:) :: thliqgacc_t !<
       real, allocatable, dimension(:,:) :: thliqacc_t  !<
-      real, allocatable, dimension(:,:) :: thicecacc_t !<
-      real, allocatable, dimension(:,:) :: thicegacc_t !<
+      ! real, allocatable, dimension(:,:) :: thicecacc_t !<
+      ! real, allocatable, dimension(:,:) :: thicegacc_t !<
       real, allocatable, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 
 ! allocated with ilg,icc:
-      real, allocatable, dimension(:,:) :: ancsvgac_t  !<
+      ! real, allocatable, dimension(:,:) :: ancsvgac_t  !<
       real, allocatable, dimension(:,:) :: ancgvgac_t  !<
-      real, allocatable, dimension(:,:) :: rmlcsvga_t  !<
+      ! real, allocatable, dimension(:,:) :: rmlcsvga_t  !<
       real, allocatable, dimension(:,:) :: rmlcgvga_t  !<
 
 end type ctem_tile_level
@@ -1415,19 +1415,19 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile%rmlmossac_t (ilg),&
          ctem_tile%gppmossac_t (ilg),&
          ctem_tile%tbaraccgat_t (ilg,ignd),&
-         ctem_tile%tbarcacc_t (ilg,ignd),&
-         ctem_tile%tbarcsacc_t (ilg,ignd),&
-         ctem_tile%tbargacc_t (ilg,ignd),&
-         ctem_tile%tbargsacc_t (ilg,ignd),&
-         ctem_tile%thliqcacc_t (ilg,ignd),&
-         ctem_tile%thliqgacc_t (ilg,ignd),&
+         ! ctem_tile%tbarcacc_t (ilg,ignd),&
+         ! ctem_tile%tbarcsacc_t (ilg,ignd),&
+         ! ctem_tile%tbargacc_t (ilg,ignd),&
+         ! ctem_tile%tbargsacc_t (ilg,ignd),&
+         ! ctem_tile%thliqcacc_t (ilg,ignd),&
+         ! ctem_tile%thliqgacc_t (ilg,ignd),&
          ctem_tile%thliqacc_t (ilg,ignd),&
-         ctem_tile%thicecacc_t (ilg,ignd),&
-         ctem_tile%thicegacc_t (ilg,ignd),&
+         ! ctem_tile%thicecacc_t (ilg,ignd),&
+         ! ctem_tile%thicegacc_t (ilg,ignd),&
          ctem_tile%thiceacc_t (ilg,ignd),&
-         ctem_tile%ancsvgac_t (ilg,icc),&
+         ! ctem_tile%ancsvgac_t (ilg,icc),&
          ctem_tile%ancgvgac_t (ilg,icc),&
-         ctem_tile%rmlcsvga_t (ilg,icc),&
+         ! ctem_tile%rmlcsvga_t (ilg,icc),&
          ctem_tile%rmlcgvga_t (ilg,icc),&
 
          ctem_mo%laimaxg_mo (nlat,nmos,icc),&
@@ -2210,19 +2210,19 @@ subroutine resetMosaicAccum()
         ctem_tile%taaccgat_t(:)=0.0
         vgat%altotacc_gat(:) = 0.0
         vgat%altotcount_ctm(:)=0
-        ctem_tile%tbarcacc_t(:,:)=0.0
-        ctem_tile%tbarcsacc_t(:,:)=0.0
-        ctem_tile%tbargacc_t(:,:)=0.0
-        ctem_tile%tbargsacc_t(:,:)=0.0
-        ctem_tile%thliqcacc_t(:,:)=0.0
-        ctem_tile%thliqgacc_t(:,:)=0.0
+        ! ctem_tile%tbarcacc_t(:,:)=0.0
+        ! ctem_tile%tbarcsacc_t(:,:)=0.0
+        ! ctem_tile%tbargacc_t(:,:)=0.0
+        ! ctem_tile%tbargsacc_t(:,:)=0.0
+        ! ctem_tile%thliqcacc_t(:,:)=0.0
+        ! ctem_tile%thliqgacc_t(:,:)=0.0
         ctem_tile%thliqacc_t(:,:)=0.0
-        ctem_tile%thiceacc_t(:,:)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-        ctem_tile%thicecacc_t(:,:)=0.0
-        ctem_tile%thicegacc_t(:,:)=0.0
-        ctem_tile%ancsvgac_t(:,:)=0.0
+        ctem_tile%thiceacc_t(:,:)=0.0  
+        ! ctem_tile%thicecacc_t(:,:)=0.0
+        ! ctem_tile%thicegacc_t(:,:)=0.0
+        ! ctem_tile%ancsvgac_t(:,:)=0.0
         ctem_tile%ancgvgac_t(:,:)=0.0
-        ctem_tile%rmlcsvga_t(:,:)=0.0
+        ! ctem_tile%rmlcsvga_t(:,:)=0.0
         ctem_tile%rmlcgvga_t(:,:)=0.0
 
         !-reset peatland accumulators-------------------------------

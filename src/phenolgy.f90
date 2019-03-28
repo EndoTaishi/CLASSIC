@@ -99,7 +99,7 @@ subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, &
              &          thliq,      THLW,  THFC,    ta,&
              &           anveg,     iday,  radl,roottemp,&
              &       rmatctem, stemmass, rootmass,  sort,&
-             &       nol2pfts,  fcancmx, isand,&
+             &       fcancmx, isand,&
 !     ------------------ inputs above this line ----------------------
              &       flhrloss,  leaflitr,  lfstatus,  pandays, &
              &       colddays)
@@ -145,7 +145,8 @@ subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, &
      &                               ican, cdlsrtmx, drlsrtmx, drgta,&
      &                               colda, lwrthrsh, dayschk, coldlmt,&
      &                               coldthrs, harvthrs, flhrspan,&
-     &                               thrprcnt, roothrsh, ctempfts,nlat,nmos
+     &                               thrprcnt, roothrsh, ctempfts,nlat,nmos,&
+                                     nol2pfts
      use generalUtils,        only : findDaylength
      
       implicit none
@@ -160,7 +161,6 @@ subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, &
 !
       logical leapnow             !< true if this year is a leap year. Only used if the switch 'leap' is true.
       integer sort(icc)           !<index for correspondence between 9 pfts and the 12 values in parameters vectors
-      integer nol2pfts(ican)      !<number of level 2 ctem pfts
 !
       real gleafmas(ilg,icc)      !<green or live leaf mass in \f$kg c/m
       real bleafmas(ilg,icc)      !<brown or dead leaf mass in \f$kg c/m
