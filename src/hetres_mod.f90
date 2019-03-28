@@ -21,7 +21,7 @@ contains
 subroutine hetresg (litrmass,  soilcmas,   delzw,    thpor,    &
                          il1,       il2,     ilg,     tbar,    &
                        psisat,        b,   thliq,    zbotw,    &
-                       thiceg,     frac,   isnow,    isand,    &
+                       thice,     frac,   isand,    &
 !    -------------- inputs above this line, outputs below -------------
                        litres,   socres)
 
@@ -62,8 +62,6 @@ implicit none
       integer il1   !<il1=1
       integer il2   !<il2=ilg
       integer i,j,k
-      integer isnow !<integer telling if bare fraction is fg (0) or fgs (1), isnow
-                    !<is changed to isnow(ilg) in classt of class version higher than 3.4 for coupling with ctem
       integer isand(ilg,ignd) !<
 
       real litrmass(ilg,1)!<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
@@ -76,7 +74,7 @@ implicit none
       real frac(ilg)          !<fraction of ground (fg) or snow over ground (fgs)
 
       real delzw(ilg,ignd)  !<
-      real thiceg(ilg,ignd) !<
+      real thice(ilg,ignd) !<
       real zcarb_g          !<
 
       real litrq10          !<
@@ -182,8 +180,8 @@ implicit none
             
             ! We don't place a lower limit on psi as it is only used here and the
             ! value of psi <= psisat is just used to select a scomotrm value.
-            if (thiceg(i,j) .le. thpor(i,j)) then ! flag new limits
-              psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thiceg(i,j)))**(-b(i,j)) 
+            if (thice(i,j) .le. thpor(i,j)) then ! flag new limits
+              psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thice(i,j)))**(-b(i,j)) 
             else      
               ! if the whole pore space is ice then suction is assumed to be very high.   
               psi(i,j) = 10000.0
@@ -288,7 +286,7 @@ subroutine hetresv ( fcan,      fct,   litrmass, soilcmas,  &
                     delzw,    thpor,        il1,      il2,  &
                       ilg,     tbar,     psisat,    thliq,  &
                  roottemp,    zbotw,       sort,        b,  &
-                     isand,  thicec,  ipeatland,            &
+                     isand,  thice,  ipeatland,            &
 !    -------------- inputs above this line, outputs below -------------
                   ltresveg, scresveg)
 
@@ -344,7 +342,7 @@ subroutine hetresv ( fcan,      fct,   litrmass, soilcmas,  &
       real zbotw(ilg,ignd)    !<bottom of soil layers
       real ltresveg(ilg,icc)  !<litter respiration for the given sub-area in umol co2/m2.s, for ctem's 9 pfts
       real scresveg(ilg,icc)  !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's 9 pfts
-      real thicec(ilg,ignd)   !<liquid soil moisture content in 3 soil layers in canopy covered subarea
+      real thice(ilg,ignd)   !<frozen soil moisture content in the soil layers
 
       real delzw(ilg,ignd)    !<
       real zcarb_g            !<
@@ -471,19 +469,19 @@ do 130 i = il1, il2
 !           Also not sure if it is needed?
 !           JM - Turn off for now, we'll see how testing looks. Nov 2016.
 !           EC - Re-implemented as peatland testing shows that in some situations, can get an invalid operation
-!                if thpor+0.005-thicec < 0. Note: same approach as in hetres_peat.  Feb 06 2017.
+!                if thpor+0.005-thice < 0. Note: same approach as in hetres_peat.  Feb 06 2017.
 
             if (ipeatland(i) >0) then
-                if ( thliq(i,j)+thicec(i,j)+0.01 < thpor(i,j) .and. tbar(i,j) < 273.16 ) then
+                if ( thliq(i,j)+thice(i,j)+0.01 < thpor(i,j) .and. tbar(i,j) < 273.16 ) then
                   psi(i,j) = 0.001
-                elseif ( thicec(i,j) > thpor(i,j) ) then
+                elseif ( thice(i,j) > thpor(i,j) ) then
                   psi(i,j) = 0.001   !set to saturation
                 else
-                  psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thicec(i,j)))**(-b(i,j))
+                  psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thice(i,j)))**(-b(i,j))
                 endif
             else
-              if (thicec(i,j) .le. thpor(i,j)) then ! flag new limits
-                     psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thicec(i,j)))**(-b(i,j)) 
+              if (thice(i,j) .le. thpor(i,j)) then ! flag new limits
+                     psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thice(i,j)))**(-b(i,j)) 
               else 
                 ! if the whole pore space is ice then suction is assumed to be very high. 
                 psi(i,j) = 10000.0

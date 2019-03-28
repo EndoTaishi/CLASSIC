@@ -72,6 +72,7 @@ contains
         character(:), pointer :: output_directory
         character(:), pointer :: xmlFile
         logical, pointer :: leap
+        
         ! -------------
         ! class model switches
 
@@ -104,9 +105,10 @@ contains
         integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
         logical, pointer :: doperpftoutput    !< Switch for making extra output files that are at the per PFT level
         logical, pointer :: dopertileoutput    !< Switch for making extra output files that are at the per tile level
-        logical, pointer :: domonthoutput    !< Switch for making monthly output files (annual are always outputted)
-        logical, pointer :: dodayoutput    !< Switch for making daily output files (annual are always outputted)
-        logical, pointer :: dohhoutput    !< Switch for making half hourly output files (annual are always outputted)
+        logical, pointer :: doAnnualOutput    !< Switch for making annual output files 
+        logical, pointer :: doMonthOutput    !< Switch for making monthly output files 
+        logical, pointer :: doDayOutput    !< Switch for making daily output files 
+        logical, pointer :: doHhOutput    !< Switch for making half hourly output files
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
 
         character(350) :: jobfile
@@ -177,18 +179,19 @@ contains
         xmlFile, &
         doperpftoutput, &
         dopertileoutput, &
-        dohhoutput, &
+        doHhOutput, &
         JHHSTD, &
         JHHENDD, &
         JHHSTY, &
         JHHENDY, &
-        dodayoutput, &
+        doDayOutput, &
         JDSTD, &
         JDENDD, &
         JDSTY, &
         JDENDY, &
-        domonthoutput, &
+        doMonthOutput, &
         JMOSTY, &
+        doAnnualOutput, &
         Comment
 
         ! Point pointers:
@@ -256,11 +259,12 @@ contains
         jdsty           => c_switch%jdsty
         jdendy          => c_switch%jdendy
         jmosty          => c_switch%jmosty
+        doAnnualOutput  => c_switch%doAnnualOutput
         doperpftoutput  => c_switch%doperpftoutput
         dopertileoutput => c_switch%dopertileoutput
-        domonthoutput   => c_switch%domonthoutput
-        dodayoutput     => c_switch%dodayoutput
-        dohhoutput      => c_switch%dohhoutput
+        doMonthOutput   => c_switch%doMonthOutput
+        doDayOutput     => c_switch%doDayOutput
+        doHhOutput      => c_switch%doHhOutput
         Comment         => c_switch%Comment
 
         !-------------------------

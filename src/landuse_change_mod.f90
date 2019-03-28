@@ -256,7 +256,7 @@ subroutine    luc(         il1,       il2,  nilg,                   & !1
       real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
       real yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
 
-      real fcanmx(nilg,ican)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+      real fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
       real delfrac(nilg,icc)    !<
       real abvgmass(nilg,icc)   !<above-ground biomass
       real grclarea(nilg)       !<gcm grid cell area, km2

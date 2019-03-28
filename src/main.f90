@@ -66,6 +66,7 @@ contains
         use ctemUtilities,       only : dayEndCTEMPreparation,accumulateForCTEM,ctemInit
         use metDisaggModule,     only : disaggMet
         use outputManager,       only : consecDays
+        use ctemDriver,          only : ctem
 
         implicit none
 
@@ -803,9 +804,10 @@ contains
         logical, pointer :: transientOBSWETF
         logical, pointer :: inibioclim
         logical, pointer :: leap
-        logical, pointer :: domonthoutput
-        logical, pointer :: dodayoutput
-        logical, pointer :: dohhoutput
+        logical, pointer :: doAnnualOutput
+        logical, pointer :: doMonthOutput
+        logical, pointer :: doDayOutput
+        logical, pointer :: doHhOutput
         logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
                                             !! regions referenced by the indexes, not coordinates, when running a sub-region
 
@@ -1161,8 +1163,8 @@ contains
         !      Tile-level variables (denoted by an ending of "_t")
 
         real, pointer, dimension(:) :: fsnowacc_t
-        real, pointer, dimension(:) :: tcansacc_t
-        real, pointer, dimension(:) :: tcanoaccgat_t
+        !real, pointer, dimension(:) :: tcansacc_t
+        !real, pointer, dimension(:) :: tcanoaccgat_t
         real, pointer, dimension(:) :: taaccgat_t
         real, pointer, dimension(:) :: uvaccgat_t
         real, pointer, dimension(:) :: vvaccgat_t
@@ -1803,9 +1805,10 @@ contains
         IALS              => c_switch%IALS
         IALG              => c_switch%IALG
         isnoalb           => c_switch%isnoalb
-        domonthoutput     => c_switch%domonthoutput
-        dodayoutput       => c_switch%dodayoutput
-        dohhoutput        => c_switch%dohhoutput
+        doAnnualOutput    => c_switch%doAnnualOutput
+        doMonthOutput     => c_switch%doMonthOutput
+        doDayOutput       => c_switch%doDayOutput
+        doHhOutput        => c_switch%doHhOutput
         readMetStartYear  => c_switch%readMetStartYear
         projectedGrid     => c_switch%projectedGrid
 
@@ -2207,8 +2210,8 @@ contains
         ! mosaic level variables (CLASS):
 
         fsnowacc_t        => ctem_tile%fsnowacc_t
-        tcansacc_t        => ctem_tile%tcansacc_t
-        tcanoaccgat_t     => ctem_tile%tcanoaccgat_t
+        !tcansacc_t        => ctem_tile%tcansacc_t
+        !tcanoaccgat_t     => ctem_tile%tcanoaccgat_t
         taaccgat_t        => ctem_tile%taaccgat_t
         uvaccgat_t        => ctem_tile%uvaccgat_t
         vvaccgat_t        => ctem_tile%vvaccgat_t
@@ -2361,6 +2364,11 @@ contains
                 &             NML,NMW,GCROW,FAREROT,MIDROT,&
                 &             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 
+            ! ctemg1 converts variables from the 'row' format (nlat,nmos,...)
+            ! to the 'gat' format (ilg, ...) which is what the model calculations 
+            ! are performed on. The ctemg1 subroutine is used to transform the 
+            ! read in state variables (which come in with the 'row' format from the
+            ! various input files).
             call ctemg1(gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,&
                 fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,&
                 ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,&
@@ -2386,20 +2394,20 @@ contains
                           cmasvegcgat,    veghghtgat,  rootdpthgat,   alvsctmgat, &
                            alirctmgat,       paicgat,     slaicgat)
 
-            call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,&
-                fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,&
-                ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,&
-                bmasvegrow,cmasvegcrow,veghghtrow,&
-                rootdpthrow,alvsctmrow,alirctmrow,&
-                paicrow,    slaicrow,&
-                ilmos,jlmos,iwmos,jwmos,&
-                nml,&
-                gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,&
-                fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,&
-                ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,&
-                bmasveggat,cmasvegcgat,veghghtgat,&
-                rootdpthgat,alvsctmgat,alirctmgat,&
-                paicgat,    slaicgat)
+            ! call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,&
+            !     fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,&
+            !     ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,&
+            !     bmasvegrow,cmasvegcrow,veghghtrow,&
+            !     rootdpthrow,alvsctmrow,alirctmrow,&
+            !     paicrow,    slaicrow,&
+            !     ilmos,jlmos,iwmos,jwmos,&
+            !     nml,&
+            !     gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,&
+            !     fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,&
+            !     ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,&
+            !     bmasveggat,cmasvegcgat,veghghtgat,&
+            !     rootdpthgat,alvsctmgat,alirctmgat,&
+            !     paicgat,    slaicgat)
 
         endif   ! if (ctem_on)
 
@@ -2591,6 +2599,15 @@ contains
                     DELZ,   FCS,    FGS,    FC,     FG,&
                     1,      NML,    ILG,    IGND,   N    )
 
+            ! ctemg2 takes variables in the 'row' format (nlat,nmos, ...)
+            ! and converts them to the 'gat' format (ilg,...). At present 
+            ! ctemg2 is bloated with many variables that do not require
+            ! gathering. This subroutine should ideally be only used for
+            ! state variables that are updated from external files as 
+            ! the run progresses. Since the model calculations operate 
+            ! on the 'gat' form, any other variables need not be gathered
+            ! as they will already be in the correct format from the previous 
+            ! model timestep.
             call ctemg2(fcancmxgat,rmatcgat,zolncgat,paicgat,&
                     ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,&
                     ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,&
@@ -2873,7 +2890,6 @@ contains
                         &             ariditygat, srplsmongat,  defctmongat, anndefctgat,&
                         &            annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
                         &       pftexistgat,      twarmmgat,       tcoldmgat,         gdd5gat,    &
-                        !
                                             !    -------------- inputs updated by ctem are above this line ------
                         !    ------------- these include all prognostic variables -----------
                         !
@@ -2898,7 +2914,6 @@ contains
                         &             emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&
                         &            emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&
                         &          btermgat,       ltermgat,          mtermgat,     burnvegfgat,  &
-
                         &    litrfallveggat,     humiftrsveggat,   ltstatusgat,       nppveggat,  &
                         &        afrleafgat,     afrstemgat,       afrrootgat,      wtstatusgat,  &
                         &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&
@@ -2908,18 +2923,6 @@ contains
                         &             ccgat,          mmgat                                       &
                         !    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----/
                         &                  )
-
-!                     !    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
-!                     do   i = 1, nml
-!                         if (taaccgat_t(i)>tfrez)           then
-!                             pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
-!                         endif
-!                     !----------------update peatland bottom layer depth--------------------
-!                         if (ipeatlandgat(i) > 0)         then
-!                             dlzwgat(i,ignd)= peatdepgat(i)-0.90
-!                             sdepgat(i) = peatdepgat(i)
-!                         endif
-!                     end do
 
                     !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
                     !     to reset here, prior to ctems2.
@@ -3034,6 +3037,11 @@ contains
 420             CONTINUE
 430         CONTINUE
 
+            ! ctems2 converts variables from the 'gat' format to the
+            ! 'row' format, which is suitable for writing to output/restart 
+            ! files. If a variable is not written to either of those files, 
+            ! there is no need to scatter the variable as it will be in the 
+            ! correct format for model calclations ('gat').
             call ctems2(fcancmxrow,rmatcrow,zolncrow,paicrow,&
                 &      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,&
                 &      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,&
@@ -3141,7 +3149,7 @@ contains
             !=======================================================================
 
             ! Half-hourly physics outputs
-            if  (dohhoutput .and.&
+              if  (doHhOutput .and.&
                 (runyr >= jhhsty) .and.&
                 (runyr <= jhhendy) .and. &
                 (iday >= jhhstd) .and. &
@@ -3149,7 +3157,7 @@ contains
                                                     nmtest,ncount,nday,iday,runyr)
 
             ! Daily physics outputs
-            if (dodayoutput .and. &
+              if (doDayOutput .and. &
                (runyr >= jdsty) .and. &
                (runyr <= jdendy) .and. &
                (iday  >= jdstd) .and. &
@@ -3164,12 +3172,12 @@ contains
             ENDDO
 
             ! Monthly physics outputs
-            if (domonthoutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex,&
+              if (doMonthOutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex,&
                                                             latLocalIndex,IDAY,runyr,NCOUNT,&
                                                             NDAY,nltest,nmtest,lastDOY)
 
             ! Annual physics outputs
-            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,&
+              if (doAnnualOutput) call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,&
                &                       nltest,nmtest,lastDOY)
 
             if (ctem_on .and. (ncount.eq.nday)) then
@@ -3178,7 +3186,7 @@ contains
                 call convertUnitsCTEM(nltest,nmtest)
 
                 ! Daily outputs from biogeochem (CTEM)
-                if (dodayoutput .and.&
+                  if (doDayOutput .and.&
                    (runyr >= jdsty).and. &
                    (runyr <=jdendy) .and. &
                    (iday   >= jdstd).and.&
@@ -3186,22 +3194,13 @@ contains
                                                          nmtest,iday,ncount,nday,&
                                                          runyr,grclarea,ipeatlandrow)
 
-                    !-reset peatland accumulators-------------------------------
-                    ! Note: these must be reset only at the end of a day. EC Jan 30 2017.
-                    ! FLAG move these elsewhere.
-!                     anmossac_t  = 0.0
-!                     rmlmossac_t = 0.0
-!                     gppmossac_t = 0.0
-                    !G12ACC     = 0.
-                    !G23ACC     = 0.
-
                 ! Monthly biogeochem outputs
-                if (domonthoutput .and. &
+                  if (doMonthOutput .and. &
                     (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,&
                                                             nmtest,iday,runyr,nday,lastDOY)
 
                 ! Annual biogeochem outputs
-                call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,runyr,nltest,nmtest,lastDOY)
+                  if (doAnnualOutput) call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,runyr,nltest,nmtest,lastDOY)
             endif
 
             ! Check if it is the last timestep of the last day of the year

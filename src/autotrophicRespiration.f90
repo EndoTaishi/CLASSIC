@@ -1,109 +1,81 @@
-!> Calculates maintenance respiration, over a given sub-area, for stem and root components.
-!! leaf respiration is estimated within the phtsyn subroutine.
-!!@author V. Arora, J. Melton 
+!>\file
+!>Autotrophic respiration. Leaf respiration is calculated in phtsyn subroutine, while stem
+!!and root maintenance respiration are calculated here.
 !!
-!!Autotrophic respiration (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$) is composed of maintenance, \f$R_\mathrm{m}\f$, and growth respirations, \f$R_\mathrm{g}\f$,
-!!\f[
-!!R_\mathrm{a} =R_\mathrm{m} + R_\mathrm{g}.
-!!\f]
-!!Maintenance respiration accounts for carbon consumed by processes that keep existing plant tissues alive and is a function of environmental stresses. Maintenance respiration is calculated on a half-hourly time step (with photosynthesis) for the leaves, \f$R_{mL}\f$, and at a daily time step for the stem, \f$R_{mS}\f$, and root, \f$R_{mR}\f$, components
-!!\f[
-!!\label{mainres_all} R_\mathrm{m} = R_{mL} + R_{mS} + R_{mR}.
-!!\f]
-!!
-!!Maintenance respiration is generally strongly correlated with nitrogen content \cite Reich1998-zr \cite Ryan1991-ai. The current version of CTEM does not explicitly track nitrogen in its vegetation components. Therefore, we adopt the approach of \cite Collatz1991-5bc \cite Collatz1992-jf in which the close relation between maximum catalytic capacity of Rubisco, \f$V_\mathrm{m}\f$, and leaf nitrogen content is used as a proxy to estimate leaf maintenance respiration,
-!!\f[
-!!R_{mL} = \varsigma_\mathrm{L}V_\mathrm{m}\,f_{25}(Q_10d,n)f_{PAR},
-!!\f]
-!!where \f$\varsigma_\mathrm{L}\f$ is set to 0.015 and 0.025 for \f$C_3\f$ and \f$C_4\f$ plants, respectively, \f$f_{PAR}\f$ scales respiration from the leaf to the canopy level, similar to Eq. (\ref{G_canopy}), and the \f$f_{25}(Q_10d,n)\f$ function accounts for different temperature sensitivities of leaf respiration during day (\f$d\f$) and night (\f$n\f$). \cite Pons2003-f26 and \cite Xu2003-d75 suggest lower temperature sensitivity for leaf respiration during the day compared to night, and therefore we use values of \f$Q_10d=1.3\f$ and \f$Q_10n=2.0\f$ for day and night, respectively.
-!!
-!!Maintenance respiration from the stem and root components is estimated based on PFT-specific base respiration rates (\f$\varsigma_\mathrm{S}\f$ and \f$\varsigma_\mathrm{R}\f$ specified at \f$15\,C\f$, \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also classic_params.f90) that are modified to account for temperature response following a \f$Q_{10}\f$ function. Maintenance respiration from stem and root components, \f$R_{m\{S,R\}}\f$, is calculated as
-!!\f[
-!!\label{r_msr} R_{\mathrm{m},i} = 2.64 \times 10^{-6}\varsigma_{i}l_{\mathrm{v}, i}C_{i}f_{15}(Q_{10}),\quad i = \mathrm{S}, \mathrm{R},
-!!\f]
-!!where \f$l_{v,i}\f$ is the live fraction of stem or root component, i.e. the sapwood, and \f$C_i\f$ is the stem or root carbon mass (\f$kg\,C\,m^{-2}\f$). The constant \f$2.64 \times 10^{-6}\f$ converts units from \f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$. The live sapwood fraction, \f$l_{\mathrm{v},i}\f$, for stem or root component is calculated following the CENTURY model \cite Parton1996-zv as
-!!\f[
-!!l_{\mathrm{v},i} = \max(0.05, \min[1.0, \exp^{-0.2835 C_i} ]),\quad i = \mathrm{S}, \mathrm{R}.
-!!\f]
-!!
-!!The \f$Q_{10}\f$ value used in Eq. (\ref{r_msr}) is not assumed to be constant but modelled as a function of temperature following \cite Tjoelker2001-uz as
-!!\f[
-!!Q_{10} = 3.22 - 0.046 \left(\frac{15.0 + T_{\{S,R\}}}{1.9}\right),
-!!\f]
-!!where \f$T_{\{S,R\}}\f$ is stem or root temperature (\f$C\f$). Stem temperature is assumed to be the same as air temperature while root temperature is based on the soil temperature weighted by the fraction of roots present in each soil layer \cite Arora2003838. The calculated \f$Q_{10}\f$ value is additionally constrained to be between 1.5 and 4.0.
-!!
-!!Growth respiration, \f$R_\mathrm{g}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is estimated as a fraction (\f$\epsilon_\mathrm{g}=0.15\f$) of the positive gross canopy photosynthetic rate after maintenance respiration has been accounted for
-!!\f[
-!!\label{growth_res} R_\mathrm{g}=\epsilon_\mathrm{g}\max[0,(G_{canopy} - R_\mathrm{m})].
-!!\f]
-!!Finally, net primary productivity (\f$NPP\f$) is calculated as
-!!\f[
-!!NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}.
-!!\f]
-!!
+module autotrophicRespiration
 
-      subroutine mainres (  fcan,      fct,     stemmass,   rootmass, 
-     1                       il1,      il2,         ilg,    leapnow,
-     2                       tcan,     tbar,    rmatctem,
-     3                      sort,   isand,
-c    -------------- inputs above this line, outputs below ----------
-     4                      rmsveg, rmrveg,     roottemp)
-c
-c     20  sep. 2001 - this subroutine calculates maintenance respiration,
-c     V. Arora        over a given sub-area, for stem and root components.
-c                     leaf respiration is estimated within the phtsyn
-c                     subroutine.
+    implicit none
 
-c     change history:
+    public :: mainres
+
+contains
+
+  !>\ingroup autotrophic_res_mainres
+  !!@{
+  !> Calculates maintenance respiration for roots and stems
+  !> @author Vivek Arora and Joe Melton
+
+      subroutine mainres (  fcan,      fct,     stemmass,   rootmass, &
+     &                       il1,      il2,         ilg,    leapnow,&
+     &                       ta,     tbar,    rmatctem,&
+     &                      sort,  isand,&
+!    -------------- inputs above this line, outputs below ----------
+     &                      rmsveg, rmrveg,     roottemp)
+!
+!     20  sep. 2001 - this subroutine calculates maintenance respiration,
+!     V. Arora        over a given sub-area, for stem and root components.
+!                     leaf respiration is estimated within the phtsyn
+!                     subroutine.
+
+!     change history:
 
 !     J. Melton 22  Jul 2015 - Loops 180 and 190 were not set up for > 3 soil layers. Fixed.
 !
-c     J. Melton 17  Jan 2014 - Moved parameters to global file (classic_params.f90)
-c
-c     J. Melton 22  Jul 2013 - Add in module for parameters
-C     
-c     J. Melton 20 sep 2012 - made it so does not do calcs for pfts with
-c                             fcan = 0.
-c     J. Melton 23 aug 2012 - change sand to isand, converting sand to
-c                             int was missing some gridcells assigned
-c                             to bedrock in classb. isand is now passed
-c                             in.
-c
-c
-c     inputs 
-c
-c     icc       - no. of ctem pfts (currently 9)
-c     ignd      - no. of soil layers
-c     ilg       - no. of grid cells in latitude circle
-c     ican      - number of class pfts, currently 4
-c
-      use classic_params,        only : icc, ignd, ican, kk, zero, 
-     1                                 bsrtstem, bsrtroot, minlvfr,
-     2                                 classpfts,nol2pfts
+!     J. Melton 17  Jan 2014 - Moved parameters to global file (classic_params.f90)
+!
+!     J. Melton 22  Jul 2013 - Add in module for parameters
+!     
+!     J. Melton 20 sep 2012 - made it so does not do calcs for pfts with
+!                             fcan = 0.
+!     J. Melton 23 aug 2012 - change sand to isand, converting sand to
+!                             int was missing some gridcells assigned
+!                             to bedrock in classb. isand is now passed
+!                             in.
+!
+!
+!     inputs 
+!
+!     icc       - no. of ctem pfts (currently 9)
+!     ignd      - no. of soil layers
+!     ilg       - no. of grid cells in latitude circle
+!     ican      - number of class pfts, currently 4
+!
+      use classic_params,        only : icc, ignd, ican, kk, zero, &
+     &                                 bsrtstem, bsrtroot, minlvfr,&
+     &                                 classpfts,nol2pfts
 
       implicit none
-c
+!
       integer ilg !<
       integer il1 !<il1=1
       integer il2 !<il2=ilg
       integer i, j, k
       integer sort(icc) !<index for correspondence between 9 pfts and 12 values in the parameter vectors
       integer n
-      
       integer k1,   k2,  m
       integer isand(ilg,ignd) !<flag for bedrock or ice in a soil layer
       logical leapnow        !< true if this year is a leap year. Only used if the switch 'leap' is true.
-c
+!
       real fcan(ilg,icc)     !<fractional coverage of ctem's 9 pfts over the given sub-area
       real fct(ilg)          !<sum of all fcan fcan & fct are not used at this time but could be used at some later stage
       real stemmass(ilg,icc) !<stem biomass for the 9 pfts in \f$kg c/m^2\f$
-      real tcan(ilg)         !<canopy temperature, k
-      real tbar(ilg,ignd)    !<soil temperature, k
+      real ta(ilg)           !< Air temperature, K
+      real tbar(ilg,ignd)    !< Soil temperature, K
       real rootmass(ilg,icc) !<root biomass for the 9 pfts in \f$kg c/m^2\f$
       real rmsveg(ilg,icc)   !<maintenance respiration for stem for the 9 pfts
       real rmrveg(ilg,icc)   !<maintenance respiration for root for the 9 pfts both in u mol co2/m2. sec
       real rmatctem(ilg,icc,ignd) !<fraction of roots in each layer for each pft
-c
+!
       real tempq10r(ilg,icc) !<
       real tempq10s(ilg)     !<
       real roottemp(ilg,icc) !<root temperature (k)
@@ -112,7 +84,7 @@ c
       real livstmfr(ilg,icc) !<
       real livrotfr(ilg,icc) !<
       real tot_rmat(ilg,icc) !<
-c
+!
       logical consq10 !<
 !>
 !>---------------------------------------------------
@@ -120,11 +92,11 @@ c
 !!
 !!set the following switch to .true. for using constant temperature
 !!indepedent q10 specified below
-      data consq10 /.false./
+      consq10 =.false.
 !>
 !>q10 - if using a constant temperature independent value, i.e.
 !>if consq10 is set to true
-      data q10/2.00/
+      q10 = 2.00
 !>
 !!---------------------------------------------------
 !!
@@ -196,7 +168,7 @@ c
           enddo
         enddo
 !>
-!!we assume that stem temperature is same as canopy temperature tcan.
+!!we assume that stem temperature is same as air temperature, ta.
 !!using stem and root temperatures we can find their maintenance respirations rates
 !!
       do 200 i = il1, il2
@@ -207,13 +179,13 @@ c
           if (.not.consq10) then
 !>when finding temperature dependent q10, use temperature which
 !>is close to average of actual temperature and the temperature at which base rate is specified
-            tempq10s(i)=(15.0+273.16+tcan(i))/1.9
+            tempq10s(i)=(15.0+273.16+ta(i))/1.9
             q10 = 3.22 - 0.046*(tempq10s(i)-273.16)       
             q10 = min(4.0, max(1.5, q10))
           endif
-c
-          q10func = q10**(0.1*(tcan(i)-288.16))
-c
+!
+          q10func = q10**(0.1*(ta(i)-288.16))
+!
         do 210 j = 1, icc
          if (fcan(i,j) .gt. 0.) then
 !>
@@ -224,10 +196,10 @@ c
 !!see King et al. 2006 Nature SOM for a possible approach. JM.
 !!
           if (leapnow) then
-            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*
+            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*&
      &       (bsrtstem(sort(j))/366.0)
           else 
-            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*
+            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*&
      &       (bsrtstem(sort(j))/365.0)
           endif 
 !>
@@ -241,26 +213,73 @@ c
             q10 = 3.22 - 0.046*(tempq10r(i,j)-273.16)       
             q10 = min(4.0, max(1.5, q10))
           endif
-c
+!
           q10func = q10**(0.1*(roottemp(i,j)-288.16))
           if (leapnow) then 
-            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*
+            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*&
      &       (bsrtroot(sort(j))/366.0)
           else 
-            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*
+            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*&
      &        (bsrtroot(sort(j))/365.0)
           endif 
-c
+!
 !>convert kg c/m2.day -> u mol co2/m2.sec
           rmrveg(i,j)= rmrveg(i,j) * 963.62 
-c
+!
          endif !fcan check.   
 210     continue 
 200   continue 
-c     
+!     
       return
 
+end subroutine mainres
+
+!!@}
+! ---------------------------------------------------------------------------------------------------
+!>\namespace autotrophic_res
+
+!> Calculates maintenance respiration, over a given sub-area, for stem and root components.
+!! leaf respiration is estimated within the phtsyn subroutine.
+!!@author V. Arora, J. Melton 
+!!
+!!Autotrophic respiration (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$) is composed of maintenance, \f$R_\mathrm{m}\f$, and growth respirations, \f$R_\mathrm{g}\f$,
+!!\f[
+!!R_\mathrm{a} =R_\mathrm{m} + R_\mathrm{g}.
+!!\f]
+!!Maintenance respiration accounts for carbon consumed by processes that keep existing plant tissues alive and is a function of environmental stresses. Maintenance respiration is calculated on a half-hourly time step (with photosynthesis) for the leaves, \f$R_{mL}\f$, and at a daily time step for the stem, \f$R_{mS}\f$, and root, \f$R_{mR}\f$, components
+!!\f[
+!!\label{mainres_all} R_\mathrm{m} = R_{mL} + R_{mS} + R_{mR}.
+!!\f]
+!!
+!!Maintenance respiration is generally strongly correlated with nitrogen content \cite Reich1998-zr \cite Ryan1991-ai. The current version of CTEM does not explicitly track nitrogen in its vegetation components. Therefore, we adopt the approach of \cite Collatz1991-5bc \cite Collatz1992-jf in which the close relation between maximum catalytic capacity of Rubisco, \f$V_\mathrm{m}\f$, and leaf nitrogen content is used as a proxy to estimate leaf maintenance respiration,
+!!\f[
+!!R_{mL} = \varsigma_\mathrm{L}V_\mathrm{m}\,f_{25}(Q_10d,n)f_{PAR},
+!!\f]
+!!where \f$\varsigma_\mathrm{L}\f$ is set to 0.015 and 0.025 for \f$C_3\f$ and \f$C_4\f$ plants, respectively, \f$f_{PAR}\f$ scales respiration from the leaf to the canopy level, similar to Eq. (\ref{G_canopy}), and the \f$f_{25}(Q_10d,n)\f$ function accounts for different temperature sensitivities of leaf respiration during day (\f$d\f$) and night (\f$n\f$). \cite Pons2003-f26 and \cite Xu2003-d75 suggest lower temperature sensitivity for leaf respiration during the day compared to night, and therefore we use values of \f$Q_10d=1.3\f$ and \f$Q_10n=2.0\f$ for day and night, respectively.
+!!
+!!Maintenance respiration from the stem and root components is estimated based on PFT-specific base respiration rates (\f$\varsigma_\mathrm{S}\f$ and \f$\varsigma_\mathrm{R}\f$ specified at \f$15\,C\f$, \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also classic_params.f90) that are modified to account for temperature response following a \f$Q_{10}\f$ function. Maintenance respiration from stem and root components, \f$R_{m\{S,R\}}\f$, is calculated as
+!!\f[
+!!\label{r_msr} R_{\mathrm{m},i} = 2.64 \times 10^{-6}\varsigma_{i}l_{\mathrm{v}, i}C_{i}f_{15}(Q_{10}),\quad i = \mathrm{S}, \mathrm{R},
+!!\f]
+!!where \f$l_{v,i}\f$ is the live fraction of stem or root component, i.e. the sapwood, and \f$C_i\f$ is the stem or root carbon mass (\f$kg\,C\,m^{-2}\f$). The constant \f$2.64 \times 10^{-6}\f$ converts units from \f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$. The live sapwood fraction, \f$l_{\mathrm{v},i}\f$, for stem or root component is calculated following the CENTURY model \cite Parton1996-zv as
+!!\f[
+!!l_{\mathrm{v},i} = \max(0.05, \min[1.0, \exp^{-0.2835 C_i} ]),\quad i = \mathrm{S}, \mathrm{R}.
+!!\f]
+!!
+!!The \f$Q_{10}\f$ value used in Eq. (\ref{r_msr}) is not assumed to be constant but modelled as a function of temperature following \cite Tjoelker2001-uz as
+!!\f[
+!!Q_{10} = 3.22 - 0.046 \left(\frac{15.0 + T_{\{S,R\}}}{1.9}\right),
+!!\f]
+!!where \f$T_{\{S,R\}}\f$ is stem or root temperature (\f$C\f$). Stem temperature is assumed to be the same as air temperature while root temperature is based on the soil temperature weighted by the fraction of roots present in each soil layer \cite Arora2003838. The calculated \f$Q_{10}\f$ value is additionally constrained to be between 1.5 and 4.0.
+!!
+!!Growth respiration, \f$R_\mathrm{g}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is estimated as a fraction (\f$\epsilon_\mathrm{g}=0.15\f$) of the positive gross canopy photosynthetic rate after maintenance respiration has been accounted for
+!!\f[
+!!\label{growth_res} R_\mathrm{g}=\epsilon_\mathrm{g}\max[0,(G_{canopy} - R_\mathrm{m})].
+!!\f]
+!!Finally, net primary productivity (\f$NPP\f$) is calculated as
+!!\f[
+!!NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}.
+!!\f]
+!!
 !>\file
-
-      end
-
+end module

@@ -33,9 +33,9 @@ OBJ = fileIOModule.o classic_params.o ctem_statevars.o class_statevars.o peatlan
 	PHTSYN3.o CANVAP.o CLASSI.o CWCALC.o ICEBAL.o SUBCAN.o TSOLVE.o XIT.o CGROW.o CLASSS.o \
 	DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o \
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
-	TNPOST.o WEND.o balcar.o mainres.o allocate.o phenolgy.o turnover.o mortality.o \
+	TNPOST.o WEND.o balanceCarbon.o autotrophicRespiration.o allocate.o phenolgy.o turnover.o mortality.o \
 	disturb.o ctems2.o landuse_change_mod.o soil_ch4uptake.o \
-	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o prepareOutputs.o  \
+	competition_mod.o hetres_mod.o ctemUtilities.o ctemDriver.o outputManager.o prepareOutputs.o  \
 	model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o xmlManager.o CLASSIC.o
 
 # Object files (.o and .mod) are placed into directories named according to the mode. In the serial

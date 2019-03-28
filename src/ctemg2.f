@@ -1,6 +1,17 @@
 !>\file
 C! Performs subsequent 'gather' operation on CTEM variables for consistency
 !! with physics variables gather operations.
+!!
+!! ctemg2 takes variables in the 'row' format (nlat,nmos, ...)
+!! and converts them to the 'gat' format (ilg,...). At present 
+!! ctemg2 is bloated with many variables that do not require
+!! gathering. This subroutine should ideally be only used for
+!! state variables that are updated from external files as 
+!! the run progresses. Since the model calculations operate 
+!! on the 'gat' form, any other variables need not be gathered
+!! as they will already be in the correct format from the previous 
+!! model timestep.
+!!
 !!@author R. Li, Y. Wu, E. Chan, J. Melton  
 !!
       subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,
@@ -398,7 +409,7 @@ c
           mtermgat(k,l)    = mtermrow(ilmos(k),jlmos(k),l)
           smfuncveggat(k,l)= smfuncvegrow(ilmos(k),jlmos(k),l)
           fcancmxgat(k,l)  = fcancmxrow(ilmos(k),jlmos(k),l)
-          ailcggat(k,l)    = ailcgrow(ilmos(k),jlmos(k),l)
+!          ailcggat(k,l)    = ailcgrow(ilmos(k),jlmos(k),l)
           ailcgsgat(k,l)   = ailcgsrow(ilmos(k),jlmos(k),l)
           fcancsgat(k,l)   = fcancsrow(ilmos(k),jlmos(k),l)
           fcancgat(k,l)    = fcancrow(ilmos(k),jlmos(k),l)
@@ -421,7 +432,7 @@ c
           pgleafmassgat(k,l) = pgleafmassrow(ilmos(k),jlmos(k),l)
           gleafmasgat(k,l) = gleafmasrow(ilmos(k),jlmos(k),l)
           bleafmasgat(k,l) = bleafmasrow(ilmos(k),jlmos(k),l)
-          ailcbgat(k,l)    = ailcbrow(ilmos(k),jlmos(k),l)
+!          ailcbgat(k,l)    = ailcbrow(ilmos(k),jlmos(k),l)
           flhrlossgat(k,l) = flhrlossrow(ilmos(k),jlmos(k),l)
           pandaysgat(k,l)  = pandaysrow(ilmos(k),jlmos(k),l)
           lfstatusgat(k,l) = lfstatusrow(ilmos(k),jlmos(k),l)

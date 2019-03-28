@@ -551,7 +551,7 @@ real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of
 real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
 real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
-real, dimension(nilg,ican), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
+real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
 real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
 real, dimension(nilg),     intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
 real, dimension(nilg),     intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2

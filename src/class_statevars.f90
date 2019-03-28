@@ -244,8 +244,8 @@ type class_gather
     real, allocatable, dimension(:) :: EVAPCS  !<
     real, allocatable, dimension(:) :: EVPCSG  !<
     real, allocatable, dimension(:) :: EVAPGS  !<
-    real, allocatable, dimension(:) :: TCANO   !<
-    real, allocatable, dimension(:) :: TCANS   !<
+    real, allocatable, dimension(:) :: TCANO   !< Temperature of canopy over ground [K]
+    real, allocatable, dimension(:) :: TCANS   !< Temperature of canopy over snow [K]
     real, allocatable, dimension(:) :: RAICAN  !<
     real, allocatable, dimension(:) :: SNOCAN  !<
     real, allocatable, dimension(:) :: RAICNS  !<
