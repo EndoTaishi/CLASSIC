@@ -1284,39 +1284,9 @@ call       mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  &
 !>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
 !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
 !!
-!  call updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
-!                            stemmass, rootmass, litrmass, & !In/Out
-!                            glealtrm, gleafmas, bleafmas) !In/Out
-! to:
-      k1=0
-      do 830 j = 1, ican
-       if(j.eq.1) then
-         k1 = k1 + 1
-       else
-         k1 = k1 + nol2pfts(j-1)
-       endif
-       k2 = k1 + nol2pfts(j) - 1
-       do 835 m = k1, k2
-        do 840 i = il1, il2
-          stemmass(i,m)=stemmass(i,m)-stemltrm(i,m)
-          rootmass(i,m)=rootmass(i,m)-rootltrm(i,m)
-          litrmass(i,m)=litrmass(i,m)+stemltrm(i,m)+rootltrm(i,m)  
-          select case(classpfts(j))
-            case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')
-              gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
-            case('Grass')    ! grasses
-            gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
-            bleafmas(i,m)=bleafmas(i,m)+glealtrm(i,m)
-            glealtrm(i,m)=0.0
-            case default
-              print*,'Unknown CLASS PFT in ctem ',classpfts(j)
-              call XIT('ctem',-6)                                                                       
-          end select
-          litrmass(i,m)=litrmass(i,m)+glealtrm(i,m)
-840     continue
-835    continue
-830   continue
-! here
+  call updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
+                            stemmass, rootmass, litrmass, & !In/Out
+                            glealtrm, gleafmas, bleafmas) !In/Out
 
 !    ------------------------------------------------------------------
 !>
@@ -1329,31 +1299,23 @@ call       mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  &
 !!spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating
 !!any fire by specifying fire extingushing probability equal to 1.
 !!
-call disturb (stemmass, rootmass, gleafmas, bleafmas,&
-     &                      thliq,    THLW,      THFC,    uwind,&
-     &                       vwind,  lightng,  fcancmx, litrmass,&
-     &                    rmatctem,     ilg,           &
-     &                         il1,      il2,     sort, &
-     &                    grclarea,   thice,   popdin, lucemcom,&
-     &                      dofire,  currlat,     iday, fsnow,&
-     &                       isand,  &
-
-!    ------------------- inputs above this line ---------------------
-!    ------------ outputs below are the primary outputs -------------
-
-     &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
-     &                    glcaemls, rtcaemls, stcaemls,&
-     &                    blcaemls,   ltrcemls,   burnfrac,               &
-     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4,   &
-
-!    ------------ outputs below are the secondary outputs -------------
-!                         which may be omitted in AGCM
-
-     &                    emit_co,  emit_nmhc,                           &
-     &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
-     &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
-     &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
-     &                   smfunc_veg                                       & 
+call disturb (stemmass, rootmass, gleafmas, bleafmas,& !In
+     &                      thliq,    THLW,      THFC,    uwind,& !In
+     &                       vwind,  lightng,  fcancmx, litrmass,& !In
+     &                    rmatctem,     ilg,           & !In
+     &                         il1,      il2,     sort, & !In
+     &                    grclarea,   thice,   popdin, lucemcom,& !In
+     &                      dofire,  currlat,     iday, fsnow,& !In
+     &                       isand,  & !In
+     &                    stemltdt, rootltdt, glfltrdt, blfltrdt,& !Out (Primary)
+     &                    glcaemls, rtcaemls, stcaemls,& !Out (Primary)
+     &                    blcaemls,   ltrcemls,   burnfrac,               & !Out (Primary)
+     &                    pstemmass,  pgleafmass, emit_co2,    emit_ch4,   & !Out (Primary)
+     &                    emit_co,  emit_nmhc,                           & ! Out (Secondary)
+     &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
+     &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,& ! Out (Secondary)
+     &                    burnvegf, bterm_veg,mterm_veg,  lterm,& ! Out (Secondary)
+     &                   smfunc_veg    & ! Out (Secondary) 
      &                   )
 
 !    ------------------------------------------------------------------
@@ -1366,54 +1328,54 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !! we do not subtract LUC emissions from the PFT-level NBP but we do subtract 
 !! it from the per tile NBP. 
 !!
-!  call calcNBP(il1, il2, ilg,  deltat, nepveg, fcancmx, & !In
-!                    lucemcom, ltresveg, scresveg, nep, & !In
-!                    glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, & ! In/Out
-!                    nbpveg, dstcemls1, dstcemls3, nbp) ! Out 
-!to:
-      do 1000 i = il1, il2
-        do 1010 j = 1, icc
-          dscemlv1(i,j) = glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) + rtcaemls(i,j)
-          dscemlv2(i,j) = dscemlv1(i,j) + ltrcemls(i,j)
-
-!         convert \f$kg c/m^2\f$ emitted in one day into u mol co2/m2.sec before
-!         subtracting emission losses from nep.
-          nbpveg(i,j)  =nepveg(i,j) - dscemlv2(i,j)*(963.62/deltat)
-
-1010    continue
-
-!       For accounting purposes, we also need to account for the bare fraction
-!       NBP. Since there is no fire on the bare, we use 0.
-        nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0.
-
-1000  continue
-!>
-!! Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. 
-!! Convert all emission losses from \f$kg c/m^2\f$ emitted in 1 day to u-mol co2/m2.sec.
-!! Calculate grid averaged carbon emission losses from litter.
-!!
-      do 1030 j = 1,icc
-        do 1040 i = il1, il2
-          dstcemls1(i) = dstcemls1(i) + fcancmx(i,j) * dscemlv1(i,j) * (963.62 / deltat)
-          dstcemls2(i) = dstcemls2(i) + fcancmx(i,j) * dscemlv2(i,j) * (963.62 / deltat)
-          galtcels(i)  = galtcels(i) + fcancmx(i,j) * ltrcemls(i,j) * (963.62 / deltat)
-          glcaemls(i,j)= glcaemls(i,j)*(963.62/deltat)
-          blcaemls(i,j)=blcaemls(i,j)*(963.62/deltat)
-          stcaemls(i,j)=stcaemls(i,j)*(963.62/deltat)
-          rtcaemls(i,j)=rtcaemls(i,j)*(963.62/deltat)
-          ltrcemls(i,j)=ltrcemls(i,j)*(963.62/deltat)
-1040    continue
-1030  continue
-!
-!       For the tile-level NBP, we include the disturbance emissions as well as
-!       respiration from the paper (litter) and furniture (soil carbon) pools (LUC
-!       product pools). Also include here the instantaneous emissions due to LUC.
-      do 1041 i = il1, il2
-        nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2)) - lucemcom(i)
-        dstcemls3(i) = dstcemls2(i) - dstcemls1(i)  !litter is total - vegetation.
-1041  continue
-
-! here.
+ call calcNBP(il1, il2, ilg,  deltat, nepveg, fcancmx, & !In
+                   lucemcom, ltresveg, scresveg, nep, & !In
+                   glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, & ! In/Out
+                   nbpveg, dstcemls1, dstcemls3, nbp) ! Out 
+! !to:
+!       do 1000 i = il1, il2
+!         do 1010 j = 1, icc
+!           dscemlv1(i,j) = glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) + rtcaemls(i,j)
+!           dscemlv2(i,j) = dscemlv1(i,j) + ltrcemls(i,j)
+! 
+! !         convert \f$kg c/m^2\f$ emitted in one day into u mol co2/m2.sec before
+! !         subtracting emission losses from nep.
+!           nbpveg(i,j)  =nepveg(i,j) - dscemlv2(i,j)*(963.62/deltat)
+! 
+! 1010    continue
+! 
+! !       For accounting purposes, we also need to account for the bare fraction
+! !       NBP. Since there is no fire on the bare, we use 0.
+!         nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0.
+! 
+! 1000  continue
+! !>
+! !! Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. 
+! !! Convert all emission losses from \f$kg c/m^2\f$ emitted in 1 day to u-mol co2/m2.sec.
+! !! Calculate grid averaged carbon emission losses from litter.
+! !!
+!       do 1030 j = 1,icc
+!         do 1040 i = il1, il2
+!           dstcemls1(i) = dstcemls1(i) + fcancmx(i,j) * dscemlv1(i,j) * (963.62 / deltat)
+!           dstcemls2(i) = dstcemls2(i) + fcancmx(i,j) * dscemlv2(i,j) * (963.62 / deltat)
+!           galtcels(i)  = galtcels(i) + fcancmx(i,j) * ltrcemls(i,j) * (963.62 / deltat)
+!           glcaemls(i,j)= glcaemls(i,j)*(963.62/deltat)
+!           blcaemls(i,j)=blcaemls(i,j)*(963.62/deltat)
+!           stcaemls(i,j)=stcaemls(i,j)*(963.62/deltat)
+!           rtcaemls(i,j)=rtcaemls(i,j)*(963.62/deltat)
+!           ltrcemls(i,j)=ltrcemls(i,j)*(963.62/deltat)
+! 1040    continue
+! 1030  continue
+! !
+! !       For the tile-level NBP, we include the disturbance emissions as well as
+! !       respiration from the paper (litter) and furniture (soil carbon) pools (LUC
+! !       product pools). Also include here the instantaneous emissions due to LUC.
+!       do 1041 i = il1, il2
+!         nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2)) - lucemcom(i)
+!         dstcemls3(i) = dstcemls2(i) - dstcemls1(i)  !litter is total - vegetation.
+! 1041  continue
+! 
+! ! here.
 
 !> Prepare for the carbon balance check. Calculate total litter fall from each 
   !! component (leaves, stem, and root) from all causes (normal turnover, drought
