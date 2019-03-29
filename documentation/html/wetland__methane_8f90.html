@@ -92,15 +92,15 @@ $(document).ready(function(){initNavTree('wetland__methane_8f90.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a76a867c5b383b8c3b3dad7d8ad3ff64c"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wetland__methane_8f90.html#a76a867c5b383b8c3b3dad7d8ad3ff64c">wetland_methane</a> (hetrores, il1, il2, ta, wetfrac, thliqg, currlat, sand, slopefrac, ch4WetSpec, wetfdyn, ch4WetDyn)</td></tr>
-<tr class="separator:a76a867c5b383b8c3b3dad7d8ad3ff64c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99e8ba8ff38cf8c923e80ebe7436ed93"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wetland__methane_8f90.html#a99e8ba8ff38cf8c923e80ebe7436ed93">wetland_methane</a> (hetrores, il1, il2, ilg, wetfrac, thliqg, currlat, sand, slopefrac, ta, ch4WetSpec, wetfdyn, ch4WetDyn)</td></tr>
+<tr class="separator:a99e8ba8ff38cf8c923e80ebe7436ed93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine. </p>
 <dl class="section author"><dt>Author</dt><dd>B. Amiro, J. Melton, V. Arora </dd></dl>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="a76a867c5b383b8c3b3dad7d8ad3ff64c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76a867c5b383b8c3b3dad7d8ad3ff64c">&#9670;&nbsp;</a></span>wetland_methane()</h2>
+<a id="a99e8ba8ff38cf8c923e80ebe7436ed93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99e8ba8ff38cf8c923e80ebe7436ed93">&#9670;&nbsp;</a></span>wetland_methane()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -126,8 +126,8 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
-          <td class="paramname"><em>ta</em>, </td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -158,6 +158,12 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension(ilg,8), intent(in)&#160;</td>
           <td class="paramname"><em>slopefrac</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>ta</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -217,7 +223,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="wetland__methane_8f90.html">wetland_methane.f90</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:14 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

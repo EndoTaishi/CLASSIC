@@ -453,8 +453,7 @@ contains
 
   if (PFTCompetition) then
 
-  !>Calculate bioclimatic parameters for estimating pfts existence
-
+    !>Calculate bioclimatic parameters for estimating pfts existence
     call  bioclim (iday,       ta,    precip,  netrad,&
                          1,     il2,    ilg, leapnow, &
                       tcurm, srpcuryr,  dftcuryr,  inibioclim,&
@@ -465,23 +464,23 @@ contains
                       annpcp, dry_season_length )
 
     if (inibioclim) then
-    !>
-    !>If first day of year then based on updated bioclimatic parameters
-    !!find if pfts can exist or not.
-    !!If .not. inibioclim then it is the first year of a run that you do not have the
-    !!climatological means already in the CTM file. After one
-    !!year inibioclim is set to true and the climatological means
-    !!are used from the first year.
-    !!
+      !>
+      !>If first day of year then based on updated bioclimatic parameters
+      !!find if pfts can exist or not.
+      !!If .not. inibioclim then it is the first year of a run that you do not have the
+      !!climatological means already in the CTM file. After one
+      !!year inibioclim is set to true and the climatological means
+      !!are used from the first year.
+      !!
       call existence(iday,            1,         il2, ilg,&
                       sort,       twarmm,     tcoldm,  &    
                       gdd5,      aridity,  srplsmon,   defctmon,  &
                   anndefct,     annsrpls,    annpcp,   pftexist,  &
                   dry_season_length )
-    !>
-    !!Call competition subroutine which on the basis of previous day's
-    !!npp estimates changes in fractional coverage of pfts
-    !!
+      !>
+      !!Call competition subroutine which on the basis of previous day's
+      !!npp estimates changes in fractional coverage of pfts
+      !!
       call competition (iday,     1,        il2,      ilg,& !In
                           nppveg,   dofire, leapnow,& !In
                          pftexist, geremort, intrmort,& !In
@@ -492,7 +491,7 @@ contains
                          fcancmx,   fcanmx, vgbiomas, gavgltms,& !In/Out
                          gavgscms, bmasveg,  & !In/Out
                          add2allo,      cc,      mm) !Out 
-!
+
     end if ! inibioclim
   endif  ! if (PFTCompetition)
   !>
@@ -542,14 +541,9 @@ contains
 130   continue
 !
   do 145 i = il1, il2
-    pvgbioms(i)=vgbiomas(i)          !<vegetation biomass from last time step
-    vgbiomas(i)= 0.0
+    pvgbioms(i)=vgbiomas(i)          !<vegetation biomass from last time step    
     pgavltms(i)=gavgltms(i)          !<litter mass from last time step
-    gavgltms(i)=0.0
     pgavscms(i)=gavgscms(i)          !<soil c mass from last time step
-    gavgscms(i)=0.0
-    litrfall(i)=0.0                  !<combined total litter fall rate
-    gavglai (i)=0.0                  !<grid averaged green lai
     do j = iccp1, iccp2 ! do over the bare fraction and the LUC pool
       !do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
         plitmass(i,j)=plitmass(i,j) + litrmass(i,j)!,k)  !litter mass over bare fraction
@@ -597,7 +591,6 @@ contains
   ! the gpp will not be corrected properly. We store the original ancgveg for 
   ! phenology to test if the leaves should be coming out.
 
-
   pheanveg = 0. 
   rmlveg=0.
   anveg=0.
@@ -627,6 +620,7 @@ contains
 190     continue
 180   continue
 
+  !! Find total maintenance respiration values and net primary productivity.
   rml(:) = 0.
   rms(:) = 0.
   rmr(:) = 0.
@@ -634,8 +628,6 @@ contains
   rg(:) = 0.
   npp(:) = 0.
   gpp(:) = 0.
-  
-  !! Find total maintenance respiration values and net primary productivity.
   do 270 j = 1, icc
     do 280 i = il1, il2
       rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
@@ -703,31 +695,26 @@ contains
                     roottemp,    zbotw, sort,bi,  & ! In
                     isand, thice, ipeatland, & ! In
                     ltresveg, scresveg) ! Out
-  !>
-  !! Find heterotrophic respiration rates from bare ground subarea
 
+  !! Find heterotrophic respiration rates from bare ground subarea
   call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1), delzw,thpor,& ! In
                     il1,       il2,       ilg,   tbar,    & ! In
                  psisat,        bi,    thliq,   zbotw,    & ! In  
                  thice,        fg,     isand,    & ! In
                  ltresveg(:,iccp1),  scresveg(:,iccp1)) ! Out
 
-
   !>  Find heterotrophic respiration rates for the LUC litter and soilc pools
   !!  The LUC litter and soil C respiration rates are assumed to
   !!  be applied over the entire tile but kept in layer 1  
-
   call  hetresg  (litrmass(:,iccp2),soilcmas(:,iccp2), delzw,thpor,& ! In
                       il1,       il2,       ilg,   tbar,    & ! In
                    psisat,        bi,    thliq,   zbotw,    & ! In
                    thice,        fg,     isand,    & ! In
                    ltresveg(:,iccp2),  scresveg(:,iccp2)) ! Out
 
-  !>
   !! When peatlands are simulated find the peat heterotrophic respiration.
   !! This is called even when there are no peatlands as it just sets the outputs 
   !! to zero and exits.
-
   call hetres_peat       (    il1,          il2,          ilg,   ipeatland,   & ! In
                           isand,   litrmsmoss,      peatdep,      wtable,   & ! In
                            tbar,        thliq,        thice,       thpor,   & ! In
@@ -774,11 +761,11 @@ contains
 370     continue
 360   continue
   !>
-  !!    add moss and peat soil respiration to the grid
-  !!    In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
-  !!    bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
-  !!    the grid sum but no bareground values as we assume peatlands have no bareground.
-  !
+  !! Add moss and peat soil respiration to the grid
+  !! In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
+  !! bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
+  !! the grid sum but no bareground values as we assume peatlands have no bareground.
+
   nep(:) = 0.
   do 380 i = il1, il2
     if (ipeatland(i) == 0) then
@@ -801,18 +788,18 @@ contains
     nep(i)=npp(i)-hetrores(i)
 
 380   continue
-  !>
-  !!Update the litter and soil c pools based on litter and soil c respiration rates
-  !!found above. also transfer humidified litter to the soil c pool.
+  
+  !> Update the litter and soil c pools based on litter and soil c respiration rates
+  !! found above. also transfer humidified litter to the soil c pool.
   !!
   do 420 j = 1, iccp2
     do 430 i = il1, il2
 
-      !>Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
+      !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
       ltrestep(i,j)=ltresveg(i,j)*(1.0/963.62)*deltat
       screstep(i,j)=scresveg(i,j)*(1.0/963.62)*deltat
 
-      !>Update litter and soil c pools
+      !> Update litter and soil c pools
       if (j < iccp1) then
         litrmass(i,j) = litrmass(i,j) - ltrestep(i,j) * (1.0+humicfac(sort(j)))
         hutrstep(i,j) = humicfac(sort(j)) * ltrestep(i,j)
@@ -821,8 +808,8 @@ contains
         if (ipeatland(i) == 0) then
             litrmass(i,j) = litrmass(i,j) -  ltrestep(i,j)*(1.0+humicfac_bg)
             hutrstep(i,j) = humicfac_bg * ltrestep(i,j)
-        !else for peatlands:
-        ! In peatlands there is no bareground litter mass since it is the moss layer.
+        ! else for peatlands:
+          ! In peatlands there is no bareground litter mass since it is the moss layer.
         endif
       endif
 
@@ -849,7 +836,7 @@ contains
     soilrsvg(i,iccp2) = ltresveg(i,iccp2) + scresveg(i,iccp2)
   460   continue
 
-  !>Find grid averaged humification and soil respiration rates
+  !> Find grid averaged humification and soil respiration rates
   soilresp(:) = 0.0
   humiftrs(:) = 0.0
   hutrstep_g(:) = 0.0
@@ -876,6 +863,7 @@ contains
       nppmosstep(i)= 0.
       humstepmoss(i)= 0.
       socrestep(i) = 0. 
+      
     else !peatland
    
       ! CAUTION says Vivek
@@ -897,6 +885,7 @@ contains
       humstepmoss(i)= humicfacmoss * ltrestepmoss(i)        !kgC/m2/dt
       hutrstep_g(i)= hutrstep_g(i) + humstepmoss(i)     !kgC/m2/dt
       humiftrs(i)  = humiftrs(i)+humstepmoss(i)*(963.62/deltat)!umol/m2/s
+      
     endif          
 470   continue
   !     ------------------------------------------------------------------
@@ -905,7 +894,7 @@ contains
   !
   !     ------------------------------------------------------------------
 
-  !>Find CH4 wetland area (if not prescribed) and emissions:
+  !> Find CH4 wetland area (if not prescribed) and emissions:
   call  wetland_methane (hetrores,       il1,       il2,      ilg,  & !In
                            wetfrac,    thliq,   currlat,     sand,  &   !In
                          slopefrac,        ta,                       & !In
@@ -918,8 +907,7 @@ contains
                              isand,   ch4conc,  thpor,& !In
                          ch4soills) ! Out
 
-  !>Estimate allocation fractions for leaf, stem, and root components.
-
+  !> Estimate allocation fractions for leaf, stem, and root components.
   call allocate (lfstatus,   thliq,    ailcg,     ailcb,& !In
                           il1,        il2,       ilg,       sand,  & !In
                          clay,   rmatctem,  gleafmas,   stemmass,  & !In
@@ -929,27 +917,29 @@ contains
                          wtstatus, ltstatus) !Out
 
   !>
-  !!Estimate fraction of npp that is to be used for horizontal
-  !!expansion (lambda) during the next day (i.e. this will be determining
-  !!the colonization rate in competition).
+  !! Estimate fraction of npp that is to be used for horizontal
+  !! expansion (lambda) during the next day (i.e. this will be determining
+  !! the colonization rate in competition).
   !!
   if (PFTCompetition)  lambda = expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
 
-  !>Maintenance respiration also reduces leaf, stem, and root biomass.
-  !!when npp for a given pft is positive then this is taken care by
-  !!allocating +ve npp amongst the leaves, stem, and root component.
-  !!when npp for a given pft is negative then maintenance respiration
-  !!loss is explicitly deducted from each component.
+  !> Maintenance respiration also reduces leaf, stem, and root biomass.
+  !! when npp for a given pft is positive then this is taken care by
+  !! allocating +ve npp amongst the leaves, stem, and root component.
+  !! when npp for a given pft is negative then maintenance respiration
+  !! loss is explicitly deducted from each component.
 
   do 600 j = 1, icc
     do 610 i = il1, il2
 
-      !!Convert npp and maintenance respiration from different components
-      !!from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered or respired over the model time step (deltat)
+      !! Convert npp and maintenance respiration from different components
+      !! from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered 
+      !! or respired over the model time step (deltat)
 
       gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
 
-      !>Remove the cost of making reproductive tissues. This cost can only be removed when NPP is positive.
+      !> Remove the cost of making reproductive tissues. This cost can
+      !! only be removed when NPP is positive.
       reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
 
       ! Not in use. We now use a constant reproductive cost as the prior formulation
@@ -977,14 +967,17 @@ contains
           ntchrveg(i,j)=-rmrvgstp(i,j)+afrroot(i,j)*gppvgstp(i,j)
         endif
       else  !>i.e. if lfstatus.eq.4
-        !>and since we do not have any real leaves on then we do not take into account co2 uptake by imaginary leaves in carbon budget.
-        !!rmlvgstp(i,j) should be zero because we set maintenance respiration from storage/imaginary leaves equal to zero. in loop 180
+        
+        !> And since we do not have any real leaves on then we do not take into
+        !! account co2 uptake by imaginary leaves in carbon budget. rmlvgstp(i,j)
+        !! should be zero because we set maintenance respiration from storage/imaginary 
+        !! leaves equal to zero. in loop 180
         !!
         ntchlveg(i,j)=-rmlvgstp(i,j)
         ntchsveg(i,j)=-rmsvgstp(i,j)
         ntchrveg(i,j)=-rmrvgstp(i,j)
         
-        !>since no real leaves are on, make allocation fractions equal to zero.
+        !> Since no real leaves are on, make allocation fractions equal to zero.
         
         afrleaf(i,j)=0.0
         afrstem(i,j)=0.0
@@ -1026,15 +1019,15 @@ contains
         call xit ('ctem',-4)
       endif
 
-      !!Convert net change in leaf, stem, and root biomass into
-      !!u-mol co2/m2.sec for use in balcar subroutine
+      !! Convert net change in leaf, stem, and root biomass into
+      !! u-mol co2/m2.sec for use in balcar subroutine
       !!
       ntchlveg(i,j) = ntchlveg(i,j) * (963.62 / deltat)
       ntchsveg(i,j) = ntchsveg(i,j) * (963.62 / deltat)
       ntchrveg(i,j) = ntchrveg(i,j) * (963.62 / deltat)
 
       !! To avoid over/underflow problems set gleafmas, stemmass, and
-      !!rootmass to zero if they get too small
+      !! rootmass to zero if they get too small
       !!
       if(bleafmas(i,j) < zero) bleafmas(i,j) = 0.0
       if(gleafmas(i,j) < zero) gleafmas(i,j) = 0.0
@@ -1044,14 +1037,14 @@ contains
 610     continue
 600   continue
   !>
-  !>calculate grid averaged value of C related to spatial expansion
+  !> Calculate grid averaged value of C related to spatial expansion
   !>
-  repro_cost_g(:)=0.0    !<amount of C for production of reproductive tissues
+  repro_cost_g(:)=0.0    !< amount of C for production of reproductive tissues
   do 620 j = 1,icc
     do 621 i = il1, il2
      !if (PFTCompetition .or. lnduseon) then
-!           Not in use. We now use the constant reproductive cost below. JM Jun 2014
-!           expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
+       !     Not in use. We now use the constant reproductive cost below. JM Jun 2014
+       !     expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
       repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j)
      !endif
 621     continue
@@ -1065,7 +1058,6 @@ contains
   !! snow sub-areas for phenology purposes (for example, leaf onset is not assumed to occur
   !! at different times over these sub-areas) we use average soil and root temperature in 
   !! the phenology subroutine.
-  
   call phenolgy(gleafmas,   bleafmas,        il1,        il2,    &!In 
                   ilg,    leapnow,    tbar,     thice,    &!In 
                    thliq,     THLW,     THFC,       ta,&!In 
@@ -1077,7 +1069,6 @@ contains
                          
   !> While leaf litter is calculated in the phenology subroutine, stem
   !! and root turnover is calculated in the turnoverStemRoot subroutine.
-
   call turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !In 
                    il1,       il2,       ilg,  leapnow,  &!In
                               sort, fcancmx,&!In
@@ -1089,7 +1080,6 @@ contains
   !! litter calculated in the phenology subroutine and stem and root litter 
   !! calculated in the turnoverStemRoot subroutine. Also add the reproduction
   !!  carbon directly to the litter pool
-  !!
   call updatePoolsTurnover(il1, il2, reprocost, & !In
                           stemmass, rootmass, litrmass, rootlitr,& !In/Out
                          gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
@@ -1101,7 +1091,6 @@ contains
   !!
   !! Set maxage >0 in classic_params.f90 to switch on mortality due to age and
   !! reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.
-
   call mortalty (stemmass,   rootmass,    ailcg,   gleafmas,  & !In
                     bleafmas,        il1,      il2,        ilg,  & !In
                      leapnow,       iday,     sort,    fcancmx,  & !In
@@ -1109,9 +1098,8 @@ contains
                     stemltrm,   rootltrm, glealtrm,   geremort,  & !Out
                     intrmort) !Out
 
-  !>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
-  !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
-
+  !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
+  !! litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
   call updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
                             stemmass, rootmass, litrmass, & !In/Out
                             glealtrm, gleafmas, bleafmas) !In/Out
@@ -1126,7 +1114,6 @@ contains
   !! a given grid cell. however, when ctem is operated at a point scale then it is assumed that the
   !! spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating
   !! any fire by specifying fire extingushing probability equal to 1.
-  
   call disturb (stemmass, rootmass, gleafmas, bleafmas,& !In
                            thliq,    THLW,      THFC,    uwind,& !In
                             vwind,  lightng,  fcancmx, litrmass,& !In
@@ -1152,7 +1139,6 @@ contains
   !! tile as it is no longer associated with any one PFT. To calculate the NBP 
   !! we do not subtract LUC emissions from the PFT-level NBP but we do subtract 
   !! it from the per tile NBP. 
-  !!
   call calcNBP(il1, il2, ilg,  deltat, nepveg, fcancmx, & !In
                    lucemcom, ltresveg, scresveg, nep, & !In
                    glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, & ! In/Out
@@ -1165,7 +1151,6 @@ contains
   !! Also add the bare ground values to the grid-average. If a peatland, we assume no bareground and
   !! add the moss values instead. Note: peatland soil C is not aggregated from plants but updated
   !! by humification and respiration from the previous stored value
-  !!
   call prepBalanceC(il1, il2, ilg, fcancmx, glealtrm, glfltrdt, &  ! In 
                         blfltrdt, stemltrm, stemltdt, rootltrm, rootltdt, & ! In
                         ipeatland, nppmosstep, pgavscms, humstepmoss, & ! In
@@ -1180,7 +1165,6 @@ contains
   !>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145)
   !!and updated sizes of all pools (in \f$(kg C/m^2)\f$). Now we call the balcar subroutine and make sure
   !!that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
-  !!
   if(spinfast.eq.1)then
     call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
                     litrmass, soilcmas, ntchlveg,  ntchsveg,&
@@ -1201,7 +1185,8 @@ contains
   endif
 
   !>
-  !>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass.
+  !> Finally find vegetation structural attributes which can be passed 
+  !! to the land surface scheme using leaf, stem, and root biomass.
   !>
   call bio2str( gleafmas, bleafmas, stemmass, rootmass,& !In
                    il1,        il2,        ilg,      zbotw,  & !In
@@ -1213,11 +1198,12 @@ contains
                 alnirc,    paicgat,   slaicgat) !Out
 
   !>
-  !>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str
+  !> Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str
   !>
+  gavglai (:) = 0.0
   do j = 1, icc
     do i = il1, il2
-      gavglai (i)=gavglai (i)+fcancmx(i,j)*ailcg(i,j)
+      gavglai(i) = gavglai(i) + fcancmx(i,j) * ailcg(i,j)
     enddo
   enddo
   
@@ -1290,14 +1276,14 @@ subroutine calcNBP(il1, il2, ilg,  deltat, nepveg, fcancmx, & !In
       dscemlv1(i,j) = glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) + rtcaemls(i,j)
       dscemlv2(i,j) = dscemlv1(i,j) + ltrcemls(i,j)
 
-!     Convert \f$(kg C/m^2)\f$ emitted in one day into u mol co2/m2.sec before
-!     subtracting emission losses from nep.
+      ! Convert \f$(kg C/m^2)\f$ emitted in one day into u mol co2/m2.sec before
+      ! subtracting emission losses from nep.
       nbpveg(i,j) = nepveg(i,j) - dscemlv2(i,j)*(963.62/deltat)
 
 101    continue
 
-!   For accounting purposes, we also need to account for the bare fraction
-!   NBP. Since there is no fire on the bare, we use 0.
+    ! For accounting purposes, we also need to account for the bare fraction 
+    ! NBP. Since there is no fire on the bare, we use 0.
     nbpveg(i,iccp1) = nepveg(i,iccp1)   - 0.
 
 100 continue

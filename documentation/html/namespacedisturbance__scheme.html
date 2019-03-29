@@ -91,9 +91,9 @@ $(document).ready(function(){initNavTree('namespacedisturbance__scheme.html','')
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a4fbb45b47771e3842034ad39b92e565b"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#a4fbb45b47771e3842034ad39b92e565b">disturb</a> (stemmass, rootmass, gleafmas, bleafmas, thliq, THLW, THFC, uwind, vwind, lightng, fcancmx, litrmass, prbfrhuc, rmatctem, extnprob, il1, il2, sort, nol2pfts, grclarea, thice, popdin, lucemcom, dofire, currlat, iday, fsnow, isand, stemltdt, rootltdt, glfltrdt, blfltrdt, glcaemls, rtcaemls, stcaemls, blcaemls, ltrcemls, burnfrac, smfunc_veg, emit_co2, emit_co, emit_ch4, emit_nmhc, emit_h2, emit_nox, emit_n2o, emit_pm25, emit_tpm, emit_tc, emit_oc, emit_bc, burnvegf, bterm_veg, mterm_veg, lterm, pstemmass, pgleafmass)</td></tr>
-<tr class="memdesc:a4fbb45b47771e3842034ad39b92e565b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates whether fire occurs, burned area, amount of C emitted and litter generated.  <a href="#a4fbb45b47771e3842034ad39b92e565b">More...</a><br /></td></tr>
-<tr class="separator:a4fbb45b47771e3842034ad39b92e565b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a790568168f75647afbda949e92aaba28"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#a790568168f75647afbda949e92aaba28">disturb</a> (stemmass, rootmass, gleafmas, bleafmas, thliq, THLW, THFC, uwind, vwind, lightng, fcancmx, litrmass, rmatctem, ilg, il1, il2, sort, grclarea, thice, popdin, lucemcom, dofire, currlat, iday, fsnow, isand, stemltdt, rootltdt, glfltrdt, blfltrdt, glcaemls, rtcaemls, stcaemls, blcaemls, ltrcemls, burnfrac, pstemmass, pgleafmass, emit_co2, emit_ch4, emit_co, emit_nmhc, emit_h2, emit_nox, emit_n2o, emit_pm25, emit_tpm, emit_tc, emit_oc, emit_bc, burnvegf, bterm_veg, mterm_veg, lterm, smfunc_veg)</td></tr>
+<tr class="memdesc:a790568168f75647afbda949e92aaba28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates whether fire occurs, burned area, amount of C emitted and litter generated.  <a href="#a790568168f75647afbda949e92aaba28">More...</a><br /></td></tr>
+<tr class="separator:a790568168f75647afbda949e92aaba28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:ae72fa0c94541c3e88a45d71f2442be9c"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#ae72fa0c94541c3e88a45d71f2442be9c">burntobare</a> (il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, fcancmx, burnvegf, stemmass, rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, nppveg)</td></tr>
 <tr class="memdesc:ae72fa0c94541c3e88a45d71f2442be9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction. And while we are doing this also run a small check to make sure grid averaged quantities do not get messed up.  <a href="#ae72fa0c94541c3e88a45d71f2442be9c">More...</a><br /></td></tr>
@@ -101,22 +101,22 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Calculates disturbance as both natural and human-influenced fires. </p>
-<p>CTEM represents disturbance as both natural and human-influenced fires. The original fire parametrization corresponding to CTEM v. 1.0 is described in Arora and Boer (2005) <a class="el" href="citelist.html#CITEREF_Arora20052ac">[5]</a>. The parametrization has since been adapted and used in several other DGVMs (Kloster et al. 2010 <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[49]</a>, Kloster et al. 2012 <a class="el" href="citelist.html#CITEREF_Kloster2012-c79">[50]</a>, Migliavacca et al. 2013 <a class="el" href="citelist.html#CITEREF_Migliavacca2013-eh">[66]</a>, and Li et al. 2012 <a class="el" href="citelist.html#CITEREF_Li20121c2">[58]</a>). CTEM v. 2.0 incorporates changes suggested in these studies as well as several new improvements.</p>
+<p>CTEM represents disturbance as both natural and human-influenced fires. The original fire parametrization corresponding to CTEM v. 1.0 is described in Arora and Boer (2005) <a class="el" href="citelist.html#CITEREF_Arora20052ac">[5]</a>. The parametrization has since been adapted and used in several other DGVMs (Kloster et al. 2010 <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[45]</a>, Kloster et al. 2012 <a class="el" href="citelist.html#CITEREF_Kloster2012-c79">[46]</a>, Migliavacca et al. 2013 <a class="el" href="citelist.html#CITEREF_Migliavacca2013-eh">[62]</a>, and Li et al. 2012 <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>). CTEM v. 2.0 incorporates changes suggested in these studies as well as several new improvements.</p>
 <p>Fire in CTEM is simulated using a process-based scheme of intermediate complexity that accounts for all elements of the fire triangle: fuel load, combustibility of fuel, and an ignition source. CTEM represents the probability of a fire occurrence ( <img class="formulaInl" alt="$P_\mathrm{f}$" src="form_565.png"/>), for a representative area of <img class="formulaInl" alt="$500\,km^2$" src="form_566.png"/> ( <img class="formulaInl" alt="$a_{rep}$" src="form_567.png"/>), as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\qquad (Eqn 1)\]" src="form_1574.png"/>
 </p>
-<p>where the right hand side terms represent the fire probabilities that are conditioned on (i) the availability of biomass as a fuel source ( <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/>), (ii) the combustibility of the fuel based on its moisture content ( <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/>), and (iii) the presence of an ignition source ( <img class="formulaInl" alt="$P_\mathrm{i}$" src="form_571.png"/>). The probability of fire and the subsequent calculations are performed for each PFT present in a grid cell (but the PFT index <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is omitted for clarity in Eqn 1). Since the CTEM parametrization is based on one fire per day per representative area, the representative area has to be sufficiently small that the requirement of only one fire per day is reasonable, yet sufficiently large such that it is not possible to burn the entire representative area in 1 day. Based on MODIS observed fire counts in Fig. 1 of Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[58]</a>, <img class="formulaInl" alt="$500\,km^2$" src="form_566.png"/> is an appropriate size to not have more than one fire per day and still be a large enough area to be assumed representative of the grid cell as a whole.</p>
-<p>The <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> term depends on the aboveground biomass ( <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/>) available for sustaining a fire (which includes the green and brown leaf mass, stem mass and litter mass, <img class="formulaInl" alt="$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$" src="form_573.png"/>). Below a lower threshold of aboveground biomass ( <img class="formulaInl" alt="$B_{low}$" src="form_574.png"/>; <img class="formulaInl" alt="$0.2\, kg\,C\,m^{-2}$" src="form_575.png"/>; similar to Moorcroft et al. (2001) <a class="el" href="citelist.html#CITEREF_Moorcroft2001-co">[68]</a>, and Kucharik et al. (2000) <a class="el" href="citelist.html#CITEREF_Kucharik2000-xk">[51]</a>), fire is not sustained and thus has a probability of 0. Above a biomass of <img class="formulaInl" alt="$1.0\, kg\,C\,m^{-2}$" src="form_576.png"/> ( <img class="formulaInl" alt="$B_{high}$" src="form_577.png"/>), <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is set to 1 as the amount of fuel available is assumed sufficient for fire. <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is then calculated using the aboveground biomass, <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/> ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) with a linear variation between the upper and lower thresholds as</p>
+<p>where the right hand side terms represent the fire probabilities that are conditioned on (i) the availability of biomass as a fuel source ( <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/>), (ii) the combustibility of the fuel based on its moisture content ( <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/>), and (iii) the presence of an ignition source ( <img class="formulaInl" alt="$P_\mathrm{i}$" src="form_571.png"/>). The probability of fire and the subsequent calculations are performed for each PFT present in a grid cell (but the PFT index <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is omitted for clarity in Eqn 1). Since the CTEM parametrization is based on one fire per day per representative area, the representative area has to be sufficiently small that the requirement of only one fire per day is reasonable, yet sufficiently large such that it is not possible to burn the entire representative area in 1 day. Based on MODIS observed fire counts in Fig. 1 of Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>, <img class="formulaInl" alt="$500\,km^2$" src="form_566.png"/> is an appropriate size to not have more than one fire per day and still be a large enough area to be assumed representative of the grid cell as a whole.</p>
+<p>The <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> term depends on the aboveground biomass ( <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/>) available for sustaining a fire (which includes the green and brown leaf mass, stem mass and litter mass, <img class="formulaInl" alt="$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$" src="form_573.png"/>). Below a lower threshold of aboveground biomass ( <img class="formulaInl" alt="$B_{low}$" src="form_574.png"/>; <img class="formulaInl" alt="$0.2\, kg\,C\,m^{-2}$" src="form_575.png"/>; similar to Moorcroft et al. (2001) <a class="el" href="citelist.html#CITEREF_Moorcroft2001-co">[64]</a>, and Kucharik et al. (2000) <a class="el" href="citelist.html#CITEREF_Kucharik2000-xk">[47]</a>), fire is not sustained and thus has a probability of 0. Above a biomass of <img class="formulaInl" alt="$1.0\, kg\,C\,m^{-2}$" src="form_576.png"/> ( <img class="formulaInl" alt="$B_{high}$" src="form_577.png"/>), <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is set to 1 as the amount of fuel available is assumed sufficient for fire. <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is then calculated using the aboveground biomass, <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/> ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) with a linear variation between the upper and lower thresholds as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}} {B_{high} - B_{low}}\right)\right]. \qquad (Eqn 2)\]" src="form_1575.png"/>
 </p>
-<p>The linear decrease of <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> from <img class="formulaInl" alt="$B_{high}$" src="form_577.png"/> to <img class="formulaInl" alt="$B_{low}$" src="form_574.png"/> reflects the fragmentation of fuel that occurs as biomass decreases. Fuel fragmentation impacts upon area burned as it impedes the fire spread rate (Guyette et al. 2002) <a class="el" href="citelist.html#CITEREF_Guyette2002-rc">[42]</a>.</p>
+<p>The linear decrease of <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> from <img class="formulaInl" alt="$B_{high}$" src="form_577.png"/> to <img class="formulaInl" alt="$B_{low}$" src="form_574.png"/> reflects the fragmentation of fuel that occurs as biomass decreases. Fuel fragmentation impacts upon area burned as it impedes the fire spread rate (Guyette et al. 2002) <a class="el" href="citelist.html#CITEREF_Guyette2002-rc">[39]</a>.</p>
 <p>The probability of fire based on the presence of ignition sources ( <img class="formulaInl" alt="$P_\mathrm{i}$" src="form_571.png"/>) is influenced by both natural (lightning) and anthropogenic agents (either intentional or accidental). An initial lightning scalar, <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/>, that varies between 0 and 1 is found as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high} - F_{low}} \right)\right], \qquad (Eqn 3)\]" src="form_1576.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/> and <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/> represent lower and upper thresholds of cloud-to-ground lightning strikes ( <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, <img class="formulaInl" alt="$flashes\,km^{-2}\,month^{-1}$" src="form_584.png"/>) , respectively. Similar to Eqn 2, below the lower threshold ( <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/>; <img class="formulaInl" alt="$0.25\,flashes\,km^{-2}\,month^{-1}$" src="form_585.png"/>), <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 0 implying lightning strikes are not sufficient to cause fire ignition, above the upper threshold ( <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/>; <img class="formulaInl" alt="$10.0\,flashes\,km^{-2}\,month^{-1}$" src="form_586.png"/>) <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 1, as ignition sources now do not pose a constraint on fire. The amount of cloud-to-ground lightning, <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, is a fraction of the total lightning based on the relationship derived by Price and Rind (1993) <a class="el" href="citelist.html#CITEREF_Price1993-fm">[73]</a> (approximation of their Eqs. 1 and 2) as</p>
+<p>where <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/> and <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/> represent lower and upper thresholds of cloud-to-ground lightning strikes ( <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, <img class="formulaInl" alt="$flashes\,km^{-2}\,month^{-1}$" src="form_584.png"/>) , respectively. Similar to Eqn 2, below the lower threshold ( <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/>; <img class="formulaInl" alt="$0.25\,flashes\,km^{-2}\,month^{-1}$" src="form_585.png"/>), <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 0 implying lightning strikes are not sufficient to cause fire ignition, above the upper threshold ( <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/>; <img class="formulaInl" alt="$10.0\,flashes\,km^{-2}\,month^{-1}$" src="form_586.png"/>) <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 1, as ignition sources now do not pose a constraint on fire. The amount of cloud-to-ground lightning, <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, is a fraction of the total lightning based on the relationship derived by Price and Rind (1993) <a class="el" href="citelist.html#CITEREF_Price1993-fm">[69]</a> (approximation of their Eqs. 1 and 2) as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\qquad (Eqn 4)\]" src="form_1577.png"/>
 </p>
@@ -124,7 +124,7 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ P_i,n = y(\vartheta_F) - y(0)(1 - \vartheta_F) + \vartheta_F[1-y(1)] \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \qquad (Eqn 5)\]" src="form_1578.png"/>
 </p>
-<p>Fire probability due to ignition caused by humans, <img class="formulaInl" alt="$P_i,h$" src="form_592.png"/>, is parametrized following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[49]</a> with a dependence on population density, <img class="formulaInl" alt="$p_\mathrm{d}$" src="form_593.png"/> ( <img class="formulaInl" alt="$number of people\,km^{-2}$" src="form_594.png"/>)</p>
+<p>Fire probability due to ignition caused by humans, <img class="formulaInl" alt="$P_i,h$" src="form_592.png"/>, is parametrized following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[45]</a> with a dependence on population density, <img class="formulaInl" alt="$p_\mathrm{d}$" src="form_593.png"/> ( <img class="formulaInl" alt="$number of people\,km^{-2}$" src="form_594.png"/>)</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \qquad (Eqn 6)\]" src="form_1579.png"/>
 </p>
@@ -156,12 +156,12 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\qquad (Eqn 12)\]" src="form_1585.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$v_{d,max}$" src="form_623.png"/> ( <img class="formulaInl" alt="$km\,h^{-1}$" src="form_617.png"/>) is the PFT-specific maximum fire spread rate from Li et al. (2012)<a class="el" href="citelist.html#CITEREF_Li20121c2">[58]</a>, which is set to zero for crop PFTs (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>). The functions <img class="formulaInl" alt="$g(u)$" src="form_624.png"/> accounts for the effect of wind speed and <img class="formulaInl" alt="$ h(\phi_{r, d})$" src="form_625.png"/> accounts for the effect of rooting zone and duff soil wetness on the fire spread rate, as discussed below.</p>
+<p>where <img class="formulaInl" alt="$v_{d,max}$" src="form_623.png"/> ( <img class="formulaInl" alt="$km\,h^{-1}$" src="form_617.png"/>) is the PFT-specific maximum fire spread rate from Li et al. (2012)<a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>, which is set to zero for crop PFTs (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>). The functions <img class="formulaInl" alt="$g(u)$" src="form_624.png"/> accounts for the effect of wind speed and <img class="formulaInl" alt="$ h(\phi_{r, d})$" src="form_625.png"/> accounts for the effect of rooting zone and duff soil wetness on the fire spread rate, as discussed below.</p>
 <p>The wind speed ( <img class="formulaInl" alt="$u$" src="form_626.png"/>; <img class="formulaInl" alt="$km\,h^{-1}$" src="form_617.png"/>) is used to determine the length ( <img class="formulaInl" alt="$l$" src="form_614.png"/>) to breadth ( <img class="formulaInl" alt="$w$" src="form_615.png"/>) ratio, <img class="formulaInl" alt="$L_\mathrm{b}$" src="form_627.png"/>, of the elliptical area burned by fire</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{lb} L_\mathrm{b}= \frac{l}{w} = \frac{v_\mathrm{d} + v_\mathrm{u}}{2v_\mathrm{p}} = 1 + 10 [1 -\exp(-0.06 u)] \qquad (Eqn 13)\]" src="form_1586.png"/>
 </p>
-<p>and its head to back ratio, <img class="formulaInl" alt="$H_\mathrm{b}$" src="form_629.png"/>, following Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[58]</a>, as</p>
+<p>and its head to back ratio, <img class="formulaInl" alt="$H_\mathrm{b}$" src="form_629.png"/>, following Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>, as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{hb} H_\mathrm{b} = \frac{v_\mathrm{d}}{v_\mathrm{u}} = \frac{L_\mathrm{b} + (L_\mathrm{b}^2 - 1)^{0.5}}{L_\mathrm{b} - (L_\mathrm{b}^2 - 1)^{0.5}}, \qquad (Eqn 14)\]" src="form_1587.png"/>
 </p>
@@ -175,12 +175,12 @@ Functions/Subroutines</h2></td></tr>
 <img class="formulaDsp" alt="\[ h(\phi_{r, d})= h(\phi_{root})(1-f_{duff}) + h(\phi_{1})f_{duff}\nonumber \\ h(\phi_{root})= \left(1-min \left(1,\frac{\phi_{root}}{E_\mathrm{V}} \right) \right)^2\nonumber \\ h(\phi_{1})= \left(1-min \left(1,\frac{\phi_{1}}{E_\mathrm{D}} \right) \right)^2. \qquad (Eqn 16)\]" src="form_1589.png"/>
 </p>
 <p>Both <img class="formulaInl" alt="$h(\phi_{root})$" src="form_641.png"/> and <img class="formulaInl" alt="$h(\phi_{1})$" src="form_642.png"/> gradually decrease from 1 (when soil wetness is 0 and soil moisture does not constrain fire spread rate) to 0 when soil wetness exceeds the respective extinction wetness thresholds, <img class="formulaInl" alt="$E_\mathrm{V}$" src="form_602.png"/> and <img class="formulaInl" alt="$E_\mathrm{D}$" src="form_643.png"/>.</p>
-<p>With fire spread rate determined, and the geometry of the burned area defined, the area burned in 1 day, <img class="formulaInl" alt="$a_{1{\mathrm{d}}}$" src="form_644.png"/> ( <img class="formulaInl" alt="$km^2\,day^{-1}$" src="form_645.png"/>), following Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[58]</a>, is calculated as</p>
+<p>With fire spread rate determined, and the geometry of the burned area defined, the area burned in 1 day, <img class="formulaInl" alt="$a_{1{\mathrm{d}}}$" src="form_644.png"/> ( <img class="formulaInl" alt="$km^2\,day^{-1}$" src="form_645.png"/>), following Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>, is calculated as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)} {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \qquad (Eqn 17)\]" src="form_1590.png"/>
 </p>
 <p>by setting <img class="formulaInl" alt="$t$" src="form_620.png"/> equal to <img class="formulaInl" alt="$24\,h$" src="form_647.png"/>.</p>
-<p>The fire extinguishing probability, <img class="formulaInl" alt="$q$" src="form_648.png"/>, is used to calculate the duration ( <img class="formulaInl" alt="$\tau$" src="form_649.png"/>, <img class="formulaInl" alt="$days$" src="form_650.png"/>) of the fire, which in turn is used to calculated the area burned over the duration of the fire, <img class="formulaInl" alt="${a_{\tau d}}$" src="form_651.png"/>. <img class="formulaInl" alt="$q$" src="form_648.png"/> is represented following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[49]</a> as</p>
+<p>The fire extinguishing probability, <img class="formulaInl" alt="$q$" src="form_648.png"/>, is used to calculate the duration ( <img class="formulaInl" alt="$\tau$" src="form_649.png"/>, <img class="formulaInl" alt="$days$" src="form_650.png"/>) of the fire, which in turn is used to calculated the area burned over the duration of the fire, <img class="formulaInl" alt="${a_{\tau d}}$" src="form_651.png"/>. <img class="formulaInl" alt="$q$" src="form_648.png"/> is represented following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[45]</a> as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},\qquad (Eqn 18) \]" src="form_1591.png"/>
 </p>
@@ -205,7 +205,7 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha} )\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450},\qquad (Eqn 23) \]" src="form_1596.png"/>
 </p>
-<p>where the constant 1000 converts <img class="formulaInl" alt="$\vec{C}_\alpha$" src="form_677.png"/> from <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/> to <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_678.png"/> and the constant 450 ( <img class="formulaInl" alt="$g\,C\,(kg dry organic matter)^{-1} $" src="form_679.png"/>) converts biomass from carbon units to dry organic matter (Li et al. 2012)<a class="el" href="citelist.html#CITEREF_Li20121c2">[58]</a>. The corresponding loss of carbon ( <img class="formulaInl" alt="$kg\,C\,m^{-2}\,day^{-1}$" src="form_487.png"/>) from the three live vegetation components (L, S, R) and the litter pool (D) of PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is given by</p>
+<p>where the constant 1000 converts <img class="formulaInl" alt="$\vec{C}_\alpha$" src="form_677.png"/> from <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/> to <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_678.png"/> and the constant 450 ( <img class="formulaInl" alt="$g\,C\,(kg dry organic matter)^{-1} $" src="form_679.png"/>) converts biomass from carbon units to dry organic matter (Li et al. 2012)<a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>. The corresponding loss of carbon ( <img class="formulaInl" alt="$kg\,C\,m^{-2}\,day^{-1}$" src="form_487.png"/>) from the three live vegetation components (L, S, R) and the litter pool (D) of PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is given by</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{emiss_combust_loss} H_{\alpha, i}= C_{\alpha, i} mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}.\qquad (Eqn 24) \]" src="form_1597.png"/>
 </p>
@@ -219,7 +219,7 @@ Functions/Subroutines</h2></td></tr>
 <img class="formulaDsp" alt="\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}.\qquad (Eqn 26) \]" src="form_1599.png"/>
 </p>
 <p>The carbon loss terms associated with combustion of vegetation components and litter ( <img class="formulaInl" alt="$H_{\alpha, i}, i={L, S, R, D}$" src="form_694.png"/>) and mortality of vegetation components ( <img class="formulaInl" alt="$M_{\alpha, i}, i={L, S, R}$" src="form_695.png"/>) due to fire are used in <a class="el" href="overviewCTEM.html#CTEMRateChgEqns">Rate change equations for carbon pools</a> Eqns 1 and 3, which describe the rate of change of carbon in model's five pools (however, listed there without the PFT subscript <img class="formulaInl" alt="$\alpha$" src="form_429.png"/>). The PFT-specific mortality factors for leaf ( <img class="formulaInl" alt="$\Theta_\mathrm{L}$" src="form_696.png"/>), stem ( <img class="formulaInl" alt="$\Theta_{\mathrm{S}}$" src="form_697.png"/>) and root ( <img class="formulaInl" alt="$\Theta_\mathrm{R}$" src="form_698.png"/>) components are listed in <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>.</p>
-<p>When CTEM is run with prescribed PFT fractional cover, the area of PFTs does not change and the fire-related emissions of <img class="formulaInl" alt="$CO_2$" src="form_545.png"/>, other trace gases and aerosols , and generation of litter act to thin the remaining biomass. When competition between PFTs for space is allowed, fire both thins the remaining biomass and through plant mortality creates bare ground, which is subsequently available for colonization. The creation of bare ground depends on the susceptibility of each PFT to stand replacing fire ( <img class="formulaInl" alt="$\zeta_\mathrm{r}$" src="form_699.png"/>, fraction) (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>) and the PFT area burned. The fire-related mortality rate, <img class="formulaInl" alt="$m_{dist}$" src="form_700.png"/> ( <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>), used in <a class="el" href="mortality_8f.html" title="Calculates the litter generated from leaves, stem, and root components after vegetation dies due to r...">mortality.f</a> Eqn. 1, is then</p>
+<p>When CTEM is run with prescribed PFT fractional cover, the area of PFTs does not change and the fire-related emissions of <img class="formulaInl" alt="$CO_2$" src="form_545.png"/>, other trace gases and aerosols , and generation of litter act to thin the remaining biomass. When competition between PFTs for space is allowed, fire both thins the remaining biomass and through plant mortality creates bare ground, which is subsequently available for colonization. The creation of bare ground depends on the susceptibility of each PFT to stand replacing fire ( <img class="formulaInl" alt="$\zeta_\mathrm{r}$" src="form_699.png"/>, fraction) (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>) and the PFT area burned. The fire-related mortality rate, <img class="formulaInl" alt="$m_{dist}$" src="form_700.png"/> ( <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>), used in mortality.f Eqn. 1, is then</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha} \frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}.\qquad (Eqn 27) \]" src="form_1600.png"/>
 </p>
@@ -385,8 +385,8 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="a4fbb45b47771e3842034ad39b92e565b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4fbb45b47771e3842034ad39b92e565b">&#9670;&nbsp;</a></span>disturb()</h2>
+<a id="a790568168f75647afbda949e92aaba28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a790568168f75647afbda949e92aaba28">&#9670;&nbsp;</a></span>disturb()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -466,20 +466,14 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>prbfrhuc</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(ilg,icc,ignd)&#160;</td>
           <td class="paramname"><em>rmatctem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>extnprob</em>, </td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -498,12 +492,6 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">integer, dimension(icc)&#160;</td>
           <td class="paramname"><em>sort</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, dimension(ican)&#160;</td>
-          <td class="paramname"><em>nol2pfts</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -622,8 +610,14 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>smfunc_veg</em>, </td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>pstemmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>pgleafmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -635,13 +629,13 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>emit_co</em>, </td>
+          <td class="paramname"><em>emit_ch4</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>emit_ch4</em>, </td>
+          <td class="paramname"><em>emit_co</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -724,14 +718,8 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
-          <td class="paramname"><em>pstemmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
-          <td class="paramname"><em>pgleafmass</em>&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramname"><em>smfunc_veg</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -748,7 +736,6 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">il1</td><td>il1=1</td></tr>
     <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
     <tr><td class="paramname">sort</td><td>index for correspondence between 9 pfts and size 12 of parameters vectors</td></tr>
-    <tr><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts</td></tr>
     <tr><td class="paramname">dofire</td><td>boolean, if true allow fire, if false no fire.</td></tr>
     <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
     <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
@@ -762,8 +749,6 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">fcancmx</td><td>fractional coverages of ctem's 9 pfts</td></tr>
     <tr><td class="paramname">lightng</td><td>total <img class="formulaInl" alt="$lightning, flashes/(km^2 . year)$" src="form_554.png"/> it is assumed that cloud to ground lightning is some fixed fraction of total lightning.</td></tr>
     <tr><td class="paramname">litrmass</td><td>litter mass for each of the 9 pfts</td></tr>
-    <tr><td class="paramname">prbfrhuc</td><td>probability of fire due to human causes</td></tr>
-    <tr><td class="paramname">extnprob</td><td>fire extinguishing probability</td></tr>
     <tr><td class="paramname">rmatctem</td><td>fraction of roots in each soil layer for each pft</td></tr>
     <tr><td class="paramname">thice</td><td>frozen soil moisture content over canopy fraction</td></tr>
     <tr><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_534.png"/></td></tr>
@@ -867,7 +852,7 @@ Functions/Subroutines</h2></td></tr>
 <p>We also estimate <img class="formulaInl" alt="$CO_2$" src="form_545.png"/> emissions from each of these components. Note that the litter which is generated due to disturbance is uniformly distributed over the entire area of a given pft, and this essentially thins the vegetation biomass. If PFTCompetition is not on, this does not change the vegetation fractions, if competition is on a fraction will become bare. That is handled in burntobare subroutine called from competition subroutine.</p>
 <p>Calculate the emissions of trace gases and aerosols based upon how much plant matter was burnt</p>
 <p>Sum all pools that will be converted to emissions/aerosols <img class="formulaInl" alt="$(g c/m^2 /day)$" src="form_1663.png"/></p>
-<p>Add in the emissions due to luc fires (deforestation) the luc emissions are converted from <img class="formulaInl" alt="$umol co_2 m-2 s-1 to g c m-2$" src="form_561.png"/> (day-1) before adding to tot_emit</p>
+<p>Add in the emissions due to luc fires (deforestation) the luc emissions are converted from <img class="formulaInl" alt="$umol co_2 m-2 s-1 to g c m-2$" src="form_561.png"/> (day-1) before adding to tot_emit. NOTE: This tot_emit is not what is used to calculate NBP so the LUC emissions are accounted for in ctem.f90, not here. This here is for model outputting.</p>
 <p>Convert burnt plant matter from carbon to dry organic matter using a conversion factor, assume all parts of the plant has the same ratio of carbon to dry organic matter. units: <img class="formulaInl" alt="$kg dom / m^2 / day$" src="form_1664.png"/></p>
 <p>Convert the dom to emissions/aerosols using emissions factors units: <img class="formulaInl" alt="$g species / m^2 /d$" src="form_1665.png"/> Also convert units to <img class="formulaInl" alt="$kg species / m^2 / s^{-1}$" src="form_1666.png"/></p>
 <p>FLAG for the optimization of popd effect on fire I am taking the lterm out as the 'temp' var. So I have made tmp be dimension ilg and I overwrite the lterm (which is written to an output file) here in its place. </p>
@@ -880,7 +865,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedisturbance__scheme.html">disturbance_scheme</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:14 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

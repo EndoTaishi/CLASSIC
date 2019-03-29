@@ -92,8 +92,8 @@ $(document).ready(function(){initNavTree('bio2str_8f.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ab4f6ee7a29e16434fb631d685b38ee30"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bio2str_8f.html#ab4f6ee7a29e16434fb631d685b38ee30">bio2str</a> (gleafmas, bleafmas, stemmass, rootmass, il1, il2, fcancmx, zbotw, delzw, nol2pfts, soildpth, ailcg, ailcb, ailc, zolnc, rmatc, rmatctem, slai, bmasveg, cmasvegc, veghght, rootdpth, alvisc, alnirc, paic, slaic, ipeatland)</td></tr>
-<tr class="separator:ab4f6ee7a29e16434fb631d685b38ee30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a492907e0b20d91f6bd9e948ca6e5101b"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bio2str_8f.html#a492907e0b20d91f6bd9e948ca6e5101b">bio2str</a> (gleafmas, bleafmas, stemmass, rootmass, il1, il2, ilg, zbotw, delzw, soildpth, fcancmx, ipeatland, ailcg, ailcb, ailc, zolnc, rmatc, rmatctem, slai, bmasveg, cmasvegc, veghght, rootdpth, alvisc, alnirc, paic, slaic)</td></tr>
+<tr class="separator:a492907e0b20d91f6bd9e948ca6e5101b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Converts biomass to structural attributes. </p>
@@ -108,7 +108,7 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$ H = (C_S + C_L)^{0.385} $" src="form_103.png"/> for crops</p>
 <p><img class="formulaInl" alt="$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $" src="form_104.png"/> for grasses</p>
 <p>where <img class="formulaInl" alt="$C_{L,g}$" src="form_105.png"/> is the green leaf biomass and <img class="formulaInl" alt="$C_{L,b}$" src="form_106.png"/> is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly <img class="formulaInl" alt="$(\tau_{L,b} = 0.1\,\tau_L$" src="form_107.png"/>).</p>
-<p>In peatlands the vegetation height is calculated as (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a></p>
+<p>In peatlands the vegetation height is calculated as (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a></p>
 <p><img class="formulaInl" alt="$ H = \min(10.0,3.0C_S^{0.385}) $" src="form_108.png"/> for trees</p>
 <p><img class="formulaInl" alt="$ H = \min(1.0, 0.25(C_S^{0.2})) $" src="form_109.png"/> for shrubs</p>
 <p><img class="formulaInl" alt="$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $" src="form_110.png"/> for grasses and sedges</p>
@@ -121,11 +121,11 @@ Functions/Subroutines</h2></td></tr>
 <p>The parameter <img class="formulaInl" alt="$\iota$" src="form_117.png"/> that describes the exponential root distribution is calculated as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]" src="form_118.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> represents the PFT-specific mean root distribution profile parameter and <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/> the average root biomass derived from Jackson et al. (1996) <a class="el" href="citelist.html#CITEREF_Jackson1996-va">[45]</a> (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>). Equation for <img class="formulaInl" alt="$\iota$" src="form_117.png"/> above yields a lower (higher) value of <img class="formulaInl" alt="$\iota$" src="form_117.png"/> than <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> when root biomass <img class="formulaInl" alt="$C_R$" src="form_93.png"/> is higher (lower) than the PFT-specific mean root biomass <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/>, resulting in a deeper (shallower) root profile than the mean root profile.</p>
+<p>where <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> represents the PFT-specific mean root distribution profile parameter and <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/> the average root biomass derived from Jackson et al. (1996) <a class="el" href="citelist.html#CITEREF_Jackson1996-va">[41]</a> (see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>). Equation for <img class="formulaInl" alt="$\iota$" src="form_117.png"/> above yields a lower (higher) value of <img class="formulaInl" alt="$\iota$" src="form_117.png"/> than <img class="formulaInl" alt="$\overline{\iota}$" src="form_119.png"/> when root biomass <img class="formulaInl" alt="$C_R$" src="form_93.png"/> is higher (lower) than the PFT-specific mean root biomass <img class="formulaInl" alt="$\overline{C_R}$" src="form_120.png"/>, resulting in a deeper (shallower) root profile than the mean root profile.</p>
 <p>The rooting depth <img class="formulaInl" alt="$d_R$" src="form_113.png"/> is checked to ensure it does not exceed the soil depth. If so, <img class="formulaInl" alt="$d_R$" src="form_113.png"/> is set to the soil depth and <img class="formulaInl" alt="$\iota$" src="form_117.png"/> is recalculated as <img class="formulaInl" alt="$\iota = 4.605/d_R$" src="form_121.png"/> (see Eq. rootterm1} for derivation of 4.605 term). The new value of <img class="formulaInl" alt="$\iota$" src="form_117.png"/> is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="ab4f6ee7a29e16434fb631d685b38ee30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4f6ee7a29e16434fb631d685b38ee30">&#9670;&nbsp;</a></span>bio2str()</h2>
+<a id="a492907e0b20d91f6bd9e948ca6e5101b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a492907e0b20d91f6bd9e948ca6e5101b">&#9670;&nbsp;</a></span>bio2str()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -169,8 +169,8 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>fcancmx</em>, </td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -187,14 +187,20 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ican)&#160;</td>
-          <td class="paramname"><em>nol2pfts</em>, </td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>soildpth</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>soildpth</em>, </td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramname"><em>fcancmx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>ipeatland</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -284,13 +290,7 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ican)&#160;</td>
-          <td class="paramname"><em>slaic</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>ipeatland</em>&#160;</td>
+          <td class="paramname"><em>slaic</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -303,7 +303,6 @@ Functions/Subroutines</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">il1</td><td>input: il1=1</td></tr>
     <tr><td class="paramname">il2</td><td>input: il2=ilg</td></tr>
-    <tr><td class="paramname">nol2pfts</td><td>input: number of level 2 pfts</td></tr>
     <tr><td class="paramname">gleafmas</td><td>input: green or live leaf mass in kg c/m2, for the 9 pfts</td></tr>
     <tr><td class="paramname">bleafmas</td><td>input: brown or dead leaf mass in kg c/m2, for the 9 pfts</td></tr>
     <tr><td class="paramname">stemmass</td><td>input: stem biomass in kg c/m2, for the 9 pfts</td></tr>
@@ -376,7 +375,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="bio2str_8f.html">bio2str.f</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:13 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

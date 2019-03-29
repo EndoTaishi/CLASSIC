@@ -1323,7 +1323,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="separator:a00ecc97130988670c1826e54f5507309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70387b47d7f92d08b9eb331ab197cd5d"><td class="memItemLeft" align="right" valign="top"><a id="a70387b47d7f92d08b9eb331ab197cd5d"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a70387b47d7f92d08b9eb331ab197cd5d">classic_params::vmax</a></td></tr>
-<tr class="memdesc:a70387b47d7f92d08b9eb331ab197cd5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[47]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
+<tr class="memdesc:a70387b47d7f92d08b9eb331ab197cd5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[43]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
 <tr class="separator:a70387b47d7f92d08b9eb331ab197cd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad04a9dc1e9e328efa3b79d36b37ee2f0"><td class="memItemLeft" align="right" valign="top"><a id="ad04a9dc1e9e328efa3b79d36b37ee2f0"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ad04a9dc1e9e328efa3b79d36b37ee2f0">classic_params::reqiter</a></td></tr>
@@ -1417,7 +1417,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <p>The basic version of CLASSIC includes the following PFTs: </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline CLASS PFTs &amp; CTEM PFTs &amp; --- &amp; --- \\ \hline \hline needle leaf &amp; evg &amp; dcd &amp; --- \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry \\ \hline crops &amp; c3 &amp; c4 &amp; --- \\ \hline grasses &amp; c3 &amp; c4 &amp; --- \\ \hline \end{tabular} \]" src="form_1660.png"/>
 </p>
-<p>The peatland module expands upon these PFTs with the addition of two shrub PFTs (only biogeochemistry) and sedges (see Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a> Evergreen shrubs, for example the ericaceous shrubs, are the common dominant vascular plants in bogs and poor fens while deciduous shrubs, such as the betulaceous shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf trees in CLASS morphologically, but their phenological and physiological characteristics are more similar to those of needleleaf trees. The shrub tundra ecosystem is situated adjacent to needleleaf forest in the Northern Hemisphere (Kaplan et al., 2003) and they share similar responses to climate in ESMs (e.g. Bonan et al., 2002). (The photosynthesis and autotrophic respiration of vascular PFTs are modelled the same as in the original CTEM.)</p>
+<p>The peatland module expands upon these PFTs with the addition of two shrub PFTs (only biogeochemistry) and sedges (see Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a> Evergreen shrubs, for example the ericaceous shrubs, are the common dominant vascular plants in bogs and poor fens while deciduous shrubs, such as the betulaceous shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf trees in CLASS morphologically, but their phenological and physiological characteristics are more similar to those of needleleaf trees. The shrub tundra ecosystem is situated adjacent to needleleaf forest in the Northern Hemisphere (Kaplan et al., 2003) and they share similar responses to climate in ESMs (e.g. Bonan et al., 2002). (The photosynthesis and autotrophic respiration of vascular PFTs are modelled the same as in the original CTEM.)</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- &amp; --- &amp; --- \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry &amp; EVG-shrubs &amp; DCD-shrubs\\ \hline crops &amp; c3 &amp; c4 &amp; --- &amp; --- &amp; ---\\ \hline grasses &amp; c3 &amp; c4 &amp; sedges &amp; --- &amp; ---\\ \hline \end{tabular} \]" src="form_1661.png"/>
 </p>
@@ -1431,7 +1431,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="classic__params_8f90.html">classic_params.f90</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:13 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -460,66 +460,75 @@ contains
     !!  from all causes (normal turnover, drought and cold stress for leaves, mortality, 
     !! and disturbance) for use in balcar subroutine
     !!
-          do 1050 j = 1,icc
-            do 1060 i = il1, il2
-              
-            ! units here are \f$kg c/m^2 .day\f$
-             tltrleaf(i,j)=leaflitr(i,j)+glealtrm(i,j)+glfltrdt(i,j)+&
-         &                 blfltrdt(i,j)
-             tltrstem(i,j)=stemlitr(i,j)+stemltrm(i,j)+stemltdt(i,j)
-             tltrroot(i,j)=rootlitr(i,j)+rootltrm(i,j)+rootltdt(i,j)
-    !>
-    !>convert units to u-mol co2/m2.sec
-             leaflitr(i,j)=leaflitr(i,j)*(963.62/deltat)
-             tltrleaf(i,j)=tltrleaf(i,j)*(963.62/deltat)
-             tltrstem(i,j)=tltrstem(i,j)*(963.62/deltat)
-             tltrroot(i,j)=tltrroot(i,j)*(963.62/deltat)
+    do 1050 j = 1,icc
+      do 1060 i = il1, il2
+        
+      ! units here are \f$kg c/m^2 .day\f$
+      tltrleaf(i,j) = leaflitr(i,j) + glealtrm(i,j) + glfltrdt(i,j) &
+                      + blfltrdt(i,j)
+      tltrstem(i,j) = stemlitr(i,j) + stemltrm(i,j) + stemltdt(i,j)
+      tltrroot(i,j) = rootlitr(i,j) + rootltrm(i,j) + rootltdt(i,j)
+      !>
+      !>convert units to u-mol co2/m2.sec
+      leaflitr(i,j) = leaflitr(i,j) * (963.62 / deltat)
+      tltrleaf(i,j) = tltrleaf(i,j) * (963.62 / deltat)
+      tltrstem(i,j) = tltrstem(i,j) * (963.62 / deltat)
+      tltrroot(i,j) = tltrroot(i,j) * (963.62 / deltat)
     1060    continue
     1050  continue
     !>
     !>calculate grid-average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate
     !>
-          do 1100 j = 1, icc
-            do 1110 i = il1, il2
-              vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+&
-         &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-              litrfall(i)=litrfall(i)+fcancmx(i,j)*(tltrleaf(i,j)+&
-         &     tltrstem(i,j)+tltrroot(i,j))
-              ! store the per PFT litterfall for outputting.
-              litrfallveg(i,j)=(tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j))
-              gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
+    litrfall(:) = 0.0                
+    vgbiomas(:) = 0.0
+    gavgltms(:) = 0.0
+    gavgscms(:) = 0.0
+    do 1100 j = 1, icc
+      do 1110 i = il1, il2
+        
+        vgbiomas(i)=vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) &
+                   + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j))
+                   
+        litrfall(i) = litrfall(i) + fcancmx(i,j) * (tltrleaf(i,j) &
+                   + tltrstem(i,j) + tltrroot(i,j))
+        
+        ! Store the per PFT litterfall for outputting.
+        litrfallveg(i,j) = (tltrleaf(i,j) + tltrstem(i,j) + tltrroot(i,j))
+        
+        gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j)
 
-              if (ipeatland(i)==0) then ! Non-peatlands
-                   gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-              !else
-                 !Peatland soil C is calculated from peat depth (peatdep) in the peatland
-              endif
-              vgbiomas_veg(i,j)=gleafmas(i,j)+&
-         &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
+        if (ipeatland(i) == 0) then ! Non-peatlands
+             gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j)
+        !else
+           !Peatland soil C is calculated from peat depth (peatdep) in the peatland
+        endif
+        
+        vgbiomas_veg(i,j) = gleafmas(i,j) + bleafmas(i,j) + stemmass(i,j)&
+                            + rootmass(i,j)
     1110    continue
     1100  continue
     !
-    !>    Add the bare ground values to the grid-average. If a peatland, we assume no bareground and
-    !!    add the moss values instead.
-    !!    Note: peatland soil C is not aggregated from plants but updated
-    !!    by humification and respiration from the previous stored value
-    !
-          do 1020 i = il1, il2
-              if (ipeatland(i)==0) then
-              ! Add the bare fraction dead C
-                gavgltms(i) = gavgltms(i) + fg(i) * litrmass(i,iccp1)
-                gavgscms(i) = gavgscms(i) + fg(i) * soilcmas(i,iccp1)
-                 
-              else
-                 litrmsmoss(i)= litrmsmoss(i)+litrfallmoss(i)-&  !FLAG, I am thinking this needs to be reset to zero somewhere in ctemDriver, but I don't see it. JM.
-          &                     ltrestepmoss(i)-humstepmoss(i)     !kg/m2
-                 Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallmoss(i)
-                 vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
-                 litrfall(i) = litrfall(i) + litrfallmoss(i)*(963.62/deltat)!umolCO2/m2/s
-                 gavgltms(i) = gavgltms(i) + litrmsmoss(i)
-                 gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)
-              endif
-    1020  continue
+    !> Add the bare ground values to the grid-average. If a peatland, we assume no bareground and
+    !! add the moss values instead.
+    !! Note: peatland soil C is not aggregated from plants but updated
+    !! by humification and respiration from the previous stored value
+          
+    do 1020 i = il1, il2
+      if (ipeatland(i)==0) then
+        ! Add the bare fraction dead C
+        gavgltms(i) = gavgltms(i) + fg(i) * litrmass(i,iccp1)
+        gavgscms(i) = gavgscms(i) + fg(i) * soilcmas(i,iccp1)
+         
+      else
+        litrmsmoss(i) = litrmsmoss(i) + litrfallmoss(i) &  !FLAG, I am thinking this needs to be reset to zero somewhere in ctemDriver, but I don't see it. JM.
+                       - ltrestepmoss(i) - humstepmoss(i)     !kg/m2
+        Cmossmas(i) = Cmossmas(i) + nppmosstep(i) - litrfallmoss(i)
+        vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
+        litrfall(i) = litrfall(i) + litrfallmoss(i) * (963.62 / deltat)!umolCO2/m2/s
+        gavgltms(i) = gavgltms(i) + litrmsmoss(i)
+        gavgscms(i) = pgavscms(i) + hutrstep_g(i) - socrestep(i)
+      endif
+1020  continue
       
   end subroutine prepBalanceC
   !!@}

@@ -103,13 +103,17 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a8976936d6f76c8619f6602153b8355f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates bioclimatic parameters required to determine existance of PFTs.  <a href="namespacecompetition__scheme.html#a8976936d6f76c8619f6602153b8355f9">More...</a><br /></td></tr>
 <tr class="separator:a8976936d6f76c8619f6602153b8355f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a4345a1807f52b8da4f0cdd9f0f71f91f"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a4345a1807f52b8da4f0cdd9f0f71f91f">competition_scheme::existence</a> (iday, il1, il2, nilg, sort, nol2pfts, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, pftexist, dry_season_length)</td></tr>
-<tr class="memdesc:a4345a1807f52b8da4f0cdd9f0f71f91f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a PFT can exist in a grid cell based on climatic conditions.  <a href="namespacecompetition__scheme.html#a4345a1807f52b8da4f0cdd9f0f71f91f">More...</a><br /></td></tr>
-<tr class="separator:a4345a1807f52b8da4f0cdd9f0f71f91f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e601873347975c05eae5e06202729c"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a39e601873347975c05eae5e06202729c">competition_scheme::existence</a> (iday, il1, il2, nilg, sort, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, pftexist, dry_season_length)</td></tr>
+<tr class="memdesc:a39e601873347975c05eae5e06202729c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a PFT can exist in a grid cell based on climatic conditions.  <a href="namespacecompetition__scheme.html#a39e601873347975c05eae5e06202729c">More...</a><br /></td></tr>
+<tr class="separator:a39e601873347975c05eae5e06202729c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a008cbfcefd33aaccb8f2b81cf8326451"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a008cbfcefd33aaccb8f2b81cf8326451">competition_scheme::competition</a> (iday, il1, il2, nilg, nol2pfts, nppveg, dofire, leapnow, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
-<tr class="memdesc:a008cbfcefd33aaccb8f2b81cf8326451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified forms. either option may be used.  <a href="namespacecompetition__scheme.html#a008cbfcefd33aaccb8f2b81cf8326451">More...</a><br /></td></tr>
-<tr class="separator:a008cbfcefd33aaccb8f2b81cf8326451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af586f9e217dd8a4785c4553ddd10042e"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#af586f9e217dd8a4785c4553ddd10042e">competition_scheme::competition</a> (iday, il1, il2, nilg, nppveg, dofire, leapnow, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
+<tr class="memdesc:af586f9e217dd8a4785c4553ddd10042e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified forms. either option may be used.  <a href="namespacecompetition__scheme.html#af586f9e217dd8a4785c4553ddd10042e">More...</a><br /></td></tr>
+<tr class="separator:af586f9e217dd8a4785c4553ddd10042e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="memItemLeft" align="right" valign="top">real function, dimension(ilg, icc), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a5513e158bc2a8e9b7618fe7b9a83c2f9">competition_scheme::expansion</a> (il1, il2, ilg, sort, ailcg, lfstatus, nppveg, pftexist)</td></tr>
+<tr class="memdesc:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimate fraction of NPP that is to be used for horizontal expansion (lambda) during the next day (i.e. this will be determining the colonization rate in competition).  <a href="namespacecompetition__scheme.html#a5513e158bc2a8e9b7618fe7b9a83c2f9">More...</a><br /></td></tr>
+<tr class="separator:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Performs competition between PFTs for space. </p>
@@ -119,7 +123,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="competition__mod_8f90.html">competition_mod.f90</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:13 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

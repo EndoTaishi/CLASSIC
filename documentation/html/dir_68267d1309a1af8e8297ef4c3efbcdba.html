@@ -93,8 +93,11 @@ Files</h2></td></tr>
 <tr class="memitem:APREP_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="APREP_8f.html">APREP.f</a></td></tr>
 <tr class="memdesc:APREP_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates various land surface parameters. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:balcar_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balcar_8f.html">balcar.f</a></td></tr>
-<tr class="memdesc:balcar_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks carbon pools for conservation. <br /></td></tr>
+<tr class="memitem:autotrophicRespiration_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autotrophicRespiration_8f90.html">autotrophicRespiration.f90</a></td></tr>
+<tr class="memdesc:autotrophicRespiration_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Autotrophic respiration. Leaf respiration is calculated in phtsyn subroutine, while stem and root maintenance respiration are calculated here. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:balanceCarbon_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balanceCarbon_8f90.html">balanceCarbon.f90</a></td></tr>
+<tr class="memdesc:balanceCarbon_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks carbon pools for conservation. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:bio2str_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bio2str_8f.html">bio2str.f</a></td></tr>
 <tr class="memdesc:bio2str_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts biomass to structural attributes. <br /></td></tr>
@@ -150,11 +153,11 @@ Files</h2></td></tr>
 <tr class="memitem:competition__mod_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="competition__mod_8f90.html">competition_mod.f90</a></td></tr>
 <tr class="memdesc:competition__mod_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs competition between PFTs for space. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ctem_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html">ctem.f90</a></td></tr>
-<tr class="memdesc:ctem_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Principle driver for CTEM. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ctem__statevars_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem__statevars_8f90.html">ctem_statevars.f90</a></td></tr>
 <tr class="memdesc:ctem__statevars_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the biogeochemistry-related variable type structures. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ctemDriver_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemDriver_8f90.html">ctemDriver.f90</a></td></tr>
+<tr class="memdesc:ctemDriver_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Principle driver for CTEM. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ctemg1_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemg1_8f.html">ctemg1.f</a></td></tr>
 <tr class="memdesc:ctemg1_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs initial 'gather' operation on CTEM variables for consistency with physics variables gather operations. <br /></td></tr>
@@ -216,17 +219,14 @@ Files</h2></td></tr>
 <tr class="memitem:main_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8f90.html">main.f90</a></td></tr>
 <tr class="memdesc:main_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric forcing. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:mainres_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mainres_8f.html">mainres.f</a></td></tr>
-<tr class="memdesc:mainres_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates maintenance respiration, over a given sub-area, for stem and root components. leaf respiration is estimated within the phtsyn subroutine. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:metModule_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="metModule_8f90.html">metModule.f90</a></td></tr>
 <tr class="memdesc:metModule_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs disaggregation of input meteorological forcing arrays to the model physics timestep (commonly half-hour) <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:model__state__drivers_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="model__state__drivers_8f90.html">model_state_drivers.f90</a></td></tr>
 <tr class="memdesc:model__state__drivers_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central driver to read in, and write out all model state variables (replacing INI and CTM files) as well as the model inputs such as MET, population density, land use change, CO2 etc. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:mortality_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f.html">mortality.f</a></td></tr>
-<tr class="memdesc:mortality_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from leaves, stem, and root components after vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality) <br /></td></tr>
+<tr class="memitem:mortality_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f90.html">mortality.f90</a></td></tr>
+<tr class="memdesc:mortality_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from leaves, stem, and root components after vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality). Also updates the vegetation pools for changes due to the mortality calculations. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:mvidx_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mvidx_8f.html">mvidx.f</a></td></tr>
 <tr class="memdesc:mvidx_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility to determine location of closest value in an array. <br /></td></tr>
@@ -312,8 +312,8 @@ Files</h2></td></tr>
 <tr class="memitem:TSPREP_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TSPREP_8f.html">TSPREP.f</a></td></tr>
 <tr class="memdesc:TSPREP_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate coefficients for solution of snow pack heat conduction. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:turnover_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="turnover_8f.html">turnover.f</a></td></tr>
-<tr class="memdesc:turnover_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from stem and root turnover. <br /></td></tr>
+<tr class="memitem:turnover_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="turnover_8f90.html">turnover.f90</a></td></tr>
+<tr class="memdesc:turnover_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from stem and root turnover Also updates the vegetation pools for changes due to the turnover calculations. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:TWCALC_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TWCALC_8f.html">TWCALC.f</a></td></tr>
 <tr class="memdesc:TWCALC_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for freezing or thawing of liquid or frozen water in the soil layers, and adjust layer temperatures and water stores accordingly. <br /></td></tr>
@@ -349,7 +349,7 @@ Files</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:14 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

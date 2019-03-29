@@ -123,7 +123,10 @@ The XML Document Structure</h1>
 <p>The various process steps are seen on the top of the page as tabs. The user first loads the existing XML document as a template, then optionally add/removes variables, then edits the variants associated with the variables, and finally generates the output XML that included the new variables and variant changes. </p><h3>Load the Existing XML</h3>
 <p>Browse to an existing XML file to add/remove variables and variants. Once the file has been selected, press the "Load XML" button to load the data. An existing file is provided in the configurationFiles folder. Choose the one with the newest version number. </p><h3>Add/Remove Variable</h3>
 <p>Fill in the <b>Standard Name</b>, <b>Short Name</b>, <b>Long Name</b>, <b>Units</b> fields and select a <b>Group</b> to classify the new variable. Select the <b>Include bare ground</b> check-box, if the variable includes bare ground. One may also use <b>Add variable group</b> to add a group or <b>Remove variable</b> to delete an existing variable. </p><h3>Variants editor</h3>
-<p>In the variants editor, the user can find a list of all of the existing variables. Click on one to find a detailed description of the variable as well as a list of potential variants. Check the box for particular variant and enter the desired <b>name in code</b>. </p><h3>Output XML</h3>
+<p>In the variants editor, the user can find a list of all of the existing variables. Click on one to find a detailed description of the variable as well as a list of potential variants. Check the box for a particular variant you're interested in and enter the desired <b>name in code</b>.</p>
+<p><em><b>Warning</b>: Unchecking the box next to a variant and navigating to a different tab will remove any text entered in the <b>name in code</b> field</em></p>
+<p>You may also use the search bar at the top of the window to find a specific keyword in your list of variables, and/or use the <b>Make All Variables Dormant</b> button to make all currently-active variables inactive.</p>
+<h3>Output XML</h3>
 <p>Once all the variable and variant changes are complete, proceed to the <b>Output XML</b> tab, where one can preview the newly generated XML document. Also, the website will trigger a download command, so the generated XML document will be pushed to the user for download.</p>
 <h1>Validation / Schema</h1>
 <p>A relaxNG schema is provided for validation purposes. In order to validate the XML Document, navigate to the schema folder and use the following command:</p>
@@ -144,7 +147,7 @@ Editing the CLASSIC code to write the output variable</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:14 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

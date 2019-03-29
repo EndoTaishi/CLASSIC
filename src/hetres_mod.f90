@@ -64,14 +64,14 @@ implicit none
       integer i,j,k
       integer isand(ilg,ignd) !<
 
-      real litrmass(ilg,1)!<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
-      real soilcmas(ilg,1)!<soil carbon mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real litrmass(ilg,1)    !<litter mass for bare in \f$kg c/m^2\f$
+      real soilcmas(ilg,1)    !<soil carbon mass for bare in \f$kg c/m^2\f$
       real tbar(ilg,ignd)     !<soil temperature, k
-      real thliq(ilg,ignd)    !<liquid soil moisture content in 3 soil layers
+      real thliq(ilg,ignd)    !<liquid soil moisture content in soil layers
       real zbotw(ilg,ignd)    !<bottom of soil layers
       real litres(ilg)        !<litter respiration over the given unvegetated sub-area in umol co2/m2.s
       real socres(ilg)        !<soil c respiration over the given unvegetated sub-area in umol co2/m2.s
-      real frac(ilg)          !<fraction of ground (fg) or snow over ground (fgs)
+      real frac(ilg)          !<fraction of ground 
 
       real delzw(ilg,ignd)  !<
       real thice(ilg,ignd) !<
@@ -96,27 +96,17 @@ implicit none
       real psi(ilg,ignd)    !<
       real tempq10s(ilg)    !<
       real fcoeff           !<
-!     ------------------------------------------------------------------
-!     Constants and parameters are located in classic_params.f90
-!     ---------------------------------------------------------------
 
 !     initialize required arrays to zero
 
-      do 100 k = 1, ignd
-        do 100 i = il1, il2
-          fracarb(i,k)=0.0  ! fraction of carbon in each soil layer
-100   continue
-
-      do 110 i = il1, il2
-        litrtemp(i)=0.0     ! litter temperature
-        solctemp(i)=0.0     ! soil carbon pool temperature
-        socmoscl(i)=0.0     ! soil moisture scalar for soil carbon decomposition
-        ltrmoscl(i)=0.0     ! soil moisture scalar for litter decomposition
-        litres(i)=0.0       ! litter resp. rate
-        tempq10l(i)=0.0
-        socres(i)=0.0       ! soil c resp. rate
-        tempq10s(i)=0.0
-110   continue
+        fracarb(:,:)=0.0  ! fraction of carbon in each soil layer
+        solctemp(:)=0.0     ! soil carbon pool temperature
+        socmoscl(:)=0.0     ! soil moisture scalar for soil carbon decomposition
+        ltrmoscl(:)=0.0     ! soil moisture scalar for litter decomposition
+        litres(:)=0.0       ! litter resp. rate
+        tempq10l(:)=0.0
+        socres(:)=0.0       ! soil c resp. rate
+        tempq10s(:)=0.0
 
 !     initialization ends
 

@@ -33,7 +33,7 @@ var searchData=
   ['lonunique',['lonunique',['../structoutputmanager_1_1simulationdomain.html#a36d5c12ed95a00c813328f32697e0ce1',1,'outputmanager::simulationdomain']]],
   ['lterm',['lterm',['../structctem__statevars_1_1veg__rot.html#a5652727ff038bb13b5be2279b5418dfd',1,'ctem_statevars::veg_rot::lterm()'],['../structctem__statevars_1_1veg__gat.html#ad4222f05ad91a35cbf93949168c1147e',1,'ctem_statevars::veg_gat::lterm()']]],
   ['ltstatus',['ltstatus',['../structctem__statevars_1_1veg__rot.html#a5e10f20bfba8f3321ddebbe164d70376',1,'ctem_statevars::veg_rot::ltstatus()'],['../structctem__statevars_1_1veg__gat.html#a4042caf2c51ccb4baa1cccc129d30416',1,'ctem_statevars::veg_gat::ltstatus()']]],
-  ['luc',['luc',['../namespacelanduse__change.html#a242419d727f14ffc4a8681914054ad62',1,'landuse_change']]],
+  ['luc',['luc',['../namespacelanduse__change.html#a1265e66b0149913c626546a9a86a3892',1,'landuse_change']]],
   ['lucemcom',['lucemcom',['../structctem__statevars_1_1veg__rot.html#aaf7b4033868af21f1fe6f7ce16829798',1,'ctem_statevars::veg_rot::lucemcom()'],['../structctem__statevars_1_1veg__gat.html#a5e4ce2fef4b5c4653d0c8d12b77b6b00',1,'ctem_statevars::veg_gat::lucemcom()']]],
   ['lucfile',['lucfile',['../structctem__statevars_1_1ctem__switches.html#a310b5abc112c4100073091fb44b6ecbe',1,'ctem_statevars::ctem_switches']]],
   ['lucfromfile',['lucfromfile',['../namespacemodel__state__drivers.html#a14282bbeec10dfe02468d4c864084289',1,'model_state_drivers']]],

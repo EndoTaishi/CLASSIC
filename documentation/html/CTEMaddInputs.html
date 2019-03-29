@@ -208,7 +208,7 @@ Population density for fire ignition/suppresion</h1>
             time:_Endianness = "little" ;
 </pre><h1><a class="anchor" id="initClimComp"></a>
 Climatic variables for PFT competition simulations</h1>
-<p>The PFT competition scheme (<a class="el" href="namespacecompetition__scheme.html">competition_scheme</a>) uses bioclimatic variables to determine if a PFT can establish and attempt to colonize a grid cell (see <a class="el" href="namespacecompetition__scheme.html#a8976936d6f76c8619f6602153b8355f9">competition_scheme::bioclim</a> and <a class="el" href="namespacecompetition__scheme.html#a4345a1807f52b8da4f0cdd9f0f71f91f">competition_scheme::existence</a>). These climatic variables are written to the model restart file for use to initialize a future run. They are also either read in from the initialization file or are determined during a model run (model switch- inibioclim).</p>
+<p>The PFT competition scheme (<a class="el" href="namespacecompetition__scheme.html">competition_scheme</a>) uses bioclimatic variables to determine if a PFT can establish and attempt to colonize a grid cell (see <a class="el" href="namespacecompetition__scheme.html#a8976936d6f76c8619f6602153b8355f9">competition_scheme::bioclim</a> and <a class="el" href="namespacecompetition__scheme.html#a39e601873347975c05eae5e06202729c">competition_scheme::existence</a>). These climatic variables are written to the model restart file for use to initialize a future run. They are also either read in from the initialization file or are determined during a model run (model switch- inibioclim).</p>
 <ul>
 <li>anndefct Annual water deficit, i.e. daily values of potential evaporation that exceed precipitation accumulated over a year [mm]</li>
 <li>annsrpls Annual water deficit, i.e. daily values of precipitation that exceed potential evaporation accumulated over a year [mm]</li>
@@ -271,7 +271,7 @@ Prescribed wetland area</h1>
                       time:_ChunkSizes = 65700 ;
 </pre><h1><a class="anchor" id="initPeat"></a>
 Peatland variables</h1>
-<p>Peatlands are simulated following the parameterization of <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a>. The peatland areas are specified by a ipeatland flag in the initialization file: </p><pre class="fragment">    float ipeatland(tile, lat, lon) ;
+<p>Peatlands are simulated following the parameterization of <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a>. The peatland areas are specified by a ipeatland flag in the initialization file: </p><pre class="fragment">    float ipeatland(tile, lat, lon) ;
       ipeatland:_FillValue = -999.f ;
       ipeatland:units = "-" ;
       ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
@@ -339,7 +339,7 @@ Land use change (LUC)</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:14 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
