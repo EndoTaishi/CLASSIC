@@ -94,16 +94,15 @@
 !!
 !!
 !!
-subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, &
-             &            ilg,   leapnow,  tbar, thice, &
-             &          thliq,      THLW,  THFC,    ta,&
-             &           anveg,     iday,  radl,roottemp,&
-             &       rmatctem, stemmass, rootmass,  sort,&
-             &       fcancmx, isand,&
-!     ------------------ inputs above this line ----------------------
-             &       flhrloss,  leaflitr,  lfstatus,  pandays, &
-             &       colddays)
-!     --- variables which are updated and outputs above this line ----
+subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, & !In
+             &            ilg,   leapnow,  tbar, thice, & !In
+             &          thliq,      THLW,  THFC,    ta,& !In
+             &           anveg,     iday,  radl,roottemp,& !In
+             &       rmatctem, stemmass, rootmass,  sort,& !In
+             &       fcancmx, isand,& !In
+             &       lfstatus,  pandays,colddays, &  ! In/Out
+             &       flhrloss,  leaflitr ) ! Out
+             
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !               Phenology, Leaf Turnover & Mortality Subroutine

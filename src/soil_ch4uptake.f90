@@ -3,12 +3,11 @@
 !!@author J. Melton 
 !! Coded up based on \cite Curry2007-du.
 
-subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, &
-     &                     bi,    thlq,     thic,     psis, &
-     &                   fcan,  wetfdyn,  wetfrac, &
-     &                  isand,   atm_CH4, thp,     &
-! ----------------- inputs above this line, outputs below ----
-     &             CH4_soills)
+subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & !In
+     &                     bi,    thlq,     thic,     psis, & !In
+     &                   fcan,  wetfdyn,  wetfrac, & !In
+     &                  isand,   atm_CH4, thp,     & !In
+     &             CH4_soills) ! Out
 
 !History:
 
