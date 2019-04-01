@@ -223,7 +223,7 @@ use soilC_processes, only : turbation
   real, dimension(ilg), intent(in) :: wtable              !< water table (m)
   real, dimension(ilg,ignd), intent(in) :: THFC           !<
   real, dimension(ilg,ignd), intent(in) :: THLW           !<
-real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+  real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
 
   !
   !     updates
@@ -407,9 +407,6 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
   real ltrestep(ilg,iccp2,ignd) !<
   real screstep(ilg,iccp2,ignd) !<
   real hutrstep(ilg,iccp2,ignd) !<
-  real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
-  integer :: botlyr                       !< bottom layer of the unfrozen soil column
-  real :: frznrtlit                       !< fraction of root distribution in frozen layers
   real rootlitr(ilg,icc) !<
   real stemlitr(ilg,icc) !<
   real nppvgstp(ilg,icc) !<
@@ -539,10 +536,10 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
       pblfmass(i,j)=bleafmas(i,j)    !<brown leaf mass from last time step
       pstemass(i,j)=stemmass(i,j)    !<stem mass from last time step
       protmass(i,j)=rootmass(i,j)    !<root mass from last time step
-      !do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
-        plitmass(i,j)=plitmass(i,j) + litrmass(i,j)!,k)    !litter mass from last time step
-        psocmass(i,j)=psocmass(i,j) + soilcmas(i,j)!,k)    !soil c mass from last time step
-      !end do
+      do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
+        plitmass(i,j)=plitmass(i,j) + litrmass(i,j,k)    !litter mass from last time step
+        psocmass(i,j)=psocmass(i,j) + soilcmas(i,j,k)    !soil c mass from last time step
+      end do
 140     continue
 130   continue
 !
@@ -551,10 +548,10 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
     pgavltms(i)=gavgltms(i)          !<litter mass from last time step
     pgavscms(i)=gavgscms(i)          !<soil c mass from last time step
     do j = iccp1, iccp2 ! do over the bare fraction and the LUC pool
-      !do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
-        plitmass(i,j)=plitmass(i,j) + litrmass(i,j)!,k)  !litter mass over bare fraction
-        psocmass(i,j)=psocmass(i,j) + soilcmas(i,j)!,k)  !soil c mass over bare fraction
-      !end do
+      do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
+        plitmass(i,j)=plitmass(i,j) + litrmass(i,j,k)  !litter mass over bare fraction
+        psocmass(i,j)=psocmass(i,j) + soilcmas(i,j,k)  !soil c mass over bare fraction
+      end do
     end do
 
     pCmossmas(i)  = Cmossmas(i)
@@ -701,7 +698,7 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
                     sort,bi,  & ! In
                     isand, thice, ipeatland, & ! In
                     ltresveg, scresveg) ! Out
-
+  
   !! Find heterotrophic respiration rates from bare ground subarea
   call  hetresg  (litrmass(:,iccp1,:),soilcmas(:,iccp1,:), delzw,thpor,& ! In
                     il1,       il2,       ilg,   tbar,    & ! In
@@ -731,6 +728,7 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
   !!Find vegetation averaged litter and soil c respiration rates
   !!using values from canopy over ground and canopy over snow subareas
   !!
+  hetrsveg(:,:)= 0.0
   do 340 j = 1, icc
     do 350 i = il1, il2     
       if(fcancmx(i,j) > zero) then
@@ -738,8 +736,6 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
           ! hetrsveg is kept per PFT and tile (not per layer) at the moment.
           hetrsveg(i,j) =  hetrsveg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
         end do
-      else
-        hetrsveg(i,j)= 0.0
       endif
       nepveg(i,j)=nppveg(i,j)-hetrsveg(i,j)
 
@@ -752,13 +748,10 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
   do 355 i = il1, il2
     if(fg(i) > zero) then
       do k = 1,ignd
-	! hetrsveg is kept per PFT and tile (not per layer) at the moment.
-        hetrsveg(i,iccp1) = hetrsveg(i,iccp1) + ltresveg(i,iccp1,:) + scresveg(i,iccp1,:)
+	      ! hetrsveg is kept per PFT and tile (not per layer) at the moment.
+        hetrsveg(i,iccp1) = hetrsveg(i,iccp1) + ltresveg(i,iccp1,k) + scresveg(i,iccp1,k)
       end do
       nepveg(i,iccp1)=0.-hetrsveg(i,iccp1)
-    else
-      hetrsveg(i,iccp1)= 0.0
-      nepveg(i,iccp1)=0.-hetrsveg(i,iccp1) 
     endif
 355   continue
   !>
@@ -808,13 +801,14 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
   !> Update the litter and soil c pools based on litter and soil c respiration rates
   !! found above. also transfer humidified litter to the soil c pool.
   !!
+  humtrsvg(:,:) = 0.
   do 420 j = 1, iccp2
     do 430 i = il1, il2
       do 435 k = 1, ignd
 
       !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
-      ltrestep(i,j,k)=ltresveg(i,j,k)*(1.0/963.62)*deltat
-      screstep(i,j,k)=scresveg(i,j,k)*(1.0/963.62)*deltat
+      ltrestep(i,j,k) = ltresveg(i,j,k) * deltat / 963.62
+      screstep(i,j,k) = scresveg(i,j,k) * deltat / 963.62
 
       !> Update litter and soil c pools
       if (j < iccp1) then
@@ -829,7 +823,7 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
           ! In peatlands there is no bareground litter mass since it is the moss layer.
         endif
       endif
-!
+
     ! humtrsvg kept as per tile/per pft (not per layer)
     humtrsvg(i,j)=humtrsvg(i,j) + hutrstep(i,j,k)*(963.62/deltat) ! u-mol co2/m2.sec
 
@@ -842,14 +836,14 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
 420   continue
 
   !>Estimate soil respiration. this is sum of heterotrophic respiration and root maintenance respiration.
-
+  soilrsvg(:,:) = 0.
   do 440 j = 1, icc
   do 445 i = il1, il2
     do 450 k = 1, ignd
         ! soilrsvg kept as per pft/per tile for now (not per layer)
-        soilrsvg(i,j)=soilrsvg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
+        soilrsvg(i,j) = soilrsvg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
   450     continue
-       soilrsvg(i,j)=soilrsvg(i,j) + rmrveg(i,j)
+       soilrsvg(i,j) = soilrsvg(i,j) + rmrveg(i,j)
 445    continue
   440   continue
 
@@ -857,7 +851,7 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
 
   do 460 i = il1, il2
   do 465 k = 1, ignd
-    soilrsvg(i,iccp1)=soilrsvg(i,iccp1) + ltresveg(i,iccp1,k)+scresveg(i,iccp1,k)
+    soilrsvg(i,iccp1) = soilrsvg(i,iccp1) + ltresveg(i,iccp1,k)+scresveg(i,iccp1,k)
 465    continue
   460   continue
 
@@ -1106,8 +1100,10 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
   !! stem and root biomass for litter deductions, and update litter pool with leaf
   !! litter calculated in the phenology subroutine and stem and root litter 
   !! calculated in the turnoverStemRoot subroutine. Also add the reproduction
-  !!  carbon directly to the litter pool
-  call updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, & !In
+  !!  carbon directly to the litter pool. We only add to non-perennially frozen soil
+  !! layers so first check which layers are unfrozen and then do the allotment 
+  !! appropriately. For defining which layers are frozen, we use the active layer depth.
+  call updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmatctem, & !In
                           stemmass, rootmass, litrmass, rootlitr,& !In/Out
                          gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
 
@@ -1127,7 +1123,7 @@ real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth ma
 
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !! litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
-  call updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
+  call updatePoolsMortality(il1, il2, stemltrm, rootltrm, rmatctem, & !In
                             stemmass, rootmass, litrmass, & !In/Out
                             glealtrm, gleafmas, bleafmas) !In/Out
 
@@ -1275,8 +1271,8 @@ subroutine calcNBP(il1, il2, ilg,  deltat, nepveg, fcancmx, & !In
   real, intent(in) :: deltat             !< CTEM (biogeochemical) time step (days)
   real, intent(in) :: nepveg(:,:)        !< Net ecosystem productivity,  \f$\mu mol CO_2 m^{-2} s^{-1}\f$
   real, intent(in) :: lucemcom(:)        !< Land use change (LUC) related combustion emission losses,  \f$\mu mol CO_2 m^{-2} s^{-1}\f$
-  real, intent(in) :: ltresveg(:,:)      !< Litter respiration for each pft, bare fraction, and LUC product pool, \f$\mu mol CO_2 m^{-2} s^{-1}\f$
-  real, intent(in) :: scresveg(:,:)      !< Soil carbon respiration for each pft, bare fraction, and LUC product pool, \f$\mu mol CO_2 m^{-2} s^{-1}\f$
+  real, intent(in) :: ltresveg(:,:,:)    !< Litter respiration for each pft, bare fraction, and LUC product pool, \f$\mu mol CO_2 m^{-2} s^{-1}\f$
+  real, intent(in) :: scresveg(:,:,:)    !< Soil carbon respiration for each pft, bare fraction, and LUC product pool, \f$\mu mol CO_2 m^{-2} s^{-1}\f$
   real, intent(in) :: nep(:)             !< Net ecosystem productivity, tile average,  \f$\mu mol CO_2 m^{-2} s^{-1}\f$
 
   real, intent(inout) ::  glcaemls(:,:)  !< Green leaf carbon emission losses, \f$(kg C/m^2)\f$
@@ -1339,7 +1335,7 @@ subroutine calcNBP(il1, il2, ilg,  deltat, nepveg, fcancmx, & !In
   nbp(:) = 0.
   dstcemls3 = 0.0
   do 105 i = il1, il2
-    nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2) + scresveg(i,iccp2)) - lucemcom(i)
+    nbp(i) = nep(i) - dstcemls2(i) - (ltresveg(i,iccp2,1) + scresveg(i,iccp2,1)) - lucemcom(i)
     dstcemls3(i) = dstcemls2(i) - dstcemls1(i)  !litter is total - vegetation.
 105  continue
 

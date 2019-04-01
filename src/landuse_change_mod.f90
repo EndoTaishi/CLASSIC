@@ -813,7 +813,7 @@ else !> use provided values but still check they are not negative
 !>      Now add the C to the gridcell's LUC pools of litter and soil C.
 !!      The fast decaying dead LUC C (paper) and slow (furniture) are kept in
 !!      the first 'soil' layer and iccp2 position. The litter and soil C
-!!      contributions are added to the normal litter and soil C pools below.
+!!      contributions are added to the normal litter and soil C pools below.        
        litrmass(i,iccp2,1)=litrmass(i,iccp2,1)+grdenpap(i) 
        soilcmas(i,iccp2,1)=soilcmas(i,iccp2,1)+grdenfur(i) 
 

@@ -196,13 +196,16 @@ contains
 !! stem and root biomass for litter deductions, and update litter pool with leaf
 !! litter calculated in the phenology subroutine and stem and root litter 
 !! calculated in the turnover subroutine. Also add the reproduction
-!!  carbon directly to the litter pool
+!!  carbon directly to the litter pool.
+!! We only add to non-perennially frozen soil layers so first check which layers are
+!! unfrozen and then do the allotment appropriately. For defining which
+!! layers are frozen, we use the active layer depth.
 !> @author Vivek Arora and Joe Melton
-subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, & !In
+subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmatctem,& !In
                                 stemmass, rootmass, litrmass, rootlitr,& !In/Out
                                 gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
   
-  use classic_params, only : ican, nol2pfts,classpfts,deltat,icc 
+  use classic_params, only : ican, nol2pfts,classpfts,deltat,icc,ignd 
   
   implicit none 
 
@@ -214,13 +217,21 @@ subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, & !I
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: stemmass(:,:)   !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
-  real, intent(inout) :: litrmass(:,:)   !<litter mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+  real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: leaflitr(:,:)   !<leaf litter \f$(kg C/m^2)\f$
   real, intent(inout) :: rootlitr(:,:)   !<root litter \f$(kg C/m^2)\f$
   real, intent(inout) :: stemlitr(:,:)   !<stem litter \f$(kg C/m^2)\f$
+  real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
+  real, intent(in)    :: maxAnnualActLyr(:)!< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+  real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
+  
+  ! Local.
+  real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
+  integer :: botlyr                       !< bottom layer of the unfrozen soil column
+  real :: frznrtlit                       !< fraction of root distribution in frozen layers
   
   
-  integer :: k1,j,m,k2,i
+  integer :: k1,j,m,k2,i,k
   
   k1=0
   do 700 j = 1, ican
@@ -305,7 +316,7 @@ subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, & !I
               unfrzrt(k) = rmatctem(i,j,k) + rmatctem(i,j,k) / (1. - frznrtlit) * frznrtlit
           end do
         end if
-
+        
         do 810 k = 1, ignd
 
           if (k == 1) then
@@ -342,6 +353,9 @@ end subroutine updatePoolsTurnover
 !! (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classic_params.f90) as
 !!\f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad 
 !!i = S, R.\f]
+!! Litter contributions are either put in the first soil layer (leaf and stem litter) whereas
+!! root litter is added in proportion to the root distribution to non-perennially frozen soil layers.
+!! For defining which layers are frozen, we use the active layer depth. 
 !!
 !>\file
 end module turnover

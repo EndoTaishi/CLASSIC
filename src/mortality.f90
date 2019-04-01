@@ -190,27 +190,28 @@ contains
 !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
 !!litter into the litter pool. The mortality for green grasses doesn't generate litter, instead they turn brown.
 !> @author Vivek Arora and Joe Melton
-subroutine updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
+subroutine updatePoolsMortality(il1, il2, stemltrm, rootltrm, rmatctem, & !In
                                 stemmass, rootmass, litrmass, & !In/Out
                                 glealtrm, gleafmas, bleafmas) !In/Out
   
-  use classic_params, only : ican, nol2pfts,classpfts
+  use classic_params, only : ican, nol2pfts,classpfts,ignd
   
   implicit none 
 
   integer, intent(in) :: il1             !< il1=1
   integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
-  real, intent(in) :: stemltrm(:,:)      !<stem litter generated due to mortality \f$(kg C/m^2)\f$
-  real, intent(in) :: rootltrm(:,:)      !<root litter generated due to mortality \f$(kg C/m^2)\f$
+  real, intent(in)    :: stemltrm(:,:)   !<stem litter generated due to mortality \f$(kg C/m^2)\f$
+  real, intent(in)    :: rootltrm(:,:)   !<root litter generated due to mortality \f$(kg C/m^2)\f$
+  real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
 
   real, intent(inout) :: glealtrm(:,:)   !<green leaf litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(inout) :: stemmass(:,:)   !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
-  real, intent(inout) :: litrmass(:,:)   !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   
-  integer :: k1,j,m,k2,i
+  integer :: k1,j,m,k2,i,k
   
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
@@ -227,7 +228,6 @@ subroutine updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
         do 840 i = il1, il2
           stemmass(i,m)=stemmass(i,m)-stemltrm(i,m)
           rootmass(i,m)=rootmass(i,m)-rootltrm(i,m)
-          litrmass(i,m)=litrmass(i,m)+stemltrm(i,m)+rootltrm(i,m)  
           select case(classpfts(j))
             case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')
               gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
@@ -241,14 +241,14 @@ subroutine updatePoolsMortality(il1, il2, stemltrm, rootltrm, & !In
           end select
 
           do 845 k = 1, ignd
-
-          if (k == 1) then
-            ! The first layer gets the leaf and stem litter. The root litter is given in proportion
-            ! to the root distribution
-            litrmass(i,m,k)=litrmass(i,m,k)+stemltrm(i,m)+rootltrm(i,m)*rmatctem(i,m,k)+glealtrm(i,m)
-          else
-            litrmass(i,m,k)=litrmass(i,m,k)+rootltrm(i,m)*rmatctem(i,m,k)
-          end if
+            if (k == 1) then
+              ! The first layer gets the leaf and stem litter. The root litter is given in proportion
+              ! to the root distribution
+              litrmass(i,m,k)=litrmass(i,m,k)+stemltrm(i,m)+rootltrm(i,m)*rmatctem(i,m,k)+glealtrm(i,m)
+            else
+              litrmass(i,m,k)=litrmass(i,m,k)+rootltrm(i,m)*rmatctem(i,m,k)
+            end if
+845       continue
 840     continue
 835    continue
 830   continue
