@@ -1,5 +1,12 @@
 !>\file
 !! Performs subsequent scatter operation on biogeochemical variables
+!!
+!! ctems2 converts variables from the 'gat' format to the
+!! 'row' format, which is suitable for writing to output/restart 
+!! files. If a variable is not written to either of those files, 
+!! there is no need to scatter the variable as it will be in the 
+!! correct format for model calclations ('gat').
+!!
 !!@author R. Li, J. Melton, E. Chan 
       subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,
      1      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,

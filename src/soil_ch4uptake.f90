@@ -3,12 +3,11 @@
 !!@author J. Melton 
 !! Coded up based on \cite Curry2007-du.
 
-subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, &
-     &                     bi,    thlq,     thic,     psis, &
-     &                   fcan,  wetfdyn,  wetfrac, &
-     &                  isand,   atm_CH4, thp,     &
-! ----------------- inputs above this line, outputs below ----
-     &             CH4_soills)
+subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & !In
+     &                     bi,    thlq,     thic,     psis, & !In
+     &                   fcan,  wetfdyn,  wetfrac, & !In
+     &                  isand,   atm_CH4, thp,     & !In
+     &             CH4_soills) ! Out
 
 !History:
 
@@ -20,7 +19,7 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, &
 !  Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
 
 use classic_params,  only : ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o,&
-                            GRAV,RHOW,RHOICE
+                            GRAV,RHOW,RHOICE,icp1
 
 implicit none
 
@@ -31,22 +30,15 @@ real, dimension(ilg,ignd), intent(in) :: BI       !< Clapp and Hornberger b-term
 real, dimension(ilg,ignd), intent(in) :: THLQ     !< Fractional water content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: THIC     !< Fractional ice content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: PSIS     !< Soil moisture suction at saturation (m)
-real, dimension(ilg,ican), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
+real, dimension(ilg,icp1), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
 real, dimension(nlat), intent(in) :: wetfrac   !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
 real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
-!real, intent(in) :: GRAV                          !< Acceleration due to gravity \f$(m s^{-1})\f$
-!real, intent(in) :: RHOW                          !< Density of water \f$(kg m^{-3})\f$
-!real, intent(in) :: RHOICE                        !< Density of ice \f$(kg m^{-3})\f$
 integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
 integer, intent(in) :: il1
 integer, intent(in) :: il2
 integer, intent(in) :: ilg
 real, dimension(ilg), intent(out) :: CH4_soills   !< Methane uptake into the soil column \f$(\mu mol CH4 m^{-2} s^{-1})\f$
-
-! GRAV, RHOW, and RHOICE are the same as in the commonblocks:
-! CLASS2 : GRAV and CLASS4 : RHOW, RHOICE. I am passing as arguments
-! to avoid the common block format.
 
 ! Local variables:
 real :: Tsoil                           !< Temperature of soil layers \f$(\circ C)\f$
@@ -62,12 +54,6 @@ real :: psi                             !< Soil moisture suction / matric potent
 real :: r_C                             !< Factor to account for croplands
 real :: r_W                             !< Factor to account for wetlands
 real :: THP_tot                         !< temp variable for total porosity \f$(cm^3 cm^{-3})\f$
-
-! Local parameters:
-! real, parameter :: D_air = 0.196        !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
-! real, parameter :: g_0 = 586.7 / 86400. !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
-! real, parameter :: betaCH4 = 0.8        !< Constant derived in Curry (2007) from comparison against measurements (-)
-! real, parameter :: k_o = 5.03E-5        !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
 
 !>---------------------------------------------------------------------
 !> Begin

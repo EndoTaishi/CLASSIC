@@ -92,15 +92,15 @@ $(document).ready(function(){initNavTree('soil__ch4uptake_8f90.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:aebefbb01731046a17391218333b28448"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="soil__ch4uptake_8f90.html#aebefbb01731046a17391218333b28448">soil_ch4uptake</a> (IL1, IL2, tbar, THP, BI, THLQ, THIC, PSIS, GRAV, FCAN, wetfdyn, wetfracgrd, isand, RHOW, RHOICE, atm_CH4, CH4_soills)</td></tr>
-<tr class="separator:aebefbb01731046a17391218333b28448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09d9e63401bce84f39dbbafc212d6515"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="soil__ch4uptake_8f90.html#a09d9e63401bce84f39dbbafc212d6515">soil_ch4uptake</a> (il1, il2, ilg, tbar, bi, thlq, thic, psis, fcan, wetfdyn, wetfrac, isand, atm_CH4, thp, CH4_soills)</td></tr>
+<tr class="separator:a09d9e63401bce84f39dbbafc212d6515"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Oxidation of methane in upland soils. </p>
-<dl class="section author"><dt>Author</dt><dd>J. Melton Coded up based on <a class="el" href="citelist.html#CITEREF_Curry2007-du">[29]</a>. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>J. Melton Coded up based on <a class="el" href="citelist.html#CITEREF_Curry2007-du">[27]</a>. </dd></dl>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="aebefbb01731046a17391218333b28448"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebefbb01731046a17391218333b28448">&#9670;&nbsp;</a></span>soil_ch4uptake()</h2>
+<a id="a09d9e63401bce84f39dbbafc212d6515"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09d9e63401bce84f39dbbafc212d6515">&#9670;&nbsp;</a></span>soil_ch4uptake()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -109,13 +109,19 @@ Functions/Subroutines</h2></td></tr>
           <td class="memname">subroutine soil_ch4uptake </td>
           <td>(</td>
           <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>IL1</em>, </td>
+          <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>IL2</em>, </td>
+          <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -127,43 +133,31 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>THP</em>, </td>
+          <td class="paramname"><em>bi</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>BI</em>, </td>
+          <td class="paramname"><em>thlq</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>THLQ</em>, </td>
+          <td class="paramname"><em>thic</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>THIC</em>, </td>
+          <td class="paramname"><em>psis</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>PSIS</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>GRAV</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ican), intent(in)&#160;</td>
-          <td class="paramname"><em>FCAN</em>, </td>
+          <td class="paramtype">real, dimension(ilg,icp1), intent(in)&#160;</td>
+          <td class="paramname"><em>fcan</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -175,7 +169,7 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(nlat), intent(in)&#160;</td>
-          <td class="paramname"><em>wetfracgrd</em>, </td>
+          <td class="paramname"><em>wetfrac</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -186,20 +180,14 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>RHOW</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>RHOICE</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>atm_CH4</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>thp</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -223,12 +211,9 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thic</td><td>Fractional ice content (-) - daily average</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">psis</td><td>Soil moisture suction at saturation (m)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fcan</td><td>Fractional coverage of vegetation (-)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">wetfracgrd</td><td>Prescribed fraction of wetlands in a grid cell</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">wetfrac</td><td>Prescribed fraction of wetlands in a grid cell</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">wetfdyn</td><td>Dynamic gridcell wetland fraction determined using slope and soil moisture</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">atm_ch4</td><td>Atmospheric <img class="formulaInl" alt="$CH_4$" src="form_533.png"/> concentration at the soil surface (ppmv)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">grav</td><td>Acceleration due to gravity <img class="formulaInl" alt="$(m s^{-1})$" src="form_1158.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rhow</td><td>Density of water <img class="formulaInl" alt="$(kg m^{-3})$" src="form_1159.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rhoice</td><td>Density of ice <img class="formulaInl" alt="$(kg m^{-3})$" src="form_1159.png"/></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">isand</td><td>flag for soil/bedrock/ice/glacier</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ch4_soills</td><td>Methane uptake into the soil column <img class="formulaInl" alt="$(\mu mol CH4 m^{-2} s^{-1})$" src="form_1667.png"/> </td></tr>
   </table>
@@ -270,7 +255,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="soil__ch4uptake_8f90.html">soil_ch4uptake.f90</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:14 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

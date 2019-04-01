@@ -13,5 +13,6 @@ tools/initFileConverter/*.o
 tools/initFileConverter/*.mod
 bin/CLASSIC
 oldcode
+*.nc
 outputFiles/*
 inputFiles/*

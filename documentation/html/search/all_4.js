@@ -40,7 +40,8 @@ var searchData=
   ['evapacc_5fmo',['evapacc_mo',['../structclass__statevars_1_1class__moyr__output.html#af95c1b508dd813c597989a4e465ea7aa',1,'class_statevars::class_moyr_output']]],
   ['evapacc_5fyr',['evapacc_yr',['../structclass__statevars_1_1class__moyr__output.html#a6b3d80055d278a4489c9138073d4ecc5',1,'class_statevars::class_moyr_output']]],
   ['evc',['evc',['../namespaceclassic__params.html#a9ae4fdd40f2b7502194d550a226d3e34',1,'classic_params']]],
-  ['existence',['existence',['../namespacecompetition__scheme.html#a4345a1807f52b8da4f0cdd9f0f71f91f',1,'competition_scheme']]],
+  ['existence',['existence',['../namespacecompetition__scheme.html#a39e601873347975c05eae5e06202729c',1,'competition_scheme']]],
+  ['expansion',['expansion',['../namespacecompetition__scheme.html#a5513e158bc2a8e9b7618fe7b9a83c2f9',1,'competition_scheme']]],
   ['extnmois_5fduff',['extnmois_duff',['../namespaceclassic__params.html#a1c7fb461e7edb0602e6c28e592b05308',1,'classic_params']]],
   ['extnmois_5fveg',['extnmois_veg',['../namespaceclassic__params.html#aa0a3ecd0fadb7cc467592854176e9b89',1,'classic_params']]],
   ['extnprob',['extnprob',['../structctem__statevars_1_1veg__rot.html#ac3bc64976cb4deecb67382e92beb9e9b',1,'ctem_statevars::veg_rot::extnprob()'],['../structctem__statevars_1_1veg__gat.html#ad8dd263bec147a6546cd2d25a4e264b9',1,'ctem_statevars::veg_gat::extnprob()']]]

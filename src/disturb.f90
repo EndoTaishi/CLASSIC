@@ -20,7 +20,7 @@ subroutine disturb (     stemmass, rootmass, gleafmas, bleafmas,      &
                             thliq,   THLW,       THFC,    uwind,      &
                             vwind,  lightng,  fcancmx, litrmass,      &
                          rmatctem,      ilg,                          &
-                              il1,      il2,     sort, nol2pfts,      &
+                              il1,      il2,     sort,                &
                          grclarea,    thice,   popdin, lucemcom,      &
                            dofire,  currlat,     iday,  fsnow,        &
                             isand,                                    &
@@ -89,7 +89,7 @@ use classic_params, only : ignd, icc, ican, zero,kk, pi, c2dom, crop, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
                         frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                         emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
-                        grass, extnmois_veg, extnmois_duff, iccp1
+                        grass, extnmois_veg, extnmois_duff, iccp1, nol2pfts
 
 implicit none
 
@@ -103,7 +103,6 @@ integer :: i,j,k,m,k1,k2,n
 
 integer isand(ilg,ignd) !<
 integer :: sort(icc) !<index for correspondence between 9 pfts and size 12 of parameters vectors
-integer :: nol2pfts(ican) !<number of level 2 ctem pfts
 integer :: iday
 
 logical :: dofire !<boolean, if true allow fire, if false no fire.

@@ -10,6 +10,7 @@ implicit none
 public  :: mosspht
 public  :: hetres_peat
 public  :: peatDayEnd
+public  :: peatDepth
 
 contains
 
@@ -539,8 +540,10 @@ do i= il1, il2
 !!    conversion of peat into carbon with 48.7% (Mer Bleue unpublished data,
 !!    Moore)
 
-    Cso(i) = (4056.6*ewtable(i)**2+72067.0*ewtable(i))*0.487/1000.0
-    Csa(i) = ((4056.6*peatdep(i)**2+72067.0*peatdep(i))*0.487/1000.0)-Cso(i)
+    Cso(i) = peatStorage(ewtable(i))
+    !Cso(i) = (4056.6*ewtable(i)**2+72067.0*ewtable(i))*0.487/1000.0
+    Csa(i) = peatStorage(peatdep(i)) - Cso(i)
+    !Csa(i) = ((4056.6*peatdep(i)**2+72067.0*peatdep(i))*0.487/1000.0)-Cso(i)
 
 !>    Find the soil respiration rate in Cso and Csa umol/m2/s.
 !!    Moisture multiplier (0.025) indicates rate reduction in decomposition due
@@ -653,8 +656,47 @@ subroutine peatDayEnd(nml)
 end subroutine peatDayEnd
 
 ! ---------------------------------------------------------------------------------------------------
+!>\ingroup peatlands_mod_peatDepth
+!!@{ 
+!> Calculate the peat depth based on equation 18 in Wu, Verseghy, Melton 2016 GMD.
+!!@author Y. Wu, J. Melton
+!!
+real function peatDepth(gavgscms)
 
+  implicit none
+  
+  real, intent(in) :: gavgscms  !< Grid averaged soil c mass, \f$kg c/m^2\f$
+  
+  ! Calculate the peat depth based on equation 18 in Wu, Verseghy, Melton 2016 GMD.
+  peatDepth = (-72067.0 + sqrt((72067.0**2.0) - (4.0 * 4056.6 &
+           * (-gavgscms * 1000 / 0.487)))) / (2 * 4056.6)
+end function peatDepth
 !!@}
+
+! ---------------------------------------------------------------------------------------------------
+!>\ingroup peatlands_mod_peatStorage
+!!@{ Finds the carbon storage in the peat based on depth (or oxic and anoxic compartments)
+!! The water table depth delineates the oxic and anoxic compartments.
+!! functions (R**2 = 0.9999) determines the carbon content of each
+!! compartment from a peat bulk density profile based on unpulished
+!! data from P.J.H. Richard (described in fig. 1, Frokling et al.(2001)
+!! conversion of peat into carbon with 48.7% (Mer Bleue unpublished data,
+!! Moore)
+!> 
+!!@author Y. Wu, J. Melton
+!!
+real function peatStorage(depth)
+  
+  implicit none
+  
+  real, intent(in) :: depth  !< Peat compartment depth (m). Either total column or oxic/anoxic.
+  
+  peatStorage = (4056.6 * depth**2 + 72067.0 * depth) * 0.487 / 1000.0
+  
+end function peatStorage
+!!@}
+! ---------------------------------------------------------------------------------------------------
+
 !> \namespace peatlands_mod
 !!
 !! The peatland module is published in Geoscientific Model Development (Wu et al. 2016) \cite Wu2016-zt.

@@ -21,7 +21,7 @@ contains
 subroutine hetresg (litrmass,  soilcmas,   delzw,    thpor,    &
                          il1,       il2,     ilg,     tbar,    &
                        psisat,        b,   thliq,   &
-                       thiceg,     frac,   isnow,    isand,    &
+                       thiceg,     frac,   isand,    &
 !    -------------- inputs above this line, outputs below -------------
                        litres,   socres)
 
@@ -71,54 +71,47 @@ use classic_params,        only : icc, ignd, zero, tanhq10, a_hetr, &
 
 implicit none
 
-! Arguments:
+==== BASE ====
+      integer ilg   !<
+      integer il1   !<il1=1
+      integer il2   !<il2=ilg
+      integer i,j,k
+      integer isnow !<integer telling if bare fraction is fg (0) or fgs (1), isnow
+                    !<is changed to isnow(ilg) in classt of class version higher than 3.4 for coupling with ctem
+      integer isand(ilg,ignd) !<
 
-integer, intent(in) :: ilg
-integer, intent(in) :: il1      !<il1=1
-integer, intent(in) :: il2      !<il2=ilg
-integer, intent(in) :: isnow    !<integer telling if bare fraction is fg (0) or fgs (1), isnow
-                                !<is changed to isnow(ilg) in classt of class version higher than 3.4 for coupling with ctem
+      real litrmass(ilg,1)!<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real soilcmas(ilg,1)!<soil carbon mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real tbar(ilg,ignd)     !<soil temperature, k
+      real thliq(ilg,ignd)    !<liquid soil moisture content in 3 soil layers
+      real zbotw(ilg,ignd)    !<bottom of soil layers
+      real litres(ilg)        !<litter respiration over the given unvegetated sub-area in umol co2/m2.s
+      real socres(ilg)        !<soil c respiration over the given unvegetated sub-area in umol co2/m2.s
+      real frac(ilg)          !<fraction of ground (fg) or snow over ground (fgs)
 
-real, dimension(ilg,1,ignd), intent(in) :: litrmass    !< litter mass for the bare or LUC pool [ \f$kg C/m^2\f$ ]
-real, dimension(ilg,1,ignd), intent(in) :: soilcmas   !< soil carbon mass for the bare or LUC pool [ \f$kg C/m^2\f$ ]
-real, dimension(ilg,ignd), intent(in) :: thpor      !< Soil total porosity [ \f$(cm^3 cm^{-3})\f$ ] - daily average
-real, dimension(ilg,ignd), intent(in) :: tbar       !< soil temperature [ K ]
-real, dimension(ilg,ignd), intent(in) :: psisat     !< Saturated soil matric potential [ m ]
-real, dimension(ilg,ignd), intent(in) :: b          !< Clapp and Hornberger empirical “b” parameter [ ]
-real, dimension(ilg,ignd), intent(in) :: thliq      !< liquid soil moisture content in soil layers [ \f$(cm^3 cm^{-3})\f$ ]
-real, dimension(ilg,ignd), intent(in) :: thiceg     !< frozen soil moisture content over bare ground fraction [ \f$(cm^3 cm^{-3})\f$ ]
-real, dimension(ilg), intent(in) :: frac            !< fraction of ground (fg) or snow over ground (fgs) [ ]
-  integer, dimension(ilg,ignd), intent(in) :: isand   !< flag for soil/bedrock/ice/glacier
-real, dimension(ilg,ignd), intent(in) :: delzw      !< thickness of the permeable soil layers (m)
+      real delzw(ilg,ignd)  !<
+      real thiceg(ilg,ignd) !<
+      real zcarb_g          !<
 
-real, dimension(ilg,ignd), intent(out) :: litres    !< litter respiration over the given unvegetated sub-area [ \f$u-mol co2/m2.sec\f$ ]
-real, dimension(ilg,ignd), intent(out) :: socres    !< soil c respiration over the given unvegetated sub-area [ \f$u-mol co2/m2.sec\f$ ]
-
-! Local vars:
-integer i,j,k
-real :: litrq10              !<
-real :: soilcq10             !<
-real :: q10func              !<
-real :: tempq10l             !<
-real :: tempq10s             !<
-real :: reduceatdepth        !<
-real, dimension(ilg,ignd) :: socmoscl  !<soil moisture scalar for soil carbon decomposition
-real, dimension(ilg,ignd) :: psi       !<Soil moisture suction / matric potential [ m ]
-real, dimension(ilg,ignd) :: ltrmoscl  !<soil moisture scalar for litter decomposition
-
-!      real zbotw(ilg,ignd)    !<bottom of soil layers
-!      real zcarb_g          !<
-!      real litrtemp(ilg)    !<litter temperature
-!      real solctemp(ilg)    !<soil carbon pool temperature
-!      real grksat(ilg,ignd) !<saturation hyd. conductivity
-!      real beta             !<
-!      real fracarb(ilg,ignd)!<fraction of carbon in each soil layer
-!      real zcarbon          !<
-!      real scmotrm(ilg,ignd)!<
-!      real fcoeff           !<
-!     ------------------------------------------------------------------
-!     Constants and parameters are located in classic_params.f90
-!     ---------------------------------------------------------------
+      real litrq10          !<
+      real soilcq10         !<
+      real litrtemp(ilg)    !<litter temperature
+      real solctemp(ilg)    !<soil carbon pool temperature
+      real q10func          !<
+      real psisat(ilg,ignd) !<saturation matric potential
+      real grksat(ilg,ignd) !<saturation hyd. conductivity
+      real b(ilg,ignd)      !<parameter b of clapp and hornberger
+      real thpor(ilg,ignd)  !<porosity
+      real beta             !<
+      real fracarb(ilg,ignd)!<fraction of carbon in each soil layer
+      real zcarbon          !<
+      real tempq10l(ilg)    !<
+      real socmoscl(ilg)    !<soil moisture scalar for soil carbon decomposition
+      real scmotrm(ilg,ignd)!<
+      real ltrmoscl(ilg)    !<soil moisture scalar for litter decomposition
+      real psi(ilg,ignd)    !<
+      real tempq10s(ilg)    !<
+      real fcoeff           !<
 
 !     initialize required arrays to zero
 
@@ -203,8 +196,8 @@ real, dimension(ilg,ignd) :: ltrmoscl  !<soil moisture scalar for litter decompo
             
             ! We don't place a lower limit on psi as it is only used here and the
             ! value of psi <= psisat is just used to select a scomotrm value.
-            if (thiceg(i,j) .le. thpor(i,j)) then ! flag new limits
-              psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thiceg(i,j)))**(-b(i,j)) 
+            if (thice(i,j) .le. thpor(i,j)) then ! flag new limits
+              psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thice(i,j)))**(-b(i,j)) 
             else      
               ! if the whole pore space is ice then suction is assumed to be very high.   
               psi(i,j) = 10000.0
@@ -332,7 +325,7 @@ subroutine hetresv ( fcan,      fct,   litrmass, soilcmas,  &
                     delzw,    thpor,        il1,      il2,  &
                       ilg,     tbar,     psisat,    thliq,  &
                      sort,        b,  &
-                     isand,  thicec,  ipeatland,            &
+                     isand,  thice,  ipeatland,            &
 !    -------------- inputs above this line, outputs below -------------
                   ltresveg, scresveg)
 
@@ -406,7 +399,7 @@ real, dimension(ilg,icc,ignd), intent(out) :: ltresveg  !< litter respiration fo
 real, dimension(ilg,icc,ignd), intent(out) :: scresveg  !< soil carbon respiration for the given vegetated sub-area [ \f$u-mol co2/m2.sec\f$ ]
 
 ! Local vars:
-integer i,j,k
+      integer i, j, k
 real :: litrq10
 real :: soilcq10
 real :: q10func
@@ -563,19 +556,19 @@ do 100 j = 1, icc
 !           Also not sure if it is needed?
 !           JM - Turn off for now, we'll see how testing looks. Nov 2016.
 !           EC - Re-implemented as peatland testing shows that in some situations, can get an invalid operation
-!                if thpor+0.005-thicec < 0. Note: same approach as in hetres_peat.  Feb 06 2017.
+!                if thpor+0.005-thice < 0. Note: same approach as in hetres_peat.  Feb 06 2017.
 
             if (ipeatland(i) >0) then
-                if ( thliq(i,j)+thicec(i,j)+0.01 < thpor(i,j) .and. tbar(i,j) < 273.16 ) then
+                if ( thliq(i,j)+thice(i,j)+0.01 < thpor(i,j) .and. tbar(i,j) < 273.16 ) then
                   psi(i,j) = 0.001
-                elseif ( thicec(i,j) > thpor(i,j) ) then
+                elseif ( thice(i,j) > thpor(i,j) ) then
                   psi(i,j) = 0.001   !set to saturation
                 else
-                  psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thicec(i,j)))**(-b(i,j))
+                  psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thice(i,j)))**(-b(i,j))
                 endif
             else
-              if (thicec(i,j) .le. thpor(i,j)) then ! flag new limits
-                     psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thicec(i,j)))**(-b(i,j)) 
+              if (thice(i,j) .le. thpor(i,j)) then ! flag new limits
+                     psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j) -thice(i,j)))**(-b(i,j)) 
               else 
                 ! if the whole pore space is ice then suction is assumed to be very high. 
                 psi(i,j) = 10000.0

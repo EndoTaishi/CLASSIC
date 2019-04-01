@@ -8,6 +8,7 @@ implicit none
 public  :: bioclim
 public  :: existence
 public  :: competition
+public  :: expansion
 
 contains
 
@@ -314,7 +315,7 @@ end subroutine bioclim
 !!@author V. Arora, J. Melton
 
 subroutine  existence(  iday,       il1,      il2,      nilg, &
-                        sort,  nol2pfts,   twarmm,    tcoldm, &
+                        sort,   twarmm,    tcoldm, &
                         gdd5,  aridity,  srplsmon,  defctmon, &
                     anndefct, annsrpls,    annpcp,  pftexist, &
                     dry_season_length)
@@ -354,7 +355,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !                     not.
 
 use classic_params, only : zero, kk, icc, ican, tcoldmin, tcoldmax, twarmmax, &
-                        gdd5lmt, aridlmt, dryseasonlmt,ctempfts
+                        gdd5lmt, aridlmt, dryseasonlmt,ctempfts,nol2pfts
 
 implicit none
 
@@ -368,7 +369,6 @@ integer, intent(in) :: il2       !< il2=nilg
 
 integer, dimension(icc), intent(in) :: sort !< index for correspondence between 9 ctem pfts and
                                             !< size 12 of parameter vectors
-integer, dimension(ican), intent(in) :: nol2pfts !< number of level 2 ctem pfts
 real, dimension(nilg), intent(in) :: twarmm    !< temperature of the warmest month (c)
 real, dimension(nilg), intent(in) :: tcoldm    !< temperature of the coldest month (c)
 real, dimension(nilg), intent(in) :: gdd5      !< growing degree days above 5 c
@@ -470,7 +470,7 @@ end subroutine existence
 !!@author V. Arora, J. Melton, Y. Peng
 
 subroutine competition(  iday,       il1,        il2,       nilg, &
-                     nol2pfts,    nppveg,     dofire,    leapnow, &
+                       nppveg,     dofire,    leapnow, &
                      pftexist,  geremort,   intrmort,             &
                      gleafmas,  bleafmas,   stemmass,   rootmass, &
                      litrmass,  soilcmas,   grclarea,     lambda, &
@@ -519,7 +519,8 @@ subroutine competition(  iday,       il1,        il2,       nilg, &
 
 use classic_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolrance, crop, grass, numgrass,iccp2,ignd
+                        tolrance, crop, grass, numgrass,iccp2, ignd, icp1, &
+                        nol2pfts
 
 use disturbance_scheme, only : burntobare
 
@@ -537,7 +538,6 @@ logical ,intent(in) :: dofire                           !< if true then we have 
 real,  dimension(nilg),  intent(in) :: grclarea         !< grid cell area, km^2
 integer, dimension(icc), intent(in) :: sort             !< index for correspondence between 9 ctem pfts and
                                                         !< size 12 of parameter vectors
-integer, dimension(ican), intent(in) :: nol2pfts        !< number of level 2 ctem pfts
 logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
 logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
 real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
@@ -556,7 +556,7 @@ real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of
 real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
 real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
-real, dimension(nilg,ican), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
+real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
 real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
 real, dimension(nilg),     intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
 real, dimension(nilg),     intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
@@ -1453,7 +1453,86 @@ do 300 j = k, k+numgrass-1
 
 end subroutine competition
 !>@}
+!
+!----------------------------------------------------------------------------------------------
+!
+!>\ingroup competition_scheme_expansion
+!!@{
+!> Estimate fraction of NPP that is to be used for horizontal
+!!expansion (lambda) during the next day (i.e. this will be determining
+!!the colonization rate in competition).
+!!@author V. Arora, J. Melton
+!!
+function expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
 
+  use classic_params, only : icc, crop, laimin, laimax, lambdamax, &
+                             ctempfts
+
+  implicit none
+
+  ! arguments
+  integer, intent(in) :: il1              !<il1=1
+  integer, intent(in) :: il2              !<il2=ilg (no. of grid cells in latitude circle)
+  integer, intent(in) :: ilg              !<ilg=no. of grid cells in latitude circle
+  integer, intent(in) :: sort(:)          !< Maps the CTEM PFTs to the parameter arrays.
+  real, intent(in) :: ailcg(:,:)          !< Green lai for ctem's pfts
+  integer, intent(in) :: lfstatus(:,:)    !<leaf phenology status
+  real, intent(in) :: nppveg(:,:)         !<npp for individual pfts,  u-mol co2/m2.sec
+  logical ,intent(in) :: pftexist(:,:)    !<logical array indicating pfts exist (t) or not (f)
+  
+  real :: expansion(ilg,icc)        !< Used to determine the colonization rate
+  
+  ! local vars  
+  integer :: j,i,n
+  real :: lambdaalt
+
+  ! --
+  expansion = 0. 
+
+  do 100 j = 1, icc
+      if(.not. crop(j)) then   ! not for crops
+          do 101 i = il1, il2
+
+          n = sort(j)
+          if(ailcg(i,j).le.laimin(n))then
+              expansion(i,j)=0.0
+          else if(ailcg(i,j).ge.laimax(n))then
+              expansion(i,j)=lambdamax
+          else
+              expansion(i,j)=((ailcg(i,j)-laimin(n))*lambdamax)/&
+      &                    (laimax(n)-laimin(n))
+          endif
+
+          !>We use the following new function to smooth the transition for expansion as
+          !!an abrupt linear increase does not give good results. JM Jun 2014
+          if (ailcg(i,j) .gt. laimin(n)*0.25) then
+              lambdaalt = cosh((ailcg(i,j) - laimin(n)*0.25) * 0.115) - 1.
+          else
+              lambdaalt=0.
+          end if
+          expansion(i,j)=max(expansion(i,j),lambdaalt)
+
+          expansion(i,j)=max(0.0, min(lambdamax, expansion(i,j)))
+
+          !>If tree and leaves still coming out, or if npp is negative, then do not expand
+          if((lfstatus(i,j).eq.1).or.nppveg(i,j).lt.0.0 .or..not.pftexist(i,j))then
+            select case (ctempfts(J))
+            case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
+              expansion(i,j)=0.0
+            case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ') 
+              ! no change.
+            case default
+              print*,'Unknown PFT in ctem.f90 ',ctempfts(J)
+              call XIT('ctem',-1)
+            end select
+          endif
+
+      101      continue
+      endif
+  100    continue
+
+end function expansion
+!>@}
 !>\namespace competition_scheme
 !! Performs competition between PFTs for space
 !!

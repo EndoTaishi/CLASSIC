@@ -4,6 +4,7 @@ var structctem__statevars_1_1ctem__switches =
     [ "co2file", "structctem__statevars_1_1ctem__switches.html#a73a4fedb5926d1a89d4891e6fdfc5495", null ],
     [ "comment", "structctem__statevars_1_1ctem__switches.html#ac909e64889b8e3437bb39e99f9b0d2c2", null ],
     [ "ctem_on", "structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f", null ],
+    [ "doannualoutput", "structctem__statevars_1_1ctem__switches.html#a7c8988bf04811b5db9d5f8a74732fb84", null ],
     [ "dodayoutput", "structctem__statevars_1_1ctem__switches.html#ae21ffc34732c1e7a342885f8b2f7ad01", null ],
     [ "dofire", "structctem__statevars_1_1ctem__switches.html#acd44b6d02549e9b4605b67e9d677c53a", null ],
     [ "dohhoutput", "structctem__statevars_1_1ctem__switches.html#afa05112de970ccbf1acb0f8f6fbf5e60", null ],

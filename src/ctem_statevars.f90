@@ -99,23 +99,25 @@ type ctem_switches
     character(350) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
     character(350) :: runparams_file    !< location of the namelist file containing the model parameters
     character(350) :: Comment           !< Comment about the run that will be written to the output netcdfs
+    
     character(350) :: output_directory  !< Directory where the output netcdfs will be placed
     character(350) :: xmlFile           !< location of the xml file that outlines the possible netcdf output files
 
     logical :: doperpftoutput           !< Switch for making extra output files that are at the per PFT level
     logical :: dopertileoutput          !< Switch for making extra output files that are at the per tile level
 
-    logical :: domonthoutput            !< Switch for making monthly output files (annual are always outputted)
+    logical :: doAnnualOutput           !< Switch for making annual output files 
+    logical :: doMonthOutput            !< Switch for making monthly output files 
     integer :: jmosty                   !< Year to start writing out the monthly output files. If you want to write monthly outputs right
                                         !< from the start then put in a negative number (like -9999)
 
-    logical :: dodayoutput              !< Switch for making daily output files (annual are always outputted)
+    logical :: doDayOutput              !< Switch for making daily output files 
     integer :: jdstd                    !< day of the year to start writing the daily output
     integer :: jdendd                   !< day of the year to stop writing the daily output
     integer :: jdsty                    !< simulation year (iyear) to start writing the daily output
     integer :: jdendy                   !< simulation year (iyear) to stop writing the daily output
 
-    logical :: dohhoutput               !< Switch for making half hourly output files (annual are always outputted)
+    logical :: doHhOutput               !< Switch for making half hourly output files 
     integer :: jhhstd                   !< day of the year to start writing the half-hourly output
     integer :: jhhendd                  !< day of the year to stop writing the half-hourly output
     integer :: jhhsty                   !< simulation year (iyear) to start writing the half-hourly output
@@ -690,21 +692,11 @@ type ctem_tile_level
 
 ! allocated with ilg,ignd:
       real, allocatable, dimension(:,:) :: tbaraccgat_t!<
-      real, allocatable, dimension(:,:) :: tbarcacc_t  !<
-      real, allocatable, dimension(:,:) :: tbarcsacc_t !<
-      real, allocatable, dimension(:,:) :: tbargacc_t  !<
-      real, allocatable, dimension(:,:) :: tbargsacc_t !<
-      real, allocatable, dimension(:,:) :: thliqcacc_t !<
-      real, allocatable, dimension(:,:) :: thliqgacc_t !<
       real, allocatable, dimension(:,:) :: thliqacc_t  !<
-      real, allocatable, dimension(:,:) :: thicecacc_t !<
-      real, allocatable, dimension(:,:) :: thicegacc_t !<
       real, allocatable, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 
 ! allocated with ilg,icc:
-      real, allocatable, dimension(:,:) :: ancsvgac_t  !<
       real, allocatable, dimension(:,:) :: ancgvgac_t  !<
-      real, allocatable, dimension(:,:) :: rmlcsvga_t  !<
       real, allocatable, dimension(:,:) :: rmlcgvga_t  !<
 
 end type ctem_tile_level
@@ -1342,7 +1334,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%fsinacc_gat(ilg),&
          vgat%flutacc_gat(ilg),&
          vgat%flinacc_gat(ilg),&
-         !vgat%pregacc_gat(ilg),&
          vgat%altotacc_gat(ilg),&
          vgat%netrad_gat(ilg),&
          vgat%preacc_gat(ilg),&
@@ -1480,19 +1471,9 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile%rmlmossac_t (ilg),&
          ctem_tile%gppmossac_t (ilg),&
          ctem_tile%tbaraccgat_t (ilg,ignd),&
-         ctem_tile%tbarcacc_t (ilg,ignd),&
-         ctem_tile%tbarcsacc_t (ilg,ignd),&
-         ctem_tile%tbargacc_t (ilg,ignd),&
-         ctem_tile%tbargsacc_t (ilg,ignd),&
-         ctem_tile%thliqcacc_t (ilg,ignd),&
-         ctem_tile%thliqgacc_t (ilg,ignd),&
          ctem_tile%thliqacc_t (ilg,ignd),&
-         ctem_tile%thicecacc_t (ilg,ignd),&
-         ctem_tile%thicegacc_t (ilg,ignd),&
          ctem_tile%thiceacc_t (ilg,ignd),&
-         ctem_tile%ancsvgac_t (ilg,icc),&
          ctem_tile%ancgvgac_t (ilg,icc),&
-         ctem_tile%rmlcsvga_t (ilg,icc),&
          ctem_tile%rmlcgvga_t (ilg,icc),&
 
          ctem_mo%laimaxg_mo (nlat,nmos,icc),&
@@ -2243,19 +2224,9 @@ subroutine resetMosaicAccum()
         ctem_tile%taaccgat_t(:)=0.0
         vgat%altotacc_gat(:) = 0.0
         vgat%altotcount_ctm(:)=0
-        ctem_tile%tbarcacc_t(:,:)=0.0
-        ctem_tile%tbarcsacc_t(:,:)=0.0
-        ctem_tile%tbargacc_t(:,:)=0.0
-        ctem_tile%tbargsacc_t(:,:)=0.0
-        ctem_tile%thliqcacc_t(:,:)=0.0
-        ctem_tile%thliqgacc_t(:,:)=0.0
         ctem_tile%thliqacc_t(:,:)=0.0
-        ctem_tile%thiceacc_t(:,:)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-        ctem_tile%thicecacc_t(:,:)=0.0
-        ctem_tile%thicegacc_t(:,:)=0.0
-        ctem_tile%ancsvgac_t(:,:)=0.0
+        ctem_tile%thiceacc_t(:,:)=0.0  
         ctem_tile%ancgvgac_t(:,:)=0.0
-        ctem_tile%rmlcsvga_t(:,:)=0.0
         ctem_tile%rmlcgvga_t(:,:)=0.0
 
         !-reset peatland accumulators-------------------------------

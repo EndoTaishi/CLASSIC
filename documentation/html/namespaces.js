@@ -12,5 +12,6 @@ var namespaces =
     [ "model_state_drivers", "namespacemodel__state__drivers.html", null ],
     [ "peatlands_mod", "namespacepeatlands__mod.html", null ],
     [ "prepareoutputs", "namespaceprepareoutputs.html", null ],
-    [ "readjobopts", "namespacereadjobopts.html", null ]
+    [ "readjobopts", "namespacereadjobopts.html", null ],
+    [ "turnover", "namespaceturnover.html", null ]
 ];

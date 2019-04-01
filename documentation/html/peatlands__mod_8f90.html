@@ -94,21 +94,27 @@ $(document).ready(function(){initNavTree('peatlands__mod_8f90.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Modules</h2></td></tr>
 <tr class="memitem:namespacepeatlands__mod"><td class="memItemLeft" align="right" valign="top">module &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html">peatlands_mod</a></td></tr>
-<tr class="memdesc:namespacepeatlands__mod"><td class="mdescLeft">&#160;</td><td class="mdescRight">The peatland module is published in Geoscientific Model Development (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[92]</a>. A copy of the paper is in the Documentation folder of this git repository. <br /></td></tr>
+<tr class="memdesc:namespacepeatlands__mod"><td class="mdescLeft">&#160;</td><td class="mdescRight">The peatland module is published in Geoscientific Model Development (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a>. A copy of the paper is in the Documentation folder of this git repository. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:aed12b76ec8925a4bc3105f8ae7a36888"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#aed12b76ec8925a4bc3105f8ae7a36888">peatlands_mod::hetres_peat</a> (il1, il2, ipeatland, isand, litrmsmoss, peatdep, wtable, tbar, thliq, thice, thpor, bi, zbotw, delzw, psisat, litresms, socresp, resoxic, resanoxic)</td></tr>
-<tr class="memdesc:aed12b76ec8925a4bc3105f8ae7a36888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)  <a href="namespacepeatlands__mod.html#aed12b76ec8925a4bc3105f8ae7a36888">More...</a><br /></td></tr>
-<tr class="separator:aed12b76ec8925a4bc3105f8ae7a36888"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbec70365270a6b437813d88e74f145a"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#afbec70365270a6b437813d88e74f145a">peatlands_mod::hetres_peat</a> (il1, il2, ilg, ipeatland, isand, litrmsmoss, peatdep, wtable, tbar, thliq, thice, thpor, bi, zbotw, delzw, psisat, litresms, socresp, resoxic, resanoxic)</td></tr>
+<tr class="memdesc:afbec70365270a6b437813d88e74f145a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)  <a href="namespacepeatlands__mod.html#afbec70365270a6b437813d88e74f145a">More...</a><br /></td></tr>
+<tr class="separator:afbec70365270a6b437813d88e74f145a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47508fa361b2265282e44efbeccf4539"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#a47508fa361b2265282e44efbeccf4539">peatlands_mod::peatdayend</a> (nml)</td></tr>
 <tr class="memdesc:a47508fa361b2265282e44efbeccf4539"><td class="mdescLeft">&#160;</td><td class="mdescRight">At the end of the day update the degree days for moss photosynthesis and the peat bottom layer depth.  <a href="namespacepeatlands__mod.html#a47508fa361b2265282e44efbeccf4539">More...</a><br /></td></tr>
 <tr class="separator:a47508fa361b2265282e44efbeccf4539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5197f4e241139789715cd911dc1ff52"><td class="memItemLeft" align="right" valign="top">real function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#ab5197f4e241139789715cd911dc1ff52">peatlands_mod::peatdepth</a> (gavgscms)</td></tr>
+<tr class="memdesc:ab5197f4e241139789715cd911dc1ff52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the peat depth based on equation 18 in Wu, Verseghy, Melton 2016 GMD.  <a href="namespacepeatlands__mod.html#ab5197f4e241139789715cd911dc1ff52">More...</a><br /></td></tr>
+<tr class="separator:ab5197f4e241139789715cd911dc1ff52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a74c6ae528153d57336622db389f4bdd3"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#a74c6ae528153d57336622db389f4bdd3">peatlands_mod::mosspht</a> (il1, il2, iday, qswnv, thliq, co2conc, tsurfk, zsnow, pres, Cmossmas, dmoss, anmoss, rmlmoss, cevapmoss, ievapmoss, ipeatland, daylength, pdd)</td></tr>
 <tr class="memdesc:a74c6ae528153d57336622db389f4bdd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moss photosynthesis subroutine (equations are in module-level description)  <a href="namespacepeatlands__mod.html#a74c6ae528153d57336622db389f4bdd3">More...</a><br /></td></tr>
 <tr class="separator:a74c6ae528153d57336622db389f4bdd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58f86d6d3567b8a6cfd177c66371b9df"><td class="memItemLeft" align="right" valign="top">real function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#a58f86d6d3567b8a6cfd177c66371b9df">peatlands_mod::peatstorage</a> (depth)</td></tr>
+<tr class="memdesc:a58f86d6d3567b8a6cfd177c66371b9df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the carbon storage in the peat based on depth (or oxic and anoxic compartments) The water table depth delineates the oxic and anoxic compartments. functions (R**2 = 0.9999) determines the carbon content of each compartment from a peat bulk density profile based on unpulished data from P.J.H. Richard (described in fig. 1, Frokling et al.(2001) conversion of peat into carbon with 48.7% (Mer Bleue unpublished data, Moore)  <a href="namespacepeatlands__mod.html#a58f86d6d3567b8a6cfd177c66371b9df">More...</a><br /></td></tr>
+<tr class="separator:a58f86d6d3567b8a6cfd177c66371b9df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Peatland specific parameterizations (photosynthesis and heterotrophic respiration) </p>
@@ -118,7 +124,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="peatlands__mod_8f90.html">peatlands_mod.f90</a></li>
-    <li class="footer">Generated on Tue Mar 12 2019 15:42:13 for CLASSIC by
+    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

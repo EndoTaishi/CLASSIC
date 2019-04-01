@@ -17,6 +17,7 @@ var searchData=
   ['dlzwgat',['dlzwgat',['../structclass__statevars_1_1class__gather.html#a1147d8eb647136e8ef05f8ebbe0a1430',1,'class_statevars::class_gather']]],
   ['dlzwrot',['dlzwrot',['../structclass__statevars_1_1class__rotated.html#a4311b314ce05cfb4847629485afc26d5',1,'class_statevars::class_rotated']]],
   ['dmoss',['dmoss',['../structctem__statevars_1_1veg__gat.html#a05858c9032f521bdebc866c7e0bea762',1,'ctem_statevars::veg_gat']]],
+  ['doannualoutput',['doannualoutput',['../structctem__statevars_1_1ctem__switches.html#a7c8988bf04811b5db9d5f8a74732fb84',1,'ctem_statevars::ctem_switches']]],
   ['dodayoutput',['dodayoutput',['../structctem__statevars_1_1ctem__switches.html#ae21ffc34732c1e7a342885f8b2f7ad01',1,'ctem_statevars::ctem_switches']]],
   ['dofire',['dofire',['../structctem__statevars_1_1ctem__switches.html#acd44b6d02549e9b4605b67e9d677c53a',1,'ctem_statevars::ctem_switches']]],
   ['dohhoutput',['dohhoutput',['../structctem__statevars_1_1ctem__switches.html#afa05112de970ccbf1acb0f8f6fbf5e60',1,'ctem_statevars::ctem_switches']]],

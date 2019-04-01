@@ -179,7 +179,7 @@ end subroutine initializeLandCover
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
 !> @author Vivek Arora
-subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
+subroutine    luc(         il1,       il2,  nilg,                   & !1
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2
                        todfrac,     yesfrac, interpol, PFTCompetition,    & !3
                        leapnow,                                           & !4
@@ -226,7 +226,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       use classic_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
                                      tolrnce1, tolrance, crop, numcrops, &
-                                     minbare, iccp2, ignd
+                                     minbare, iccp2, ignd, classpfts, icp1,&
+                                     nol2pfts
 
       implicit none
 
@@ -235,7 +236,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       integer nilg              !<no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
       integer i, j, k, m, n, k1, k2, q !FLAG q needed? JM
       integer iday              !<day of year
-      integer nol2pfts(ican)    !<number of level 2 pfts
       integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
       integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
       integer bareiord(nilg)    !<bare fraction increases or decreases
@@ -263,7 +263,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
       real yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
 
-      real fcanmx(nilg,ican)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+      real fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
       real delfrac(nilg,icc)    !<
       real abvgmass(nilg,icc)   !<above-ground biomass
       real grclarea(nilg)       !<gcm grid cell area, km2
