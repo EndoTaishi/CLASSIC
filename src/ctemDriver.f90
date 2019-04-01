@@ -697,7 +697,7 @@ use soilC_processes, only : turbation
                     ilg,   tbar, psisat, thliq,& ! In
                     sort,bi,  & ! In
                     isand, thice, ipeatland, & ! In
-                    ltresveg, scresveg) ! Out
+                    ltresveg(:,1:icc,:), scresveg(:,1:icc,:)) ! Out
   
   !! Find heterotrophic respiration rates from bare ground subarea
   call  hetresg  (litrmass(:,iccp1,:),soilcmas(:,iccp1,:), delzw,thpor,& ! In
