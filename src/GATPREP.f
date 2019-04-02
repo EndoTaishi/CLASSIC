@@ -75,7 +75,6 @@ C---------------------------------------------------------------------
 !!is incremented by one, and the elements of the vectors IWMOS and JWMOS corresponding to NMW are
 !!set to the indices of the current grid cell and mosaic tile respectively.
 !!
-
       DO 200 I=IL1,IL2
           IF(GCROW(I).LE.-0.5)                               THEN
               DO 100 J=1,IM

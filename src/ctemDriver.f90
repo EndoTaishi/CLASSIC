@@ -30,9 +30,6 @@ contains
                   wtable,   maxAnnualActLyr,         & ! In
                   PFTCompetition,  dofire,  lnduseon,  inibioclim,  & ! In
                      leapnow,                                   & ! In
-!
-!    -------------- all inputs used by ctem are above this line ---------
-!
                    stemmass, rootmass, litrmass,  gleafmas,& ! In/ Out
                    bleafmas, soilcmas,    ailcg,      ailc,& ! In/ Out
                       zolnc, rmatctem,    rmatc,     ailcb,& ! In/ Out
@@ -42,9 +39,6 @@ contains
                     bmasveg, cmasvegc, colddays,  rothrlos,& ! In/ Out
                      fcanmx,   alvisc,   alnirc,   gavglai,& ! In/ Out
                    Cmossmas, litrmsmoss,     peatdep,      &! In/ Out
-!
-!    ------------- the following are all competition related variables ---
-!
                    geremort,   intrmort,   pstemmass,    pgleafmass, &! In/ Out
                       tcurm,   srpcuryr,    dftcuryr,      lambda,   &! In/ Out
                      tmonth, anpcpcur,  anpecur,   gdd5cur,&! In/ Out
@@ -52,14 +46,6 @@ contains
                     aridity, srplsmon, defctmon,  anndefct,&! In/ Out
                    annsrpls,  annpcp,dry_season_length,&! In/ Out
                    pftexist,   twarmm,       tcoldm,         gdd5,   &! In/ Out
-!
-!    -------------- inputs updated by ctem are above this line ------
-!    ------------- these include all prognostic variables -----------
-!
-!    
-!    --------- and finally all output is below this line ------------------
-!
-!    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----\
                        npp,       nep, hetrores,   autores,& ! Out (Primary)
                   soilresp,        rm,       rg,       nbp,& ! Out (Primary)
                     litres,    socres,      gpp, dstcemls1,& ! Out (Primary)
@@ -71,9 +57,6 @@ contains
                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   & ! Out (Primary)
                                 paicgat,    slaicgat,                & ! Out (Primary)
                  emit_co2,   emit_ch4,                              &  ! Out (Primary)
-!    ---- OUTPUT COMMON TO AGCM AND OFFLINE RUNS ----/
-
-!    ---- OUTPUT EXCLUSIVE TO OFFLINE RUNS ----\
                   emit_co,   emit_nmhc,  smfunc_veg,                & ! Out (Secondary)
                    emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
                    emit_tpm, emit_tc,  emit_oc,    emit_bc,& ! Out (Secondary)
@@ -339,7 +322,7 @@ use soilC_processes, only : turbation
   real, dimension(ilg,iccp2,ignd), intent(out) :: ltresveg     !<fluxes for each pft: litter respiration for each pft + bare fraction
   real, dimension(ilg,iccp2,ignd), intent(out) :: scresveg     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
   real, dimension(ilg,iccp1), intent(out) :: hetrsveg     !<
-  real, dimension(ilg,iccp2), intent(out) :: humtrsvg     !<transfer of humidified litter from litter to soil c pool per PFT.
+  real, dimension(ilg,iccp2,ignd), intent(out) :: humtrsvg     !<transfer of humidified litter from litter to soil c pool per PFT.
   real, dimension(ilg,icc), intent(out) :: autoresveg     !<
   real, dimension(ilg,icc), intent(out) :: litrfallveg    !<
   real, dimension(ilg,icc), intent(out) :: roottemp       !<root temperature, k
@@ -637,7 +620,7 @@ use soilC_processes, only : turbation
       nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
 
       !>Now that we know maintenance respiration from leaf, stem, and root
-      !>and gpp, we can find growth respiration for each vegetation
+      !>and gpp, we can find growth respiration for each vegetation type
 
       if( nppveg(i,j).gt.zero ) then
           rgveg(i,j)=grescoef(sort(j))*nppveg(i,j)
@@ -801,59 +784,57 @@ use soilC_processes, only : turbation
   !> Update the litter and soil c pools based on litter and soil c respiration rates
   !! found above. also transfer humidified litter to the soil c pool.
   !!
-  humtrsvg(:,:) = 0.
   do 420 j = 1, iccp2
     do 430 i = il1, il2
       do 435 k = 1, ignd
 
-      !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
-      ltrestep(i,j,k) = ltresveg(i,j,k) * deltat / 963.62
-      screstep(i,j,k) = scresveg(i,j,k) * deltat / 963.62
+        !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
+        ltrestep(i,j,k) = ltresveg(i,j,k) * deltat / 963.62
+        screstep(i,j,k) = scresveg(i,j,k) * deltat / 963.62
 
-      !> Update litter and soil c pools
-      if (j < iccp1) then
-        litrmass(i,j,k) = litrmass(i,j,k) - (ltrestep(i,j,k) * (1.0+humicfac(sort(j))))
-        hutrstep(i,j,k) = humicfac(sort(j)) * ltrestep(i,j,k)
-      else
-        !> Next we add bareground and LUC pool litter mass and humification for non-peatlands.
-        if (ipeatland(i) == 0) then
-            litrmass(i,j,k)=litrmass(i,j,k)-(ltrestep(i,j,k)*(1.0+humicfac_bg))
-            hutrstep(i,j,k)= humicfac_bg * ltrestep(i,j,k)
-        ! else for peatlands:
-          ! In peatlands there is no bareground litter mass since it is the moss layer.
+        !> Update litter and soil c pools
+        if (j < iccp1) then
+          litrmass(i,j,k) = litrmass(i,j,k) - (ltrestep(i,j,k) * (1.0+humicfac(sort(j))))
+          hutrstep(i,j,k) = humicfac(sort(j)) * ltrestep(i,j,k)
+        else
+          !> Next we add bareground and LUC pool litter mass and humification for non-peatlands.
+          if (ipeatland(i) == 0) then
+              litrmass(i,j,k)=litrmass(i,j,k)-(ltrestep(i,j,k)*(1.0+humicfac_bg))
+              hutrstep(i,j,k)= humicfac_bg * ltrestep(i,j,k)
+          ! else for peatlands:
+            ! In peatlands there is no bareground litter mass since it is the moss layer.
+          endif
         endif
-      endif
 
-    ! humtrsvg kept as per tile/per pft (not per layer)
-    humtrsvg(i,j)=humtrsvg(i,j) + hutrstep(i,j,k)*(963.62/deltat) ! u-mol co2/m2.sec
+        humtrsvg(i,j,k) = hutrstep(i,j,k)*(963.62/deltat) ! u-mol co2/m2.sec
 
-    soilcmas(i,j,k)=soilcmas(i,j,k) + real(spinfast) * (hutrstep(i,j,k) -  screstep(i,j,k))
+        soilcmas(i,j,k)=soilcmas(i,j,k) + real(spinfast) * (hutrstep(i,j,k) -  screstep(i,j,k))
 
-    if(litrmass(i,j,k).lt.zero) litrmass(i,j,k)=0.0
-    if(soilcmas(i,j,k).lt.zero) soilcmas(i,j,k)=0.0
-435      continue
-430     continue
-420   continue
+        if(litrmass(i,j,k).lt.zero) litrmass(i,j,k)=0.0
+        if(soilcmas(i,j,k).lt.zero) soilcmas(i,j,k)=0.0
+435   continue
+430 continue
+420 continue
 
   !>Estimate soil respiration. this is sum of heterotrophic respiration and root maintenance respiration.
   soilrsvg(:,:) = 0.
   do 440 j = 1, icc
-  do 445 i = il1, il2
-    do 450 k = 1, ignd
+    do 445 i = il1, il2
+      do 450 k = 1, ignd
         ! soilrsvg kept as per pft/per tile for now (not per layer)
         soilrsvg(i,j) = soilrsvg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
-  450     continue
-       soilrsvg(i,j) = soilrsvg(i,j) + rmrveg(i,j)
-445    continue
-  440   continue
+450   continue
+      soilrsvg(i,j) = soilrsvg(i,j) + rmrveg(i,j)
+445 continue
+440 continue
 
   !> But over the bare fraction and LUC product pool there is no live root.
 
   do 460 i = il1, il2
-  do 465 k = 1, ignd
-    soilrsvg(i,iccp1) = soilrsvg(i,iccp1) + ltresveg(i,iccp1,k)+scresveg(i,iccp1,k)
-465    continue
-  460   continue
+    do 465 k = 1, ignd
+      soilrsvg(i,iccp1) = soilrsvg(i,iccp1) + ltresveg(i,iccp1,k)+scresveg(i,iccp1,k)
+465 continue
+460 continue
 
   !> Find grid averaged humification and soil respiration rates
   soilresp(:) = 0.0
@@ -861,10 +842,10 @@ use soilC_processes, only : turbation
   hutrstep_g(:) = 0.0
   do 470 i = il1, il2
     do 480 j = 1,icc
-      soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
-      humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
+      soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)      
     do k = 1,ignd
       hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j,k) 
+      humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j,k)
     end do
 480     continue
 
@@ -876,7 +857,9 @@ use soilC_processes, only : turbation
     if (ipeatland(i) ==0 ) then !non peatland
       
       soilresp(i) = soilresp(i) + fg(i) * soilrsvg(i,iccp1)
-      humiftrs(i) = humiftrs(i) + fg(i) * humtrsvg(i,iccp1)
+      do k = 1,ignd
+        humiftrs(i) = humiftrs(i) + fg(i) * humtrsvg(i,iccp1,k)
+      end do
 
       !Set all peatland vars to 0.
       litrfallmoss(i)= 0.

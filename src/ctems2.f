@@ -174,7 +174,7 @@ c
      5      dstcemlsrow(nlat,nmos),       litrfallrow(nlat,nmos),
      6      humiftrsrow(nlat,nmos),       veghghtrow(nlat,nmos,icc),
      7      litrfallvegrow(nlat,nmos,icc),
-     &      humiftrsvegrow(nlat,nmos,iccp2),
+     &      humiftrsvegrow(nlat,nmos,iccp2,ignd),
      7      rootdpthrow(nlat,nmos,icc),   rmlrow(nlat,nmos),
      8      rmsrow(nlat,nmos),            rmrrow(nlat,nmos),
      9      tltrleafrow(nlat,nmos,icc),   tltrstemrow(nlat,nmos,icc),
@@ -261,7 +261,7 @@ c
      4      socresgat(ilg),            gppgat(ilg),
      5      dstcemlsgat(ilg),          litrfallgat(ilg),
      6      humiftrsgat(ilg),          veghghtgat(ilg,icc),
-     &      litrfallveggat(ilg,icc), humiftrsveggat(ilg,iccp2),
+     &      litrfallveggat(ilg,icc), humiftrsveggat(ilg,iccp2,ignd),
      7      rootdpthgat(ilg,icc),      rmlgat(ilg),
      8      rmsgat(ilg),               rmrgat(ilg),
      9      tltrleafgat(ilg,icc),      tltrstemgat(ilg,icc),
@@ -488,8 +488,8 @@ c
           soilcmasrow(ilmos(k),jlmos(k),l,m) = soilcmasgat(k,l,m)
           litresvegrow(ilmos(k),jlmos(k),l,m) = litresveggat(k,l,m)
           soilcresvegrow(ilmos(k),jlmos(k),l,m)=soilcresveggat(k,l,m)
-         end do
-          humiftrsvegrow(ilmos(k),jlmos(k),l) = humiftrsveggat(k,l)
+          humiftrsvegrow(ilmos(k),jlmos(k),l,m) = humiftrsveggat(k,l,m)
+         end do          
 103   continue
 
 c

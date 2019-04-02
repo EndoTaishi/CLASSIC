@@ -1191,7 +1191,7 @@ contains
         integer, pointer :: fixedYearOBSWETF
         logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
-        real, pointer, dimension(:,:) :: tracerco2conc
+        real, pointer, dimension(:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
@@ -1281,8 +1281,7 @@ contains
                 if (arrindex == 0) stop ('getInput says: The tracer CO2 file does not contain requested year')
         
                 ! We read in only the suggested year
-                i = 1 ! offline nlat is always 1 so just set
-                tracerco2conc(i,:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
+                tracerco2conc(:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
             end if
 
         case ('CH4') ! Methane concentration
@@ -1543,7 +1542,7 @@ contains
         integer :: arrindex,lengthTime,i,m
         real :: LGHTTimeNow,OBSWTimeNow
         real, pointer, dimension(:,:) :: co2concrow
-        real, pointer, dimension(:,:) :: tracerco2conc
+        real, pointer, dimension(:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: nfcancmxrow
@@ -1593,7 +1592,7 @@ contains
                 call abandonCell('updateInput says: The tracerCO2 file does not contain requested year: '//seqstring)
               else
                 i = 1 ! offline nlat is always 1 so just set
-                tracerco2conc(i,:) = tracerCO2FromFile(arrindex)
+                tracerco2conc(i) = tracerCO2FromFile(arrindex)
               end if
               
         case ('CH4')

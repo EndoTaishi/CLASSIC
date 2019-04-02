@@ -20,7 +20,7 @@
         metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2-ignd-actlyr.nc' ,     !< location of the model initialization file
+    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2-ignd-actlyr-tracer.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
                                                !! typically here you will just copy the init_file and rename it so it can be overwritten.
 ! Namelist of model parameters
@@ -34,12 +34,12 @@
                         ! Balcar checks for conservation of carbon.
     
     ! Model tracer 
-        useTracer = 0 ,     ! useTracer = 0, the tracer code is not used. 
+        useTracer = 1 ,     ! useTracer = 0, the tracer code is not used. 
                             ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                             !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
                             ! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
                             ! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme. 
-        tracerCO2file = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc'  ! Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
+        tracerCO2file = 'inputFiles/tracerCO2.nc'  ! Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
                             ! and fixedYearCO2 switches to determine how it is read in.
 
     !CO2 switches:
@@ -79,9 +79,9 @@
         ! lnduseon to true, it will update the fractional coverages from LUCFile. When lnduseon is false it is
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is
         ! not used at all.
-        lnduseon = .true. ,
+        lnduseon = .false. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
-        fixedYearLUC = 1901 ,
+        fixedYearLUC = -9999 ,
 
     ! Wetland switches:
         ! If you wish to read in and use observed wetland fractions, there are two options. If you wish time

@@ -44,8 +44,8 @@ type ctem_switches
     integer :: useTracer        !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
                                 !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
                                 !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
-                                !! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
-                                !! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme. 
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme. 
     character(350) :: tracerCO2file !< Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
                                 !! and fixedYearCO2 switches to determine how it is read in.
     integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
@@ -576,7 +576,7 @@ type veg_gat
     real, allocatable, dimension(:,:) :: rmrveg     !<root maintenance resp. rate for each pft
     real, allocatable, dimension(:,:) :: rgveg      !<growth resp. rate for each pft
     real, allocatable, dimension(:,:) :: litrfallveg!<litter fall in \f$kg c/m^2\f$ for each pft
-    real, allocatable, dimension(:,:) :: humiftrsveg!<
+    real, allocatable, dimension(:,:,:) :: humiftrsveg!<
 
     real, allocatable, dimension(:,:) :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: pfcancmx !<previous year's fractional coverages of pfts
@@ -656,8 +656,11 @@ type (veg_gat), save, target :: vgat
 type tracersType
   !   Simple tracer variables. Only allocated and used if useTracer > 0.
   
-  ! allocated with nlat,nmos:
-  real, allocatable, dimension(:,:) :: tracerCO2rot !< Atmopspheric tracer CO2 concentration (units vary)
+  ! allocated with nlat:
+  real, allocatable, dimension(:) :: tracerCO2rot !< Atmopspheric tracer CO2 concentration (units vary)
+  
+  ! Pools:
+  ! allocated with nlat,nmos,...:
   real, allocatable, dimension(:,:) :: mossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, allocatable, dimension(:,:) :: mossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
@@ -669,7 +672,20 @@ type tracersType
   ! allocated with nlat,nmos,iccp2,ignd:
   real, allocatable, dimension(:,:,:,:) :: litrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   real, allocatable, dimension(:,:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  
+  ! allocated with ilg,...:
+  real, allocatable, dimension(:) :: mossCMassrow      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+  real, allocatable, dimension(:) :: mossLitrMassrow   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
+  ! allocated with nlat,nmos,icc:
+  real, allocatable, dimension(:,:) :: gLeafMassrow      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: bLeafMassrow      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: stemMassrow       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: rootMassrow       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  ! allocated with nlat,nmos,iccp2,ignd:
+  real, allocatable, dimension(:,:,:) :: litrMassrow       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: soilCMassrow      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  
 end type tracersType
 
 type (tracersType), save, target :: tracer
@@ -1197,7 +1213,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
          
-         tracer%tracerCO2rot(nlat,nmos),&
+         tracer%tracerCO2rot(nlat),&
          tracer%mossCMassrot(nlat,nmos),&
          tracer%mossLitrMassrot(nlat,nmos),&
 
@@ -1441,7 +1457,7 @@ allocate(vgat%grclarea(ilg),&
         vgat%soilcmas (ilg,iccp2,ignd),&
         vgat%litresveg (ilg,iccp2,ignd),&
         vgat%soilcresveg (ilg,iccp2,ignd),&
-        vgat%humiftrsveg (ilg,iccp2),&  !FLAG maybe add ignd later.
+        vgat%humiftrsveg (ilg,iccp2,ignd),& 
 
 ! allocated with ilg,ignd:
 !          vgat%rgmgat(ilg,ignd),&
