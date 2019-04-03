@@ -67,6 +67,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use metDisaggModule,     only : disaggMet
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
+  use tracer,              only : tracerDynamics
 
   implicit none
 
@@ -1055,6 +1056,19 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: btermgat
   real, pointer, dimension(:) :: ltermgat
   real, pointer, dimension(:,:) :: mtermgat
+  real, pointer, dimension(:,:) :: glcaemls  !<green leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: blcaemls  !<brown leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: rtcaemls  !<root carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: stcaemls  !<stem carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: ltrcemls  !<litter carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: blfltrdt  !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, pointer, dimension(:,:) :: ntchlveg  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+  real, pointer, dimension(:,:) :: ntchsveg  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
+  real, pointer, dimension(:,:) :: ntchrveg  !<fluxes for each pft: Net change in root biomass, 
+                                                !! the net change is the difference between allocation and
+                                                !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
+
+
 
   real, pointer, dimension(:) :: extnprobgat
   real, pointer, dimension(:) :: prbfrhucgat
@@ -2076,7 +2090,15 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   btermgat          => vgat%bterm
   ltermgat          => vgat%lterm
   mtermgat          => vgat%mterm
-
+  blfltrdt          => vgat%blfltrdt
+  glcaemls          => vgat%glcaemls
+  blcaemls          => vgat%blcaemls
+  rtcaemls          => vgat%rtcaemls
+  stcaemls          => vgat%stcaemls
+  ltrcemls          => vgat%ltrcemls
+  ntchlveg          => vgat%ntchlveg
+  ntchsveg          => vgat%ntchsveg
+  ntchrveg          => vgat%ntchrveg
   extnprobgat       => vgat%extnprob
   prbfrhucgat       => vgat%prbfrhuc
   daylgat           => vgat%dayl
@@ -2825,59 +2847,61 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
         ! and uses daily accumulated values of variables simulated by CLASS.
         call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,& ! In
-            &           ilg,      1,        nml,        iday,    radjgat,     &! In
-            &             taaccgat_t,    dlzwgat, ancgvgac_t,   rmlcgvga_t,& ! In
-            &                zbtwgat, & ! In
-            &             uvaccgat_t,  vvaccgat_t,    lightng, tbaraccgat_t,   &! In
-            &            pfcancmxgat, nfcancmxgat,                & ! In
-            &               sdepgat,    spinfast,   todfrac,& ! In 
-            &             netrad_gat,  preacc_gat,   PSISGAT,                  &! In 
-            &              grclarea,    popdingat,     isndgat,                &! In
-            &        wetfrac_presgat,slopefracgat,       BIGAT,                &! In
-            &               THPGAT,        DLATGAT,  ch4concgat,    &! In
-            &              THFCGAT,       THLWGAT, thliqacc_t,  thiceacc_t,    &! In
-            &        ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &! In
-            &           wtablegat, maxAnnualActLyrGAT,  & ! In
-            &          PFTCompetition,    dofire,     lnduseon, inibioclim,    & ! In
-            &          leapnow,                                                &! In
-            &            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,& ! In/Out
-            &            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,& ! In/Out
-            &               zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,& ! In/Out
-            &            flhrlossgat,  pandaysgat, lfstatusgat, grwtheffgat,& ! In/Out
-            &            lystmmasgat, lyrotmasgat, tymaxlaigat, vgbiomasgat,& ! In/Out
-            &            gavgltmsgat, gavgscmsgat, stmhrlosgat,     slaigat,& ! In/Out
-            &             bmasveggat, cmasvegcgat,  colddaysgat, rothrlosgat,& ! In/Out
-            &                fcangat,  alvsctmgat,   alirctmgat,  gavglaigat,&! In/Out
-            &       Cmossmasgat,  litrmsmossgat,      peatdepgat,        &! In/Out
-            &       geremortgat,    intrmortgat,    pstemmassgat,   pgleafmassgat,&! In/Out
-            &             tcurm,       srpcuryr,        dftcuryr,       lambdagat,&! In/Out
-            &                 tmonth,    anpcpcur,      anpecur,     gdd5cur,&! In/Out
-            &               surmncur,    defmncur,     srplscur,    defctcur,&! In/Out
-            &             ariditygat, srplsmongat,  defctmongat, anndefctgat,&! In/Out
-            &            annsrplsgat,   annpcpgat,  dry_season_lengthgat,&! In/Out
-            &       pftexistgat,      twarmmgat,       tcoldmgat,         gdd5gat,    &! In/Out
-            &                 nppgat,      nepgat, hetroresgat, autoresgat,&! Out (Primary)
-            &            soilcrespgat,       rmgat,       rggat,      nbpgat,&! Out (Primary)
-            &              litresgat,    socresgat,     gppgat, dstcemlsgat,&! Out (Primary)
-            &            litrfallgat,  humiftrsgat, veghghtgat, rootdpthgat,&! Out (Primary)
-            &                 rmlgat,      rmsgat,     rmrgat,  tltrleafgat,&! Out (Primary)
-            &            tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,&! Out (Primary)
-            &       burnfracgat,     lucemcomgat,     lucltringat, &! Out (Primary)
-            &       lucsocingat,   dstcemls3gat,                                      &! Out (Primary)
-            &     ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,   &! Out (Primary)
-            &                          paicgat,         slaicgat,                     &! Out (Primary)
-            &       emit_co2gat,   emit_ch4gat,        reprocost,                     &! Out (Primary)
-            &        emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &! Out (Secondary)
-            &             emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&! Out (Secondary)
-            &            emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&! Out (Secondary)
-            &          btermgat,       ltermgat,          mtermgat,     burnvegfgat,  &! Out (Secondary)
-            &    litrfallveggat,     humiftrsveggat,   ltstatusgat,       nppveggat,  &! Out (Secondary)
-            &        afrleafgat,     afrstemgat,       afrrootgat,      wtstatusgat,  &! Out (Secondary)
-            &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&! Out (Secondary)
-            &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,&! Out (Secondary)
-            &    hetroresveggat,  autoresveggat,      litresveggat,   soilcresveggat, &! Out (Secondary)
-            &        nppmossgat,      armossgat,                                      &! Out (Secondary)
-            &             ccgat,          mmgat )
+                       ilg,      1,        nml,        iday,    radjgat,     &! In
+                         taaccgat_t,    dlzwgat, ancgvgac_t,   rmlcgvga_t,& ! In
+                            zbtwgat, & ! In
+                         uvaccgat_t,  vvaccgat_t,    lightng, tbaraccgat_t,   &! In
+                        pfcancmxgat, nfcancmxgat,                & ! In
+                           sdepgat,    spinfast,   todfrac,& ! In 
+                         netrad_gat,  preacc_gat,   PSISGAT,                  &! In 
+                          grclarea,    popdingat,     isndgat,                &! In
+                    wetfrac_presgat,slopefracgat,       BIGAT,                &! In
+                           THPGAT,        DLATGAT,  ch4concgat,    &! In
+                          THFCGAT,       THLWGAT, thliqacc_t,  thiceacc_t,    &! In
+                    ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &! In
+                       wtablegat, maxAnnualActLyrGAT,  & ! In
+                      PFTCompetition,    dofire,     lnduseon, inibioclim,    & ! In
+                      leapnow,                                                &! In
+                        stemmassgat, rootmassgat, litrmassgat, gleafmasgat,& ! In/Out
+                        bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,& ! In/Out
+                           zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,& ! In/Out
+                        flhrlossgat,  pandaysgat, lfstatusgat, grwtheffgat,& ! In/Out
+                        lystmmasgat, lyrotmasgat, tymaxlaigat, vgbiomasgat,& ! In/Out
+                        gavgltmsgat, gavgscmsgat, stmhrlosgat,     slaigat,& ! In/Out
+                         bmasveggat, cmasvegcgat,  colddaysgat, rothrlosgat,& ! In/Out
+                            fcangat,  alvsctmgat,   alirctmgat,  gavglaigat,&! In/Out
+                   Cmossmasgat,  litrmsmossgat,      peatdepgat,        &! In/Out
+                   geremortgat,    intrmortgat,    pstemmassgat,   pgleafmassgat,&! In/Out
+                         tcurm,       srpcuryr,        dftcuryr,       lambdagat,&! In/Out
+                             tmonth,    anpcpcur,      anpecur,     gdd5cur,&! In/Out
+                           surmncur,    defmncur,     srplscur,    defctcur,&! In/Out
+                         ariditygat, srplsmongat,  defctmongat, anndefctgat,&! In/Out
+                        annsrplsgat,   annpcpgat,  dry_season_lengthgat,&! In/Out
+                   pftexistgat,      twarmmgat,       tcoldmgat,         gdd5gat,    &! In/Out
+                             nppgat,      nepgat, hetroresgat, autoresgat,&! Out (Primary)
+                        soilcrespgat,       rmgat,       rggat,      nbpgat,&! Out (Primary)
+                          litresgat,    socresgat,     gppgat, dstcemlsgat,&! Out (Primary)
+                        litrfallgat,  humiftrsgat, veghghtgat, rootdpthgat,&! Out (Primary)
+                             rmlgat,      rmsgat,     rmrgat,  tltrleafgat,&! Out (Primary)
+                        tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,&! Out (Primary)
+                   burnfracgat,     lucemcomgat,     lucltringat, &! Out (Primary)
+                   lucsocingat,   dstcemls3gat,                                      &! Out (Primary)
+                 ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,   &! Out (Primary)
+                                      paicgat,         slaicgat,                     &! Out (Primary)
+                   emit_co2gat,   emit_ch4gat,        reprocost,    blfltrdt,        &! Out (Primary)
+                                   glcaemls, blcaemls, rtcaemls, stcaemls, ltrcemls, &  ! Out (Primary)
+                                  ntchlveg, ntchsveg, ntchrveg,                      &  ! Out (Primary)
+                    emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &! Out (Secondary)
+                         emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&! Out (Secondary)
+                        emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&! Out (Secondary)
+                      btermgat,       ltermgat,          mtermgat,     burnvegfgat,  &! Out (Secondary)
+                litrfallveggat,     humiftrsveggat,   ltstatusgat,       nppveggat,  &! Out (Secondary)
+                    afrleafgat,     afrstemgat,       afrrootgat,      wtstatusgat,  &! Out (Secondary)
+                      rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,&! Out (Secondary)
+                   vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,&! Out (Secondary)
+                hetroresveggat,  autoresveggat,      litresveggat,   soilcresveggat, &! Out (Secondary)
+                    nppmossgat,      armossgat,                                      &! Out (Secondary)
+                         ccgat,          mmgat )
 
         !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
         !     to reset here, prior to ctems2.
@@ -2889,7 +2913,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
           end do
         end do
 
-        !if (useTracer > 0) call tracerDynamics()
+        if (useTracer > 0) call tracerDynamics(1,nml)
         
       endif  ! if(ncount.eq.nday)
     endif  ! if(ctem_on)

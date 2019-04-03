@@ -483,6 +483,17 @@ type veg_gat
     real, allocatable, dimension(:,:) :: bterm      !<biomass term for fire probabilty calc
     real, allocatable, dimension(:)   :: lterm      !<lightning term for fire probabilty calc
     real, allocatable, dimension(:,:) :: mterm      !<moisture term for fire probabilty calc
+    real, allocatable, dimension(:,:) :: glcaemls  !<green leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: blcaemls  !<brown leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: rtcaemls  !<root carbon emission disturbance losses, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: stcaemls  !<stem carbon emission disturbance losses, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: ltrcemls  !<litter carbon emission disturbance losses, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: ntchlveg  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+    real, allocatable, dimension(:,:) :: ntchsveg  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
+    real, allocatable, dimension(:,:) :: ntchrveg  !<fluxes for each pft: Net change in root biomass, 
+                                                  !! the net change is the difference between allocation and
+                                                  !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
+
 
     real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
@@ -499,6 +510,7 @@ type veg_gat
     real, allocatable, dimension(:)   :: rml        !<leaf maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)   :: rms        !<stem maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: tltrleaf   !<total leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: blfltrdt !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
     real, allocatable, dimension(:,:) :: tltrstem   !<total stem litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: tltrroot   !<total root litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: leaflitr   !<leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$). this leaf litter
@@ -675,17 +687,17 @@ type tracersType
   real, allocatable, dimension(:,:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   
   ! allocated with ilg,...:
-  real, allocatable, dimension(:) :: mossCMassrow      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
-  real, allocatable, dimension(:) :: mossLitrMassrow   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+  real, allocatable, dimension(:) :: mossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+  real, allocatable, dimension(:) :: mossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
   ! allocated with nlat,nmos,icc:
-  real, allocatable, dimension(:,:) :: gLeafMassrow      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, allocatable, dimension(:,:) :: bLeafMassrow      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, allocatable, dimension(:,:) :: stemMassrow       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, allocatable, dimension(:,:) :: rootMassrow       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: gLeafMassgat      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: bLeafMassgat      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: stemMassgat       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:) :: rootMassgat       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
   ! allocated with nlat,nmos,iccp2,ignd:
-  real, allocatable, dimension(:,:,:) :: litrMassrow       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-  real, allocatable, dimension(:,:,:) :: soilCMassrow      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: litrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: soilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   
 end type tracersType
 
@@ -1357,6 +1369,8 @@ allocate(vgat%grclarea(ilg),&
          vgat%sdepgat(ilg),&
          vgat%xdiffusgat(ilg),& ! the corresponding ROW is CLASS's XDIFFUS
          vgat%faregat(ilg),&    ! the ROT is FAREROT
+         tracer%mossCMassgat(ilg),&
+         tracer%mossLitrMassgat(ilg),&
 
 ! allocated with ilg, icc
          vgat%gleafmas (ilg,icc),&
@@ -1407,6 +1421,15 @@ allocate(vgat%grclarea(ilg),&
          vgat%veghght (ilg,icc),&
          vgat%rootdpth (ilg,icc),&
          vgat%tltrleaf (ilg,icc),&
+         vgat%blfltrdt (ilg,icc),&
+         vgat%glcaemls(ilg,icc),&
+         vgat%blcaemls(ilg,icc),&
+         vgat%rtcaemls(ilg,icc),&
+         vgat%stcaemls(ilg,icc),&
+         vgat%ltrcemls(ilg,icc),&
+         vgat%ntchlveg(ilg,icc),&
+         vgat%ntchsveg(ilg,icc),&
+         vgat%ntchrveg(ilg,icc),&
          vgat%tltrstem (ilg,icc),&
          vgat%tltrroot (ilg,icc),&
          vgat%leaflitr (ilg,icc),&
@@ -1439,6 +1462,10 @@ allocate(vgat%grclarea(ilg),&
          vgat%lfstatus (ilg,icc),&
          vgat%pandays (ilg,icc),&
          vgat%todfrac(ilg,icc),&
+         tracer%gLeafMassgat(ilg,icc),&
+         tracer%bLeafMassgat(ilg,icc),&
+         tracer%stemMassgat(ilg,icc),&
+         tracer%rootMassgat(ilg,icc),&
 
 ! allocated with ilg, ican:
          vgat%zolnc (ilg,ican),&
@@ -1460,6 +1487,8 @@ allocate(vgat%grclarea(ilg),&
         vgat%litresveg (ilg,iccp2,ignd),&
         vgat%soilcresveg (ilg,iccp2,ignd),&
         vgat%humiftrsveg (ilg,iccp2,ignd),& 
+        tracer%litrMassgat(ilg,iccp2,ignd),&
+        tracer%soilCMassgat(ilg,iccp2,ignd),&
 
 ! allocated with ilg,ignd:
 !          vgat%rgmgat(ilg,ignd),&

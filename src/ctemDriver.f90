@@ -56,7 +56,10 @@ contains
                lucsocin,   dstcemls3,                             & ! Out (Primary)
                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   & ! Out (Primary)
                                 paicgat,    slaicgat,                & ! Out (Primary)
-                 emit_co2,   emit_ch4,     reprocost,                &  ! Out (Primary)
+                 emit_co2,   emit_ch4,     reprocost, blfltrdt,     &  ! Out (Primary)
+                 glcaemls, blcaemls, rtcaemls, stcaemls,  ltrcemls, &  ! Out (Primary)
+                 ntchlveg, ntchsveg, ntchrveg,                      &  ! Out (Primary)
+
                   emit_co,   emit_nmhc,  smfunc_veg,                & ! Out (Secondary)
                    emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
                    emit_tpm, emit_tc,  emit_oc,    emit_bc,& ! Out (Secondary)
@@ -365,6 +368,17 @@ contains
   real, dimension(ilg), intent(out) :: armoss             !<autotrophic respiration of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: nppmoss            !<net primary production of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real, intent(out) :: blfltrdt(ilg,icc)  !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, intent(out) :: glcaemls(ilg,icc)  !<green leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, intent(out) :: blcaemls(ilg,icc)  !<brown leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, intent(out) :: rtcaemls(ilg,icc)  !<root carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, intent(out) :: stcaemls(ilg,icc)  !<stem carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, intent(out) :: ltrcemls(ilg,icc)  !<litter carbon emission disturbance losses, \f$kg c/m^2\f$
+  real, intent(out) :: ntchlveg(ilg,icc)  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+  real, intent(out) :: ntchsveg(ilg,icc)  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
+  real, intent(out) :: ntchrveg(ilg,icc)  !<fluxes for each pft: Net change in root biomass, 
+                                          !! the net change is the difference between allocation and
+                                          !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
 
   ! ---------------------------------------------
   ! Local variables:
@@ -398,21 +412,12 @@ contains
   real rmsvgstp(ilg,icc) !<
   real rmrvgstp(ilg,icc) !<
   real gppvgstp(ilg,icc) !<
-  real ntchlveg(ilg,icc) !<
-  real ntchsveg(ilg,icc) !<
-  real ntchrveg(ilg,icc) !<
   real stemltrm(ilg,icc) !<
   real rootltrm(ilg,icc) !<
   real glealtrm(ilg,icc) !<
   real stemltdt(ilg,icc)  !<
   real rootltdt(ilg,icc)  !<
   real glfltrdt(ilg,icc)  !<
-  real blfltrdt(ilg,icc)  !<
-  real glcaemls(ilg,icc)  !<
-  real blcaemls(ilg,icc)  !<
-  real rtcaemls(ilg,icc)  !<
-  real stcaemls(ilg,icc)  !<
-  real ltrcemls(ilg,icc)  !<
   real dscemlv1(ilg,icc)  !<
   real dscemlv2(ilg,icc)  !<
   real add2allo(ilg,icc)  !<
@@ -1124,8 +1129,8 @@ contains
   call disturb (stemmass, rootmass, gleafmas, bleafmas,& !In
                            thliq,    THLW,      THFC,    uwind,& !In
                             vwind,  lightng,  fcancmx, litrmass,& !In
-                         rmatctem,     ilg,           & !In
-                              il1,      il2,     sort, & !In
+                         rmatctem,     ilg,  maxAnnualActLyr,  & !In
+                              il1,      il2,     sort, zbotw,  & !In
                          grclarea,   thice,   popdin, lucemcom,& !In
                            dofire,  currlat,     iday, fsnow,& !In
                             isand,  & !In
