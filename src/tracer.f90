@@ -55,7 +55,7 @@ contains
   subroutine simpleTracer()
     
     use classic_params, only : icc, deltat
-    use ctem_statevars, only : tracer,c_switch
+    use ctem_statevars, only : tracer,c_switch,vgat
     
     implicit none 
     
@@ -64,26 +64,34 @@ contains
     real, pointer :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    real, pointer :: tracerLitrMass(:,:,:)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-    real, pointer :: tracerSoilCMass(:,:,:)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-    real, pointer :: tracerMossCMass(:,:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
-    real, pointer :: tracerMossLitrMass(:,:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+    real, pointer :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, pointer :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, pointer :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+    real, pointer :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
     real, pointer :: tracerco2conc(:)
     
-    real, pointer :: rmlveg(:,:)       !< Leaf maintenance resp. rate for each pft
-    real, pointer :: gppveg(:,:)       !< Gross primary productity for each pft
-    real, pointer :: rmsveg(:,:)       !< Stem maintenance resp. rate for each pft
-    real, pointer :: rmrveg(:,:)       !< Root maintenance resp. rate for each pft
-    real, pointer :: rgveg(:,:)        !< Growth resp. rate for each pft
-    real, pointer :: ltresveg(:,:,:)     !<fluxes for each pft: litter respiration for each pft + bare fraction
-    real, pointer :: scresveg(:,:,:)     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
-    real, pointer :: humiftrsveg(:,:)
+    real, pointer :: rmlveg(:,:)      !< Leaf maintenance resp. rate for each pft
+    real, pointer :: gppveg(:,:)      !< Gross primary productity for each pft
+    real, pointer :: rmsveg(:,:)      !< Stem maintenance resp. rate for each pft
+    real, pointer :: rmrveg(:,:)      !< Root maintenance resp. rate for each pft
+    real, pointer :: rgveg(:,:)       !< Growth resp. rate for each pft
+    real, pointer :: litresveg(:,:,:)  !<fluxes for each pft: litter respiration for each pft + bare fraction
+    real, pointer :: soilcresveg(:,:,:)  !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
+    real, pointer :: humiftrsveg(:,:,:) !<
+    real, pointer :: reprocost(:,:)   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+    real, pointer :: afrleaf(:,:)     !<allocation fraction for leaves
+    real, pointer :: afrstem(:,:)     !<allocation fraction for stems
+    real, pointer :: afrroot(:,:)     !<allocation fraction for roots
+    real, pointer :: tltrleaf(:,:)    !<total leaf litter fall rate (u-mol co2/m2.sec)
+    real, pointer :: tltrstem(:,:)    !<total stem litter fall rate (u-mol co2/m2.sec)
+    real, pointer :: tltrroot(:,:)    !<total root litter fall rate (u-mol co2/m2.sec)
+
     ! Local
     
     ! Point pointers 
 
-    tracerco2conc     => tracer%tracerCO2row
+    tracerco2conc     => tracer%tracerCO2rot
     tracerGLeafMass   => tracer%gLeafMassrow
     tracerBLeafMass   => tracer%bLeafMassrow
     tracerStemMass    => tracer%stemMassrow
@@ -93,14 +101,23 @@ contains
     tracerMossCMass   => tracer%mossCMassrow
     tracerMossLitrMass => tracer%mossLitrMassrow
     
-    rmlveg => vgat%rmlvegacc
-    rmrveg => vgat%rmrveg
-    rmsveg => vgat%rmsveg
-    gppveg => vgat%gppveg
-    rgveg  => vgat%rgveg
-    litresveg => vgat%litresveg
-    soilcresveg => vgat%soilcresveg
-    humiftrsveg => vgat%humiftrsveg
+    rmlveg            => vgat%rmlvegacc
+    rmrveg            => vgat%rmrveg
+    rmsveg            => vgat%rmsveg
+    gppveg            => vgat%gppveg
+    rgveg             => vgat%rgveg
+    litresveg         => vgat%litresveg
+    soilcresveg       => vgat%soilcresveg
+    humiftrsveg       => vgat%humiftrsveg
+    reprocost         => vgat%reprocost
+    afrleaf           => vgat%afrleaf
+    afrstem           => vgat%afrstem
+    afrroot           => vgat%afrroot
+    tltrleaf          => vgat%tltrleaf
+    tltrstem          => vgat%tltrstem
+    tltrroot          => vgat%tltrroot
+    
+    
     ! ---------
     
     
@@ -110,7 +127,7 @@ contains
 
     
     ! First update the green leaves
-    ! tracerGLeafMass + GPP - allocation to roots - allocation to stem - respiration - litterfall - conversion to brown leaves - combusted - growth resp.
+    ! tracerGLeafMass + GPP - allocation to roots - allocation to stem - respiration - litterfall - conversion to brown leaves - combusted - growth resp. - repro cost.
     
     ! Update brown leaves 
     ! tracerBLeafMass - respiration - litterfall - combusted

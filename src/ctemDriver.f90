@@ -56,7 +56,7 @@ contains
                lucsocin,   dstcemls3,                             & ! Out (Primary)
                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   & ! Out (Primary)
                                 paicgat,    slaicgat,                & ! Out (Primary)
-                 emit_co2,   emit_ch4,                              &  ! Out (Primary)
+                 emit_co2,   emit_ch4,     reprocost,                &  ! Out (Primary)
                   emit_co,   emit_nmhc,  smfunc_veg,                & ! Out (Secondary)
                    emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
                    emit_tpm, emit_tc,  emit_oc,    emit_bc,& ! Out (Secondary)
@@ -154,7 +154,7 @@ contains
   use balanceCarbon, only : balcar, prepBalanceC
   use mortality, only : mortalty, updatePoolsMortality
   use turnover, only : turnoverStemRoot, updatePoolsTurnover
-use soilC_processes, only : turbation
+  use soilC_processes, only : turbation
 
   implicit none
 
@@ -364,6 +364,7 @@ use soilC_processes, only : turbation
   real, dimension(ilg,icc), intent(out) :: vgbiomas_veg   !<
   real, dimension(ilg), intent(out) :: armoss             !<autotrophic respiration of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: nppmoss            !<net primary production of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
 
   ! ---------------------------------------------
   ! Local variables:
@@ -415,7 +416,6 @@ use soilC_processes, only : turbation
   real dscemlv1(ilg,icc)  !<
   real dscemlv2(ilg,icc)  !<
   real add2allo(ilg,icc)  !<
-  real reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
   real repro_cost_g(ilg)  !< Tile-level cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
   real rgmoss(ilg)        !< moss growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real litresmoss(ilg)    !< moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
@@ -1086,7 +1086,7 @@ use soilC_processes, only : turbation
   !!  carbon directly to the litter pool. We only add to non-perennially frozen soil
   !! layers so first check which layers are unfrozen and then do the allotment 
   !! appropriately. For defining which layers are frozen, we use the active layer depth.
-  call updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmatctem, & !In
+  call updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw, rmatctem, & !In
                           stemmass, rootmass, litrmass, rootlitr,& !In/Out
                          gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
 
@@ -1106,7 +1106,8 @@ use soilC_processes, only : turbation
 
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !! litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
-  call updatePoolsMortality(il1, il2, stemltrm, rootltrm, rmatctem, & !In
+  call updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In 
+                            rmatctem, maxAnnualActLyr, zbotw, & !In
                             stemmass, rootmass, litrmass, & !In/Out
                             glealtrm, gleafmas, bleafmas) !In/Out
 

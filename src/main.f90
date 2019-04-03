@@ -1119,6 +1119,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: rgveggat
   real, pointer, dimension(:,:) :: litrfallveggat
   real, pointer, dimension(:,:,:) :: humiftrsveggat
+  real, pointer, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
 
   real, pointer, dimension(:,:) :: rothrlosgat
   real, pointer, dimension(:,:) :: pfcancmxgat
@@ -2037,6 +2038,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   vgbiomas_veggat   => vgat%vgbiomas_veg
   litrfallveggat    => vgat%litrfallveg
   humiftrsveggat    => vgat%humiftrsveg
+  reprocost         => vgat%reprocost
 
   altotcount_ctm    => vgat%altotcount_ctm
   todfrac           => vgat%todfrac
@@ -2864,7 +2866,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
             &       lucsocingat,   dstcemls3gat,                                      &! Out (Primary)
             &     ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,   &! Out (Primary)
             &                          paicgat,         slaicgat,                     &! Out (Primary)
-            &       emit_co2gat,   emit_ch4gat,                                       &! Out (Primary)
+            &       emit_co2gat,   emit_ch4gat,        reprocost,                     &! Out (Primary)
             &        emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &! Out (Secondary)
             &             emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&! Out (Secondary)
             &            emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&! Out (Secondary)

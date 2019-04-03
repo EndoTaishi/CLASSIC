@@ -201,16 +201,18 @@ contains
 !! unfrozen and then do the allotment appropriately. For defining which
 !! layers are frozen, we use the active layer depth.
 !> @author Vivek Arora and Joe Melton
-subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmatctem,& !In
+subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw, rmatctem,& !In
                                 stemmass, rootmass, litrmass, rootlitr,& !In/Out
                                 gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
   
   use classic_params, only : ican, nol2pfts,classpfts,deltat,icc,ignd 
+  use ctemUtilities, only : unfrozenRoots
   
   implicit none 
 
   integer, intent(in) :: il1             !< il1=1
   integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
+  integer, intent(in) :: ilg             !< no. of grid cells/tiles in latitude circle
   real, intent(in) :: reprocost(:,:)     !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
      
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
@@ -226,11 +228,7 @@ subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmat
   real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
   
   ! Local.
-  real, dimension(ignd) :: unfrzrt        !< root distribution only over unfrozen layers
-  integer :: botlyr                       !< bottom layer of the unfrozen soil column
-  real :: frznrtlit                       !< fraction of root distribution in frozen layers
-  
-  
+  real, dimension(ilg,icc,ignd) :: unfrzrt        !< root distribution only over unfrozen layers
   integer :: k1,j,m,k2,i,k
   
   k1=0
@@ -287,36 +285,13 @@ subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmat
   !! subroutine and stem and root litter calculated in the turnover
   !! subroutine. Also add the reproduction carbon directly to the litter pool
 
+  !! We only add to non-perennially frozen soil layers so first check which layers are
+  !! unfrozen and then do the allotment appropriately. For defining which
+  !! layers are frozen, we use the active layer depth.
+  unfrzrt = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
+
   do 800 i = il1, il2
-
-      !! We only add to non-perennially frozen soil layers so first check which layers are
-      !! unfrozen and then do the allotment appropriately. For defining which
-      !! layers are frozen, we use the active layer depth.
-
-      ! Find the bottom of the unfrozen soil column:
-      botlyr = 1 ! we assume if the first layer is frozen that it still can
-                   ! accept the root litter. So initialize to 1.
-      do k = 1,ignd
-          if(maxAnnualActLyr(i) < zbotw(i,k)) exit
-            botlyr = k
-      end do
-
       do 805 j = 1, icc
-
-        ! Now we take the root distribution and adjust it to the soil profile we have
-        ! that is unfrozen
-
-        unfrzrt = 0.
-        if (botlyr == ignd) then !if the botlyr is the bottom of the soil column then just set to original
-                                 ! and move on.
-             unfrzrt(:) = rmatctem(i,j,:)
-        else ! there is some frozen soil so adjust how the root litter is distibuted
-          frznrtlit = sum(rmatctem(i,j,botlyr+1:ignd)) !determine how much of the distribution is in the frozen layers
-          do k = 1, botlyr
-              unfrzrt(k) = rmatctem(i,j,k) + rmatctem(i,j,k) / (1. - frznrtlit) * frznrtlit
-          end do
-        end if
-        
         do 810 k = 1, ignd
 
           if (k == 1) then
@@ -324,14 +299,14 @@ subroutine updatePoolsTurnover(il1, il2, reprocost, maxAnnualActLyr, zbotw, rmat
             ! which is assumed to be cones/seeds. The root litter is given in proportion
             ! to the adjusted root distribution
             litrmass(i,j,k)=litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
-                    + rootlitr(i,j) * unfrzrt(k) + reprocost(i,j)*(1.0/963.62) *deltat
+                    + rootlitr(i,j) * unfrzrt(i,j,k) + reprocost(i,j)*(1.0/963.62) *deltat
             ! litrmass(i,j,k)=litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
             !         + rootlitr(i,j) * rmatctem(i,j,k) + reprocost(i,j)*(1.0/963.62) *deltat
 
 
           else ! the lower soil layers get the roots, in the proportion that they
                ! are in the unfrozen soil column.
-            litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * unfrzrt(k)
+            litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * unfrzrt(i,j,k)
              ! litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
           end if
 

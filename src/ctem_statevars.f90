@@ -577,6 +577,7 @@ type veg_gat
     real, allocatable, dimension(:,:) :: rgveg      !<growth resp. rate for each pft
     real, allocatable, dimension(:,:) :: litrfallveg!<litter fall in \f$kg c/m^2\f$ for each pft
     real, allocatable, dimension(:,:,:) :: humiftrsveg!<
+    real, allocatable, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
 
     real, allocatable, dimension(:,:) :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: pfcancmx !<previous year's fractional coverages of pfts
@@ -1423,6 +1424,7 @@ allocate(vgat%grclarea(ilg),&
          vgat%rmrveg (ilg,icc),&
          vgat%rgveg (ilg,icc),&
          vgat%litrfallveg (ilg,icc),&
+         vgat%reprocost(ilg,icc),&
          vgat%anveg (ilg,icc),&
          vgat%rmlveg (ilg,icc),&
          vgat%geremort (ilg,icc),&
