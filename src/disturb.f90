@@ -19,8 +19,7 @@ contains
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
                     thliq,   THLW,       THFC,    uwind,      & !In
                     vwind,  lightng,  fcancmx, litrmass,      & !In
-                 rmatctem,      ilg,   maxAnnualActLyr,       & !In
-                      il1,      il2,     sort,   zbotw,       & !In
+                 rmatctem,      ilg,   il1,      il2,   sort, & !In
                  grclarea,    thice,   popdin, lucemcom,      & !In
                    dofire,  currlat,     iday,  fsnow,        & !In
                     isand,                                    & !In
@@ -81,15 +80,12 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
                           frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                           emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
                           grass, extnmois_veg, extnmois_duff, iccp1, nol2pfts
-  use ctemUtilities, only : unfrozenRoots
   
   implicit none
 
   real, dimension(ilg,icc), intent(out) :: pstemmass
   real, dimension(ilg,icc), intent(out) :: pgleafmass
-  real, intent(in)    :: maxAnnualActLyr(:)!< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
-  real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
-
+  
   integer :: ilg !<
   integer :: il1 !<il1=1
   integer :: il2 !<il2=ilg
@@ -209,7 +205,6 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
   logical, dimension(ilg,icc) :: fire_veg  !<fire occuring logical, Vivek
 
   real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary variables
-  real, dimension(ilg,icc,ignd) :: unfrzrt  !< root distribution only over unfrozen layers
   
   !>initialize required arrays to zero, or assign value
 
@@ -586,11 +581,6 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
   !>each vegetation component (leaves, stem, and root) based on their
   !>resistance to combustion. Update the veg pools due to combustion.
 
-  !! We only add to non-perennially frozen soil layers so first check which layers are
-  !! unfrozen and then do the allotment appropriately. For defining which
-  !! layers are frozen, we use the active layer depth.
-  unfrzrt = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
-
   do 520 j = 1, icc
     n = sort(j)
     do 530 i = il1, il2
@@ -624,8 +614,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
         litrmass(i,j,1) = litrmass(i,j,1) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
                         + rootltdt(i,j) * rmatctem(i,j,1) - ltrcemls(i,j)
         do k = 2, ignd
-          !litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
-          litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * unfrzrt(i,j,k)
+          litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
         end do
 
         !>Output the burned area per PFT (the units here are burned fraction of each PFTs area. So

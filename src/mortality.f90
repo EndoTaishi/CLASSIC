@@ -191,12 +191,11 @@ contains
 !!litter into the litter pool. The mortality for green grasses doesn't generate litter, instead they turn brown.
 !> @author Vivek Arora and Joe Melton
 subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In 
-                                rmatctem, maxAnnualActLyr, zbotw,  & !In
+                                rmatctem,   & !In
                                 stemmass, rootmass, litrmass, & !In/Out
                                 glealtrm, gleafmas, bleafmas) !In/Out
   
   use classic_params, only : ican, nol2pfts,classpfts,ignd,icc
-  use ctemUtilities, only : unfrozenRoots
   
   implicit none 
 
@@ -206,9 +205,7 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
   real, intent(in)    :: stemltrm(:,:)   !<stem litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(in)    :: rootltrm(:,:)   !<root litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
-  real, intent(in)    :: maxAnnualActLyr(:)!< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
-  real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
-
+  
   real, intent(inout) :: glealtrm(:,:)   !<green leaf litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(inout) :: stemmass(:,:)   !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
@@ -217,15 +214,9 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   
   integer :: k1,j,m,k2,i,k
-  real, dimension(ilg,icc,ignd) :: unfrzrt        !< root distribution only over unfrozen layers
   
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
-
-  !> We only add to non-perennially frozen soil layers so first check which layers are
-  !! unfrozen and then do the allotment appropriately. For defining which
-  !! layers are frozen, we use the active layer depth.
-  unfrzrt = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
   
   k1=0
   do 830 j = 1, ican
@@ -255,11 +246,9 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
         if (k == 1) then
           ! The first layer gets the leaf and stem litter. The root litter is given in proportion
           ! to the root distribution
-          !litrmass(i,m,k)=litrmass(i,m,k)+stemltrm(i,m)+rootltrm(i,m)*rmatctem(i,m,k)+glealtrm(i,m)
-          litrmass(i,m,k)=litrmass(i,m,k)+stemltrm(i,m)+rootltrm(i,m)*unfrzrt(i,m,k)+glealtrm(i,m)
+          litrmass(i,m,k)=litrmass(i,m,k)+stemltrm(i,m)+rootltrm(i,m)*rmatctem(i,m,k)+glealtrm(i,m)
         else
-          !litrmass(i,m,k)=litrmass(i,m,k)+rootltrm(i,m)*rmatctem(i,m,k)
-          litrmass(i,m,k)=litrmass(i,m,k)+rootltrm(i,m)*unfrzrt(i,m,k)
+          litrmass(i,m,k)=litrmass(i,m,k)+rootltrm(i,m)*rmatctem(i,m,k)
         end if
 845       continue
 840     continue

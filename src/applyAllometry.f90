@@ -8,6 +8,7 @@ module applyAllometry
 implicit none
 
 public :: allometry
+public :: unfrozenRoots
 
 contains
 
@@ -457,6 +458,12 @@ contains
 410 continue
 400 continue
 
+
+  !> We only allow roots in non-perennially frozen soil layers so first check which layers are
+  !! unfrozen and then adjust the distribution appropriately. For defining which
+  !! layers are frozen, we use the active layer depth.
+  rmatctem = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
+
   !> Make sure all fractions (of roots in each layer) add to one.
   do 411 j = 1, icc
     do 412 i = il1, il2
@@ -583,6 +590,60 @@ contains
   end subroutine allometry
 !!@}
 ! ---------------------------------------------------------------------------------------------------
+
+!>\ingroup allometry_unfrozenRoots
+!!@{ We only allow roots in non-perennially frozen soil layers so first check which layers are
+!! unfrozen and then correct the root distribution appropriately. For defining which
+!! layers are frozen, we use the active layer depth.
+!!@author J. Melton
+function unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
+
+  use classic_params, only : ignd,icc
+  
+  implicit none
+
+  integer, intent(in) :: il1             !< il1=1
+  integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
+  integer, intent(in) :: ilg             !< Number of grid cells/tiles in latitude circle
+  real, intent(in)    :: maxAnnualActLyr(:)!< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+  real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
+  real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's pfts in each soil layer
+
+  real :: unfrozenRoots(ilg,icc,ignd)             !< root distribution only over unfrozen layers  
+  
+  integer :: botlyr                       !< bottom layer of the unfrozen soil column
+  real :: frznrtlit                       !< fraction of root distribution in frozen layers
+  integer k,j,i
+
+  !! We only add to non-perennially frozen soil layers so first check which layers are
+  !! unfrozen and then do the allotment appropriately. For defining which
+  !! layers are frozen, we use the active layer depth.
+  unfrozenRoots = 0.
+  do i = il1, il2
+    ! Find the bottom of the unfrozen soil column:
+    botlyr = 1 ! we assume if the first layer is frozen that it still can
+                 ! accept the root litter. So initialize to 1.
+    do k = 1,ignd
+        if(maxAnnualActLyr(i) < zbotw(i,k)) exit
+          botlyr = k
+    end do
+
+    do j = 1, icc      
+      if (botlyr == ignd) then !if the botlyr is the bottom of the soil column then just set to original
+                               ! and move on.
+           unfrozenRoots(i,j,:) = rmatctem(i,j,:)
+      else ! there is some frozen soil so adjust how the root litter is distibuted
+        frznrtlit = sum(rmatctem(i,j,botlyr+1:ignd)) !determine how much of the distribution is in the frozen layers
+        do k = 1, botlyr
+            unfrozenRoots(i,j,k) = rmatctem(i,j,k) + rmatctem(i,j,k) / (1. - frznrtlit) * frznrtlit
+        end do
+      end if
+    end do 
+  end do 
+  
+end function unfrozenRoots
+!>@}
+! -----------------------------------------------------------------------------------------------
 !>\namespace allometry
 !!
 

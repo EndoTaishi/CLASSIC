@@ -201,12 +201,11 @@ contains
 !! unfrozen and then do the allotment appropriately. For defining which
 !! layers are frozen, we use the active layer depth.
 !> @author Vivek Arora and Joe Melton
-subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw, rmatctem,& !In
+subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
                                 stemmass, rootmass, litrmass, rootlitr,& !In/Out
                                 gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
   
   use classic_params, only : ican, nol2pfts,classpfts,deltat,icc,ignd 
-  use ctemUtilities, only : unfrozenRoots
   
   implicit none 
 
@@ -214,6 +213,7 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw,
   integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
   integer, intent(in) :: ilg             !< no. of grid cells/tiles in latitude circle
   real, intent(in) :: reprocost(:,:)     !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
      
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
@@ -223,12 +223,8 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw,
   real, intent(inout) :: leaflitr(:,:)   !<leaf litter \f$(kg C/m^2)\f$
   real, intent(inout) :: rootlitr(:,:)   !<root litter \f$(kg C/m^2)\f$
   real, intent(inout) :: stemlitr(:,:)   !<stem litter \f$(kg C/m^2)\f$
-  real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
-  real, intent(in)    :: maxAnnualActLyr(:)!< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
-  real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
   
   ! Local.
-  real, dimension(ilg,icc,ignd) :: unfrzrt        !< root distribution only over unfrozen layers
   integer :: k1,j,m,k2,i,k
   
   k1=0
@@ -285,11 +281,6 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw,
   !! subroutine and stem and root litter calculated in the turnover
   !! subroutine. Also add the reproduction carbon directly to the litter pool
 
-  !! We only add to non-perennially frozen soil layers so first check which layers are
-  !! unfrozen and then do the allotment appropriately. For defining which
-  !! layers are frozen, we use the active layer depth.
-  unfrzrt = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
-
   do 800 i = il1, il2
       do 805 j = 1, icc
         do 810 k = 1, ignd
@@ -299,15 +290,12 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw,
             ! which is assumed to be cones/seeds. The root litter is given in proportion
             ! to the adjusted root distribution
             litrmass(i,j,k)=litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
-                    + rootlitr(i,j) * unfrzrt(i,j,k) + reprocost(i,j)*(1.0/963.62) *deltat
-            ! litrmass(i,j,k)=litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
-            !         + rootlitr(i,j) * rmatctem(i,j,k) + reprocost(i,j)*(1.0/963.62) *deltat
+                    + rootlitr(i,j) * rmatctem(i,j,k) + reprocost(i,j)*(1.0/963.62) *deltat
 
 
           else ! the lower soil layers get the roots, in the proportion that they
                ! are in the unfrozen soil column.
-            litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * unfrzrt(i,j,k)
-             ! litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
+            litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
           end if
 
   810     continue

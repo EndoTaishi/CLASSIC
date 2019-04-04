@@ -1092,7 +1092,7 @@ contains
   !!  carbon directly to the litter pool. We only add to non-perennially frozen soil
   !! layers so first check which layers are unfrozen and then do the allotment 
   !! appropriately. For defining which layers are frozen, we use the active layer depth.
-  call updatePoolsTurnover(il1, il2, ilg, reprocost, maxAnnualActLyr, zbotw, rmatctem, & !In
+  call updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, & !In
                           stemmass, rootmass, litrmass, rootlitr,& !In/Out
                          gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
 
@@ -1113,7 +1113,7 @@ contains
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !! litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
   call updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In 
-                            rmatctem, maxAnnualActLyr, zbotw, & !In
+                            rmatctem, & !In
                             stemmass, rootmass, litrmass, & !In/Out
                             glealtrm, gleafmas, bleafmas) !In/Out
 
@@ -1130,8 +1130,7 @@ contains
   call disturb (stemmass, rootmass, gleafmas, bleafmas,& !In
                            thliq,    THLW,      THFC,    uwind,& !In
                             vwind,  lightng,  fcancmx, litrmass,& !In
-                         rmatctem,     ilg,  maxAnnualActLyr,  & !In
-                              il1,      il2,     sort, zbotw,  & !In
+                         rmatctem,     ilg,  il1,      il2,     sort, & !In
                          grclarea,   thice,   popdin, lucemcom,& !In
                            dofire,  currlat,     iday, fsnow,& !In
                             isand,  & !In
