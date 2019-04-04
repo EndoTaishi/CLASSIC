@@ -27,16 +27,17 @@
 
 # Object files
 OBJ = fileIOModule.o classic_params.o ctem_statevars.o class_statevars.o peatlands_mod.o \
-	generalUtils.o APREP.o GRALB.o mvidx.o SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o \
+	generalUtils.o ctemUtilities.o APREP.o GRALB.o mvidx.o SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o \
 	TNPREP.o WFILL.o CANADD.o GRDRAN.o SNOALBW.o  TPREP.o WFLOW.o CANALB.o CLASSG.o \
-	GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemg1.o bio2str.o ctems1.o ctemg2.o \
+	GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemg1.o applyAllometry.o ctems1.o ctemg2.o \
 	PHTSYN3.o CANVAP.o CLASSI.o CWCALC.o ICEBAL.o SUBCAN.o TSOLVE.o XIT.o CGROW.o CLASSS.o \
 	DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o \
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
-	TNPOST.o WEND.o ctemUtilities.o  balanceCarbon.o autotrophicRespiration.o allocate.o phenolgy.o  \
+	TNPOST.o WEND.o  balanceCarbon.o autotrophicRespiration.o allocate.o phenolgy.o  \
 	turnover.o mortality.o disturb.o ctems2.o landuse_change_mod.o soil_ch4uptake.o \
-	competition_mod.o heterotrophicRespiration.o soilC_processes.o tracer.o ctemDriver.o outputManager.o prepareOutputs.o  \
-	model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o xmlManager.o CLASSIC.o
+	competition_mod.o heterotrophicRespiration.o soilC_processes.o tracer.o ctemDriver.o outputManager.o \
+	prepareOutputs.o  model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o \
+	xmlManager.o CLASSIC.o
 
 # Object files (.o and .mod) are placed into directories named according to the mode. In the serial
 # compiler case, these are placed into the "objectFiles" directory.

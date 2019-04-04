@@ -332,7 +332,7 @@ module generalUtils
         endif
     end function closeEnough
     !!@}
-
+! ---------------------------------------------------------------------------------------------------
     !>\ingroup generalUtils_initRandomSeed
     !!@{
     !! This subroutine sets a repeatable seed for the random number generator. 

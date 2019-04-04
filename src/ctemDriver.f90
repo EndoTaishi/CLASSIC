@@ -158,6 +158,7 @@ contains
   use mortality, only : mortalty, updatePoolsMortality
   use turnover, only : turnoverStemRoot, updatePoolsTurnover
   use soilC_processes, only : turbation
+  use applyAllometry, only : allometry
 
   implicit none
 
@@ -438,8 +439,8 @@ contains
 
   !> Begin calculations
 
-  !> Generate the sort index for correspondence between 9 pfts and the
-  !> 12 values in the parameter vectors
+  !> Generate the sort index for correspondence between CTEM pfts and the
+  !>  values in the parameter vectors
   sort = genSortIndex()
 
   if (PFTCompetition) then
@@ -1200,7 +1201,7 @@ contains
   !> Finally find vegetation structural attributes which can be passed 
   !! to the land surface scheme using leaf, stem, and root biomass.
   !>
-  call bio2str( gleafmas, bleafmas, stemmass, rootmass,& !In
+  call allometry( gleafmas, bleafmas, stemmass, rootmass,& !In
                    il1,        il2,        ilg,      zbotw,  & !In
                  delzw,   soildpth,    fcancmx,  & !In
              ipeatland,  maxAnnualActLyr,              & !In
@@ -1210,7 +1211,7 @@ contains
                 alnirc,    paicgat,   slaicgat) !Out
 
   !>
-  !> Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str
+  !> Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by allometry
   !>
   gavglai (:) = 0.0
   do j = 1, icc

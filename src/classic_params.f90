@@ -27,6 +27,7 @@ public :: allocateParamsCLASSIC
 public :: readin_PFTnums
 public :: readin_params
 public :: prepareGlobalParams
+private :: findPFTindexes
 
 ! Constants
 
@@ -157,6 +158,7 @@ integer, dimension(:), allocatable :: nol2pfts !< Number of level 2 PFTs calcula
 logical, dimension(:), allocatable :: crop     !< simple crop matrix, define number and position of the crops (NOTE: dimension icc)
 logical, dimension(:), allocatable :: grass    !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
 integer, dimension(:), allocatable :: CL4CTEM  !< Indexing of the CTEM-level PFTs into a CLASS PFT-level array.
+integer, dimension(:,:), allocatable :: reindexPFTs !< Reindexing arrays of CLASS variables into the parameters arrays at the CTEM level.
 
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
@@ -727,6 +729,7 @@ subroutine allocateParamsCLASSIC()
     allocate(GROWYR(18,4,2),&
             ZORAT(ican),&
             classpfts(ican),&
+            reindexPFTs(ican,2),&
             CANEXT(ican),&
             XLEAF(ican),&
             RSMN(ican), &
@@ -1037,16 +1040,13 @@ subroutine readin_params
         nol2pfts(i)=isumc  ! number of level 2 pfts
     end do
     
+    ! Find the reindexing array to go from CLASS PFTs to CTEM PFTs in the parameter
+    ! arrays.
+    reindexPFTs = findPFTindexes()
+    
     ! Calculate the CL4CTEM which helps index CTEM to CLASS in APREP.
-    k1c=0
     do i = 1, ican
-      if(i.eq.1) then
-        k1c = k1c + 1
-      else
-        k1c = k1c + nol2pfts(i-1)
-      endif
-      k2c = k1c + nol2pfts(i) - 1
-      do m = k1c, k2c
+      do m = reindexPFTs(i,1), reindexPFTs(i,2)
         CL4CTEM(m) = i
       end do
     end do
@@ -1088,6 +1088,33 @@ subroutine readin_params
 
 end subroutine readin_params
 !!@}
+
+! ---------------------------------------------------------------------------------------------------
+!>\ingroup classic_params_reindexPFTs
+!!@{
+!> Provides indexes to relate the CLASS PFTs to the CTEM ones in the 
+!! parameter arrays.
+  function findPFTindexes()
+    
+    implicit none 
+    
+    integer :: j,k1c,k2c    
+    integer :: findPFTindexes(ican,2)
+    
+    k1c = 0
+    do j = 1, ican      
+      if (j == 1) then
+        k1c = k1c + 1
+      else
+        k1c = k1c + nol2pfts(j-1)
+      endif
+      k2c = k1c + nol2pfts(j) - 1
+      findPFTindexes(j,1) = k1c
+      findPFTindexes(j,2) = k2c      
+    end do 
+
+  end function findPFTindexes
+
 
 !>\file
 !> This module holds CLASSIC globally accessible parameters

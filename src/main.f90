@@ -68,7 +68,8 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
   use tracer,              only : tracerDynamics
-
+  use applyAllometry,      only : allometry
+  
   implicit none
 
   ! Arguments
@@ -2396,7 +2397,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         paicrow,    slaicrow, FAREROT,&
         ipeatlandrow,maxAnnualActLyrROT)
 
-    call bio2str( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
+    call allometry( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
                             1,           nml,          ilg,      zbtwgat, &
                       dlzwgat,       sdepgat,   fcancmxgat, &
                  ipeatlandgat,maxAnnualActLyrGAT, &
