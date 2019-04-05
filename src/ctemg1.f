@@ -11,6 +11,9 @@ C! Performs initial 'gather' operation on CTEM variables for consistency
      e         veghghtgat,rootdpthgat,   alvsctmgat,   alirctmgat,
      f            paicgat,   slaicgat,   faregat,    
      1       ipeatlandgat, maxAnnualActLyrGAT,
+     6      tracergLeafMassgat, tracerBLeafMassgat,tracerStemMassgat,
+     7      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,
+     8      tracerMossCMassgat, tracerMossLitrMassgat,
      g              ilmos,      jlmos,       iwmos,         jwmos,
      h                nml,
      i        gleafmasrow,bleafmasrow, stemmassrow,   rootmassrow,
@@ -19,7 +22,11 @@ C! Performs initial 'gather' operation on CTEM variables for consistency
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
      n         alirctmrow,    paicrow,    slaicrow,  FAREROT,         
-     o         ipeatlandrow, maxAnnualActLyrROT)
+     o         ipeatlandrow, maxAnnualActLyrROT,
+     6      tracergLeafMassrot, tracerBLeafMassrot,tracerStemMassrot,
+     7      tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,
+     8      tracerMossCMassrot, tracerMossLitrMassrot)
+
 
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -29,7 +36,7 @@ c     July 5 2009   - gather operation on ctem variables for consistency
 c                   with class' tiled version
 c     Rong Li
 c
-      use classic_params,only : nlat,nmos,ilg,ignd,ican,icp1,icc
+      use classic_params,only : nlat,nmos,ilg,ignd,ican,icp1,icc,iccp2
 
       implicit none
 c
@@ -74,6 +81,26 @@ c
      c         paicrow(nlat,nmos,ican),       slaicrow(nlat,nmos,ican),
      d         maxAnnualActLyrROT(nlat,nmos)
       integer  ipeatlandrow(nlat,nmos)
+      
+      ! allocated with nlat,nmos,...:
+      real :: tracermossCMassrot(nlat,nmos)     !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+      real :: tracermossLitrMassrot(nlat,nmos)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+      real :: tracergLeafMassrot(nlat,nmos,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerbLeafMassrot(nlat,nmos,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerstemMassrot(nlat,nmos,icc)       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerrootMassrot(nlat,nmos,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerlitrMassrot(nlat,nmos,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+      real :: tracersoilCMassrot(nlat,nmos,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+
+      real :: tracermossCMassgat(ilg)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+      real :: tracermossLitrMassgat(ilg)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+      real :: tracergLeafMassgat(ilg,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerbLeafMassgat(ilg,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerstemMassgat(ilg,icc)       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerrootMassgat(ilg,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerlitrMassgat(ilg,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+      real :: tracersoilCMassgat(ilg,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+      
 c
 c----------------------------------------------------------------------
       do 100 k=1,nml
@@ -81,6 +108,10 @@ c----------------------------------------------------------------------
           ipeatlandgat(k)=ipeatlandrow(ilmos(k),jlmos(k))   
           faregat(k) = FAREROT(ilmos(k), jlmos(k))
           maxAnnualActLyrGAT(k) = maxAnnualActLyrROT(ilmos(k), jlmos(k))
+          tracerMossCMassgat(k) = tracerMossCMassrot(ilmos(k),jlmos(k)) 
+          tracermossLitrMassgat(k) = 
+     1      tracermossLitrMassrot(ilmos(k),jlmos(k))
+
 100   continue
           
 c
@@ -97,6 +128,13 @@ c
           bmasveggat(k,l)  = bmasvegrow(ilmos(k),jlmos(k),l)
           veghghtgat(k,l)  = veghghtrow(ilmos(k),jlmos(k),l)
           rootdpthgat(k,l) = rootdpthrow(ilmos(k),jlmos(k),l)
+          tracergLeafMassgat(k,l)=
+     1                  tracergLeafMassrot(ilmos(k),jlmos(k),l)
+          tracerbLeafMassgat(k,l)=
+     1                        tracerbLeafMassrot(ilmos(k),jlmos(k),l)
+          tracerStemMassgat(k,l) =tracerStemMassrot(ilmos(k),jlmos(k),l)
+          tracerRootMassgat(k,l) =tracerRootMassrot(ilmos(k),jlmos(k),l)
+
 101   continue
 
 c
@@ -129,5 +167,15 @@ c
            rmatcgat(k,l,m)=rmatcrow(ilmos(k),jlmos(k),l,m)
 290   continue
 c
+      do l = 1, iccp2
+        do k = 1,nml 
+          do m = 1, ignd 
+            tracerSoilCMassgat(k,l,m) =
+     1                     tracerSoilCMassrot(ilmos(k),jlmos(k),l,m)
+            tracerLitrMassgat(k,l,m) = 
+     1                     tracerLitrMassrot(ilmos(k),jlmos(k),l,m)
+          end do 
+        end do 
+      end do 
       return
       end

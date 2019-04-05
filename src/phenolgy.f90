@@ -101,7 +101,7 @@ subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, & !In
              &       rmatctem, stemmass, rootmass,  sort,& !In
              &       fcancmx, isand,& !In
              &       lfstatus,  pandays,colddays, &  ! In/Out
-             &       flhrloss,  leaflitr ) ! Out
+             &       flhrloss,  leaflitr, phenLeafGtoB ) ! Out
              
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
@@ -211,6 +211,8 @@ subroutine phenolgy(gleafmas, bleafmas,  il1,      il2, & !In
       real coldlsrt(ilg,icc)      !<cold loss rate
       real flhrloss(ilg,icc)      !<fall & harvest loss for bdl dcd plants and crops, respectively, \f$kg c/m^2\f$.
       real lfthrs(ilg,icc)        !<threshold lai for finding leaf status
+
+      real, intent(out) :: phenLeafGtoB(ilg,icc)     !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
 
       character(8) :: pftkind
 !>
@@ -863,6 +865,7 @@ do 410 i = il1, il2
 !!brown grass. we then find the leaf litter from the brown grass
 !!which will then go into the litter pool.
 !!
+    phenLeafGtoB = 0.
     do 620 j = 1,icc
      pftkind = ctempfts(j)
      select case(pftkind)
@@ -880,11 +883,15 @@ do 410 i = il1, il2
             bleafmas(i,j) = bleafmas(i,j)+nrmlloss(i,j)+drgtloss(i,j)+  &
      &                      coldloss(i,j)
           endif
+          
+          ! Store the amount of green leaf converted to brown for output/tracer 
+          phenLeafGtoB(i,j) = nrmlloss(i,j) + drgtloss(i,j) + coldloss(i,j)
           nrmlloss(i,j) = 0.0
           drgtloss(i,j) = 0.0
           coldloss(i,j) = 0.0
-!>we assume life span of brown grass is 10% that of green grass
-!!but this is an adjustable parameter.
+          
+          !>we assume life span of brown grass is 10% that of green grass
+          !!but this is an adjustable parameter.
           if (leapnow) then
             nrmlloss(i,j) = bleafmas(i,j)*(1.0-exp(-1.0/(0.10*366.0*lfespany(n))))
           else

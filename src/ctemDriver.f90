@@ -56,10 +56,10 @@ contains
                lucsocin,   dstcemls3,                             & ! Out (Primary)
                 ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills,   & ! Out (Primary)
                                 paicgat,    slaicgat,                & ! Out (Primary)
-                 emit_co2,   emit_ch4,     reprocost, blfltrdt,     &  ! Out (Primary)
+                 emit_co2,   emit_ch4, reprocost, blfltrdt, glfltrdt, &  ! Out (Primary)
                  glcaemls, blcaemls, rtcaemls, stcaemls,  ltrcemls, &  ! Out (Primary)
-                 ntchlveg, ntchsveg, ntchrveg,                      &  ! Out (Primary)
-
+                 ntchlveg, ntchsveg, ntchrveg,  mortLeafGtoB,       &  ! Out (Primary)
+                 phenLeafGtoB,                                      &  ! Out (Primary)
                   emit_co,   emit_nmhc,  smfunc_veg,                & ! Out (Secondary)
                    emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
                    emit_tpm, emit_tc,  emit_oc,    emit_bc,& ! Out (Secondary)
@@ -370,6 +370,7 @@ contains
   real, dimension(ilg), intent(out) :: nppmoss            !<net primary production of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
   real, intent(out) :: blfltrdt(ilg,icc)  !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, intent(out) :: glfltrdt(ilg,icc)  !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
   real, intent(out) :: glcaemls(ilg,icc)  !<green leaf carbon emission disturbance losses, \f$kg c/m^2\f$
   real, intent(out) :: blcaemls(ilg,icc)  !<brown leaf carbon emission disturbance losses, \f$kg c/m^2\f$
   real, intent(out) :: rtcaemls(ilg,icc)  !<root carbon emission disturbance losses, \f$kg c/m^2\f$
@@ -380,6 +381,9 @@ contains
   real, intent(out) :: ntchrveg(ilg,icc)  !<fluxes for each pft: Net change in root biomass, 
                                           !! the net change is the difference between allocation and
                                           !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
+  real, intent(out) :: mortLeafGtoB(ilg,icc)  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
+  real, intent(out) :: phenLeafGtoB(ilg,icc)  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
+
 
   ! ---------------------------------------------
   ! Local variables:
@@ -418,7 +422,6 @@ contains
   real glealtrm(ilg,icc) !<
   real stemltdt(ilg,icc)  !<
   real rootltdt(ilg,icc)  !<
-  real glfltrdt(ilg,icc)  !<
   real dscemlv1(ilg,icc)  !<
   real dscemlv2(ilg,icc)  !<
   real add2allo(ilg,icc)  !<
@@ -1075,7 +1078,7 @@ contains
                  rmatctem, stemmass, rootmass,     sort,&!In 
                  fcancmx,  isand, &!In 
                  lfstatus,  pandays, colddays, & !In/Out
-                 flhrloss, leaflitr ) ! Out
+                 flhrloss, leaflitr, phenLeafGtoB ) ! Out
                          
   !> While leaf litter is calculated in the phenology subroutine, stem
   !! and root turnover is calculated in the turnoverStemRoot subroutine.
@@ -1115,8 +1118,8 @@ contains
   call updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In 
                             rmatctem, & !In
                             stemmass, rootmass, litrmass, & !In/Out
-                            glealtrm, gleafmas, bleafmas) !In/Out
-
+                            glealtrm, gleafmas, bleafmas,& !In/Out
+                            mortLeafGtoB) ! Out
   !    ------------------------------------------------------------------
   !>
   !> Call the disturbance subroutine which calculates mortality due to fire and other disturbances.

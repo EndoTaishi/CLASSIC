@@ -2766,7 +2766,7 @@ contains
 
         use class_statevars, only : class_rot
         use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
-                                    resetmonthend,ctem_mo
+                                    resetmonthend,ctem_mo, tracer
         use classic_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed,iccp2,ignd
         use outputManager, only : writeOutput1D,consecDays
 
@@ -2790,6 +2790,11 @@ contains
         logical, pointer :: dopertileoutput
         logical, pointer :: transientOBSWETF
         integer, pointer :: fixedYearOBSWETF
+        integer, pointer :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                      !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                      !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                      !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                      !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
 
         real, pointer, dimension(:,:) :: FAREROT !<Fractional coverage of mosaic tile on modelled area
 
@@ -2970,6 +2975,19 @@ contains
         real, pointer, dimension(:) :: ch4soills_mo_g
         real, pointer, dimension(:) :: cProduct_mo_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
         real, pointer, dimension(:) :: fProductDecomp_mo_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-
+        
+        real, pointer, dimension(:,:) :: tracermossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: tracermossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+
+        
+        real, pointer, dimension(:,:,:) :: tracergLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerbLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerstemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerrootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+        ! allocated with nlat,nmos,iccp2,ignd:
+        real, pointer, dimension(:,:,:,:) :: tracerlitrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracersoilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+
         ! local
         integer :: i,m,j,nt,k
         real :: barefrac
@@ -2993,7 +3011,8 @@ contains
         dopertileoutput       => c_switch%dopertileoutput
         transientOBSWETF      => c_switch%transientOBSWETF
         fixedYearOBSWETF      => c_switch%fixedYearOBSWETF
-
+        useTracer             => c_switch%useTracer
+        
         FAREROT => class_rot%FAREROT
 
         pftexistrow           => vrot%pftexist
@@ -3127,6 +3146,15 @@ contains
         vvaccrow_m        => vrot%vvaccrow_m
         litrfallvegrow    => vrot%litrfallveg
         humiftrsvegrow    => vrot%humiftrsveg
+        
+        tracerGLeafMassrot   => tracer%gLeafMassrot
+        tracerBLeafMassrot   => tracer%bLeafMassrot
+        tracerStemMassrot    => tracer%stemMassrot
+        tracerRootMassrot    => tracer%rootMassrot
+        tracerLitrMassrot    => tracer%litrMassrot
+        tracerSoilCMassrot   => tracer%soilCMassrot
+        tracerMossCMassrot   => tracer%mossCMassrot
+        tracerMossLitrMassrot => tracer%mossLitrMassrot
 
         laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
         stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
@@ -3559,8 +3587,11 @@ contains
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo' ,timeStamp,'fFireCH4',[emit_ch4_mo(i,m,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo' ,timeStamp,'fFire',[emit_co2_mo(i,m,:)])
                             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo' ,timeStamp,'burntFractionAll',[burnfrac_mo(i,m,:)])
-    !                            smfuncveg_mo(i,m,j), &
-    !                            bterm_mo(i,m,j),lterm_mo_t(i,m),mterm_mo(i,m,j),wind_mo_t &
+
+                        if (useTracer > 0) then             
+                          call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerGLeafMass' ,timeStamp,'cLeafTracer',[tracerBLeafMassrot(i,m,:)])
+                        end if 
+
                         end if
                     end if
                 end if
@@ -3839,7 +3870,7 @@ contains
     real, pointer, dimension(:) :: peatdep_yr_g
     real, pointer, dimension(:) :: cProduct_yr_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, pointer, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
-
+    
     ! local
     integer :: i,m,j,nt,k
     real :: barefrac
@@ -3991,7 +4022,7 @@ contains
     veghghtrow        => vrot%veghght
 
     peatdeprow            => vrot%peatdep
-
+    
     laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
     stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
     rootmass_yr_g         =>ctem_grd_yr%rootmass_yr_g
@@ -4398,8 +4429,7 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)])
           end if
-!                            smfuncveg_yr(i,m,j), &
-!                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
+          
         end if
       end if
 

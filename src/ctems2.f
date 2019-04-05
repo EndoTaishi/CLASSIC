@@ -51,6 +51,9 @@
      3      anmossrow, rmlmossrow, gppmossrow, armossrow,
      4      nppmossrow,peatdeprow,litrmsmossrow,Cmossmasrow,
      5      dmossrow, ipeatlandrow,pddrow,wetfrac_presrow,!thlqaccrow_m,thicaccrow_m,
+     6      tracergLeafMassrot, tracerBLeafMassrot,tracerStemMassrot,
+     7      tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,
+     8      tracerMossCMassrot, tracerMossLitrMassrot,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -96,7 +99,11 @@ c --
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      3      anmossgat, rmlmossgat, gppmossgat,armossgat,
      4      nppmossgat,peatdepgat,litrmsmossgat,Cmossmasgat,
-     5      dmossgat,ipeatlandgat,pddgat,wetfrac_presgat)!,thlqaccgat_m,thicaccgat_m)
+     5      dmossgat,ipeatlandgat,pddgat,wetfrac_presgat,
+     6      tracergLeafMassgat, tracerBLeafMassgat,tracerStemMassgat,
+     7      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,
+     8      tracerMossCMassgat, tracerMossLitrMassgat)!,thlqaccgat_m,thicaccgat_m)
+
 
 c     Dec 23 2016     Remove thlqaccXXX_m/thicaccXXX_m
 c     Ed Chan
@@ -333,6 +340,24 @@ c   Peatland variables
 
       integer  ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 
+      ! allocated with nlat,nmos,...:
+      real :: tracermossCMassrot(nlat,nmos)     !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+      real :: tracermossLitrMassrot(nlat,nmos)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+      real :: tracergLeafMassrot(nlat,nmos,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerbLeafMassrot(nlat,nmos,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerstemMassrot(nlat,nmos,icc)       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerrootMassrot(nlat,nmos,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerlitrMassrot(nlat,nmos,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+      real :: tracersoilCMassrot(nlat,nmos,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+
+      real :: tracermossCMassgat(ilg)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+      real :: tracermossLitrMassgat(ilg)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+      real :: tracergLeafMassgat(ilg,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerbLeafMassgat(ilg,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerstemMassgat(ilg,icc)       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerrootMassgat(ilg,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+      real :: tracerlitrMassgat(ilg,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+      real :: tracersoilCMassgat(ilg,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdeprow(ilmos(k),jlmos(k))        = sdepgat(k)
@@ -392,6 +417,10 @@ c----------------------------------------------------------------------
           dry_season_lengthrow(ilmos(k),jlmos(k)) =
      1                           dry_season_lengthgat(k)
 
+          tracerMossCMassrot(ilmos(k),jlmos(k)) = 
+     1      tracerMossCMassgat(k)
+          tracermossLitrMassrot(ilmos(k),jlmos(k)) = 
+     1      tracermossLitrMassgat(k)
 c
 100   continue
 c
@@ -471,6 +500,13 @@ c         fire variables
           emit_ocrow(ilmos(k),jlmos(k),l)     = emit_ocgat(k,l)
           emit_bcrow(ilmos(k),jlmos(k),l)     = emit_bcgat(k,l)
           burnvegfrow(ilmos(k),jlmos(k),l)    = burnvegfgat(k,l)
+          
+          tracergLeafMassrot(ilmos(k),jlmos(k),l)=
+     1                         tracergLeafMassgat(k,l)
+          tracerbLeafMassrot(ilmos(k),jlmos(k),l)=
+     1                        tracerbLeafMassgat(k,l)
+          tracerStemMassrot(ilmos(k),jlmos(k),l) =tracerStemMassgat(k,l)
+          tracerRootMassrot(ilmos(k),jlmos(k),l) =tracerRootMassgat(k,l)                    
 c
 101   continue
 c
@@ -489,6 +525,12 @@ c
           litresvegrow(ilmos(k),jlmos(k),l,m) = litresveggat(k,l,m)
           soilcresvegrow(ilmos(k),jlmos(k),l,m)=soilcresveggat(k,l,m)
           humiftrsvegrow(ilmos(k),jlmos(k),l,m) = humiftrsveggat(k,l,m)
+          
+          tracerSoilCMassrot(ilmos(k),jlmos(k),l,m) =
+     1                           tracerSoilCMassgat(k,l,m)
+          tracerLitrMassrot(ilmos(k),jlmos(k),l,m) = 
+     1                            tracerLitrMassgat(k,l,m)
+          
          end do          
 103   continue
 

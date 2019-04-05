@@ -193,7 +193,8 @@ contains
 subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In 
                                 rmatctem,   & !In
                                 stemmass, rootmass, litrmass, & !In/Out
-                                glealtrm, gleafmas, bleafmas) !In/Out
+                                glealtrm, gleafmas, bleafmas, & !In/Out
+                                mortLeafGtoB) ! Out
   
   use classic_params, only : ican, nol2pfts,classpfts,ignd,icc
   
@@ -213,11 +214,13 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   
+  real, intent(out) :: mortLeafGtoB(ilg,icc)     !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
+  
   integer :: k1,j,m,k2,i,k
   
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
-  
+  mortLeafGtoB = 0.
   k1=0
   do 830 j = 1, ican
    if(j.eq.1) then
@@ -236,6 +239,7 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
         case('Grass')    ! grasses
           gleafmas(i,m)=gleafmas(i,m)-glealtrm(i,m)
           bleafmas(i,m)=bleafmas(i,m)+glealtrm(i,m)
+          mortLeafGtoB(i,m) = glealtrm(i,m)
           glealtrm(i,m)=0.0
         case default
           print*,'Unknown CLASS PFT in mortality ',classpfts(j)

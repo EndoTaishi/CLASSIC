@@ -53,7 +53,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use landuse_change,      only : initializeLandCover
   use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&
                                   resetmonthend,resetyearend,&
-                                  ctem_tile,resetMosaicAccum
+                                  ctem_tile,resetMosaicAccum,tracer
   use class_statevars,     only : class_gat,class_rot,resetAccVars,&
                                   resetclassmon,resetclassyr,initDiagnosticVars
   use prepareOutputs,      only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
@@ -67,7 +67,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use metDisaggModule,     only : disaggMet
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
-  use tracer,              only : tracerDynamics
+  use tracerModule,              only : tracerDynamics
   use applyAllometry,      only : allometry
   
   implicit none
@@ -1063,12 +1063,14 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: stcaemls  !<stem carbon emission disturbance losses, \f$kg c/m^2\f$
   real, pointer, dimension(:,:) :: ltrcemls  !<litter carbon emission disturbance losses, \f$kg c/m^2\f$
   real, pointer, dimension(:,:) :: blfltrdt  !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, pointer, dimension(:,:) :: glfltrdt  !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
   real, pointer, dimension(:,:) :: ntchlveg  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
   real, pointer, dimension(:,:) :: ntchsveg  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
   real, pointer, dimension(:,:) :: ntchrveg  !<fluxes for each pft: Net change in root biomass, 
                                                 !! the net change is the difference between allocation and
                                                 !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-
+  real, pointer, dimension(:,:) :: mortLeafGtoB  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
+  real, pointer, dimension(:,:) :: phenLeafGtoB  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
 
 
   real, pointer, dimension(:) :: extnprobgat
@@ -1251,6 +1253,32 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:) :: anmossac_t
   real, pointer, dimension(:) :: rmlmossac_t
   real, pointer, dimension(:) :: gppmossac_t
+  
+  real, pointer, dimension(:,:) :: tracermossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+  real, pointer, dimension(:,:) :: tracermossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+
+  
+  real, pointer, dimension(:,:,:) :: tracergLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:,:) :: tracerbLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:,:) :: tracerstemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:,:) :: tracerrootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  ! allocated with nlat,nmos,iccp2,ignd:
+  real, pointer, dimension(:,:,:,:) :: tracerlitrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:,:,:) :: tracersoilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  
+  ! allocated with ilg,...:
+  real, pointer, dimension(:) :: tracermossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+  real, pointer, dimension(:) :: tracermossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+
+  ! allocated with nlat,nmos,icc:
+  real, pointer, dimension(:,:) :: tracergLeafMassgat      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: tracerbLeafMassgat      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: tracerstemMassgat       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:) :: tracerrootMassgat       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  ! allocated with nlat,nmos,iccp2,ignd:
+  real, pointer, dimension(:,:,:) :: tracerlitrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, pointer, dimension(:,:,:) :: tracersoilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  
 
   ! Point the CLASS pointers
 
@@ -2092,6 +2120,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   ltermgat          => vgat%lterm
   mtermgat          => vgat%mterm
   blfltrdt          => vgat%blfltrdt
+  glfltrdt          => vgat%glfltrdt  
   glcaemls          => vgat%glcaemls
   blcaemls          => vgat%blcaemls
   rtcaemls          => vgat%rtcaemls
@@ -2100,6 +2129,8 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   ntchlveg          => vgat%ntchlveg
   ntchsveg          => vgat%ntchsveg
   ntchrveg          => vgat%ntchrveg
+  mortLeafGtoB      => vgat%mortLeafGtoB
+  phenLeafGtoB      => vgat%phenLeafGtoB
   extnprobgat       => vgat%extnprob
   prbfrhucgat       => vgat%prbfrhuc
   daylgat           => vgat%dayl
@@ -2243,6 +2274,24 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   anmossac_t        => ctem_tile%anmossac_t
   rmlmossac_t       => ctem_tile%rmlmossac_t
   gppmossac_t       => ctem_tile%gppmossac_t
+  
+  tracerGLeafMassrot   => tracer%gLeafMassrot
+  tracerBLeafMassrot   => tracer%bLeafMassrot
+  tracerStemMassrot    => tracer%stemMassrot
+  tracerRootMassrot    => tracer%rootMassrot
+  tracerLitrMassrot    => tracer%litrMassrot
+  tracerSoilCMassrot   => tracer%soilCMassrot
+  tracerMossCMassrot   => tracer%mossCMassrot
+  tracerMossLitrMassrot => tracer%mossLitrMassrot
+  
+  tracerGLeafMassgat   => tracer%gLeafMassgat
+  tracerBLeafMassgat   => tracer%bLeafMassgat
+  tracerStemMassgat    => tracer%stemMassgat
+  tracerRootMassgat    => tracer%rootMassgat
+  tracerLitrMassgat    => tracer%litrMassgat
+  tracerSoilCMassgat   => tracer%soilCMassgat
+  tracerMossCMassgat   => tracer%mossCMassgat
+  tracerMossLitrMassgat => tracer%mossLitrMassgat
 
   !    =================================================================================
 
@@ -2387,6 +2436,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         rootdpthgat,alvsctmgat,alirctmgat,&
         paicgat,    slaicgat, faregat, &
         ipeatlandgat,maxAnnualActLyrGAT, &
+        tracergLeafMassgat, tracerBLeafMassgat,tracerStemMassgat,&
+        tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,&
+        tracerMossCMassgat, tracerMossLitrMassgat,&
         ilmos,jlmos,iwmos,jwmos,&
         nml,&
         gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,&
@@ -2395,7 +2447,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         bmasvegrow,cmasvegcrow,veghghtrow,&
         rootdpthrow,alvsctmrow,alirctmrow,&
         paicrow,    slaicrow, FAREROT,&
-        ipeatlandrow,maxAnnualActLyrROT)
+        ipeatlandrow,maxAnnualActLyrROT,&        
+        tracergLeafMassrot, tracerBLeafMassrot,tracerStemMassrot,&
+        tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,&
+        tracerMossCMassrot, tracerMossLitrMassrot )
 
     call allometry( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
                             1,           nml,          ilg,      zbtwgat, &
@@ -2889,9 +2944,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                    lucsocingat,   dstcemls3gat,                                      &! Out (Primary)
                  ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,   &! Out (Primary)
                                       paicgat,         slaicgat,                     &! Out (Primary)
-                   emit_co2gat,   emit_ch4gat,        reprocost,    blfltrdt,        &! Out (Primary)
+                   emit_co2gat,   emit_ch4gat,        reprocost, blfltrdt,glfltrdt, &! Out (Primary)
                                    glcaemls, blcaemls, rtcaemls, stcaemls, ltrcemls, &  ! Out (Primary)
-                                  ntchlveg, ntchsveg, ntchrveg,                      &  ! Out (Primary)
+                                  ntchlveg, ntchsveg, ntchrveg, mortLeafGtoB,         &  ! Out (Primary)
+                                  phenLeafGtoB,                                       &  ! Out (Primary)
                     emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &! Out (Secondary)
                          emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&! Out (Secondary)
                         emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&! Out (Secondary)
@@ -3067,6 +3123,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
             anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,&
             peatdeprow,litrmsmossrow,Cmossmasrow,dmossrow,&
             ipeatlandrow, pddrow,wetfrac_presrow,&!thlqaccrow_m, thicaccrow_m,&
+            tracergLeafMassrot, tracerBLeafMassrot,tracerStemMassrot,&
+            tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,&
+            tracerMossCMassrot, tracerMossLitrMassrot,&
                 !    ----
         &      ilmos,       jlmos,       iwmos,        jwmos,&
         &      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,&
@@ -3111,7 +3170,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         &      annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
                 anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,&
                 peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,&
-                ipeatlandgat,pddgat,wetfrac_presgat)!,thlqaccgat_m,thicaccgat_m)
+                ipeatlandgat,pddgat,wetfrac_presgat, &
+                tracergLeafMassgat, tracerBLeafMassgat,tracerStemMassgat,&
+                tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,&
+                tracerMossCMassgat, tracerMossLitrMassgat)!,thlqaccgat_m,thicaccgat_m)
 
       if(ncount.eq.nday) then
 
@@ -3189,6 +3251,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
       if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then
 
         WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
+        
+        write(*,'(a7,9f13.10)')'tracer',tracerBLeafMassrot
+        write(*,'(a7,9f13.10)')'bleaf',bleafmasgat
+        
 
         ! Write to the restart file
         call write_restart(lonIndex,latIndex)

@@ -493,7 +493,8 @@ type veg_gat
     real, allocatable, dimension(:,:) :: ntchrveg  !<fluxes for each pft: Net change in root biomass, 
                                                   !! the net change is the difference between allocation and
                                                   !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-
+    real, allocatable, dimension(:,:) :: mortLeafGtoB  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
+    real, allocatable, dimension(:,:) :: phenLeafGtoB  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
 
     real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
@@ -511,6 +512,7 @@ type veg_gat
     real, allocatable, dimension(:)   :: rms        !<stem maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: tltrleaf   !<total leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: blfltrdt !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, allocatable, dimension(:,:) :: glfltrdt !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
     real, allocatable, dimension(:,:) :: tltrstem   !<total stem litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: tltrroot   !<total root litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: leaflitr   !<leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$). this leaf litter
@@ -1422,6 +1424,7 @@ allocate(vgat%grclarea(ilg),&
          vgat%rootdpth (ilg,icc),&
          vgat%tltrleaf (ilg,icc),&
          vgat%blfltrdt (ilg,icc),&
+         vgat%glfltrdt (ilg,icc),&
          vgat%glcaemls(ilg,icc),&
          vgat%blcaemls(ilg,icc),&
          vgat%rtcaemls(ilg,icc),&
@@ -1430,6 +1433,8 @@ allocate(vgat%grclarea(ilg),&
          vgat%ntchlveg(ilg,icc),&
          vgat%ntchsveg(ilg,icc),&
          vgat%ntchrveg(ilg,icc),&
+         vgat%mortLeafGtoB(ilg,icc),&
+         vgat%phenLeafGtoB(ilg,icc),&         
          vgat%tltrstem (ilg,icc),&
          vgat%tltrroot (ilg,icc),&
          vgat%leaflitr (ilg,icc),&

@@ -55,7 +55,7 @@
         fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
     !Fire switches
-        dofire = .true. ,               ! If true the fire disturbance parameterization is turned on.
+        dofire = .false. ,               ! If true the fire disturbance parameterization is turned on.
 
             transientPOPD = .true. ,    ! Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
             POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017_chunked.nc' ,
@@ -137,7 +137,7 @@
     output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
     xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
-    doperpftoutput = .false. ,   ! Switch for making extra output files that are at the per PFT level
+    doperpftoutput = .true. ,   ! Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level
 
     dohhoutput = .false. ,      ! Switch for making half hourly output files 

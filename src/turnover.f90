@@ -197,9 +197,6 @@ contains
 !! litter calculated in the phenology subroutine and stem and root litter 
 !! calculated in the turnover subroutine. Also add the reproduction
 !!  carbon directly to the litter pool.
-!! We only add to non-perennially frozen soil layers so first check which layers are
-!! unfrozen and then do the allotment appropriately. For defining which
-!! layers are frozen, we use the active layer depth.
 !> @author Vivek Arora and Joe Melton
 subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
                                 stemmass, rootmass, litrmass, rootlitr,& !In/Out

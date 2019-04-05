@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2019/3/21">
+<variableSet type="CLASS" version="1.2" created="2019/4/4">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -2277,6 +2277,20 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>pftexistrow_mo_g</nameInCode>
                 <units>T/F</units>
+            </variant>
+        </variable>
+    </group>
+    <group type="tracer">
+        <variable id="86" includeBareGround="false" dormant="false">
+            <standardName>Tracer of leaf carbon</standardName>
+            <longName>Tracer of leaf carbon (can be simple tracer, 13C or 14C)</longName>
+            <shortName>cLeafTracer</shortName>
+            <defaultUnits>Depends on tracer</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>tracerGLeafMass</nameInCode>
+                <units>Depends on tracer</units>
             </variant>
         </variable>
     </group>
