@@ -291,26 +291,31 @@ module generalUtils
               ftable(i,m) = ftable(i,m) + delz(j)
             endif
             
-            ! Once a year we adjust the maximum annual active layer depth
-            ! in an e-folding sense with the
-            ! present maxmimum active layer depth for the year ending on the summer
-            ! solstice. The maximum values are used in bio2str
-            ! to ensure roots are not placed into frozen soil layers.    
-                                
-            if ((dlatrow(i) > 0. .and. iday == 355) & !Boreal winter solstice.
-              .or. (dlatrow(i) < 0. .and. iday == 172)) then  !Austral winter solstice.
-              maxAnnualActLyr(i,m) = maxAnnualActLyr(i,m) * efoldfact &
-                               + actLyrThisYr(i,m) * (1.0 - efoldfact)
-              actLyrThisYr(i,m) = 0.0
-            else
-              ! Compare the present active layer depth against actLyrThisYr
-              actLyrThisYr(i,m) = max(actLyrThisYr(i,m), actlyr(i,m))
-            end if
-
           end do
         end do
       end do
       
+      do i = 1, nltest
+        do m = 1,nmtest
+
+          ! Once a year we adjust the maximum annual active layer depth
+          ! in an e-folding sense with the
+          ! present maxmimum active layer depth for the year ending on the summer
+          ! solstice. The maximum values are used in bio2str
+          ! to ensure roots are not placed into frozen soil layers.    
+                              
+          if ((dlatrow(i) > 0. .and. iday == 355) & !Boreal winter solstice.
+            .or. (dlatrow(i) < 0. .and. iday == 172)) then  !Austral winter solstice.
+            maxAnnualActLyr(i,m) = maxAnnualActLyr(i,m) * efoldfact &
+                             + actLyrThisYr(i,m) * (1.0 - efoldfact)
+            actLyrThisYr(i,m) = 0.0
+          else
+            ! Compare the present active layer depth against actLyrThisYr
+            actLyrThisYr(i,m) = max(actLyrThisYr(i,m), actlyr(i,m))
+          end if
+        end do
+      end do
+
     end subroutine findPermafrostVars
     !!@}
     !---------------------------------------------------------------------------------------

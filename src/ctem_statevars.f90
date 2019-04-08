@@ -413,12 +413,12 @@ type veg_gat
     ! This is the basic data structure that contains the state variables
     ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1,iccp2}
 
-    real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, allocatable, dimension(:,:) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, allocatable, dimension(:,:) :: gleafmas   !< Green leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: bleafmas   !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: stemmass   !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: rootmass   !< Root mass for each of the CTEM PFTs, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: pstemmass  !< Stem mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, allocatable, dimension(:,:) :: pgleafmass !< Root mass from previous timestep, is value before fire. used by burntobare subroutine
     real, allocatable, dimension(:,:) :: fcancmx    !<max. fractional coverage of ctem's 9 pfts, but this can be
                                                     !<modified by land-use change, and competition between pfts
     real, allocatable, dimension(:) :: gavglai        !<grid averaged green leaf area index
@@ -460,8 +460,8 @@ type veg_gat
     real, allocatable, dimension(:,:) :: stmhrlos   !<stem harvest loss for crops, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: rmatc    !<fraction of roots for each of class' 4 pfts in each soil layer
     real, allocatable, dimension(:,:,:) :: rmatctem !<fraction of roots for each of ctem's 9 pfts in each soil layer
-    real, allocatable, dimension(:,:,:) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: litrmass   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: soilcmas   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: vgbiomas_veg !<vegetation biomass for each pft
 
     real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide (kg <species> $m^{-2}$$s^{-1}$)
@@ -495,6 +495,15 @@ type veg_gat
                                                   !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
     real, allocatable, dimension(:,:) :: mortLeafGtoB  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
     real, allocatable, dimension(:,:) :: phenLeafGtoB  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
+    real, allocatable, dimension(:,:,:) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:,:) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:) :: gLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:) :: bLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:) :: stemLandCompChg   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:) :: rootLandCompChg   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:,:) :: litterLandCompChg !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, allocatable, dimension(:,:,:) :: soilCLandCompChg !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+
 
     real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
@@ -1435,6 +1444,10 @@ allocate(vgat%grclarea(ilg),&
          vgat%ntchrveg(ilg,icc),&
          vgat%mortLeafGtoB(ilg,icc),&
          vgat%phenLeafGtoB(ilg,icc),&         
+         vgat%gLeafLandCompChg(ilg,icc),& 
+         vgat%bLeafLandCompChg(ilg,icc),& 
+         vgat%stemLandCompChg(ilg,icc),& 
+         vgat%rootLandCompChg(ilg,icc),& 
          vgat%tltrstem (ilg,icc),&
          vgat%tltrroot (ilg,icc),&
          vgat%leaflitr (ilg,icc),&
@@ -1494,6 +1507,10 @@ allocate(vgat%grclarea(ilg),&
         vgat%humiftrsveg (ilg,iccp2,ignd),& 
         tracer%litrMassgat(ilg,iccp2,ignd),&
         tracer%soilCMassgat(ilg,iccp2,ignd),&
+        vgat%turbLitter(ilg,iccp2,ignd),& 
+        vgat%turbSoilC(ilg,iccp2,ignd),& 
+        vgat%litterLandCompChg(ilg,iccp2,ignd),& 
+        vgat%soilCLandCompChg(ilg,iccp2,ignd),& 
 
 ! allocated with ilg,ignd:
 !          vgat%rgmgat(ilg,ignd),&

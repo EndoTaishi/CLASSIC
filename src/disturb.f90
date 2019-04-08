@@ -848,7 +848,7 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
   do 100 i = il1, il2
     if (shifts_occur(i)) then !>only do checks if we actually shifted fractions here.
 
-      if(barefrac(i).ge.zero .and. barefrac(i) .gt. pbarefra(i))then
+      if(barefrac(i) >= zero .and. barefrac(i) > pbarefra(i))then
         do k = 1, ignd
           litrmass(i,iccp1,k) = (litrmass(i,iccp1,k)*pbarefra(i) + litr_lost(i,k)) / barefrac(i)
           soilcmas(i,iccp1,k) = (soilcmas(i,iccp1,k)*pbarefra(i) + soilc_lost(i,k)) / barefrac(i)

@@ -1071,6 +1071,16 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                                                 !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
   real, pointer, dimension(:,:) :: mortLeafGtoB  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
   real, pointer, dimension(:,:) :: phenLeafGtoB  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
+  real, pointer, dimension(:,:,:) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:,:) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:) :: gLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:) :: bLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:) :: stemLandCompChg   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:) :: rootLandCompChg   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:,:) :: litterLandCompChg !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+  real, pointer, dimension(:,:,:) :: soilCLandCompChg !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+
+
 
 
   real, pointer, dimension(:) :: extnprobgat
@@ -2131,6 +2141,14 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   ntchrveg          => vgat%ntchrveg
   mortLeafGtoB      => vgat%mortLeafGtoB
   phenLeafGtoB      => vgat%phenLeafGtoB
+  turbLitter        => vgat%turbLitter
+  turbSoilC         => vgat%turbSoilC
+  gLeafLandCompChg  => vgat%gLeafLandCompChg
+  bLeafLandCompChg  => vgat%bLeafLandCompChg
+  stemLandCompChg  => vgat%stemLandCompChg
+  rootLandCompChg  => vgat%rootLandCompChg
+  litterLandCompChg => vgat%litterLandCompChg
+  soilCLandCompChg  => vgat%soilCLandCompChg
   extnprobgat       => vgat%extnprob
   prbfrhucgat       => vgat%prbfrhuc
   daylgat           => vgat%dayl
@@ -2945,9 +2963,11 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                  ch4WetSpecgat,   ch4WetDyngat,       wetfdyngat,    ch4soillsgat,   &! Out (Primary)
                                       paicgat,         slaicgat,                     &! Out (Primary)
                    emit_co2gat,   emit_ch4gat,        reprocost, blfltrdt,glfltrdt, &! Out (Primary)
-                                   glcaemls, blcaemls, rtcaemls, stcaemls, ltrcemls, &  ! Out (Primary)
-                                  ntchlveg, ntchsveg, ntchrveg, mortLeafGtoB,         &  ! Out (Primary)
-                                  phenLeafGtoB,                                       &  ! Out (Primary)
+                         glcaemls, blcaemls, rtcaemls, stcaemls, ltrcemls, &  ! Out (Primary)
+                        ntchlveg, ntchsveg, ntchrveg, mortLeafGtoB,         &  ! Out (Primary)
+                        phenLeafGtoB, turbLitter, turbSoilC,              &  ! Out (Primary)
+                      gLeafLandCompChg, bLeafLandCompChg, stemLandCompChg, &! Out (Primary)
+                      rootLandCompChg, litterLandCompChg, soilCLandCompChg, &! Out (Primary)
                     emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &! Out (Secondary)
                          emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&! Out (Secondary)
                         emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&! Out (Secondary)
@@ -3252,9 +3272,28 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
         WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
         
-        write(*,'(a7,9f13.10)')'tracer',tracerBLeafMassrot
-        write(*,'(a7,9f13.10)')'bleaf',bleafmasgat
-        
+        do k = 1,ignd
+          ! write(*,'(a7,i4,11f13.10)')'tracer',k,tracerSoilCMassrot(1,1,:,k)
+          ! write(*,'(a7,i4,11f13.10)')'soilc',k,soilcmasrow(1,1,:,k)
+          write(*,'(a7,i4,11f13.10)')'tracer',k,tracerLitrMassrot(1,1,:,k)
+          write(*,'(a7,i4,11f13.10)')'litter',k,litrmassrow(1,1,:,k)        
+        end do 
+        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerStemMassrot(1,1,:)
+        ! write(*,'(a7,i4,9f13.10)')'stem',k,stemmassrow(1,1,:)
+        ! print*,'-----'
+        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerRootMassrot(1,1,:)
+        ! write(*,'(a7,i4,9f13.10)')'root',k,rootmassrow(1,1,:)
+        ! print*,'-----'
+        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerGLeafMassrot(1,1,:)
+        ! write(*,'(a7,i4,9f13.10)')'gleaf',k,gleafmasrow(1,1,:) 
+        ! print*,'-----'
+        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerBLeafMassrot(1,1,:)
+        ! write(*,'(a7,i4,9f13.10)')'bleaf',k,bleafmasrow(1,1,:)
+        ! print*,'-----'
+        ! print*,rmatctemgat(1,6,:)
+        ! print*,'---------------'
+        ! print*,rootMassgat(1,6),fcancmxgat(1,6)
+        ! print*,'---------------'
 
         ! Write to the restart file
         call write_restart(lonIndex,latIndex)

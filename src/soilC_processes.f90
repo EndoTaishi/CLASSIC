@@ -20,7 +20,9 @@ contains
 !> @author Joe Melton
 !!@{
 
-subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast,litrmass,soilcmas)
+subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast, & !In
+                    litrmass,soilcmas, & !In/Out 
+                    turbLitter, turbSoilC) ! Out 
 
 use classic_params,        only : icc, ilg, ignd, iccp2, iccp1, zero,tolrance,deltat, &
                                 cryodiffus, biodiffus, kterm
@@ -40,6 +42,9 @@ integer, dimension(ilg,ignd), intent(in) :: isand            !< flag for non-per
 real, dimension(ilg), intent(in) :: actlyr                   !< active layer depth [m]
 real, dimension(ilg,iccp2,ignd), intent(inout) :: litrmass   !< litter mass for the pfts + bare [ \f$kg C/m^2\f$ ]
 real, dimension(ilg,iccp2,ignd), intent(inout) :: soilcmas   !< soil carbon mass for the pfts + bare [ \f$kg C/m^2\f$ ]
+real, dimension(ilg,iccp2,ignd), intent(out) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+real, dimension(ilg,iccp2,ignd), intent(out) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+
 
 ! Local variables:
 real, allocatable, dimension(:) :: avect            !< vectors for tridiagonal solver, subdiagonal a
@@ -64,7 +69,12 @@ real :: termr                                       !< temp var
 real :: amount                                      !< temp var
 real :: botthick                                    !< temp var
 real :: diffus                                      !< diffusion coefficient used (either cryodiffus or biodiffus)
+real :: initLitter(ilg,iccp2,ignd)                  !< Initial litter pool
+real :: initSoilC(ilg,iccp2,ignd)                   !< Initial soil C pool
 !----
+
+initLitter = litrmass
+initSoilC = soilcmas
 
 do i = il1, il2
 
@@ -228,6 +238,10 @@ do i = il1, il2
     end if !must be some soil (botlyr > 0)
 
 end do !i
+
+! Store the movement of the litter and soil C for output/tracer.
+turbLitter = initLitter - litrmass
+turbSoilC = initSoilC - soilcmas
 
 end subroutine turbation
 !>@}

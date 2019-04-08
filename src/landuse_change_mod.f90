@@ -48,7 +48,7 @@ subroutine initializeLandCover
 !
 
 use classic_params,        only : nmos,nlat,icc,ican,icp1,seed,crop,numcrops,minbare,&
-                                modelpft,l2max,nol2pfts
+                                modelpft,l2max,nol2pfts,reindexPFTs
 use ctem_statevars,     only : c_switch,vrot
 use class_statevars,    only : class_rot
 
@@ -70,7 +70,7 @@ real, dimension(nlat,nmos,icc-numcrops) :: pftarrays ! temp variable
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposj ! temp var
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposm ! temp var
 integer :: j,m,i,n,k
-integer :: k2,k1
+! integer :: k2,k1
 
 start_bare        => c_switch%start_bare
 PFTCompetition    => c_switch%PFTCompetition
@@ -144,15 +144,16 @@ if (PFTCompetition) then
 end if  ! PFTCompetition
 
 !> get fcans for use by class using the nfcancmxs just read in
-k1=0
+! k1=0
 do 997 j = 1, ican
-    if(j.eq.1) then
-    k1 = k1 + 1
-    else
-    k1 = k1 + nol2pfts(j-1)
-    endif
-    k2 = k1 + nol2pfts(j) - 1
-    do 998 n = k1, k2
+    ! if(j.eq.1) then
+    ! k1 = k1 + 1
+    ! else
+    ! k1 = k1 + nol2pfts(j-1)
+    ! endif
+    ! k2 = k1 + nol2pfts(j) - 1
+    ! do 998 n = k1, k2
+    do 998 n = reindexPFTs(j,1), reindexPFTs(j,2)
     do i = 1, nlat
         do m = 1, nmos
             FCANROT(i,m,j)=FCANROT(i,m,j)+nfcancmxrow(i,m,n)
@@ -179,335 +180,320 @@ end subroutine initializeLandCover
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
 !> @author Vivek Arora
-subroutine    luc(         il1,       il2,  nilg,                   & !1
-                        grclarea, pfcancmx, nfcancmx,      iday,    & !2
-                       todfrac,     yesfrac, interpol, PFTCompetition,    & !3
-                       leapnow,                                           & !4
-!    ----------------------- inputs above this line -------------
-                      gleafmas,    bleafmas, stemmass,       rootmass,    & !5
-                      litrmass,    soilcmas, vgbiomas,       gavgltms,    & !6
-                      gavgscms,     fcancmx,   fcanmx,                    & !7
-!    ----------- updates above this line, outputs below ---------
-                      lucemcom,    lucltrin, lucsocin)                      !8
-!
-!     ----------------------------------------------------------------
-!
-!      8  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
-!     J. Melton       carbon pools
-!
-!     19  Jan 2016  - Implemented new LUC litter and soil C pools
-!     J. Melton
+subroutine    luc(         il1,       il2,  nilg,                   & ! In
+                        grclarea, pfcancmx, nfcancmx,      iday,    & ! In
+                       todfrac,     yesfrac, interpol, PFTCompetition, & ! In
+                       leapnow,                                        & ! In
+                      gleafmas,    bleafmas, stemmass,       rootmass,    & ! In / Out
+                      litrmass,    soilcmas, vgbiomas,       gavgltms,    & ! In / Out
+                      gavgscms,     fcancmx,   fcanmx,                    & ! In / Out
+                      lucemcom,    lucltrin, lucsocin)                ! Out
+  !
+  !     ----------------------------------------------------------------
+  !
+  !      8  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
+  !     J. Melton       carbon pools
+  !
+  !     19  Jan 2016  - Implemented new LUC litter and soil C pools
+  !     J. Melton
 
-!     31  Jan 2014  - Moved parameters to global file (classic_params.f90)
-!     J. Melton
-!
-!     18  Apr. 2013 - made it so that you will exit luc if the grid cell has
-!     J. Melton       no actual luc in this timestep. removed some extraneous checks.
-!
-!     02  Jan. 2004 - this subroutine deals with the changes in the land
-!     V. Arora        cover and estimates land use change (luc)
-!                     related carbon emissions. based on whether there
-!                     is conversion of forests/grassland to crop area,
-!                     or croplands abandonment, this subroutine
-!                     reallocates carbon from live vegetation to litter
-!                     and soil c components. the decomposition from the
-!                     litter and soil c pools thus implicitly models luc
-!                     related carbon emissions. set of rules are
-!                     followed to determine the fate of carbon that
-!                     results from deforestation or replacement of
-!                     grasslands by crops.
-!
-!     ----------------------------------------------------------------
-!     inputs
-!
-!     icc       - no of pfts for use by ctem, currently 9
-!     ican        - no of pfts for use by class, currently 4
-!     ----------------------------------------------------------------
-      use classic_params,        only : icc, ican, zero, km2tom2, iccp1, &
-                                     combust, paper, furniture, bmasthrs, &
-                                     tolrnce1, tolrance, crop, numcrops, &
-                                     minbare, iccp2, ignd, classpfts, icp1,&
-                                     nol2pfts
+  !     31  Jan 2014  - Moved parameters to global file (classic_params.f90)
+  !     J. Melton
+  !
+  !     18  Apr. 2013 - made it so that you will exit luc if the grid cell has
+  !     J. Melton       no actual luc in this timestep. removed some extraneous checks.
+  !
+  !     02  Jan. 2004 - this subroutine deals with the changes in the land
+  !     V. Arora        cover and estimates land use change (luc)
+  !                     related carbon emissions. based on whether there
+  !                     is conversion of forests/grassland to crop area,
+  !                     or croplands abandonment, this subroutine
+  !                     reallocates carbon from live vegetation to litter
+  !                     and soil c components. the decomposition from the
+  !                     litter and soil c pools thus implicitly models luc
+  !                     related carbon emissions. set of rules are
+  !                     followed to determine the fate of carbon that
+  !                     results from deforestation or replacement of
+  !                     grasslands by crops.
+  !
+  use classic_params,        only : icc, ican, zero, km2tom2, iccp1, &
+                                 combust, paper, furniture, bmasthrs, &
+                                 tolrnce1, tolrance, crop, numcrops, &
+                                 minbare, iccp2, ignd, classpfts, icp1,&
+                                 nol2pfts, reindexPFTs
 
-      implicit none
+  implicit none
 
-      integer il1               !<il1=1
-      integer il2               !<il2=nilg
-      integer nilg              !<no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
-      integer i, j, k, m, n, k1, k2, q !FLAG q needed? JM
-      integer iday              !<day of year
-      integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
-      integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
-      integer bareiord(nilg)    !<bare fraction increases or decreases
-      integer lrgstpft(1)       !<
-      logical leapnow           !< true if this year is a leap year. Only used if the switch 'leap' is true.
-      logical  interpol         !<if todfrac & yesfrac are provided then interpol must be set to false so that
-                                !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx
-                                !<which are year end values
-      logical  luctkplc(nilg)   !<
-      logical  PFTCompetition   !<true if the competition subroutine is on.
+  integer il1               !<il1=1
+  integer il2               !<il2=nilg
+  integer nilg              !<no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
+  integer i, j, k, m, n, q !, k1, k2, q !FLAG q needed? JM
+  integer iday              !<day of year
+  integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
+  integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
+  integer bareiord(nilg)    !<bare fraction increases or decreases
+  integer lrgstpft(1)       !<
+  logical leapnow           !< true if this year is a leap year. Only used if the switch 'leap' is true.
+  logical  interpol         !<if todfrac & yesfrac are provided then interpol must be set to false so that
+                            !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx
+                            !<which are year end values
+  logical  luctkplc(nilg)   !<
+  logical  PFTCompetition   !<true if the competition subroutine is on.
 
-      real gleafmas(nilg,icc)   !<green or live leaf mass in kg c/m2, for the 9 pfts
-      real bleafmas(nilg,icc)   !<brown or dead leaf mass in kg c/m2, for the 9 pfts
-      real stemmass(nilg,icc)   !<stem biomass in kg c/m2, for the 9 pfts
-      real rootmass(nilg,icc)   !<root biomass in kg c/m2, for the 9 pfts
-      real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
-      real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
-      real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
-      real soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
-      real litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
-      real gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
-      real gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
-      real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
-      real fcancmy(nilg,icc)    !<
-      real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
-      real yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
+  real gleafmas(nilg,icc)   !<green or live leaf mass in kg c/m2, for the 9 pfts
+  real bleafmas(nilg,icc)   !<brown or dead leaf mass in kg c/m2, for the 9 pfts
+  real stemmass(nilg,icc)   !<stem biomass in kg c/m2, for the 9 pfts
+  real rootmass(nilg,icc)   !<root biomass in kg c/m2, for the 9 pfts
+  real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
+  real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
+  real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
+  real soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
+  real litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
+  real gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
+  real gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
+  real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
+  real fcancmy(nilg,icc)    !<
+  real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
+  real yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
 
-      real fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
-      real delfrac(nilg,icc)    !<
-      real abvgmass(nilg,icc)   !<above-ground biomass
-      real grclarea(nilg)       !<gcm grid cell area, km2
-      real combustc(nilg,icc)   !<total carbon from deforestation- combustion
-      real paperc(nilg,icc)     !<total carbon from deforestation- paper
-      real furnturc(nilg,icc)   !<total carbon from deforestation- furniture
-      real incrlitr             !<
-      real incrsolc             !<
-      real chopedbm(nilg)       !<chopped off biomass
-      real compdelfrac(nilg,icc)!<with competition on, this is the change in pft frac per timestep
+  real fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+  real delfrac(nilg,icc)    !<
+  real abvgmass(nilg,icc)   !<above-ground biomass
+  real grclarea(nilg)       !<gcm grid cell area, km2
+  real combustc(nilg,icc)   !<total carbon from deforestation- combustion
+  real paperc(nilg,icc)     !<total carbon from deforestation- paper
+  real furnturc(nilg,icc)   !<total carbon from deforestation- furniture
+  real incrlitr             !<
+  real incrsolc             !<
+  real chopedbm(nilg)       !<chopped off biomass
+  real compdelfrac(nilg,icc)!<with competition on, this is the change in pft frac per timestep
 
-      real redubmas1      !<
-      real term           !<
-      real barefrac(nilg) !<initialize bare fraction to 1.0
-      real grsumcom(nilg) !<grid sum of combustion carbon for all pfts that are chopped
-      real grsumpap(nilg) !<grid sum of paper carbon for all pfts that are chopped
-      real grsumfur(nilg) !<grid sum of furniture carbon for all pfts that are chopped
-      real grsumlit(nilg,ignd) !<grid sum of litter carbon for all pfts that are chopped
-      real grsumsoc(nilg,ignd) !<grid sum of soil c carbon for all pfts that are chopped
-      real pbarefra(nilg) !<initialize previous years's bare fraction to 1.0
-      real grdencom(nilg) !<grid averaged densities for combustion carbon
-      real grdenpap(nilg) !<grid averaged densities for paper carbon
-      real grdenfur(nilg) !<grid averaged densities for furniture carbon
-      real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
-      real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
-      real totcmass(nilg) !<total c mass (live+dead)
-      real totlmass(nilg) !<total c mass (live)
-      real totdmas1(nilg) !<total c mass (dead) litter
-      real ntotcmas(nilg) !<total c mass (live+dead) after luc treatment
-      real ntotlmas(nilg) !<total c mass (live) after luc treatment
-      real ntotdms1(nilg) !<total c mass (dead) litter after luc treatment
-      real lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
-      real pvgbioms(nilg) !<Vegetation biomass on entering subroutine
-      real pgavltms(nilg) !<Litter mass on entering subroutine
-      real pgavscms(nilg) !<Soil C mass on entering subroutine
-      real pluclitpool(nilg) !<LUC paper pool on entering subroutine
-      real plucscpool(nilg) !<LUC furniture pool on entering subroutine
+  real redubmas1      !<
+  real term           !<
+  real barefrac(nilg) !<initialize bare fraction to 1.0
+  real grsumcom(nilg) !<grid sum of combustion carbon for all pfts that are chopped
+  real grsumpap(nilg) !<grid sum of paper carbon for all pfts that are chopped
+  real grsumfur(nilg) !<grid sum of furniture carbon for all pfts that are chopped
+  real grsumlit(nilg,ignd) !<grid sum of litter carbon for all pfts that are chopped
+  real grsumsoc(nilg,ignd) !<grid sum of soil c carbon for all pfts that are chopped
+  real pbarefra(nilg) !<initialize previous years's bare fraction to 1.0
+  real grdencom(nilg) !<grid averaged densities for combustion carbon
+  real grdenpap(nilg) !<grid averaged densities for paper carbon
+  real grdenfur(nilg) !<grid averaged densities for furniture carbon
+  real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
+  real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
+  real totcmass(nilg) !<total c mass (live+dead)
+  real totlmass(nilg) !<total c mass (live)
+  real totdmas1(nilg) !<total c mass (dead) litter
+  real ntotcmas(nilg) !<total c mass (live+dead) after luc treatment
+  real ntotlmas(nilg) !<total c mass (live) after luc treatment
+  real ntotdms1(nilg) !<total c mass (dead) litter after luc treatment
+  real lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
+  real pvgbioms(nilg) !<Vegetation biomass on entering subroutine
+  real pgavltms(nilg) !<Litter mass on entering subroutine
+  real pgavscms(nilg) !<Soil C mass on entering subroutine
+  real pluclitpool(nilg) !<LUC paper pool on entering subroutine
+  real plucscpool(nilg) !<LUC furniture pool on entering subroutine
 
-      real redubmas2      !<
-      real lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
-      real lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
-      real totdmas2(nilg) !<total c mass (dead) soil c
-      real ntotdms2(nilg) !<total c mass (dead) soil c after luc treatment
+  real redubmas2      !<
+  real lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
+  real lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
+  real totdmas2(nilg) !<total c mass (dead) soil c
+  real ntotdms2(nilg) !<total c mass (dead) soil c after luc treatment
 
-      real pftarrays(nilg,icc-numcrops) !<
-      integer indexpos(nilg,icc-numcrops) !<
+  real pftarrays(nilg,icc-numcrops) !<
+  integer indexpos(nilg,icc-numcrops) !<
 
-!>---------------------------------------------------------------
-!>Constants and parameters are located in classic_params.f90
-!>---------------------------------------------------------------
+  !>find/use provided current and previous day's fractional coverage
+  !>if competition is on, we will adjust these later.
 
-!>find/use provided current and previous day's fractional coverage
-!>if competition is on, we will adjust these later.
-
-      if(interpol) then !> perform interpolation
-       do 110 j = 1, icc
-        do 111 i = il1, il2
-          if (PFTCompetition .and. .not. crop(j)) then 
-            nfcancmx(i,j)=yesfrac(i,j)
-            pfcancmx(i,j)=yesfrac(i,j)
-          end if
-          delfrac(i,j)=nfcancmx(i,j)-pfcancmx(i,j) !change in fraction
-
-          if (leapnow) then
-            delfrac(i,j)=delfrac(i,j)/366.0
-          else
-            delfrac(i,j)=delfrac(i,j)/365.0
-          endif
-
-          fcancmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
-          fcancmy(i,j)=pfcancmx(i,j)+(real(iday-1)*delfrac(i,j)) ! previous day
-
-          if( fcancmx(i,j).lt.0.0.and.abs(fcancmx(i,j)).lt.1.0e-05)then
-            fcancmx(i,j)=0.0
-          else if( fcancmx(i,j).lt.0.0.and. &
-                abs(fcancmx(i,j)).ge.1.0e-05)then
-            write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
-            write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-1)
-          endif
-
-          if(fcancmy(i,j).lt.0.0.and.abs(fcancmy(i,j)).lt.1.0e-05)then
-            fcancmy(i,j)=0.0
-          else if( fcancmy(i,j).lt.0.0.and. &
-         abs(fcancmy(i,j)).ge.1.0e-05)then
-            write(6,*)'fcancmy(',i,',',j,')=',fcancmy(i,j)
-            write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-2)
-          endif
-
-111     continue
-110    continue
-else !> use provided values but still check they are not negative
-       do 115 j = 1, icc
-        do 116 i = il1, il2
-          fcancmx(i,j) = todfrac(i,j)
-          fcancmy(i,j) = yesfrac(i,j)
-
-          if( fcancmx(i,j).lt.0.0.and.abs(fcancmx(i,j)).lt.1.0e-05)then
-            fcancmx(i,j)=0.0
-          else if( fcancmx(i,j).lt.0.0.and. &
-         abs(fcancmx(i,j)).ge.1.0e-05)then
-            write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
-            write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-3)
-          endif
-
-          if(fcancmy(i,j).lt.0.0.and.abs(fcancmy(i,j)).lt.1.0e-05)then
-            fcancmy(i,j)=0.0
-          else if( fcancmy(i,j).lt.0.0.and. &
-         abs(fcancmy(i,j)).ge.1.0e-05)then
-            write(6,*)'fcancmy(',i,',',j,')=',fcancmy(i,j)
-            write(6,*)'fractional coverage cannot be negative'
-            call xit('luc',-4)
-          endif
-
-116     continue
-115    continue
-      endif
-!>
-!>If competition is on, we need to adjust the other fractions for the increase/decrease
-!>in cropland as only the crops areas is now specified.
-      if (PFTCompetition) then
-
-         call adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,compdelfrac)
-
-         do j = 1, icc
-          do i = 1, il1, il2
-
-            if (.not. crop(j)) then
-             fcancmx(i,j)=yesfrac(i,j)+compdelfrac(i,j) !  current day
-             fcancmy(i,j)=yesfrac(i,j) ! previous day
-            end if
-          end do
-
-         end do
+  if(interpol) then !> perform interpolation
+   do 110 j = 1, icc
+    do 111 i = il1, il2
+      if (PFTCompetition .and. .not. crop(j)) then 
+        nfcancmx(i,j)=yesfrac(i,j)
+        pfcancmx(i,j)=yesfrac(i,j)
       end if
-!>
-!!check if this year's fractional coverages have changed or not for any pft
-!!
-      luctkplc(:)=.false.  ! did land use change take place for any pft in this grid cell
-      do 200 j = 1, icc
-        do 250 i = il1, il2
-          if ( (abs(fcancmx(i,j)-fcancmy(i,j))).gt.zero ) then
-            luctkplc(i)=.true. ! yes, luc did take place in this grid cell
-          endif
+      delfrac(i,j)=nfcancmx(i,j)-pfcancmx(i,j) !change in fraction
+
+      if (leapnow) then
+        delfrac(i,j)=delfrac(i,j)/366.0
+      else
+        delfrac(i,j)=delfrac(i,j)/365.0
+      endif
+
+      fcancmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
+      fcancmy(i,j)=pfcancmx(i,j)+(real(iday-1)*delfrac(i,j)) ! previous day
+
+      if( fcancmx(i,j).lt.0.0.and.abs(fcancmx(i,j)).lt.1.0e-05)then
+        fcancmx(i,j)=0.0
+      else if( fcancmx(i,j).lt.0.0.and. &
+            abs(fcancmx(i,j)).ge.1.0e-05)then
+        write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
+        write(6,*)'fractional coverage cannot be negative'
+        call xit('luc',-1)
+      endif
+
+      if(fcancmy(i,j).lt.0.0.and.abs(fcancmy(i,j)).lt.1.0e-05)then
+        fcancmy(i,j)=0.0
+      else if( fcancmy(i,j).lt.0.0.and. &
+     abs(fcancmy(i,j)).ge.1.0e-05)then
+        write(6,*)'fcancmy(',i,',',j,')=',fcancmy(i,j)
+        write(6,*)'fractional coverage cannot be negative'
+        call xit('luc',-2)
+      endif
+
+111  continue
+110 continue
+  else !> use provided values but still check they are not negative
+    do 115 j = 1, icc
+      do 116 i = il1, il2
+        fcancmx(i,j) = todfrac(i,j)
+        fcancmy(i,j) = yesfrac(i,j)
+
+        if( fcancmx(i,j).lt.0.0.and.abs(fcancmx(i,j)).lt.1.0e-05)then
+          fcancmx(i,j)=0.0
+        else if( fcancmx(i,j).lt.0.0.and. &
+       abs(fcancmx(i,j)).ge.1.0e-05)then
+          write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
+          write(6,*)'fractional coverage cannot be negative'
+          call xit('luc',-3)
+        endif
+
+        if(fcancmy(i,j).lt.0.0.and.abs(fcancmy(i,j)).lt.1.0e-05)then
+          fcancmy(i,j)=0.0
+        else if( fcancmy(i,j).lt.0.0.and. &
+       abs(fcancmy(i,j)).ge.1.0e-05)then
+          write(6,*)'fcancmy(',i,',',j,')=',fcancmy(i,j)
+          write(6,*)'fractional coverage cannot be negative'
+          call xit('luc',-4)
+        endif
+
+116   continue
+115 continue
+  end if
+  !>
+  !>If competition is on, we need to adjust the other fractions for the increase/decrease
+  !>in cropland as only the crops areas is now specified.
+  if (PFTCompetition) then
+
+     call adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,compdelfrac)
+
+     do j = 1, icc
+      do i = 1, il1, il2
+
+        if (.not. crop(j)) then
+         fcancmx(i,j)=yesfrac(i,j)+compdelfrac(i,j) !  current day
+         fcancmy(i,j)=yesfrac(i,j) ! previous day
+        end if
+      end do
+
+     end do
+  end if
+  !>
+  !!check if this year's fractional coverages have changed or not for any pft
+  !!
+  luctkplc(:)=.false.  ! did land use change take place for any pft in this grid cell
+  do 200 j = 1, icc
+    do 250 i = il1, il2
+      if ( (abs(fcancmx(i,j)-fcancmy(i,j))).gt.zero ) then
+        luctkplc(i)=.true. ! yes, luc did take place in this grid cell
+      endif
 250     continue
 200   continue
 
-
-!     only perform the rest of the subroutine if any luc is actually taking
-!     place, otherwise exit.
-      do 255 i = il1, il2
-        if (luctkplc(i)) then
-!     -------------------------------------------------------------------
-!     initialization
-
+  ! only perform the rest of the subroutine if any luc is actually taking
+  ! place, otherwise exit.
+  do 255 i = il1, il2
+    if (luctkplc(i)) then
+      
+      ! initialization
       do 260 j = 1, ican
-            fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
+        fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
 260   continue
 
       do 270 j = 1, icc
-          fraciord(i,j)=0   !fractional coverage increase or decrease
+        fraciord(i,j)=0   !fractional coverage increase or decrease
 !                           !increase +1, decrease -1
-          abvgmass(i,j)=0.0 !above-ground biomass
-          treatind(i,j)=0   !treatment index for combust, paper, & furniture
-          combustc(i,j)=0.0 !total carbon from deforestation- combustion
-          paperc(i,j)=0.0   !total carbon from deforestation- paper
-          furnturc(i,j)=0.0 !total carbon from deforestation- furniture
+        abvgmass(i,j)=0.0 !above-ground biomass
+        treatind(i,j)=0   !treatment index for combust, paper, & furniture
+        combustc(i,j)=0.0 !total carbon from deforestation- combustion
+        paperc(i,j)=0.0   !total carbon from deforestation- paper
+        furnturc(i,j)=0.0 !total carbon from deforestation- furniture
 270   continue
 
-        pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
-        pgavltms(i)=gavgltms(i)  ! temporary arrays
-        pgavscms(i)=gavgscms(i)
-        pluclitpool(i) = litrmass(i,iccp2,1)  !LUC product pools are stored in first layer.
-        plucscpool(i) = soilcmas(i,iccp2,1) !LUC product pools are stored in first layer.
+      pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
+      pgavltms(i)=gavgltms(i)  ! temporary arrays
+      pgavscms(i)=gavgscms(i)
+      pluclitpool(i) = litrmass(i,iccp2,1)  !LUC product pools are stored in first layer.
+      plucscpool(i) = soilcmas(i,iccp2,1) !LUC product pools are stored in first layer.
 
-        vgbiomas(i)=0.0
-        gavgltms(i)=0.0
-        gavgscms(i)=0.0
-
-
-        grsumcom(i)=0.0          ! grid sum of combustion carbon for all
-                                 ! pfts that are chopped
-        grsumpap(i)=0.0          ! similarly for paper, 
-        grsumfur(i)=0.0          ! furniture,
-        do k = 1,ignd
-            grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
-            grsumsoc(i,k)=0.0          ! soil c
-            grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
-            grdensoc(i,k)=0.0          ! soil c
-        end do
-
-        grdencom(i)=0.0          ! grid averaged densities for combustion carbon,
-        grdenpap(i)=0.0          ! paper,
-        grdenfur(i)=0.0          ! furniture, 
-
-        totcmass(i)=0.0          ! total c mass (live+dead)
-        totlmass(i)=0.0          ! total c mass (live)
-        totdmas1(i)=0.0          ! total c mass (dead) litter
-        totdmas2(i)=0.0          ! total c mass (dead) soil c
-
-        barefrac(i)=1.0          
-        pbarefra(i)=1.0           
+      vgbiomas(i)=0.0
+      gavgltms(i)=0.0
+      gavgscms(i)=0.0
 
 
-        ntotcmas(i)=0.0          ! total c mass (live+dead)
-        ntotlmas(i)=0.0          ! total c mass (live)
-        ntotdms1(i)=0.0          ! total c mass (dead) litter
-        ntotdms2(i)=0.0          ! total c mass (dead) soil c
+      grsumcom(i)=0.0          ! grid sum of combustion carbon for all
+                               ! pfts that are chopped
+      grsumpap(i)=0.0          ! similarly for paper, 
+      grsumfur(i)=0.0          ! furniture,
+      do k = 1,ignd
+          grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
+          grsumsoc(i,k)=0.0          ! soil c
+          grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
+          grdensoc(i,k)=0.0          ! soil c
+      end do
+
+      grdencom(i)=0.0          ! grid averaged densities for combustion carbon,
+      grdenpap(i)=0.0          ! paper,
+      grdenfur(i)=0.0          ! furniture, 
+
+      totcmass(i)=0.0          ! total c mass (live+dead)
+      totlmass(i)=0.0          ! total c mass (live)
+      totdmas1(i)=0.0          ! total c mass (dead) litter
+      totdmas2(i)=0.0          ! total c mass (dead) soil c
+
+      barefrac(i)=1.0          
+      pbarefra(i)=1.0           
 
 
-        lucemcom(i)=0.0
-        lucltrin(i)=0.0
-        lucsocin(i)=0.0
-
-        bareiord(i)=0
-        chopedbm(i)=0.0
+      ntotcmas(i)=0.0          ! total c mass (live+dead)
+      ntotlmas(i)=0.0          ! total c mass (live)
+      ntotdms1(i)=0.0          ! total c mass (dead) litter
+      ntotdms2(i)=0.0          ! total c mass (dead) soil c
 
 
+      lucemcom(i)=0.0
+      lucltrin(i)=0.0
+      lucsocin(i)=0.0
 
-!>initialization ends
+      bareiord(i)=0
+      chopedbm(i)=0.0
 
-!>-------------------------------------------------------------------
+      !>initialization ends
 
-!>if land use change has taken place then get fcanmxs for use by class based on the new fcancmxs
+      !>-------------------------------------------------------------------
 
-      k1=0
+      !>if land use change has taken place then get fcanmxs for use by class based on the new fcancmxs
+
+      ! k1=0
       do 300 j = 1, ican
-        if(j.eq.1) then
-          k1 = k1 + 1
-        else
-          k1 = k1 + nol2pfts(j-1)
-        endif
-        k2 = k1 + nol2pfts(j) - 1
-        do 301 m = k1, k2
+        ! if(j.eq.1) then
+        !   k1 = k1 + 1
+        ! else
+        !   k1 = k1 + nol2pfts(j-1)
+        ! endif
+        ! k2 = k1 + nol2pfts(j) - 1
+        ! do 301 m = k1, k2
+        do 301 m = reindexPFTs(j,1), reindexPFTs(j,2)
             fcanmx(i,j)=fcanmx(i,j)+fcancmx(i,m)
             barefrac(i)=barefrac(i)-fcancmx(i,m)
 301     continue
 300   continue
-!>
-!>check if the interpol didn't mess up the barefrac. if so, take the
-!!extra amount from the pft with the largest area. 
-!!but you can't take it from crops!
+      !>
+      !>check if the interpol didn't mess up the barefrac. if so, take the
+      !!extra amount from the pft with the largest area. 
+      !!but you can't take it from crops!
       pftarrays=0.
 
          if (barefrac(i).lt.0.0) then ! PFTCompetition only needs minbare but it checks later.
@@ -533,116 +519,118 @@ else !> use provided values but still check they are not negative
             end if
          endif
 
-!>find previous day's bare fraction using previous day's fcancmxs
+      !>find previous day's bare fraction using previous day's fcancmxs
       do 310 j = 1, icc
-          pbarefra(i)=pbarefra(i)-fcancmy(i,j)
-310   continue
-!>
-!>check if the interpol didn't mess up the pbarefra. if so, take the
-!!extra amount from the pft with the largest area.
-!!but you can't take it from crops!
-         if (pbarefra(i).lt.0.0) then
-           k=1
-           do j = 1,icc
-            if (.not. crop(j)) then
-             indexpos(i,k) = j
-             pftarrays(i,k)=fcancmy(i,j)
-             k=k+1
-            end if
-           end do
+        pbarefra(i)=pbarefra(i)-fcancmy(i,j)
+      310   continue
+      !>
+      !>check if the interpol didn't mess up the pbarefra. if so, take the
+      !!extra amount from the pft with the largest area.
+      !!but you can't take it from crops!
+      if (pbarefra(i).lt.0.0) then
+        k=1
+        do j = 1,icc
+          if (.not. crop(j)) then
+            indexpos(i,k) = j
+            pftarrays(i,k)=fcancmy(i,j)
+            k=k+1
+          end if
+        end do
 
-            lrgstpft = maxloc(pftarrays(i,:))
-            j = indexpos(i,lrgstpft(1))
+        lrgstpft = maxloc(pftarrays(i,:))
+        j = indexpos(i,lrgstpft(1))
 
-           if (PFTCompetition) then
-                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare
-                pbarefra(i) = minbare
-            else
-                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i)
-                pbarefra(i) = 0.0
-            end if
+        if (PFTCompetition) then
+          fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare
+          pbarefra(i) = minbare
+        else
+          fcancmy(i,j) = fcancmy(i,j) + pbarefra(i)
+          pbarefra(i) = 0.0
+        end if
 
-         endif
-!>
-!>based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.
-!>
+      endif
+      !>
+      !>based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.
+      !>
       do 320 j = 1, icc
-          totlmass(i)=totlmass(i)+ &
-                     (fcancmy(i,j)*(gleafmas(i,j)+bleafmas(i,j)+ &
-                      stemmass(i,j)+rootmass(i,j))*grclarea(i) &
-                      *km2tom2)
+        totlmass(i)=totlmass(i)&
+                    + (fcancmy(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
+                    + stemmass(i,j)+rootmass(i,j))*grclarea(i) &
+                    *km2tom2)
 320   continue
 
       do 340 j = 1, iccp2 
 
-          if(j.lt.iccp1) then
-            term = fcancmy(i,j)
-          else if(j.eq.iccp1) then
-            term = pbarefra(i)
-          else if(j.eq.iccp2) then !LUC product pools cover entire cell.
-            term = 1.0
-          endif
-          do 342 k = 1, ignd
-          totdmas1(i)=totdmas1(i)+ &
-                     (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
-          totdmas2(i)=totdmas2(i)+ &
-                     (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
+        if(j.lt.iccp1) then
+          term = fcancmy(i,j)
+        else if(j.eq.iccp1) then
+          term = pbarefra(i)
+        else if(j.eq.iccp2) then !LUC product pools cover entire cell.
+          term = 1.0
+        endif
+        do 342 k = 1, ignd
+        totdmas1(i)=totdmas1(i)+ &
+                   (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
+        totdmas2(i)=totdmas2(i)+ &
+                   (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
 342       continue
 340   continue
 
-        totcmass(i)=totlmass(i)+totdmas1(i)+totdmas2(i)
-!     bare fractions cannot be negative
-        if( pbarefra(i).lt.0.0.and.abs(pbarefra(i)).lt.1.0e-05 )then
-          pbarefra(i)=0.0
-        else if(pbarefra(i).lt.0.0.and.abs(pbarefra(i)).ge.1.0e-05 )then
-          write(6,*)'bare fractions cannot be negative'
-          write(6,*)'prev. bare fraction(',i,')  =',pbarefra(i)
-          call xit('luc',-5)
-        endif
+      totcmass(i)=totlmass(i)+totdmas1(i)+totdmas2(i)
+      ! bare fractions cannot be negative
+      if( pbarefra(i).lt.0.0.and.abs(pbarefra(i)).lt.1.0e-05 )then
+        pbarefra(i)=0.0
+      else if(pbarefra(i).lt.0.0.and.abs(pbarefra(i)).ge.1.0e-05 )then
+        write(6,*)'bare fractions cannot be negative'
+        write(6,*)'prev. bare fraction(',i,')  =',pbarefra(i)
+        call xit('luc',-5)
+      endif
 
-        if( barefrac(i).lt.0.0.and.abs(barefrac(i)).lt.1.0e-05 )then
-          write(*,*)'setting bare to zero',barefrac(i)
-          barefrac(i)=0.0
-        else if(barefrac(i).lt.0.0.and.abs(barefrac(i)).ge.1.0e-05 )then
-          write(6,*)'bare fractions cannot be negative'
-          write(6,*)'bare fraction(',i,')  =',barefrac(i)
-          call xit('luc',-6)
-        endif
-!>     find above ground biomass and treatment index for combust, paper,
-!>     and furniture
-      k1=0
+      if( barefrac(i).lt.0.0.and.abs(barefrac(i)).lt.1.0e-05 )then
+        write(*,*)'setting bare to zero',barefrac(i)
+        barefrac(i)=0.0
+      else if(barefrac(i).lt.0.0.and.abs(barefrac(i)).ge.1.0e-05 )then
+        write(6,*)'bare fractions cannot be negative'
+        write(6,*)'bare fraction(',i,')  =',barefrac(i)
+        call xit('luc',-6)
+      endif
+
+      !> Find above ground biomass and treatment index for combust, paper,
+      !> and furniture
+      !k1=0
       do 500 j = 1, ican
-        if(j.eq.1) then
-          k1 = k1 + 1
-        else
-          k1 = k1 + nol2pfts(j-1)
-        endif
-        k2 = k1 + nol2pfts(j) - 1
-        do 510 m = k1, k2
-            abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
-            select case(classpfts(j))
-            case ('Crops', 'Grass') !Crops and Grass
+        ! if(j.eq.1) then
+        !   k1 = k1 + 1
+        ! else
+        !   k1 = k1 + nol2pfts(j-1)
+        ! endif
+        ! k2 = k1 + nol2pfts(j) - 1
+        ! do 510 m = k1, k2
+        do 510 m = reindexPFTs(j,1), reindexPFTs(j,2)
+          abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
+          select case(classpfts(j))
+          case ('Crops', 'Grass') !Crops and Grass
+            treatind(i,m)=3
+          case('NdlTr','BdlTr')
+            if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
+              treatind(i,m)=1
+            else if (abvgmass(i,m).le.bmasthrs(2)) then !bush 
               treatind(i,m)=3
-            case('NdlTr','BdlTr')
-              if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
-                treatind(i,m)=1
-              else if (abvgmass(i,m).le.bmasthrs(2)) then !bush 
-                treatind(i,m)=3
-              else  !shrubland
-                treatind(i,m)=2
-              endif
-            case('BdlSh')  !FLAG - should shrubs only be bush or shrubs? JM FIXME
-              if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
-                treatind(i,m)=1
-              else if (abvgmass(i,m).le.bmasthrs(2)) then !bush 
-                treatind(i,m)=3
-              else  !shrubland
-                treatind(i,m)=2
-              endif      
-            case default
-              print*,'Unknown CLASS PFT in LUC ',classpfts(j)
-              call XIT('luc',-7)       
-            end select
+            else  !shrubland
+              treatind(i,m)=2
+            endif
+          case('BdlSh')  !FLAG - should shrubs only be bush or shrubs? JM FIXME
+            if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
+              treatind(i,m)=1
+            else if (abvgmass(i,m).le.bmasthrs(2)) then !bush 
+              treatind(i,m)=3
+            else  !shrubland
+              treatind(i,m)=2
+            endif      
+          case default
+            print*,'Unknown CLASS PFT in LUC ',classpfts(j)
+            call XIT('luc',-7)       
+          end select
 510     continue
 500   continue
 
@@ -705,15 +693,16 @@ else !> use provided values but still check they are not negative
 !!from the chopped off fraction of this pft, gets assimilated into
 !!soil c of all existing pfts as well.
 !!
-      k1=0
+      ! k1=0
       do 600 j = 1, ican
-        if(j.eq.1) then
-          k1 = k1 + 1
-        else
-          k1 = k1 + nol2pfts(j-1)
-        endif
-        k2 = k1 + nol2pfts(j) - 1
-        do 610 m = k1, k2
+        ! if(j.eq.1) then
+        !   k1 = k1 + 1
+        ! else
+        !   k1 = k1 + nol2pfts(j-1)
+        ! endif
+        ! k2 = k1 + nol2pfts(j) - 1
+        !do 610 m = k1, k2
+        do 610 m = reindexPFTs(j,1), reindexPFTs(j,2)
             if(fraciord(i,m).eq.-1)then
 
 !>chop off above ground biomass
@@ -766,9 +755,9 @@ else !> use provided values but still check they are not negative
 610     continue
 600   continue
 
-!>if bare fraction decreases then chop off the litter and soil c
-!!from the decreased fraction and add it to grsumlit & grsumsoc for spreading over the whole grid cell
-!!
+!> if bare fraction decreases then chop off the litter and soil c
+!! from the decreased fraction and add it to grsumlit & grsumsoc for
+!! putting in the LUC product pools
         if(bareiord(i).eq.-1)then
           do 632 k = 1, ignd
           redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
@@ -922,7 +911,7 @@ else !> use provided values but still check they are not negative
         end do
 
 !>
-!>just like total amount of carbon must balance, the grid averagred densities must also balance
+!>just like total amount of carbon must balance, the grid averaged densities must also balance
 !>
        if( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i)&
               + pluclitpool(i) + plucscpool(i) &
@@ -951,17 +940,16 @@ else !> use provided values but still check they are not negative
            call xit('luc',-12)
        endif
 
-      do 800 j = 1, icc
-          if((.not. leapnow .and.iday.eq.365) .or. &
-             (leapnow.and.iday.eq.366)) then
+        do 800 j = 1, icc
+          if((.not. leapnow .and. iday == 365) .or. (leapnow .and. iday == 366)) then
             pfcancmx(i,j)=nfcancmx(i,j)
           endif
-800   continue
+800     continue
 
-       endif  ! loop to check if any luc took place.
-255   continue
+      end if  ! loop to check if any luc took place.
+255 continue
 
-      return
+  return
 
 end subroutine luc
 !>@}
