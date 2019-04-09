@@ -3,6 +3,7 @@ var ctem__statevars_8f90 =
     [ "ctem_switches", "structctem__statevars_1_1ctem__switches.html", "structctem__statevars_1_1ctem__switches" ],
     [ "veg_rot", "structctem__statevars_1_1veg__rot.html", "structctem__statevars_1_1veg__rot" ],
     [ "veg_gat", "structctem__statevars_1_1veg__gat.html", "structctem__statevars_1_1veg__gat" ],
+    [ "tracerstype", "structctem__statevars_1_1tracerstype.html", "structctem__statevars_1_1tracerstype" ],
     [ "ctem_tile_level", "structctem__statevars_1_1ctem__tile__level.html", "structctem__statevars_1_1ctem__tile__level" ],
     [ "ctem_monthly", "structctem__statevars_1_1ctem__monthly.html", "structctem__statevars_1_1ctem__monthly" ],
     [ "ctem_gridavg_monthly", "structctem__statevars_1_1ctem__gridavg__monthly.html", "structctem__statevars_1_1ctem__gridavg__monthly" ],
@@ -23,6 +24,7 @@ var ctem__statevars_8f90 =
     [ "ctem_tile_mo", "ctem__statevars_8f90.html#af68043090dc6cd2c0615eb7d4b550b18", null ],
     [ "ctem_tile_yr", "ctem__statevars_8f90.html#a74e5918629cea2b5e0e8cd50b271f917", null ],
     [ "ctem_yr", "ctem__statevars_8f90.html#aa83b75c65f5aa4de37ef1f55a6a54193", null ],
+    [ "tracer", "ctem__statevars_8f90.html#a5c4751d17cd0e71155f74489aeb25922", null ],
     [ "vgat", "ctem__statevars_8f90.html#ae21be54e6097f1f897ddbb5a7265d301", null ],
     [ "vrot", "ctem__statevars_8f90.html#ac60177625fa0d946b94065134b1f37a2", null ]
 ];

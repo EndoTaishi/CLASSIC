@@ -297,7 +297,7 @@ contains
                       + humiftrsveg(i,j,k)) * convertUnits !humification
             end if                
           else ! bareground or LUC product pools
-            gains = 0. ! FLAG only from LUC.
+            gains = 0. ! The gains come from LUC, so are in the litterLandCompChg term.
             losses = (litresveg(i,j,k)  & !litter respiration
                     + humiftrsveg(i,j,k)) * convertUnits  ! humification
           end if 
@@ -333,7 +333,21 @@ contains
            
       end do ! j 
     end do ! i 
+    
+    ! k=1
+    ! write(*,'(a7,i4,2f13.10)')'tracer1',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
+    ! write(*,'(a7,i4,2f13.10)')'litter1',k,litrmass(1,6,k),litrmass(1,7,k)      
+    ! k=2  
+    ! write(*,'(a7,i4,2f13.10)')'tracer2',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
+    ! write(*,'(a7,i4,2f13.10)')'litter2',k,litrmass(1,6,k),litrmass(1,7,k)    
+    ! k=3    
+    ! write(*,'(a7,i4,2f13.10)')'tracer3',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
+    ! write(*,'(a7,i4,2f13.10)')'litter3',k,litrmass(1,6,k),litrmass(1,7,k)  
+    ! k=4     
+    ! write(*,'(a7,i4,2f13.10)')'tracer4',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
+    ! write(*,'(a7,i4,2f13.10)')'litter4',k,litrmass(1,6,k),litrmass(1,7,k)        
 
+    !read(*,*)
   end subroutine simpleTracer
 !!@}
 ! -------------------------------------------------------

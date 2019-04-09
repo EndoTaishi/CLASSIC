@@ -6,6 +6,7 @@ var NAVTREE =
     [ "Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists", "initTool.html", null ],
     [ "Modify netcdf model initialization files for whole fields or point locations", "modifyRS.html", null ],
     [ "Bibliography", "citelist.html", null ],
+    [ "Modules", "modules.html", "modules" ],
     [ "Modules", null, [
       [ "Modules List", "namespaces.html", "namespaces" ],
       [ "Module Members", "namespacemembers.html", [
@@ -35,15 +36,15 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classic__params_8f90.html#a4d1cea4fbf05ebcf81e8f0658a4ad346",
-"classic__params_8f90.html#afdd0e10208864f91afe9f075306ded02",
-"model__state__drivers_8f90.html#ab7519f6cea113965e1c7d90a1767c24b",
-"structclass__statevars_1_1class__gather.html#a451d81ee5ed15b6616dc9f680fa41193",
-"structclass__statevars_1_1class__moyr__output.html#a4a85320dbe3bc18749ca0b986ad80498",
-"structclass__statevars_1_1class__rotated.html#ab24d205d34ae3811375da71fdad35409",
-"structctem__statevars_1_1ctem__monthly.html#af97c8b0e764ea86a75038cd6b34ef8b1",
-"structctem__statevars_1_1veg__gat.html#a59a7d44154bb3a85668a84726a57709d",
-"structctem__statevars_1_1veg__rot.html#ac650e4cdd83740ac7ff27189ad342013"
+"classic__params_8f90.html#a4ccc881818e40154f2b456ae672dc045",
+"classic__params_8f90.html#af848251bbbde37310b9068bb15642350",
+"model__state__drivers_8f90.html#a7727f620795fa75d19208eb99a782416",
+"structclass__statevars_1_1class__gather.html#a2e3e457c1c99ae64ec94e176d6573e28",
+"structclass__statevars_1_1class__gather.html#af7724f6e410feb91601310bb18e9d305",
+"structclass__statevars_1_1class__rotated.html#aa1265e193d75f77c4f0666c418970de5",
+"structctem__statevars_1_1ctem__monthly.html#a11e62ffb67546edbb54e6de09aab2931",
+"structctem__statevars_1_1veg__gat.html#a19f24e06942e439d9a53aa1bd181335c",
+"structctem__statevars_1_1veg__rot.html#a608a4b4002244f8bb7a89da61fca2abe"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

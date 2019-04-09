@@ -96,13 +96,15 @@ $(document).ready(function(){initNavTree('ctem__statevars_8f90.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Types</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html">ctem_statevars::ctem_switches</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">switches for running the model, read from the joboptions file  <a href="structctem__statevars_1_1ctem__switches.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches for running the model, read from the joboptions file.  <a href="structctem__statevars_1_1ctem__switches.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html">ctem_statevars::veg_rot</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's 'rot' vars.  <a href="structctem__statevars_1_1veg__rot.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__gat.html">ctem_statevars::veg_gat</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's 'gat' vars.  <a href="structctem__statevars_1_1veg__gat.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1tracerstype.html">ctem_statevars::tracerstype</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__tile__level.html">ctem_statevars::ctem_tile_level</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's variables per tile.  <a href="structctem__statevars_1_1ctem__tile__level.html#details">More...</a><br /></td></tr>
@@ -138,10 +140,6 @@ Functions/Subroutines</h2></td></tr>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#a069aa6fb4b132ef4fe61febb61d40ec1">ctem_statevars::initrowvars</a> ()</td></tr>
 <tr class="memdesc:a069aa6fb4b132ef4fe61febb61d40ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes 'row' variables. <br /></td></tr>
 <tr class="separator:a069aa6fb4b132ef4fe61febb61d40ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcc1311f7dd0743cf4002b0d2635e824"><td class="memItemLeft" align="right" valign="top"><a id="afcc1311f7dd0743cf4002b0d2635e824"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#afcc1311f7dd0743cf4002b0d2635e824">ctem_statevars::resetmonthend</a> (nltest, nmtest)</td></tr>
-<tr class="memdesc:afcc1311f7dd0743cf4002b0d2635e824"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets monthly variables at month end in preparation for next month. <br /></td></tr>
-<tr class="separator:afcc1311f7dd0743cf4002b0d2635e824"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a090f13e5df0ad3551010689fcf82a0ac"><td class="memItemLeft" align="right" valign="top"><a id="a090f13e5df0ad3551010689fcf82a0ac"></a>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#a090f13e5df0ad3551010689fcf82a0ac">ctem_statevars::resetyearend</a> (nltest, nmtest)</td></tr>
 <tr class="memdesc:a090f13e5df0ad3551010689fcf82a0ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets annual variables in preparation for next year. <br /></td></tr>
@@ -155,6 +153,10 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#ad342e3a360b7b12a40b1c80a251d95b9">ctem_statevars::alloc_ctem_vars</a> ()</td></tr>
 <tr class="memdesc:ad342e3a360b7b12a40b1c80a251d95b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate the biogeochemistry (CTEM) variables in preparation for a simulation. <br /></td></tr>
 <tr class="separator:ad342e3a360b7b12a40b1c80a251d95b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc1311f7dd0743cf4002b0d2635e824"><td class="memItemLeft" align="right" valign="top"><a id="afcc1311f7dd0743cf4002b0d2635e824"></a>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#afcc1311f7dd0743cf4002b0d2635e824">ctem_statevars::resetmonthend</a> (nltest, nmtest)</td></tr>
+<tr class="memdesc:afcc1311f7dd0743cf4002b0d2635e824"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets monthly variables at month end in preparation for next month. <br /></td></tr>
+<tr class="separator:afcc1311f7dd0743cf4002b0d2635e824"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -167,6 +169,9 @@ type(veg_rot), target, save&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="memitem:ae21be54e6097f1f897ddbb5a7265d301"><td class="memItemLeft" align="right" valign="top"><a id="ae21be54e6097f1f897ddbb5a7265d301"></a>
 type(veg_gat), target, save&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_statevars::vgat</b></td></tr>
 <tr class="separator:ae21be54e6097f1f897ddbb5a7265d301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c4751d17cd0e71155f74489aeb25922"><td class="memItemLeft" align="right" valign="top"><a id="a5c4751d17cd0e71155f74489aeb25922"></a>
+type(tracerstype), target, save&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_statevars::tracer</b></td></tr>
+<tr class="separator:a5c4751d17cd0e71155f74489aeb25922"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35e3e81a8d12b67b5bc48767779ffe4d"><td class="memItemLeft" align="right" valign="top"><a id="a35e3e81a8d12b67b5bc48767779ffe4d"></a>
 type(ctem_tile_level), target, save&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_statevars::ctem_tile</b></td></tr>
 <tr class="separator:a35e3e81a8d12b67b5bc48767779ffe4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -210,7 +215,7 @@ type(ctem_tileavg_annual), target, save&#160;</td><td class="memItemRight" valig
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem__statevars_8f90.html">ctem_statevars.f90</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
+    <li class="footer">Generated on Tue Apr 9 2019 08:59:52 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

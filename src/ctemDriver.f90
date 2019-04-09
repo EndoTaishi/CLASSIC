@@ -614,8 +614,6 @@ contains
                sort, isand,& !In
                rmsveg, rmrveg, roottemp) ! Out
 
-  !call calcNPP()
-
   ! NOTE: This next bit is a little tricky. Remember ancgveg is the net photosynthesis 
   ! so it is ancgveg = gpp - rmlcgveg. Here we assign the daily mean net photosynthesis
   ! (ancgveg) and mean rml (rmlveg) to the anveg and rmlveg variables 
@@ -940,9 +938,8 @@ contains
       hutrstep_g(i)= hutrstep_g(i) + humstepmoss(i)     !kgC/m2/dt
       humiftrs(i)  = humiftrs(i)+humstepmoss(i)*(963.62/deltat)!umol/m2/s
       
-    endif          
-470   continue
-  !     ------------------------------------------------------------------
+    end if          
+470 continue
   !
   !     heterotrophic respiration part ends
   !
@@ -1090,19 +1087,15 @@ contains
       
 610 continue
 600 continue
-  !>
+  
   !> Calculate grid averaged value of C related to spatial expansion
-  !>
+  
   repro_cost_g(:)=0.0    !< amount of C for production of reproductive tissues
   do 620 j = 1,icc
     do 621 i = il1, il2
-     !if (PFTCompetition .or. lnduseon) then
-       !     Not in use. We now use the constant reproductive cost below. JM Jun 2014
-       !     expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
-      repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j)
-     !endif
-621     continue
-620   continue
+      repro_cost_g(i) = repro_cost_g(i) + fcancmx(i,j) * reprocost(i,j)
+621 continue
+620 continue
 
   !    ------------------------------------------------------------------
 
@@ -1112,13 +1105,12 @@ contains
   !! snow sub-areas for phenology purposes (for example, leaf onset is not assumed to occur
   !! at different times over these sub-areas) we use average soil and root temperature in 
   !! the phenology subroutine.
-  call phenolgy(gleafmas,   bleafmas,        il1,        il2,    &!In 
-                  ilg,    leapnow,    tbar,     thice,    &!In 
+  call phenolgy(il1,  il2,  ilg,    leapnow,  tbar,  thice,    &!In 
                    thliq,     THLW,     THFC,       ta,&!In 
                  pheanveg,     iday,     radj, roottemp,&!In 
                  rmatctem, stemmass, rootmass,     sort,&!In 
                  fcancmx,  isand, &!In 
-                 lfstatus,  pandays, colddays, & !In/Out
+                 lfstatus,  pandays, colddays, gleafmas, bleafmas, & !In/Out
                  flhrloss, leaflitr, phenLeafGtoB ) ! Out
                          
   !> While leaf litter is calculated in the phenology subroutine, stem
@@ -1200,7 +1192,7 @@ contains
                    glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, & ! In/Out
                    nbpveg, dstcemls1, dstcemls3, nbp) ! Out 
 
-  !> Allow cryoturbation (and bioturbation) to move the soil C between
+  !> Allow cryoturbation and bioturbation to move the soil C between
   !! layers. Since this is neither consuming nor adding C, this does not
   !! affect our C balance in balcar. There is also an internal C balance check.
   call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, &!In
@@ -1228,24 +1220,23 @@ contains
   !>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145)
   !!and updated sizes of all pools (in \f$(kg C/m^2)\f$). Now we call the balcar subroutine and make sure
   !!that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
-  if(spinfast.eq.1)then
-    call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
-                    litrmass, soilcmas, ntchlveg,  ntchsveg,&
-                    ntchrveg, tltrleaf, tltrstem,  tltrroot,&
-                    glcaemls, blcaemls, stcaemls,  rtcaemls,&
-                    ltrcemls, ltresveg, scresveg,  humtrsvg,&
-                    pglfmass, pblfmass, pstemass,  protmass,&
-                    plitmass, psocmass, vgbiomas,  reprocost,&
-                    pvgbioms, gavgltms, pgavltms,  gavgscms,&
-                    pgavscms, dstcemls3, repro_cost_g,       &
-                     autores, hetrores,      gpp,    &
-                      litres,   socres, dstcemls1,    &
-                    litrfall, humiftrs,                 &
-                         il1,      il2,      ilg,     &
-                   ipeatland, Cmossmas, pCmossmas,                &
-                  nppmosstep, litrfallmoss, litrmsmoss,&
-                 plitrmsmoss, ltrestepmoss, humstepmoss)
-  endif
+  if (spinfast == 1) call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
+                                  litrmass, soilcmas, ntchlveg,  ntchsveg,&
+                                  ntchrveg, tltrleaf, tltrstem,  tltrroot,&
+                                  glcaemls, blcaemls, stcaemls,  rtcaemls,&
+                                  ltrcemls, ltresveg, scresveg,  humtrsvg,&
+                                  pglfmass, pblfmass, pstemass,  protmass,&
+                                  plitmass, psocmass, vgbiomas,  reprocost,&
+                                  pvgbioms, gavgltms, pgavltms,  gavgscms,&
+                                  pgavscms, dstcemls3, repro_cost_g,       &
+                                   autores, hetrores,      gpp,    &
+                                    litres,   socres, dstcemls1,    &
+                                  litrfall, humiftrs,                 &
+                                       il1,      il2,      ilg,     &
+                                 ipeatland, Cmossmas, pCmossmas,                &
+                                nppmosstep, litrfallmoss, litrmsmoss,&
+                               plitrmsmoss, ltrestepmoss, humstepmoss)
+  
   !>
   !> Finally find vegetation structural attributes which can be passed 
   !! to the land surface scheme using leaf, stem, and root biomass.
@@ -1259,15 +1250,13 @@ contains
              cmasvegc,  veghght, rootdpth,   alvisc,& !Out
                 alnirc,    paicgat,   slaicgat) !Out
 
-  !>
   !> Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by allometry
-  !>
   gavglai (:) = 0.0
   do j = 1, icc
     do i = il1, il2
       gavglai(i) = gavglai(i) + fcancmx(i,j) * ailcg(i,j)
-    enddo
-  enddo
+    end do
+  end do
   
   !> At the end of the day, find the depth of the peat, update the degree days for moss photosynthesis and the peat bottom layer depth
   do i = il1, il2

@@ -92,9 +92,9 @@ $(document).ready(function(){initNavTree('mortality_8f90.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:acdd8660ef73249398759e7b34a0f0855"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f90.html#acdd8660ef73249398759e7b34a0f0855">mortality::updatepoolsmortality</a> (il1, il2, stemltrm, rootltrm, stemmass, rootmass, litrmass, glealtrm, gleafmas, bleafmas)</td></tr>
-<tr class="memdesc:acdd8660ef73249398759e7b34a0f0855"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the litter into the litter pool. The mortality for green grasses doesn't generate litter, instead they turn brown.  <a href="mortality_8f90.html#acdd8660ef73249398759e7b34a0f0855">More...</a><br /></td></tr>
-<tr class="separator:acdd8660ef73249398759e7b34a0f0855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fa62bcab37dba3855c862076667886e"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f90.html#a0fa62bcab37dba3855c862076667886e">mortality::updatepoolsmortality</a> (il1, il2, ilg, stemltrm, rootltrm, rmatctem, stemmass, rootmass, litrmass, glealtrm, gleafmas, bleafmas, mortLeafGtoB)</td></tr>
+<tr class="memdesc:a0fa62bcab37dba3855c862076667886e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the litter into the litter pool. The mortality for green grasses doesn't generate litter, instead they turn brown.  <a href="mortality_8f90.html#a0fa62bcab37dba3855c862076667886e">More...</a><br /></td></tr>
+<tr class="separator:a0fa62bcab37dba3855c862076667886e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a8af5d27a11910795ec04462f491ce7ed"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f90.html#a8af5d27a11910795ec04462f491ce7ed">mortality::mortalty</a> (stemmass, rootmass, ailcg, gleafmas, bleafmas, il1, il2, ilg, leapnow, iday, sort, fcancmx, lystmmas, lyrotmas, tymaxlai, grwtheff, stemltrm, rootltrm, glealtrm, geremort, intrmort)</td></tr>
 <tr class="memdesc:a8af5d27a11910795ec04462f491ce7ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates maintenance respiration for roots and stems.  <a href="mortality_8f90.html#a8af5d27a11910795ec04462f491ce7ed">More...</a><br /></td></tr>
@@ -282,8 +282,8 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="file_acdd8660ef73249398759e7b34a0f0855"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_acdd8660ef73249398759e7b34a0f0855">&#9670;&nbsp;</a></span>updatepoolsmortality()</h2>
+<a id="file_a0fa62bcab37dba3855c862076667886e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a0fa62bcab37dba3855c862076667886e">&#9670;&nbsp;</a></span>updatepoolsmortality()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -303,6 +303,12 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>stemltrm</em>, </td>
         </tr>
@@ -311,6 +317,12 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>rootltrm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>rmatctem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -327,7 +339,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
@@ -346,7 +358,13 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
-          <td class="paramname"><em>bleafmas</em>&#160;</td>
+          <td class="paramname"><em>bleafmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>mortLeafGtoB</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -362,14 +380,17 @@ Functions/Subroutines</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg (no. of grid cells in latitude circle)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ilg</td><td>no. of grid cells/tiles in latitude circle</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stemltrm</td><td>stem litter generated due to mortality <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">rootltrm</td><td>root litter generated due to mortality <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rmatctem</td><td>fraction of roots for each of ctem's 9 pfts in each soil layer</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">glealtrm</td><td>green leaf litter generated due to mortality <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">stemmass</td><td>stem mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>root mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter mass for each of the ctem pfts + bare + LUC product pools, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">gleafmas</td><td>green leaf mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/> </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mortleafgtob</td><td>Green leaf mass converted to brown due to mortality <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/> </td></tr>
   </table>
   </dd>
 </dl>
@@ -383,7 +404,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="mortality_8f90.html">mortality.f90</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
+    <li class="footer">Generated on Tue Apr 9 2019 08:59:52 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -3272,12 +3272,13 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
         WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
         
-        do k = 1,ignd
-          ! write(*,'(a7,i4,11f13.10)')'tracer',k,tracerSoilCMassrot(1,1,:,k)
-          ! write(*,'(a7,i4,11f13.10)')'soilc',k,soilcmasrow(1,1,:,k)
-          write(*,'(a7,i4,11f13.10)')'tracer',k,tracerLitrMassrot(1,1,:,k)
-          write(*,'(a7,i4,11f13.10)')'litter',k,litrmassrow(1,1,:,k)        
-        end do 
+        ! do k = 1,ignd
+        !   ! write(*,'(a7,i4,11f13.10)')'tracer',k,tracerSoilCMassrot(1,1,:,k)
+        !   ! write(*,'(a7,i4,11f13.10)')'soilc',k,soilcmasrow(1,1,:,k)
+        !   write(*,'(a7,i4,11f13.10)')'tracer',k,tracerLitrMassrot(1,1,:,k)
+        !   write(*,'(a7,i4,11f13.10)')'litter',k,litrmassrow(1,1,:,k)        
+        ! end do 
+        ! read(*,*)
         ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerStemMassrot(1,1,:)
         ! write(*,'(a7,i4,9f13.10)')'stem',k,stemmassrow(1,1,:)
         ! print*,'-----'

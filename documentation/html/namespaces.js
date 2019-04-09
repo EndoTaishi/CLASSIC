@@ -5,7 +5,6 @@ var namespaces =
     [ "competition_scheme", "namespacecompetition__scheme.html", null ],
     [ "ctem_statevars", "namespacectem__statevars.html", null ],
     [ "disturbance_scheme", "namespacedisturbance__scheme.html", null ],
-    [ "heterotrophic_respiration", "namespaceheterotrophic__respiration.html", null ],
     [ "landuse_change", "namespacelanduse__change.html", null ],
     [ "main", "namespacemain.html", null ],
     [ "metdisaggmodule", "namespacemetdisaggmodule.html", null ],

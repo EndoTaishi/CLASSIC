@@ -105,9 +105,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ae8c06112b9b31ccffe032bbf463403b6"><td class="memItemLeft" align="right" valign="top">real function, dimension(5), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="generalUtils_8f90.html#ae8c06112b9b31ccffe032bbf463403b6">generalutils::parsetimestamp</a> (timeStamp)</td></tr>
 <tr class="memdesc:ae8c06112b9b31ccffe032bbf463403b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a time stamp in the expected form "day as %Y%m%d.%f" Returns an array with 1) year, 2) month, 3) day, 4) fraction of day 5) day of year.  <a href="generalUtils_8f90.html#ae8c06112b9b31ccffe032bbf463403b6">More...</a><br /></td></tr>
 <tr class="separator:ae8c06112b9b31ccffe032bbf463403b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17f1988b01be8a48ad0ec3ace2b6823e"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="generalUtils_8f90.html#a17f1988b01be8a48ad0ec3ace2b6823e">generalutils::findpermafrostvars</a> (nltest, nmtest)</td></tr>
-<tr class="memdesc:a17f1988b01be8a48ad0ec3ace2b6823e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the active layer depth and depth to the frozen water table.  <a href="generalUtils_8f90.html#a17f1988b01be8a48ad0ec3ace2b6823e">More...</a><br /></td></tr>
-<tr class="separator:a17f1988b01be8a48ad0ec3ace2b6823e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12e82d2683b95d2a1b07367835692e02"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="generalUtils_8f90.html#a12e82d2683b95d2a1b07367835692e02">generalutils::findpermafrostvars</a> (nltest, nmtest, iday)</td></tr>
+<tr class="memdesc:a12e82d2683b95d2a1b07367835692e02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the active layer depth and depth to the frozen water table.  <a href="generalUtils_8f90.html#a12e82d2683b95d2a1b07367835692e02">More...</a><br /></td></tr>
+<tr class="separator:a12e82d2683b95d2a1b07367835692e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4476b8a9d08db5d4c498d3f6c3d57364"><td class="memItemLeft" align="right" valign="top">logical function, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="generalUtils_8f90.html#a4476b8a9d08db5d4c498d3f6c3d57364">generalutils::closeenough</a> (num1, num2, error)</td></tr>
 <tr class="memdesc:a4476b8a9d08db5d4c498d3f6c3d57364"><td class="mdescLeft">&#160;</td><td class="mdescRight">As real numbers are not precise, this is a simple way to compare two reals.  <a href="generalUtils_8f90.html#a4476b8a9d08db5d4c498d3f6c3d57364">More...</a><br /></td></tr>
 <tr class="separator:a4476b8a9d08db5d4c498d3f6c3d57364"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -312,8 +312,8 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
 
 </div>
 </div>
-<a id="file_a17f1988b01be8a48ad0ec3ace2b6823e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a17f1988b01be8a48ad0ec3ace2b6823e">&#9670;&nbsp;</a></span>findpermafrostvars()</h2>
+<a id="file_a12e82d2683b95d2a1b07367835692e02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a12e82d2683b95d2a1b07367835692e02">&#9670;&nbsp;</a></span>findpermafrostvars()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -328,7 +328,13 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>nmtest</em>&#160;</td>
+          <td class="paramname"><em>nmtest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>iday</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -390,7 +396,7 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="generalUtils_8f90.html">generalUtils.f90</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
+    <li class="footer">Generated on Tue Apr 9 2019 08:59:52 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

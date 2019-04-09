@@ -46,6 +46,7 @@ var searchData=
   ['frltrglf',['frltrglf',['../namespaceclassic__params.html#ab6094bfa35ff9c5965a7899a338236f8',1,'classic_params']]],
   ['frltrrt',['frltrrt',['../namespaceclassic__params.html#a1d12236afac8a34d7d79dc85a7f8e1ce',1,'classic_params']]],
   ['frltrstm',['frltrstm',['../namespaceclassic__params.html#a27459578b6b1e09be98704ce0553a1d6',1,'classic_params']]],
+  ['frozered',['frozered',['../namespaceclassic__params.html#aaa64666a170a707d48a796e503adf7ea',1,'classic_params']]],
   ['fsgggat',['fsgggat',['../structclass__statevars_1_1class__gather.html#a3011867f8842ce6400ed5538c608b3df',1,'class_statevars::class_gather']]],
   ['fsgsgat',['fsgsgat',['../structclass__statevars_1_1class__gather.html#ab37b9a94177a4b66e4f11afd04725e60',1,'class_statevars::class_gather']]],
   ['fsgvgat',['fsgvgat',['../structclass__statevars_1_1class__gather.html#a50b058047f94d50fd14bae1fabe06d74',1,'class_statevars::class_gather']]],

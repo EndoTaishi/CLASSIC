@@ -101,13 +101,13 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Calculates disturbance as both natural and human-influenced fires. </p>
-<p>CTEM represents disturbance as both natural and human-influenced fires. The original fire parametrization corresponding to CTEM v. 1.0 is described in Arora and Boer (2005) <a class="el" href="citelist.html#CITEREF_Arora20052ac">[5]</a>. The parametrization has since been adapted and used in several other DGVMs (Kloster et al. 2010 <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[45]</a>, Kloster et al. 2012 <a class="el" href="citelist.html#CITEREF_Kloster2012-c79">[46]</a>, Migliavacca et al. 2013 <a class="el" href="citelist.html#CITEREF_Migliavacca2013-eh">[62]</a>, and Li et al. 2012 <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>). CTEM v. 2.0 incorporates changes suggested in these studies as well as several new improvements.</p>
+<p>CTEM represents disturbance as both natural and human-influenced fires. The original fire parametrization corresponding to CTEM v. 1.0 is described in Arora and Boer (2005) <a class="el" href="citelist.html#CITEREF_Arora20052ac">[5]</a>. The parametrization has since been adapted and used in several other DGVMs (Kloster et al. 2010 <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[43]</a>, Kloster et al. 2012 <a class="el" href="citelist.html#CITEREF_Kloster2012-c79">[44]</a>, Migliavacca et al. 2013 <a class="el" href="citelist.html#CITEREF_Migliavacca2013-eh">[62]</a>, and Li et al. 2012 <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>). CTEM v. 2.0 incorporates changes suggested in these studies as well as several new improvements.</p>
 <p>Fire in CTEM is simulated using a process-based scheme of intermediate complexity that accounts for all elements of the fire triangle: fuel load, combustibility of fuel, and an ignition source. CTEM represents the probability of a fire occurrence ( <img class="formulaInl" alt="$P_\mathrm{f}$" src="form_565.png"/>), for a representative area of <img class="formulaInl" alt="$500\,km^2$" src="form_566.png"/> ( <img class="formulaInl" alt="$a_{rep}$" src="form_567.png"/>), as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\qquad (Eqn 1)\]" src="form_1574.png"/>
 </p>
 <p>where the right hand side terms represent the fire probabilities that are conditioned on (i) the availability of biomass as a fuel source ( <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/>), (ii) the combustibility of the fuel based on its moisture content ( <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/>), and (iii) the presence of an ignition source ( <img class="formulaInl" alt="$P_\mathrm{i}$" src="form_571.png"/>). The probability of fire and the subsequent calculations are performed for each PFT present in a grid cell (but the PFT index <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is omitted for clarity in Eqn 1). Since the CTEM parametrization is based on one fire per day per representative area, the representative area has to be sufficiently small that the requirement of only one fire per day is reasonable, yet sufficiently large such that it is not possible to burn the entire representative area in 1 day. Based on MODIS observed fire counts in Fig. 1 of Li et al. (2012) <a class="el" href="citelist.html#CITEREF_Li20121c2">[54]</a>, <img class="formulaInl" alt="$500\,km^2$" src="form_566.png"/> is an appropriate size to not have more than one fire per day and still be a large enough area to be assumed representative of the grid cell as a whole.</p>
-<p>The <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> term depends on the aboveground biomass ( <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/>) available for sustaining a fire (which includes the green and brown leaf mass, stem mass and litter mass, <img class="formulaInl" alt="$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$" src="form_573.png"/>). Below a lower threshold of aboveground biomass ( <img class="formulaInl" alt="$B_{low}$" src="form_574.png"/>; <img class="formulaInl" alt="$0.2\, kg\,C\,m^{-2}$" src="form_575.png"/>; similar to Moorcroft et al. (2001) <a class="el" href="citelist.html#CITEREF_Moorcroft2001-co">[64]</a>, and Kucharik et al. (2000) <a class="el" href="citelist.html#CITEREF_Kucharik2000-xk">[47]</a>), fire is not sustained and thus has a probability of 0. Above a biomass of <img class="formulaInl" alt="$1.0\, kg\,C\,m^{-2}$" src="form_576.png"/> ( <img class="formulaInl" alt="$B_{high}$" src="form_577.png"/>), <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is set to 1 as the amount of fuel available is assumed sufficient for fire. <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is then calculated using the aboveground biomass, <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/> ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) with a linear variation between the upper and lower thresholds as</p>
+<p>The <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> term depends on the aboveground biomass ( <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/>) available for sustaining a fire (which includes the green and brown leaf mass, stem mass and litter mass, <img class="formulaInl" alt="$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$" src="form_573.png"/>). Below a lower threshold of aboveground biomass ( <img class="formulaInl" alt="$B_{low}$" src="form_574.png"/>; <img class="formulaInl" alt="$0.2\, kg\,C\,m^{-2}$" src="form_575.png"/>; similar to Moorcroft et al. (2001) <a class="el" href="citelist.html#CITEREF_Moorcroft2001-co">[64]</a>, and Kucharik et al. (2000) <a class="el" href="citelist.html#CITEREF_Kucharik2000-xk">[46]</a>), fire is not sustained and thus has a probability of 0. Above a biomass of <img class="formulaInl" alt="$1.0\, kg\,C\,m^{-2}$" src="form_576.png"/> ( <img class="formulaInl" alt="$B_{high}$" src="form_577.png"/>), <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is set to 1 as the amount of fuel available is assumed sufficient for fire. <img class="formulaInl" alt="$P_\mathrm{b}$" src="form_569.png"/> is then calculated using the aboveground biomass, <img class="formulaInl" alt="$B_{ag}$" src="form_572.png"/> ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) with a linear variation between the upper and lower thresholds as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}} {B_{high} - B_{low}}\right)\right]. \qquad (Eqn 2)\]" src="form_1575.png"/>
 </p>
@@ -116,7 +116,7 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high} - F_{low}} \right)\right], \qquad (Eqn 3)\]" src="form_1576.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/> and <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/> represent lower and upper thresholds of cloud-to-ground lightning strikes ( <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, <img class="formulaInl" alt="$flashes\,km^{-2}\,month^{-1}$" src="form_584.png"/>) , respectively. Similar to Eqn 2, below the lower threshold ( <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/>; <img class="formulaInl" alt="$0.25\,flashes\,km^{-2}\,month^{-1}$" src="form_585.png"/>), <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 0 implying lightning strikes are not sufficient to cause fire ignition, above the upper threshold ( <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/>; <img class="formulaInl" alt="$10.0\,flashes\,km^{-2}\,month^{-1}$" src="form_586.png"/>) <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 1, as ignition sources now do not pose a constraint on fire. The amount of cloud-to-ground lightning, <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, is a fraction of the total lightning based on the relationship derived by Price and Rind (1993) <a class="el" href="citelist.html#CITEREF_Price1993-fm">[69]</a> (approximation of their Eqs. 1 and 2) as</p>
+<p>where <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/> and <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/> represent lower and upper thresholds of cloud-to-ground lightning strikes ( <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, <img class="formulaInl" alt="$flashes\,km^{-2}\,month^{-1}$" src="form_584.png"/>) , respectively. Similar to Eqn 2, below the lower threshold ( <img class="formulaInl" alt="$F_{low}$" src="form_581.png"/>; <img class="formulaInl" alt="$0.25\,flashes\,km^{-2}\,month^{-1}$" src="form_585.png"/>), <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 0 implying lightning strikes are not sufficient to cause fire ignition, above the upper threshold ( <img class="formulaInl" alt="$F_{high}$" src="form_582.png"/>; <img class="formulaInl" alt="$10.0\,flashes\,km^{-2}\,month^{-1}$" src="form_586.png"/>) <img class="formulaInl" alt="$\vartheta_F$" src="form_579.png"/> is 1, as ignition sources now do not pose a constraint on fire. The amount of cloud-to-ground lightning, <img class="formulaInl" alt="$F_c2g$" src="form_583.png"/>, is a fraction of the total lightning based on the relationship derived by Price and Rind (1993) <a class="el" href="citelist.html#CITEREF_Price1993-fm">[70]</a> (approximation of their Eqs. 1 and 2) as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\qquad (Eqn 4)\]" src="form_1577.png"/>
 </p>
@@ -124,7 +124,7 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ P_i,n = y(\vartheta_F) - y(0)(1 - \vartheta_F) + \vartheta_F[1-y(1)] \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \qquad (Eqn 5)\]" src="form_1578.png"/>
 </p>
-<p>Fire probability due to ignition caused by humans, <img class="formulaInl" alt="$P_i,h$" src="form_592.png"/>, is parametrized following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[45]</a> with a dependence on population density, <img class="formulaInl" alt="$p_\mathrm{d}$" src="form_593.png"/> ( <img class="formulaInl" alt="$number of people\,km^{-2}$" src="form_594.png"/>)</p>
+<p>Fire probability due to ignition caused by humans, <img class="formulaInl" alt="$P_i,h$" src="form_592.png"/>, is parametrized following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[43]</a> with a dependence on population density, <img class="formulaInl" alt="$p_\mathrm{d}$" src="form_593.png"/> ( <img class="formulaInl" alt="$number of people\,km^{-2}$" src="form_594.png"/>)</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \qquad (Eqn 6)\]" src="form_1579.png"/>
 </p>
@@ -180,7 +180,7 @@ Functions/Subroutines</h2></td></tr>
 <img class="formulaDsp" alt="\[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)} {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \qquad (Eqn 17)\]" src="form_1590.png"/>
 </p>
 <p>by setting <img class="formulaInl" alt="$t$" src="form_620.png"/> equal to <img class="formulaInl" alt="$24\,h$" src="form_647.png"/>.</p>
-<p>The fire extinguishing probability, <img class="formulaInl" alt="$q$" src="form_648.png"/>, is used to calculate the duration ( <img class="formulaInl" alt="$\tau$" src="form_649.png"/>, <img class="formulaInl" alt="$days$" src="form_650.png"/>) of the fire, which in turn is used to calculated the area burned over the duration of the fire, <img class="formulaInl" alt="${a_{\tau d}}$" src="form_651.png"/>. <img class="formulaInl" alt="$q$" src="form_648.png"/> is represented following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[45]</a> as</p>
+<p>The fire extinguishing probability, <img class="formulaInl" alt="$q$" src="form_648.png"/>, is used to calculate the duration ( <img class="formulaInl" alt="$\tau$" src="form_649.png"/>, <img class="formulaInl" alt="$days$" src="form_650.png"/>) of the fire, which in turn is used to calculated the area burned over the duration of the fire, <img class="formulaInl" alt="${a_{\tau d}}$" src="form_651.png"/>. <img class="formulaInl" alt="$q$" src="form_648.png"/> is represented following Kloster et al. (2010) <a class="el" href="citelist.html#CITEREF_Kloster2010-633">[43]</a> as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},\qquad (Eqn 18) \]" src="form_1591.png"/>
 </p>
@@ -312,13 +312,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2,ignd), intent(inout)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2,ignd), intent(inout)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
@@ -380,8 +380,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Soil and litter carbon are treated such that we actually transfer the carbon to the bare fraction since it would remain in place as a location was devegetated In doing so we do not adjust the litter or soilc density on the remaining vegetated fraction. But we do adjust it on the bare fraction to ensure our carbon balance works out.</p>
 <p>only do checks if we actually shifted fractions here.</p>
 <p>check if total grid average biomass density is same before and after adjusting fractions</p>
-<p>only do checks if we actually shifted fractions here.</p>
-<p>then add the bare ground in. </p>
+<p>only do checks if we actually shifted fractions here. </p>
 
 </div>
 </div>
@@ -460,7 +459,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp2)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp2,ignd)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
@@ -810,7 +809,7 @@ Functions/Subroutines</h2></td></tr>
 <p>The litter and brown leaves are not affected by the soil water potential therefore they will react only to the moisture conditions (our proxy here is the upper soil moisture). If it is dry they increase the probability of fire corresponding to the proportion of total C they contribute. Only allow if there is no snow.</p>
 <p>Use average root zone vegetation dryness to find likelihood of fire due to moisture.</p>
 <p>calculate mterm for each PFT</p>
-<p>duff fraction for each PFT, Vivek</p>
+<p>duff fraction for each PFT, Vivek We only consider the first layer litter</p>
 <p><img class="formulaInl" alt="$drgtstrs(i,j)$" src="form_557.png"/> is <img class="formulaInl" alt="$\phi_{root}$" src="form_558.png"/> in Melton and Arora GMDD (2015) paper</p>
 <p>no fire likelihood due to moisture if no vegetation</p>
 <ol type="1">
@@ -854,8 +853,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Sum all pools that will be converted to emissions/aerosols <img class="formulaInl" alt="$(g c/m^2 /day)$" src="form_1663.png"/></p>
 <p>Add in the emissions due to luc fires (deforestation) the luc emissions are converted from <img class="formulaInl" alt="$umol co_2 m-2 s-1 to g c m-2$" src="form_561.png"/> (day-1) before adding to tot_emit. NOTE: This tot_emit is not what is used to calculate NBP so the LUC emissions are accounted for in ctem.f90, not here. This here is for model outputting.</p>
 <p>Convert burnt plant matter from carbon to dry organic matter using a conversion factor, assume all parts of the plant has the same ratio of carbon to dry organic matter. units: <img class="formulaInl" alt="$kg dom / m^2 / day$" src="form_1664.png"/></p>
-<p>Convert the dom to emissions/aerosols using emissions factors units: <img class="formulaInl" alt="$g species / m^2 /d$" src="form_1665.png"/> Also convert units to <img class="formulaInl" alt="$kg species / m^2 / s^{-1}$" src="form_1666.png"/></p>
-<p>FLAG for the optimization of popd effect on fire I am taking the lterm out as the 'temp' var. So I have made tmp be dimension ilg and I overwrite the lterm (which is written to an output file) here in its place. </p>
+<p>Convert the dom to emissions/aerosols using emissions factors units: <img class="formulaInl" alt="$g species / m^2 /d$" src="form_1665.png"/> Also convert units to <img class="formulaInl" alt="$kg species / m^2 / s^{-1}$" src="form_1666.png"/> </p>
 
 </div>
 </div>
@@ -865,7 +863,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedisturbance__scheme.html">disturbance_scheme</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
+    <li class="footer">Generated on Tue Apr 9 2019 08:59:53 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

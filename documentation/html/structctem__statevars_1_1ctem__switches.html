@@ -88,7 +88,7 @@ $(document).ready(function(){initNavTree('structctem__statevars_1_1ctem__switche
 </div><!--header-->
 <div class="contents">
 
-<p>switches for running the model, read from the joboptions file  
+<p>Switches for running the model, read from the joboptions file.  
  <a href="structctem__statevars_1_1ctem__switches.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -113,6 +113,14 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a55460bfaad642095697779680a5acfa5">spinfast</a></td></tr>
 <tr class="memdesc:a55460bfaad642095697779680a5acfa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">set this to a number &gt;1 (up to ~10) to spin up soil carbon pool faster, set to 1 for final production simulations <br /></td></tr>
 <tr class="separator:a55460bfaad642095697779680a5acfa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdeaad7d44052c26b571a7974df9d163"><td class="memItemLeft" align="right" valign="top"><a id="acdeaad7d44052c26b571a7974df9d163"></a>
+integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#acdeaad7d44052c26b571a7974df9d163">usetracer</a></td></tr>
+<tr class="memdesc:acdeaad7d44052c26b571a7974df9d163"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme. <br /></td></tr>
+<tr class="separator:acdeaad7d44052c26b571a7974df9d163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fde1fb2110ad04a2aa2c6dc8334cdc9"><td class="memItemLeft" align="right" valign="top"><a id="a7fde1fb2110ad04a2aa2c6dc8334cdc9"></a>
+character(350)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a7fde1fb2110ad04a2aa2c6dc8334cdc9">tracerco2file</a></td></tr>
+<tr class="memdesc:a7fde1fb2110ad04a2aa2c6dc8334cdc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 and fixedYearCO2 switches to determine how it is read in. <br /></td></tr>
+<tr class="separator:a7fde1fb2110ad04a2aa2c6dc8334cdc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1948d0b513a2989498f28f3ab07a20e"><td class="memItemLeft" align="right" valign="top"><a id="aa1948d0b513a2989498f28f3ab07a20e"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#aa1948d0b513a2989498f28f3ab07a20e">readmetstartyear</a></td></tr>
 <tr class="memdesc:aa1948d0b513a2989498f28f3ab07a20e"><td class="mdescLeft">&#160;</td><td class="mdescRight">First year of meteorological forcing to read in from the met file. <br /></td></tr>
@@ -379,7 +387,7 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 <tr class="separator:a3539dafb72ad7482814c4b59bcb55762"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>switches for running the model, read from the joboptions file </p>
+<div class="textblock"><p>Switches for running the model, read from the joboptions file. </p>
 </div><hr/>The documentation for this type was generated from the following file:<ul>
 <li>src/<a class="el" href="ctem__statevars_8f90.html">ctem_statevars.f90</a></li>
 </ul>
@@ -389,7 +397,7 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacectem__statevars.html">ctem_statevars</a></li><li class="navelem"><a class="el" href="structctem__statevars_1_1ctem__switches.html">ctem_switches</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
+    <li class="footer">Generated on Tue Apr 9 2019 08:59:53 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

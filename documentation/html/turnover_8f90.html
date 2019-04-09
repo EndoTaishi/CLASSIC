@@ -97,14 +97,14 @@ Modules</h2></td></tr>
 <tr class="memdesc:namespaceturnover"><td class="mdescLeft">&#160;</td><td class="mdescRight">The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/> <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) associated with turnover of stem ( <img class="formulaInl" alt="$D_\mathrm{S}$" src="form_1462.png"/>) and root ( <img class="formulaInl" alt="$D_\mathrm{R}$" src="form_1463.png"/>) components is calculated based on the amount of biomass in the respective components ( <img class="formulaInl" alt="$C_\mathrm{S}, C_\mathrm{R}$" src="form_1464.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) and their respective turnover timescales ( <img class="formulaInl" alt="$\tau_\mathrm{S}$" src="form_1465.png"/> and <img class="formulaInl" alt="$\tau_\mathrm{R}$" src="form_1466.png"/>; <img class="formulaInl" alt="$yr$" src="form_1003.png"/>; see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>) as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]" src="form_1467.png"/>
 </p>
-<p>. <br /></td></tr>
+<p> Litter contributions are either put in the first soil layer (leaf and stem litter) whereas root litter is added in proportion to the root distribution to non-perennially frozen soil layers. For defining which layers are frozen, we use the active layer depth. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a729c2cccb9b56c2a6b1ed5c85b37e68a"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#a729c2cccb9b56c2a6b1ed5c85b37e68a">turnover::updatepoolsturnover</a> (il1, il2, reprocost, stemmass, rootmass, litrmass, rootlitr, gleafmas, bleafmas, leaflitr, stemlitr)</td></tr>
-<tr class="memdesc:a729c2cccb9b56c2a6b1ed5c85b37e68a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update green leaf biomass for trees and crops, brown leaf biomass for grasses, stem and root biomass for litter deductions, and update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool.  <a href="namespaceturnover.html#a729c2cccb9b56c2a6b1ed5c85b37e68a">More...</a><br /></td></tr>
-<tr class="separator:a729c2cccb9b56c2a6b1ed5c85b37e68a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7868c3883698c1fc94f95a74111c5804"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#a7868c3883698c1fc94f95a74111c5804">turnover::updatepoolsturnover</a> (il1, il2, ilg, reprocost, rmatctem, stemmass, rootmass, litrmass, rootlitr, gleafmas, bleafmas, leaflitr, stemlitr)</td></tr>
+<tr class="memdesc:a7868c3883698c1fc94f95a74111c5804"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update green leaf biomass for trees and crops, brown leaf biomass for grasses, stem and root biomass for litter deductions, and update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool.  <a href="namespaceturnover.html#a7868c3883698c1fc94f95a74111c5804">More...</a><br /></td></tr>
+<tr class="separator:a7868c3883698c1fc94f95a74111c5804"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a671d52dc9ffb402a00e952db68fff5ef"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#a671d52dc9ffb402a00e952db68fff5ef">turnover::turnoverstemroot</a> (stemmass, rootmass, lfstatus, ailcg, il1, il2, ilg, leapnow, sort, fcancmx, stmhrlos, rothrlos, stemlitr, rootlitr)</td></tr>
 <tr class="memdesc:a671d52dc9ffb402a00e952db68fff5ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from stem and root turnover.  <a href="namespaceturnover.html#a671d52dc9ffb402a00e952db68fff5ef">More...</a><br /></td></tr>
@@ -119,7 +119,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="turnover_8f90.html">turnover.f90</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
+    <li class="footer">Generated on Tue Apr 9 2019 08:59:53 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

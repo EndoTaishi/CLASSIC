@@ -1,8 +1,9 @@
 &joboptions
 
 ! Model grid description
-    projectedGrid = .false. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
-                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+    projectedGrid = .false. ! True if you have a projected lon lat grid, false if not. Projected grids
+                            ! can only have regions referenced by the indexes, not coordinates, when 
+                            ! running a sub-region
 
 ! Meteorological options:
     readMetStartYear = 1850  ! First year of meteorological forcing to read in from the met file
@@ -21,8 +22,10 @@
 
 ! Initialization and restart files
     init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2-ignd-actlyr-tracer.nc' ,     !< location of the model initialization file
-    rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
-                                               !! typically here you will just copy the init_file and rename it so it can be overwritten.
+    rs_file_to_overwrite = 'rsFile.nc' ,      ! location of the existing netcdf file that will be 
+                                              ! **overwritten** for the restart file typically here you
+                                              !  will just copy the init_file and rename it so it can be
+                                              ! overwritten.
 ! Namelist of model parameters
     runparams_file = 'configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
 
@@ -55,7 +58,7 @@
         fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
     !Fire switches
-        dofire = .false. ,               ! If true the fire disturbance parameterization is turned on.
+        dofire = .true. ,               ! If true the fire disturbance parameterization is turned on.
 
             transientPOPD = .true. ,    ! Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
             POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017_chunked.nc' ,
@@ -79,9 +82,9 @@
         ! lnduseon to true, it will update the fractional coverages from LUCFile. When lnduseon is false it is
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is
         ! not used at all.
-        lnduseon = .false. ,
+        lnduseon = .true. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
-        fixedYearLUC = -9999 ,
+        fixedYearLUC = 1850 ,
 
     ! Wetland switches:
         ! If you wish to read in and use observed wetland fractions, there are two options. If you wish time

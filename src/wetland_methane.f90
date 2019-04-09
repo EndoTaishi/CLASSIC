@@ -1,5 +1,3 @@
-
-
 !>\file
 !>Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine 
 !!@author B. Amiro, J. Melton, V. Arora
