@@ -517,7 +517,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   use classic_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                           icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
                           tolrance, crop, grass, numgrass,iccp2, ignd, icp1, &
-                          nol2pfts
+                          nol2pfts,reindexPFTs
 
   use disturbance_scheme, only : burntobare
 
@@ -613,7 +613,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg) :: pvgbioms
   real, dimension(nilg) :: pgavltms
   real, dimension(nilg) :: pgavscms
-  real, dimension(nilg) :: add2dead
+  real, dimension(nilg,iccp1) :: add2dead
   real, dimension(nilg) :: gavgputa
   real, dimension(nilg) :: gavgnpp
   real, dimension(nilg) :: pbarefra
@@ -658,8 +658,8 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     !>Since the biomass pools could have changed, update bmasveg.
     do i = il1, il2
       do j = 1, icc
-        if (fcancmx(i,j).gt.0.0) then
-          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
+        if (fcancmx(i,j) > 0.0) then
+          bmasveg(i,j) = gleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
         endif
       end do
     end do 
@@ -682,8 +682,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 
       colrate(i,j)=0.0         ! colonization rate
       mortrate(i,j)=0.0        ! mortality rate
-      mrtboclm(i,j)=0.0 ! mortality rate if long-term bioclimatic
-!                           ! conditions become unfavourable
+      mrtboclm(i,j)=0.0 ! mortality rate if long-term bioclimatic conditions become unfavourable
       usenppvg(i,j)=0.0
       chngfrac(i,j)=0.0
       expnterm(i,j)=0.0
@@ -740,7 +739,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     end do
     deadmass(i,iccp1)=0.0
     pdeadmas(i,iccp1)=0.0
-    add2dead(i)=0.0
+    add2dead(i,:)=0.0
     gavgputa(i)=0.0 ! grid averaged value of c put aside for allocation
     gavgnpp(i)=0.0  ! grid averaged npp kg c/m2 for balance purposes
     bareiord(i)=0
@@ -752,19 +751,19 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     incrsolc(i,iccp1,:)=0.0
 
 150   continue
-  !>
-  !!initial rank/superiority order for simulating competition. since crops
-  !!are not in competition their rank doesn't matter and
-  !!therefore we only have icc-2 ranks corresponding to the remaining pfts.
-  !!the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.
-  do j = 1,icc-numcrops
-    inirank(j)=j
+  
+  !> initial rank/superiority order for simulating competition. since crops
+  !! are not in competition their rank doesn't matter and
+  !! therefore we only have icc-2 ranks corresponding to the remaining pfts.
+  !! the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.
+  do j = 1, icc-numcrops
+    inirank(j) = j
     do i = il1, il2
-      rank(i,j)=inirank(j)
+      rank(i,j) = inirank(j)
     end do 
   end do
   
-  !> Estimate colonization and mortality rate for each pft, except for
+  !> Estimate colonization and mortality rate for each PFT, except for
   !! crops whose fractional coverage is prescribed.
   do 200 j = 1, icc
     if (.not. crop(j)) then  ! do not run for crops
@@ -795,15 +794,15 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     end if
 200 continue
 
-  !>---> from here on we assume that we only have icc-numcrops pfts <----
-  !!since crops are not part of the competition.
+  !> From here on we assume that we only have icc-numcrops pfts
+  !! since crops are not part of the competition.
   !!
-  !!based on npp for each pft find the competition ranks / superiority
-  !!order for simulating competition. note that crops
-  !!are not in competition, so the competition is between the
-  !!remaining pfts. in addition pfts which shouldn't exist in the
-  !!grid cell because of unfavourable values of long-term climatic
-  !!conditions are considered inferior.
+  !! Based on NPP for each PFT find the competition ranks / superiority
+  !! order for simulating competition. Note that crops
+  !! are not in competition, so the competition is between the
+  !! remaining pfts. In addition PFTs which shouldn't exist in the
+  !! grid cell because of unfavourable values of long-term climatic
+  !! conditions are considered inferior.
 
   do 220 j = 1, icc
     do 221 i = il1, il2
@@ -821,9 +820,9 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 221 continue
 220 continue
 
-  !> Bubble sort according to colonization rates NOTE - this only works if no tree species are
-  !!indexed at positions > numtreepfts, i.e. the trees must be a contiguous
-  !!unit at the start of the indexes. JM Jun 2014
+  !> Bubble sort according to colonization rates WARNING - this only works if no tree species are
+  !! indexed at positions > numtreepfts, i.e. the trees must be a contiguous
+  !! unit at the start of the indexes. 
   do 270 j = 1, numtreepfts
     do 280 n = 1, numtreepfts
       do 290 i = il1, il2
@@ -839,8 +838,8 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 280 continue
 270 continue
 
-  !> The rank of C3 and C4 grass is also determined on the basis of
-  !!their NPP but grasses are always assumed to be inferior to tree pfts
+  !> The rank of grasses is also determined on the basis of
+  !! their NPP but grasses are always assumed to be inferior to tree pfts
 
   ! Find index of the first grass pft and give it to the temp variable, k.
   do j = 1,icc
@@ -860,7 +859,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
           usenppvg(i,n) = usenppvg(i,j)
           usenppvg(i,j) = temp(i)
           t1(i) = rank(i,n-numcrops)
-          rank(i,n-numcrops) = rank(i,j-numcrops)
+          rank(i,n-numcrops) = rank(i,j - numcrops)
           rank(i,j-numcrops) = t1(i)
         end if
 310   continue
@@ -869,7 +868,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 
   !> With the ranks of all pfts in all grid cells we can now simulate
   !! competition between them. For Lotka-Volterra eqns we need a
-  !! minimum seeding fraction otherwise the pfts will not expand at all.
+  !! minimum seeding fraction otherwise the pfts will not expand.
   do 330 j = 1, icc-numcrops   ! j now goes from 1 to icc-numcrops
     if (j <= numtreepfts) then
       n = j
@@ -889,7 +888,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 340 continue
 330 continue
 
-  !>arrange colonization and mortality rates, and fractions, according to superiority ranks
+  !> Arrange colonization and mortality rates, and fractions, according to superiority ranks
   do 350 n = 1, icc-numcrops   ! n now goes from 1 to icc-numcrops
     do 360 i = il1, il2
       usefrac(i,n) = frac(i,rank(i,n))
@@ -974,7 +973,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 
   !> Check again that total veg frac doesn't exceed 1.
   do 560 i = il1, il2
-    vegfrac(i)=cropfrac(i) !total vegetation fraction
+    vegfrac(i) = cropfrac(i) !total vegetation fraction
 560 continue
 
   do 570 n = 1, icc-numcrops
@@ -1007,9 +1006,9 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 591 continue
 590 continue
 
-  !>---> from here on we get back to our usual icc pfts <----
+  ! ---> from here on we get back to our usual icc pfts <----
 
-  !>get bare fraction
+  ! get bare fraction
   do 600 j = 1, icc
     do 601 i = il1, il2
       barefrac(i) = barefrac(i) - fcancmx(i,j)
@@ -1075,36 +1074,9 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
           do k = 1,ignd
             litrmass(i,j,k) = litrmass(i,j,k) * term
             soilcmas(i,j,k) = soilcmas(i,j,k) * term
-
-  !           only a fraction of npp becomes litter which for simplicity
-  !           and for now we spread over the whole grid cell
-
-  !            if(expnterm(i,j).le.zero.and.mortterm(i,j).gt.zero)then
-  !              write(6,*)'expansion term<= zero when fractional coverage'
-  !              write(6,*)'is increasing for pft',j,' in grid cell',i
-  !              write(*,*)'pfcancmx(',i,',',j,')=',pfcancmx(i,j)
-  !              write(*,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
-  !              write(*,*)'expnterm(',i,',',j,')=',expnterm(i,j)
-  !              call xit('competition',-7)
-  !            else if(expnterm(i,j).le.zero.and.mortterm(i,j).le.zero)then
-  !              term = 1.0
-  !            else
-  !              term = (mortterm(i,j)/expnterm(i,j))
-  !            endif
-
-  !            add2allo(i,j)=(1.-term)
-
-  !           the factor (deltat/963.62) converts npp from u-mol co2-c/m2.sec
-  !           -> kg c/m2.deltat
-
-          ! Not in use. JM Jun 2014.
-          !incrlitr(i,j) = term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
             incrlitr(i,j,k) = 0.
             grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
           end do
-  !           ! Not in use. JM Jun 2014. -rest put aside for allocation
-  !           add2allo(i,j) = add2allo(i,j)* max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*&
-  !                          (pfcancmx(i,j)/fcancmx(i,j))
           add2allo(i,j) = 0.
 
         else if (fraciord(i,j) == -1) then ! Contract
@@ -1127,12 +1099,9 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
               incrlitr(i,j,k) = abs(chngfrac(i,j)) * (rootmass(i,j) * rmatctem(i,j,k) + litrmass(i,j,k))
             end if
 
-            ! Not in use. JM Jun 2014.
-            !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-            
             grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
 
-            ! Chop off soil c from the fraction that goes down and
+            ! Chop off soil C from the fraction that goes down and
             ! spread it uniformly over the soil c pool of entire grid cell
             incrsolc(i,j,k) = abs(chngfrac(i,j)) * soilcmas(i,j,k)
             grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
@@ -1141,9 +1110,6 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 
         else if (fraciord(i,j) == 0) then
 
-          ! Not in use. JM Jun 2014.
-          ! All npp used for expansion becomes litter
-          !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j)
           incrlitr(i,j,:) = 0.
           grsumlit(i,:) = grsumlit(i,:) + incrlitr(i,j,:)
 
@@ -1153,60 +1119,60 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 660 continue
 
   !> If bare fraction decreases then chop off the litter and soil c
-  !!from the decreased fraction and add it to grsumlit & grsumsoc
-  !!for spreading over the whole grid cell. if bare fraction increases
-  !!then spread its litter and soil c uniformly over the increased fraction.
+  !! from the decreased fraction and add it to grsumlit & grsumsoc
+  !! for spreading over the whole grid cell. If bare fraction increases
+  !! then spread its litter and soil c uniformly over the increased fraction.
   do 680 i = il1, il2
-    if(bareiord(i).eq.-1)then !decrease in bare area
+    if (bareiord(i) == -1) then !decrease in bare area
       do k = 1,ignd
-        incrlitr(i,iccp1,k) =(pbarefra(i)-barefrac(i))*litrmass(i,iccp1,k)
-        grsumlit(i,k)=grsumlit(i,k)+incrlitr(i,iccp1,k)
+        incrlitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1,k)
+        grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,iccp1,k)
 
-        incrsolc(i,iccp1,k) = (pbarefra(i)-barefrac(i))*soilcmas(i,iccp1,k)
-        grsumsoc(i,k)=grsumsoc(i,k)+incrsolc(i,iccp1,k)
+        incrsolc(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1,k)
+        grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,iccp1,k)
       end do
-    else if(bareiord(i).eq.1)then ! increase in bare area
+    else if (bareiord(i) == 1) then ! increase in bare area
       do k = 1,ignd
-        term = pbarefra(i)/barefrac(i)
-        litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
-        soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
+        term = pbarefra(i) / barefrac(i)
+        litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+        soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
       end do
-    endif
+    end if
 680   continue
 
   !> If a pft is not supposed to exist as indicated by pftexist and its
-  !!fractional coverage is really small then get rid of the pft all
-  !!together and spread its live and dead biomass over the grid cell.
+  !! fractional coverage is really small then get rid of the pft all
+  !! together and spread its live and dead biomass over the grid cell.
   do 690 j = 1, icc
     do 691 i = il1, il2
       if (.not. pftexist(i,j) .and. fcancmx(i,j) < 1.0e-05) then
 
-        barefrac(i)=barefrac(i)+fcancmx(i,j)
-        term = (barefrac(i)-fcancmx(i,j))/barefrac(i)
+        barefrac(i) = barefrac(i) + fcancmx(i,j)
+        term = (barefrac(i) - fcancmx(i,j)) / barefrac(i)
 
        do k = 1,ignd
-        ! FLAG, Put the incrlitr in the first layer (from the leaves and stems)
+        ! Put the incrlitr in the first layer (from the leaves and stems)
         ! but the roots and litr must be put in the proper soil layers. To do
         ! this we bring in the rmatctem for the root placement. JM Feb 2016
-
         if (k == 1) then
-          incrlitr(i,j,k)=incrlitr(i,j,k)+fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
-                       +stemmass(i,j)+rootmass(i,j)*rmatctem(i,j,k)+litrmass(i,j,k))
+          incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+                                            + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k)&
+                                            + litrmass(i,j,k))
         else
-          incrlitr(i,j,k)=incrlitr(i,j,k)+fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
-                        +stemmass(i,j)+rootmass(i,j)*rmatctem(i,j,k)+litrmass(i,j,k))
+          incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
+                                            + litrmass(i,j,k))
         end if
 
         grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
 
-        incrsolc(i,j,k)=incrsolc(i,j,k)+fcancmx(i,j)*soilcmas(i,j,k)
-        grsumsoc(i,k)=grsumsoc(i,k)+incrsolc(i,j,k)
+        incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
+        grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
 
         !> Adjust litter and soil c mass densities for increase in
         !! barefrac over the bare fraction.
 
-        litrmass(i,iccp1,k) = litrmass(i,iccp1,k)*term
-        soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k)*term
+        litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+        soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
 
         end do
 
@@ -1219,7 +1185,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   !> Spread litter and soil c over all pfts and the barefrac
   do 700 j = 1, icc
     do 701 i = il1, il2
-      if(fcancmx(i,j).gt.zero)then
+      if (fcancmx(i,j) > zero) then
         litrmass(i,j,:) = litrmass(i,j,:) + grsumlit(i,:)
         soilcmas(i,j,:) = soilcmas(i,j,:) + grsumsoc(i,:)
       else
@@ -1229,38 +1195,31 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         rootmass(i,j)=0.0  !FLAG, should I set rmatctem to zero here too? JM Feb 2016.
         litrmass(i,j,:)=0.0
         soilcmas(i,j,:)=0.0
-      endif
+      end if
 701 continue
 700 continue
 
   do 720 i = il1, il2
-    if(barefrac(i).gt.zero)then
+    if (barefrac(i) > zero) then
       litrmass(i,iccp1,:) = litrmass(i,iccp1,:) + grsumlit(i,:)
       soilcmas(i,iccp1,:) = soilcmas(i,iccp1,:) + grsumsoc(i,:)
     else
-      litrmass(i,iccp1,:)=0.0
-      soilcmas(i,iccp1,:)=0.0
-    endif
+      litrmass(i,iccp1,:) = 0.0
+      soilcmas(i,iccp1,:) = 0.0
+    end if
 720 continue
 
-  !>get fcanmxs for use by class based on the new fcancmxs
+  ! Get fcanmxs for use by CLASS based on the new fcancmxs
   do 740 j = 1, ican
     do 741 i = il1, il2
-       fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
+       fcanmx(i,j) = 0.0 ! fractional coverage of class' pfts
 741 continue
 740 continue
 
-  k1=0
   do 750 j = 1, ican
-    if(j.eq.1) then
-      k1 = k1 + 1
-    else
-      k1 = k1 + nol2pfts(j-1)
-    endif
-    k2 = k1 + nol2pfts(j) - 1
-    do 751 l = k1, k2
+    do 751 l = reindexPFTs(j,1), reindexPFTs(j,2)
       do 752 i = il1, il2
-        fcanmx(i,j)=fcanmx(i,j)+fcancmx(i,l)
+        fcanmx(i,j) = fcanmx(i,j) + fcancmx(i,l)
 752   continue
 751 continue
 750 continue
@@ -1268,19 +1227,19 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   !> Update grid averaged vegetation biomass, and litter and soil c densities
   do 800 j = 1, icc
     do 801 i = il1, il2
-      vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
-                 bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
+      vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j)&
+                                               + stemmass(i,j) + rootmass(i,j))
       do k = 1, ignd
-        gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
-        gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+        gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j,k)
+        gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j,k)
       end do
 801 continue
 800 continue
 
   do 810 i = il1, il2
     do k = 1, ignd
-      gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1,k) )
-      gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1,k) )
+      gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1,k)
+      gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1,k)
     end do
 810   continue
   !>
@@ -1313,7 +1272,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
           ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
         end do
 
-        add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
+        add2dead(i,j) = add2dead(i,j) + barelitr(i,j) + baresolc(i,j)
 
         ! Not in use. JM Jun 2014.
         ! npp we had in first place to expand
@@ -1377,19 +1336,19 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j,k) + soilcmas(i,j,k))
         pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j,k) + psocmass(i,j,k))
 
-        add2dead(i) = add2dead(i) + (grsumlit(i,k) + grsumsoc(i,k)) * barefrac(i)
+        add2dead(i,j) = add2dead(i,j) + (grsumlit(i,k) + grsumsoc(i,k)) * barefrac(i)
 
         ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
         ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
       end do
 
-      befrmass = pdeadmas(i,j) + add2dead(i)
+      befrmass = pdeadmas(i,j) + add2dead(i,j)
       aftrmass = deadmass(i,j) + ownlitr(i,j) + ownsolc(i,j)
 
       if (abs(befrmass - aftrmass) > tolrance) then
         write(6,*)'total dead mass for grid cell =',i,'does not balance over bare'
         write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
-        write(6,*)'add2dead(',i,') term=',add2dead(i)
+        write(6,*)'add2dead(',i,') term=',add2dead(i,j)
         write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
         write(6,*)' '
         write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
