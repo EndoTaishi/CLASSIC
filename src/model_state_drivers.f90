@@ -414,15 +414,15 @@ contains
             ch4id = ncOpen(CH4File, nf90_nowrite)
             ch4VarName = ncGetVarName(ch4id)
             if (useTracer > 0) then 
-              ! Use this opportunity to error check. Presently only useTracer == 1
-              ! if valid so if given (useTracer > 1), bail and write message.
-              if (useTracer > 1) then  
-                print*,'>>> Presently only valid useTracer options are 0 or 1. You'
-                print*,'gave a value of',useTracer,'. Please retry with a valid value'
-                stop 
-              end if 
               tracerco2id = ncOpen(tracerCO2File, nf90_nowrite)
-              tracerco2VarName = ncGetVarName(tracerco2id)
+              ! 14C has different values depending on latitudional bands. The expected 
+              ! input file is from CMIP6 and it splits the bands as follows:
+              ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N), 
+              ! and Northern Hemisphere (30-90°N). Since at this stage of 
+              ! CLASSIC we don't know the latitude of the cell being simulated 
+              ! we need to get tracerco2VarName later for 14C simulations.
+              if (useTracer /= 2) tracerco2VarName = ncGetVarName(tracerco2id)
+                
             end if 
             if (dofire) then
                 popid = ncOpen(POPDFile, nf90_nowrite)
@@ -547,8 +547,8 @@ contains
         integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
                             ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                             !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
-                            ! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
-                            ! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme. 
+                            ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                            ! useTracer = 3 [Not implemented yet means the tracer is 13C and will then call a 13C fractionation scheme. 
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !< Green leaf mass for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: bleafmasrow          !< Brown leaf mass for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -1162,6 +1162,7 @@ contains
         use ctem_statevars, only : c_switch,vrot,tracer
         use classic_params, only : icc,nmos
         use outputManager, only : checkForTime
+        use tracerModule,   only : convertTracerUnits
 
         implicit none
 
@@ -1193,6 +1194,12 @@ contains
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
+        integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
+                            ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
+                            !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                            ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                            ! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme. 
+
 
         real, dimension(5) :: dateTime
         real :: startLGHTTime,startWETTime
@@ -1213,11 +1220,12 @@ contains
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
         leap            => c_switch%leap
+        useTracer       => c_switch%useTracer 
         co2concrow      => vrot%co2conc
         tracerco2conc   => tracer%tracerCO2rot
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
-        fcancmxrow      => vrot%fcancmx
+        fcancmxrow      => vrot%fcancmx        
 
         select case (trim(inputRequested))
 
@@ -1262,17 +1270,33 @@ contains
             allocate(tracerCO2Time(lengthOfFile))
         
             fileTime = ncGet1DVar(tracerCO2id, 'time', start = [1], count = [lengthOfFile])
+            
+            if (useTracer == 2) then 
+              ! 14C has different values depending on latitudional bands. The expected 
+              ! input file is from CMIP6 and it splits the bands as follows:
+              ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N), 
+              ! and Northern Hemisphere (30-90°N). We now assign the file 
+              ! variable name here 
+              if (latitude > 30.) then
+                tracerco2VarName = 'NH_D14C'
+              else if (latitude <= 30. .and. latitude >= -30.) then 
+                tracerco2VarName = 'Tropics_D14C'
+              else if (latitude < -30.) then 
+                tracerco2VarName = 'SH_D14C'
+              end if
+            end if 
         
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
-            do i = 1, lengthOfFile
-                dateTime = parseTimeStamp(fileTime(i))
-                tracerCO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
+            do i = 1, lengthOfFile  
+              dateTime = parseTimeStamp(fileTime(i))
+              tracerCO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
             end do
         
             if (transientCO2) then
                 ! We read in the whole CO2 times series and store it.
                 allocate(tracerCO2FromFile(lengthOfFile))
                 tracerCO2FromFile = ncGet1DVar(tracerCO2id, trim(tracerco2VarName), start = [1], count = [lengthOfFile])
+                
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(tracerCO2Time),real(fixedYearCO2))
@@ -1281,6 +1305,9 @@ contains
                 ! We read in only the suggested year
                 tracerco2conc(:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
             end if
+            
+            ! Convert the units of the tracer depending on the tracer being simulated.
+            tracerco2conc = convertTracerUnits(tracerco2conc)
 
         case ('CH4') ! Methane concentration
 
@@ -1529,6 +1556,7 @@ contains
         use ctem_statevars, only : vrot,c_switch,vgat,tracer
         use classic_params, only : nmos
         use generalUtils, only : abandonCell
+        use tracerModule,   only : convertTracerUnits
 
         implicit none
 
@@ -1585,13 +1613,17 @@ contains
 
               ! Find the requested year in the file.
               arrindex = checkForTime(lengthTime,real(tracerCO2Time),real(yearNeeded))
+              
               if (arrindex == 0) then
                 write (seqstring,'(I0)') yearNeeded
                 call abandonCell('updateInput says: The tracerCO2 file does not contain requested year: '//seqstring)
               else
                 i = 1 ! offline nlat is always 1 so just set
-                tracerco2conc(i) = tracerCO2FromFile(arrindex)
+                tracerco2conc(i) = tracerCO2FromFile(arrindex)                
               end if
+              
+              ! Convert the units of the tracer depending on the tracer being simulated.
+              tracerco2conc = convertTracerUnits(tracerco2conc)
               
         case ('CH4')
 

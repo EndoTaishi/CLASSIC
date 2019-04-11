@@ -202,6 +202,7 @@ var classic__params_8f90 =
     [ "l2max", "classic__params_8f90.html#abc0a1c3b865bb39668c0d5cfd6dfbe6a", null ],
     [ "laimax", "classic__params_8f90.html#a68faf81ef2e918cb5a755333ec0de74b", null ],
     [ "laimin", "classic__params_8f90.html#a7c314b2c287bc28ce9b49767dcdced35", null ],
+    [ "lambda14c", "classic__params_8f90.html#aade8664d01bae9a5bbc501172534d84a", null ],
     [ "lambdamax", "classic__params_8f90.html#acd079cdc23eee04f2212fa622996caa0", null ],
     [ "lat_thrshld1", "classic__params_8f90.html#aca3da27e0be2b9d469a6b124508b33d5", null ],
     [ "lat_thrshld2", "classic__params_8f90.html#a7c963004cd291c70e86daffc7eb90084", null ],

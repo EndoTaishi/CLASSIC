@@ -118,85 +118,85 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public turnover::turnoverstemroot </td>
           <td>(</td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>stemmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>rootmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">integer, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>lfstatus</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>ailcg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(icc)&#160;</td>
+          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
           <td class="paramname"><em>sort</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>fcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
           <td class="paramname"><em>stmhrlos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
           <td class="paramname"><em>rothrlos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>stemlitr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>rootlitr</em>&#160;</td>
         </tr>
         <tr>
@@ -211,25 +211,26 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramname">lfstatus</td><td>leaf status. an integer indicating if leaves are in "max. growth", "normal growth", "fall/harvest", or "no leaves" mode. see phenolgy subroutine for more details.</td></tr>
-    <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
-    <tr><td class="paramname">sort</td><td>index for correspondence between 9 ctem pfts and size 12 of parameter vectors</td></tr>
-    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">ailcg</td><td>green or live lai</td></tr>
-    <tr><td class="paramname">fcancmx</td><td>max. fractional coverage of ctem's 9 pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
-    <tr><td class="paramname">stemlitr</td><td>stem litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">rootlitr</td><td>root litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">rothrlos</td><td>root death for crops. when in "harvest" mode for crops, root is assumed to die in a similar way as stem is harvested.</td></tr>
-    <tr><td class="paramname">stmhrlos</td><td>stem harvest loss for crops. when in "harvest" mode for crops, stem is also assumed to be harvested and this generates litter. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lfstatus</td><td>leaf status. an integer indicating if leaves are in "max.  
+ growth", "normal growth", "fall/harvest", or "no leaves" mode. see phenolgy subroutine for more details.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between ctem pfts and size of parameter vectors</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stemmass</td><td>stem mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rootmass</td><td>root mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ailcg</td><td>green or live lai</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of CTEM pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">rothrlos</td><td>root death for crops. when in "harvest" mode for crops, root is assumed to die in a similar way as stem is harvested.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">stmhrlos</td><td>stem harvest loss for crops. when in "harvest" mode for crops, stem is also assumed to be harvested and this generates litter.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">stemlitr</td><td>stem litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rootlitr</td><td>root litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>Calculate normal stem and root litter using the amount of stem and root biomass and their turnover time scales.</p>
-<p>if crops are in harvest mode then we start harvesting stem as well. if stem has already been harvested then we set the stem harvest loss equal to zero. the roots of the crop die in a similar way.</p>
-<p>add stem and root litter from all sources</p>
+<p>If crops are in harvest mode then we start harvesting stem as well. If stem has already been harvested then we set the stem harvest loss equal to zero. the roots of the crop die in a similar way.</p>
+<p>add stem and root litter from all sources </p>
 
 </div>
 </div>
@@ -356,7 +357,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceturnover.html">turnover</a></li>
-    <li class="footer">Generated on Tue Apr 9 2019 08:59:53 for CLASSIC by
+    <li class="footer">Generated on Thu Apr 11 2019 11:13:45 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

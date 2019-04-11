@@ -43,6 +43,7 @@ var searchData=
   ['fproductdecomp_5fyr_5fg',['fproductdecomp_yr_g',['../structctem__statevars_1_1ctem__gridavg__annual.html#a1ecf74535f6defa1e4442cc1a4275fe6',1,'ctem_statevars::ctem_gridavg_annual']]],
   ['fproductdecomp_5fyr_5ft',['fproductdecomp_yr_t',['../structctem__statevars_1_1ctem__tileavg__annual.html#a7f20e69f08303d0722ce60d3cfe8aeed',1,'ctem_statevars::ctem_tileavg_annual']]],
   ['fracbofg',['fracbofg',['../namespaceclassic__params.html#a48ff892caffc1b58daf6d59b6c73d762',1,'classic_params']]],
+  ['fractionate13c',['fractionate13c',['../tracer_8f90.html#a1191f46e335ff369c767a229115420f1',1,'tracermodule']]],
   ['frco2blf',['frco2blf',['../namespaceclassic__params.html#af1ec8c967962ffeac90b06c2a6df3f04',1,'classic_params']]],
   ['frco2glf',['frco2glf',['../namespaceclassic__params.html#ae878ac4e7e9e9922ef090718be4f4531',1,'classic_params']]],
   ['frco2rt',['frco2rt',['../namespaceclassic__params.html#aee35b2dc07ca6cf03e9af7b2b5952f02',1,'classic_params']]],

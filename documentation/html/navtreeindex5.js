@@ -1,5 +1,6 @@
 var NAVTREEINDEX5 =
 {
+"structclass__statevars_1_1class__gather.html#af71b2d4da0955aff973daaf13d37de28":[7,0,0,0,174],
 "structclass__statevars_1_1class__gather.html#af7724f6e410feb91601310bb18e9d305":[7,0,0,0,241],
 "structclass__statevars_1_1class__gather.html#af8869de17265b7272148ba369a172ede":[7,0,0,0,8],
 "structclass__statevars_1_1class__gather.html#af955a6920be7ec340d2e50c8743713f3":[7,0,0,0,194],
@@ -248,6 +249,5 @@ var NAVTREEINDEX5 =
 "structclass__statevars_1_1class__rotated.html#a9c5ed2502790cd326e7883765e9ef730":[7,0,0,2,30],
 "structclass__statevars_1_1class__rotated.html#a9cd8d35a4c5c99ad3acd4cbaf0476546":[7,0,0,2,233],
 "structclass__statevars_1_1class__rotated.html#a9eda78bafa090fe83cc29bd7ff0df294":[7,0,0,2,80],
-"structclass__statevars_1_1class__rotated.html#a9f540930955ac151976b3c420dd90aad":[7,0,0,2,275],
-"structclass__statevars_1_1class__rotated.html#a9f8cd6172a0f2e4a98cfffa6b2a15ad9":[7,0,0,2,281]
+"structclass__statevars_1_1class__rotated.html#a9f540930955ac151976b3c420dd90aad":[7,0,0,2,275]
 };

@@ -1,5 +1,6 @@
 var NAVTREEINDEX6 =
 {
+"structclass__statevars_1_1class__rotated.html#a9f8cd6172a0f2e4a98cfffa6b2a15ad9":[7,0,0,2,281],
 "structclass__statevars_1_1class__rotated.html#aa1265e193d75f77c4f0666c418970de5":[7,0,0,2,22],
 "structclass__statevars_1_1class__rotated.html#aa129cf48e7562b14ef85c317e9214797":[7,0,0,2,45],
 "structclass__statevars_1_1class__rotated.html#aa343682d0c66fd1d1f8e5639cbffbb4c":[7,0,0,2,266],
@@ -248,6 +249,5 @@ var NAVTREEINDEX6 =
 "structctem__statevars_1_1ctem__gridavg__monthly.html#aeef22f174c428abff053f979c8002eb7":[7,0,1,2,41],
 "structctem__statevars_1_1ctem__gridavg__monthly.html#af3b8681ab580351938fcc8274641d3ce":[7,0,1,2,2],
 "structctem__statevars_1_1ctem__monthly.html":[7,0,1,3],
-"structctem__statevars_1_1ctem__monthly.html#a0235de80498d649751106fc83b4821c5":[7,0,1,3,17],
-"structctem__statevars_1_1ctem__monthly.html#a061168b463f5a6134ee6eae2e55e3ef9":[7,0,1,3,7]
+"structctem__statevars_1_1ctem__monthly.html#a0235de80498d649751106fc83b4821c5":[7,0,1,3,17]
 };

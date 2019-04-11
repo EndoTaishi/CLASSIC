@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"structclass__statevars_1_1class__gather.html#a2d0bd1077d6fdadc56ab26e1eec80f39":[7,0,0,0,161],
 "structclass__statevars_1_1class__gather.html#a2e3e457c1c99ae64ec94e176d6573e28":[7,0,0,0,160],
 "structclass__statevars_1_1class__gather.html#a2f0ab2618e91333f01ba1e2c31d33d66":[7,0,0,0,228],
 "structclass__statevars_1_1class__gather.html#a2f4e827e21e30caa6a762d289c4fea4e":[7,0,0,0,54],
@@ -248,6 +249,5 @@ var NAVTREEINDEX4 =
 "structclass__statevars_1_1class__gather.html#af4037019a861fe4c05ca107b208a8021":[7,0,0,0,140],
 "structclass__statevars_1_1class__gather.html#af43a75c8b37b2460548d37cc5d9d437b":[7,0,0,0,123],
 "structclass__statevars_1_1class__gather.html#af4f52670a67b8806cca8561c90ac7df2":[7,0,0,0,231],
-"structclass__statevars_1_1class__gather.html#af5b81c164e0361c8538950d6fd53e903":[7,0,0,0,9],
-"structclass__statevars_1_1class__gather.html#af71b2d4da0955aff973daaf13d37de28":[7,0,0,0,174]
+"structclass__statevars_1_1class__gather.html#af5b81c164e0361c8538950d6fd53e903":[7,0,0,0,9]
 };

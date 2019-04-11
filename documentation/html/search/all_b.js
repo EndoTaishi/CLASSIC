@@ -4,6 +4,7 @@ var searchData=
   ['laimax',['laimax',['../namespaceclassic__params.html#a68faf81ef2e918cb5a755333ec0de74b',1,'classic_params']]],
   ['laimin',['laimin',['../namespaceclassic__params.html#a7c314b2c287bc28ce9b49767dcdced35',1,'classic_params']]],
   ['lambda',['lambda',['../structctem__statevars_1_1veg__gat.html#abbccacdea04d42346d27951d422a7ddb',1,'ctem_statevars::veg_gat']]],
+  ['lambda14c',['lambda14c',['../namespaceclassic__params.html#aade8664d01bae9a5bbc501172534d84a',1,'classic_params']]],
   ['lambdamax',['lambdamax',['../namespaceclassic__params.html#acd079cdc23eee04f2212fa622996caa0',1,'classic_params']]],
   ['landuse_5fchange',['landuse_change',['../namespacelanduse__change.html',1,'']]],
   ['landuse_5fchange_5fmod_2ef90',['landuse_change_mod.f90',['../landuse__change__mod_8f90.html',1,'']]],

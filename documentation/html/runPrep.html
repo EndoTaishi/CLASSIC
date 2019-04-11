@@ -114,15 +114,15 @@ Running CLASSIC in a Singularity Container</h1>
 <p>In order to run CLASSIC, we need several specific software tools such as compilers (e.g. GNU, Intel, Cray, etc.) and libraries (MPI, NetCDF etc.) that have to be present on our machine to be able to run the model. If we use a container then we can simply access the model through the container, a process that eliminates the cumbersome and time consuming process of installing all of these compilers and libraries locally.</p>
 <p>Another significant advantage is that the versions of each library is "frozen" in the container. This has several advantages for scientific reproducibility, mobility, and model development. For example, we could have a container with the library versions at the time of a major model release version. So, even several years later, we can run the model with the original intended library versions recreating the software environment exactly. A version of the WRF weather prediction model has been containerized to aid in it use in teaching and research (Hacker et al. 2016) <a class="el" href="citelist.html#CITEREF_Hacker2016-qg">[40]</a> .</p>
 <h2>Benefits of {Singularity} containers</h2>
-<p>From Kurtzer et al. (2017) <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[47]</a> :</p>
+<p>From Kurtzer et al. (2017) <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[48]</a> :</p>
 <blockquote class="doxtable">
 <p>Singularity offers mobility of compute by enabling environments to be completely portable via a single image file, and is designed with the features necessary to allow seamless integration with any scientific computational resources. ... Mobility of compute is defined as the ability to define, create, and maintain a workflow locally while remaining confident that the workflow can be executed on different hosts, Linux operating systems, and/or cloud service providers. In essence, mobility of compute means being able to contain the entire software stack, from data files up through the library stack, and reliability move it from system to system. Mobility of compute is an essential building block for reproducible science, and consistent and continuous deployment of applications. ... Many of the same features that facilitate mobility also facilitate reproducibility. Once a contained workflow has been defined, the container image can be snapshotted, archived, and locked down such that it can be used later and the user can be confident that the code within the container has not changed. The container is not subject to any external influence from the host operating system (aside from the kernel which is ubiquitous of any OS level virtualization solution).... Singularity can give the user the freedom they need to install the applications, versions, and dependencies for their workflows without impacting the system in any way. Users can define their own working environment and literally copy that environment image (a single file) to a shared resource, and run their workflow inside that image. </p>
 </blockquote>
-<p>A nice benefit of containers is that they are designed to be easy to use <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[47]</a> :</p>
+<p>A nice benefit of containers is that they are designed to be easy to use <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[48]</a> :</p>
 <blockquote class="doxtable">
 <p>The goal of Singularity is to support existing and traditional HPC resources as easily as installing a single package onto the host operating system. For the administrators of the hosts, some configuration may be required via a single configuration file, however the default values are tuned to be generally applicable for shared environments. </p>
 </blockquote>
-<p>System administrators will be comforted to know <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[47]</a> :</p>
+<p>System administrators will be comforted to know <a class="el" href="citelist.html#CITEREF_Kurtzer2017-xc">[48]</a> :</p>
 <blockquote class="doxtable">
 <p>Singularity does not provide a pathway for privilege escalation (which makes it truly applicable for multi-tenant shared scientific compute resources). This means that in the runtime environment, a user inside a Singularity container is the same user as outside the container. If a user wants to be root inside the container, they must first become root outside the container. Considering on most shared resources the user will not have root access means they will not have root access within their containers either. This simple concept thus defines the Singularity usage workflow. </p>
 </blockquote>
@@ -341,7 +341,7 @@ Setting up the joboptions file</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Tue Apr 9 2019 08:59:53 for CLASSIC by
+    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

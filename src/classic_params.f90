@@ -49,6 +49,8 @@ real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air ($J kg^{-1} K^{-
 real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
 real, parameter :: STD_PRESS = 101325.0 !<Standard atmospheric pressure (Pa)
 
+real, parameter :: lambda14C = 8267.  !< radioactive decay rate for 14C, corresponds to a half life of 5730 years. (\f$yr^{-1}\f$)
+
 ! FLAG below not used anywhere.
 !AI=2.88053E+6/1004.5
 !BI=0.167E+3/1004.5

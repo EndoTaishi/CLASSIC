@@ -680,6 +680,8 @@ type (veg_gat), save, target :: vgat
 type tracersType
   !   Simple tracer variables. Only allocated and used if useTracer > 0.
   
+  ! NOTE: Units may vary depending on the tracer used, see convertTracerUnits in tracer.f90
+  
   ! allocated with nlat:
   real, allocatable, dimension(:) :: tracerCO2rot !< Atmopspheric tracer CO2 concentration (units vary)
   
@@ -689,8 +691,8 @@ type tracersType
   real, allocatable, dimension(:,:) :: mossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
   ! allocated with nlat,nmos,icc:
-  real, allocatable, dimension(:,:,:) :: gLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, allocatable, dimension(:,:,:) :: bLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, allocatable, dimension(:,:,:) :: gLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$ 
+  real, allocatable, dimension(:,:,:) :: bLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$
   real, allocatable, dimension(:,:,:) :: stemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
   real, allocatable, dimension(:,:,:) :: rootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
   ! allocated with nlat,nmos,iccp2,ignd:

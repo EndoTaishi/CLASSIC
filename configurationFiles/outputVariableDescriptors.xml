@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2019/4/4">
+<variableSet type="CLASS" version="1.2" created="2019/4/11">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -2290,6 +2290,54 @@
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>tracerGLeafMass</nameInCode>
+                <units>Depends on tracer</units>
+            </variant>
+        </variable>
+        <variable id="87" includeBareGround="true" dormant="false">
+            <standardName>Tracer of soil C</standardName>
+            <longName>Tracer of soil carbon (can be simple tracer, 14C or 13C)</longName>
+            <shortName>cSoilTracer</shortName>
+            <defaultUnits>Depends on tracer</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>tracerSoilCMass</nameInCode>
+                <units>Depends on tracer</units>
+            </variant>
+        </variable>
+        <variable id="88" includeBareGround="true" dormant="false">
+            <standardName>Tracer of litter C</standardName>
+            <longName>Tracer of litter carbon (can be simple tracer, 14C or 13C)</longName>
+            <shortName>cLitterTracer</shortName>
+            <defaultUnits>Depends on tracer</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>layer</outputForm>
+                <nameInCode>tracerLitrMass</nameInCode>
+                <units>Depends on tracer</units>
+            </variant>
+        </variable>
+        <variable id="89" includeBareGround="false" dormant="false">
+            <standardName>Tracer of stem C</standardName>
+            <longName>Tracer of stem carbon (can be simple tracer, 14C or 13C)</longName>
+            <shortName>cStemTracer</shortName>
+            <defaultUnits>Depends on tracer</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>tracerStemMass</nameInCode>
+                <units>Depends on tracer</units>
+            </variant>
+        </variable>
+        <variable id="90" includeBareGround="false" dormant="false">
+            <standardName>Tracer of root C</standardName>
+            <longName>Tracer of root carbon (can be simple tracer, 14C or 13C)</longName>
+            <shortName>cRootTracer</shortName>
+            <defaultUnits>Depends on tracer</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>tracerRootMass</nameInCode>
                 <units>Depends on tracer</units>
             </variant>
         </variable>

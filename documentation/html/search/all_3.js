@@ -10,6 +10,7 @@ var searchData=
   ['dcbaset',['dcbaset',['../namespaceclassic__params.html#aeaaa13e220ea942a0ecb87bbe5176e68',1,'classic_params']]],
   ['dctmin',['dctmin',['../namespaceclassic__params.html#af5f2e3ea59459892f91d320efbd36f31',1,'classic_params']]],
   ['deallocinput',['deallocinput',['../namespacemodel__state__drivers.html#aaf94fac699883c97781af896554f4bbf',1,'model_state_drivers']]],
+  ['decay14c',['decay14c',['../tracer_8f90.html#a283a7636686a314244a7025bcf469ee8',1,'tracermodule']]],
   ['defctcur',['defctcur',['../structctem__statevars_1_1veg__gat.html#a23db04fef112615f0104caa850a522f2',1,'ctem_statevars::veg_gat']]],
   ['defctmon',['defctmon',['../structctem__statevars_1_1veg__rot.html#a74a0c09b59ea22655799cc0d43863e06',1,'ctem_statevars::veg_rot::defctmon()'],['../structctem__statevars_1_1veg__gat.html#aa459886f5bf5254b2ea1c5efaa169586',1,'ctem_statevars::veg_gat::defctmon()']]],
   ['defmncur',['defmncur',['../structctem__statevars_1_1veg__gat.html#a26aadfe13cbcaf938f07d4058095c0f9',1,'ctem_statevars::veg_gat']]],

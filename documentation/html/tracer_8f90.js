@@ -1,7 +1,8 @@
 var tracer_8f90 =
 [
-    [ "simpletracer", "tracer_8f90.html#af894987165697a02d35f83ecef117daa", null ],
-    [ "tracer13c", "tracer_8f90.html#a95ce6c5902851dd07396801bbf475f9e", null ],
-    [ "tracer14c", "tracer_8f90.html#a1c60ff3c7c87de1c154edb070aec2a14", null ],
-    [ "tracerdynamics", "tracer_8f90.html#a86a8a15766e69cd77e35bca50e955f77", null ]
+    [ "checktracerbalance", "tracer_8f90.html#ab47297fd69d111c7095805609f16acba", null ],
+    [ "converttracerunits", "tracer_8f90.html#a7fb315fe035c60fbb7e701eb245c031d", null ],
+    [ "decay14c", "tracer_8f90.html#a283a7636686a314244a7025bcf469ee8", null ],
+    [ "fractionate13c", "tracer_8f90.html#a1191f46e335ff369c767a229115420f1", null ],
+    [ "updatetracerpools", "tracer_8f90.html#a942c996d91de007ff6638790626e1b99", null ]
 ];

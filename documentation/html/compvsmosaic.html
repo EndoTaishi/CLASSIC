@@ -86,8 +86,8 @@ $(document).ready(function(){initNavTree('compvsmosaic.html','');});
 <div class="contents">
 <div class="textblock"><p>CLASSIC can be run in two different configurations: composite or mosaic (see figure below)</p>
 <p>In the composite mode, the structural vegetation attributes (including leaf area index, vegetation height, rooting depth) of PFTs that exist in a grid cell are averaged in proportion to their fractional coverages and then used in the grid-averaged energy and water balance calculations. As a result the entire grid cell is characterized by land surface physical environment (including soil temperature, soil moisture, fractional snow cover, and net radiation) that is common to all PFTs.</p>
-<p>In contrast, in the mosaic mode, a grid box is split into multiple tiles representing individual PFTs (or land unit, such as soil texture e.g. Melton et al. (2017) <a class="el" href="citelist.html#CITEREF_Melton2017-gp">[61]</a>) for each of which energy, water and carbon balance calculations are performed separately. In principle, the mosaic mode may be used to represent tiles that are characterized by any chosen distinction such a lowlands vs. uplands, soil texture, vegetation, soil depth, etc.</p>
-<p>As a result of the differences between the mosaic and composite configurations, the simulated carbon balance evolves somewhat differently in the two configurations despite being driven with identical climate forcing (see Melton and Arora (2014) <a class="el" href="citelist.html#CITEREF_Melton2014-xk">[58]</a>). For previous publications using this model capability see: Li and Arora (2012) <a class="el" href="citelist.html#CITEREF_Li2012-f7f">[53]</a>, Melton and Arora (2014) <a class="el" href="citelist.html#CITEREF_Melton2014-xk">[58]</a>, Shrestha et al. (2016) <a class="el" href="citelist.html#CITEREF_Shrestha2016-do">[75]</a>, and Melton et al. (2017) <a class="el" href="citelist.html#CITEREF_Melton2017-gp">[61]</a>.</p>
+<p>In contrast, in the mosaic mode, a grid box is split into multiple tiles representing individual PFTs (or land unit, such as soil texture e.g. Melton et al. (2017) <a class="el" href="citelist.html#CITEREF_Melton2017-gp">[62]</a>) for each of which energy, water and carbon balance calculations are performed separately. In principle, the mosaic mode may be used to represent tiles that are characterized by any chosen distinction such a lowlands vs. uplands, soil texture, vegetation, soil depth, etc.</p>
+<p>As a result of the differences between the mosaic and composite configurations, the simulated carbon balance evolves somewhat differently in the two configurations despite being driven with identical climate forcing (see Melton and Arora (2014) <a class="el" href="citelist.html#CITEREF_Melton2014-xk">[59]</a>). For previous publications using this model capability see: Li and Arora (2012) <a class="el" href="citelist.html#CITEREF_Li2012-f7f">[54]</a>, Melton and Arora (2014) <a class="el" href="citelist.html#CITEREF_Melton2014-xk">[59]</a>, Shrestha et al. (2016) <a class="el" href="citelist.html#CITEREF_Shrestha2016-do">[76]</a>, and Melton et al. (2017) <a class="el" href="citelist.html#CITEREF_Melton2017-gp">[62]</a>.</p>
 <p>Although pretty clever and powerful, running the mosaic version and interpreting the model results can be a logical nightmare, especially with competition on where the fractions of different tiles/mosaic change with time. So if you are new at this, please consider running the model in the composite mode.</p>
 <p>Some initialization variables that impact upon composite vs. mosaic model runs:</p>
 <ul>
@@ -96,7 +96,7 @@ $(document).ready(function(){initNavTree('compvsmosaic.html','');});
 </ul>
 </li>
 <li>MIDROT Mosaic tile type identifier (1 for land surface, 0 for inland lake)<ul>
-<li>CLASSIC runs in the coupled models with a sub-grid lakes scheme (The Canadian Small Lake Model (CSLM); Verseghy and MacKay, 2017 <a class="el" href="citelist.html#CITEREF_Verseghy2017-ys">[80]</a>). The lakes can then be represented as a tile.</li>
+<li>CLASSIC runs in the coupled models with a sub-grid lakes scheme (The Canadian Small Lake Model (CSLM); Verseghy and MacKay, 2017 <a class="el" href="citelist.html#CITEREF_Verseghy2017-ys">[82]</a>). The lakes can then be represented as a tile.</li>
 </ul>
 </li>
 </ul>
@@ -110,7 +110,7 @@ Schematic representation of the composite and mosaic ap- proaches for the coupli
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Tue Apr 9 2019 08:59:53 for CLASSIC by
+    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

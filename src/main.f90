@@ -67,7 +67,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use metDisaggModule,     only : disaggMet
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
-  use tracerModule,              only : tracerDynamics
+  use tracerModule,        only : updateTracerPools, decay14C
   use applyAllometry,      only : allometry
   
   implicit none
@@ -2376,7 +2376,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
     !> Read in the inputs for a run with biogeochemical component turned on
     call getInput('CO2') ! CO2 atmospheric concentration
     call getInput('CH4') ! CH4 atmospheric concentration
-    if (useTracer > 0) call getInput('tracerCO2') ! tracer atmospheric values            
+    if (useTracer > 0) call getInput('tracerCO2',longitude,latitude) ! tracer atmospheric values            
     if (.not. projectedGrid) then
       !regular lon/lat grid
       if (dofire) call getInput('POPD',longitude,latitude) ! Population density
@@ -2990,8 +2990,12 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
           end do
         end do
 
-        if (useTracer > 0) call tracerDynamics(1,nml)
+        ! Update the tracer pools if any tracer is being used.
+        if (useTracer > 0) call updateTracerPools(1,nml)
         
+        ! Once a year, calculate the 14C lost to decay if using the 14C tracer.
+        if (useTracer == 2 .and. iday == lastdoy .and. ncount == nday) call decay14C(1,nml)
+
       endif  ! if(ncount.eq.nday)
     endif  ! if(ctem_on)
 

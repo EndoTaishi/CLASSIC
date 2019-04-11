@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['simpletracer',['simpletracer',['../tracer_8f90.html#af894987165697a02d35f83ecef117daa',1,'tracermodule']]],
   ['sldiag',['sldiag',['../SLDIAG_8f.html#ad70c758db99cc5fdf4cabbcd33447dd2',1,'SLDIAG.f']]],
   ['sninfl',['sninfl',['../SNINFL_8f.html#a40705488cafaec0ed712b2b926c1d67d',1,'SNINFL.f']]],
   ['snoadd',['snoadd',['../SNOADD_8f.html#af7d261f12e703bc9bfc7bd0a543d51ae',1,'SNOADD.f']]],
