@@ -770,30 +770,28 @@ contains
         
 
         if (.not. ctem_on) then
-            FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
-            ! Error check:
-            do i = 1,nlat
-                do m = 1,nmos
-                    if (FAREROT(i,m) .gt. 1.0) then
-                        print *,'FAREROT > 1',FAREROT(I,M)
-                        call XIT('read_initialstate', -1)
-                    end if
-                enddo
-            enddo
-            !else fcancmx is read in instead and fcanrot is derived later.
+          FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
+          ! Error check:
+          do i = 1,nlat
+            do m = 1,nmos
+              if (FAREROT(i,m) .gt. 1.0) then
+                print *,'FAREROT > 1',FAREROT(I,M)
+                call XIT('read_initialstate', -1)
+              end if
+            end do
+          end do
+          !else fcancmx is read in instead and fcanrot is derived later.
         end if
 
-!     Complete some initial set up work. The limiting snow
-!> depth, ZSNL, is assigned its operational value of 0.10 m.
+        ! Complete some initial set up work. The limiting snow
+        ! depth, ZSNL, is assigned its operational value of 0.10 m.
         DO 100 I=1,nlat
             DO 100 M=1,nmos
-
                 DO J=1,IGND
-                    TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
+                  TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
                 ENDDO
                 TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
                 TCANROT(I,M)=TCANROT(I,M)+TFREZ
-
                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
                 TBASROT(I,M)=TBARROT(I,M,IGND)
                 CMAIROT(I,M)=0.
@@ -805,7 +803,6 @@ contains
                 TSFSROT(I,M,4)=TBARROT(I,M,1)
                 TACROT (I,M)=TCANROT(I,M)
                 QACROT (I,M)=0.5E-2
-
 100     CONTINUE
 
         ! Set the counter for the number of iterations required to solve surface energy balance for the elements of the four subareas to zero.
@@ -814,138 +811,138 @@ contains
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
         do i = 1,nlat
-            do j = 1,nmos
-                do m = 1,ignd-1
-                    if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
-                        THLQROT(i,j,m:ignd) = 0.
-                        THICROT(i,j,m:ignd) = 0.
-                        exit
-                    end if
-                end do
+          do j = 1,nmos
+            do m = 1,ignd-1
+              if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
+                THLQROT(i,j,m:ignd) = 0.
+                THICROT(i,j,m:ignd) = 0.
+                exit
+              end if
             end do
+          end do
         end do
 
         if (ctem_on) then
 
-            grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
+          grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
 
-            do i = 1,nmos
-                grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
+          do i = 1,nmos
+            grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
+          end do
+
+          slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, 8, nmos], format = [nlat, nmos, 8])
+          Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+          litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+          dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+          fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+
+          gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+
+          !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+          if (dofire .and. PFTCompetition) then
+            do i = 1,nlat
+              do m = 1,nmos
+                do j =1,icc
+                  pstemmassrow(i,m,j)=stemmassrow(i,m,j)
+                  pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
+                end do
+              end do
+            end do
+          end if
+
+          litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
+          soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+          
+          ! If a tracer is being used, read in those values.
+          if (useTracer > 0) then 
+            tracerGLeafMass = ncGet3DVar(initid, 'tracerGLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerStemMass = ncGet3DVar(initid, 'tracerStemMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerRootMass = ncGet3DVar(initid, 'tracerRootMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
+            tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
+            tracerMossCMass = ncGet2DVar(initid, 'tracerMossCMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+            tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])              
+          end if
+
+          lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+
+          if (PFTCompetition .and. inibioclim) then  !read in the bioclimatic parameters
+
+            twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            gdd5(:,1) = ncGet1DVar(initid, 'gdd5', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            aridity(:,1) = ncGet1DVar(initid, 'aridity', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            srplsmon(:,1) = ncGet1DVar(initid, 'srplsmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            defctmon(:,1) = ncGet1DVar(initid, 'defctmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            anndefct(:,1) = ncGet1DVar(initid, 'anndefct', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+
+            !>Take the first tile value now and put it over the other tiles
+            do m = 1,nmos
+              twarmm(:,m)=twarmm(:,1)
+              tcoldm(:,m)=tcoldm(:,1)
+              gdd5(:,m)=gdd5(:,1)
+              aridity(:,m)=aridity(:,1)
+              srplsmon(:,m)=srplsmon(:,1)
+              defctmon(:,m)=defctmon(:,1)
+              anndefct(:,m)=anndefct(:,1)
+              annsrpls(:,m)=annsrpls(:,1)
+              annpcp(:,m)=annpcp(:,1)
+              dry_season_length(:,m) =dry_season_length(:,1)
             end do
 
-            slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, 8, nmos], format = [nlat, nmos, 8])
-            Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          else if (PFTCompetition .and. .not. inibioclim) then ! set them to zero
 
-            gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            twarmm=0.0
+            tcoldm=0.0
+            gdd5=0.0
+            aridity=0.0
+            srplsmon=0.0
+            defctmon=0.0
+            anndefct=0.0
+            annsrpls=0.0
+            annpcp=0.0
+            dry_season_length = 0.0
 
-            !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-            if (dofire .and. PFTCompetition) then
-                do i = 1,nlat
-                    do m = 1,nmos
-                        do j =1,icc
-                            pstemmassrow(i,m,j)=stemmassrow(i,m,j)
-                            pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
-                        end do
-                    end do
-                end do
-            end if
+          endif
 
-            litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
-            soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+          !>if this run uses the competition and starts from bare ground, set up the model state here. this
+          !>overwrites what was read in from the initialization file.            
+          
+          if (PFTCompetition .and. start_bare) then
             
-            ! If a tracer is being used, read in those values.
-            if (useTracer > 0) then 
-              tracerGLeafMass = ncGet3DVar(initid, 'tracerGLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-              tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-              tracerStemMass = ncGet3DVar(initid, 'tracerStemMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-              tracerRootMass = ncGet3DVar(initid, 'tracerRootMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-              tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
-              tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
-              tracerMossCMass = ncGet2DVar(initid, 'tracerMossCMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-              tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])              
-            end if
+            ! If useTracer > 0 then the tracer values are left initialized at what they were read in as.
+            do i=1,nlat
+              do m = 1,nmos
+                do j = 1,icc
+                  if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
+                  gleafmasrow(i,m,j)=0.0
+                  bleafmasrow(i,m,j)=0.0
+                  stemmassrow(i,m,j)=0.0
+                  rootmassrow(i,m,j)=0.0
+                  lfstatusrow(i,m,j)=4
+                  pandaysrow(i,m,j)=0
+                enddo
 
-            lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+                lfstatusrow(i,m,1)=2
+                
+                do j = 1,iccp2
+                  litrmassrow(i,m,j,1:ignd)=0.0
+                  soilcmasrow(i,m,j,1:ignd)=0.0
+                enddo
+              end do ! nmtest
+            enddo !nltest
 
-            if (PFTCompetition .and. inibioclim) then  !read in the bioclimatic parameters
+          end if !if (PFTCompetition .and. start_bare)
 
-                twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                gdd5(:,1) = ncGet1DVar(initid, 'gdd5', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                aridity(:,1) = ncGet1DVar(initid, 'aridity', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                srplsmon(:,1) = ncGet1DVar(initid, 'srplsmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                defctmon(:,1) = ncGet1DVar(initid, 'defctmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                anndefct(:,1) = ncGet1DVar(initid, 'anndefct', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-
-                !>Take the first tile value now and put it over the other tiles
-                do m = 1,nmos
-                    twarmm(:,m)=twarmm(:,1)
-                    tcoldm(:,m)=tcoldm(:,1)
-                    gdd5(:,m)=gdd5(:,1)
-                    aridity(:,m)=aridity(:,1)
-                    srplsmon(:,m)=srplsmon(:,1)
-                    defctmon(:,m)=defctmon(:,1)
-                    anndefct(:,m)=anndefct(:,1)
-                    annsrpls(:,m)=annsrpls(:,1)
-                    annpcp(:,m)=annpcp(:,1)
-                    dry_season_length(:,m) =dry_season_length(:,1)
-                end do
-
-            else if (PFTCompetition .and. .not. inibioclim) then ! set them to zero
-
-                twarmm=0.0
-                tcoldm=0.0
-                gdd5=0.0
-                aridity=0.0
-                srplsmon=0.0
-                defctmon=0.0
-                anndefct=0.0
-                annsrpls=0.0
-                annpcp=0.0
-                dry_season_length = 0.0
-
-            endif
-
-            !>if this run uses the competition and starts from bare ground, set up the model state here. this
-            !>overwrites what was read in from the initialization file.            
-            
-            if (PFTCompetition .and. start_bare) then
-                ! If useTracer > 0 then the tracer values are left initialized at what they were read in as.
-                do i=1,nlat
-                    do m = 1,nmos
-
-                        do j = 1,icc
-                            if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
-                            gleafmasrow(i,m,j)=0.0
-                            bleafmasrow(i,m,j)=0.0
-                            stemmassrow(i,m,j)=0.0
-                            rootmassrow(i,m,j)=0.0
-                            lfstatusrow(i,m,j)=4
-                            pandaysrow(i,m,j)=0
-                        enddo
-
-                        lfstatusrow(i,m,1)=2
-
-                        do j = 1,iccp2
-                            litrmassrow(i,m,j,1:ignd)=0.0
-                            soilcmasrow(i,m,j,1:ignd)=0.0
-                        enddo
-                    end do ! nmtest
-                enddo !nltest
-
-            end if !if (PFTCompetition .and. start_bare)
-
-        end if !ctem_on
+      end if !ctem_on
 
     end subroutine read_initialstate
 

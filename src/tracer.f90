@@ -210,8 +210,9 @@ contains
             
             !! FLAG OK to assign no special tracer value to LUC/Comp???? *********
             tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + gains - losses - gLeafLandCompChg(i,j)
-            if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
             
+            if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
+ 
             ! ***  Update brown leaves (grass only) *** 
             if (grass(j) ) then
               gains = phenLeafGtoB(i,j) & ! phenology transfer to brown leaves, only >0 for grasses
@@ -255,15 +256,6 @@ contains
             tracerRootMass(i,j) = tracerRootMass(i,j) + gains - losses - rootLandCompChg(i,j)
             if (tracerRootMass(i,j) < zero) tracerRootMass(i,j) = 0.
 
-          else 
-            ! Set the tracer pools to 0 if the model pool is zero
-            ! or the PFT is not in the tile.          
-            tracerLitrMass(i,j,:) = 0.
-            tracerSoilCMass(i,j,:) = 0.
-            tracerRootMass(i,j) = 0.
-            tracerStemMass(i,j) = 0.
-            tracerBLeafMass(i,j) = 0.
-            tracerGLeafMass(i,j) = 0.
           end if         
           if (rootmass(i,j) < zero) tracerRootMass(i,j) = 0.
           if (stemmass(i,j) < zero) tracerStemMass(i,j) = 0.
@@ -329,22 +321,7 @@ contains
     
     ! Check for mass balance for the tracer.
     if (doTracerBalance) call checkTracerBalance(il1,il2)
-      
-    ! k=1
-    ! write(*,'(a7,i4,2f13.10)')'tracer1',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
-    ! write(*,'(a7,i4,2f13.10)')'litter1',k,litrmass(1,6,k),litrmass(1,7,k)      
-    ! k=2  
-    ! write(*,'(a7,i4,2f13.10)')'tracer2',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
-    ! write(*,'(a7,i4,2f13.10)')'litter2',k,litrmass(1,6,k),litrmass(1,7,k)    
-    ! k=3    
-    ! write(*,'(a7,i4,2f13.10)')'tracer3',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
-    ! write(*,'(a7,i4,2f13.10)')'litter3',k,litrmass(1,6,k),litrmass(1,7,k)  
-    ! k=4     
-    ! write(*,'(a7,i4,2f13.10)')'tracer4',k,tracerLitrMass(1,6,k),tracerLitrMass(1,7,k)
-    ! write(*,'(a7,i4,2f13.10)')'litter4',k,litrmass(1,6,k),litrmass(1,7,k)        
-
-    !read(*,*)
-    
+  
   end subroutine updateTracerPools
 !!@}
 ! -------------------------------------------------------
@@ -514,7 +491,7 @@ end function convertTracerUnits
 subroutine checkTracerBalance(il1,il2)
   
   use classic_params, only : icc, iccp2, ignd, tolrance
-  use ctem_statevars, only : tracer,vgat
+  use ctem_statevars, only : tracer,vgat,c_switch
 
   implicit none 
   
@@ -535,7 +512,12 @@ subroutine checkTracerBalance(il1,il2)
   real, pointer :: rootmass(:,:)     !< Root mass for each of the CTEM PFTs, \f$kg c/m^2\f$
   real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
   real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
-  
+  integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
+                      ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
+                      !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                      ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                      ! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme. 
+
   integer :: i,j,k 
   
   tracerGLeafMass   => tracer%gLeafMassgat
@@ -552,8 +534,15 @@ subroutine checkTracerBalance(il1,il2)
   rootmass          => vgat%rootmass
   litrmass          => vgat%litrmass
   soilcmas          => vgat%soilcmas
+  useTracer         => c_switch%useTracer
   
   ! ---------
+  
+  if (useTracer /= 1) then
+    print*,'checkTracerBalance: useTracer must == 1 for this check, you have:',useTracer 
+    print*,'Ending run.'
+    call xit('checkTracerBalance',1)
+  end if 
   
   do i = il1, il2
     do j = 1, iccp2
@@ -563,7 +552,7 @@ subroutine checkTracerBalance(il1,il2)
         if (abs(tracerGLeafMass(i,j) - gleafmas(i,j)) > tolrance) then 
           print*,'checkTracerBalance: Tracer balance fail for green leaf mass'
           print*,i,'PFT',j,'tracerGLeafMass',tracerGLeafMass(i,j),&
-                    'gleafmas',gleafmas(i,j)          
+                    'gleafmas',gleafmas(i,j)   
           call xit('checkTracerBalance',-1)
         end if 
          
@@ -571,7 +560,7 @@ subroutine checkTracerBalance(il1,il2)
         if (abs(tracerBLeafMass(i,j) - bleafmas(i,j)) > tolrance) then 
           print*,'checkTracerBalance: Tracer balance fail for brown leaf mass'
           print*,i,'PFT',j,'tracerBLeafMass',tracerBLeafMass(i,j),&
-                    'bleafmas',bleafmas(i,j)
+                    'bleafmas',bleafmas(i,j)        
           call xit('checkTracerBalance',-2)
         end if 
         
@@ -579,7 +568,7 @@ subroutine checkTracerBalance(il1,il2)
         if (abs(tracerStemMass(i,j) - stemmass(i,j)) > tolrance) then 
           print*,'checkTracerBalance: Tracer balance fail for stem mass'
           print*,i,'PFT',j,'tracerStemMass',tracerStemMass(i,j),&
-                    'stemmass',stemmass(i,j)
+                    'stemmass',stemmass(i,j)   
           call xit('checkTracerBalance',-1)
         end if 
         
@@ -587,7 +576,7 @@ subroutine checkTracerBalance(il1,il2)
         if (abs(tracerRootMass(i,j) - rootmass(i,j)) > tolrance) then 
           print*,'checkTracerBalance: Tracer balance fail for root mass'
           print*,i,'PFT',j,'tracerRootMass',tracerRootMass(i,j),&
-                    'rootmass',rootmass(i,j)
+                    'rootmass',rootmass(i,j)      
           call xit('checkTracerBalance',-1)
         end if 
       end if 
@@ -597,14 +586,14 @@ subroutine checkTracerBalance(il1,il2)
         if (abs(tracerLitrMass(i,j,k) - litrmass(i,j,k)) > tolrance) then 
           print*,'checkTracerBalance: Tracer balance fail for litter mass'
           print*,i,'PFT',j,'layer',k,'tracerLitrMass',tracerLitrMass(i,j,k),&
-                    'litrmass',litrmass(i,j,k)
+                    'litrmass',litrmass(i,j,k)            
           call xit('checkTracerBalance',-1)
         end if 
         ! green leaf mass 
         if (abs(tracerSoilCMass(i,j,k) - soilcmas(i,j,k)) > tolrance) then 
           print*,'checkTracerBalance: Tracer balance fail for soil C mass'
           print*,i,'PFT',j,'layer',k,'tracerSoilCMass',tracerSoilCMass(i,j,k),&
-                    'soilcmas',soilcmas(i,j,k)
+                    'soilcmas',soilcmas(i,j,k)    
           call xit('checkTracerBalance',-1)
         end if 
       end do 

@@ -29,7 +29,7 @@ contains
                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  & ! In
                   wtable,   maxAnnualActLyr,         & ! In
                   PFTCompetition,  dofire,  lnduseon,  inibioclim,  & ! In
-                     leapnow,                                   & ! In
+                     leapnow, useTracer,                       & ! In
                    stemmass, rootmass, litrmass,  gleafmas,& ! In/ Out
                    bleafmas, soilcmas,    ailcg,      ailc,& ! In/ Out
                       zolnc, rmatctem,    rmatc,     ailcb,& ! In/ Out
@@ -161,6 +161,7 @@ contains
   use turnover, only : turnoverStemRoot, updatePoolsTurnover
   use soilC_processes, only : turbation
   use applyAllometry, only : allometry
+  use tracerModule,   only : updateTracerPools
 
   implicit none
 
@@ -213,6 +214,11 @@ contains
   real, dimension(ilg,ignd), intent(in) :: THFC           !<
   real, dimension(ilg,ignd), intent(in) :: THLW           !<
   real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
 
   !
   !     updates
@@ -1237,7 +1243,10 @@ contains
                                 nppmosstep, litrfallmoss, litrmsmoss,&
                                plitrmsmoss, ltrestepmoss, humstepmoss)
   
-  !>
+  !> Update the tracer pools if any tracer is being used. This needs to be before
+  !! allometry since rmatctem could then change.
+   if (useTracer > 0) call updateTracerPools(il1,il2)
+
   !> Finally find vegetation structural attributes which can be passed 
   !! to the land surface scheme using leaf, stem, and root biomass.
   !>

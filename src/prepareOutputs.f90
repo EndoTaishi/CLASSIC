@@ -3536,8 +3536,8 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
             call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerGLeafMass' ,timeStamp,'cLeafTracer',[tracerGLeafMassrot(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerStemMass' ,timeStamp,'cStemTracer',[tracerStemMassrot(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerRootMass' ,timeStamp,'cRootTracer',[tracerRootMassrot(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerLitrMass' ,timeStamp,'cLitterTracer',[tracerLitrMassrot(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerSoilCMass' ,timeStamp,'cSoilTracer',[tracerSoilCMassrot(i,m,:)])
+            !call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerLitrMass' ,timeStamp,'cLitterTracer',[tracerLitrMassrot(i,m,:)])
+            !call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerSoilCMass' ,timeStamp,'cSoilTracer',[tracerSoilCMassrot(i,m,:)])
           end if 
           
         end if

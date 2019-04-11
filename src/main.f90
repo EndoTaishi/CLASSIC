@@ -67,7 +67,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use metDisaggModule,     only : disaggMet
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
-  use tracerModule,        only : updateTracerPools, decay14C
+  use tracerModule,        only : decay14C
   use applyAllometry,      only : allometry
   
   implicit none
@@ -2935,7 +2935,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                     ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &! In
                        wtablegat, maxAnnualActLyrGAT,  & ! In
                       PFTCompetition,    dofire,     lnduseon, inibioclim,    & ! In
-                      leapnow,                                                &! In
+                      leapnow,       useTracer,                              &! In
                         stemmassgat, rootmassgat, litrmassgat, gleafmasgat,& ! In/Out
                         bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,& ! In/Out
                            zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,& ! In/Out
@@ -2990,9 +2990,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
           end do
         end do
 
-        ! Update the tracer pools if any tracer is being used.
-        if (useTracer > 0) call updateTracerPools(1,nml)
-        
         ! Once a year, calculate the 14C lost to decay if using the 14C tracer.
         if (useTracer == 2 .and. iday == lastdoy .and. ncount == nday) call decay14C(1,nml)
 
@@ -3276,30 +3273,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
         WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
         
-        ! do k = 1,ignd
-        !   ! write(*,'(a7,i4,11f13.10)')'tracer',k,tracerSoilCMassrot(1,1,:,k)
-        !   ! write(*,'(a7,i4,11f13.10)')'soilc',k,soilcmasrow(1,1,:,k)
-        !   write(*,'(a7,i4,11f13.10)')'tracer',k,tracerLitrMassrot(1,1,:,k)
-        !   write(*,'(a7,i4,11f13.10)')'litter',k,litrmassrow(1,1,:,k)        
-        ! end do 
-        ! read(*,*)
-        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerStemMassrot(1,1,:)
-        ! write(*,'(a7,i4,9f13.10)')'stem',k,stemmassrow(1,1,:)
-        ! print*,'-----'
-        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerRootMassrot(1,1,:)
-        ! write(*,'(a7,i4,9f13.10)')'root',k,rootmassrow(1,1,:)
-        ! print*,'-----'
-        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerGLeafMassrot(1,1,:)
-        ! write(*,'(a7,i4,9f13.10)')'gleaf',k,gleafmasrow(1,1,:) 
-        ! print*,'-----'
-        ! write(*,'(a7,i4,9f13.10)')'tracer',k,tracerBLeafMassrot(1,1,:)
-        ! write(*,'(a7,i4,9f13.10)')'bleaf',k,bleafmasrow(1,1,:)
-        ! print*,'-----'
-        ! print*,rmatctemgat(1,6,:)
-        ! print*,'---------------'
-        ! print*,rootMassgat(1,6),fcancmxgat(1,6)
-        ! print*,'---------------'
-
         ! Write to the restart file
         call write_restart(lonIndex,latIndex)
         
