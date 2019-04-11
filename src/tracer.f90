@@ -46,7 +46,9 @@ contains
 !! at the start of the balance check.
 !!
 !> @author Joe Melton
-  subroutine updateTracerPools(il1,il2)
+  subroutine updateTracerPools(il1, il2, pglfmass, pblfmass,& !In
+                               pstemass, protmass, plitmass,& !In
+                               psocmass,pCmossmas, plitrmsmoss) !In
     
     use classic_params, only : icc, deltat, iccp2, zero, grass, ignd, nlat
     use ctem_statevars, only : tracer,c_switch,vgat
@@ -55,6 +57,14 @@ contains
     
     integer, intent(in) :: il1 !<other variables: il1=1
     integer, intent(in) :: il2 !<other variables: il2=ilg
+    real, intent(in) :: pglfmass(:,:)     !< Green leaf mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
+    real, intent(in) :: pblfmass(:,:)     !< Brown leaf mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
+    real, intent(in) :: pstemass(:,:)     !< Stem mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
+    real, intent(in) :: protmass(:,:)     !< Root mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
+    real, intent(in) :: plitmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools at the start of ctem subroutine, \f$kg c/m^2\f$
+    real, intent(in) :: psocmass(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools at the start of ctem subroutine, \f$kg c/m^2\f$
+    real, intent(in) :: pCmossmas(:)       !<C in moss biomass, \f$kg C/m^2\f$
+    real, intent(in) :: plitrmsmoss(:)     !<moss litter mass, \f$kg C/m^2\f$
 
     real, pointer :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -64,12 +74,10 @@ contains
     real, pointer :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, pointer :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-
-    real, pointer :: tracerCO2(:)   !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
-    
-    real, pointer :: litresveg(:,:,:)  !<fluxes for each pft: litter respiration for each pft + bare fraction
-    real, pointer :: soilcresveg(:,:,:)  !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
-    real, pointer :: humiftrsveg(:,:,:) !<
+    real, pointer :: tracerCO2(:)           !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
+    real, pointer :: litresveg(:,:,:)   !<fluxes for each pft: litter respiration for each pft + bare fraction
+    real, pointer :: soilcresveg(:,:,:)  !<soil carbon respiration in umol co2/m2.s, for ctem's pfts
+    real, pointer :: humiftrsveg(:,:,:) !< Transfers to the soil carbon pool in umol co2/m2.s, for ctem's pfts
     real, pointer :: reprocost(:,:)   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
     real, pointer :: tltrleaf(:,:)    !<total leaf litter fall rate (u-mol co2/m2.sec)
     real, pointer :: tltrstem(:,:)    !<total stem litter fall rate (u-mol co2/m2.sec)
@@ -102,13 +110,15 @@ contains
     real, pointer :: rootmass(:,:)     !< Root mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
     real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
-    real, pointer, dimension(:,:) :: gLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer, dimension(:,:) :: bLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer, dimension(:,:) :: stemLandCompChg   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer, dimension(:,:) :: rootLandCompChg   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer, dimension(:,:,:) :: litterLandCompChg !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer, dimension(:,:,:) :: soilCLandCompChg !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-
+    real, pointer :: Cmossmas(:)       !<C in moss biomass, \f$kg C/m^2\f$
+    real, pointer :: litrmsmoss(:)     !<moss litter mass, \f$kg C/m^2\f$
+    real, pointer :: gLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, pointer :: bLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, pointer :: stemLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, pointer :: rootLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, pointer :: litterLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, pointer :: soilCLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    integer, pointer :: ipeatland(:) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     
     ! Local
     integer :: i,j,k
@@ -157,12 +167,16 @@ contains
     rootmass          => vgat%rootmass
     litrmass          => vgat%litrmass
     soilcmas          => vgat%soilcmas
+    Cmossmas          => vgat%Cmossmas
+    litrmsmoss        => vgat%litrmsmoss
     gLeafLandCompChg  => vgat%gLeafLandCompChg
     bLeafLandCompChg  => vgat%bLeafLandCompChg
     stemLandCompChg  => vgat%stemLandCompChg
     rootLandCompChg  => vgat%rootLandCompChg
     litterLandCompChg => vgat%litterLandCompChg
     soilCLandCompChg  => vgat%soilCLandCompChg
+    ipeatland        => vgat%ipeatland 
+    
     ! ---------
     
     convertUnits = deltat / 963.62
@@ -172,14 +186,17 @@ contains
     ! up run for this check.
     doTracerBalance = .false.
 
-    ! Check for mass balance for the tracer. First set the 
-    ! tracer CO2 value to 1 so it gets the same inputs as the 
-    ! model CO2 pools.    
-    if (doTracerBalance) tracerValue = 1.
+    ! If doTracerBalance is true, Check for mass balance for the tracer.
+    !  First set the tracer CO2 value to 1 so it gets the same inputs as the 
+    ! model CO2 pools. Otherwise just use the read in tracerValue.   
+    if (doTracerBalance) then 
+      tracerValue = 1.
+    else
+      tracerValue = tracerCO2
+    end if 
       
-    !> Since this is a simple tracer, we don't need to do any conversion of the 
-    !! carbon that is uptaked in this timestep. We assume that the tracerValue
-    !! should just be applied as is.
+    !> We don't need to do any conversion of the carbon that is uptaked
+    !! in this timestep. We assume that the tracerValue should just be applied as is.
     do i = il1, il2 
       do j = 1, iccp2
         if (j <= icc) then !these are just icc sized arrays.
@@ -207,8 +224,7 @@ contains
             !> When the tracer is calculated we apply the gain and losses to the exisiting
             !! pool. We also include the gains/losses due to changing PFT areas after land 
             !! use change or competition. 
-            
-            !! FLAG OK to assign no special tracer value to LUC/Comp???? *********
+            print*,gains,losses,tracerValue(i)
             tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + gains - losses - gLeafLandCompChg(i,j)
             
             if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
@@ -317,6 +333,9 @@ contains
         if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.       
            
       end do ! j 
+      
+      if (ipeatland(i) > 0) print*,'Tracer not set up yet for peatlands.'
+      
     end do ! i 
     
     ! Check for mass balance for the tracer.
@@ -329,7 +348,14 @@ contains
 !!@{Calculates the decay of \f$^{14}C\f$ in the tracer pools.
 !!
 !! Once a year we calculate the decay of \f$^{14}C\f$ in the tracer pools.
-!! This 
+!! This calculation is only called if useTracer == 2. 
+!! If using spinfast to equilibrate the model we need to 
+!! adjust the decay of 14C in the model soil C pool. Since 
+!! spinfast increases the turnover time of soil C by the factor 
+!! 1/spinfast, the 14C in the soils generated with a spinfast > 1 
+!! will be too young by the same factor. Following Koven et al .2013 
+!! \cite Koven2013-dd we adjust for that faster equilbration by
+!! increasing the decay in the soil C tracer pool by spinfast.
 !!@author Joe Melton
   subroutine decay14C(il1,il2)
     
@@ -349,6 +375,8 @@ contains
     real, pointer :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, pointer :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+    integer, pointer :: spinfast              !< Set this to a higher number up to 10 to spin up
+                                              !< soil carbon pool faster
 
     integer  :: i,j,k    !counters
     real :: dfac    !< decay constant. \f$y^{-1}\f$
@@ -362,6 +390,7 @@ contains
     tracerSoilCMass   => tracer%soilCMassgat
     tracerMossCMass   => tracer%mossCMassgat
     tracerMossLitrMass => tracer%mossLitrMassgat
+    spinfast          => c_switch%spinfast
     !----------
     !begin calculations
     
@@ -379,7 +408,7 @@ contains
         end if  
         do k = 1, ignd
           tracerLitrMass(i,j,k) = ((tracerLitrMass(i,j,k) + 1.) * dfac) - 1.
-          tracerSoilCMass(i,j,k) = ((tracerSoilCMass(i,j,k) + 1.) * dfac) - 1.
+          tracerSoilCMass(i,j,k) = ((tracerSoilCMass(i,j,k) + 1.) * dfac * spinfast) - 1.
         end do
       end do
     end do
@@ -430,8 +459,6 @@ contains
 !!
 !! \f$ A_s = 10^{-12}\left( \frac{\Delta ^{14}C}{1000} + 1 \right)\f$
 !!
-!! In practice, we remove the \f$10^{-12}\f$ term to ensure we don't lose information 
-!! due to numerical precision. This is later considered when outputting results.
 !!@author Joe Melton
 function convertTracerUnits(tracerco2conc)
   
@@ -464,11 +491,7 @@ function convertTracerUnits(tracerco2conc)
   else if (useTracer == 2) then 
     
     ! Incoming units expected are \Delta ^{14}C so need to convert to 14C/C ratio   
-    ! NOTE: Since the 14C/C ratio is very small (typically 1E-12 - 1E-13) to 
-    ! ensure we don't have loss of precision we keep the ratio as:
-    ! 1E 12 * 14C/C   (so we remove the multiplication by 1E-12 which accounts 
-    ! for the A_{abs} 14C/C ratio of 1E-12). 
-    convertTracerUnits(:) = (tracerco2conc(:) / 1000. + 1.)
+    convertTracerUnits(:) = (tracerco2conc(:) / 1000. + 1.) * 1E-12
     
   else if (useTracer == 3) then 
     

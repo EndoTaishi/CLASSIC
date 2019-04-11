@@ -1245,7 +1245,9 @@ contains
   
   !> Update the tracer pools if any tracer is being used. This needs to be before
   !! allometry since rmatctem could then change.
-   if (useTracer > 0) call updateTracerPools(il1,il2)
+   if (useTracer > 0) call updateTracerPools(il1, il2, pglfmass, pblfmass,& !In
+                                            pstemass, protmass, plitmass,& !In
+                                            psocmass,pCmossmas, plitrmsmoss) !In
 
   !> Finally find vegetation structural attributes which can be passed 
   !! to the land surface scheme using leaf, stem, and root biomass.
