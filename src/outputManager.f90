@@ -366,6 +366,7 @@ contains
         integer, dimension(:), allocatable :: intArray
 
         logical, pointer :: projectedGrid
+        integer :: dummyId(0)
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
                                            !< also accounts for leap years in .MET when cycling over meteorology (metLoop > 1)
@@ -399,7 +400,6 @@ contains
         call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
         !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
-        !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
         if (.not. projectedGrid) then
           varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
@@ -410,7 +410,6 @@ contains
         call ncPutAtt(ncid,varid,'standard_name',charvalues='Latitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
         !call ncPutAtt(ncid,varid,'actual_range',yrange) #FLAG need to find the xrange from all_lon.
-        !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
         ! The landCoverFrac, while 'grid' so that it will output in all runs
         ! needs to be switched to 'pft' so that it can be properly given the
@@ -426,7 +425,6 @@ contains
                 varid = ncDefVar(ncid,'tile',nf90_short,[tileDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='tile')
                 call ncPutAtt(ncid,varid,'units',charvalues='tile number')
-                !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
             case("pft")         ! Per PFT outputs
 
@@ -439,7 +437,6 @@ contains
                 varid = ncDefVar(ncid,'pft',nf90_short,[pftDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='Plant Functional Type')
                 call ncPutAtt(ncid,varid,'units',charvalues='PFT')
-                !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
             case ("layer")      ! Per layer outputs
 
@@ -447,7 +444,6 @@ contains
                 varid = ncDefVar(ncid,'layer',nf90_short,[layerDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='soil layer')
                 call ncPutAtt(ncid,varid,'units',charvalues='layer')
-                !call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
 
         end select
 
@@ -474,9 +470,6 @@ contains
             call ncPutAtt(ncid,varid,'calendar',charvalues="365_day")
         end if
 
-        !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
-        !call ncPutAtt(ncid,varid,'_Chunksizes',intvalues=1)
-
         call ncEndDef(ncid)
 
         call ncPutDimValues(ncid, 'time', realValues=timeVect, count=(/timelength/))
@@ -489,9 +482,11 @@ contains
           call ncPutDimValues(ncid, 'lat', realValues=myDomain%latUnique, count=(/myDomain%cnty/))
         else ! projected grid
           ! Since these are flattened arrays we will use the ncPutVar function which will reshape them
-          call ncPutVar(ncid, 'lon', realValues = myDomain%allLonValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
-          call ncPutVar(ncid, 'lat', realValues = myDomain%allLatValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
-
+          !call ncPutVar(ncid, 'lon', realValues = myDomain%allLonValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
+          !call ncPutVar(ncid, 'lat', realValues = myDomain%allLatValues,start = [1, 1], count = [myDomain%cntx,myDomain%cnty])
+          ! Use arrays that store the lats/lons for the part of the domain being processed.
+          call ncPutVar(ncid, 'lon', realValues = myDomain%lonUnique,start = [1,1], count = [myDomain%cntx,myDomain%cnty])
+          call ncPutVar(ncid, 'lat', realValues = myDomain%latUnique,start = [1,1], count = [myDomain%cntx,myDomain%cnty])
         end if
 
         select case(trim(outputForm))
@@ -545,8 +540,18 @@ contains
         call ncPutAtt(ncid,varid,'units',charvalues=units)
         call ncPutAtt(ncid,varid,'_FillValue',realvalues=fill_value)
         call ncPutAtt(ncid,varid,'nameInCode',charvalues=nameInCode)
-        !call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
-        !call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
+
+        if (projectedGrid) then
+          ! Identify lat/lon as the coordinate variables (used by cdo) for rotated lat-lon grids.
+          call ncPutAtt(ncid,varid,'coordinates',charvalues='lat lon')
+          ! Add variable with coordinates of rotated pole specified via attributes.
+          ! The dimension ID is not optional for the ncDefVar function in fileIOModule.F90, so use a dummy array of size 0.
+          varid = ncDefVar(ncid, 'rotated_pole',nf90_byte,dummyId)
+          call ncPutAtt(ncid,varid,'grid_mapping_name',charvalues='rotated_latitude_longitude')
+          call ncPutAtt(ncid,varid,'grid_north_pole_latitude',realvalues=42.5)
+          call ncPutAtt(ncid,varid,'grid_north_pole_longitude',realvalues=83.)
+        end if
+
         call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
 
         call ncEndDef(ncid)

@@ -126,6 +126,7 @@ contains
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
         integer :: lonloc,latloc,flattenedIndex,tempIndex
+        character(30) row_bounds
 
         ! point pointers:
         init_file               => c_switch%init_file
@@ -334,10 +335,6 @@ contains
         myDomain%LandCellCount = 0
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
-              if (projectedGrid) then
-                flattenedIndex = (j + myDomain%srty - 2) * totlon + (i + myDomain%srtx - 1)
-                tempIndex = (i - 1) * myDomain%cnty + j
-              end if
               if (mask(i,j) .eq. -1) then
                   ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
                   ! , ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
@@ -348,30 +345,38 @@ contains
                 myDomain%latLocalIndex(myDomain%LandCellCount) = j
                 if (.not. projectedGrid) then
                   myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
                   myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
-                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
                 else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
                   ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
                   ! , ",", myDomain%allLatValues(flattenedIndex), ") is valid"
+                  flattenedIndex = (j + myDomain%srty - 2) * totlon + (i + myDomain%srtx - 1)
                   myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(flattenedIndex)
-                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
                   myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(flattenedIndex)
-                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
-                end if
-              else !keep track of the non-land too for the making of the output files.
-                if (.not. projectedGrid) then
-                  myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
-                  myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
-                else ! projected grid so the lons and lats are flattened vectors representing their 2D grids
-                  ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(flattenedIndex)&
-                  ! , ",", myDomain%allLatValues(flattenedIndex), ") is NOT valid"
-                  myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
-                  myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
                 end if
               endif
             enddo
         enddo
+
+        ! Extract lat/lon for the part of the grid that is being processed. This could be a subgrid or the full domain.
+        ! (This has been split out of the previous loop as it is independent of the mask) - EC.
+
+        if (.not. projectedGrid) then
+          do i = 1, myDomain%cntx
+            myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+          enddo
+          do j = 1, myDomain%cnty
+            myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+          enddo
+        else 
+          do j = 1, myDomain%cnty
+            do i = 1, myDomain%cntx
+              flattenedIndex = (j + myDomain%srty - 2) * totlon + (i + myDomain%srtx - 1)
+              tempIndex = (j - 1) * myDomain%cntx + i
+              myDomain%lonUnique(tempIndex) = myDomain%allLonValues(flattenedIndex)
+              myDomain%latUnique(tempIndex) = myDomain%allLatValues(flattenedIndex)
+            enddo
+          enddo
+        end if
 
         if (myDomain%LandCellCount == 0) then
             print*,'=>Your domain is not land my friend.'
@@ -399,7 +404,15 @@ contains
         ilg = nlat * nmos
 
         !> Lastly, open some files so they are ready
+
         rsid = ncOpen(rs_file_to_overwrite, nf90_write)
+
+        !> Add global attribute to restart file, storing the rows overwritten.
+        !> Could be used in the future to simplify stitching of the restart file when the run is split across multiple nodes.
+        write(row_bounds,'(I0,x,I0)') ypos
+        call ncReDef(rsid)
+        call ncPutAtt(rsid,nf90_global,'row_bounds',charvalues=trim(row_bounds))
+        call ncEndDef(rsid)
 
         if (ctem_on) then
             co2id = ncOpen(CO2File, nf90_nowrite)
