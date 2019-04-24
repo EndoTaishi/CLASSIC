@@ -259,10 +259,13 @@ contains
         integer, intent(in)                             :: count(:)     !< Count array
         real, allocatable                               :: ncGetVar(:)  !< Return type
         integer                                         :: varId, ndims
+        character(50)                                   :: string
         real, allocatable                               :: temp1D(:), temp2D(:,:), temp3D(:,:,:), temp4D(:,:,:,:), temp5D(:,:,:,:,:)
 
         varId = ncGetVarId(fileId, label)
         ndims = ncGetVarDimensions(fileId, varId)
+
+        write(string,'(5I10)') start
 
         ! Currently makes I/O worse in general, but may be useful in the future (EC, Sep 2018).
         !call checkNC(nf90_var_par_access(fileId, varId, nf90_collective))
@@ -271,27 +274,27 @@ contains
         case(1)
             allocate(ncGetVar(count(1)))
             allocate(temp1D(count(1)))
-            call checkNC(nf90_get_var(fileId, varId, temp1D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
+            call checkNC(nf90_get_var(fileId, varId, temp1D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // '; start=' // trim(string) // ') ') 
             ncGetVar = temp1D
         case(2)
             allocate(ncGetVar(count(1) * count(2)))
             allocate(temp2D(count(1), count(2)))
-            call checkNC(nf90_get_var(fileId, varId, temp2D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
+            call checkNC(nf90_get_var(fileId, varId, temp2D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // '; start=' // trim(string) // ') ') 
             ncGetVar = reshape(temp2D,(/size(temp2D)/))
         case(3)
             allocate(ncGetVar(count(1) * count(2) * count(3)))
             allocate(temp3D(count(1), count(2), count(3)))
-            call checkNC(nf90_get_var(fileId, varId, temp3D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
+            call checkNC(nf90_get_var(fileId, varId, temp3D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // '; start=' // trim(string) // ') ') 
             ncGetVar = reshape(temp3D,(/size(temp3D)/))
         case(4)
             allocate(ncGetVar(count(1) * count(2) * count(3) * count(4)))
             allocate(temp4D(count(1), count(2), count(3), count(4)))
-            call checkNC(nf90_get_var(fileId, varId, temp4D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
+            call checkNC(nf90_get_var(fileId, varId, temp4D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // '; start=' // trim(string) // ') ') 
             ncGetVar = reshape(temp4D,(/size(temp4D)/))
         case(5)
             allocate(ncGetVar(count(1) * count(2) * count(3) * count(4) * count(5)))
             allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
-            call checkNC(nf90_get_var(fileId, varId, temp5D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // ') ')
+            call checkNC(nf90_get_var(fileId, varId, temp5D, start = start, count = count), tag = 'ncGetVar(' // trim(label) // '; start=' // trim(string) // ') ') 
             ncGetVar = reshape(temp5D,(/size(temp5D)/))
         case default
             stop ("Only up to 5 dimensions have been implemented!")
@@ -662,6 +665,7 @@ contains
         integer, intent(in)         :: ncStatus !< Status variable
         character(*), optional      :: tag  !< Optional tag
         character(100)              :: message
+        integer                     :: status
         if (present(tag)) then
             message = tag
         else
@@ -670,6 +674,9 @@ contains
 
         if(ncStatus /= nf90_noerr) then
             print*,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
+#if PARALLEL
+            call MPI_ABORT( MPI_COMM_WORLD, -1, status )
+#endif
             stop
         end if
     end subroutine checkNC
