@@ -5,10 +5,121 @@ module heterotrophic_respiration
 implicit none
 
 ! Subroutines contained in this module:
+public  :: heterotrophicRespiration  
 public  :: hetresg
 public  :: hetresv
+public  :: updatePoolsHetResp
 
 contains
+  
+  !>\ingroup heterotrophic_respiration_heterotrophicRespiration
+  !!@{
+  !>Heterotrophic respiration subroutine that calls hetresg and hetresv.
+  !> @author Vivek Arora and Joe Melton
+
+  subroutine heterotrophicRespiration(il1, il2, ilg, ipeatland, fcancmx, fc, & ! In
+                                      litrmass, soilcmas, delzw, thpor, tbar,& ! In 
+                                      psisat, thliq, sort, bi, isand , thice,& ! In
+                                      fg, litrmsmoss, peatdep, wtable, zbotw,& ! In
+                                      useTracer, tracerLitrMass, tracerSoilCMass, tracerMossLitrMass, & ! In 
+                                      ltresveg, scresveg, litresmoss, socres_peat,& ! Out
+                                      resoxic, resanoxic, & ! Out                                      
+                                      ltResTracer, sCResTracer, litResMossTracer, soCResPeatTracer ) ! Out
+    
+    use classic_params,        only : iccp2,ignd,icc,iccp1
+    use peatlands_mod, only : hetres_peat
+    
+    implicit none 
+    
+    integer, intent(in) :: il1 
+    integer, intent(in) :: il2 
+    integer, intent(in) :: ilg 
+    integer, intent(in) :: ipeatland(:)
+    integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                  !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                  !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                  !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                  !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
+    real, intent(in) :: fcancmx(:,:)      !< max. fractional coverage of CTEM's pfts, but this can be
+                                                            !< modified by land-use change, and competition between pfts
+    real, intent(in) :: fc(:)             !<
+    real, intent(in) :: litrmass(:,:,:)   !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+    real, intent(in) :: soilcmas(:,:,:)   !<soil carbon mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+    real, intent(in) :: delzw(:,:)         !< thicknesses of the soil layers
+    real, intent(in) :: thpor(:,:)         !< Soil total porosity \f$(cm^3 cm^{-3})\f$ -
+    real, intent(in) :: tbar(:,:)          !< Soil temperature, K
+    real, intent(in) :: psisat(:,:)        !< Saturated soil matric potential (m)
+    real, intent(in) :: thliq(:,:)         !< liquid mois. content of soil layers
+    integer, intent(in) :: sort(:)         !<
+    real, intent(in) :: bi(:,:)            !< Brooks and Corey/Clapp and Hornberger b term
+    integer, intent(in) :: isand(:,:)      !<
+    real, intent(in) :: thice(:,:)         !< frozen mois. content of soil layers
+    real, intent(in) :: fg(:)              !<
+    real, intent(inout) :: litrmsmoss(:)   !< moss litter C pool (kgC/m2)
+    real, intent(inout) :: peatdep(:)      !< peat depth (m)
+    real, intent(in) :: wtable(:)          !< water table (m)
+    real, intent(in) :: zbotw(:,:)         !< bottom of soil layers
+    
+    real, intent(out) :: ltresveg(ilg,iccp2,ignd)     !<fluxes for each pft: litter respiration for each pft + bare fraction
+    real, intent(out) :: scresveg(ilg,iccp2,ignd)     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
+    real, intent(out) :: litresmoss(ilg)    !< moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: socres_peat(ilg)   !< heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: resoxic(ilg)       !< oxic respiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: resanoxic(ilg)     !< anoxic respiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+
+    real, intent(in) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, intent(in) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, intent(in) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+    
+    
+    real, intent(out) :: ltResTracer(ilg,iccp2,ignd)  !< Tracer fluxes for each pft: litter respiration for each pft + bare fraction TODO: Units
+    real, intent(out) :: sCResTracer(ilg,iccp2,ignd)  !< Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts TODO: Units
+    real, intent(out) :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) TODO: Units
+    real, intent(out) :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) TODO: Units
+    
+    ! ------
+    
+    
+    call    hetresv ( fcancmx, fc, litrmass(:,1:icc,:), soilcmas(:,1:icc,:),& ! In
+                      delzw, thpor, il1, il2, & ! In
+                      ilg,   tbar, psisat, thliq,& ! In
+                      sort,bi,  isand, thice, ipeatland, & ! In
+                      useTracer, tracerLitrMass(:,1:icc,:), tracerSoilCMass(:,1:icc,:), & ! In 
+                      ltresveg(:,1:icc,:), scresveg(:,1:icc,:), & ! Out                       
+                      ltResTracer(:,1:icc,:), sCResTracer(:,1:icc,:)) ! Out
+    
+    !! Find heterotrophic respiration rates from bare ground subarea
+    call  hetresg  (litrmass(:,iccp1,:),soilcmas(:,iccp1,:), delzw,thpor,& ! In
+                      il1,       il2,       ilg,   tbar,    & ! In
+                   psisat,        bi,    thliq,      & ! In  
+                   thice,        fg,     isand,    & ! In
+                   useTracer,tracerLitrMass(:,iccp1,:), tracerSoilCMass(:,iccp1,:), & ! In 
+                   ltresveg(:,iccp1,:),  scresveg(:,iccp1,:), & ! Out                   
+                   ltResTracer(:,iccp1,:), sCResTracer(:,iccp1,:)) ! Out
+
+    !>  Find heterotrophic respiration rates for the LUC litter and soilc pools
+    !!  The LUC litter and soil C respiration rates are assumed to
+    !!  be applied over the entire tile but kept in layer 1  
+    call  hetresg  (litrmass(:,iccp2,:),soilcmas(:,iccp2,:), delzw,thpor,& ! In
+                        il1,       il2,       ilg,   tbar,    & ! In
+                     psisat,        bi,    thliq,   & ! In
+                     thice,        fg,     isand,    & ! In
+                     useTracer,tracerLitrMass(:,iccp2,:), tracerSoilCMass(:,iccp2,:), & ! In 
+                     ltresveg(:,iccp2,:),  scresveg(:,iccp2,:), & ! Out                    
+                     ltResTracer(:,iccp2,:), sCResTracer(:,iccp2,:)) ! Out
+                     
+   !! When peatlands are simulated find the peat heterotrophic respiration.
+   ! Called regardless to set outputs to 0.
+   call hetres_peat       (    il1,          il2,          ilg,   ipeatland,   & ! In
+                           isand,   litrmsmoss,      peatdep,      wtable,   & ! In
+                           tbar,        thliq,        thice,       thpor,   & ! In
+                           bi,        zbotw,        delzw,      psisat,   & ! In
+                           useTracer, tracerMossLitrMass, & ! In 
+                           litresmoss,  socres_peat,      resoxic,   resanoxic, & ! Out                      
+                           litResMossTracer, soCResPeatTracer ) ! Out 
+                     
+    
+  end subroutine heterotrophicRespiration
 
   !>\ingroup heterotrophic_respiration_hetresg
   !!@{
@@ -18,7 +129,9 @@ contains
                            il1,       il2,     ilg,     tbar,    & !In
                          psisat,        b,   thliq,   & !In
                          thice,     frac,   isand,    & !In
-                         litres,   socres) ! Out
+                         useTracer, tracerLitrMass, tracerSoilCMass, & ! In 
+                         litres,   socres, & ! Out                         
+                         ltResTracer, sCResTracer) ! Out 
 
   !               Canadian Terrestrial Ecosystem Model (CTEM)
   !           Heterotrophic Respiration Subroutine For Bare Fraction
@@ -70,19 +183,28 @@ contains
   integer, intent(in) :: il1   !<il1=1
   integer, intent(in) :: il2   !<il2=ilg
   integer, intent(in) :: isand(:,:) !<
-  real, intent(in) :: litrmass(:,:)   !<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
-  real, intent(in) :: soilcmas(:,:)   !<soil carbon mass for the 8 pfts + bare in \f$kg c/m^2\f$
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
+  real, intent(in) :: litrmass(:,:)   !<litter mass for the CTEM pfts + bare in \f$kg c/m^2\f$
+  real, intent(in) :: soilcmas(:,:)   !<soil carbon mass for the CTEM pfts + bare in \f$kg c/m^2\f$
   real, intent(in) :: tbar(:,:)    !<soil temperature, k
-  real, intent(in) :: thliq(:,:)   !<liquid soil moisture content in 3 soil layers
+  real, intent(in) :: thliq(:,:)   !<liquid soil moisture content in soil layers
   real, intent(in) :: frac(:)         !<fraction of bare ground (fg)
   real, intent(in) :: delzw(:,:)   !<
   real, intent(in) :: thice(:,:)   !<
   real, intent(in) :: psisat(:,:)  !<saturation matric potential
   real, intent(in) :: b(:,:)       !<parameter b of clapp and hornberger
   real, intent(in) :: thpor(:,:)   !<porosity
-      
+  real, intent(in) :: tracerLitrMass(:,:)   !< Tracer litter mass for the CTEM pfts + bare in \f$kg c/m^2\f$
+  real, intent(in) :: tracerSoilCMass(:,:)   !<Tracer soil carbon mass for the CTEM pfts + bare in \f$kg c/m^2\f$
+        
   real, intent(out) :: litres(ilg,ignd)      !<litter respiration over the given unvegetated sub-area in umol co2/m2.s
   real, intent(out) :: socres(ilg,ignd)      !<soil c respiration over the given unvegetated sub-area in umol co2/m2.s
+  real, intent(out) :: ltResTracer(ilg,ignd)      !<Tracer litter respiration over the given unvegetated sub-area in umol co2/m2.s
+  real, intent(out) :: sCResTracer(ilg,ignd)      !<Tracer soil C respiration over the given unvegetated sub-area in umol co2/m2.s
   
   ! Local 
   real :: litrq10          !<
@@ -104,6 +226,8 @@ contains
   ltrmoscl(:,:)=0.0   ! soil moisture scalar for litter decomposition
   litres(:,:)=0.0     ! litter resp. rate
   socres(:,:)=0.0     ! soil c resp. rate
+  ltResTracer = 0.
+  sCResTracer = 0.
 
   !     initialization ends
 
@@ -200,6 +324,9 @@ contains
         ! 2.64 converts bsratelt_g from kg c/kg c.year to u-mol co2/kg c.s
         litres(i,j) = ltrmoscl(i,j) * litrmass(i,j) * bsratelt_g * 2.64 &
                       * q10func * reduceatdepth 
+                      
+        if (useTracer > 0) ltResTracer(i,j) = ltrmoscl(i,j) * tracerLitrMass(i,j) &
+                                                        * bsratelt_g * 2.64 * q10func * reduceatdepth 
 
         ! Respiration from soil c pool
         tempq10s = tbar(i,j) - 273.16
@@ -212,7 +339,11 @@ contains
         end if
         ! 2.64 converts bsratelt_g from kg c/kg c.year to u-mol co2/kg c.s
         socres(i,j) = socmoscl(i,j) * soilcmas(i,j) * bsratesc_g * 2.64 * q10func * reduceatdepth 
-      endif
+        
+        if (useTracer > 0) sCResTracer(i,j) = socmoscl(i,j) * tracerSoilCMass(i,j) &
+                                                        * bsratesc_g * 2.64 * q10func * reduceatdepth 
+
+      end if
 
 340  continue
 330 continue
@@ -229,10 +360,10 @@ end subroutine hetresg
 !> @author Vivek Arora, Joe Melton, Yuanqiao Wu
   subroutine hetresv ( fcan,      fct,   litrmass, soilcmas,  & !In
                       delzw,    thpor,        il1,      il2,  & !In
-                        ilg,     tbar,     psisat,    thliq,  & !In
-                       sort,        b,  & !In
-                       isand,  thice,  ipeatland,            & !In
-                    ltresveg, scresveg) !Out
+                      ilg,     tbar,     psisat,    thliq,  & !In
+                      sort,   b,  isand,  thice,  ipeatland, & !In
+                      useTracer, tracerLitrMass, tracerSoilCMass, & ! In 
+                      ltresveg, scresveg, ltResTracer, sCResTracer ) ! Out 
 
   !               Canadian Terrestrial Ecosystem Model (CTEM)
   !           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -285,6 +416,11 @@ end subroutine hetresg
   integer, intent(in) :: ilg                              !< il1=1
   integer, intent(in) :: il1                              !< il1=1
   integer, intent(in) :: il2                              !< il2=ilg
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
   real, dimension(ilg,icc,ignd), intent(in) :: litrmass   !< litter mass for the 9 pfts + bare [ \f$kg C/m^2\f$ ]
   real, dimension(ilg,icc,ignd), intent(in) :: soilcmas   !< soil carbon mass for the 9 pfts + bare [ \f$kg C/m^2\f$ ]
   real, dimension(ilg,ignd), intent(in) :: thpor          !< Soil total porosity [ \f$(cm^3 cm^{-3})\f$ ] - daily average
@@ -299,9 +435,14 @@ end subroutine hetresg
   integer, dimension(icc), intent(in) :: sort             !< index for correspondence between CTEM pfts and all values in the parameters vectors
   real, dimension(ilg,ignd), intent(in) :: delzw          !< thickness of the permeable soil layers [ m ]
   integer, intent(in) ::  ipeatland(ilg)                  !<
+  real, intent(in) :: tracerLitrMass(:,:,:)   !< Tracer litter mass for the CTEM pfts + bare in \f$kg c/m^2\f$
+  real, intent(in) :: tracerSoilCMass(:,:,:)   !<Tracer soil carbon mass for the CTEM pfts + bare in \f$kg c/m^2\f$
 
   real, dimension(ilg,icc,ignd), intent(out) :: ltresveg  !< litter respiration for the given vegetated sub-area [ \f$u-mol co2/m2.sec\f$ ]
   real, dimension(ilg,icc,ignd), intent(out) :: scresveg  !< soil carbon respiration for the given vegetated sub-area [ \f$u-mol co2/m2.sec\f$ ]
+  real, intent(out) :: ltResTracer(ilg,icc,ignd)      !<Tracer litter respiration over the given unvegetated sub-area in umol co2/m2.s
+  real, intent(out) :: sCResTracer(ilg,icc,ignd)      !<Tracer soil C respiration over the given unvegetated sub-area in umol co2/m2.s
+
 
   ! Local vars:
   integer i, j, k
@@ -320,6 +461,8 @@ end subroutine hetresg
   ltrmoscl(:,:)=0.0     ! soil moisture scalar for litter decomposition
   ltresveg(:,:,:)=0.0   ! litter resp. rate for each pft
   scresveg(:,:,:)=0.0   ! soil c resp. rate for each pft
+  ltResTracer = 0.
+  sCResTracer = 0.
 
   !! Find moisture scalar for soil c decomposition
   !! This is modelled as function of logarithm of matric potential.
@@ -456,6 +599,10 @@ end subroutine hetresg
           ltresveg(i,j,k) = ltrmoscl(i,k) * litrmass(i,j,k) * bsratelt(sort(j)) * 2.64 &
                                           * q10func * reduceatdepth
 
+          if (useTracer > 0) ltResTracer(i,j,k) = ltrmoscl(i,k) * tracerLitrMass(i,j,k) &
+                                                          * bsratelt(sort(j)) * 2.64 * q10func &
+                                                          * reduceatdepth 
+
           ! Respiration from soil c pool
           tempq10s = tbar(i,k) - 273.16
           soilcq10 = tanhq10(1) + tanhq10(2) *(tanh(tanhq10(3) * (tanhq10(4) - tempq10s)))
@@ -468,6 +615,11 @@ end subroutine hetresg
           ! 2.64 converts bsratesc from kg c/kg c.year to u-mol co2/kg c.s
           scresveg(i,j,k) = socmoscl(i,k) * soilcmas(i,j,k) * bsratesc(sort(j)) * 2.64 &
                                           * q10func * reduceatdepth
+
+          if (useTracer > 0) sCResTracer(i,j,k) = socmoscl(i,k) * tracerSoilCMass(i,j,k) &
+                                                          * bsratesc(sort(j)) * 2.64 * q10func &
+                                                          * reduceatdepth 
+                                          
         endif
 340   continue
 330 continue
@@ -475,7 +627,303 @@ end subroutine hetresg
 
   return
 
-  end subroutine hetresv
+end subroutine hetresv  
+!!@}
+
+! ---------------------------------------------------------------
+
+!>\ingroup heterotrophic_respiration_updatePoolsHetResp
+!!@{ Find vegetation and tile averaged litter and soil C respiration rates
+!! using values from canopy over ground and canopy over snow subareas.
+!! Also adds the moss and peat soil respiration to the tile level quantities.
+!! Next the litter and soil C pools are updated based on litter and soil C respiration rates.
+!! The humidified litter is then transferred to the soil C pool.
+!! Soil respiration is estimated as the sum of heterotrophic respiration and root maintenance respiration.
+!! For peatlands, we additionally add moss values to the grid (litter respiration
+!! and moss root respiration).
+!> @author Vivek Arora, Joe Melton
+subroutine updatePoolsHetResp(il1, il2, ilg, fcancmx, ltresveg, scresveg, & !In 
+                              ipeatland, fg, litresmoss,socres_peat, & ! In 
+                              sort, spinfast, rmrveg, rmr, leapnow, & ! In 
+                              useTracer, ltResTracer, sCResTracer, litResMossTracer, soCResPeatTracer, & ! In 
+                              litrmass, soilcmas, Cmossmas, & ! In / Out 
+                              tracerLitrMass, tracerSoilCMass, tracerMossCMass, & ! In / Out 
+                              hetrsveg, litres, socres, hetrores, humtrsvg, soilresp, & ! Out 
+                              humiftrs, hutrstep_g, litrfallmoss, ltrestepmoss, &
+                              humstepmoss, socrestep ) ! Out 
+
+  use classic_params, only : icc, iccp1, iccp2,ignd,zero, humicfac, humicfac_bg, &
+                              deltat, humicfacmoss, rmortmoss
+
+  implicit none
+
+  ! Inputs 
+  integer, intent(in) :: il1             !< il1=1
+  integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
+  integer, intent(in) :: ilg
+  integer, intent(in) ::  spinfast        !<spinup factor for soil carbon whose default value is 1. as this factor increases the
+                                          !<soil c pool will come into equilibrium faster. reasonable value for spinfast is
+                                          !<between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                            !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                            !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                            !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                            !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                                                                
+  integer, intent(in) :: ipeatland(ilg)       !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen                                          
+  logical, intent(in) :: leapnow            !< true if this year is a leap year. Only used if the switch 'leap' is true.
+  real, intent(in) :: fcancmx(ilg,icc)      !< max. fractional coverage of CTEM's pfts, but this can be
+                                                       !< modified by land-use change, and competition between pfts
+  real, intent(in) :: ltresveg(ilg,iccp2,ignd)     !<fluxes for each pft: litter respiration for each pft + bare fraction
+  real, intent(in) :: scresveg(ilg,iccp2,ignd)     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
+  real, intent(in) :: fg(ilg)             !< Fraction of grid cell that is bare ground.
+  integer, intent(in) :: sort(icc)
+  real, intent(in) :: litresmoss(ilg)    !< moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: socres_peat(ilg)   !< heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: rmrveg(ilg,icc)    !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
+  real, intent(in) :: rmr(ilg)           !< Root maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: ltResTracer(ilg,iccp2,ignd)  !< Tracer fluxes for each pft: litter respiration for each pft + bare fraction 
+  real, intent(in) :: sCResTracer(ilg,iccp2,ignd)  !< Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
+  real, intent(in) :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) TODO: Units
+  real, intent(in) :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  
+  ! Updates 
+  real, intent(inout) :: litrmass (ilg,iccp2,ignd)  !< Litter mass for each of the CTEM pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  real, intent(inout) :: soilcmas(ilg,iccp2,ignd)   !< Soil carbon mass for each of the CTEM pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  real, intent(inout) :: Cmossmas(ilg)         !< Moss biomass C pool (kgC/m2)
+
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+  
+  ! Outputs 
+  real, intent(out) :: hutrstep_g(ilg)    !< Tile sum of humification from vascualr litter (kgC/m2/timestep)
+  real, intent(out) :: litrfallmoss(ilg)  !< moss litter fall (kgC/m2/timestep)
+  real, intent(out) :: ltrestepmoss(ilg)  !< litter respiration from moss (kgC/m2/timestep)
+  real, intent(out) :: humstepmoss(ilg)   !< moss humification (kgC/m2/timestep)
+  real, intent(out) :: socrestep(ilg)     !< heterotrophic respiration from soil (kgC/m2/timestep)
+  real, intent(out) :: hetrsveg(ilg,iccp1) !< Vegetation averaged litter and soil C respiration rates (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: litres(ilg)      !< Litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: socres(ilg)      !< Soil carbon respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: hetrores(ilg)    !< Heterotrophic respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: humtrsvg(ilg,iccp2,ignd)     !<transfer of humidified litter from litter to soil c pool per PFT. (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: soilresp(ilg)    !< Soil respiration. This includes root respiration and respiration from 
+                                        !! litter and soil carbon pools. Note that soilresp is different from
+                                        !! socres, which is respiration from the soil C pool.(\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: humiftrs(ilg)    !< Transfer of humidified litter from litter to soil C pool (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)                                      
+
+  ! Local 
+  integer :: k,j,i
+  real ltrestep !<
+  real screstep !<
+  real hutrstep(ilg,iccp2,ignd) !<
+  real tracerhutrstep !<
+  real soilrsvg(ilg,iccp2) !<
+  
+  ! -----------
+
+  !> Find vegetation averaged litter and soil C respiration rates
+  !! using values from canopy over ground and canopy over snow subareas
+  hetrsveg(:,:)= 0.0
+  do 340 j = 1, icc
+    do 350 i = il1, il2     
+      if (fcancmx(i,j) > zero) then
+        do k = 1,ignd
+          ! hetrsveg is kept per PFT and tile (not per layer) at the moment.
+          hetrsveg(i,j) =  hetrsveg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
+        end do
+      end if
+350     continue
+340   continue
+
+  !> Find litter and soil c respiration rates averaged over the bare
+  !!fraction of the grid cell using values from ground and snow over ground sub-areas.
+  do 355 i = il1, il2
+    if (fg(i) > zero) then
+      do k = 1,ignd
+	      ! hetrsveg is kept per PFT and tile (not per layer) at the moment.
+        hetrsveg(i,iccp1) = hetrsveg(i,iccp1) + ltresveg(i,iccp1,k) + scresveg(i,iccp1,k)
+      end do
+      !nepveg(i,iccp1)=0.-hetrsveg(i,iccp1)
+    end if
+355 continue
+
+  !> Find grid averaged litter and soil c respiration rates
+  litres(:) = 0.
+  socres(:) = 0.
+  do 360 j = 1,icc
+    do 370 i = il1, il2
+      do k = 1, ignd
+        litres(i) = litres(i) + fcancmx(i,j) * ltresveg(i,j,k)
+        socres(i) = socres(i) + fcancmx(i,j) * scresveg(i,j,k)
+      end do
+370 continue
+360 continue
+  
+  !> Add moss and peat soil respiration to the grid
+  !! In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
+  !! bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland. 
+  !! If it is a peatland, we add litresmoss to
+  !! the grid sum but no bareground values as we assume peatlands have no bareground.
+  do 380 i = il1, il2
+    if (ipeatland(i) == 0) then
+      do k = 1, ignd
+        litres(i) = litres(i) + fg(i) * ltresveg(i,iccp1,k)
+        socres(i) = socres(i) + fg(i) * scresveg(i,iccp1,k)
+      end do
+    else  ! peatlands
+      litres(i) = litres(i) + litresmoss(i) !add the moss litter, which is assumed to cover whole tile.
+      !
+      ! CAUTION says Vivek
+      ! Note that the following line overwrites socres(i) calculated above in loop 370, although
+      ! socres(i) is based on scresveg(i,j) which isn't modified. Similarly, the implementation
+      ! of peatlands also means hetrores(i), calculated below, is now inconsistent with hetrsveg(i,j).
+      ! The implementation of peatlands is based on overwriting variables without making things
+      ! consistent. Of course, overwriting variables is not advised because it makes things confusing. 
+      !
+      socres(i) = socres_peat(i) ! since this is only peatland on this tile, use just the peat value.
+    
+    end if
+
+    hetrores(i) = litres(i) + socres(i)
+
+380   continue
+  
+  !> Update the litter and soil c pools based on litter and soil c respiration rates
+  !! found above. also transfer humidified litter to the soil c pool.
+  do 420 j = 1, iccp2
+    do 430 i = il1, il2
+      do 435 k = 1, ignd
+
+        !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
+        ltrestep = ltresveg(i,j,k) * deltat / 963.62
+        screstep = scresveg(i,j,k) * deltat / 963.62
+
+        !> Update litter and soil c pools
+        if (j < iccp1) then
+          litrmass(i,j,k) = litrmass(i,j,k) - (ltrestep * (1.0 + humicfac(sort(j))))
+          hutrstep(i,j,k) = humicfac(sort(j)) * ltrestep
+        else
+          !> Next we add bareground and LUC pool litter mass and humification for non-peatlands.
+          if (ipeatland(i) == 0) then
+            litrmass(i,j,k) = litrmass(i,j,k) - (ltrestep * (1.0 + humicfac_bg))
+            hutrstep(i,j,k) = humicfac_bg * ltrestep
+          ! else for peatlands:
+            ! In peatlands there is no bareground litter mass since it is the moss layer.
+          endif
+        endif
+
+        humtrsvg(i,j,k) = hutrstep(i,j,k) * (963.62 / deltat) ! u-mol co2/m2.sec
+
+        soilcmas(i,j,k) = soilcmas(i,j,k) + real(spinfast) * (hutrstep(i,j,k) -  screstep)
+
+        if(litrmass(i,j,k) < zero) litrmass(i,j,k) = 0.0
+        if(soilcmas(i,j,k) < zero) soilcmas(i,j,k) = 0.0
+        
+        ! Now perform the same calculations to the tracer pools
+        if (useTracer > 0) then  
+          if (j < iccp1) then
+            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) - (ltResTracer(i,j,k) * deltat / 963.62 &
+                                                            * (1.0 + humicfac(sort(j))))
+            tracerhutrstep = humicfac(sort(j)) * ltResTracer(i,j,k) * deltat / 963.62
+          else 
+            if (ipeatland(i) == 0) then
+              tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) - (ltResTracer(i,j,k) * deltat / 963.62 &
+                                                             * (1.0 + humicfac_bg))
+              tracerhutrstep = humicfac_bg * ltResTracer(i,j,k) * deltat / 963.62
+            end if 
+          end if 
+          
+          tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + real(spinfast) &
+                                          * (tracerhutrstep -  sCResTracer(i,j,k) * deltat / 963.62)
+
+          if(litrmass(i,j,k) < zero) tracerLitrMass(i,j,k) = 0.0
+          if(soilcmas(i,j,k) < zero) tracerSoilCMass(i,j,k) = 0.0
+        end if 
+        
+435   continue
+430 continue
+420 continue
+
+  !>Estimate soil respiration. this is sum of heterotrophic respiration and root maintenance respiration.
+  soilrsvg(:,:) = 0.
+  do 440 j = 1, icc
+    do 445 i = il1, il2
+      do 450 k = 1, ignd
+        ! soilrsvg kept as per pft/per tile for now (not per layer)
+        soilrsvg(i,j) = soilrsvg(i,j) + ltresveg(i,j,k) + scresveg(i,j,k)
+450   continue
+      soilrsvg(i,j) = soilrsvg(i,j) + rmrveg(i,j)
+445 continue
+440 continue
+
+  !> But over the bare fraction and LUC product pool there is no live root.
+
+  do 460 i = il1, il2
+    do 465 k = 1, ignd
+      soilrsvg(i,iccp1) = soilrsvg(i,iccp1) + ltresveg(i,iccp1,k) + scresveg(i,iccp1,k)
+465 continue
+460 continue
+
+  !> Find grid averaged humification and soil respiration rates
+  soilresp(:) = 0.0
+  humiftrs(:) = 0.0
+  hutrstep_g(:) = 0.0
+  do 470 i = il1, il2
+    do 480 j = 1, icc
+      soilresp(i) = soilresp(i) + fcancmx(i,j) * soilrsvg(i,j)      
+      do k = 1, ignd
+        hutrstep_g(i) = hutrstep_g(i) + fcancmx(i,j) * hutrstep(i,j,k) 
+        humiftrs(i) = humiftrs(i) + fcancmx(i,j) * humtrsvg(i,j,k)
+      end do
+480 continue
+
+    !> After aggregation of humification and soil respiration rates for non-peatlands
+    !! to the grid/tile level, the same must be done for bareground (iccp1).
+    !! For peatlands, we additionally add moss values to the grid (litter respiration
+    !! and moss root respiration). Note in loop 430 iccp1 is passed for peatlands
+
+    if (ipeatland(i) == 0 ) then !non peatland
+      
+      soilresp(i) = soilresp(i) + fg(i) * soilrsvg(i,iccp1)
+      do k = 1,ignd
+        humiftrs(i) = humiftrs(i) + fg(i) * humtrsvg(i,iccp1,k)
+      end do
+
+      !Set all peatland vars to 0.
+      litrfallmoss(i) = 0.
+      ltrestepmoss(i) = 0.
+      humstepmoss(i) = 0.
+      socrestep(i) = 0. 
+      
+    else !peatland
+   
+      ! CAUTION says Vivek
+      ! Here again soilresp(i) is overwritten with socres(i)=socres_peat(i) as calculated
+      ! above in loop 380. This makes soilresp(i) inconsistent with soilrsvg(i,j) for
+      ! peatland gridcells/tile.      
+      
+      soilresp(i) = socres(i) + litres(i) + rmr(i) !moss root and litter respiration. No bareground!
+
+      ! Calculate moss time step C fluxes, '/365*deltat' convert year-1
+      ! to time step-1, 'deltat/963.62' convert umol CO2/m2/s to kgC/m2/deltat.
+      ! note that hutrstep_g aggregation for icc was done in loop 480
+      if (leapnow) then 
+        litrfallmoss(i) = Cmossmas(i) * rmortmoss / 366. * deltat !kgC/m2/day(dt)
+        !if (useTracer > 0) FLAG, not connected up!
+      else 
+        litrfallmoss(i) = Cmossmas(i) * rmortmoss / 365. * deltat !kgC/m2/day(dt)
+      end if 
+      ltrestepmoss(i) = litresmoss(i) * (1.0 / 963.62) * deltat   !kgC/m2/dt
+      socrestep(i) = socres(i) * (1.0 / 963.62) * deltat     !kgC/m2/dt
+      soilresp(i) = soilresp(i) * (1.0 / 963.62) * deltat   !kgC/m2/dt
+      humstepmoss(i) = humicfacmoss * ltrestepmoss(i)        !kgC/m2/dt
+      hutrstep_g(i) = hutrstep_g(i) + humstepmoss(i)     !kgC/m2/dt
+      humiftrs(i)  = humiftrs(i) + humstepmoss(i) * (963.62 / deltat)!umol/m2/s
+      
+    end if          
+470 continue
+
+end subroutine updatePoolsHetResp
 !!@}
 
 !>\defgroup hetresg Heterotrophic Respiration Bare Ground

@@ -7,7 +7,7 @@ module tracerModule
 
 implicit none
 
-public :: updateTracerPools
+public :: updateSimpleTracer
 public :: decay14C
 public :: fractionate13C
 public :: convertTracerUnits
@@ -15,8 +15,8 @@ public :: checkTracerBalance
 
 contains
 
-!>\ingroup tracer_tracerDynamics
-!!@{Subroutine which tracks C flow through the system.
+!>\ingroup tracer_updateSimpleTracer
+!!@{Tracks C flow through the system.
 !! No fractionation effects are applied in this subroutine. 
 !! The tracer's value depends on how 
 !! the model is initialized and the input file used.
@@ -36,19 +36,17 @@ contains
 !! to 1 (for simple tracer). This ensure not fractionation or decay is 
 !! performed on the tracer. Ensure that the initFile tracer pool sizes 
 !! are the same as the model C pools otherwise it will fail immediately.
-!! Next set checkTracerBalance to True in the updateTracerPools code. This
+!! Next set checkTracerBalance to True in the updateSimpleTracer code. This
 !! replaces the read in tracerCO2 value with a value of 1, which means
 !! the tracer is given the same amount of C as the normal C pools. Then
-!! at the end of updateTracerPools a small section of code is called 
+!! at the end of updateSimpleTracer a small section of code is called 
 !! that checks that the tracer C pools are the same size as the model C pools.
-!! If they differ it indicates a missing flux term in updateTracerPools or 
+!! If they differ it indicates a missing flux term in updateSimpleTracer or 
 !! that the initFile was not set up with identical tracer and normal C pools 
 !! at the start of the balance check.
 !!
 !> @author Joe Melton
-  subroutine updateTracerPools(il1, il2, pglfmass, pblfmass,& !In
-                               pstemass, protmass, plitmass,& !In
-                               psocmass,pCmossmas, plitrmsmoss) !In
+  subroutine updateSimpleTracer(il1, il2) !In
     
     use classic_params, only : icc, deltat, iccp2, zero, grass, ignd, nlat
     use ctem_statevars, only : tracer,c_switch,vgat
@@ -57,14 +55,6 @@ contains
     
     integer, intent(in) :: il1 !<other variables: il1=1
     integer, intent(in) :: il2 !<other variables: il2=ilg
-    real, intent(in) :: pglfmass(:,:)     !< Green leaf mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
-    real, intent(in) :: pblfmass(:,:)     !< Brown leaf mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
-    real, intent(in) :: pstemass(:,:)     !< Stem mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
-    real, intent(in) :: protmass(:,:)     !< Root mass for each of the CTEM PFTs at the start of ctem subroutine, \f$kg c/m^2\f$
-    real, intent(in) :: plitmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools at the start of ctem subroutine, \f$kg c/m^2\f$
-    real, intent(in) :: psocmass(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools at the start of ctem subroutine, \f$kg c/m^2\f$
-    real, intent(in) :: pCmossmas(:)       !<C in moss biomass, \f$kg C/m^2\f$
-    real, intent(in) :: plitrmsmoss(:)     !<moss litter mass, \f$kg C/m^2\f$
 
     real, pointer :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -184,7 +174,7 @@ contains
     ! Set to true if you want to check for tracer balance. 
     ! NOTE: See the comments in the header for how to set 
     ! up run for this check.
-    doTracerBalance = .false.
+    doTracerBalance = .true.
 
     ! If doTracerBalance is true, Check for mass balance for the tracer.
     !  First set the tracer CO2 value to 1 so it gets the same inputs as the 
@@ -203,7 +193,7 @@ contains
           if (fcancmx(i,j) > zero) then
                         
             ! *** Update the green leaves *** 
-                        
+                
             if (ntchlveg(i,j) > 0.) then ! NPP was positive to leaves
               gains = ntchlveg(i,j) * convertUnits * tracerValue(i)  
             else ! loss of C from leaves due to negative NPP.
@@ -224,12 +214,11 @@ contains
             !> When the tracer is calculated we apply the gain and losses to the exisiting
             !! pool. We also include the gains/losses due to changing PFT areas after land 
             !! use change or competition. 
-            print*,gains,losses,tracerValue(i)
-            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + gains - losses - gLeafLandCompChg(i,j)
-            
-            if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
+            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + gains - losses - gLeafLandCompChg(i,j)           
+            !if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
  
             ! ***  Update brown leaves (grass only) *** 
+          
             if (grass(j) ) then
               gains = phenLeafGtoB(i,j) & ! phenology transfer to brown leaves, only >0 for grasses
                       + mortLeafGtoB(i,j) ! mortality transfer to brown leaves, only >0 for grasses
@@ -237,14 +226,16 @@ contains
               losses = leaflitr(i,j)  * convertUnits & ! phenology litter generation.
                        + blfltrdt(i,j) & !brown leaf litter generated by fire.
                        + blcaemls(i,j) * convertUnits !combusted by fire.
-              
+
               tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + gains - losses - bLeafLandCompChg(i,j)
-              if (tracerBLeafMass(i,j) < zero) tracerBLeafMass(i,j) = 0.
+              !if (tracerBLeafMass(i,j) < zero) tracerBLeafMass(i,j) = 0.
+              
             end if 
             
             ! ***  Update stem mass (all except grass) *** 
-            if (.not. grass(j)) then
             
+            if (.not. grass(j)) then
+
               if (ntchsveg(i,j) > 0.) then ! NPP was positive to leaves
                 gains = ntchsveg(i,j) * convertUnits * tracerValue(i)  
               else ! loss of C from leaves due to negative NPP.
@@ -253,13 +244,14 @@ contains
 
               losses = tltrstem(i,j) * convertUnits & !turnover, mortality, disturbance => litter.
                       + stcaemls(i,j) * convertUnits ! combusted by fire.
-              
+                                
               tracerStemMass(i,j) = tracerStemMass(i,j) + gains - losses - stemLandCompChg(i,j)
-              if (tracerStemMass(i,j) < zero) tracerStemMass(i,j) = 0.
+              !if (tracerStemMass(i,j) < zero) tracerStemMass(i,j) = 0.
               
             end if 
             
             ! ***  Update root mass *** 
+
             if (ntchrveg(i,j) > 0.) then ! NPP was positive to leaves
               gains = ntchrveg(i,j) * convertUnits * tracerValue(i)  
             else ! loss of C from leaves due to negative NPP.
@@ -268,9 +260,9 @@ contains
             
             losses = tltrroot(i,j) * convertUnits &
                     + rtcaemls(i,j) * convertUnits
-                    
+                                      
             tracerRootMass(i,j) = tracerRootMass(i,j) + gains - losses - rootLandCompChg(i,j)
-            if (tracerRootMass(i,j) < zero) tracerRootMass(i,j) = 0.
+            !if (tracerRootMass(i,j) < zero) tracerRootMass(i,j) = 0.
 
           end if         
           if (rootmass(i,j) < zero) tracerRootMass(i,j) = 0.
@@ -284,13 +276,13 @@ contains
           if (j <= icc) then 
             if (k == 1) then 
               ! surface gains 
-              gains = (tltrleaf(i,j) & !leaf litter 
-                      + tltrstem(i,j) & ! stem 
+              gains = (tltrleaf(i,j)  & !leaf litter 
+                      + tltrstem(i,j)  & ! stem 
                       + tltrroot(i,j) * rmatctem(i,j,k) & ! root 
-                      + reprocost(i,j))  * convertUnits  ! reproductive tissues
+                      + reprocost(i,j) )  * convertUnits  ! reproductive tissues
               losses = (litresveg(i,j,k)  & !litter respiration
-                      + humiftrsveg(i,j,k) &  ! humification
-                      + ltrcemls(i,j)) * convertUnits !combusted
+                      + humiftrsveg(i,j,k)  &  ! humification
+                      + ltrcemls(i,j) ) * convertUnits !combusted
             else 
               ! deeper layers 
               gains = tltrroot(i,j) * rmatctem(i,j,k)  * convertUnits !from roots only.
@@ -307,26 +299,27 @@ contains
           ! but LUC product pools are not considered to be turbated.
           if (j < iccp2) then
             tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses &
-                                                          - turbLitter(i,j,k) &
-                                                          - litterLandCompChg(i,j,k)
+                                                          - (turbLitter(i,j,k) &
+                                                          - litterLandCompChg(i,j,k))
           else 
-            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses  - litterLandCompChg(i,j,k)
+            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses  - litterLandCompChg(i,j,k) 
           end if 
-          if (tracerLitrMass(i,j,k) < zero) tracerLitrMass(i,j,k) = 0.
+          !if (tracerLitrMass(i,j,k) < zero) tracerLitrMass(i,j,k) = 0.
         end do 
                 
         ! ***  Update soil C mass ***          
         do k = 1, ignd
           gains = humiftrsveg(i,j,k) * convertUnits ! humification 
           losses = soilcresveg(i,j,k) * convertUnits ! respiration 
+          
           if (j < iccp2) then
             tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses &
-                                                            - turbSoilC(i,j,k)&
-                                                            - soilCLandCompChg(i,j,k)         
+                                                            - (turbSoilC(i,j,k)&
+                                                            - soilCLandCompChg(i,j,k)) 
           else ! no turbation of LUC product pools.
-            tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses - soilCLandCompChg(i,j,k)
+            tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses - soilCLandCompChg(i,j,k) 
           end if
-          if (tracerSoilCMass(i,j,k) < zero) tracerSoilCMass(i,j,k) = 0.
+          !if (tracerSoilCMass(i,j,k) < zero) tracerSoilCMass(i,j,k) = 0.
         end do
         
         if (sum(litrmass(i,j,:)) < zero) tracerLitrMass(i,j,:) = 0.
@@ -341,7 +334,7 @@ contains
     ! Check for mass balance for the tracer.
     if (doTracerBalance) call checkTracerBalance(il1,il2)
   
-  end subroutine updateTracerPools
+  end subroutine updateSimpleTracer
 !!@}
 ! -------------------------------------------------------
 !>\ingroup tracer_decay14C
@@ -506,9 +499,9 @@ end function convertTracerUnits
 !>\ingroup tracer_checkTracerBalance
 !! Checks for balance between the tracer pools and the 
 !! model normal C pools. The subroutine is called when 
-!! the doTracerBalance logical is set to true in updateTracerPools
+!! the doTracerBalance logical is set to true in updateSimpleTracer
 !! and the model initFile is set up as described in the 
-!! notes of updateTracerPools. checkTracerBalance uses the 
+!! notes of updateSimpleTracer. checkTracerBalance uses the 
 !! same tolerance for comparisions as balcar.
 !!@author Joe Melton
 subroutine checkTracerBalance(il1,il2)

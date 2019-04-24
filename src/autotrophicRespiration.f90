@@ -15,222 +15,226 @@ contains
   !> Calculates maintenance respiration for roots and stems
   !> @author Vivek Arora and Joe Melton
 
-      subroutine mainres (  fcan,      fct,     stemmass,   rootmass, &
-     &                       il1,      il2,         ilg,    leapnow,&
-     &                       ta,     tbar,    rmatctem,&
-     &                      sort,  isand,&
-!    -------------- inputs above this line, outputs below ----------
-     &                      rmsveg, rmrveg,     roottemp)
-!
-!     20  sep. 2001 - this subroutine calculates maintenance respiration,
-!     V. Arora        over a given sub-area, for stem and root components.
-!                     leaf respiration is estimated within the phtsyn
-!                     subroutine.
+  subroutine mainres (  fcan,      fct,     stemmass,   rootmass, & !In
+                      il1,      il2,         ilg,    leapnow,& !In
+                      ta,     tbar,    rmatctem, sort,  isand,& !In
+                      useTracer, tracerStemMass, tracerRootMass, & ! In
+                      rmsveg, rmrveg, roottemp, & !Out                       
+                      rmsTracer, rmrTracer) ! Out  
+  !
+  !     20  sep. 2001 - this subroutine calculates maintenance respiration,
+  !     V. Arora        over a given sub-area, for stem and root components.
+  !                     leaf respiration is estimated within the phtsyn
+  !                     subroutine.
 
-!     change history:
+  !     change history:
 
-!     J. Melton 22  Jul 2015 - Loops 180 and 190 were not set up for > 3 soil layers. Fixed.
-!
-!     J. Melton 17  Jan 2014 - Moved parameters to global file (classic_params.f90)
-!
-!     J. Melton 22  Jul 2013 - Add in module for parameters
-!     
-!     J. Melton 20 sep 2012 - made it so does not do calcs for pfts with
-!                             fcan = 0.
-!     J. Melton 23 aug 2012 - change sand to isand, converting sand to
-!                             int was missing some gridcells assigned
-!                             to bedrock in classb. isand is now passed
-!                             in.
-!
-!
-!     inputs 
-!
-!     icc       - no. of ctem pfts (currently 9)
-!     ignd      - no. of soil layers
-!     ilg       - no. of grid cells in latitude circle
-!     ican      - number of class pfts, currently 4
-!
-      use classic_params,        only : icc, ignd, ican, kk, zero, &
-     &                                 bsrtstem, bsrtroot, minlvfr,&
-     &                                 classpfts,nol2pfts
+  !     J. Melton 22  Apr 2019 - Moved to own module. Added tracer.
+  !     J. Melton 22  Jul 2015 - Loops 180 and 190 were not set up for > 3 soil layers. Fixed.
+  !
+  !     J. Melton 17  Jan 2014 - Moved parameters to global file (classic_params.f90)
+  !
+  !     J. Melton 22  Jul 2013 - Add in module for parameters
+  !     
+  !     J. Melton 20 sep 2012 - made it so does not do calcs for pfts with
+  !                             fcan = 0.
+  !     J. Melton 23 aug 2012 - change sand to isand, converting sand to
+  !                             int was missing some gridcells assigned
+  !                             to bedrock in classb. isand is now passed
+  !                             in.
+  !
+  use classic_params,        only : icc, ignd, ican, kk, zero, &
+                                  bsrtstem, bsrtroot, minlvfr,&
+                                  classpfts,nol2pfts, reindexPFTs
 
-      implicit none
-!
-      integer ilg !<
-      integer il1 !<il1=1
-      integer il2 !<il2=ilg
-      integer i, j, k
-      integer sort(icc) !<index for correspondence between 9 pfts and 12 values in the parameter vectors
-      integer n
-      integer k1,   k2,  m
-      integer isand(ilg,ignd) !<flag for bedrock or ice in a soil layer
-      logical leapnow        !< true if this year is a leap year. Only used if the switch 'leap' is true.
-!
-      real fcan(ilg,icc)     !<fractional coverage of ctem's 9 pfts over the given sub-area
-      real fct(ilg)          !<sum of all fcan fcan & fct are not used at this time but could be used at some later stage
-      real stemmass(ilg,icc) !<stem biomass for the 9 pfts in \f$kg c/m^2\f$
-      real ta(ilg)           !< Air temperature, K
-      real tbar(ilg,ignd)    !< Soil temperature, K
-      real rootmass(ilg,icc) !<root biomass for the 9 pfts in \f$kg c/m^2\f$
-      real rmsveg(ilg,icc)   !<maintenance respiration for stem for the 9 pfts
-      real rmrveg(ilg,icc)   !<maintenance respiration for root for the 9 pfts both in u mol co2/m2. sec
-      real rmatctem(ilg,icc,ignd) !<fraction of roots in each layer for each pft
-!
-      real tempq10r(ilg,icc) !<
-      real tempq10s(ilg)     !<
-      real roottemp(ilg,icc) !<root temperature (k)
-      real q10               !<
-      real q10func           !<
-      real livstmfr(ilg,icc) !<
-      real livrotfr(ilg,icc) !<
-      real tot_rmat(ilg,icc) !<
-!
-      logical consq10 !<
-!>
-!>---------------------------------------------------
-!!Constants and parameters are located in classic_params.f90
-!!
-!!set the following switch to .true. for using constant temperature
-!!indepedent q10 specified below
-      consq10 =.false.
-!>
-!>q10 - if using a constant temperature independent value, i.e.
-!>if consq10 is set to true
-      q10 = 2.00
-!>
-!!---------------------------------------------------
-!!
-!!initialize required arrays to zero
-!!
-      do 100 j = 1, icc
-        do 110 i = il1, il2
-          roottemp(i,j) = 0.0        ! root temperature
-          tot_rmat(i,j) = 0.0
-          rmsveg(i,j) = 0.0          ! stem maintenance respiration
-          rmrveg(i,j) = 0.0          ! root maintenance respiration
-          livstmfr(i,j)= 0.0         ! live stem fraction
-          livrotfr(i,j)= 0.0         ! live root fraction
-110     continue 
-100   continue 
-!>
-!>initialization ends
-!!
-!!based on root and stem biomass, find fraction which is live.
-!!for stem this would be the sapwood to total wood ratio.
-!!
-      k1=0
-      do 120 j = 1, ican
-        if(j.eq.1) then
-          k1 = k1 + 1
-        else
-          k1 = k1 + nol2pfts(j-1)
-        endif
-        k2 = k1 + nol2pfts(j) - 1
-        do 125 m = k1, k2
-         do 130 i = il1, il2
-         select case(classpfts(j))
-          case ('Crops', 'Grass') ! crops and grass
-            livstmfr(i,m) = 1.0
-            livrotfr(i,m) = 1.0
-          case('NdlTr','BdlTr','BdlSh') 
-            livstmfr(i,m) = exp(-0.2835*stemmass(i,m))  !following century model              
-            livstmfr(i,m) = max(minlvfr,min(livstmfr(i,m),1.0))
-            livrotfr(i,m) = exp(-0.2835*rootmass(i,m))               
-            livrotfr(i,m) = max(minlvfr,min(livrotfr(i,m),1.0))
-          case default
-            print*,'Unknown CLASS PFT in mainres ',classpfts(j)
-            call XIT('mainres',-1)                 
-          end select
-130     continue 
-125    continue 
-120   continue 
-!>
-!>fraction of roots for each vegetation type, for each soil layer, 
-!!in each grid cell is given by rmatctem (grid cell, veg type, soil layer) 
-!!which bio2str subroutine calculates. rmatctem can thus be used 
-!!to find average root temperature for each plant functional type 
-!!
-      ! Initial code for > 3 soil layers. YW April 14, 2015
-      ! Removed code for <= 3 soil layers (superfluous) and added division by sum
-      ! of rmatctem, which was missing (similar code in allocate.f). EC Feb 10 2017.
+  implicit none
 
-        do j = 1, icc
-          do  i = il1, il2
-            if (fcan(i,j) .gt. 0.) then
-              do  k= 1, ignd
-                if (isand(i,k) .ge. -2)           then
-                  roottemp(i,j)=roottemp(i,j)+tbar(i,k)*rmatctem(i,j,k)
-                  tot_rmat(i,j) = tot_rmat(i,j)+rmatctem(i,j,k)
-                endif
-              enddo
-              roottemp(i,j)=roottemp(i,j)/tot_rmat(i,j)
-            endif
-          enddo
-        enddo
-!>
-!!we assume that stem temperature is same as air temperature, ta.
-!!using stem and root temperatures we can find their maintenance respirations rates
-!!
-      do 200 i = il1, il2
-!>
-!!first find the q10 response function to scale base respiration
-!!rate from 15 c to current temperature, we do the stem first.
-!!
-          if (.not.consq10) then
-!>when finding temperature dependent q10, use temperature which
-!>is close to average of actual temperature and the temperature at which base rate is specified
-            tempq10s(i)=(15.0+273.16+ta(i))/1.9
-            q10 = 3.22 - 0.046*(tempq10s(i)-273.16)       
-            q10 = min(4.0, max(1.5, q10))
-          endif
-!
-          q10func = q10**(0.1*(ta(i)-288.16))
-!
-        do 210 j = 1, icc
-         if (fcan(i,j) .gt. 0.) then
-!>
-!!This q10 value is then used with the base rate of respiration
-!!(commonly taken at some reference temperature (15 deg c), see Tjoelker et
-!!al. 2009 New Phytologist or Atkin et al. 2000 New Phyto for 
-!!an example.). Long-term acclimation to temperature could be occuring 
-!!see King et al. 2006 Nature SOM for a possible approach. JM.
-!!
+  integer, intent(in) :: ilg          !< Number of grid cells in latitude circle
+  integer, intent(in) :: il1          !<il1=1
+  integer, intent(in) :: il2          !<il2=ilg
+  integer, intent(in) :: sort(icc)    !<index for correspondence between 9 pfts and 12 values in the parameter vectors
+  integer, intent(in) :: isand(ilg,ignd) !<flag for bedrock or ice in a soil layer
+  logical, intent(in) :: leapnow        !< true if this year is a leap year. Only used if the switch 'leap' is true.
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
+  real, intent(in) :: fcan(ilg,icc)     !<fractional coverage of ctem's 9 pfts over the given sub-area
+  real, intent(in) :: fct(ilg)          !<sum of all fcan fcan & fct are not used at this time but could be used at some later stage
+  real, intent(in) :: stemmass(ilg,icc) !<stem biomass for the 9 pfts in \f$kg c/m^2\f$
+  real, intent(in) :: ta(ilg)           !< Air temperature, K
+  real, intent(in) :: tbar(ilg,ignd)    !< Soil temperature, K
+  real, intent(in) :: rootmass(ilg,icc) !<root biomass for the 9 pfts in \f$kg c/m^2\f$
+  real, intent(in) :: rmatctem(ilg,icc,ignd) !<fraction of roots in each layer for each pft
+  
+  real, intent(out) :: roottemp(ilg,icc) !<root temperature (k)
+  real, intent(out) :: rmsveg(ilg,icc)   !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
+  real, intent(out) :: rmrveg(ilg,icc)   !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
+  
+  real, intent(in) :: tracerStemMass(:,:) !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(in) :: tracerRootMass(:,:)!< Tracer mass in the root for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(out) :: rmsTracer(ilg,icc)   !< Tracer maintenance respiration for stem for the CTEM pfts (kg C/m2.day)
+  real, intent(out) :: rmrTracer(ilg,icc)   !< Tracer maintenance respiration for root for the CTEM pfts both (kg c/m2.day)
+  
+  real tempq10r(ilg,icc) !<
+  real tempq10s(ilg)     !<
+  integer i, j, k
+  integer n, m
+  real q10               !<
+  real q10funcStem, q10funcRoot    !<
+  real livstmfr(ilg,icc) !<
+  real livrotfr(ilg,icc) !<
+  real tot_rmat(ilg,icc) !<
+  logical consq10 !<
+  
+  !---------------------------------------------------
+
+  !> Set the following switch to .true. for using constant temperature
+  !! indepedent q10 specified below
+  consq10 =.false.
+  
+  !> q10 - if using a constant temperature independent value, i.e.
+  !> if consq10 is set to true
+  q10 = 2.00
+
+  ! ---------------------------------------------------
+
+  ! Initialize required arrays to zero
+  roottemp = 0.0        ! root temperature
+  tot_rmat = 0.0
+  rmsveg = 0.0          ! stem maintenance respiration
+  rmrveg = 0.0          ! root maintenance respiration
+  livstmfr= 0.0         ! live stem fraction
+  livrotfr= 0.0         ! live root fraction
+  rmsTracer = 0.
+  rmrTracer = 0.
+  
+  ! initialization ends
+  
+  !> Based on root and stem biomass, find fraction which is live.
+  !! for stem this would be the sapwood to total wood ratio.
+  do 120 j = 1, ican
+    do 125 m = reindexPFTs(j,1), reindexPFTs(j,2)
+      do 130 i = il1, il2
+        select case(classpfts(j))
+        case ('Crops', 'Grass') ! crops and grass
+          livstmfr(i,m) = 1.0
+          livrotfr(i,m) = 1.0
+        case('NdlTr','BdlTr','BdlSh') 
+          livstmfr(i,m) = exp(-0.2835 * stemmass(i,m))  !following century model              
+          livstmfr(i,m) = max(minlvfr, min(livstmfr(i,m), 1.0))
+          livrotfr(i,m) = exp(-0.2835 * rootmass(i,m))               
+          livrotfr(i,m) = max(minlvfr, min(livrotfr(i,m), 1.0))
+        case default
+          print*,'Unknown CLASS PFT in mainres ',classpfts(j)
+          call XIT('mainres',-1)                 
+        end select
+  130     continue 
+  125    continue 
+  120   continue 
+  
+  !> Fraction of roots for each vegetation type, for each soil layer, 
+  !! in each grid cell is given by rmatctem (grid cell, veg type, soil layer) 
+  !! which bio2str subroutine calculates. rmatctem can thus be used 
+  !! to find average root temperature for each plant functional type 
+  do j = 1, icc
+    do  i = il1, il2
+      if (fcan(i,j) > 0.) then
+        do  k = 1, ignd
+          if (isand(i,k) >= -2)           then
+            roottemp(i,j) = roottemp(i,j) + tbar(i,k) * rmatctem(i,j,k)
+            tot_rmat(i,j) = tot_rmat(i,j) + rmatctem(i,j,k)
+          end if
+        end do
+        roottemp(i,j) = roottemp(i,j) / tot_rmat(i,j)
+      endif
+    enddo
+  enddo
+
+  !> We assume that stem temperature is same as air temperature, ta.
+  !! using stem and root temperatures we can find their maintenance respirations rates
+  do 200 i = il1, il2
+    
+    !> first find the q10 response function to scale base respiration
+    !! rate from 15 c to current temperature, we do the stem first.
+    if (.not. consq10) then
+      !> when finding temperature dependent q10, use temperature which
+      !! is close to average of actual temperature and the temperature
+      !! at which base rate is specified
+      tempq10s(i) = (15.0 + 273.16 + ta(i)) / 1.9
+      q10 = 3.22 - 0.046 * (tempq10s(i) - 273.16)       
+      q10 = min(4.0, max(1.5, q10))
+    end if
+  
+    q10funcStem = q10**(0.1*(ta(i)-288.16))
+
+    do 210 j = 1, icc
+      if (fcan(i,j) > 0.) then
+
+        !> This q10 value is then used with the base rate of respiration
+        !! (commonly taken at some reference temperature (15 deg c), see Tjoelker et
+        !! al. 2009 New Phytologist or Atkin et al. 2000 New Phyto for 
+        !! an example.). Long-term acclimation to temperature could be occuring 
+        !! see King et al. 2006 Nature SOM for a possible approach. JM.
+        if (leapnow) then
+          rmsveg(i,j) = stemmass(i,j) * livstmfr(i,j) * q10funcStem &
+                                 * (bsrtstem(sort(j)) / 366.0)
+        else 
+          rmsveg(i,j) = stemmass(i,j) * livstmfr(i,j) * q10funcStem &
+                                 * (bsrtstem(sort(j)) / 365.0)
+        end if 
+        
+        if (useTracer > 0) then 
+          ! If our tracers are present then calculate the tracer flux values 
           if (leapnow) then
-            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*&
-     &       (bsrtstem(sort(j))/366.0)
+            rmsTracer(i,j) = tracerStemMass(i,j) * livstmfr(i,j) * q10funcStem &
+                                   * (bsrtstem(sort(j)) / 366.0)
           else 
-            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*&
-     &       (bsrtstem(sort(j))/365.0)
-          endif 
-!>
-!>convert kg c/m2.day -> u mol co2/m2.sec
-          rmsveg(i,j)= rmsveg(i,j) * 963.62
-!>
-!>root respiration
-!>   
-          if (.not.consq10) then
-            tempq10r(i,j)=(15.0+273.16+roottemp(i,j))/1.9
-            q10 = 3.22 - 0.046*(tempq10r(i,j)-273.16)       
-            q10 = min(4.0, max(1.5, q10))
-          endif
-!
-          q10func = q10**(0.1*(roottemp(i,j)-288.16))
+            rmsTracer(i,j) = tracerStemMass(i,j) * livstmfr(i,j) * q10funcStem &
+                                   * (bsrtstem(sort(j)) / 365.0)
+          end if         
+        end if 
+        
+        !> convert kg c/m2.day -> u mol co2/m2.sec
+        rmsveg(i,j) = rmsveg(i,j) * 963.62
+        
+        !>root respiration   
+        if (.not. consq10) then
+          tempq10r(i,j) = (15.0 + 273.16 + roottemp(i,j)) / 1.9
+          q10 = 3.22 - 0.046 * (tempq10r(i,j) - 273.16)       
+          q10 = min(4.0, max(1.5, q10))
+        end if
+
+        q10funcRoot = q10**(0.1 * (roottemp(i,j) - 288.16))
+
+        if (leapnow) then 
+          rmrveg(i,j) = rootmass(i,j) * livrotfr(i,j) * q10funcRoot &
+                                      * (bsrtroot(sort(j))/366.0)
+        else 
+          rmrveg(i,j) = rootmass(i,j) * livrotfr(i,j) * q10funcRoot &
+                                      * (bsrtroot(sort(j))/365.0)
+        end if 
+
+        !> convert kg c/m2.day -> u mol co2/m2.sec
+        rmrveg(i,j) = rmrveg(i,j) * 963.62 
+        
+        if (useTracer > 0) then 
+          ! If our tracers are present then calculate the tracer flux values 
           if (leapnow) then 
-            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*&
-     &       (bsrtroot(sort(j))/366.0)
+            rmrTracer(i,j) = tracerRootMass(i,j) * livrotfr(i,j) * q10funcRoot &
+                                        * (bsrtroot(sort(j))/366.0)
           else 
-            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*&
-     &        (bsrtroot(sort(j))/365.0)
-          endif 
-!
-!>convert kg c/m2.day -> u mol co2/m2.sec
-          rmrveg(i,j)= rmrveg(i,j) * 963.62 
-!
-         endif !fcan check.   
-210     continue 
-200   continue 
-!     
-      return
+            rmrTracer(i,j) = tracerRootMass(i,j) * livrotfr(i,j) * q10funcRoot &
+                                        * (bsrtroot(sort(j))/365.0)
+          end if 
+        end if 
+
+      end if !fcan check.   
+210 continue 
+200 continue 
+ 
+  return
 
 end subroutine mainres
 

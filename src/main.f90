@@ -2495,7 +2495,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
   ! start up the main model loop
 
-  do while (run_model)
+  mainModelLoop: do while (run_model)
 
     !
     !> Update the meteorological forcing data for current time step;
@@ -2952,6 +2952,8 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                          ariditygat, srplsmongat,  defctmongat, anndefctgat,&! In/Out
                         annsrplsgat,   annpcpgat,  dry_season_lengthgat,&! In/Out
                    pftexistgat,      twarmmgat,       tcoldmgat,         gdd5gat,    &! In/Out
+              tracerStemMassgat, tracerRootMassgat, tracerGLeafMassgat, tracerBLeafMassgat, & !In/Out 
+              tracerSoilCMassgat, tracerLitrMassgat, tracerMossCMassgat, tracerMossLitrMassgat, & ! In/Out
                              nppgat,      nepgat, hetroresgat, autoresgat,&! Out (Primary)
                         soilcrespgat,       rmgat,       rggat,      nbpgat,&! Out (Primary)
                           litresgat,    socresgat,     gppgat, dstcemlsgat,&! Out (Primary)
@@ -3310,7 +3312,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         end if
       end if
 
-    ENDDO !MAIN MODEL LOOP
+    end do mainModelLoop !MAIN MODEL LOOP
 
     ! deallocate arrays used for input files
     call deallocInput
