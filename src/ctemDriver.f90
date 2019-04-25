@@ -9,13 +9,13 @@ implicit none
 ! subroutines contained in this module:
 
 public  :: ctem   
-public  :: calcNBP 
+public  :: calcNPP
 public  :: calcNEP
-!public  :: calcNPP
+public  :: calcNBP 
 
 contains
 
-  subroutine ctem( fcancmx,    fsnow,     sand,      clay,  & ! In
+  subroutine ctem(   fsnow,     sand,      clay,  & ! In
                  ilg,   il1,      il2,     iday,      radj,  & ! In
                          ta,     delzw, ancgveg,   rmlcgveg, & ! In
                       zbotw,  & ! In
@@ -39,7 +39,7 @@ contains
                    gavgltms, gavgscms, stmhrlos,      slai, & ! In/ Out
                     bmasveg, cmasvegc, colddays,  rothrlos,& ! In/ Out
                      fcanmx,   alvisc,   alnirc,   gavglai,& ! In/ Out
-                   Cmossmas, litrmsmoss,     peatdep,      &! In/ Out
+                   Cmossmas, litrmsmoss,     peatdep,  fcancmx, &! In/ Out
                    geremort,   intrmort,   pstemmass,    pgleafmass, &! In/ Out
                       tcurm,   srpcuryr,    dftcuryr,      lambda,   &! In/ Out
                      tmonth, anpcpcur,  anpecur,   gdd5cur,&! In/ Out
@@ -142,10 +142,10 @@ contains
 !    -----------------------------------------------------------------
 
   use classic_params,        only : kk, pi, zero, icp1, &
-                                kn,iccp1, ican, nlat,&
+                                iccp1, ican, nlat,&
                                 ignd, icc, nmos, l2max, grescoef,&
                                 humicfac,laimin,laimax,lambdamax,&
-                                crop,repro_fraction,grescoefmoss,&
+                                crop,repro_fraction,&
                                 rmortmoss,humicfacmoss,GRAV,RHOW,RHOICE,&
                                classpfts,ctempfts,iccp2,humicfac_bg,&
                                nol2pfts,deltat
@@ -213,6 +213,8 @@ contains
   real, dimension(ilg), intent(in) :: rmlmoss             !< moss maintainance respiration -daily averaged C fluxes rates (umol/m2/s)
   real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily averaged C fluxes rates (umol/m2/s)
   real, dimension(ilg), intent(in) :: wtable              !< water table (m)
+  real, dimension(ilg,icc), intent(in) :: ancgveg         !< net photosynthetic rate for CTEM's pfts 
+  real, dimension(ilg,icc), intent(in) :: rmlcgveg        !< leaf respiration rate for CTEM's pfts
   real, dimension(ilg,ignd), intent(in) :: THFC           !<
   real, dimension(ilg,ignd), intent(in) :: THLW           !<
   real, dimension(ilg), intent(in) :: maxAnnualActLyr     !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
@@ -220,7 +222,7 @@ contains
                                 !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
                                 !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
                                 !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
-                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
 
   !
   !     updates
@@ -231,8 +233,6 @@ contains
   integer, dimension(ilg,icc), intent(inout) :: pandays   !<days with positive net photosynthesis (an) for use in the phenology subroutine
   integer, dimension(ilg,2), intent(inout) :: colddays    !<cold days counter for tracking days below a certain temperature threshold for ndl dcd and crop pfts.
   integer, dimension(ilg,icc), intent(inout) :: lfstatus  !<leaf phenology status
-  real, dimension(ilg,icc), intent(inout) :: ancgveg      !< net photosynthetic rate for CTEM's pfts 
-  real, dimension(ilg,icc), intent(inout) :: rmlcgveg     !< leaf respiration rate for CTEM's pfts
   real, dimension(ilg,icc), intent(inout) :: fcancmx      !< max. fractional coverage of CTEM's pfts, but this can be
                                                           !< modified by land-use change, and competition between pfts
   real, dimension(ilg,ican,ignd), intent(inout) :: rmatc  !<fraction of roots for each of class' 4 pfts in each soil layer
@@ -304,27 +304,27 @@ contains
   real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   real, intent(inout) :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, intent(inout) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-  
+  real, dimension(ilg,icc), intent(inout) :: slai           !<storage/imaginary lai for phenology purposes
   !
   !   outputs
   !
   real, dimension(ilg), intent(out) :: ch4soills          !< Methane uptake into the soil column \f$(mg CH_4 m^{-2} s^{-1})\f$
-  real, dimension(ilg), intent(out) :: rml                !<leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-  real, dimension(ilg), intent(out) :: gpp                !<gross primary productivity
-  real, dimension(ilg,icc), intent(out) :: slai           !<storage/imaginary lai for phenology purposes
+  real, dimension(ilg), intent(out) :: rml                !< Tile level leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg), intent(out) :: gpp                !< Tile level gross primary productivity (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  
   real, dimension(ilg,icc), intent(out) :: veghght        !<vegetation height (meters)
   real, dimension(ilg,icc), intent(out) :: rootdpth       !<99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
                                                           !<to see how vegetation grows above and below ground, respectively
   real, dimension(ilg), intent(out) :: npp                !< Tile-level net primary productivity (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: nep                !< Tile-level net ecosystem productivity (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: hetrores           !< Tile-level heterotrophic respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-  real, dimension(ilg), intent(out) :: autores            !<autotrophic respiration
+  real, dimension(ilg), intent(out) :: autores             !< Tile level autotrophic respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: soilresp           !< Soil respiration. This includes root respiration and respiration from 
                                         !! litter and soil carbon pools. Note that soilresp is different from
                                         !! socres, which is respiration from the soil C pool.(\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-  real, dimension(ilg), intent(out) :: rm                 !<maintenance respiration
-  real, dimension(ilg), intent(out) :: rg                 !<growth respiration
-  real, dimension(ilg), intent(out) :: nbp                !<net biome productivity
+  real, dimension(ilg), intent(out) :: rm                 !<Tile level maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg), intent(out) :: rg                 !<Tile level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg), intent(out) :: nbp                !<Tile level net biome productivity (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: dstcemls1          !<carbon emission losses due to disturbance (fire at present) from vegetation
   real, dimension(ilg), intent(out) :: litrfall           !<total litter fall (from leaves, stem, and root) due to all causes (mortality, turnover, and disturbance)
   real, dimension(ilg), intent(out) :: humiftrs           !< Transfer of humidified litter from litter to soil C pool (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
@@ -332,23 +332,23 @@ contains
   real, dimension(ilg), intent(out) :: lucltrin           !<luc related inputs to litter pool, u-mol co2/m2.sec
   real, dimension(ilg), intent(out) :: lucsocin           !<luc related inputs to soil c pool, u-mol co2/m2.sec
   real, dimension(ilg), intent(out) :: dstcemls3          !<carbon emission losses due to disturbance (fire at present) from litter pool
-  real, dimension(ilg), intent(out) :: rms                !<stem maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-  real, dimension(ilg), intent(out) :: rmr                !< Root maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg), intent(out) :: rms                !< Tile level stem maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg), intent(out) :: rmr                !< Tile level root maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: litres             !< Litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg), intent(out) :: socres             !< Soil carbon respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg,icc), intent(out) :: rmsveg         !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
   real, dimension(ilg,icc), intent(out) :: rmrveg         !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
-  real, dimension(ilg,icc), intent(out) :: rmlveg         !<
-  real, dimension(ilg,icc), intent(out) :: gppveg         !<
+  real, dimension(ilg,icc), intent(out) :: rmlveg         !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg,icc), intent(out) :: gppveg         !< Gross primary productivity per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg,icc), intent(out) :: nppveg         !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-  real, dimension(ilg,icc), intent(out) :: rgveg          !<
+  real, dimension(ilg,icc), intent(out) :: rgveg          !<PFT level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg,iccp1), intent(out) :: nepveg       !<
   real, dimension(ilg,iccp1), intent(out) :: nbpveg       !<
   real, dimension(ilg,iccp2,ignd), intent(out) :: ltresveg     !<fluxes for each pft: litter respiration for each pft + bare fraction
   real, dimension(ilg,iccp2,ignd), intent(out) :: scresveg     !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
   real, dimension(ilg,iccp1), intent(out) :: hetrsveg     !< Vegetation averaged litter and soil C respiration rates (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg,iccp2,ignd), intent(out) :: humtrsvg     !<transfer of humidified litter from litter to soil c pool per PFT. (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-  real, dimension(ilg,icc), intent(out) :: autoresveg     !<
+  real, dimension(ilg,icc), intent(out) :: autoresveg     !< PFT level autotrophic respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg,icc), intent(out) :: litrfallveg    !<
   real, dimension(ilg,icc), intent(out) :: roottemp       !<root temperature, k
   real, dimension(ilg,icc), intent(out) :: emit_co2       !<carbon dioxide emitted from biomass burning in g of compound
@@ -421,7 +421,7 @@ contains
   real yesfrac_comp(ilg,icc) !<
   real fc(ilg)  !< Fraction of grid cell that is covered by canopy 
   real fg(ilg)  !< Fraction of grid cell that is bare ground.
-  real term        !<
+  ! real term        !<
   real pglfmass(ilg,icc)  !<
   real pblfmass(ilg,icc)  !<
   real pstemass(ilg,icc)  !<
@@ -431,8 +431,8 @@ contains
   real pvgbioms(ilg)      !<
   real pgavltms(ilg)      !<
   real pgavscms(ilg)      !<
-  real anveg(ilg,icc)    !<
-  real rmveg(ilg,icc)    !<
+  !real anveg(ilg,icc)    !<
+  ! real rmveg(ilg,icc)    !<
   real pheanveg(ilg,icc) !<
   ! real soilrsvg(ilg,iccp2) !<
   ! real ltrestep(ilg,iccp2,ignd) !<
@@ -456,7 +456,7 @@ contains
   real dscemlv2(ilg,icc)  !<
   real add2allo(ilg,icc)  !<
   real repro_cost_g(ilg)  !< Tile-level cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
-  real rgmoss(ilg)        !< moss growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  ! real rgmoss(ilg)        !< moss growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real litresmoss(ilg)    !< moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real socres_peat(ilg)   !< heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real resoxic(ilg)       !< oxic respiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
@@ -476,6 +476,7 @@ contains
   real :: sCResTracer(ilg,iccp2,ignd)  !< Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
   real :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
   real :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real :: tracerNPP(ilg,icc) !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
   !> Initialize the tracer pool trackers for competition and land use change to zero.
   gLeafLandCompChg = 0.0
@@ -645,99 +646,113 @@ contains
                rmsveg, rmrveg, roottemp, & ! Out                 
                rmsTracer, rmrTracer) ! Out  
   
-  ! NOTE: This next bit is a little tricky. Remember ancgveg is the net photosynthesis 
-  ! so it is ancgveg = gpp - rmlcgveg. Here we assign the daily mean net photosynthesis
-  ! (ancgveg) and mean rml (rmlveg) to the anveg and rmlveg variables 
-  ! and their sum to gpp veg since gpp = anveg + rml if we both have some coverage of the 
-  ! PFT (fcancmx > 1) and the leaves are not imaginary (lfstatus /= 4).
-  ! If no real leaves are in existence we leave rml, anveg and gpp set to 0.
-  ! However, if we have real leaves, but they are quite small we are going to
-  ! reduce rml, but we need to use the original rml to find the gppveg otherwise 
-  ! the gpp will not be corrected properly. We store the original ancgveg for 
-  ! phenology to test if the leaves should be coming out.
+  !> Calculate NPP (net primary productivity), difference between GPP and 
+  !! autotrophic respriation, for each pft and tile. Also sets the net 
+  !! photosynthesis to be used by phenology and determines the total 
+  !! autotrophic respiration fluxes at the PFT and tile-levels. Calculates
+  !! values for both upland and peatland sites.
+  call calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
+              slai, ailcg, sort, rmsveg, rmrveg, ipeatland, & ! In 
+              anmoss, fcancmx, rmlmoss, gppmoss, useTracer, & ! In 
+              gleafmas, tracerGLeafMass, tracerCO2, & ! In 
+              pheanveg, rmlveg, rml, rms, rmr, rm ,rg, npp, gpp, & ! Out 
+              autores, autoresveg, rgveg, nppmoss, armoss, & ! Out 
+              gppveg, nppmosstep, nppveg, tracerNPP) ! Out 
 
-  pheanveg = 0. 
-  rmlveg=0.
-  anveg=0.
-  gppveg=0.
-  do 180 j = 1, icc
-    do 190 i = il1, il2
-      
-      if (fcancmx(i,j) > zero) then
-        
-        pheanveg(i,j) = ancgveg(i,j) ! to be used for phenology purposes
-        
-        if (lfstatus(i,j) /= 4) then ! real leaves so use values
-
-          anveg(i,j) = ancgveg(i,j)
-          rmlveg(i,j) = rmlcgveg(i,j)
-          gppveg(i,j) = anveg(i,j) + rmlveg(i,j)
-
-          if(slai(i,j) > ailcg(i,j))then
-            term = ((1.0 / kn(sort(j))) * (1.0 - exp(-kn(sort(j)) * ailcg(i,j))) &
-                  / (1.0 / kn(sort(j))) * (1.0 - exp(-kn(sort(j)) * slai(i,j))))
-            rmlveg(i,j) = rmlveg(i,j) * term
-          end if
-        !else 
-          ! the leaves were imaginary so leave variables set to the initialized 0 value.
-        endif
-      end if
-190     continue
-180   continue
-
-  !! Find total maintenance respiration values and net primary productivity.
-  rml(:) = 0.
-  rms(:) = 0.
-  rmr(:) = 0.
-  rm(:) = 0.
-  rg(:) = 0.
-  npp(:) = 0.
-  gpp(:) = 0.
-  do 270 j = 1, icc
-    do 280 i = il1, il2
-      rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
-      nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
-
-      !>Now that we know maintenance respiration from leaf, stem, and root
-      !>and gpp, we can find growth respiration for each vegetation type
-
-      if( nppveg(i,j).gt.zero ) then
-          rgveg(i,j)=grescoef(sort(j))*nppveg(i,j)
-      else
-          rgveg(i,j)=0.0
-      endif
-      nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
-
-      !>Calculate grid/tile-averaged rates of rm, rg, npp, and gpp
-      rml(i)=rml(i)+fcancmx(i,j)*rmlveg(i,j)
-      rms(i)=rms(i)+fcancmx(i,j)*rmsveg(i,j)
-      rmr(i)=rmr(i)+fcancmx(i,j)*rmrveg(i,j)
-      rm(i) =rm(i)+fcancmx(i,j)*rmveg(i,j)
-      rg(i) =rg(i)+fcancmx(i,j)*rgveg(i,j)
-      npp(i)=npp(i)+fcancmx(i,j)*nppveg(i,j)
-      gpp(i)=gpp(i)+fcancmx(i,j)*gppveg(i,j)
-      autores(i)=rg(i)+rm(i)
-      autoresveg(i,j)=rmveg(i,j) + rgveg(i,j)
-
-  280     continue 
-270   continue 
-  !
-  !>    Add moss GPP and rml to the grid/tile average C fluxes
-  !>    for grid cells which have peatlands
-  !
-  do 335 i = il1, il2
-    if (ipeatland(i) > 0) then
-      rgmoss(i) = anmoss(i)*grescoefmoss
-      rml(i)= rml(i) + rmlmoss(i)
-      rm(i) = rm(i)  + rmlmoss(i)
-      rg(i) = rg(i)  + rgmoss (i)
-      armoss(i) = rmlmoss(i) + rgmoss(i)
-      nppmoss(i) = anmoss(i) - rgmoss(i)
-      npp(i)= npp(i) + nppmoss (i)
-      gpp(i)= gpp(i) + gppmoss(i)
-      autores(i) = autores(i) + armoss(i)
-    endif
-335   continue
+  
+!   ! NOTE: This next bit is a little tricky. Remember ancgveg is the net photosynthesis 
+!   ! so it is ancgveg = gpp - rmlcgveg. Here we assign the daily mean net photosynthesis
+!   ! (ancgveg) and mean rml (rmlveg) to the anveg and rmlveg variables 
+!   ! and their sum to gpp veg since gpp = anveg + rml if we both have some coverage of the 
+!   ! PFT (fcancmx > 1) and the leaves are not imaginary (lfstatus /= 4).
+!   ! If no real leaves are in existence we leave rml, anveg and gpp set to 0.
+!   ! However, if we have real leaves, but they are quite small we are going to
+!   ! reduce rml, but we need to use the original rml to find the gppveg otherwise 
+!   ! the gpp will not be corrected properly. We store the original ancgveg for 
+!   ! phenology to test if the leaves should be coming out.
+! 
+!   pheanveg = 0. 
+!   rmlveg=0.
+!   anveg=0.
+!   gppveg=0.
+!   do 180 j = 1, icc
+!     do 190 i = il1, il2
+! 
+!       if (fcancmx(i,j) > zero) then
+! 
+!         pheanveg(i,j) = ancgveg(i,j) ! to be used for phenology purposes
+! 
+!         if (lfstatus(i,j) /= 4) then ! real leaves so use values
+! 
+!           anveg(i,j) = ancgveg(i,j)
+!           rmlveg(i,j) = rmlcgveg(i,j)
+!           gppveg(i,j) = anveg(i,j) + rmlveg(i,j)
+! 
+!           if(slai(i,j) > ailcg(i,j))then
+!             term = ((1.0 / kn(sort(j))) * (1.0 - exp(-kn(sort(j)) * ailcg(i,j))) &
+!                   / (1.0 / kn(sort(j))) * (1.0 - exp(-kn(sort(j)) * slai(i,j))))
+!             rmlveg(i,j) = rmlveg(i,j) * term
+!           end if
+!         !else 
+!           ! the leaves were imaginary so leave variables set to the initialized 0 value.
+!         endif
+!       end if
+! 190     continue
+! 180   continue
+! 
+!   !! Find total maintenance respiration values and net primary productivity.
+!   rml(:) = 0.
+!   rms(:) = 0.
+!   rmr(:) = 0.
+!   rm(:) = 0.
+!   rg(:) = 0.
+!   npp(:) = 0.
+!   gpp(:) = 0.
+!   do 270 j = 1, icc
+!     do 280 i = il1, il2
+!       rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
+!       nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
+! 
+!       !>Now that we know maintenance respiration from leaf, stem, and root
+!       !>and gpp, we can find growth respiration for each vegetation type
+! 
+!       if( nppveg(i,j).gt.zero ) then
+!           rgveg(i,j)=grescoef(sort(j))*nppveg(i,j)
+!       else
+!           rgveg(i,j)=0.0
+!       endif
+!       nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
+! 
+!       !>Calculate grid/tile-averaged rates of rm, rg, npp, and gpp
+!       rml(i)=rml(i)+fcancmx(i,j)*rmlveg(i,j)
+!       rms(i)=rms(i)+fcancmx(i,j)*rmsveg(i,j)
+!       rmr(i)=rmr(i)+fcancmx(i,j)*rmrveg(i,j)
+!       rm(i) =rm(i)+fcancmx(i,j)*rmveg(i,j)
+!       rg(i) =rg(i)+fcancmx(i,j)*rgveg(i,j)
+!       npp(i)=npp(i)+fcancmx(i,j)*nppveg(i,j)
+!       gpp(i)=gpp(i)+fcancmx(i,j)*gppveg(i,j)
+!       autores(i)=rg(i)+rm(i)
+!       autoresveg(i,j)=rmveg(i,j) + rgveg(i,j)
+! 
+!   280     continue 
+! 270   continue 
+!   !
+!   !>    Add moss GPP and rml to the grid/tile average C fluxes
+!   !>    for grid cells which have peatlands
+!   !
+!   do 335 i = il1, il2
+!     if (ipeatland(i) > 0) then
+!       rgmoss(i) = anmoss(i)*grescoefmoss
+!       rml(i)= rml(i) + rmlmoss(i)
+!       rm(i) = rm(i)  + rmlmoss(i)
+!       rg(i) = rg(i)  + rgmoss (i)
+!       armoss(i) = rmlmoss(i) + rgmoss(i)
+!       nppmoss(i) = anmoss(i) - rgmoss(i)
+!       npp(i)= npp(i) + nppmoss (i)
+!       gpp(i)= gpp(i) + gppmoss(i)
+!       autores(i) = autores(i) + armoss(i)
+!     endif
+! 335   continue
   !
   !     autotrophic respiration part ends
   !
@@ -935,7 +950,7 @@ contains
     !! For peatlands, we additionally add moss values to the grid (litter respiration
     !! and moss root respiration). Note in loop 430 iccp1 is passed for peatlands
 
-    if (ipeatland(i) ==0 ) then !non peatland
+    ! if (ipeatland(i) ==0 ) then !non peatland
       
       ! soilresp(i) = soilresp(i) + fg(i) * soilrsvg(i,iccp1)
       ! do k = 1,ignd
@@ -945,11 +960,11 @@ contains
       ! !Set all peatland vars to 0.
       ! litrfallmoss(i)= 0.
       ! ltrestepmoss(i)= 0.
-      nppmosstep(i)= 0.
+      ! nppmosstep(i)= 0.
       ! humstepmoss(i)= 0.
       ! socrestep(i) = 0. 
       
-    else !peatland
+    ! else !peatland
    
       ! CAUTION says Vivek
       ! Here again soilresp(i) is overwritten with socres(i)=socres_peat(i) as calculated
@@ -964,15 +979,15 @@ contains
 
       ! litrfallmoss(i)= Cmossmas(i)*rmortmoss/365*deltat !kgC/m2/day(dt)
       ! ltrestepmoss(i)= litresmoss(i)*(1.0/963.62)*deltat   !kgC/m2/dt
-      nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
+      ! nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
       ! socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
       ! soilresp(i)  = soilresp(i)*(1.0/963.62)*deltat   !kgC/m2/dt
       ! humstepmoss(i)= humicfacmoss * ltrestepmoss(i)        !kgC/m2/dt
       ! hutrstep_g(i)= hutrstep_g(i) + humstepmoss(i)     !kgC/m2/dt
       ! humiftrs(i)  = humiftrs(i)+humstepmoss(i)*(963.62/deltat)!umol/m2/s
       
-    end if          
-470 continue
+!     end if          
+! 470 continue
   !
   !     heterotrophic respiration part ends
   !
@@ -1008,15 +1023,17 @@ contains
   if (PFTCompetition)  lambda = expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
 
   !> Maintenance respiration also reduces leaf, stem, and root biomass.
-  !! when npp for a given pft is positive then this is taken care by
-  !! allocating +ve npp amongst the leaves, stem, and root component.
-  !! when npp for a given pft is negative then maintenance respiration
+  !! when NPP for a given pft is positive then this is taken care by
+  !! allocating positive NPP amongst the leaves, stem, and root component.
+  !! when NPP for a given pft is negative then maintenance respiration
   !! loss is explicitly deducted from each component.
 
+  !FLAG need to do tracer bit below!
+  
   do 600 j = 1, icc
     do 610 i = il1, il2
 
-        !! Convert npp and maintenance respiration from different components
+        !! Convert NPP and maintenance respiration from different components
         !! from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered 
         !! or respired over the model time step (deltat)
 
@@ -1040,16 +1057,16 @@ contains
         rmsvgstp(i,j)=rmsveg(i,j)*(1.0/963.62)*deltat
         rmrvgstp(i,j)=rmrveg(i,j)*(1.0/963.62)*deltat
         
-        if(lfstatus(i,j).ne.4)then
-          if(nppvgstp(i,j).gt.0.0) then
-            ntchlveg(i,j)=afrleaf(i,j)*nppvgstp(i,j)
-            ntchsveg(i,j)=afrstem(i,j)*nppvgstp(i,j)
-            ntchrveg(i,j)=afrroot(i,j)*nppvgstp(i,j)
+        if (lfstatus(i,j) /= 4) then
+          if (nppvgstp(i,j) > 0.0) then
+            ntchlveg(i,j) = afrleaf(i,j) * nppvgstp(i,j)
+            ntchsveg(i,j) = afrstem(i,j) * nppvgstp(i,j)
+            ntchrveg(i,j) = afrroot(i,j) * nppvgstp(i,j)
           else
-            ntchlveg(i,j)=-rmlvgstp(i,j)+afrleaf(i,j)*gppvgstp(i,j)
-            ntchsveg(i,j)=-rmsvgstp(i,j)+afrstem(i,j)*gppvgstp(i,j)
-            ntchrveg(i,j)=-rmrvgstp(i,j)+afrroot(i,j)*gppvgstp(i,j)
-          endif
+            ntchlveg(i,j) = -rmlvgstp(i,j) + afrleaf(i,j) * gppvgstp(i,j)
+            ntchsveg(i,j) = -rmsvgstp(i,j) + afrstem(i,j) * gppvgstp(i,j)
+            ntchrveg(i,j) = -rmrvgstp(i,j) + afrroot(i,j) * gppvgstp(i,j)
+          end if
         else  !>i.e. if lfstatus.eq.4
           
           !> And since we do not have any real leaves on then we do not take into
@@ -1057,22 +1074,22 @@ contains
           !! should be zero because we set maintenance respiration from storage/imaginary 
           !! leaves equal to zero. in loop 180
           !!
-          ntchlveg(i,j)=-rmlvgstp(i,j)
-          ntchsveg(i,j)=-rmsvgstp(i,j)
-          ntchrveg(i,j)=-rmrvgstp(i,j)
+          ntchlveg(i,j) = -rmlvgstp(i,j)
+          ntchsveg(i,j) = -rmsvgstp(i,j)
+          ntchrveg(i,j) = -rmrvgstp(i,j)
           
           !> Since no real leaves are on, make allocation fractions equal to zero.
           
-          afrleaf(i,j)=0.0
-          afrstem(i,j)=0.0
-          afrroot(i,j)=0.0
-        endif
+          afrleaf(i,j) = 0.0
+          afrstem(i,j) = 0.0
+          afrroot(i,j) = 0.0
+        end if
 
-        gleafmas(i,j)=gleafmas(i,j)+ntchlveg(i,j)
-        stemmass(i,j)=stemmass(i,j)+ntchsveg(i,j)
-        rootmass(i,j)=rootmass(i,j)+ntchrveg(i,j)
+        gleafmas(i,j) = gleafmas(i,j) + ntchlveg(i,j)
+        stemmass(i,j) = stemmass(i,j) + ntchsveg(i,j)
+        rootmass(i,j) = rootmass(i,j) + ntchrveg(i,j)
 
-        if(gleafmas(i,j).lt.0.0)then
+        if (gleafmas(i,j) < 0.0) then
           write(6,1900)'gleafmas < zero at i=',i,' for pft=',j,''
           write(6,1901)'gleafmas = ',gleafmas(i,j)
           write(6,1901)'ntchlveg = ',ntchlveg(i,j)
@@ -1082,7 +1099,7 @@ contains
   1900    format(a23,i4,a10,i2,a1)
   1902    format(a11,i4)
           call xit ('ctem',-2)
-        endif
+        end if
 
         if(stemmass(i,j).lt.0.0)then
           write(6,1900)'stemmass < zero at i=(',i,') for pft=',j,')'
@@ -1353,6 +1370,213 @@ contains
 end subroutine ctem 
 !>@}
 ! ----------------------------------------------------------------------------
+!>\ingroup ctem_calcnpp
+!!@{
+!> Calculate NPP (net primary productivity), difference between GPP and 
+!! autotrophic respriation, for each pft and tile. Also sets the net 
+!! photosynthesis to be used by phenology and determines the total 
+!! autotrophic respiration fluxes at the PFT and tile-levels. Calculates
+!! values for both upland and peatland sites.
+!!@author V. Arora, J. Melton
+subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
+                  slai, ailcg, sort, rmsveg, rmrveg, ipeatland, & ! In 
+                  anmoss, fcancmx, rmlmoss, gppmoss, useTracer, & ! In 
+                  gleafmas, tracerGLeafMass, tracerCO2, & ! In 
+                  pheanveg, rmlveg, rml, rms, rmr, rm ,rg, npp, gpp, & ! Out 
+                  autores, autoresveg, rgveg, nppmoss, armoss, & ! Out 
+                  gppveg, nppmosstep, nppveg, tracerNPP) ! Out 
+  
+  use classic_params, only : icc, iccp1, kn, zero, grescoefmoss, deltat, &
+                             grescoef
+
+  implicit none
+
+  ! arguments
+  integer, intent(in) :: il1             !< il1=1
+  integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
+  integer, intent(in) :: ilg
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
+  real, intent(in) :: ancgveg(:,:)      !< net photosynthetic rate for CTEM's pfts 
+  integer, intent(in) :: lfstatus(:,:)  !<leaf phenology status
+  real, intent(in) :: rmlcgveg(:,:)     !< leaf respiration rate for CTEM's pfts
+  real, intent(in) :: slai(:,:)         !<storage/imaginary lai for phenology purposes
+  real, intent(in) :: ailcg(:,:)        !<green lai for ctem's 9 pfts
+  integer, intent(in) :: sort(:)        !< 
+  real, intent(in) :: rmsveg(:,:)       !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
+  real, intent(in) :: rmrveg(:,:)       !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
+  integer, intent(in) :: ipeatland(:)   !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+  real, intent(in) :: anmoss(:)         !< moss net photoysnthesis -daily averaged C fluxes rates (umol/m2/s)
+  real, intent(in) :: fcancmx(:,:)      !< max. fractional coverage of CTEM's pfts, but this can be
+                                        !! modified by land-use change, and competition between pfts
+  real, intent(in) :: rmlmoss(:)        !< moss maintainance respiration -daily averaged C fluxes rates (umol/m2/s)                         
+  real, intent(in) :: gppmoss(:)        !< moss GPP -daily averaged C fluxes rates (umol/m2/s)  
+  real, intent(in) :: gleafmas(:,:)     !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$   
+  real, intent(in) :: tracerGLeafMass(:,:) !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$          
+  real, intent(in) :: tracerCO2(:)       !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
+                                        
+  real, intent(out) :: pheanveg(ilg,icc) !<
+  real, intent(out) :: rmlveg(ilg,icc)   !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: gppveg(ilg,icc)   !< Gross primary productivity per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rml(ilg)          !< Tile level leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rms(ilg)         !<Tile level stem maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rmr(ilg)         !< Tile level Root maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rm(ilg)          !<Tile level maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rg(ilg)          !<Tile level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: npp(ilg)         !< Tile-level net primary productivity (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: gpp(ilg)         !< Tile level gross primary productivity (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: autores(ilg)     !< Tile level autotrophic respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: autoresveg(ilg,icc)  !< PFT level autotrophic respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rgveg(ilg,icc)   !<PFT level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: nppmoss(ilg)     !< Net primary production of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: armoss(ilg)      !<autotrophic respiration of moss (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: nppmosstep(ilg)  !< moss NPP (kgC/m2/timestep)
+  real, intent(out) :: nppveg(ilg,icc)  !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: tracerNPP(ilg,icc) !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  
+  ! Local 
+  integer :: j,i  
+  real :: anveg(ilg,icc)    !<
+  real :: term                 !<
+  real :: rgmoss(ilg)          !< moss growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real :: rmveg(ilg,icc)       !<
+  real :: frac                 !< temp var.
+  real :: tracerRML            !<
+  real :: tracerGPP            !<
+  real :: tracerRG             !<
+  
+  !--------
+  
+  ! NOTE: This next bit is a little tricky. Remember ancgveg is the net photosynthesis 
+  ! so it is ancgveg = gpp - rmlcgveg. Here we assign the daily mean net photosynthesis
+  ! (ancgveg) and mean rml (rmlveg) to the anveg and rmlveg variables 
+  ! and their sum to gpp veg since gpp = anveg + rml if we both have some coverage of the 
+  ! PFT (fcancmx > 1) and the leaves are not imaginary (lfstatus /= 4).
+  ! If no real leaves are in existence we leave rml, anveg and gpp set to 0.
+  ! However, if we have real leaves, but they are quite small we are going to
+  ! reduce rml, but we need to use the original rml to find the gppveg otherwise 
+  ! the gpp will not be corrected properly. We store the original ancgveg for 
+  ! phenology to test if the leaves should be coming out.
+
+  pheanveg = 0. 
+  rmlveg=0.
+  anveg=0.
+  gppveg=0.
+  do 180 j = 1, icc
+    do 190 i = il1, il2
+      
+      if (fcancmx(i,j) > zero) then
+        
+        pheanveg(i,j) = ancgveg(i,j) ! to be used for phenology purposes
+        
+        if (lfstatus(i,j) /= 4) then ! real leaves so use values
+
+          anveg(i,j) = ancgveg(i,j)
+          rmlveg(i,j) = rmlcgveg(i,j)
+          gppveg(i,j) = anveg(i,j) + rmlveg(i,j)
+
+          if(slai(i,j) > ailcg(i,j))then
+            term = ((1.0 / kn(sort(j))) * (1.0 - exp(-kn(sort(j)) * ailcg(i,j))) &
+                  / (1.0 / kn(sort(j))) * (1.0 - exp(-kn(sort(j)) * slai(i,j))))
+            rmlveg(i,j) = rmlveg(i,j) * term
+          end if
+        !else 
+          ! the leaves were imaginary so leave variables set to the initialized 0 value.
+        endif
+      end if
+  190     continue
+  180   continue
+
+  !! Find total maintenance respiration values and net primary productivity.
+  rml(:) = 0.
+  rms(:) = 0.
+  rmr(:) = 0.
+  rm(:) = 0.
+  rg(:) = 0.
+  npp(:) = 0.
+  gpp(:) = 0.
+  tracerNPP(:,:) = 0.
+  
+  do 270 j = 1, icc
+    do 280 i = il1, il2
+      rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
+      nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
+            
+      if (useTracer > 0) then 
+        !> Determine the NPP for the tracer. To find the value of rml for the tracer 
+        !! we need to scale the 'normal' rml value by the proportion of tracer to 
+        !! 12C. Because the calculation of rml does not include leaf mass (only fpar 
+        !! so by extentions LAI), there is no simple means to calculate tracerRML.
+        frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+        tracerRML = rmlveg(i,j) * frac 
+        
+        !> Now we can find the tracerGPP by multiplying the gppveg value by the 
+        !! tracerCO2 value.
+        tracerGPP = gppveg(i,j) * tracerCO2(i)
+        
+        !> And from that calculate the tracerNPP, which is what we are needing.
+        tracerNPP(i,j) = tracerGPP - tracerRML
+        
+        tracerRG = 0.
+        if (tracerNPP(i,j) > 0.) tracerRG = grescoef(sort(j)) * tracerNPP(i,j)
+        
+        tracerNPP(i,j) = tracerNPP(i,j) - tracerRG
+        
+      end if 
+      
+      !> Now that we know maintenance respiration from leaf, stem, and root
+      !! and gpp, we can find growth respiration for each vegetation type
+
+      if( nppveg(i,j) > zero ) then
+          rgveg(i,j) = grescoef(sort(j)) * nppveg(i,j)
+      else
+          rgveg(i,j) = 0.0
+      endif
+      nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
+
+      !>Calculate grid/tile-averaged rates of rm, rg, npp, and gpp
+      rml(i) = rml(i) + fcancmx(i,j) * rmlveg(i,j)
+      rms(i) = rms(i) + fcancmx(i,j) * rmsveg(i,j)
+      rmr(i) = rmr(i) + fcancmx(i,j) * rmrveg(i,j)
+      rm(i) = rm(i) + fcancmx(i,j) * rmveg(i,j)
+      rg(i) = rg(i) + fcancmx(i,j) * rgveg(i,j)
+      npp(i) = npp(i) + fcancmx(i,j) * nppveg(i,j)
+      gpp(i) = gpp(i) + fcancmx(i,j) * gppveg(i,j)
+      autores(i) = rg(i) + rm(i)
+      autoresveg(i,j) = rmveg(i,j) + rgveg(i,j)
+
+  280 continue 
+  270 continue 
+  !
+  !>    Add moss GPP and rml to the grid/tile average C fluxes
+  !>    for grid cells which have peatlands
+  !
+  do 335 i = il1, il2
+    if (ipeatland(i) > 0) then
+      rgmoss(i) = anmoss(i)*grescoefmoss
+      rml(i)= rml(i) + rmlmoss(i)
+      rm(i) = rm(i)  + rmlmoss(i)
+      rg(i) = rg(i)  + rgmoss (i)
+      armoss(i) = rmlmoss(i) + rgmoss(i)
+      nppmoss(i) = anmoss(i) - rgmoss(i)
+      npp(i)= npp(i) + nppmoss (i)
+      gpp(i)= gpp(i) + gppmoss(i)
+      autores(i) = autores(i) + armoss(i)
+      
+      nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
+      
+    else 
+      nppmosstep(i)= 0.
+    endif
+  335   continue
+  
+end subroutine calcNPP
+!>@}
+! ----------------------------------------------------------------------------
+
 !>\ingroup ctem_calcnep
 !!@{
 !> Calculate NEP (net ecosystem productivity), difference between NPP and 

@@ -2920,7 +2920,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
         ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
         ! and uses daily accumulated values of variables simulated by CLASS.
-        call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,& ! In
+        call ctem (     fsnowacc_t,    sandgat,    claygat,& ! In
                        ilg,      1,        nml,        iday,    radjgat,     &! In
                          taaccgat_t,    dlzwgat, ancgvgac_t,   rmlcgvga_t,& ! In
                             zbtwgat, & ! In
@@ -2944,7 +2944,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                         gavgltmsgat, gavgscmsgat, stmhrlosgat,     slaigat,& ! In/Out
                          bmasveggat, cmasvegcgat,  colddaysgat, rothrlosgat,& ! In/Out
                             fcangat,  alvsctmgat,   alirctmgat,  gavglaigat,&! In/Out
-                   Cmossmasgat,  litrmsmossgat,      peatdepgat,        &! In/Out
+                   Cmossmasgat,  litrmsmossgat,      peatdepgat,   fcancmxgat,   &! In/Out
                    geremortgat,    intrmortgat,    pstemmassgat,   pgleafmassgat,&! In/Out
                          tcurm,       srpcuryr,        dftcuryr,       lambdagat,&! In/Out
                              tmonth,    anpcpcur,      anpecur,     gdd5cur,&! In/Out
