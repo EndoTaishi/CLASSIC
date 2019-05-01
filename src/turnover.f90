@@ -17,10 +17,10 @@ contains
 !> Calculates the litter generated from stem and root turnover
 !> @author Vivek Arora and Joe Melton
 subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
-                           il1,      il2,       ilg,  leapnow,& !In
-                          sort,  fcancmx,& !In
+                           il1,      il2,       ilg,  leapnow, useTracer, & !In
+                          sort,  fcancmx, tracerStemMass, tracerRootMass, & !In
                           stmhrlos, rothrlos,& ! In / Out
-                          stemlitr, rootlitr) ! Out 
+                          stemlitr, rootlitr, tracerStemLitr, tracerRootLitr) ! Out 
   !               
   !     06  Dec 2018  - Pass ilg back in as an argument 
   !     V. Arora        
@@ -48,10 +48,17 @@ subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
   integer, intent(in) :: il2 !<il2=ilg
   integer, intent(in) :: lfstatus(ilg,icc) !<leaf status. an integer indicating if leaves are in "max.  
                           !< growth", "normal growth", "fall/harvest", or "no leaves" mode. see phenolgy subroutine for more details.
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                          
   logical, intent(in) :: leapnow     !< true if this year is a leap year. Only used if the switch 'leap' is true.
   integer, intent(in) :: sort(icc)      !<index for correspondence between ctem pfts and size of parameter vectors
   real, intent(in) :: stemmass(ilg,icc) !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(in) :: rootmass(ilg,icc) !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+  real, intent(in) :: tracerStemMass(:,:)  !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(in) :: tracerRootMass(:,:)  !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
   real, intent(in) :: ailcg(ilg,icc)    !<green or live lai
   real, intent(in) :: fcancmx(ilg,icc)  !<max. fractional coverage of CTEM pfts, but this can be modified by 
                                         !!land-use change, and competition between pfts
@@ -61,10 +68,13 @@ subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
                                           !! also assumed to be harvested and this generates litter.
   real, intent(out) :: stemlitr(ilg,icc) !<stem litter \f$(kg C/m^2)\f$
   real, intent(out) :: rootlitr(ilg,icc) !<root litter \f$(kg C/m^2)\f$
+  real, intent(out) :: tracerStemLitr(ilg,icc) !< Tracer stem litter \f$tracer C units/m^2\f$
+  real, intent(out) :: tracerRootLitr(ilg,icc) !< Tracer root litter \f$tracer C units/m^2\f$
 
   integer :: i, j, k, n, m
   real :: nrmlsmlr(ilg,icc) !<stem litter from normal turnover
   real :: nrmlrtlr(ilg,icc) !<root litter from normal turnover
+  real :: frac !< temp. var.
   
   ! Initialize required arrays to zero
   stemlitr = 0.0
@@ -141,6 +151,12 @@ subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
       if (fcancmx(i,j) > 0.0) then
         stemlitr(i,j) = nrmlsmlr(i,j) + stmhrlos(i,j)
         rootlitr(i,j) = nrmlrtlr(i,j) + rothrlos(i,j)
+        if (useTracer > 0) then 
+          frac = tracerStemMass(i,j) / stemmass(i,j)
+          tracerStemLitr(i,j) = stemlitr(i,j) * frac 
+          frac = tracerRootMass(i,j) / rootmass(i,j)
+          tracerRootLitr(i,j) = rootlitr(i,j) * frac 
+        end if 
      end if
 360 continue
 350 continue
@@ -158,9 +174,12 @@ end subroutine turnoverStemRoot
 !! calculated in the turnover subroutine. Also add the reproduction
 !!  carbon directly to the litter pool.
 !> @author Vivek Arora and Joe Melton
-subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
+subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tracerReproCost, & !In
                                 stemmass, rootmass, litrmass, rootlitr,& !In/Out
-                                gleafmas, bleafmas, leaflitr, stemlitr) !In/Out
+                                gleafmas, bleafmas, leaflitr, stemlitr, & !In/Out
+                                tracerGLeafMass,tracerBLeafMass, tracerLitrMass,& ! In/Out 
+                                tracerRootMass, tracerStemMass, & ! In/Out 
+                                tracerLeafLitr,tracerStemLitr, tracerRootLitr) !In/Out
   
   use classic_params, only : ican, nol2pfts,classpfts,deltat,icc,ignd,reindexPFTs 
   
@@ -170,8 +189,15 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
   integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
   integer, intent(in) :: ilg             !< no. of grid cells/tiles in latitude circle
   real, intent(in) :: reprocost(:,:)     !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real, intent(in) :: tracerReproCost(:,:)  !< Tracer cost of making reproductive tissues, only non-zero when
+                                            !! NPP is positive (\f$\tracer C units m^{-2} s^{-1}\f$) 
   real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
-     
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                          
+                                
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
@@ -180,6 +206,15 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
   real, intent(inout) :: leaflitr(:,:)   !<leaf litter \f$(kg C/m^2)\f$
   real, intent(inout) :: rootlitr(:,:)   !<root litter \f$(kg C/m^2)\f$
   real, intent(inout) :: stemlitr(:,:)   !<stem litter \f$(kg C/m^2)\f$
+  real, intent(inout) :: tracerStemLitr(:,:) !< Tracer stem litter \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootLitr(:,:) !< Tracer root litter \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLeafLitr(ilg,icc)  !<Tracer leaf litter generated by normal turnover, cold
+                                                  !< and drought stress, and leaf fall/harvest,\f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
   
   ! Local.
   integer :: j,m,i,k
@@ -198,6 +233,14 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
               leaflitr(i,m) = leaflitr(i,m) + gleafmas(i,m)
               gleafmas(i,m) = 0.0
             end if
+            
+            if (useTracer > 0) then 
+              tracerGLeafMass(i,m) = tracerGLeafMass(i,m) - tracerLeafLitr(i,m)
+              if (gleafmas(i,m) < 0.0) then
+                tracerLeafLitr(i,m) = tracerLeafLitr(i,m) + tracerGLeafMass(i,m)
+                tracerGLeafMass(i,m) = 0.0
+              end if
+            end if 
 
           case('Grass')
 
@@ -206,6 +249,15 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
               leaflitr(i,m) = leaflitr(i,m) + bleafmas(i,m)
               bleafmas(i,m) = 0.0
             end if
+            
+            if (useTracer > 0) then 
+              tracerBLeafMass(i,m) = tracerBLeafMass(i,m) - tracerLeafLitr(i,m)
+              if (bleafmas(i,m) < 0.0) then
+                tracerLeafLitr(i,m) = tracerLeafLitr(i,m) + tracerBLeafMass(i,m)
+                tracerBLeafMass(i,m) = 0.0
+              end if
+            end if 
+            
 
           case default
 
@@ -225,12 +277,29 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
         stemlitr(i,j) = stemlitr(i,j) + stemmass(i,j)
         stemmass(i,j) = 0.0
       end if
+      
+      if (useTracer > 0) then 
+        tracerStemMass(i,j) = tracerStemMass(i,j) - tracerStemLitr(i,j)
+        if (stemmass(i,j) < 0.0) then
+          tracerStemLitr(i,j) = tracerStemLitr(i,j) + tracerStemMass(i,j)
+          tracerStemMass(i,j) = 0.0
+        end if
+      end if 
 
       rootmass(i,j) = rootmass(i,j) - rootlitr(i,j)
       if (rootmass(i,j) < 0.0) then
         rootlitr(i,j) = rootlitr(i,j) + rootmass(i,j)
         rootmass(i,j) = 0.0
       end if
+      
+      if (useTracer > 0) then 
+        tracerRootMass(i,j) = tracerRootMass(i,j) - tracerRootLitr(i,j)
+        if (rootmass(i,j) < 0.0) then
+          tracerRootLitr(i,j) = tracerRootLitr(i,j) + tracerRootMass(i,j)
+          tracerRootMass(i,j) = 0.0
+        end if
+      end if 
+
 790 continue
 780 continue
   
@@ -248,10 +317,18 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem,& !In
                             + rootlitr(i,j) * rmatctem(i,j,k) &
                             + reprocost(i,j) * deltat / 963.62
 
-
+          if (useTracer > 0) then 
+            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLeafLitr(i,j) + tracerStemLitr(i,j) &
+                              + tracerRootLitr(i,j) * rmatctem(i,j,k) &
+                              + tracerReproCost(i,j) * deltat / 963.62
+          end if 
         else ! the lower soil layers get the roots, in the proportion that they
              ! are in the unfrozen soil column.
           litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
+          
+          if (useTracer > 0) then 
+            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerRootLitr(i,j) * rmatctem(i,j,k)
+          end if 
         end if
 
 810     continue

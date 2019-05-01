@@ -19,10 +19,11 @@ contains
 !> @author Vivek Arora and Joe Melton
 subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In 
                           bleafmas,        il1,      il2,       ilg,& ! In 
-                           leapnow,       iday,     sort,   fcancmx,& ! In 
+                          leapnow,       iday,     sort,   fcancmx,& ! In 
+                          useTracer, tracerStemMass, tracerRootMass, tracerGLeafMass, & ! In 
                           lystmmas,   lyrotmas, tymaxlai,  grwtheff,& ! In/Out
                           stemltrm,  rootltrm,  glealtrm,  geremort,& ! Out
-                           intrmort) !Out
+                           intrmort, tracerStemMort, tracerRootMort, tracerGLeafMort) !Out
   !
   !     07  Dec 2018  - Pass ilg back in as an argument
   !     V. Arora
@@ -49,12 +50,20 @@ subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In
   integer, intent(in) :: il1    !<il1=1
   integer, intent(in) :: il2    !<il2=ilg
   integer, intent(in) :: iday   !<day of the year
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                          
   logical, intent(in) :: leapnow   !< true if this year is a leap year. Only used if the switch 'leap' is true.
   real, intent(in) :: fcancmx(ilg,icc)  !<
   integer, intent(in) :: sort(icc) !<index for correspondence between ctem 9 pfts and size 12 of parameters vectors
   real, intent(in) :: stemmass(ilg,icc) !<stem mass for each of the 9 ctem pfts, \f$(kg C/m^2)\f$
   real, intent(in) :: rootmass(ilg,icc) !<root mass for each of the 9 ctem pfts, \f$(kg C/m^2)\f$
   real, intent(in) :: gleafmas(ilg,icc) !<green leaf mass for each of the 9 ctem pfts, \f$(kg C/m^2)\f$
+  real, intent(in) :: tracerStemMass(:,:)  !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(in) :: tracerRootMass(:,:)  !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(in) :: tracerGLeafMass(:,:) !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
   real, intent(in) :: ailcg(ilg,icc)    !<green or live lai
   real, intent(in) :: bleafmas(ilg,icc) !<brown leaf mass for each of the 9 ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: grwtheff(ilg,icc) !<growth efficiency. change in biomass per year per unit max. lai (g c/m2)/(m2/m2)
@@ -66,6 +75,10 @@ subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In
   real, intent(out) :: glealtrm(ilg,icc) !<green leaf litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(out) :: geremort(ilg,icc) !<growth efficiency related mortality (1/day)
   real, intent(out) :: intrmort(ilg,icc) !<intrinsic mortality (1/day)
+  real, intent(out) :: tracerStemMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
+  real, intent(out) :: tracerRootMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
+  real, intent(out) :: tracerGLeafMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
+
 
   integer i, j, k,n
 
@@ -75,10 +88,13 @@ subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In
   glealtrm = 0.0
   geremort = 0.0
   intrmort = 0.0
+  tracerStemMort = 0.0
+  tracerRootMort = 0.0
+  tracerGLeafMort = 0.0
 
   ! ------------------------------------------------------------------
   
-  !! At the end of every year, i.e. when iday equals 365, we calculate
+  !! At the end of every year, i.e. when iday equals 365/366, we calculate
   !! growth related mortality. rather than using this number to kill
   !! plants at the end of every year, this mortality rate is applied
   !! gradually over the next year.
@@ -149,6 +165,11 @@ subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In
         stemltrm(i,j) = stemmass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
         rootltrm(i,j) = rootmass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
         glealtrm(i,j) = gleafmas(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+        if (useTracer > 0) then  
+          tracerStemMort(i,j) = tracerStemMass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+          tracerRootMort(i,j) = tracerRootMass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+          tracerGLeafMort(i,j) = tracerGLeafMass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+        end if 
       end if
 310 continue
 300 continue
@@ -163,10 +184,11 @@ end subroutine mortalty
 !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
 !!litter into the litter pool. The mortality for green grasses doesn't generate litter, instead they turn brown.
 !> @author Vivek Arora and Joe Melton
-subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In 
-                                rmatctem,   & !In
+subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, useTracer, & ! In 
+                                rmatctem, tracerStemMort, tracerRootMort, tracerGLeafMort,  & !In
                                 stemmass, rootmass, litrmass, & !In/Out
-                                glealtrm, gleafmas, bleafmas, & !In/Out
+                                glealtrm, gleafmas, bleafmas, tracerLitrMass, & !In/Out
+                                tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass,& ! In/Out 
                                 mortLeafGtoB) ! Out
   
   use classic_params, only : ican, nol2pfts,classpfts,ignd,icc,reindexPFTs
@@ -179,13 +201,26 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
   real, intent(in)    :: stemltrm(:,:)   !<stem litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(in)    :: rootltrm(:,:)   !<root litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(in)    :: rmatctem(:,:,:) !<fraction of roots for each of ctem's 9 pfts in each soil layer
-  
+  real, intent(in) :: tracerStemMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
+  real, intent(in) :: tracerRootMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                          
+
   real, intent(inout) :: glealtrm(:,:)   !<green leaf litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(inout) :: stemmass(:,:)   !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+  real, intent(inout) :: tracerStemMass(:,:)  !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)  !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerGLeafMass(:,:) !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:) !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerGLeafMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
   
   real, intent(out) :: mortLeafGtoB(ilg,icc)     !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
   
@@ -201,18 +236,31 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
         stemmass(i,m) = stemmass(i,m) - stemltrm(i,m)
         rootmass(i,m) = rootmass(i,m) - rootltrm(i,m)
         
+        if (useTracer > 0) then ! Update the tracer pools if being used.
+          tracerStemMass(i,m) = tracerStemMass(i,m) - tracerStemMort(i,m)
+          tracerRootMass(i,m) = tracerRootMass(i,m) - tracerRootMort(i,m)
+        end if       
+        
         select case(classpfts(j))
 
         case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')
 
           gleafmas(i,m) = gleafmas(i,m) - glealtrm(i,m)
 
+          if (useTracer > 0) tracerGLeafMass(i,m) = tracerGLeafMass(i,m) - tracerGLeafMort(i,m)
+          
         case('Grass')    ! grasses
 
           gleafmas(i,m) = gleafmas(i,m) - glealtrm(i,m)
           bleafmas(i,m) = bleafmas(i,m) + glealtrm(i,m)
           mortLeafGtoB(i,m) = glealtrm(i,m)
           glealtrm(i,m) = 0.0
+          
+          if (useTracer > 0) then ! Update the tracer pools if being used.
+            tracerGLeafMass(i,m) = tracerGLeafMass(i,m) - tracerGLeafMort(i,m)
+            tracerBLeafMass(i,m) = tracerBLeafMass(i,m) + tracerGLeafMort(i,m)
+            tracerGLeafMort(i,m) = 0.0
+          end if 
 
         case default
 
@@ -228,8 +276,15 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, & ! In
             litrmass(i,m,k) = litrmass(i,m,k) + stemltrm(i,m) &
                                               + rootltrm(i,m) * rmatctem(i,m,k) &
                                               + glealtrm(i,m)
+                                              
+            if (useTracer > 0) tracerLitrMass(i,m,k) = tracerLitrMass(i,m,k) + tracerStemMort(i,m) &
+                                              + tracerRootMort(i,m) * rmatctem(i,m,k) &
+                                              + tracerGLeafMort(i,m)
           else
             litrmass(i,m,k) = litrmass(i,m,k) + rootltrm(i,m) * rmatctem(i,m,k)
+            
+            if (useTracer > 0) tracerLitrMass(i,m,k) = tracerLitrMass(i,m,k) + tracerRootMort(i,m) * rmatctem(i,m,k)
+            
           end if
 845     continue
 840   continue
