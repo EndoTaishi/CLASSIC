@@ -1237,22 +1237,20 @@ contains
   !! a given grid cell. however, when ctem is operated at a point scale then it is assumed that the
   !! spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating
   !! any fire by specifying fire extingushing probability equal to 1.
-  call disturb (stemmass, rootmass, gleafmas, bleafmas,& !In
-                           thliq,    THLW,      THFC,    uwind,& !In
-                            vwind,  lightng,  fcancmx, litrmass,& !In
-                         rmatctem,     ilg,  il1,      il2,     sort, & !In
-                         grclarea,   thice,   popdin, lucemcom,& !In
-                           dofire,  currlat,     iday, fsnow,& !In
-                            isand,  & !In
-                         stemltdt, rootltdt, glfltrdt, blfltrdt,& !Out (Primary)
-                         glcaemls, rtcaemls, stcaemls,& !Out (Primary)
-                         blcaemls,   ltrcemls,   burnfrac,               & !Out (Primary)
-                         pstemmass,  pgleafmass, emit_co2,    emit_ch4,   & !Out (Primary)
-                         emit_co,  emit_nmhc,                           & ! Out (Secondary)
-                         emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
-                         emit_tpm, emit_tc,  emit_oc,  emit_bc,& ! Out (Secondary)
-                         burnvegf, bterm_veg,mterm_veg,  lterm,& ! Out (Secondary)
-                        smfunc_veg) ! Out (Secondary) 
+  call disturb (thliq,    THLW,      THFC,    uwind,& !In
+                  vwind,  lightng,  fcancmx, isand, & !In
+                  rmatctem,     ilg,  il1,      il2,     sort, & !In
+                  grclarea,   thice,   popdin, lucemcom,& !In
+                  dofire,  currlat,     iday, fsnow,& !In
+                  stemmass, rootmass, gleafmas, bleafmas, litrmass,& !In/Out
+                  stemltdt, rootltdt, glfltrdt, blfltrdt,& !Out (Primary)
+                  glcaemls, rtcaemls, stcaemls,& !Out (Primary)
+                  blcaemls,   ltrcemls,   burnfrac,               & !Out (Primary)
+                  pstemmass,  pgleafmass, emit_co2,    emit_ch4,   & !Out (Primary)
+                  emit_co,  emit_nmhc,  emit_h2,  emit_nox,        & ! Out (Secondary)
+                  emit_n2o, emit_pm25, emit_tpm, emit_tc, & ! Out (Secondary)
+                  emit_oc,  emit_bc, burnvegf, bterm_veg,& ! Out (Secondary)
+                  mterm_veg,  lterm, smfunc_veg) ! Out (Secondary) 
 
   !> Calculate NBP (net biome production) for each pft by taking into account
   !! C emission losses. The disturbance routine produces emissions due to fire

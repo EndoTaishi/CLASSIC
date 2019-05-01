@@ -16,22 +16,21 @@ contains
 !> Calculates whether fire occurs, burned area, amount of C emitted and litter generated
 !> @author Vivek Arora and Joe Melton
 
-subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
-                    thliq,   THLW,       THFC,    uwind,      & !In
-                    vwind,  lightng,  fcancmx, litrmass,      & !In
+subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
+                    vwind,  lightng,  fcancmx, isand,    & !In
                  rmatctem,      ilg,   il1,      il2,   sort, & !In
                  grclarea,    thice,   popdin, lucemcom,      & !In
-                   dofire,  currlat,     iday,  fsnow,        & !In
-                    isand,                                    & !In
+                 dofire,  currlat,     iday,  fsnow,        & !In
+                 stemmass, rootmass, gleafmas, bleafmas,  litrmass,     & !In?out
                  stemltdt,   rootltdt,   glfltrdt,    blfltrdt,   & ! Out (Primary)
                  glcaemls,   rtcaemls,   stcaemls,                &! Out (Primary)
                  blcaemls,   ltrcemls,   burnfrac,                &! Out (Primary)
                 pstemmass, pgleafmass,  emit_co2,     emit_ch4,   &! Out (Primary)
-                  emit_co,  emit_nmhc,                            &! Out (Secondary)
-                  emit_h2,   emit_nox,   emit_n2o,   emit_pm25,   &! Out (Secondary)
-                 emit_tpm,    emit_tc,    emit_oc,     emit_bc,   &! Out (Secondary)
-                 burnvegf,  bterm_veg,  mterm_veg,       lterm,   &! Out (Secondary)
-               smfunc_veg)! Out (Secondary)
+                  emit_co,  emit_nmhc,  emit_h2,  emit_nox,        & ! Out (Secondary)
+                  emit_n2o, emit_pm25, emit_tpm, emit_tc, & ! Out (Secondary)
+                  emit_oc,  emit_bc, burnvegf, bterm_veg,& ! Out (Secondary)
+                  mterm_veg,  lterm, smfunc_veg ) ! Out (Secondary) 
+
 
   !
   !     20  Nov 2018  - Remove extnprob from going in. It's redundant now because
@@ -83,73 +82,74 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
   
   implicit none
 
-  real, dimension(ilg,icc), intent(out) :: pstemmass
-  real, dimension(ilg,icc), intent(out) :: pgleafmass
-  
-  integer :: ilg !<
-  integer :: il1 !<il1=1
-  integer :: il2 !<il2=ilg
-  integer :: i,j,k,m,k1,k2,n
-
-  integer isand(ilg,ignd) !<
-  integer :: sort(icc) !<index for correspondence between 9 pfts and size 12 of parameters vectors
-  integer :: iday
-
-  logical :: dofire !<boolean, if true allow fire, if false no fire.
-  logical :: fire(ilg) !<fire occuring
-
-  real :: stemmass(ilg,icc)  !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  real :: rootmass(ilg,icc)  !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  real :: gleafmas(ilg,icc)  !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  real :: bleafmas(ilg,icc)  !<brown leaf mass
-  real :: thliq(ilg,ignd)    !<liquid soil moisture content
-  real :: THLW(ilg,ignd)   !<wilting point soil moisture content
-  real :: THFC(ilg,ignd)  !<field capacity soil moisture content
-  real :: uwind(ilg)         !<wind speed, \f$m/s\f$
-  real :: vwind(ilg)         !<wind speed, \f$m/s\f$
-  real :: fcancmx(ilg,icc)   !<fractional coverages of ctem's 9 pfts
-  real :: lightng(ilg)       !<total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
+  integer, intent(in) :: ilg !<
+  integer, intent(in) :: il1 !<il1=1
+  integer, intent(in) :: il2 !<il2=ilg
+  integer, intent(in) :: isand(ilg,ignd) !<
+  integer, intent(in) :: sort(icc) !<index for correspondence between 9 pfts and size 12 of parameters vectors
+  integer, intent(in) :: iday
+  logical, intent(in) :: dofire !<boolean, if true allow fire, if false no fire
+  real, intent(in) :: thliq(ilg,ignd)    !<liquid soil moisture content
+  real, intent(in) :: THLW(ilg,ignd)   !<wilting point soil moisture content
+  real, intent(in) :: THFC(ilg,ignd)  !<field capacity soil moisture content
+  real, intent(in) :: uwind(ilg)         !<wind speed, \f$m/s\f$
+  real, intent(in) :: vwind(ilg)         !<wind speed, \f$m/s\f$
+  real, intent(in) :: fcancmx(ilg,icc)   !<fractional coverages of ctem's 9 pfts
+  real, intent(in) :: lightng(ilg)       !<total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
                              !<to ground lightning is some fixed fraction of total lightning.
-  real :: litrmass(ilg,iccp2,ignd)!<litter mass for each of the 9 pfts
-  real :: prbfrhuc(ilg)      !<probability of fire due to human causes
-  real :: extnprob(ilg)      !<fire extinguishing probability
-  real :: rmatctem(ilg,icc,ignd) !<fraction of roots in each soil layer for each pft
-  real :: thice(ilg,ignd)   !<frozen soil moisture content over canopy fraction
-  real :: popdin(ilg)       !<population density \f$(people / km^2)\f$
-  real :: lucemcom(ilg)     !<land use change (luc) related combustion emission losses, \f$u-mol co2/m2.sec\f$
-  real :: tmpprob(ilg)      !<
-  real :: currlat(ilg)      !<
-  real :: fsnow(ilg)        !<fraction of snow simulated by class
+  real, intent(in) :: rmatctem(ilg,icc,ignd) !<fraction of roots in each soil layer for each pft
+  real, intent(in) :: thice(ilg,ignd)   !<frozen soil moisture content over canopy fraction
+  real, intent(in) :: popdin(ilg)       !<population density \f$(people / km^2)\f$
+  real, intent(in) :: lucemcom(ilg)     !<land use change (luc) related combustion emission losses, \f$u-mol co2/m2.sec\f$
+  real, intent(in) :: currlat(ilg)      !<
+  real, intent(in) :: fsnow(ilg)        !<fraction of snow simulated by class
 
-  real :: stemltdt(ilg,icc) !<stem litter generated due to disturbance \f$(kg c/m^2)\f$
-  real :: rootltdt(ilg,icc) !<root litter generated due to disturbance \f$(kg c/m^2)\f$
-  real :: glfltrdt(ilg,icc) !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-  real :: burnarea(ilg)     !<total area burned, \f$km^2\f$
+  real, intent(inout) :: stemmass(ilg,icc)  !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: rootmass(ilg,icc)  !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: gleafmas(ilg,icc)  !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: bleafmas(ilg,icc)  !<brown leaf mass
+  real, intent(inout) :: litrmass(ilg,iccp2,ignd)!<litter mass for each of the 9 pfts
 
+  real, intent(out) :: stemltdt(ilg,icc) !<stem litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, intent(out) :: rootltdt(ilg,icc) !<root litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, intent(out) :: glfltrdt(ilg,icc) !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, intent(out) :: pstemmass(ilg,icc)
+  real, intent(out) :: pgleafmass(ilg,icc)
+  real, intent(out) :: burnvegf(ilg,icc)    !<per PFT fraction burned of that PFTs area
+  real, intent(out) :: bterm_veg(ilg,icc)    !<biomass fire probability term, Vivek
+  real, intent(out) :: mterm_veg(ilg,icc)    !<moisture fire probability term, Vivek
+  real, intent(out) :: lterm(ilg)           !<lightning fire probability term
+  real, intent(out) :: smfunc_veg(ilg,icc)   !<soil moisture dependence on fire spread rate, Vivek
+  
   !     note the following c burned will be converted to a trace gas
   !     emission or aerosol on the basis of emission factors.
-  real :: glcaemls(ilg,icc) !<green leaf carbon emission losses, \f$kg c/m^2\f$
-  real :: rtcaemls(ilg,icc) !<root carbon emission losses, \f$kg c/m^2\f$
-  real :: stcaemls(ilg,icc) !<stem carbon emission losses, \f$kg c/m^2\f$
-  real :: ltrcemls(ilg,icc) !<litter carbon emission losses, \f$kg c/m^2\f$
-  real :: blfltrdt(ilg,icc) !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-  real :: blcaemls(ilg,icc) !<brown leaf carbon emission losses, \f$kg c/m^2\f$
-  real :: burnfrac(ilg)     !<total areal fraction burned, (%)
+  real, intent(out) :: glcaemls(ilg,icc) !<green leaf carbon emission losses, \f$kg c/m^2\f$
+  real, intent(out) :: rtcaemls(ilg,icc) !<root carbon emission losses, \f$kg c/m^2\f$
+  real, intent(out) :: stcaemls(ilg,icc) !<stem carbon emission losses, \f$kg c/m^2\f$
+  real, intent(out) :: ltrcemls(ilg,icc) !<litter carbon emission losses, \f$kg c/m^2\f$
+  real, intent(out) :: blfltrdt(ilg,icc) !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+  real, intent(out) :: blcaemls(ilg,icc) !<brown leaf carbon emission losses, \f$kg c/m^2\f$
+  real, intent(out) :: burnfrac(ilg)     !<total areal fraction burned, (%)
 
   !     emitted compounds from biomass burning (kg {species} / m2 / s)
-  real :: emit_co2(ilg,icc) !<carbon dioxide
-  real :: emit_co(ilg,icc)  !<carbon monoxide
-  real :: emit_ch4(ilg,icc) !<methane
-  real :: emit_nmhc(ilg,icc)!<non-methane hydrocarbons
-  real :: emit_h2(ilg,icc)  !<hydrogen gas
-  real :: emit_nox(ilg,icc) !<nitrogen oxides
-  real :: emit_n2o(ilg,icc) !<nitrous oxide
-  real :: emit_pm25(ilg,icc)!<particulate matter less than 2.5 um in diameter
-  real :: emit_tpm(ilg,icc) !<total particulate matter
-  real :: emit_tc(ilg,icc)  !<total carbon
-  real :: emit_oc(ilg,icc)  !<organic carbon
-  real :: emit_bc(ilg,icc)  !<black carbon
+  real, intent(out) :: emit_co2(ilg,icc) !<carbon dioxide
+  real, intent(out) :: emit_co(ilg,icc)  !<carbon monoxide
+  real, intent(out) :: emit_ch4(ilg,icc) !<methane
+  real, intent(out) :: emit_nmhc(ilg,icc)!<non-methane hydrocarbons
+  real, intent(out) :: emit_h2(ilg,icc)  !<hydrogen gas
+  real, intent(out) :: emit_nox(ilg,icc) !<nitrogen oxides
+  real, intent(out) :: emit_n2o(ilg,icc) !<nitrous oxide
+  real, intent(out) :: emit_pm25(ilg,icc)!<particulate matter less than 2.5 um in diameter
+  real, intent(out) :: emit_tpm(ilg,icc) !<total particulate matter
+  real, intent(out) :: emit_tc(ilg,icc)  !<total carbon
+  real, intent(out) :: emit_oc(ilg,icc)  !<organic carbon
+  real, intent(out) :: emit_bc(ilg,icc)  !<black carbon
 
+  ! Local
+  integer :: i,j,k,m,k1,k2,n
+  real :: prbfrhuc(ilg)      !<probability of fire due to human causes
+  real :: extnprob(ilg)      !<fire extinguishing probability
+  real :: burnarea(ilg)     !<total area burned, \f$km^2\f$
   real :: biomass(ilg,icc)  !<total biomass for fire purposes
   real :: drgtstrs(ilg,icc) !<soil dryness factor for pfts
   real :: betadrgt(ilg,ignd)!<dryness term for soil layers
@@ -159,7 +159,6 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
   real :: c2glgtng(ilg)     !<cloud-to-ground lightning
   real :: betalght(ilg)     !<0-1 lightning term
   real :: y(ilg)            !<logistic dist. for fire prob. due to lightning
-  real :: lterm(ilg)        !<lightning fire probability term
   real :: temp(ilg)         !<
   real :: betmsprd(ilg)     !<beta moisture for calculating fire spread rate
   real :: smfunc(ilg)       !<soil moisture function used for fire spread rate
@@ -173,37 +172,26 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
   real :: grclarea(ilg)     !<gcm grid cell area, \f$km^2\f$
   real :: tot_emit          !<sum of all pools to be converted to emissions/aerosols \f$(g c/m^2)\f$
   real :: tot_emit_dom      !<tot_emit converted to \f$kg dom / m^2\f$
-  real :: burnvegf(ilg,icc) !<per PFT fraction burned of that PFTs area
-
   real :: natural_ignitions(ilg) !<
   real :: anthro_ignitions(ilg)  !<
   real :: fire_supp(ilg)         !<
   real :: num_ignitions(ilg, icc)!<
   real :: num_fires(ilg, icc)    !<
-
   real :: hb_interm    !<interm calculation
   real :: hbratio(ilg) !<head to back ratio of ellipse
-
-  real, dimension(ilg) :: surface_duff_f  !<fraction of biomass that is in the surface duff (grass brown leaves + litter)
-  real, dimension(ilg,icc) :: pftareab    !<areas of different pfts in a grid cell, before fire, \f$km^2\f$
+  real :: surface_duff_f(ilg)  !<fraction of biomass that is in the surface duff (grass brown leaves + litter)
+  real :: pftareab(ilg,icc)    !<areas of different pfts in a grid cell, before fire, \f$km^2\f$
                                           !<pft area before fire \f$(km^2)\f$
-
-
   real :: ymin, ymax, slope
   real :: soilterm  !<temporary variable
   real :: duffterm  !<temporary variable
   real :: extn_par1 !<parameter used in calculation of fire extinguishing probability
-
-  real, dimension(ilg,icc) :: bterm_veg    !<biomass fire probability term, Vivek
-  real, dimension(ilg,icc) :: duff_frac_veg!<duff fraction for each PFT, Vivek
-  real, dimension(ilg,icc) :: mterm_veg    !<moisture fire probability term, Vivek
-  real, dimension(ilg,icc) :: probfire_veg !<PFT fire probability term, Vivek
-  real, dimension(ilg,icc) :: smfunc_veg   !<soil moisture dependence on fire spread rate, Vivek
-  real, dimension(ilg,icc) :: sprdrate_veg !<per PFT fire spread rate
-  real, dimension(ilg,icc) :: arbn1day_veg !<per PFT area burned in 1 day
-  real, dimension(ilg,icc) :: burnarea_veg !<per PFT area burned over fire duration
-  logical, dimension(ilg,icc) :: fire_veg  !<fire occuring logical, Vivek
-
+  real :: duff_frac_veg(ilg,icc)!<duff fraction for each PFT, Vivek
+  real :: probfire_veg(ilg,icc) !<PFT fire probability term, Vivek
+  real :: sprdrate_veg(ilg,icc) !<per PFT fire spread rate
+  real :: arbn1day_veg(ilg,icc) !<per PFT area burned in 1 day
+  real :: burnarea_veg(ilg,icc) !<per PFT area burned over fire duration
+  logical :: fire_veg(ilg,icc)  !<fire occuring logical, Vivek
   real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary variables
   
   !>initialize required arrays to zero, or assign value
@@ -263,7 +251,6 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas,      & !In
     betalght(i)=0.0
     y(i)=0.0
     lterm(i)=0.0
-    fire(i)=.false.
     burnarea(i)=0.0
     burnfrac(i)=0.0
     betmsprd(i)=0.0
