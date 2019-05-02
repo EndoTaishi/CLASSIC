@@ -20,8 +20,8 @@ contains
 !> @author Joe Melton
 !!@{
 
-subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast, & !In
-                    litrmass,soilcmas, & !In/Out 
+subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast, useTracer, & !In
+                    litrmass,soilcmas, tracerLitrMass, tracerSoilCMass, & !In/Out 
                     turbLitter, turbSoilC) ! Out 
 
 use classic_params,        only : icc, ilg, ignd, iccp2, iccp1, zero,tolrance,deltat, &
@@ -33,15 +33,24 @@ implicit none
 ! Arguments:
 integer, intent(in) :: il1                                   !< il1=1
 integer, intent(in) :: il2                                   !< il2=ilg
+integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                              !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                              !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                              !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                              !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
 integer, intent(in) :: spinfast                              !< spinup factor for soil carbon whose default value is 1.
                                                              !!  as this factor increases the soil c pool will come
                                                              !! into equilibrium faster. Reasonable value for spinfast is between 5 and 10.
-real, dimension(ilg,ignd), intent(in) :: delzw               !< Permeable thickness of soil layer [m]
-real, dimension(ilg,ignd), intent(in) :: zbotw               !< Bottom of soil layers [m]
-integer, dimension(ilg,ignd), intent(in) :: isand            !< flag for non-permeable layers
-real, dimension(ilg), intent(in) :: actlyr                   !< active layer depth [m]
-real, dimension(ilg,iccp2,ignd), intent(inout) :: litrmass   !< litter mass for the pfts + bare [ \f$kg C/m^2\f$ ]
-real, dimension(ilg,iccp2,ignd), intent(inout) :: soilcmas   !< soil carbon mass for the pfts + bare [ \f$kg C/m^2\f$ ]
+real, intent(in) :: delzw(:,:)              !< Permeable thickness of soil layer [m]
+real, intent(in) :: zbotw(:,:)               !< Bottom of soil layers [m]
+integer, intent(in) :: isand(:,:)            !< flag for non-permeable layers
+real, intent(in) :: actlyr(:)                   !< active layer depth [m]
+
+real, intent(inout) :: litrmass(:,:,:)   !< litter mass for the pfts + bare [ \f$kg C/m^2\f$ ]
+real, intent(inout) :: soilcmas(:,:,:)   !< soil carbon mass for the pfts + bare [ \f$kg C/m^2\f$ ]
+real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+
 real, dimension(ilg,iccp2,ignd), intent(out) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
 real, dimension(ilg,iccp2,ignd), intent(out) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
 
@@ -57,7 +66,7 @@ real, allocatable, dimension(:) :: littinter        !< litter array for the trid
 real, allocatable, dimension(:) :: depthinter       !< soil depth at layer interfaces [m]
 real, allocatable, dimension(:) :: effectiveD       !< effective diffusion coefficient for that soil layer
 
-integer :: i,l,j                                    !< counters
+integer :: i,l,j,k                                    !< counters
 integer :: botlyr                                   !< index of deepest permeable soil layer
 real :: dzm                                         !< temp var
 real :: psoilc                                      !< total soil C mass before turbation [ \f$kg C/m^2\f$ ]
@@ -242,6 +251,24 @@ end do !i
 ! Store the movement of the litter and soil C for output/tracer.
 turbLitter = initLitter - litrmass
 turbSoilC = initSoilC - soilcmas
+
+if (useTracer > 0) then 
+  ! If using tracer, then update the litter and soil C tracers. Use the change in 
+  ! the normal pools to see how much tracer to move around. This avoids calling this 
+  ! subroutine twice and ensures the tracer moves with the normal pools.
+  do i = il1, il2
+    do j = 1, iccp1 
+      do k = 1, ignd
+        if (tracerLitrMass(i,j,k) > 0.) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) &
+                                                                 - turbLitter(i,j,k) * initLitter(i,j,k) &
+                                                                                     / tracerLitrMass(i,j,k)
+        if (tracerSoilCMass(i,j,k) > 0.) tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) &
+                                                                  - turbSoilC(i,j,k) * initSoilC(i,j,k) &
+                                                                                     / tracerSoilCMass(i,j,k)
+      end do
+    end do 
+  end do 
+end if 
 
 end subroutine turbation
 !>@}

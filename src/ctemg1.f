@@ -11,9 +11,9 @@ C! Performs initial 'gather' operation on CTEM variables for consistency
      e         veghghtgat,rootdpthgat,   alvsctmgat,   alirctmgat,
      f            paicgat,   slaicgat,   faregat,    
      1       ipeatlandgat, maxAnnualActLyrGAT,
-     6      tracergLeafMassgat, tracerBLeafMassgat,tracerStemMassgat,
-     7      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,
-     8      tracerMossCMassgat, tracerMossLitrMassgat,
+c     6      tracergLeafMassgat, tracerBLeafMassgat,tracerStemMassgat,
+c     7      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,
+c     8      tracerMossCMassgat, tracerMossLitrMassgat,
      g              ilmos,      jlmos,       iwmos,         jwmos,
      h                nml,
      i        gleafmasrow,bleafmasrow, stemmassrow,   rootmassrow,
@@ -22,10 +22,10 @@ C! Performs initial 'gather' operation on CTEM variables for consistency
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
      n         alirctmrow,    paicrow,    slaicrow,  FAREROT,         
-     o         ipeatlandrow, maxAnnualActLyrROT,
-     6      tracergLeafMassrot, tracerBLeafMassrot,tracerStemMassrot,
-     7      tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,
-     8      tracerMossCMassrot, tracerMossLitrMassrot)
+     o         ipeatlandrow, maxAnnualActLyrROT) !,
+c     6      tracergLeafMassrot, tracerBLeafMassrot,tracerStemMassrot,
+c     7      tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,
+c     8      tracerMossCMassrot, tracerMossLitrMassrot)
 
 
 c

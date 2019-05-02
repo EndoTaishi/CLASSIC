@@ -69,6 +69,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use ctemDriver,          only : ctem
   use tracerModule,        only : decay14C
   use applyAllometry,      only : allometry
+  use ctemGatherScatter,   only : ctems2, ctemg1
   
   implicit none
 
@@ -1267,7 +1268,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: tracermossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, pointer, dimension(:,:) :: tracermossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
-  
   real, pointer, dimension(:,:,:) :: tracergLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
   real, pointer, dimension(:,:,:) :: tracerbLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
   real, pointer, dimension(:,:,:) :: tracerstemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -1275,10 +1275,12 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   ! allocated with nlat,nmos,iccp2,ignd:
   real, pointer, dimension(:,:,:,:) :: tracerlitrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   real, pointer, dimension(:,:,:,:) :: tracersoilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-  
+  real, pointer, dimension(:,:) :: tracerCO2rot     !< Atmopspheric tracer CO2 concentration (units vary)
+    
   ! allocated with ilg,...:
   real, pointer, dimension(:) :: tracermossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, pointer, dimension(:) :: tracermossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+  real, pointer, dimension(:) :: tracerCO2gat     !< Atmopspheric tracer CO2 concentration (units vary)
 
   ! allocated with nlat,nmos,icc:
   real, pointer, dimension(:,:) :: tracergLeafMassgat      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -1288,6 +1290,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   ! allocated with nlat,nmos,iccp2,ignd:
   real, pointer, dimension(:,:,:) :: tracerlitrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   real, pointer, dimension(:,:,:) :: tracersoilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  
   
 
   ! Point the CLASS pointers
@@ -2301,6 +2304,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   tracerSoilCMassrot   => tracer%soilCMassrot
   tracerMossCMassrot   => tracer%mossCMassrot
   tracerMossLitrMassrot => tracer%mossLitrMassrot
+  tracerCO2rot         => tracer%tracerCO2rot
   
   tracerGLeafMassgat   => tracer%gLeafMassgat
   tracerBLeafMassgat   => tracer%bLeafMassgat
@@ -2310,6 +2314,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   tracerSoilCMassgat   => tracer%soilCMassgat
   tracerMossCMassgat   => tracer%mossCMassgat
   tracerMossLitrMassgat => tracer%mossLitrMassgat
+  tracerCO2gat          => tracer%tracerCO2gat
 
   !    =================================================================================
 
@@ -2447,6 +2452,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
     ! are performed on. The ctemg1 subroutine is used to transform the 
     ! read in state variables (which come in with the 'row' format from the
     ! various input files).
+    
     call ctemg1(gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,&
         fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,&
         ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,&
@@ -2470,15 +2476,14 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,&
         tracerMossCMassrot, tracerMossLitrMassrot )
 
-    call allometry( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, &
-                            1,           nml,          ilg,      zbtwgat, &
-                      dlzwgat,       sdepgat,   fcancmxgat, &
-                 ipeatlandgat,maxAnnualActLyrGAT, &
-!                 --------------- inputs above this line, outputs below --------
-                     ailcggat,      ailcbgat,      ailcgat,     zolncgat, &
-                     rmatcgat,   rmatctemgat,      slaigat,   bmasveggat, &
-                  cmasvegcgat,    veghghtgat,  rootdpthgat,   alvsctmgat, &
-                   alirctmgat,       paicgat,     slaicgat)
+    call allometry( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, & !In
+                            1,           nml,          ilg,      zbtwgat, & !In
+                      dlzwgat,       sdepgat,   fcancmxgat, & !In
+                 ipeatlandgat,maxAnnualActLyrGAT, & !In
+                     ailcggat,      ailcbgat,      ailcgat,     zolncgat, & !Out
+                     rmatcgat,   rmatctemgat,      slaigat,   bmasveggat, & !Out
+                  cmasvegcgat,    veghghtgat,  rootdpthgat,   alvsctmgat, & !Out
+                   alirctmgat,       paicgat,     slaicgat) !Out
 
   endif   ! if (ctem_on)
 
@@ -2532,21 +2537,21 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 250         CONTINUE
 
     ! Check if we are on the first timestep of the day
-    if (ihour .eq. 0 .and. imin .eq. 0) then
+    if (ihour == 0 .and. imin == 0) then
 
       ! Find the daylength of this day
-      daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
+      daylrow = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
 
       ! Update the lightning if fire is on and transientLGHT is true
       if (dofire .and. ctem_on) call updateInput('LGHT',runyr,imonth=imonth,iday=iday,dom=DOM)
 
       ! Update the wetland fractions if we are using read-in wetland fractions
-      if ((transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) .and. ctem_on) then
+      if ((transientOBSWETF .or. fixedYearOBSWETF /= -9999) .and. ctem_on) then
         call updateInput('OBSWETF',runyr,imonth=imonth,iday=iday,dom=DOM)
       end if
 
       !Check if this is the first day of the year
-      if (iday.eq.1) then
+      if (iday == 1) then
 
         ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
         if (leap) call findLeapYears(iyear,leapnow,lastDOY)
@@ -2720,7 +2725,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
             annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
             anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,&
             litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,& !thlqaccgat_m,&
-            ipeatlandgat,pddgat,&
+            ipeatlandgat,pddgat,tracerCO2gat,&
 !          thicaccgat_m,ipeatlandgat,pddgat,& this line commented out.
             ilmos,       jlmos,       iwmos,        jwmos,&
             nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,&
@@ -2764,7 +2769,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
             annsrplsrow,   annpcprow,  dry_season_lengthrow,&
             anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,&
             litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,&
-            ipeatlandrow,pddrow)
+            ipeatlandrow,pddrow,tracerCO2rot)
     !    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow) this line commented out.
 
     !-----------------------------------------------------------------------
@@ -2935,7 +2940,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                     ipeatlandgat,     anmossac_t, rmlmossac_t, gppmossac_t,   &! In
                        wtablegat, maxAnnualActLyrGAT,  & ! In
                       PFTCompetition,    dofire,     lnduseon, inibioclim,    & ! In
-                      leapnow,       useTracer,                              &! In
+                      leapnow,       useTracer,    tracerCO2gat,           &! In
                         stemmassgat, rootmassgat, litrmassgat, gleafmasgat,& ! In/Out
                         bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,& ! In/Out
                            zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,& ! In/Out
@@ -3198,14 +3203,12 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                 tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat,&
                 tracerMossCMassgat, tracerMossLitrMassgat)!,thlqaccgat_m,thicaccgat_m)
 
-      if(ncount.eq.nday) then
+      if (ncount == nday) then
 
-        DOM=DOM + 1 !increment the day of month counter
+        DOM = DOM + 1 !increment the day of month counter
 
         ! Reset mosaic accumulator arrays.
-        if (ctem_on) then
-          call resetMosaicAccum
-        endif  ! if(ctem_on)
+        if (ctem_on) call resetMosaicAccum
 
         ! Determine the active layer depth and depth to the frozen water table.
         ! This only occurs once per day since they don't change rapidly.
@@ -3232,11 +3235,11 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                                               ncount,nday,lastDOY,runyr)
 
       DO NT=1,NMON
-        IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
+        IF ((IDAY == monthend(NT+1)) .AND. (NCOUNT == NDAY)) THEN
           IMONTH=NT
           DOM=1 !reset the day of month counter
-        ENDIF
-      ENDDO
+        END IF
+      END DO
 
       ! Monthly physics outputs
       if (doMonthOutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex,&
@@ -3245,9 +3248,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
       ! Annual physics outputs
       if (doAnnualOutput) call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,runyr,NCOUNT,NDAY,&
-       &                       nltest,nmtest,lastDOY)
+                                               nltest,nmtest,lastDOY)
 
-      if (ctem_on .and. (ncount.eq.nday)) then
+      if (ctem_on .and. (ncount == nday)) then
         
         ! Convert units in preparation for output:
         call convertUnitsCTEM(nltest,nmtest)
@@ -3268,10 +3271,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
         ! Annual biogeochem outputs
         if (doAnnualOutput) call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,runyr,nltest,nmtest,lastDOY)
-      endif
+      end if
 
       ! Check if it is the last timestep of the last day of the year
-      if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then
+      if ((IDAY == lastDOY) .AND. (NCOUNT == NDAY)) then
 
         WRITE(*,*)'IYEAR=',IYEAR,'runyr=',runyr,'Loop count =',lopcount,'/',metLoop
         
@@ -3288,13 +3291,13 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
         ! Reset the month
         imonth = 0
 
-      endif !last day of year check
+      end if !last day of year check
 
       ! Increment the counter for timestep of the day, or reset it to 1.
-      NCOUNT=NCOUNT+1
-      IF(NCOUNT.GT.NDAY) THEN
-        NCOUNT=1
-      ENDIF
+      NCOUNT = NCOUNT + 1
+      IF (NCOUNT > NDAY) THEN
+        NCOUNT = 1
+      END IF
 
       !> Now check if the met file is done, needs to loop more, or just continues to the next timestep
       if (.not. metDone) then

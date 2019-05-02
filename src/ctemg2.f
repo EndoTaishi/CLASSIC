@@ -56,7 +56,7 @@ C! Performs subsequent 'gather' operation on CTEM variables for consistency
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      2      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
      4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,
-     5      ipeatlandgat, pddgat,
+     5      ipeatlandgat, pddgat, tracerCO2gat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -100,7 +100,7 @@ c
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
      4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
-     5      ipeatlandrow,pddrow)
+     5      ipeatlandrow, pddrow, tracerCO2rot)
 !    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 
 
@@ -189,7 +189,8 @@ c
      e      burnfracgat(ilg),       smfuncveggat(ilg,icc),
      f      lucemcomgat(ilg),       lucltringat(ilg),
      g      lucsocingat(ilg),       nppveggat(ilg,icc),
-     h      dstcemls3gat(ilg)
+     h      dstcemls3gat(ilg),
+     i      tracerCO2gat(ilg)
 c
 c      fire emission variables
        real emit_co2gat(ilg,icc),  emit_cogat(ilg,icc), 
@@ -277,7 +278,7 @@ c
      e      burnfracrow(nlat,nmos),       smfuncvegrow(nlat,nmos,icc),
      f      lucemcomrow(nlat,nmos),        lucltrinrow(nlat,nmos),
      g      lucsocinrow(nlat,nmos),        nppvegrow(nlat,nmos,icc),
-     h      dstcemls3row(nlat,nmos)
+     h      dstcemls3row(nlat,nmos),       tracerCO2rot(nlat,nmos)
 c
 c     fire variables
       real emit_co2row(nlat,nmos,icc),  emit_corow(nlat,nmos,icc), 
@@ -379,6 +380,7 @@ c----------------------------------------------------------------------
           lucltringat(k)  = lucltrinrow(ilmos(k),jlmos(k))
           lucsocingat(k)  = lucsocinrow(ilmos(k),jlmos(k))
           dstcemls3gat(k) = dstcemls3row(ilmos(k),jlmos(k))
+          tracerCO2gat(k) = tracerCO2rot(ilmos(k),jlmos(k))
           faregat(k)      = farerow(ilmos(k),jlmos(k))
           gavgscmsgat(k)  = gavgscmsrow(ilmos(k),jlmos(k))
           do n = 1,8

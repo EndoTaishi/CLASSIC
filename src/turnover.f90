@@ -151,10 +151,18 @@ subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
       if (fcancmx(i,j) > 0.0) then
         stemlitr(i,j) = nrmlsmlr(i,j) + stmhrlos(i,j)
         rootlitr(i,j) = nrmlrtlr(i,j) + rothrlos(i,j)
-        if (useTracer > 0) then 
-          frac = tracerStemMass(i,j) / stemmass(i,j)
+        if (useTracer > 0) then
+          if (stemmass(i,j) > 0.)  then
+            frac = tracerStemMass(i,j) / stemmass(i,j)
+          else 
+            frac = 0.
+          end if 
           tracerStemLitr(i,j) = stemlitr(i,j) * frac 
-          frac = tracerRootMass(i,j) / rootmass(i,j)
+          if (rootmass(i,j) > 0.)  then
+            frac = tracerRootMass(i,j) / rootmass(i,j)
+          else 
+            frac = 0.
+          end if
           tracerRootLitr(i,j) = rootlitr(i,j) * frac 
         end if 
      end if

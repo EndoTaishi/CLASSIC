@@ -865,7 +865,7 @@ contains
             tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
             tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
             tracerMossCMass = ncGet2DVar(initid, 'tracerMossCMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])              
+            tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])      
           end if
 
           lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
@@ -1112,6 +1112,7 @@ contains
             if (useTracer > 0) then 
               call ncPut3DVar(rsid, 'tracerGLeafMass', tracerGLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
               call ncPut3DVar(rsid, 'tracerBLeafMass', tracerBLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              print*,tracerStemMass
               call ncPut3DVar(rsid, 'tracerStemMass', tracerStemMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
               call ncPut3DVar(rsid, 'tracerRootMass', tracerRootMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
               do k = 1, ignd
@@ -1187,7 +1188,7 @@ contains
         integer, pointer :: fixedYearOBSWETF
         logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
-        real, pointer, dimension(:) :: tracerco2conc
+        real, pointer, dimension(:,:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
@@ -1300,7 +1301,8 @@ contains
                 if (arrindex == 0) stop ('getInput says: The tracer CO2 file does not contain requested year')
         
                 ! We read in only the suggested year
-                tracerco2conc(:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
+                i = 1 ! always 1 offline.
+                tracerco2conc(i,:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
             end if
             
             ! Convert the units of the tracer depending on the tracer being simulated.
@@ -1565,7 +1567,7 @@ contains
         integer :: arrindex,lengthTime,i,m
         real :: LGHTTimeNow,OBSWTimeNow
         real, pointer, dimension(:,:) :: co2concrow
-        real, pointer, dimension(:) :: tracerco2conc
+        real, pointer, dimension(:,:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: nfcancmxrow
@@ -1616,7 +1618,7 @@ contains
                 call abandonCell('updateInput says: The tracerCO2 file does not contain requested year: '//seqstring)
               else
                 i = 1 ! offline nlat is always 1 so just set
-                tracerco2conc(i) = tracerCO2FromFile(arrindex)                
+                tracerco2conc(i,:) = tracerCO2FromFile(arrindex)                
               end if
               
               ! Convert the units of the tracer depending on the tracer being simulated.

@@ -678,17 +678,15 @@ type (veg_gat), save, target :: vgat
 
 !=================================================================================
 type tracersType
-  !   Simple tracer variables. Only allocated and used if useTracer > 0.
+  !   Simple tracer variables. Only written to if useTracer > 0.
   
   ! NOTE: Units may vary depending on the tracer used, see convertTracerUnits in tracer.f90
-  
-  ! allocated with nlat:
-  real, allocatable, dimension(:) :: tracerCO2rot !< Atmopspheric tracer CO2 concentration (units vary)
   
   ! Pools:
   ! allocated with nlat,nmos,...:
   real, allocatable, dimension(:,:) :: mossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, allocatable, dimension(:,:) :: mossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+  real, allocatable, dimension(:,:) :: tracerCO2rot     !< Atmopspheric tracer CO2 concentration (units vary)
 
   ! allocated with nlat,nmos,icc:
   real, allocatable, dimension(:,:,:) :: gLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$ 
@@ -702,7 +700,7 @@ type tracersType
   ! allocated with ilg,...:
   real, allocatable, dimension(:) :: mossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, allocatable, dimension(:) :: mossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-
+  real, allocatable, dimension(:) :: tracerCO2gat     !< Atmopspheric tracer CO2 concentration (units vary)
   ! allocated with nlat,nmos,icc:
   real, allocatable, dimension(:,:) :: gLeafMassgat      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
   real, allocatable, dimension(:,:) :: bLeafMassgat      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -1239,7 +1237,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%peatdep(nlat,nmos),&
          vrot%pdd(nlat,nmos),&
          
-         tracer%tracerCO2rot(nlat),&
+         tracer%tracerCO2rot(nlat,nmos),&
          tracer%mossCMassrot(nlat,nmos),&
          tracer%mossLitrMassrot(nlat,nmos),&
 
@@ -1384,6 +1382,7 @@ allocate(vgat%grclarea(ilg),&
          vgat%faregat(ilg),&    ! the ROT is FAREROT
          tracer%mossCMassgat(ilg),&
          tracer%mossLitrMassgat(ilg),&
+         tracer%tracerCO2gat(ilg),&
 
 ! allocated with ilg, icc
          vgat%gleafmas (ilg,icc),&

@@ -7,6 +7,7 @@ module allocateCarbon
     implicit none
 
     public :: allocate
+    public :: updatePoolsAllocateRepro
 
 contains
 
@@ -264,15 +265,8 @@ contains
 !!that they can grow asap. in addition when leaf status is
 !!"fall/harvest" then nothing is allocated to leaves.
 !!
-      k1=0
       do 500 j = 1, ican
-       if(j.eq.1) then
-         k1 = k1 + 1
-       else
-         k1 = k1 + nol2pfts(j-1)
-       endif
-       k2 = k1 + nol2pfts(j) - 1
-       do 505 m = k1, k2
+       do 505 m = reindexPFTs(j,1), reindexPFTs(j,2)
         do 510 i = il1, il2
          if (fcancmx(i,m).gt.0.0) then
           if(lfstatus(i,m).eq.1) then
@@ -371,17 +365,16 @@ contains
       do 541 j = 1, icc
         n=sort(j)
         do 542 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then
-          if( (stemmass(i,j)+gleafmas(i,j)).gt.0.05)then
-            if( (rootmass(i,j)/(stemmass(i,j)+gleafmas(i,j))).&
-     &      lt.rtsrmin(n) ) then
-              astem(i,j)=min(0.05,afrstem(i,j))
-              diff = afrstem(i,j)-astem(i,j)
-              afrstem(i,j)=afrstem(i,j)-diff
-              afrroot(i,j)=afrroot(i,j)+diff
-            endif
-          endif
-         endif
+         if (fcancmx(i,j) > 0.0) then
+          if ((stemmass(i,j)+gleafmas(i,j)) > 0.05) then
+            if ((rootmass(i,j) / (stemmass(i,j) + gleafmas(i,j))) < rtsrmin(n)) then
+              astem(i,j) = min(0.05, afrstem(i,j))
+              diff = afrstem(i,j)- astem(i,j)
+              afrstem(i,j) = afrstem(i,j)- diff
+              afrroot(i,j) = afrroot(i,j)+ diff
+            end if
+          end if
+         end if
 542     continue
 541   continue
 !>
@@ -422,6 +415,203 @@ contains
 end subroutine allocate
 !!@}
 ! ---------------------------------------------------------------------------------------------------
+
+!>\ingroup allocateCarbon_updatePoolsAllocateRepro
+!!@{
+!> Performs allocation of carbon gained by photosynthesis into plant structural pools
+!> @author Vivek Arora and Joe Melton
+subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCompetition, & ! In
+                                    pftexist,gppveg,rmsveg,rmrveg,rmlveg, fcancmx,  & ! In 
+                                    lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass, rootmass,bleafmas, & ! In/Out 
+                                    reprocost, ntchlveg, ntchsveg, ntchrveg, repro_cost_g) ! Out 
+  
+  use classic_params,        only : icc, deltat, repro_fraction, zero
+  use competition_scheme, only : expansion 
+  
+  implicit none 
+  
+  integer, intent(in) :: ilg          !< Number of grid cells in latitude circle
+  integer, intent(in) :: il1          !<il1=1
+  integer, intent(in) :: il2          !<il2=ilg
+  logical, intent(in) :: PFTCompetition                   !<logical boolean telling if competition between pfts is on or not
+  integer, intent(in) :: sort(icc)    !<index for correspondence between 9 pfts and 12 values in the parameter vectors
+  real, intent(in) :: ailcg(ilg,icc)        !< Green LAI for ctem's pfts \f$(m^2 leaf/m^2 ground)\f$
+  integer, intent(in) :: lfstatus(ilg,icc)  !<leaf phenology status
+  real, intent(in) :: nppveg(ilg,icc)       !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  logical, intent(in) :: pftexist(ilg,icc)  !< True if PFT is present in tile.
+  real, intent(in) :: gppveg(ilg,icc)       !< Gross primary productivity per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: rmsveg(ilg,icc)       !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
+  real, intent(in) :: rmrveg(ilg,icc)       !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
+  real, intent(in) :: rmlveg(ilg,icc)       !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, dimension(ilg,icc), intent(in) :: fcancmx      !< max. fractional coverage of CTEM's pfts, but this can be
+                                                          !< modified by land-use change, and competition between pfts
+                                                          
+  real, intent(inout) :: afrleaf(ilg,icc)        !<allocation fraction for leaves
+  real, intent(inout) :: afrstem(ilg,icc)        !<allocation fraction for stem
+  real, intent(inout) :: afrroot(ilg,icc)        !<allocation fraction for root
+  real, intent(inout) :: lambda(ilg,icc) !< Fraction of npp that is to be used for 
+                                                            !! horizontal expansion (lambda) during the next
+                                                            !! day (i.e. this will be determining
+                                                            !! the colonization rate in competition)
+  real, intent(inout) :: gleafmas(ilg,icc)     !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$ 
+  real, intent(inout) :: bleafmas(ilg,icc)     !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$  
+  real, intent(inout) :: stemmass(ilg,icc)     !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$                                  
+  real, intent(inout) :: rootmass(ilg,icc)     !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$ 
+  real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real, intent(out) :: ntchlveg(ilg,icc)  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+  real, intent(out) :: ntchsveg(ilg,icc)  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
+  real, intent(out) :: ntchrveg(ilg,icc)  !<fluxes for each pft: Net change in root biomass, 
+                                          !! the net change is the difference between allocation and
+                                          !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
+  real, intent(out) ::repro_cost_g(ilg)  !< Tile-level cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+                            
+  ! Local
+  integer :: i,j
+  real gppvgstp(ilg,icc) !<
+  real nppvgstp(ilg,icc) !<
+  real rmlvgstp(ilg,icc) !<
+  real rmsvgstp(ilg,icc) !<
+  real rmrvgstp(ilg,icc) !<
+
+  real :: convertUnits      !< This converts the units from u-mol CO2/m2.sec to kg C/m^2
+  
+  convertUnits = deltat / 963.62
+  
+  !>
+  !! Estimate fraction of npp that is to be used for horizontal
+  !! expansion (lambda) during the next day (i.e. this will be determining
+  !! the colonization rate in competition).
+  !!
+  if (PFTCompetition)  lambda = expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
+
+  !> Maintenance respiration also reduces leaf, stem, and root biomass.
+  !! when NPP for a given pft is positive then this is taken care by
+  !! allocating positive NPP amongst the leaves, stem, and root component.
+  !! when NPP for a given pft is negative then maintenance respiration
+  !! loss is explicitly deducted from each component.
+
+  do 600 j = 1, icc
+    do 610 i = il1, il2
+
+        !! Convert NPP and maintenance respiration from different components
+        !! from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered 
+        !! or respired over the model time step (deltat)
+
+        gppvgstp(i,j) = gppveg(i,j) * convertUnits !+ add2allo(i,j)
+
+        !> Remove the cost of making reproductive tissues. This cost can
+        !! only be removed when NPP is positive.
+        reprocost(i,j) = max(0., nppveg(i,j) * repro_fraction)
+
+        ! Not in use. We now use a constant reproductive cost as the prior formulation
+        ! produces perturbations that do not allow closing of the C balance. JM Jun 2014.
+        ! nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
+        !     &                  + add2allo(i,j)
+        nppvgstp(i,j) = (nppveg(i,j) - reprocost(i,j)) * convertUnits
+
+        ! Amount of c related to horizontal expansion
+        ! Not in use. JM Jun 2014
+        ! expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)+ add2allo(i,j)*(963.62/1.0)
+        
+        rmlvgstp(i,j) = rmlveg(i,j) * convertUnits
+        rmsvgstp(i,j) = rmsveg(i,j) * convertUnits
+        rmrvgstp(i,j) = rmrveg(i,j) * convertUnits
+        
+        if (lfstatus(i,j) /= 4) then ! real leaves exist 
+          if (nppvgstp(i,j) > 0.0) then ! and there is C to allocate.
+            ntchlveg(i,j) = afrleaf(i,j) * nppvgstp(i,j)
+            ntchsveg(i,j) = afrstem(i,j) * nppvgstp(i,j)
+            ntchrveg(i,j) = afrroot(i,j) * nppvgstp(i,j)
+          else ! We lose C, not gain.
+            ntchlveg(i,j) = -rmlvgstp(i,j) + afrleaf(i,j) * gppvgstp(i,j)
+            ntchsveg(i,j) = -rmsvgstp(i,j) + afrstem(i,j) * gppvgstp(i,j)
+            ntchrveg(i,j) = -rmrvgstp(i,j) + afrroot(i,j) * gppvgstp(i,j)
+          end if
+        else  !>i.e. if lfstatus == 4 (no leaves)
+          
+          !> And since we do not have any real leaves on then we do not take into
+          !! account CO2 uptake by imaginary leaves in carbon budget. rmlvgstp(i,j)
+          !! should be zero because we set maintenance respiration from storage/imaginary 
+          !! leaves equal to zero. in loop 180
+          !!
+          ntchlveg(i,j) = -rmlvgstp(i,j)
+          ntchsveg(i,j) = -rmsvgstp(i,j)
+          ntchrveg(i,j) = -rmrvgstp(i,j)
+          
+          !> Since no real leaves are on, make allocation fractions equal to zero.
+          afrleaf(i,j) = 0.0
+          afrstem(i,j) = 0.0
+          afrroot(i,j) = 0.0
+          
+        end if
+
+        gleafmas(i,j) = gleafmas(i,j) + ntchlveg(i,j)
+        stemmass(i,j) = stemmass(i,j) + ntchsveg(i,j)
+        rootmass(i,j) = rootmass(i,j) + ntchrveg(i,j)
+
+        if (gleafmas(i,j) < 0.0) then
+          write(6,1900)'gleafmas < zero at i=',i,' for pft=',j,''
+          write(6,1901)'gleafmas = ',gleafmas(i,j)
+          write(6,1901)'ntchlveg = ',ntchlveg(i,j)
+          write(6,1902)'lfstatus = ',lfstatus(i,j)
+          write(6,1901)'ailcg    = ',ailcg(i,j)
+          ! write(6,1901)'slai     = ',slai(i,j)
+  1900    format(a23,i4,a10,i2,a1)
+  1902    format(a11,i4)
+          call xit ('updatePoolsAllocateRepro',-2)
+        end if
+
+        if (stemmass(i,j) < 0.0) then
+          write(6,1900)'stemmass < zero at i=(',i,') for pft=',j,')'
+          write(6,1901)'stemmass = ',stemmass(i,j)
+          write(6,1901)'ntchsveg = ',ntchsveg(i,j)
+          write(6,1902)'lfstatus = ',lfstatus(i,j)
+          write(6,1901)'rmsvgstp = ',rmsvgstp(i,j)
+          write(6,1901)'afrstem  = ',afrstem(i,j)
+          write(6,1901)'gppvgstp = ',gppvgstp(i,j)
+          write(6,1901)'rmsveg = ',rmsveg(i,j)
+  1901    format(a11,f12.8)
+          call xit ('updatePoolsAllocateRepro',-3)
+        end if
+
+        if (rootmass(i,j) < 0.0) then
+          write(6,1900)'rootmass < zero at i=(',i,') for pft=',j,')'
+          write(6,1901)'rootmass = ',rootmass(i,j)
+          call xit ('updatePoolsAllocateRepro',-4)
+        end if
+
+        !! Convert net change in leaf, stem, and root biomass into
+        !! u-mol co2/m2.sec for use in balcar subroutine
+        !!
+        ntchlveg(i,j) = ntchlveg(i,j) * (963.62 / deltat)
+        ntchsveg(i,j) = ntchsveg(i,j) * (963.62 / deltat)
+        ntchrveg(i,j) = ntchrveg(i,j) * (963.62 / deltat)
+
+        !! To avoid over/underflow problems set gleafmas, stemmass, and
+        !! rootmass to zero if they get too small
+        !!
+        if(bleafmas(i,j) < zero) bleafmas(i,j) = 0.0
+        if(gleafmas(i,j) < zero) gleafmas(i,j) = 0.0
+        if(stemmass(i,j) < zero) stemmass(i,j) = 0.0
+        if(rootmass(i,j) < zero) rootmass(i,j) = 0.0
+      
+610 continue
+600 continue
+  
+  !> Calculate grid averaged value of C related to spatial expansion
+  
+  repro_cost_g(:)=0.0    !< amount of C for production of reproductive tissues
+  do 620 j = 1,icc
+    do 621 i = il1, il2
+      repro_cost_g(i) = repro_cost_g(i) + fcancmx(i,j) * reprocost(i,j)
+621 continue
+620 continue
+
+end subroutine updatePoolsAllocateRepro
+
+!!@}
+! ---------------------------------------------------------------------------------------------------
+
 !>\namespace allocateCarbon
 !!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
 !!biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a

@@ -16,12 +16,13 @@ contains
 !> Calculates whether fire occurs, burned area, amount of C emitted and litter generated
 !> @author Vivek Arora and Joe Melton
 
-subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
+subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
                     vwind,  lightng,  fcancmx, isand,    & !In
                  rmatctem,      ilg,   il1,      il2,   sort, & !In
                  grclarea,    thice,   popdin, lucemcom,      & !In
                  dofire,  currlat,     iday,  fsnow,        & !In
-                 stemmass, rootmass, gleafmas, bleafmas,  litrmass,     & !In?out
+                 stemmass, rootmass, gleafmas, bleafmas,  litrmass,     & !In/out
+                 tracerStemMass, tracerRootMass, tracerGLeafMass,tracerBLeafMass, tracerLitrMass,& ! In/Ou
                  stemltdt,   rootltdt,   glfltrdt,    blfltrdt,   & ! Out (Primary)
                  glcaemls,   rtcaemls,   stcaemls,                &! Out (Primary)
                  blcaemls,   ltrcemls,   burnfrac,                &! Out (Primary)
@@ -89,6 +90,12 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
   integer, intent(in) :: sort(icc) !<index for correspondence between 9 pfts and size 12 of parameters vectors
   integer, intent(in) :: iday
   logical, intent(in) :: dofire !<boolean, if true allow fire, if false no fire
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                          
+
   real, intent(in) :: thliq(ilg,ignd)    !<liquid soil moisture content
   real, intent(in) :: THLW(ilg,ignd)   !<wilting point soil moisture content
   real, intent(in) :: THFC(ilg,ignd)  !<field capacity soil moisture content
@@ -109,7 +116,12 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
   real, intent(inout) :: gleafmas(ilg,icc)  !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, intent(inout) :: bleafmas(ilg,icc)  !<brown leaf mass
   real, intent(inout) :: litrmass(ilg,iccp2,ignd)!<litter mass for each of the 9 pfts
-
+  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
+  
   real, intent(out) :: stemltdt(ilg,icc) !<stem litter generated due to disturbance \f$(kg c/m^2)\f$
   real, intent(out) :: rootltdt(ilg,icc) !<root litter generated due to disturbance \f$(kg c/m^2)\f$
   real, intent(out) :: glfltrdt(ilg,icc) !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
@@ -193,6 +205,8 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
   real :: burnarea_veg(ilg,icc) !<per PFT area burned over fire duration
   logical :: fire_veg(ilg,icc)  !<fire occuring logical, Vivek
   real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary variables
+  real :: tracerLitTemp, tracerEmitTemp ! temp tracer variables 
+  real :: fractionPFTburned  !< temp variable.
   
   !>initialize required arrays to zero, or assign value
 
@@ -571,24 +585,26 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
   do 520 j = 1, icc
     n = sort(j)
     do 530 i = il1, il2
-      if(pftareab(i,j) .gt. zero)then
+      if (pftareab(i,j) > zero) then
 
         !>Set aside these pre-disturbance stem and root masses for use
         !>in burntobare subroutine.
-        pstemmass(i,j)=stemmass(i,j)
-        pgleafmass(i,j)=gleafmas(i,j)
+        pstemmass(i,j) = stemmass(i,j)
+        pgleafmass(i,j) = gleafmas(i,j)
 
-        glfltrdt(i,j)= frltrglf(n) *gleafmas(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        stemltdt(i,j)= frltrstm(n) *stemmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        rootltdt(i,j)= frltrrt(n)  *rootmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        glcaemls(i,j)= frco2glf(n) *gleafmas(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        blcaemls(i,j)= frco2blf(n) *bleafmas(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        stcaemls(i,j)= frco2stm(n) *stemmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
-        rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) *(burnarea_veg(i,j) /pftareab(i,j))
+        fractionPFTburned = burnarea_veg(i,j) / pftareab(i,j) 
+        
+        glfltrdt(i,j)= frltrglf(n) *gleafmas(i,j) * fractionPFTburned
+        blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) * fractionPFTburned
+        stemltdt(i,j)= frltrstm(n) *stemmass(i,j) * fractionPFTburned
+        rootltdt(i,j)= frltrrt(n)  *rootmass(i,j) * fractionPFTburned
+        glcaemls(i,j)= frco2glf(n) *gleafmas(i,j) * fractionPFTburned
+        blcaemls(i,j)= frco2blf(n) *bleafmas(i,j) * fractionPFTburned
+        stcaemls(i,j)= frco2stm(n) *stemmass(i,j) * fractionPFTburned
+        rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) * fractionPFTburned
         
         ! The burned litter comes from the first layer
-        ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j,1) *(burnarea_veg(i,j) /pftareab(i,j))
+        ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j,1) * fractionPFTburned
 
         !>Update the pools:
         gleafmas(i,j)=gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)
@@ -604,6 +620,47 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,      & !In
           litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
         end do
 
+        if (useTracer > 0) then 
+          ! Update the tracer pools for fire losses. Need to calculte the litter and emissions
+          ! terms since they are dependent upon pool size. 
+          tracerLitTemp = frltrglf(n) * tracerGLeafMass(i,j) * fractionPFTburned
+          tracerEmitTemp = frco2glf(n) * tracerGLeafMass(i,j) * fractionPFTburned
+          tracerGLeafMass(i,j)=tracerGLeafMass(i,j) - tracerLitTemp - tracerEmitTemp
+
+          ! The burned litter is placed on the top litter layer so add the green leaf litter 
+          tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
+
+          tracerLitTemp = frltrblf(n) * tracerBLeafMass(i,j) * fractionPFTburned
+          tracerEmitTemp = frco2blf(n) * tracerBLeafMass(i,j) * fractionPFTburned
+          tracerBLeafMass(i,j)=tracerBLeafMass(i,j) - tracerLitTemp - tracerEmitTemp
+          
+          ! The burned litter is placed on the top litter layer so add the brown leaf litter 
+          tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
+
+          tracerLitTemp = frltrstm(n) * tracerStemMass(i,j) * fractionPFTburned
+          tracerEmitTemp = frco2stm(n) * tracerStemMass(i,j) * fractionPFTburned
+          tracerStemMass(i,j)=tracerStemMass(i,j) - tracerLitTemp - tracerEmitTemp
+          
+          ! The burned litter is placed on the top litter layer so add the stem litter 
+          tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
+
+          tracerLitTemp = frltrrt(n) * tracerRootMass(i,j) * fractionPFTburned
+          tracerEmitTemp = frco2rt(n) * tracerRootMass(i,j) * fractionPFTburned
+          tracerRootMass(i,j)=tracerRootMass(i,j) - tracerLitTemp - tracerEmitTemp
+          
+          ! The burned litter is placed on the top litter layer except for the root litter which
+          ! goes into litter layers according to the root distribution. 
+          do k = 1, ignd
+            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLitTemp * rmatctem(i,j,k)
+          end do
+          
+          ! The burned litter comes from the first layer
+          tracerLitTemp = frltrbrn(n) *tracerLitrMass(i,j,1) * fractionPFTburned
+          
+          tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) - tracerLitTemp
+        
+        end if 
+        
         !>Output the burned area per PFT (the units here are burned fraction of each PFTs area. So
         !>if a PFT has 50% gridcell cover and 50% of that burns it will have a burnvegf of 0.5 (which
         !>then translates into a gridcell fraction of 0.25). This units is for consistency 

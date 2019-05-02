@@ -80,8 +80,8 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
   real, intent(in) :: radl(ilg)              !<latitude in radians
   real, intent(inout) :: gleafmas(ilg,icc)      !<green or live leaf mass in \f$kg c/m
   real, intent(inout) :: bleafmas(ilg,icc)      !<brown or dead leaf mass in \f$kg c/m
-  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerGLeafMass(ilg,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(ilg,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
   integer, intent(inout) :: pandays(ilg,icc)    !<counter for positive net photosynthesis (an) days for initiating leaf onset
   integer, intent(inout) :: lfstatus(ilg,icc)   !<integer indicating leaf status or mode
                               !<1 - max. growth or onset, when all npp is allocated to leaves
@@ -819,17 +819,29 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
             
             ! Since grasses have nrmlloss, drgtloss, coldloss reset, we use phenLeafGtoB
             ! to allow us to keep track. 
-            frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+            if (gleafmas(i,j) > 0.) then
+              frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+            else 
+              frac = 0.
+            end if 
             tracerGLeafMass(i,j) = tracerGLeafMass(i,j) - frac * phenLeafGtoB(i,j)
             ! We want to retain the leaf litter for grasses, which for them is 
             ! just nrmlloss so we also scale that and store it.
-            frac = tracerBLeafMass(i,j) / bleafmas(i,j)
+            if (bleafmas(i,j) > 0.) then
+              frac = tracerBLeafMass(i,j) / bleafmas(i,j)
+            else 
+              frac = 0.
+            end if           
             tracerLeafLitr(i,j) = frac * nrmlloss(i,j) 
 
           case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr',&
                 'CropC3  ', 'CropC4  ','BdlEvgSh','BdlDCoSh')
                 ! These are all based on gleafmas so scale by that.
-                frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+                if (gleafmas(i,j) > 0.) then
+                  frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+                else 
+                  frac = 0.
+                end if 
                 tracerLeafLitr(i,j) = leaflitr(i,j) * frac                        
 
           case default

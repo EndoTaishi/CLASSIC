@@ -30,7 +30,7 @@ contains
                  ipeatland,    anmoss,   rmlmoss,  gppmoss,  & ! In
                   wtable,   maxAnnualActLyr,         & ! In
                   PFTCompetition,  dofire,  lnduseon,  inibioclim,  & ! In
-                     leapnow, useTracer,                       & ! In
+                     leapnow, useTracer,  tracerCO2,        & ! In
                    stemmass, rootmass, litrmass,  gleafmas,& ! In/ Out
                    bleafmas, soilcmas,    ailcg,      ailc,& ! In/ Out
                       zolnc, rmatctem,    rmatc,     ailcb,& ! In/ Out
@@ -164,6 +164,7 @@ contains
   use soilC_processes, only : turbation
   use applyAllometry, only : allometry
   use tracerModule,   only : updateSimpleTracer
+  use allocateCarbon, only : allocate, updatePoolsAllocateRepro
 
   implicit none
 
@@ -228,7 +229,7 @@ contains
   !
   !     updates
   !
-  logical, intent(inout) :: pftexist(ilg,icc)             !<
+  logical, intent(inout) :: pftexist(ilg,icc)             !< True if PFT is present in tile.
   logical, intent(inout) :: inibioclim                    !<switch telling if bioclimatic parameters are being initialized from scratch (false)
                                                           !<or being initialized from some spun up values(true).
   integer, dimension(ilg,icc), intent(inout) :: pandays   !<days with positive net photosynthesis (an) for use in the phenology subroutine
@@ -264,7 +265,7 @@ contains
   real, dimension(ilg,icc), intent(inout) :: gleafmas     !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, dimension(ilg,icc), intent(inout) :: bleafmas     !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, dimension(ilg,iccp2,ignd), intent(inout) :: soilcmas   !<soil carbon mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
-  real, dimension(ilg,icc), intent(inout) :: ailcg        !<green lai for ctem's 9 pfts
+  real, dimension(ilg,icc), intent(inout) :: ailcg        !< Green LAI for ctem's pfts \f$(m^2 leaf/m^2 ground)\f$
   real, dimension(ilg,ican), intent(inout) :: ailc        !<lumped lai for class' 4 pfts
   real, dimension(ilg,icc,ignd), intent(inout) :: rmatctem!<fraction of roots for each of ctem's 9 pfts in each soil layer
   real, dimension(ilg,ican), intent(inout) :: zolnc       !<lumped log of roughness length for class' 4 pfts
@@ -306,6 +307,10 @@ contains
   real, intent(inout) :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
   real, intent(inout) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
   real, dimension(ilg,icc), intent(inout) :: slai           !<storage/imaginary lai for phenology purposes
+  real, dimension(ilg,icc), intent(inout) :: lambda         !< Fraction of npp that is to be used for 
+                                                            !! horizontal expansion (lambda) during the next
+                                                            !! day (i.e. this will be determining
+                                                            !! the colonization rate in competition)
   !
   !   outputs
   !
@@ -371,8 +376,7 @@ contains
   real, dimension(ilg), intent(out) :: wetfdyn            !<
   real, dimension(ilg), intent(out) :: ch4WetDyn            !<
   real, dimension(ilg,icc), intent(out) :: cc             !<
-  real, dimension(ilg,icc), intent(out) :: mm             !<
-  real, dimension(ilg,icc), intent(out) :: lambda         !<
+  real, dimension(ilg,icc), intent(out) :: mm             !<  
   real, dimension(ilg,icc), intent(out) :: afrleaf        !<allocation fraction for leaves
   real, dimension(ilg,icc), intent(out) :: afrstem        !<allocation fraction for stem
   real, dimension(ilg,icc), intent(out) :: afrroot        !<allocation fraction for root
@@ -441,13 +445,13 @@ contains
   ! real hutrstep(ilg,iccp2,ignd) !<
   real plitmasspl(ilg,iccp2,ignd) !<
   real psocmasspl(ilg,iccp2,ignd) !<
-  real rootlitr(ilg,icc) !<
+  real rootlitr(ilg,icc) !<root litter \f$(kg C/m^2)\f$
   real stemlitr(ilg,icc) !<stem litter \f$(kg C/m^2)\f$
-  real nppvgstp(ilg,icc) !<root litter \f$(kg C/m^2)\f$
-  real rmlvgstp(ilg,icc) !<
-  real rmsvgstp(ilg,icc) !<
-  real rmrvgstp(ilg,icc) !<
-  real gppvgstp(ilg,icc) !<
+  ! real nppvgstp(ilg,icc) 
+  ! real rmlvgstp(ilg,icc) !<
+  ! real rmsvgstp(ilg,icc) !<
+  ! real rmrvgstp(ilg,icc) !<
+  ! real gppvgstp(ilg,icc) !<
   real stemltrm(ilg,icc) !<
   real rootltrm(ilg,icc) !<
   real glealtrm(ilg,icc) !<
@@ -1026,145 +1030,141 @@ contains
                           afrleaf,  afrstem,  afrroot, & !Out
                          wtstatus, ltstatus) !Out
 
-  !>
-  !! Estimate fraction of npp that is to be used for horizontal
-  !! expansion (lambda) during the next day (i.e. this will be determining
-  !! the colonization rate in competition).
-  !!
-  if (PFTCompetition)  lambda = expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
-
-  !> Maintenance respiration also reduces leaf, stem, and root biomass.
-  !! when NPP for a given pft is positive then this is taken care by
-  !! allocating positive NPP amongst the leaves, stem, and root component.
-  !! when NPP for a given pft is negative then maintenance respiration
-  !! loss is explicitly deducted from each component.
-
-  !FLAG need to do tracer bit below!
-  
-  do 600 j = 1, icc
-    do 610 i = il1, il2
-
-        !! Convert NPP and maintenance respiration from different components
-        !! from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered 
-        !! or respired over the model time step (deltat)
-
-        gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
-
-        !> Remove the cost of making reproductive tissues. This cost can
-        !! only be removed when NPP is positive.
-        reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
-
-! COMBAK real, intent(in) :: tracerReproCost(:,:)  !< Tracer cost of making reproductive tissues, only non-zero when
-                                          !! NPP is positive (\f$\tracer C units m^{-2} s^{-1}\f$) 
-                                          
-        ! Not in use. We now use a constant reproductive cost as the prior formulation
-        ! produces perturbations that do not allow closing of the C balance. JM Jun 2014.
-        ! nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
-        !     &                  + add2allo(i,j)
-        nppvgstp(i,j)=(nppveg(i,j)-reprocost(i,j))*(1.0/963.62)*deltat
-
-        ! Amount of c related to horizontal expansion
-        ! Not in use. JM Jun 2014
-        ! expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)+ add2allo(i,j)*(963.62/1.0)
-        
-        rmlvgstp(i,j)=rmlveg(i,j)*(1.0/963.62)*deltat
-        rmsvgstp(i,j)=rmsveg(i,j)*(1.0/963.62)*deltat
-        rmrvgstp(i,j)=rmrveg(i,j)*(1.0/963.62)*deltat
-        
-        if (lfstatus(i,j) /= 4) then
-          if (nppvgstp(i,j) > 0.0) then
-            ntchlveg(i,j) = afrleaf(i,j) * nppvgstp(i,j)
-            ntchsveg(i,j) = afrstem(i,j) * nppvgstp(i,j)
-            ntchrveg(i,j) = afrroot(i,j) * nppvgstp(i,j)
-          else
-            ntchlveg(i,j) = -rmlvgstp(i,j) + afrleaf(i,j) * gppvgstp(i,j)
-            ntchsveg(i,j) = -rmsvgstp(i,j) + afrstem(i,j) * gppvgstp(i,j)
-            ntchrveg(i,j) = -rmrvgstp(i,j) + afrroot(i,j) * gppvgstp(i,j)
-          end if
-        else  !>i.e. if lfstatus.eq.4
-          
-          !> And since we do not have any real leaves on then we do not take into
-          !! account co2 uptake by imaginary leaves in carbon budget. rmlvgstp(i,j)
-          !! should be zero because we set maintenance respiration from storage/imaginary 
-          !! leaves equal to zero. in loop 180
-          !!
-          ntchlveg(i,j) = -rmlvgstp(i,j)
-          ntchsveg(i,j) = -rmsvgstp(i,j)
-          ntchrveg(i,j) = -rmrvgstp(i,j)
-          
-          !> Since no real leaves are on, make allocation fractions equal to zero.
-          
-          afrleaf(i,j) = 0.0
-          afrstem(i,j) = 0.0
-          afrroot(i,j) = 0.0
-        end if
-
-        gleafmas(i,j) = gleafmas(i,j) + ntchlveg(i,j)
-        stemmass(i,j) = stemmass(i,j) + ntchsveg(i,j)
-        rootmass(i,j) = rootmass(i,j) + ntchrveg(i,j)
-
-        if (gleafmas(i,j) < 0.0) then
-          write(6,1900)'gleafmas < zero at i=',i,' for pft=',j,''
-          write(6,1901)'gleafmas = ',gleafmas(i,j)
-          write(6,1901)'ntchlveg = ',ntchlveg(i,j)
-          write(6,1902)'lfstatus = ',lfstatus(i,j)
-          write(6,1901)'ailcg    = ',ailcg(i,j)
-          write(6,1901)'slai     = ',slai(i,j)
-  1900    format(a23,i4,a10,i2,a1)
-  1902    format(a11,i4)
-          call xit ('ctem',-2)
-        end if
-
-        if(stemmass(i,j).lt.0.0)then
-          write(6,1900)'stemmass < zero at i=(',i,') for pft=',j,')'
-          write(6,1901)'stemmass = ',stemmass(i,j)
-          write(6,1901)'ntchsveg = ',ntchsveg(i,j)
-          write(6,1902)'lfstatus = ',lfstatus(i,j)
-          write(6,1901)'rmsvgstp = ',rmsvgstp(i,j)
-          write(6,1901)'afrstem  = ',afrstem(i,j)
-          write(6,1901)'gppvgstp = ',gppvgstp(i,j)
-          write(6,1901)'rmsveg = ',rmsveg(i,j)
-  1901    format(a11,f12.8)
-          call xit ('ctem',-3)
-        endif
-
-        if(rootmass(i,j).lt.0.0)then
-          write(6,1900)'rootmass < zero at i=(',i,') for pft=',j,')'
-          write(6,1901)'rootmass = ',rootmass(i,j)
-          call xit ('ctem',-4)
-        endif
-
-        !! Convert net change in leaf, stem, and root biomass into
-        !! u-mol co2/m2.sec for use in balcar subroutine
-        !!
-        ntchlveg(i,j) = ntchlveg(i,j) * (963.62 / deltat)
-        ntchsveg(i,j) = ntchsveg(i,j) * (963.62 / deltat)
-        ntchrveg(i,j) = ntchrveg(i,j) * (963.62 / deltat)
-
-        !! To avoid over/underflow problems set gleafmas, stemmass, and
-        !! rootmass to zero if they get too small
-        !!
-        if(bleafmas(i,j) < zero) bleafmas(i,j) = 0.0
-        if(gleafmas(i,j) < zero) gleafmas(i,j) = 0.0
-        if(stemmass(i,j) < zero) stemmass(i,j) = 0.0
-        if(rootmass(i,j) < zero) rootmass(i,j) = 0.0
-      
-610 continue
-600 continue
-  
-  !> Calculate grid averaged value of C related to spatial expansion
-  
-  repro_cost_g(:)=0.0    !< amount of C for production of reproductive tissues
-  do 620 j = 1,icc
-    do 621 i = il1, il2
-      repro_cost_g(i) = repro_cost_g(i) + fcancmx(i,j) * reprocost(i,j)
-621 continue
-620 continue
-
-! if (useTracer > 1) then 
-!   call updateTracerPhotoResp()
-! end if 
+  call updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg, PFTCompetition,& ! In
+                               pftexist,gppveg,rmsveg,rmrveg,rmlveg, fcancmx,  & ! In 
+                               lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass, rootmass,bleafmas, & ! In/Out 
+                               reprocost, ntchlveg, ntchsveg, ntchrveg, repro_cost_g) ! Out 
+!   !>
+!   !! Estimate fraction of npp that is to be used for horizontal
+!   !! expansion (lambda) during the next day (i.e. this will be determining
+!   !! the colonization rate in competition).
+!   !!
+!   if (PFTCompetition)  lambda = expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
 ! 
+!   !> Maintenance respiration also reduces leaf, stem, and root biomass.
+!   !! when NPP for a given pft is positive then this is taken care by
+!   !! allocating positive NPP amongst the leaves, stem, and root component.
+!   !! when NPP for a given pft is negative then maintenance respiration
+!   !! loss is explicitly deducted from each component.
+! 
+!   !FLAG need to do tracer bit below!
+! 
+!   do 600 j = 1, icc
+!     do 610 i = il1, il2
+! 
+!         !! Convert NPP and maintenance respiration from different components
+!         !! from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered 
+!         !! or respired over the model time step (deltat)
+! 
+!         gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
+! 
+!         !> Remove the cost of making reproductive tissues. This cost can
+!         !! only be removed when NPP is positive.
+!         reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
+! ! 
+!         ! Not in use. We now use a constant reproductive cost as the prior formulation
+!         ! produces perturbations that do not allow closing of the C balance. JM Jun 2014.
+!         ! nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
+!         !     &                  + add2allo(i,j)
+!         nppvgstp(i,j)=(nppveg(i,j)-reprocost(i,j))*(1.0/963.62)*deltat
+! 
+!         ! Amount of c related to horizontal expansion
+!         ! Not in use. JM Jun 2014
+!         ! expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)+ add2allo(i,j)*(963.62/1.0)
+! 
+!         rmlvgstp(i,j)=rmlveg(i,j)*(1.0/963.62)*deltat
+!         rmsvgstp(i,j)=rmsveg(i,j)*(1.0/963.62)*deltat
+!         rmrvgstp(i,j)=rmrveg(i,j)*(1.0/963.62)*deltat
+! 
+!         if (lfstatus(i,j) /= 4) then
+!           if (nppvgstp(i,j) > 0.0) then
+!             ntchlveg(i,j) = afrleaf(i,j) * nppvgstp(i,j)
+!             ntchsveg(i,j) = afrstem(i,j) * nppvgstp(i,j)
+!             ntchrveg(i,j) = afrroot(i,j) * nppvgstp(i,j)
+!           else
+!             ntchlveg(i,j) = -rmlvgstp(i,j) + afrleaf(i,j) * gppvgstp(i,j)
+!             ntchsveg(i,j) = -rmsvgstp(i,j) + afrstem(i,j) * gppvgstp(i,j)
+!             ntchrveg(i,j) = -rmrvgstp(i,j) + afrroot(i,j) * gppvgstp(i,j)
+!           end if
+!         else  !>i.e. if lfstatus.eq.4
+! 
+!           !> And since we do not have any real leaves on then we do not take into
+!           !! account co2 uptake by imaginary leaves in carbon budget. rmlvgstp(i,j)
+!           !! should be zero because we set maintenance respiration from storage/imaginary 
+!           !! leaves equal to zero. in loop 180
+!           !!
+!           ntchlveg(i,j) = -rmlvgstp(i,j)
+!           ntchsveg(i,j) = -rmsvgstp(i,j)
+!           ntchrveg(i,j) = -rmrvgstp(i,j)
+! 
+!           !> Since no real leaves are on, make allocation fractions equal to zero.
+! 
+!           afrleaf(i,j) = 0.0
+!           afrstem(i,j) = 0.0
+!           afrroot(i,j) = 0.0
+!         end if
+! 
+!         gleafmas(i,j) = gleafmas(i,j) + ntchlveg(i,j)
+!         stemmass(i,j) = stemmass(i,j) + ntchsveg(i,j)
+!         rootmass(i,j) = rootmass(i,j) + ntchrveg(i,j)
+! 
+!         if (gleafmas(i,j) < 0.0) then
+!           write(6,1900)'gleafmas < zero at i=',i,' for pft=',j,''
+!           write(6,1901)'gleafmas = ',gleafmas(i,j)
+!           write(6,1901)'ntchlveg = ',ntchlveg(i,j)
+!           write(6,1902)'lfstatus = ',lfstatus(i,j)
+!           write(6,1901)'ailcg    = ',ailcg(i,j)
+!           write(6,1901)'slai     = ',slai(i,j)
+!   1900    format(a23,i4,a10,i2,a1)
+!   1902    format(a11,i4)
+!           call xit ('ctem',-2)
+!         end if
+! 
+!         if(stemmass(i,j).lt.0.0)then
+!           write(6,1900)'stemmass < zero at i=(',i,') for pft=',j,')'
+!           write(6,1901)'stemmass = ',stemmass(i,j)
+!           write(6,1901)'ntchsveg = ',ntchsveg(i,j)
+!           write(6,1902)'lfstatus = ',lfstatus(i,j)
+!           write(6,1901)'rmsvgstp = ',rmsvgstp(i,j)
+!           write(6,1901)'afrstem  = ',afrstem(i,j)
+!           write(6,1901)'gppvgstp = ',gppvgstp(i,j)
+!           write(6,1901)'rmsveg = ',rmsveg(i,j)
+!   1901    format(a11,f12.8)
+!           call xit ('ctem',-3)
+!         endif
+! 
+!         if(rootmass(i,j).lt.0.0)then
+!           write(6,1900)'rootmass < zero at i=(',i,') for pft=',j,')'
+!           write(6,1901)'rootmass = ',rootmass(i,j)
+!           call xit ('ctem',-4)
+!         endif
+! 
+!         !! Convert net change in leaf, stem, and root biomass into
+!         !! u-mol co2/m2.sec for use in balcar subroutine
+!         !!
+!         ntchlveg(i,j) = ntchlveg(i,j) * (963.62 / deltat)
+!         ntchsveg(i,j) = ntchsveg(i,j) * (963.62 / deltat)
+!         ntchrveg(i,j) = ntchrveg(i,j) * (963.62 / deltat)
+! 
+!         !! To avoid over/underflow problems set gleafmas, stemmass, and
+!         !! rootmass to zero if they get too small
+!         !!
+!         if(bleafmas(i,j) < zero) bleafmas(i,j) = 0.0
+!         if(gleafmas(i,j) < zero) gleafmas(i,j) = 0.0
+!         if(stemmass(i,j) < zero) stemmass(i,j) = 0.0
+!         if(rootmass(i,j) < zero) rootmass(i,j) = 0.0
+! 
+! 610 continue
+! 600 continue
+! 
+!   !> Calculate grid averaged value of C related to spatial expansion
+! 
+!   repro_cost_g(:)=0.0    !< amount of C for production of reproductive tissues
+!   do 620 j = 1,icc
+!     do 621 i = il1, il2
+!       repro_cost_g(i) = repro_cost_g(i) + fcancmx(i,j) * reprocost(i,j)
+! 621 continue
+! 620 continue
 
   !    ------------------------------------------------------------------
 
@@ -1237,12 +1237,13 @@ contains
   !! a given grid cell. however, when ctem is operated at a point scale then it is assumed that the
   !! spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating
   !! any fire by specifying fire extingushing probability equal to 1.
-  call disturb (thliq,    THLW,      THFC,    uwind,& !In
+  call disturb (thliq,    THLW,      THFC,    uwind, useTracer,& !In
                   vwind,  lightng,  fcancmx, isand, & !In
                   rmatctem,     ilg,  il1,      il2,     sort, & !In
                   grclarea,   thice,   popdin, lucemcom,& !In
                   dofire,  currlat,     iday, fsnow,& !In
                   stemmass, rootmass, gleafmas, bleafmas, litrmass,& !In/Out
+                  tracerStemMass, tracerRootMass, tracerGLeafMass,tracerBLeafMass, tracerLitrMass,& ! In/Ou
                   stemltdt, rootltdt, glfltrdt, blfltrdt,& !Out (Primary)
                   glcaemls, rtcaemls, stcaemls,& !Out (Primary)
                   blcaemls,   ltrcemls,   burnfrac,               & !Out (Primary)
@@ -1267,8 +1268,8 @@ contains
   !> Allow cryoturbation and bioturbation to move the soil C between
   !! layers. Since this is neither consuming nor adding C, this does not
   !! affect our C balance in balcar. There is also an internal C balance check.
-  call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, &!In
-                litrmass,soilcmas, &! In/Out
+  call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, useTracer, &!In
+                litrmass,soilcmas,tracerLitrMass, tracerSoilCMass, &! In/Out
                 turbLitter, turbSoilC) ! Out
 
   !> Prepare for the carbon balance check. Calculate total litter fall from each 
@@ -1305,7 +1306,7 @@ contains
                                     litres,   socres, dstcemls1,    &
                                   litrfall, humiftrs,                 &
                                        il1,      il2,      ilg,     &
-                                 ipeatland, Cmossmas, pCmossmas,                &
+                                 ipeatland, Cmossmas, pCmossmas,      &
                                 nppmosstep, litrfallmoss, litrmsmoss,&
                                plitrmsmoss, ltrestepmoss, humstepmoss)
   
@@ -1485,7 +1486,11 @@ subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
         !! we need to scale the 'normal' rml value by the proportion of tracer to 
         !! 12C. Because the calculation of rml does not include leaf mass (only fpar 
         !! so by extentions LAI), there is no simple means to calculate tracerRML.
-        frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+        if (gleafmas(i,j) > 0.) then
+          frac = tracerGLeafMass(i,j) / gleafmas(i,j)
+        else
+          frac = 0.
+        end if 
         tracerRML = rmlveg(i,j) * frac 
         
         !> Now we can find the tracerGPP by multiplying the gppveg value by the 

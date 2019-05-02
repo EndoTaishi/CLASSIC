@@ -118,7 +118,7 @@ contains
     logical :: doTracerBalance  !< Logical to determine if the tracer pool balance check is performed.
     
     ! Point pointers 
-    tracerCO2         => tracer%tracerCO2rot
+    tracerCO2         => tracer%tracerCO2gat
     tracerGLeafMass   => tracer%gLeafMassgat
     tracerBLeafMass   => tracer%bLeafMassgat
     tracerStemMass    => tracer%stemMassgat
@@ -455,12 +455,12 @@ contains
 !!@author Joe Melton
 function convertTracerUnits(tracerco2conc)
   
-  use ctem_statevars, only : c_switch,tracer,nlat  
+  use ctem_statevars, only : c_switch,tracer,nlat,nmos  
   
   implicit none 
   
-  real, dimension(nlat) :: convertTracerUnits
-  real, dimension(:), intent(in) :: tracerco2conc
+  real, dimension(nlat,nmos) :: convertTracerUnits
+  real, dimension(:,:), intent(in) :: tracerco2conc
   integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
                       ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                       !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
@@ -484,7 +484,7 @@ function convertTracerUnits(tracerco2conc)
   else if (useTracer == 2) then 
     
     ! Incoming units expected are \Delta ^{14}C so need to convert to 14C/C ratio   
-    convertTracerUnits(:) = (tracerco2conc(:) / 1000. + 1.) * 1E-12
+    convertTracerUnits = (tracerco2conc / 1000. + 1.) * 1E-12
     
   else if (useTracer == 3) then 
     
