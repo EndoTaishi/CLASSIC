@@ -101,13 +101,17 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
   real :: day                    !<
   real :: daylngth(ilg)          !<
   real :: nrmlloss(ilg,icc)      !<leaf loss due to normal turnover
+  real :: tracerNrmlLoss(ilg,icc)!<Tracer leaf loss due to normal turnover
   real :: betadrgt(ilg,ignd)     !<(1 - drought stress)
   real :: drgtstrs(ilg,icc)      !<drought stress term
   real :: drgtlsrt(ilg,icc)      !<drought loss rate
   real :: drgtloss(ilg,icc)      !<leaf loss due to drought stress
+  real :: tracerDrgtLoss(ilg,icc)!<Tracer leaf loss due to drought stress
   real :: coldloss(ilg,icc)      !<leaf loss due to cold stress
+  real :: tracerColdLoss(ilg,icc)!<Tracer leaf loss due to cold stress
   real :: coldstrs(ilg,icc)      !<cold stress term
   real :: coldlsrt(ilg,icc)      !<cold loss rate
+  real :: tracerFlHrLoss(ilg,icc)!<Tracer fall & harvest loss for bdl dcd plants and crops, respectively, \f$kg c/m^2\f$.
   real :: lfthrs(ilg,icc)        !<threshold lai for finding leaf status
   character(8) :: pftkind
   integer :: i, j, k, m , n 
@@ -124,6 +128,7 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
   ailcb = 0.0
   chkmode = 0.0
   leaflitr = 0.0
+  tracerLeafLitr = 0.
   nrmlloss = 0.0
   drgtstrs = 0.0
   drgtlsrt = 0.0
@@ -133,7 +138,10 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
   coldloss = 0.0
   lfthrs = 0.0
   flhrloss = 0.0
-
+  tracerFlHrLoss= 0.
+  tracerNrmlLoss = 0.
+  tracerDrgtLoss = 0.
+  tracerColdLoss = 0.
   ! Initialization ends    
 
   !------------------------------------------------------------------
@@ -349,6 +357,8 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
             lfstatus(i,j) = 3        
             chkmode(i,j) = 1
             flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(2))
+            if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(2))
+            
           end if
           
         case ('BdlDDrTr')
@@ -366,6 +376,8 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
             lfstatus(i,j) = 3        ! go into "leaf fall" mode
             chkmode(i,j) = 1         
             flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(2))
+            if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(2))
+            
           end if
         
         case ('NdlEvgTr' , 'BdlEvgTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
@@ -445,6 +457,8 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
                 lfstatus(i,j) = 3         ! go into "leaf fall" mode
                 chkmode(i,j) = 1
                 flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(2))
+                if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(2))
+                
               else if (ailcg(i,j) > zero .and. ailcg(i,j) < lfthrs(i,j)) then
                 lfstatus(i,j) = 1         ! switch to "max. growth" mode
                 chkmode(i,j) = 1
@@ -453,6 +467,7 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
                 chkmode(i,j) = 1
                 pandays(i,j) = 0
                 flhrloss(i,j) = 0.0
+                if (useTracer > 0) tracerFlHrLoss(i,j) = 0.
               else
                 lfstatus(i,j) = 2         ! stay in "normal growth" mode
                 chkmode(i,j) = 1
@@ -492,15 +507,21 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
                 lfstatus(i,j) = 3        ! go into "harvest" mode
                 chkmode(i,j) = 1
                 flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(1))
+                if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(1))
+                
               else if (ailcg(i,j) > zero .and. colddays(i,2) >= coldlmt(2)) then
                 lfstatus(i,j) = 3        ! go into "harvest" mode
                 chkmode(i,j) = 1          ! regardless of lai
                 flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(1))
+                if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(1))
+                
               else if (ailcg(i,j) <= zero) then
                 lfstatus(i,j) = 4        ! switch to "no leaves" mode
                 chkmode(i,j) = 1         
                 pandays(i,j) = 0
                 flhrloss(i,j) = 0.0
+                if (useTracer > 0) tracerFlHrLoss(i,j) = 0.
+
               else
                 lfstatus(i,j) = 2        ! stay in "normal growth" mode
                 chkmode(i,j) = 1          
@@ -601,6 +622,8 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
             chkmode(i,j) = 1
             pandays(i,j) = 0
             flhrloss(i,j) = 0.0
+            if (useTracer > 0) tracerFlHrLoss(i,j) = 0.
+            
           else
             if (pftkind == 'NdlDcdTr' .or. pftkind == 'BdlDCoSh') then!    
               if (pandays(i,j) >= dayschk(j) .and. ta(i) > (coldthrs(1) + 273.16)) then
@@ -678,8 +701,10 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
       if (fcancmx(i,j) > 0.0) then 
         if (leapnow) then
           nrmlloss(i,j) = gleafmas(i,j) * (1.0 - exp(-1.0 / (366.0 * lfespany(n))))
+          if (useTracer > 0) tracerNrmlLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp(-1.0 / (366.0 * lfespany(n))))
         else
           nrmlloss(i,j) = gleafmas(i,j) * (1.0 - exp(-1.0 / (365.0 * lfespany(n))))
+          if (useTracer > 0) tracerNrmlLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp(-1.0 / (365.0 * lfespany(n))))
         end if
      end if   !fcancmx
 430 continue
@@ -723,7 +748,9 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
 
         !> Estimate leaf loss in \f$kg c/m^2\f$ due to drought stress
         drgtloss(i,j) = gleafmas(i,j) * (1.0 - exp(-drgtlsrt(i,j)))
-
+        
+        if (useTracer > 0) tracerDrgtLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp(-drgtlsrt(i,j)))
+        
         !> Similar to drgtstrs we find coldstrs for each pft. we assume that
         !! max. cold stress related leaf loss occurs when temperature is 5 c
         !! or more below pft's threshold
@@ -744,6 +771,9 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
   
         !> estimate leaf loss in \f$kg c/m^2\f$ due to cold stress
         coldloss(i,j) = gleafmas(i,j) * (1.0 - exp(-coldlsrt(i,j)))
+        
+        if (useTracer > 0) tracerColdLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp(-coldlsrt(i,j)))
+        
       end if
 490 continue 
 480 continue 
@@ -764,11 +794,26 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
       do i = il1, il2
         if (fcancmx(i,j) > 0.0) then 
           gleafmas(i,j) = gleafmas(i,j) - nrmlloss(i,j) - drgtloss(i,j) - coldloss(i,j)
+          
+          if (useTracer > 0) tracerGLeafMass(i,j) = tracerGLeafMass(i,j) - tracerNrmlLoss(i,j) &
+                                                                         - tracerDrgtLoss(i,j) - tracerColdLoss(i,j)
+          
           if( gleafmas(i,j) < 0.0) then
+            
             bleafmas(i,j) = bleafmas(i,j) + nrmlloss(i,j) + drgtloss(i,j) + coldloss(i,j) + gleafmas(i,j)
             gleafmas(i,j) = 0.0
+                        
+            if (useTracer > 0) then  
+              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + tracerNrmlLoss(i,j) &
+                                                          + tracerDrgtLoss(i,j) &
+                                                          + tracerColdLoss(i,j) + tracerGLeafMass(i,j)
+              tracerGLeafMass(i,j) = 0.
+            end if 
+            
           else
             bleafmas(i,j) = bleafmas(i,j) + nrmlloss(i,j) + drgtloss(i,j) + coldloss(i,j)
+            if (useTracer > 0) tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + tracerNrmlLoss(i,j) &
+                                                                           + tracerDrgtLoss(i,j) + tracerColdLoss(i,j)
           endif
         
           ! Store the amount of green leaf converted to brown for output/tracer 
@@ -777,12 +822,20 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
           drgtloss(i,j) = 0.0
           coldloss(i,j) = 0.0
           
+          if (useTracer > 0) then  
+            tracerNrmlLoss(i,j) = 0.
+            tracerDrgtLoss(i,j) = 0. 
+            tracerColdLoss(i,j) = 0.
+          end if 
+          
           !> we assume life span of brown grass is 10% that of green grass
           !! but this is an adjustable parameter.
           if (leapnow) then
             nrmlloss(i,j) = bleafmas(i,j) * (1.0 - exp(-1.0 / (0.10 * 366.0 * lfespany(n))))
+            if (useTracer > 0) tracerNrmlLoss(i,j) = tracerBLeafMass(i,j) * (1.0 - exp(-1.0 / (0.10 * 366.0 * lfespany(n))))
           else
             nrmlloss(i,j) = bleafmas(i,j) * (1.0 - exp(-1.0 / (0.10 * 365.0 * lfespany(n))))
+            if (useTracer > 0) tracerNrmlLoss(i,j) = tracerBLeafMass(i,j) * (1.0 - exp(-1.0 / (0.10 * 365.0 * lfespany(n))))
           end if
         end if
       end do
@@ -808,49 +861,9 @@ subroutine phenolgy(il1,      il2, ilg,   leapnow,  tbar, thice, & !In
       if (fcancmx(i,j) > 0.0) then
         leaflitr(i,j) = nrmlloss(i,j) + drgtloss(i,j) &
                         + coldloss(i,j) + flhrloss(i,j)
-                        
-        if (useTracer > 0) then 
-          ! Rather than duplicating the calcultion for tracer, we just adjust it here for the difference
-          ! in tracer vs. gleaf and apply the losses.
-          pftkind = ctempfts(j)
-          select case(pftkind)
-            
-          case ('GrassC3 ','GrassC4 ','Sedge   ')
-            
-            ! Since grasses have nrmlloss, drgtloss, coldloss reset, we use phenLeafGtoB
-            ! to allow us to keep track. 
-            if (gleafmas(i,j) > 0.) then
-              frac = tracerGLeafMass(i,j) / gleafmas(i,j)
-            else 
-              frac = 0.
-            end if 
-            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) - frac * phenLeafGtoB(i,j)
-            ! We want to retain the leaf litter for grasses, which for them is 
-            ! just nrmlloss so we also scale that and store it.
-            if (bleafmas(i,j) > 0.) then
-              frac = tracerBLeafMass(i,j) / bleafmas(i,j)
-            else 
-              frac = 0.
-            end if           
-            tracerLeafLitr(i,j) = frac * nrmlloss(i,j) 
+        if (useTracer > 0) tracerLeafLitr(i,j) = tracerNrmlLoss(i,j) &
+                                                        + tracerDrgtLoss(i,j) + tracerColdLoss(i,j) + tracerFlHrLoss(i,j)
 
-          case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr',&
-                'CropC3  ', 'CropC4  ','BdlEvgSh','BdlDCoSh')
-                ! These are all based on gleafmas so scale by that.
-                if (gleafmas(i,j) > 0.) then
-                  frac = tracerGLeafMass(i,j) / gleafmas(i,j)
-                else 
-                  frac = 0.
-                end if 
-                tracerLeafLitr(i,j) = leaflitr(i,j) * frac                        
-
-          case default
-            
-            print*,'Unknown CTEM PFT in phenolgy ',pftkind
-            call XIT('phenolgy',-7)  
-          
-          end select             
-        end if 
       end if
 660 continue
 650 continue

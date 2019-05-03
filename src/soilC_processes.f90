@@ -20,8 +20,8 @@ contains
 !> @author Joe Melton
 !!@{
 
-subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast, useTracer, & !In
-                    litrmass,soilcmas, tracerLitrMass, tracerSoilCMass, & !In/Out 
+subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast,  & !In
+                    litter,soilC, & !In/Out 
                     turbLitter, turbSoilC) ! Out 
 
 use classic_params,        only : icc, ilg, ignd, iccp2, iccp1, zero,tolrance,deltat, &
@@ -31,25 +31,18 @@ implicit none
 
 
 ! Arguments:
-integer, intent(in) :: il1                                   !< il1=1
-integer, intent(in) :: il2                                   !< il2=ilg
-integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
-                              !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
-                              !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
-                              !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
-                              !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
-integer, intent(in) :: spinfast                              !< spinup factor for soil carbon whose default value is 1.
-                                                             !!  as this factor increases the soil c pool will come
-                                                             !! into equilibrium faster. Reasonable value for spinfast is between 5 and 10.
+integer, intent(in) :: il1       !< il1=1
+integer, intent(in) :: il2       !< il2=ilg
+integer, intent(in) :: spinfast  !< spinup factor for soil carbon whose default value is 1.
+                                 !!  as this factor increases the soil c pool will come
+                                 !! into equilibrium faster. Reasonable value for spinfast is between 5 and 10.
 real, intent(in) :: delzw(:,:)              !< Permeable thickness of soil layer [m]
 real, intent(in) :: zbotw(:,:)               !< Bottom of soil layers [m]
 integer, intent(in) :: isand(:,:)            !< flag for non-permeable layers
 real, intent(in) :: actlyr(:)                   !< active layer depth [m]
 
-real, intent(inout) :: litrmass(:,:,:)   !< litter mass for the pfts + bare [ \f$kg C/m^2\f$ ]
-real, intent(inout) :: soilcmas(:,:,:)   !< soil carbon mass for the pfts + bare [ \f$kg C/m^2\f$ ]
-real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+real, intent(inout) :: litter(:,:,:)   !< litter mass for the pfts + bare [ \f$kg C/m^2\f$ ]
+real, intent(inout) :: soilC(:,:,:)   !< soil carbon mass for the pfts + bare [ \f$kg C/m^2\f$ ]
 
 real, dimension(ilg,iccp2,ignd), intent(out) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
 real, dimension(ilg,iccp2,ignd), intent(out) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
@@ -82,8 +75,8 @@ real :: initLitter(ilg,iccp2,ignd)                  !< Initial litter pool
 real :: initSoilC(ilg,iccp2,ignd)                   !< Initial soil C pool
 !----
 
-initLitter = litrmass
-initSoilC = soilcmas
+initLitter = litter
+initSoilC = soilC
 
 do i = il1, il2
 
@@ -115,8 +108,8 @@ do i = il1, il2
                             !! we don't include them in our calculations (we don't calculate over position iccp2).
 
           !> At the start, store the size of the present pool for later comparison
-          psoilc = sum(soilcmas(i,j,:))
-          plit   = sum(litrmass(i,j,:))
+          psoilc = sum(soilC(i,j,:))
+          plit   = sum(litter(i,j,:))
 
           if (psoilc > zero) then !> and only do turbation for PFTs with some soil C. (assume soil C is always ~> lit).
                                   !> Next set up the tridiagional solver soil and litter C. In this the first interface is
@@ -130,8 +123,8 @@ do i = il1, il2
 
             ! Put the soil C/litter into the soilcinter/littinter array where
             ! position 1 is the soil surface and position botlyr is the bedrock bottom.
-            soilcinter(2:botlyr-1) = soilcmas(i,j,1:botlyr-2)
-            littinter(2:botlyr-1)  = litrmass(i,j,1:botlyr-2)
+            soilcinter(2:botlyr-1) = soilC(i,j,1:botlyr-2)
+            littinter(2:botlyr-1)  = litter(i,j,1:botlyr-2)
             depthinter(2:botlyr-1) = zbotw(i,1:botlyr-2)
 
             ! The final interface is at the bottom of the soil column and the bedrock, so the soilC/litter is 0 there.
@@ -214,21 +207,21 @@ do i = il1, il2
             call tridiag(avect,bvect,cvect,rvect_lt,littinter)
 
             !> Lastly, put the soil C/litter back into their arrays
-            soilcmas(i,j,1:botlyr-2) = soilcinter(2:botlyr-1)
-            litrmass(i,j,1:botlyr-2) = littinter(2:botlyr-1)
+            soilC(i,j,1:botlyr-2) = soilcinter(2:botlyr-1)
+            litter(i,j,1:botlyr-2) = littinter(2:botlyr-1)
 
             !> We also ensure we have conservation of C by comparing the total C
             !! before and after the diffusion and distributing/removing
             !! any excess/deficit over the layers we operated on.
-            asoilc = sum(soilcmas(i,j,:))
-            alit   = sum(litrmass(i,j,:))
+            asoilc = sum(soilC(i,j,:))
+            alit   = sum(litter(i,j,:))
 
             !> (positive amount means we lost some C, negative we gained.)
             amount = psoilc - asoilc
-            soilcmas(i,j,1:botlyr-2) = soilcmas(i,j,1:botlyr-2) + amount/real(botlyr-2)
+            soilC(i,j,1:botlyr-2) = soilC(i,j,1:botlyr-2) + amount/real(botlyr-2)
 
             amount = plit - alit
-            litrmass(i,j,1:botlyr-2) = litrmass(i,j,1:botlyr-2) + amount/real(botlyr-2)
+            litter(i,j,1:botlyr-2) = litter(i,j,1:botlyr-2) + amount/real(botlyr-2)
 
           end if ! test if any soil c present
         end do !icc
@@ -249,26 +242,8 @@ do i = il1, il2
 end do !i
 
 ! Store the movement of the litter and soil C for output/tracer.
-turbLitter = initLitter - litrmass
-turbSoilC = initSoilC - soilcmas
-
-if (useTracer > 0) then 
-  ! If using tracer, then update the litter and soil C tracers. Use the change in 
-  ! the normal pools to see how much tracer to move around. This avoids calling this 
-  ! subroutine twice and ensures the tracer moves with the normal pools.
-  do i = il1, il2
-    do j = 1, iccp1 
-      do k = 1, ignd
-        if (tracerLitrMass(i,j,k) > 0.) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) &
-                                                                 - turbLitter(i,j,k) * initLitter(i,j,k) &
-                                                                                     / tracerLitrMass(i,j,k)
-        if (tracerSoilCMass(i,j,k) > 0.) tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) &
-                                                                  - turbSoilC(i,j,k) * initSoilC(i,j,k) &
-                                                                                     / tracerSoilCMass(i,j,k)
-      end do
-    end do 
-  end do 
-end if 
+turbLitter = initLitter - litter
+turbSoilC = initSoilC - soilC
 
 end subroutine turbation
 !>@}

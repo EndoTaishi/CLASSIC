@@ -821,12 +821,12 @@ subroutine updatePoolsHetResp(il1, il2, ilg, fcancmx, ltresveg, scresveg, & !In
         
         ! Now perform the same calculations to the tracer pools
         if (useTracer > 0) then  
-          if (j < iccp1) then
+          if (j < iccp1) then ! vegetated 
             tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) - (ltResTracer(i,j,k) * deltat / 963.62 &
                                                             * (1.0 + humicfac(sort(j))))
             tracerhutrstep = humicfac(sort(j)) * ltResTracer(i,j,k) * deltat / 963.62
-          else 
-            if (ipeatland(i) == 0) then
+          else ! bare ground 
+            if (ipeatland(i) == 0) then !non-peatlands 
               tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) - (ltResTracer(i,j,k) * deltat / 963.62 &
                                                              * (1.0 + humicfac_bg))
               tracerhutrstep = humicfac_bg * ltResTracer(i,j,k) * deltat / 963.62

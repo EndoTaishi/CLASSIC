@@ -81,6 +81,7 @@ subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In
 
 
   integer i, j, k,n
+  real :: tempVarMort
 
   ! Initialize required arrays to zero
   stemltrm = 0.0
@@ -162,13 +163,14 @@ subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas,& ! In
   do 300 j = 1, icc
     do 310 i = il1, il2
       if (fcancmx(i,j) > 0.0) then
-        stemltrm(i,j) = stemmass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
-        rootltrm(i,j) = rootmass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
-        glealtrm(i,j) = gleafmas(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+        tempVarMort = (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+        stemltrm(i,j) = stemmass(i,j) * tempVarMort
+        rootltrm(i,j) = rootmass(i,j) * tempVarMort
+        glealtrm(i,j) = gleafmas(i,j) * tempVarMort
         if (useTracer > 0) then  
-          tracerStemMort(i,j) = tracerStemMass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
-          tracerRootMort(i,j) = tracerRootMass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
-          tracerGLeafMort(i,j) = tracerGLeafMass(i,j) * (1.0 - exp(-1.0 * (geremort(i,j) + intrmort(i,j))))
+          tracerStemMort(i,j) = tracerStemMass(i,j) * tempVarMort
+          tracerRootMort(i,j) = tracerRootMass(i,j) * tempVarMort
+          tracerGLeafMort(i,j) = tracerGLeafMass(i,j) * tempVarMort
         end if 
       end if
 310 continue

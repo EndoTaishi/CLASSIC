@@ -1112,7 +1112,6 @@ contains
             if (useTracer > 0) then 
               call ncPut3DVar(rsid, 'tracerGLeafMass', tracerGLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
               call ncPut3DVar(rsid, 'tracerBLeafMass', tracerBLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-              print*,tracerStemMass
               call ncPut3DVar(rsid, 'tracerStemMass', tracerStemMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
               call ncPut3DVar(rsid, 'tracerRootMass', tracerRootMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
               do k = 1, ignd

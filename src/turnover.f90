@@ -146,6 +146,8 @@ subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
 250 continue   
 
   !>add stem and root litter from all sources
+  tracerStemLitr = 0.
+  tracerRootLitr = 0.
   do 350 j = 1, icc
     do 360 i = il1, il2
       if (fcancmx(i,j) > 0.0) then
@@ -154,16 +156,14 @@ subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !in
         if (useTracer > 0) then
           if (stemmass(i,j) > 0.)  then
             frac = tracerStemMass(i,j) / stemmass(i,j)
-          else 
-            frac = 0.
+            tracerStemLitr(i,j) = stemlitr(i,j) * frac 
           end if 
-          tracerStemLitr(i,j) = stemlitr(i,j) * frac 
+          
           if (rootmass(i,j) > 0.)  then
             frac = tracerRootMass(i,j) / rootmass(i,j)
-          else 
-            frac = 0.
+            tracerRootLitr(i,j) = rootlitr(i,j) * frac
           end if
-          tracerRootLitr(i,j) = rootlitr(i,j) * frac 
+           
         end if 
      end if
 360 continue
@@ -237,36 +237,31 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tr
           case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh') ! tree, crops and shrub
             
             gleafmas(i,m) = gleafmas(i,m) - leaflitr(i,m)
+            if (useTracer > 0) tracerGLeafMass(i,m) = tracerGLeafMass(i,m) - tracerLeafLitr(i,m)
+          
             if (gleafmas(i,m) < 0.0) then
               leaflitr(i,m) = leaflitr(i,m) + gleafmas(i,m)
               gleafmas(i,m) = 0.0
-            end if
-            
-            if (useTracer > 0) then 
-              tracerGLeafMass(i,m) = tracerGLeafMass(i,m) - tracerLeafLitr(i,m)
-              if (gleafmas(i,m) < 0.0) then
+              if (useTracer > 0) then 
                 tracerLeafLitr(i,m) = tracerLeafLitr(i,m) + tracerGLeafMass(i,m)
                 tracerGLeafMass(i,m) = 0.0
               end if
-            end if 
-
+            end if          
+            
           case('Grass')
 
             bleafmas(i,m) = bleafmas(i,m) - leaflitr(i,m)
+            if (useTracer > 0) tracerBLeafMass(i,m) = tracerBLeafMass(i,m) - tracerLeafLitr(i,m)
+            
             if (bleafmas(i,m) < 0.0) then
               leaflitr(i,m) = leaflitr(i,m) + bleafmas(i,m)
               bleafmas(i,m) = 0.0
-            end if
-            
-            if (useTracer > 0) then 
-              tracerBLeafMass(i,m) = tracerBLeafMass(i,m) - tracerLeafLitr(i,m)
-              if (bleafmas(i,m) < 0.0) then
+              if (useTracer > 0) then 
                 tracerLeafLitr(i,m) = tracerLeafLitr(i,m) + tracerBLeafMass(i,m)
                 tracerBLeafMass(i,m) = 0.0
-              end if
-            end if 
+              end if 
+            end if
             
-
           case default
 
             print*,'Unknown CLASS PFT in ctem ',classpfts(j)
@@ -280,34 +275,31 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tr
   !>Update stem and root biomass for litter deductions
   do 780 j = 1, icc
     do 790 i = il1, il2
+      
       stemmass(i,j) = stemmass(i,j) - stemlitr(i,j)
+      if (useTracer > 0) tracerStemMass(i,j) = tracerStemMass(i,j) - tracerStemLitr(i,j)
+      
       if (stemmass(i,j) < 0.0) then
         stemlitr(i,j) = stemlitr(i,j) + stemmass(i,j)
         stemmass(i,j) = 0.0
-      end if
-      
-      if (useTracer > 0) then 
-        tracerStemMass(i,j) = tracerStemMass(i,j) - tracerStemLitr(i,j)
-        if (stemmass(i,j) < 0.0) then
+        if (useTracer > 0) then 
           tracerStemLitr(i,j) = tracerStemLitr(i,j) + tracerStemMass(i,j)
           tracerStemMass(i,j) = 0.0
-        end if
-      end if 
-
+        end if 
+      end if
+      
       rootmass(i,j) = rootmass(i,j) - rootlitr(i,j)
+      if (useTracer > 0) tracerRootMass(i,j) = tracerRootMass(i,j) - tracerRootLitr(i,j)
+      
       if (rootmass(i,j) < 0.0) then
         rootlitr(i,j) = rootlitr(i,j) + rootmass(i,j)
         rootmass(i,j) = 0.0
-      end if
-      
-      if (useTracer > 0) then 
-        tracerRootMass(i,j) = tracerRootMass(i,j) - tracerRootLitr(i,j)
-        if (rootmass(i,j) < 0.0) then
+        if (useTracer > 0) then 
           tracerRootLitr(i,j) = tracerRootLitr(i,j) + tracerRootMass(i,j)
           tracerRootMass(i,j) = 0.0
-        end if
-      end if 
-
+        end if 
+      end if
+    
 790 continue
 780 continue
   
@@ -325,18 +317,14 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tr
                             + rootlitr(i,j) * rmatctem(i,j,k) &
                             + reprocost(i,j) * deltat / 963.62
 
-          if (useTracer > 0) then 
-            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLeafLitr(i,j) + tracerStemLitr(i,j) &
+          if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLeafLitr(i,j) + tracerStemLitr(i,j) &
                               + tracerRootLitr(i,j) * rmatctem(i,j,k) &
-                              + tracerReproCost(i,j) * deltat / 963.62
-          end if 
+                              + tracerReproCost(i,j) * deltat / 963.62 
         else ! the lower soil layers get the roots, in the proportion that they
              ! are in the unfrozen soil column.
           litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
           
-          if (useTracer > 0) then 
-            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerRootLitr(i,j) * rmatctem(i,j,k)
-          end if 
+          if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerRootLitr(i,j) * rmatctem(i,j,k)
         end if
 
 810     continue

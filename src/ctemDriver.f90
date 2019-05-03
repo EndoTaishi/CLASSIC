@@ -163,7 +163,7 @@ contains
   use turnover, only : turnoverStemRoot, updatePoolsTurnover
   use soilC_processes, only : turbation
   use applyAllometry, only : allometry
-  use tracerModule,   only : updateSimpleTracer
+  use tracerModule,   only : prepTracer, doTracerBalance, checkTracerBalance
   use allocateCarbon, only : allocate, updatePoolsAllocateRepro
 
   implicit none
@@ -475,8 +475,8 @@ contains
   real socrestep(ilg)     !< heterotrophic respiration from soil (kgC/m2/timestep)
   real hutrstep_g(ilg)    !< grid sum of humification from vascualr litter (kgC/m2/timestep)
   
-  real :: rmsTracer(ilg,icc)   !< Tracer maintenance respiration for stem for the CTEM pfts (kg C/m2.day)
-  real :: rmrTracer(ilg,icc)   !< Tracer maintenance respiration for root for the CTEM pfts both (kg c/m2.day)
+  real :: rmsTracer(ilg,icc)   !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real :: rmrTracer(ilg,icc)   !< Tracer maintenance respiration for root for the CTEM pfts both (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real :: ltResTracer(ilg,iccp2,ignd)  !< Tracer fluxes for each pft: litter respiration for each pft + bare fraction 
   real :: sCResTracer(ilg,iccp2,ignd)  !< Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
   real :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
@@ -492,6 +492,9 @@ contains
   real :: tracerStemMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
   real :: tracerRootMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
   real :: tracerGLeafMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
+  real :: tracerValue(ilg)       !< Tracer CO2 value updated from the prepTracer subroutine, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
+  real :: tracerRML(ilg,icc)     !< Tracer leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real :: tracerGPP(ilg,icc) !< Tracer GPP (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
   !> Initialize the tracer pool trackers for competition and land use change to zero.
   gLeafLandCompChg = 0.0
@@ -506,6 +509,10 @@ contains
   !> Generate the sort index for correspondence between CTEM pfts and the
   !>  values in the parameter vectors
   sort = genSortIndex()
+  
+  !> Set up the tracer for today
+  if (useTracer > 0) call prepTracer(il1, il2,ilg, tracerCO2,& ! In 
+                                     tracerValue) !Out
 
   if (PFTCompetition .or. lnduseon) then
     !>Store green and brown leaf, stem, and root biomass, and litter and
@@ -653,7 +660,7 @@ contains
   !! Find stem and root maintenance respiration in umol co2/m2/sec
   !! If the tracer is being calculated then we also determine the 
   !! tracer flux.
-
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'A = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
   call mainres (fcancmx, fc, stemmass, rootmass, & !In
                 il1, il2, ilg, leapnow, & !In
                ta, tbar, rmatctem, sort, isand,& !In
@@ -669,10 +676,10 @@ contains
   call calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
               slai, ailcg, sort, rmsveg, rmrveg, ipeatland, & ! In 
               anmoss, fcancmx, rmlmoss, gppmoss, useTracer, & ! In 
-              gleafmas, tracerGLeafMass, tracerCO2, & ! In 
+              gleafmas, tracerGLeafMass, tracerValue, rmsTracer, rmrTracer,& ! In 
               pheanveg, rmlveg, rml, rms, rmr, rm ,rg, npp, gpp, & ! Out 
               autores, autoresveg, rgveg, nppmoss, armoss, & ! Out 
-              gppveg, nppmosstep, nppveg, tracerNPP) ! Out 
+              gppveg, nppmosstep, nppveg, tracerNPP, tracerRML,tracerGPP) ! Out 
 
   
 !   ! NOTE: This next bit is a little tricky. Remember ancgveg is the net photosynthesis 
@@ -776,6 +783,7 @@ contains
   !!     Heterotrophic respiration part starts
 
   !! Find heterotrophic respiration rates (umol co2/m2/sec) 
+  ! If tracer is being used then calculate the tracer fluxes. 
 
   ! CAUTION says Vivek
   ! Note that ipeatland is passed to hetresv to calculate psi (matric potential)
@@ -784,9 +792,7 @@ contains
   ! soil carbon respiration for gridcells/tiles which are peatlands is overwritten
   ! below in loop 380 by socres_peat(i) making passing of ipeatland to hetresv and
   ! calculation of psi in a different way useless.
-  
-  ! If tracer is being used then calculate the tracer fluxes. This uses optional variables.
-
+    
   call heterotrophicRespiration(il1, il2, ilg, ipeatland, fcancmx, fc, & ! In
                                 litrmass, soilcmas, delzw, thpor, tbar,& ! In 
                                 psisat, thliq, sort, bi, isand , thice,& ! In
@@ -813,7 +819,8 @@ contains
                           hetrsveg, litres, socres, hetrores, humtrsvg, soilresp, & ! Out 
                           humiftrs, hutrstep_g, litrfallmoss, ltrestepmoss, &
                           humstepmoss, socrestep ) ! Out 
-                                    
+
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'B = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
   !> Calculate NEP (net ecosystem productivity), difference between NPP and 
   !! heterotrophic respriation, for each pft and tile                                       
   call calcNEP(il1, il2, ilg, nppveg, hetrsveg, fg, npp, hetrores,  & ! In 
@@ -1030,10 +1037,17 @@ contains
                           afrleaf,  afrstem,  afrroot, & !Out
                          wtstatus, ltstatus) !Out
 
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'C = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                              
   call updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg, PFTCompetition,& ! In
-                               pftexist,gppveg,rmsveg,rmrveg,rmlveg, fcancmx,  & ! In 
-                               lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass, rootmass,bleafmas, & ! In/Out 
-                               reprocost, ntchlveg, ntchsveg, ntchrveg, repro_cost_g) ! Out 
+                               pftexist,gppveg,rmsveg,rmrveg,rmlveg,fcancmx,& ! In 
+                               useTracer,tracerNPP, rmsTracer, rmrTracer, tracerRML, tracerGPP,  & ! In 
+                               lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass,& ! In /Out 
+                               rootmass,bleafmas, tracerGLeafMass,tracerStemMass, & ! In/Out 
+                               tracerRootMass, tracerBLeafMass, & !In/Out
+                               reprocost, ntchlveg, ntchsveg, ntchrveg, & ! Out 
+                               repro_cost_g, tracerReproCost) ! Out 
+
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'D = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
 !   !>
 !   !! Estimate fraction of npp that is to be used for horizontal
 !   !! expansion (lambda) during the next day (i.e. this will be determining
@@ -1182,7 +1196,8 @@ contains
                  lfstatus,  pandays, colddays, gleafmas, &
                  bleafmas, tracerGLeafMass, tracerBLeafMass, & !In/Out
                  flhrloss, leaflitr, phenLeafGtoB, tracerLeafLitr ) ! Out
-                         
+  
+  if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'E = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
   !> While leaf litter is calculated in the phenology subroutine, stem
   !! and root turnover is calculated in the turnoverStemRoot subroutine.
     call turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !In 
@@ -1205,6 +1220,7 @@ contains
                          tracerRootMass, tracerStemMass, & ! In/Out 
                          tracerLeafLitr,tracerStemLitr, tracerRootLitr) !In/Out
   
+  if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'F = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
   !> Call the mortality subroutine which calculates mortality due to reduced growth and aging. 
   !! Exogenous mortality due to fire and other disturbances and the subsequent litter 
   !! that is generated is calculated in the disturb subroutine.
@@ -1227,6 +1243,7 @@ contains
                             glealtrm, gleafmas, bleafmas, tracerLitrMass,& !In/Out
                             tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass,& ! In/Out 
                             mortLeafGtoB) ! Out
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'G = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
   !    ------------------------------------------------------------------
   !>
   !> Call the disturbance subroutine which calculates mortality due to fire and other disturbances.
@@ -1253,6 +1270,7 @@ contains
                   emit_oc,  emit_bc, burnvegf, bterm_veg,& ! Out (Secondary)
                   mterm_veg,  lterm, smfunc_veg) ! Out (Secondary) 
 
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'H = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
   !> Calculate NBP (net biome production) for each pft by taking into account
   !! C emission losses. The disturbance routine produces emissions due to fire
   !! and while the land use change subroutine calculates emissions due to LUC. 
@@ -1268,10 +1286,15 @@ contains
   !> Allow cryoturbation and bioturbation to move the soil C between
   !! layers. Since this is neither consuming nor adding C, this does not
   !! affect our C balance in balcar. There is also an internal C balance check.
-  call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, useTracer, &!In
-                litrmass,soilcmas,tracerLitrMass, tracerSoilCMass, &! In/Out
+  call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, &!In
+                litrmass,soilcmas, &! In/Out
                 turbLitter, turbSoilC) ! Out
 
+  if (useTracer > 0) call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, &!In
+                              tracerLitrMass,tracerSoilCMass, &! In/Out
+                              turbLitter, turbSoilC) ! Out
+
+if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'I = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
   !> Prepare for the carbon balance check. Calculate total litter fall from each 
   !! component (leaves, stem, and root) from all causes (normal turnover, drought
   !! and cold stress for leaves, mortality, and disturbance), calculate grid-average
@@ -1293,27 +1316,31 @@ contains
   !>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145)
   !!and updated sizes of all pools (in \f$(kg C/m^2)\f$). Now we call the balcar subroutine and make sure
   !!that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
-  if (spinfast == 1) call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
-                                  litrmass, soilcmas, ntchlveg,  ntchsveg,&
-                                  ntchrveg, tltrleaf, tltrstem,  tltrroot,&
-                                  glcaemls, blcaemls, stcaemls,  rtcaemls,&
-                                  ltrcemls, ltresveg, scresveg,  humtrsvg,&
-                                  pglfmass, pblfmass, pstemass,  protmass,&
-                                  plitmass, psocmass, vgbiomas,  reprocost,&
-                                  pvgbioms, gavgltms, pgavltms,  gavgscms,&
-                                  pgavscms, dstcemls3, repro_cost_g,       &
-                                   autores, hetrores,      gpp,    &
-                                    litres,   socres, dstcemls1,    &
-                                  litrfall, humiftrs,                 &
-                                       il1,      il2,      ilg,     &
-                                 ipeatland, Cmossmas, pCmossmas,      &
-                                nppmosstep, litrfallmoss, litrmsmoss,&
-                               plitrmsmoss, ltrestepmoss, humstepmoss)
+  if (spinfast == 1) then
+    call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
+                      litrmass, soilcmas, ntchlveg,  ntchsveg,&
+                      ntchrveg, tltrleaf, tltrstem,  tltrroot,&
+                      glcaemls, blcaemls, stcaemls,  rtcaemls,&
+                      ltrcemls, ltresveg, scresveg,  humtrsvg,&
+                      pglfmass, pblfmass, pstemass,  protmass,&
+                      plitmass, psocmass, vgbiomas,  reprocost,&
+                      pvgbioms, gavgltms, pgavltms,  gavgscms,&
+                      pgavscms, dstcemls3, repro_cost_g,       &
+                       autores, hetrores,      gpp,    &
+                        litres,   socres, dstcemls1,    &
+                      litrfall, humiftrs,                 &
+                           il1,      il2,      ilg,     &
+                     ipeatland, Cmossmas, pCmossmas,      &
+                    nppmosstep, litrfallmoss, litrmsmoss,&
+                   plitrmsmoss, ltrestepmoss, humstepmoss)
   
-  !> Update the tracer pools if any tracer is being used. This needs to be before
-  !! allometry since rmatctem could then change.
-   if (useTracer == 1) call updateSimpleTracer(il1, il2) !In
-
+    !> Check for mass balance for the tracer if the tracer is being used and 
+    !! doTracerBalance is true. 
+    if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'J = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
+    if (useTracer > 0 .and. doTracerBalance) call checkTracerBalance(il1,il2)
+    
+  end if 
+   
   !> Finally find vegetation structural attributes which can be passed 
   !! to the land surface scheme using leaf, stem, and root biomass.
   !>
@@ -1356,11 +1383,11 @@ end subroutine ctem
 !!@author V. Arora, J. Melton
 subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
                   slai, ailcg, sort, rmsveg, rmrveg, ipeatland, & ! In 
-                  anmoss, fcancmx, rmlmoss, gppmoss, useTracer, & ! In 
-                  gleafmas, tracerGLeafMass, tracerCO2, & ! In 
+                  anmoss, fcancmx, rmlmoss, gppmoss, useTracer,& ! In 
+                  gleafmas, tracerGLeafMass, tracerValue, rmsTracer, rmrTracer, & ! In 
                   pheanveg, rmlveg, rml, rms, rmr, rm ,rg, npp, gpp, & ! Out 
                   autores, autoresveg, rgveg, nppmoss, armoss, & ! Out 
-                  gppveg, nppmosstep, nppveg, tracerNPP) ! Out 
+                  gppveg, nppmosstep, nppveg, tracerNPP, tracerRML, tracerGPP) ! Out 
   
   use classic_params, only : icc, iccp1, kn, zero, grescoefmoss, deltat, &
                              grescoef
@@ -1392,7 +1419,9 @@ subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
   real, intent(in) :: gppmoss(:)        !< moss GPP -daily averaged C fluxes rates (umol/m2/s)  
   real, intent(in) :: gleafmas(:,:)     !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$   
   real, intent(in) :: tracerGLeafMass(:,:) !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$          
-  real, intent(in) :: tracerCO2(:)       !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
+  real, intent(in) :: tracerValue(:)       !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
+  real, intent(in) :: rmsTracer(:,:)   !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: rmrTracer(:,:)   !< Tracer maintenance respiration for root for the CTEM pfts both (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
                                         
   real, intent(out) :: pheanveg(ilg,icc) !<
   real, intent(out) :: rmlveg(ilg,icc)   !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
@@ -1412,6 +1441,8 @@ subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
   real, intent(out) :: nppmosstep(ilg)  !< moss NPP (kgC/m2/timestep)
   real, intent(out) :: nppveg(ilg,icc)  !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, intent(out) :: tracerNPP(ilg,icc) !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: tracerRML(ilg,icc) !< Tracer leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: tracerGPP(ilg,icc) !< Tracer GPP (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   
   ! Local 
   integer :: j,i  
@@ -1420,9 +1451,8 @@ subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
   real :: rgmoss(ilg)          !< moss growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real :: rmveg(ilg,icc)       !<
   real :: frac                 !< temp var.
-  real :: tracerRML            !<
-  real :: tracerGPP            !<
-  real :: tracerRG             !<
+  real :: tracerRG             !< Tracer growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real :: tracerRM             !<  Tracer total maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   
   !--------
   
@@ -1491,14 +1521,16 @@ subroutine calcNPP(il1, il2, ilg, ancgveg, lfstatus, rmlcgveg, & ! In
         else
           frac = 0.
         end if 
-        tracerRML = rmlveg(i,j) * frac 
+        tracerRML(i,j) = rmlveg(i,j) * frac 
+        
+        tracerRM = tracerRML(i,j) + rmrTracer(i,j) + rmsTracer(i,j)
         
         !> Now we can find the tracerGPP by multiplying the gppveg value by the 
-        !! tracerCO2 value.
-        tracerGPP = gppveg(i,j) * tracerCO2(i)
+        !! tracerValue.
+        tracerGPP(i,j) = gppveg(i,j) * tracerValue(i)
         
         !> And from that calculate the tracerNPP, which is what we are needing.
-        tracerNPP(i,j) = tracerGPP - tracerRML
+        tracerNPP(i,j) = tracerGPP(i,j) - tracerRM
         
         tracerRG = 0.
         if (tracerNPP(i,j) > 0.) tracerRG = grescoef(sort(j)) * tracerNPP(i,j)

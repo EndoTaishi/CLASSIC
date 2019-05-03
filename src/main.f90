@@ -69,7 +69,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use ctemDriver,          only : ctem
   use tracerModule,        only : decay14C
   use applyAllometry,      only : allometry
-  use ctemGatherScatter,   only : ctems2, ctemg1
+  use ctemGatherScatter,   only : ctems2, ctemg1,ctemg2
   
   implicit none
 
@@ -2361,13 +2361,13 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
   !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
   !> refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.
-  ZRFMROW(:) = zrfmJobOpt
-  ZRFHROW(:) = zrfhJobOpt
+  ZRFMROW = zrfmJobOpt
+  ZRFHROW = zrfhJobOpt
   
   !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
   !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
   !>  The value is read in from the job options file.
-  ZBLDROW(:) = zbldJobOpt
+  ZBLDROW = zbldJobOpt
   
   !> Initialize variables in preparation for the run
   call initrowvars        
@@ -2432,27 +2432,27 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   !> textural information read in for each of the soil layers.
 
   CALL CLASSB(THPROT,THRROT,THMROT,BIROT,PSISROT,GRKSROT,&
-      &            THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,&
-      &            DLZWROT,ZBTWROT,&
-      &            ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,&
-      &            SANDROT,CLAYROT,ORGMROT,SOCIROT,DELZ,ZBOT,&
-      &            SDEPROT,ISNDROT,IGDRROT,&
-      &            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ipeatlandrow)
+              THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,&
+              DLZWROT,ZBTWROT,&
+              ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,&
+              SANDROT,CLAYROT,ORGMROT,SOCIROT,DELZ,ZBOT,&
+              SDEPROT,ISNDROT,IGDRROT,&
+              NLAT,NMOS,1,NLTEST,NMTEST,IGND,ipeatlandrow)
 
   !ctem initializations.
   if (ctem_on) then
     call ctemInit(nltest,nmtest)
 
     CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,&
-        &             NML,NMW,GCROW,FAREROT,MIDROT,&
-        &             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
+                NML,NMW,GCROW,FAREROT,MIDROT,&
+                NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 
     ! ctemg1 converts variables from the 'row' format (nlat,nmos,...)
     ! to the 'gat' format (ilg, ...) which is what the model calculations 
     ! are performed on. The ctemg1 subroutine is used to transform the 
     ! read in state variables (which come in with the 'row' format from the
     ! various input files).
-    
+
     call ctemg1(gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,&
         fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,&
         ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,&
@@ -2485,7 +2485,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                   cmasvegcgat,    veghghtgat,  rootdpthgat,   alvsctmgat, & !Out
                    alirctmgat,       paicgat,     slaicgat) !Out
 
-  endif   ! if (ctem_on)
+  end if   ! if (ctem_on)
 
   !     ctem initial preparation done
 
@@ -2509,7 +2509,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
         !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
-    N=N+1
+    N = N + 1
 
     !> Generally only the total incoming shortwave radiation FSDOWN
     !> is available; so it is partitioned 50:50 between the incoming visible (FSVHROW)
@@ -2523,18 +2523,18 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
     !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
     !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
 
-    DO 250 I=1,NLTEST
+    DO 250 I = 1, NLTEST
 
-      FSVHROW(I)=0.5*FSSROW(I)
-      FSIHROW(I)=0.5*FSSROW(I)
-      TAROW(I)=TAROW(I)+TFREZ
-      ULROW(I)=UVROW(I)
-      VLROW(I)=0.0
-      VMODROW(I)=UVROW(I)
-      FSSBROL(I,1)=FSVHROW(I)
-      FSSBROL(I,2)=FSIHROW(I)
+      FSVHROW(I) = 0.5 * FSSROW(I)
+      FSIHROW(I) = 0.5 * FSSROW(I)
+      TAROW(I) = TAROW(I) + TFREZ
+      ULROW(I) = UVROW(I)
+      VLROW(I) = 0.0
+      VMODROW(I) = UVROW(I)
+      FSSBROL(I,1) = FSVHROW(I)
+      FSSBROL(I,2) = FSIHROW(I)
 
-250         CONTINUE
+250 CONTINUE
 
     ! Check if we are on the first timestep of the day
     if (ihour == 0 .and. imin == 0) then
@@ -2591,9 +2591,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
     !>CLASSI evaluates a series of derived atmospheric variables
 
     CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,&
-        &            RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,&
-        &            PREROW,RPREROW,SPREROW,PRESROW,&
-        &            IPCP,NLAT,1,NLTEST)
+                RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,&
+                PREROW,RPREROW,SPREROW,PRESROW,&
+                IPCP,NLAT,1,NLTEST)
 
     CUMSNO=CUMSNO+SPCPROW(1)*RHSIROW(1)*DELT
 
@@ -3007,17 +3007,17 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
     !>the long vectors of mosaic tiles back onto the configuration of mosaic tiles within grid cells.
 
     CALL CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,&
-        &             ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,&
-        &             SNOROT, GTROT, TCANROT,RCANROT,SCANROT,&
-        &             GROROT, CMAIROT,TACROT, QACROT, WSNOROT,&
-        &             REFROT, BCSNROT,EMISROT,SALBROT,CSALROT,&
-        &             ILMOS,JLMOS,NML,NLAT,NTLD,NMOS,&
-        &             ILG,IGND,ICAN,ICAN+1,NBS,&
-        &             TBARGAT,THLQGAT,THICGAT,TSFSGAT,TPNDGAT,&
-        &             ZPNDGAT,TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,&
-        &             SNOGAT, GTGAT, TCANGAT,RCANGAT,SCANGAT,&
-        &             GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT,&
-        &             REFGAT, BCSNGAT,EMISGAT,SALBGAT,CSALGAT)
+                 ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,&
+                 SNOROT, GTROT, TCANROT,RCANROT,SCANROT,&
+                 GROROT, CMAIROT,TACROT, QACROT, WSNOROT,&
+                 REFROT, BCSNROT,EMISROT,SALBROT,CSALROT,&
+                 ILMOS,JLMOS,NML,NLAT,NTLD,NMOS,&
+                 ILG,IGND,ICAN,ICAN+1,NBS,&
+                 TBARGAT,THLQGAT,THICGAT,TSFSGAT,TPNDGAT,&
+                 ZPNDGAT,TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,&
+                 SNOGAT, GTGAT, TCANGAT,RCANGAT,SCANGAT,&
+                 GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT,&
+                 REFGAT, BCSNGAT,EMISGAT,SALBGAT,CSALGAT)
 
     !
     !    * SCATTER OPERATION ON DIAGNOSTIC VARIABLES SPLIT OUT OF
@@ -3109,45 +3109,45 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
     ! there is no need to scatter the variable as it will be in the 
     ! correct format for model calclations ('gat').
     call ctems2(fcancmxrow,rmatcrow,zolncrow,paicrow,&
-        &      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,&
-        &      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,&
-        &      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,&
-        &      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,&
-        &      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
-        &      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
-        &      SANDROT,     CLAYROT,     ORGMROT,&
-        &      anvegrow,    rmlvegrow,   tbaraccrow_m, prbfrhucrow,&
-        &      extnprobrow, pfcancmxrow,  nfcancmxrow,&
-        &      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
-        &      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
-        &      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,&
-        &      lyrotmasrow, tymaxlairow, vgbiomasrow,  gavgltmsrow,&
-        &      stmhrlosrow, bmasvegrow,  colddaysrow,  rothrlosrow,&
-        &      alvsctmrow,  alirctmrow,  gavglairow,   npprow,&
-        &      neprow,      hetroresrow, autoresrow,   soilcresprow,&
-        &      rmrow,       rgrow,       nbprow,       litresrow,&
-        &      socresrow,   gpprow,      dstcemlsrow,  litrfallrow,&
-        &      humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,&
-        &      litrfallvegrow, humiftrsvegrow,&
-        &      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,&
-        &      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,&
-        &      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,&
-        &      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,&
-        &      lucsocinrow, nppvegrow,   dstcemls3row,&
-        &      FAREROT,     gavgscmsrow,&
-        &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,&
-        &      vgbiomas_vegrow,gppvegrow,nepvegrow,&
-        &      FCANROT,      pftexistrow,&
-        &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
-        &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
-        &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,&
-        &      btermrow,     ltermrow,   mtermrow,&
-        &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,&
-        &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-        &      ch4WetSpecrow, wetfdynrow, ch4WetDynrow, ch4soillsrow,&
-        &      twarmmrow,    tcoldmrow,     gdd5row,&
-        &      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
-        &      annsrplsrow,   annpcprow,  dry_season_lengthrow,&
+              ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,&
+              ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,&
+              co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,&
+              co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,&
+              cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
+              rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
+              SANDROT,     CLAYROT,     ORGMROT,&
+              anvegrow,    rmlvegrow,   tbaraccrow_m, prbfrhucrow,&
+              extnprobrow, pfcancmxrow,  nfcancmxrow,&
+              stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
+              bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
+              pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,&
+              lyrotmasrow, tymaxlairow, vgbiomasrow,  gavgltmsrow,&
+              stmhrlosrow, bmasvegrow,  colddaysrow,  rothrlosrow,&
+              alvsctmrow,  alirctmrow,  gavglairow,   npprow,&
+              neprow,      hetroresrow, autoresrow,   soilcresprow,&
+              rmrow,       rgrow,       nbprow,       litresrow,&
+              socresrow,   gpprow,      dstcemlsrow,  litrfallrow,&
+              humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,&
+              litrfallvegrow, humiftrsvegrow,&
+              rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,&
+              tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,&
+              afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,&
+              burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,&
+              lucsocinrow, nppvegrow,   dstcemls3row,&
+              FAREROT,     gavgscmsrow,&
+              rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,&
+              vgbiomas_vegrow,gppvegrow,nepvegrow,&
+              FCANROT,      pftexistrow,&
+              emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
+              emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
+              emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,&
+              btermrow,     ltermrow,   mtermrow,&
+              nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,&
+              soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
+              ch4WetSpecrow, wetfdynrow, ch4WetDynrow, ch4soillsrow,&
+              twarmmrow,    tcoldmrow,     gdd5row,&
+              aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
+              annsrplsrow,   annpcprow,  dry_season_lengthrow,&
             anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,&
             peatdeprow,litrmsmossrow,Cmossmasrow,dmossrow,&
             ipeatlandrow, pddrow,wetfrac_presrow,&!thlqaccrow_m, thicaccrow_m,&
@@ -3155,47 +3155,47 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
             tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot,&
             tracerMossCMassrot, tracerMossLitrMassrot,&
                 !    ----
-        &      ilmos,       jlmos,       iwmos,        jwmos,&
-        &      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,&
-        &      ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,&
-        &      ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,&
-        &      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,&
-        &      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,&
-        &      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
-        &      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
-        &      sandgat,     claygat,     orgmgat,&
-        &      anveggat,    rmlveggat,   tbaraccgat_t, prbfrhucgat,&
-        &      extnprobgat, pfcancmxgat,  nfcancmxgat,&
-        &      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
-        &      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
-        &      pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,&
-        &      lyrotmasgat, tymaxlaigat, vgbiomasgat,  gavgltmsgat,&
-        &      stmhrlosgat, bmasveggat,  colddaysgat,  rothrlosgat,&
-        &      alvsctmgat,  alirctmgat,  gavglaigat,   nppgat,&
-        &      nepgat,      hetroresgat, autoresgat,   soilcrespgat,&
-        &      rmgat,       rggat,       nbpgat,       litresgat,&
-        &      socresgat,   gppgat,      dstcemlsgat,  litrfallgat,&
-        &      humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,&
-        &      litrfallveggat, humiftrsveggat,&
-        &      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,&
-        &      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,&
-        &      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,&
-        &      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,&
-        &      lucsocingat, nppveggat,   dstcemls3gat,&
-        &      faregat,     gavgscmsgat, &
-        &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,&
-        &      vgbiomas_veggat,gppveggat,nepveggat,&
-        &      fcangat,      pftexistgat,&
-        &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
-        &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
-        &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,&
-        &      btermgat,     ltermgat,   mtermgat,&
-        &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,&
-        &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-        &      ch4WetSpecgat, wetfdyngat, ch4WetDyngat, ch4soillsgat,&
-        &      twarmmgat,    tcoldmgat,     gdd5gat,&
-        &      ariditygat, srplsmongat,  defctmongat, anndefctgat,&
-        &      annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
+              ilmos,       jlmos,       iwmos,        jwmos,&
+              nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,&
+              ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,&
+              ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,&
+              co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,&
+              co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,&
+              cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
+              rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
+              sandgat,     claygat,     orgmgat,&
+              anveggat,    rmlveggat,   tbaraccgat_t, prbfrhucgat,&
+              extnprobgat, pfcancmxgat,  nfcancmxgat,&
+              stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
+              bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
+              pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,&
+              lyrotmasgat, tymaxlaigat, vgbiomasgat,  gavgltmsgat,&
+              stmhrlosgat, bmasveggat,  colddaysgat,  rothrlosgat,&
+              alvsctmgat,  alirctmgat,  gavglaigat,   nppgat,&
+              nepgat,      hetroresgat, autoresgat,   soilcrespgat,&
+              rmgat,       rggat,       nbpgat,       litresgat,&
+              socresgat,   gppgat,      dstcemlsgat,  litrfallgat,&
+              humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,&
+              litrfallveggat, humiftrsveggat,&
+              rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,&
+              tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,&
+              afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,&
+              burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,&
+              lucsocingat, nppveggat,   dstcemls3gat,&
+              faregat,     gavgscmsgat, &
+              rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,&
+              vgbiomas_veggat,gppveggat,nepveggat,&
+              fcangat,      pftexistgat,&
+              emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
+              emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
+              emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,&
+              btermgat,     ltermgat,   mtermgat,&
+              nbpveggat, hetroresveggat, autoresveggat,litresveggat,&
+              soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
+              ch4WetSpecgat, wetfdyngat, ch4WetDyngat, ch4soillsgat,&
+              twarmmgat,    tcoldmgat,     gdd5gat,&
+              ariditygat, srplsmongat,  defctmongat, anndefctgat,&
+              annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
                 anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,&
                 peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,&
                 ipeatlandgat,pddgat,wetfrac_presgat, &

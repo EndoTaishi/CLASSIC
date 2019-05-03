@@ -421,9 +421,13 @@ end subroutine allocate
 !> Performs allocation of carbon gained by photosynthesis into plant structural pools
 !> @author Vivek Arora and Joe Melton
 subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCompetition, & ! In
-                                    pftexist,gppveg,rmsveg,rmrveg,rmlveg, fcancmx,  & ! In 
-                                    lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass, rootmass,bleafmas, & ! In/Out 
-                                    reprocost, ntchlveg, ntchsveg, ntchrveg, repro_cost_g) ! Out 
+                                    pftexist,gppveg,rmsveg,rmrveg,rmlveg,fcancmx, &! In 
+                                    useTracer, tracerNPP, rmsTracer, rmrTracer, tracerRML,tracerGPP, & ! In 
+                                    lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass,& ! In/Out 
+                                    rootmass,bleafmas,tracerGLeafMass,tracerStemMass, & ! In/Out 
+                                    tracerRootMass, tracerBLeafMass,  & ! In/Out 
+                                    reprocost, ntchlveg, ntchsveg, ntchrveg, & ! Out 
+                                    repro_cost_g, tracerReproCost) ! Out 
   
   use classic_params,        only : icc, deltat, repro_fraction, zero
   use competition_scheme, only : expansion 
@@ -433,7 +437,13 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
   integer, intent(in) :: ilg          !< Number of grid cells in latitude circle
   integer, intent(in) :: il1          !<il1=1
   integer, intent(in) :: il2          !<il2=ilg
-  logical, intent(in) :: PFTCompetition                   !<logical boolean telling if competition between pfts is on or not
+  logical, intent(in) :: PFTCompetition !<logical boolean telling if competition between pfts is on or not
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                          
+  
   integer, intent(in) :: sort(icc)    !<index for correspondence between 9 pfts and 12 values in the parameter vectors
   real, intent(in) :: ailcg(ilg,icc)        !< Green LAI for ctem's pfts \f$(m^2 leaf/m^2 ground)\f$
   integer, intent(in) :: lfstatus(ilg,icc)  !<leaf phenology status
@@ -445,7 +455,12 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
   real, intent(in) :: rmlveg(ilg,icc)       !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real, dimension(ilg,icc), intent(in) :: fcancmx      !< max. fractional coverage of CTEM's pfts, but this can be
                                                           !< modified by land-use change, and competition between pfts
-                                                          
+  real, intent(in) :: tracerNPP(ilg,icc) !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: rmsTracer(:,:)   !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: rmrTracer(:,:)   !< Tracer maintenance respiration for root for the CTEM pfts both (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: tracerRML(:,:)   !< Tracer leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(in) :: tracerGPP(ilg,icc) !< Tracer GPP (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+                                                            
   real, intent(inout) :: afrleaf(ilg,icc)        !<allocation fraction for leaves
   real, intent(inout) :: afrstem(ilg,icc)        !<allocation fraction for stem
   real, intent(inout) :: afrroot(ilg,icc)        !<allocation fraction for root
@@ -457,6 +472,11 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
   real, intent(inout) :: bleafmas(ilg,icc)     !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$  
   real, intent(inout) :: stemmass(ilg,icc)     !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$                                  
   real, intent(inout) :: rootmass(ilg,icc)     !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$ 
+  real, intent(inout) :: tracerStemMass(ilg,icc) !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerRootMass(ilg,icc)!< Tracer mass in the root for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerGLeafMass(ilg,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(ilg,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  
   real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
   real, intent(out) :: ntchlveg(ilg,icc)  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
   real, intent(out) :: ntchsveg(ilg,icc)  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
@@ -464,15 +484,22 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
                                           !! the net change is the difference between allocation and
                                           !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
   real, intent(out) ::repro_cost_g(ilg)  !< Tile-level cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real, intent(out) :: tracerReproCost(ilg,icc)   !<
                             
   ! Local
   integer :: i,j
-  real gppvgstp(ilg,icc) !<
-  real nppvgstp(ilg,icc) !<
-  real rmlvgstp(ilg,icc) !<
-  real rmsvgstp(ilg,icc) !<
-  real rmrvgstp(ilg,icc) !<
-
+  real :: gppvgstp(ilg,icc) !<
+  real :: nppvgstp(ilg,icc) !<
+  real :: rmlvgstp(ilg,icc) !<
+  real :: rmsvgstp(ilg,icc) !<
+  real :: rmrvgstp(ilg,icc) !<
+  real :: tracerNPPstp      !<
+  real :: tracerRMLstp
+  real :: rmsTracerstp
+  real :: rmrTracerstp
+  real :: ntchlTracer
+  real :: ntchsTracer
+  real :: ntchrTracer
   real :: convertUnits      !< This converts the units from u-mol CO2/m2.sec to kg C/m^2
   
   convertUnits = deltat / 963.62
@@ -502,7 +529,7 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
         !> Remove the cost of making reproductive tissues. This cost can
         !! only be removed when NPP is positive.
         reprocost(i,j) = max(0., nppveg(i,j) * repro_fraction)
-
+        
         ! Not in use. We now use a constant reproductive cost as the prior formulation
         ! produces perturbations that do not allow closing of the C balance. JM Jun 2014.
         ! nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
@@ -516,16 +543,39 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
         rmlvgstp(i,j) = rmlveg(i,j) * convertUnits
         rmsvgstp(i,j) = rmsveg(i,j) * convertUnits
         rmrvgstp(i,j) = rmrveg(i,j) * convertUnits
+
+        ! If a tracer is being used then also find the reprocost and 
+        ! remove that from NPP. Convert units of respiration.
+        if (useTracer > 0) then 
+          tracerReproCost(i,j) = max(0., tracerNPP(i,j) * repro_fraction)
+          tracerNPPstp = (tracerNPP(i,j) - tracerReproCost(i,j)) * convertUnits
+          tracerRMLstp = tracerRML(i,j) * convertUnits
+          rmsTracerstp = rmsTracer(i,j) * convertUnits
+          rmrTracerstp = rmrTracer(i,j) * convertUnits
+        end if 
         
         if (lfstatus(i,j) /= 4) then ! real leaves exist 
           if (nppvgstp(i,j) > 0.0) then ! and there is C to allocate.
             ntchlveg(i,j) = afrleaf(i,j) * nppvgstp(i,j)
             ntchsveg(i,j) = afrstem(i,j) * nppvgstp(i,j)
             ntchrveg(i,j) = afrroot(i,j) * nppvgstp(i,j)
+            if (useTracer > 0) then 
+              ntchlTracer = afrleaf(i,j) * tracerNPPstp
+              ntchsTracer = afrstem(i,j) * tracerNPPstp
+              ntchrTracer = afrroot(i,j) * tracerNPPstp             
+            end if 
           else ! We lose C, not gain.
             ntchlveg(i,j) = -rmlvgstp(i,j) + afrleaf(i,j) * gppvgstp(i,j)
             ntchsveg(i,j) = -rmsvgstp(i,j) + afrstem(i,j) * gppvgstp(i,j)
             ntchrveg(i,j) = -rmrvgstp(i,j) + afrroot(i,j) * gppvgstp(i,j)
+            
+            if (useTracer > 0) then ! If tracer in use, do the same for the tracer. Note 
+              ! the tracerGPP units are converted in place.
+              ntchlTracer = -tracerRMLstp + afrleaf(i,j) * (tracerGPP(i,j) * convertUnits)
+              ntchsTracer = -rmsTracerstp + afrstem(i,j) * (tracerGPP(i,j) * convertUnits)
+              ntchrTracer = -rmrTracerstp + afrroot(i,j) * (tracerGPP(i,j) * convertUnits)
+            end if 
+
           end if
         else  !>i.e. if lfstatus == 4 (no leaves)
           
@@ -538,6 +588,12 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
           ntchsveg(i,j) = -rmsvgstp(i,j)
           ntchrveg(i,j) = -rmrvgstp(i,j)
           
+          if (useTracer > 0) then 
+            ntchlTracer = -tracerRMLstp 
+            ntchsTracer = -rmsTracerstp 
+            ntchrTracer = -rmrTracerstp 
+          end if 
+
           !> Since no real leaves are on, make allocation fractions equal to zero.
           afrleaf(i,j) = 0.0
           afrstem(i,j) = 0.0
@@ -548,6 +604,13 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
         gleafmas(i,j) = gleafmas(i,j) + ntchlveg(i,j)
         stemmass(i,j) = stemmass(i,j) + ntchsveg(i,j)
         rootmass(i,j) = rootmass(i,j) + ntchrveg(i,j)
+        
+        if (useTracer > 0) then 
+          tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + ntchlTracer
+          tracerStemMass(i,j) = tracerStemMass(i,j) + ntchsTracer
+          tracerRootMass(i,j) = tracerRootMass(i,j) + ntchrTracer
+        end if 
+
 
         if (gleafmas(i,j) < 0.0) then
           write(6,1900)'gleafmas < zero at i=',i,' for pft=',j,''
@@ -594,6 +657,14 @@ subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCo
         if(gleafmas(i,j) < zero) gleafmas(i,j) = 0.0
         if(stemmass(i,j) < zero) stemmass(i,j) = 0.0
         if(rootmass(i,j) < zero) rootmass(i,j) = 0.0
+        
+        if (useTracer > 0) then 
+          if(bleafmas(i,j) < zero) tracerBLeafMass(i,j) = 0.0
+          if(gleafmas(i,j) < zero) tracerGLeafMass(i,j) = 0.0
+          if(stemmass(i,j) < zero) tracerStemMass(i,j) = 0.0
+          if(rootmass(i,j) < zero) tracerRootMass(i,j) = 0.0
+        end if 
+
       
 610 continue
 600 continue

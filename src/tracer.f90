@@ -7,11 +7,16 @@ module tracerModule
 
 implicit none
 
-public :: updateSimpleTracer
+public :: prepTracer
 public :: decay14C
 public :: fractionate13C
 public :: convertTracerUnits
 public :: checkTracerBalance
+
+! Set to true if you want to check for tracer balance. 
+! NOTE: See the comments in the prepTracer header for how to set 
+! up run for this check.
+logical :: doTracerBalance  = .true. !< Logical to determine if the tracer pool balance check is performed.
 
 contains
 
@@ -46,7 +51,8 @@ contains
 !! at the start of the balance check.
 !!
 !> @author Joe Melton
-  subroutine updateSimpleTracer(il1, il2) !In
+  subroutine prepTracer(il1, il2,ilg, tracerCO2,& ! In 
+                                tracerValue) !Out
     
     use classic_params, only : icc, deltat, iccp2, zero, grass, ignd, nlat
     use ctem_statevars, only : tracer,c_switch,vgat
@@ -55,6 +61,7 @@ contains
     
     integer, intent(in) :: il1 !<other variables: il1=1
     integer, intent(in) :: il2 !<other variables: il2=ilg
+    integer, intent(in) :: ilg !<number of grid cells in this latitude band.
 
     real, pointer :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -64,36 +71,36 @@ contains
     real, pointer :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, pointer :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-    real, pointer :: tracerCO2(:)           !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
-    real, pointer :: litresveg(:,:,:)   !<fluxes for each pft: litter respiration for each pft + bare fraction
-    real, pointer :: soilcresveg(:,:,:)  !<soil carbon respiration in umol co2/m2.s, for ctem's pfts
-    real, pointer :: humiftrsveg(:,:,:) !< Transfers to the soil carbon pool in umol co2/m2.s, for ctem's pfts
-    real, pointer :: reprocost(:,:)   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
-    real, pointer :: tltrleaf(:,:)    !<total leaf litter fall rate (u-mol co2/m2.sec)
-    real, pointer :: tltrstem(:,:)    !<total stem litter fall rate (u-mol co2/m2.sec)
-    real, pointer :: tltrroot(:,:)    !<total root litter fall rate (u-mol co2/m2.sec)
-    real, pointer :: blfltrdt(:,:)    !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, pointer :: glfltrdt(:,:)    !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, pointer :: glcaemls(:,:)  !<green leaf carbon emission disturbance losses, \f$kg c/m^2\f$
-    real, pointer :: blcaemls(:,:)  !<brown leaf carbon emission disturbance losses, \f$kg c/m^2\f$
-    real, pointer :: rtcaemls(:,:)  !<root carbon emission disturbance losses, \f$kg c/m^2\f$
-    real, pointer :: stcaemls(:,:)  !<stem carbon emission disturbance losses, \f$kg c/m^2\f$
-    real, pointer :: ltrcemls(:,:)  !<litter carbon emission disturbance losses, \f$kg c/m^2\f$
-    real, pointer :: ntchlveg(:,:)  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
-    real, pointer :: ntchsveg(:,:)  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
-    real, pointer :: ntchrveg(:,:)  !<fluxes for each pft: Net change in root biomass, 
-                                    !! the net change is the difference between allocation and
-                                    !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-    real, pointer :: mortLeafGtoB(:,:)  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
-    real, pointer :: phenLeafGtoB(:,:)  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
-    real, pointer :: fcancmx(:,:)    !< Maximum fractional coverage of CTEM PFTs, but this can be
-                                     !! modified by land-use change, and competition between PFTs
-    real, pointer :: leaflitr(:,:)   !< Leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$). 
-                                     !! this leaf litter does not include litter generated 
-                                     !! due to mortality/fire
-    real, pointer :: rmatctem(:,:,:)   !< Fraction of roots for each of CTEM's PFTs in each soil layer
-    real, pointer :: turbLitter(:,:,:) !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer :: turbSoilC(:,:,:)  !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+    real, intent(in) :: tracerCO2(:)           !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
+    ! real, pointer :: litresveg(:,:,:)   !<fluxes for each pft: litter respiration for each pft + bare fraction
+    ! real, pointer :: soilcresveg(:,:,:)  !<soil carbon respiration in umol co2/m2.s, for ctem's pfts
+    ! real, pointer :: humiftrsveg(:,:,:) !< Transfers to the soil carbon pool in umol co2/m2.s, for ctem's pfts
+    ! real, pointer :: reprocost(:,:)   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+    ! real, pointer :: tltrleaf(:,:)    !<total leaf litter fall rate (u-mol co2/m2.sec)
+    ! real, pointer :: tltrstem(:,:)    !<total stem litter fall rate (u-mol co2/m2.sec)
+    ! real, pointer :: tltrroot(:,:)    !<total root litter fall rate (u-mol co2/m2.sec)
+    ! real, pointer :: blfltrdt(:,:)    !<brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    ! real, pointer :: glfltrdt(:,:)    !<green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    ! real, pointer :: glcaemls(:,:)  !<green leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+    ! real, pointer :: blcaemls(:,:)  !<brown leaf carbon emission disturbance losses, \f$kg c/m^2\f$
+    ! real, pointer :: rtcaemls(:,:)  !<root carbon emission disturbance losses, \f$kg c/m^2\f$
+    ! real, pointer :: stcaemls(:,:)  !<stem carbon emission disturbance losses, \f$kg c/m^2\f$
+    ! real, pointer :: ltrcemls(:,:)  !<litter carbon emission disturbance losses, \f$kg c/m^2\f$
+    ! real, pointer :: ntchlveg(:,:)  !<fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+    ! real, pointer :: ntchsveg(:,:)  !<fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
+    ! real, pointer :: ntchrveg(:,:)  !<fluxes for each pft: Net change in root biomass, 
+    !                                 !! the net change is the difference between allocation and
+    !                                 !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
+    ! real, pointer :: mortLeafGtoB(:,:)  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
+    ! real, pointer :: phenLeafGtoB(:,:)  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
+    ! real, pointer :: fcancmx(:,:)    !< Maximum fractional coverage of CTEM PFTs, but this can be
+    !                                  !! modified by land-use change, and competition between PFTs
+    ! real, pointer :: leaflitr(:,:)   !< Leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$). 
+    !                                  !! this leaf litter does not include litter generated 
+    !                                  !! due to mortality/fire
+    ! real, pointer :: rmatctem(:,:,:)   !< Fraction of roots for each of CTEM's PFTs in each soil layer
+    ! real, pointer :: turbLitter(:,:,:) !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: turbSoilC(:,:,:)  !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
     real, pointer :: gleafmas(:,:)     !< Green leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: bleafmas(:,:)     !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: stemmass(:,:)     !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
@@ -102,23 +109,23 @@ contains
     real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
     real, pointer :: Cmossmas(:)       !<C in moss biomass, \f$kg C/m^2\f$
     real, pointer :: litrmsmoss(:)     !<moss litter mass, \f$kg C/m^2\f$
-    real, pointer :: gLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer :: bLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer :: stemLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer :: rootLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer :: litterLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, pointer :: soilCLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: gLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: bLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: stemLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: rootLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: litterLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
+    ! real, pointer :: soilCLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
     integer, pointer :: ipeatland(:) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
-    
+    ! 
     ! Local
     integer :: i,j,k
-    real :: gains, losses
-    real :: convertUnits      !< This converts the units from u-mol CO2/m2.sec to kg C/m^2
-    real :: tracerValue(nlat) !< Temporary variable containing the tracer CO2 value to be used. Units vary.
-    logical :: doTracerBalance  !< Logical to determine if the tracer pool balance check is performed.
+    ! real :: gains, losses
+    ! real :: convertUnits      !< This converts the units from u-mol CO2/m2.sec to kg C/m^2
+    real, intent(out) :: tracerValue(ilg) !< Temporary variable containing the tracer CO2 value to be used. Units vary.
+    ! logical :: doTracerBalance  !< Logical to determine if the tracer pool balance check is performed.
     
     ! Point pointers 
-    tracerCO2         => tracer%tracerCO2gat
+    ! tracerCO2         => tracer%tracerCO2gat
     tracerGLeafMass   => tracer%gLeafMassgat
     tracerBLeafMass   => tracer%bLeafMassgat
     tracerStemMass    => tracer%stemMassgat
@@ -127,30 +134,30 @@ contains
     tracerSoilCMass   => tracer%soilCMassgat
     tracerMossCMass   => tracer%mossCMassgat
     tracerMossLitrMass => tracer%mossLitrMassgat
-    litresveg         => vgat%litresveg
-    soilcresveg       => vgat%soilcresveg
-    humiftrsveg       => vgat%humiftrsveg
-    reprocost         => vgat%reprocost
-    tltrleaf          => vgat%tltrleaf
-    tltrstem          => vgat%tltrstem
-    tltrroot          => vgat%tltrroot
-    blfltrdt          => vgat%blfltrdt
-    glfltrdt          => vgat%glfltrdt
-    glcaemls          => vgat%glcaemls
-    blcaemls          => vgat%blcaemls
-    rtcaemls          => vgat%rtcaemls
-    stcaemls          => vgat%stcaemls
-    ltrcemls          => vgat%ltrcemls
-    ntchlveg          => vgat%ntchlveg
-    ntchsveg          => vgat%ntchsveg
-    ntchrveg          => vgat%ntchrveg
-    mortLeafGtoB      => vgat%mortLeafGtoB
-    phenLeafGtoB      => vgat%phenLeafGtoB
-    fcancmx           => vgat%fcancmx
-    leaflitr          => vgat%leaflitr
-    rmatctem          => vgat%rmatctem
-    turbLitter        => vgat%turbLitter
-    turbSoilC         => vgat%turbSoilC
+    ! litresveg         => vgat%litresveg
+    ! soilcresveg       => vgat%soilcresveg
+    ! humiftrsveg       => vgat%humiftrsveg
+    ! reprocost         => vgat%reprocost
+    ! tltrleaf          => vgat%tltrleaf
+    ! tltrstem          => vgat%tltrstem
+    ! tltrroot          => vgat%tltrroot
+    ! blfltrdt          => vgat%blfltrdt
+    ! glfltrdt          => vgat%glfltrdt
+    ! glcaemls          => vgat%glcaemls
+    ! blcaemls          => vgat%blcaemls
+    ! rtcaemls          => vgat%rtcaemls
+    ! stcaemls          => vgat%stcaemls
+    ! ltrcemls          => vgat%ltrcemls
+    ! ntchlveg          => vgat%ntchlveg
+    ! ntchsveg          => vgat%ntchsveg
+    ! ntchrveg          => vgat%ntchrveg
+    ! mortLeafGtoB      => vgat%mortLeafGtoB
+    ! phenLeafGtoB      => vgat%phenLeafGtoB
+    ! fcancmx           => vgat%fcancmx
+    ! leaflitr          => vgat%leaflitr
+    ! rmatctem          => vgat%rmatctem
+    ! turbLitter        => vgat%turbLitter
+    ! turbSoilC         => vgat%turbSoilC
     gleafmas          => vgat%gleafmas
     bleafmas          => vgat%bleafmas
     stemmass          => vgat%stemmass
@@ -159,22 +166,18 @@ contains
     soilcmas          => vgat%soilcmas
     Cmossmas          => vgat%Cmossmas
     litrmsmoss        => vgat%litrmsmoss
-    gLeafLandCompChg  => vgat%gLeafLandCompChg
-    bLeafLandCompChg  => vgat%bLeafLandCompChg
-    stemLandCompChg  => vgat%stemLandCompChg
-    rootLandCompChg  => vgat%rootLandCompChg
-    litterLandCompChg => vgat%litterLandCompChg
-    soilCLandCompChg  => vgat%soilCLandCompChg
+    ! gLeafLandCompChg  => vgat%gLeafLandCompChg
+    ! bLeafLandCompChg  => vgat%bLeafLandCompChg
+    ! stemLandCompChg  => vgat%stemLandCompChg
+    ! rootLandCompChg  => vgat%rootLandCompChg
+    ! litterLandCompChg => vgat%litterLandCompChg
+    ! soilCLandCompChg  => vgat%soilCLandCompChg
     ipeatland        => vgat%ipeatland 
     
     ! ---------
     
-    convertUnits = deltat / 963.62
+    ! convertUnits = deltat / 963.62
     
-    ! Set to true if you want to check for tracer balance. 
-    ! NOTE: See the comments in the header for how to set 
-    ! up run for this check.
-    doTracerBalance = .true.
 
     ! If doTracerBalance is true, Check for mass balance for the tracer.
     !  First set the tracer CO2 value to 1 so it gets the same inputs as the 
@@ -187,84 +190,86 @@ contains
       
     !> We don't need to do any conversion of the carbon that is uptaked
     !! in this timestep. We assume that the tracerValue should just be applied as is.
+    
+    !> If the normal pools are empty, make the tracer pools the same.
     do i = il1, il2 
       do j = 1, iccp2
         if (j <= icc) then !these are just icc sized arrays.
-          if (fcancmx(i,j) > zero) then
-                        
-            ! *** Update the green leaves *** 
-                
-            if (ntchlveg(i,j) > 0.) then ! NPP was positive to leaves
-              gains = ntchlveg(i,j) * convertUnits * tracerValue(i)  
-            else ! loss of C from leaves due to negative NPP.
-              gains = ntchlveg(i,j) * convertUnits  
-            end if
-            ! tltrleaf (phenology litter, mortality, disturbance) includes brown leaf
-            ! generation from disturbance so remove that)
-            if (.not. grass(j) ) then
-              losses = (tltrleaf(i,j) - (blfltrdt(i,j)/convertUnits)) * convertUnits & 
-                       + glcaemls(i,j) * convertUnits !combusted by fire.
-            else 
-              losses = glfltrdt(i,j) & !green leaf litter generated by fire.
-                       + mortLeafGtoB(i,j) & !mortality transfer to brown leaves, only >0 for grasses
-                       + phenLeafGtoB(i,j) & !phenology transfer to brown leaves, only >0 for grasses
-                       + glcaemls(i,j) * convertUnits !combusted by fire.
-            end if 
-                     
-            !> When the tracer is calculated we apply the gain and losses to the exisiting
-            !! pool. We also include the gains/losses due to changing PFT areas after land 
-            !! use change or competition. 
-            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + gains - losses - gLeafLandCompChg(i,j)           
-            !if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
- 
-            ! ***  Update brown leaves (grass only) *** 
-          
-            if (grass(j) ) then
-              gains = phenLeafGtoB(i,j) & ! phenology transfer to brown leaves, only >0 for grasses
-                      + mortLeafGtoB(i,j) ! mortality transfer to brown leaves, only >0 for grasses
-              
-              losses = leaflitr(i,j)  * convertUnits & ! phenology litter generation.
-                       + blfltrdt(i,j) & !brown leaf litter generated by fire.
-                       + blcaemls(i,j) * convertUnits !combusted by fire.
-
-              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + gains - losses - bLeafLandCompChg(i,j)
-              !if (tracerBLeafMass(i,j) < zero) tracerBLeafMass(i,j) = 0.
-              
-            end if 
-            
-            ! ***  Update stem mass (all except grass) *** 
-            
-            if (.not. grass(j)) then
-
-              if (ntchsveg(i,j) > 0.) then ! NPP was positive to leaves
-                gains = ntchsveg(i,j) * convertUnits * tracerValue(i)  
-              else ! loss of C from leaves due to negative NPP.
-                gains = ntchsveg(i,j) * convertUnits  
-              end if
-
-              losses = tltrstem(i,j) * convertUnits & !turnover, mortality, disturbance => litter.
-                      + stcaemls(i,j) * convertUnits ! combusted by fire.
-                                
-              tracerStemMass(i,j) = tracerStemMass(i,j) + gains - losses - stemLandCompChg(i,j)
-              !if (tracerStemMass(i,j) < zero) tracerStemMass(i,j) = 0.
-              
-            end if 
-            
-            ! ***  Update root mass *** 
-
-            if (ntchrveg(i,j) > 0.) then ! NPP was positive to leaves
-              gains = ntchrveg(i,j) * convertUnits * tracerValue(i)  
-            else ! loss of C from leaves due to negative NPP.
-              gains = ntchrveg(i,j) * convertUnits  
-            end if
-            
-            losses = tltrroot(i,j) * convertUnits &
-                    + rtcaemls(i,j) * convertUnits
-                                      
-            tracerRootMass(i,j) = tracerRootMass(i,j) + gains - losses - rootLandCompChg(i,j)
-            !if (tracerRootMass(i,j) < zero) tracerRootMass(i,j) = 0.
-
-          end if         
+    !       if (fcancmx(i,j) > zero) then
+    ! 
+    !         ! *** Update the green leaves *** 
+    ! 
+    !         if (ntchlveg(i,j) > 0.) then ! NPP was positive to leaves
+    !           gains = ntchlveg(i,j) * convertUnits * tracerValue(i)  
+    !         else ! loss of C from leaves due to negative NPP.
+    !           gains = ntchlveg(i,j) * convertUnits  
+    !         end if
+    !         ! tltrleaf (phenology litter, mortality, disturbance) includes brown leaf
+    !         ! generation from disturbance so remove that)
+    !         if (.not. grass(j) ) then
+    !           losses = (tltrleaf(i,j) - (blfltrdt(i,j)/convertUnits)) * convertUnits & 
+    !                    + glcaemls(i,j) * convertUnits !combusted by fire.
+    !         else 
+    !           losses = glfltrdt(i,j) & !green leaf litter generated by fire.
+    !                    + mortLeafGtoB(i,j) & !mortality transfer to brown leaves, only >0 for grasses
+    !                    + phenLeafGtoB(i,j) & !phenology transfer to brown leaves, only >0 for grasses
+    !                    + glcaemls(i,j) * convertUnits !combusted by fire.
+    !         end if 
+    ! 
+    !         !> When the tracer is calculated we apply the gain and losses to the exisiting
+    !         !! pool. We also include the gains/losses due to changing PFT areas after land 
+    !         !! use change or competition. 
+    !         tracerGLeafMass(i,j) = tracerGLeafMass(i,j) + gains - losses - gLeafLandCompChg(i,j)           
+    !         !if (tracerGLeafMass(i,j) < zero) tracerGLeafMass(i,j) = 0.
+    ! 
+    !         ! ***  Update brown leaves (grass only) *** 
+    ! 
+    !         if (grass(j) ) then
+    !           gains = phenLeafGtoB(i,j) & ! phenology transfer to brown leaves, only >0 for grasses
+    !                   + mortLeafGtoB(i,j) ! mortality transfer to brown leaves, only >0 for grasses
+    ! 
+    !           losses = leaflitr(i,j)  * convertUnits & ! phenology litter generation.
+    !                    + blfltrdt(i,j) & !brown leaf litter generated by fire.
+    !                    + blcaemls(i,j) * convertUnits !combusted by fire.
+    ! 
+    !           tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + gains - losses - bLeafLandCompChg(i,j)
+    !           !if (tracerBLeafMass(i,j) < zero) tracerBLeafMass(i,j) = 0.
+    ! 
+    !         end if 
+    ! 
+    !         ! ***  Update stem mass (all except grass) *** 
+    ! 
+    !         if (.not. grass(j)) then
+    ! 
+    !           if (ntchsveg(i,j) > 0.) then ! NPP was positive to leaves
+    !             gains = ntchsveg(i,j) * convertUnits * tracerValue(i)  
+    !           else ! loss of C from leaves due to negative NPP.
+    !             gains = ntchsveg(i,j) * convertUnits  
+    !           end if
+    ! 
+    !           losses = tltrstem(i,j) * convertUnits & !turnover, mortality, disturbance => litter.
+    !                   + stcaemls(i,j) * convertUnits ! combusted by fire.
+    ! 
+    !           tracerStemMass(i,j) = tracerStemMass(i,j) + gains - losses - stemLandCompChg(i,j)
+    !           !if (tracerStemMass(i,j) < zero) tracerStemMass(i,j) = 0.
+    ! 
+    !         end if 
+    ! 
+    !         ! ***  Update root mass *** 
+    ! 
+    !         if (ntchrveg(i,j) > 0.) then ! NPP was positive to leaves
+    !           gains = ntchrveg(i,j) * convertUnits * tracerValue(i)  
+    !         else ! loss of C from leaves due to negative NPP.
+    !           gains = ntchrveg(i,j) * convertUnits  
+    !         end if
+    ! 
+    !         losses = tltrroot(i,j) * convertUnits &
+    !                 + rtcaemls(i,j) * convertUnits
+    ! 
+    !         tracerRootMass(i,j) = tracerRootMass(i,j) + gains - losses - rootLandCompChg(i,j)
+    !         !if (tracerRootMass(i,j) < zero) tracerRootMass(i,j) = 0.
+    ! 
+    !       end if         
           if (rootmass(i,j) < zero) tracerRootMass(i,j) = 0.
           if (stemmass(i,j) < zero) tracerStemMass(i,j) = 0.
           if (bleafmas(i,j) < zero) tracerBLeafMass(i,j) = 0.
@@ -272,55 +277,55 @@ contains
         end if
       
         ! ***  Update litter mass *** 
-        do k = 1, ignd
-          if (j <= icc) then 
-            if (k == 1) then 
-              ! surface gains 
-              gains = (tltrleaf(i,j)  & !leaf litter 
-                      + tltrstem(i,j)  & ! stem 
-                      + tltrroot(i,j) * rmatctem(i,j,k) & ! root 
-                      + reprocost(i,j) )  * convertUnits  ! reproductive tissues
-              losses = (litresveg(i,j,k)  & !litter respiration
-                      + humiftrsveg(i,j,k)  &  ! humification
-                      + ltrcemls(i,j) ) * convertUnits !combusted
-            else 
-              ! deeper layers 
-              gains = tltrroot(i,j) * rmatctem(i,j,k)  * convertUnits !from roots only.
-              losses = (litresveg(i,j,k)  & !litter respiration
-                      + humiftrsveg(i,j,k)) * convertUnits !humification
-            end if                
-          else ! bareground or LUC product pools
-            gains = 0. ! The gains come from LUC, so are in the litterLandCompChg term.
-            losses = (litresveg(i,j,k)  & !litter respiration
-                    + humiftrsveg(i,j,k)) * convertUnits  ! humification
-          end if 
-          
-          ! Litter mass is mixed by soil turbation (cryo, bio) so we also consider the turbation movements
-          ! but LUC product pools are not considered to be turbated.
-          if (j < iccp2) then
-            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses &
-                                                          - (turbLitter(i,j,k) &
-                                                          - litterLandCompChg(i,j,k))
-          else 
-            tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses  - litterLandCompChg(i,j,k) 
-          end if 
-          !if (tracerLitrMass(i,j,k) < zero) tracerLitrMass(i,j,k) = 0.
-        end do 
-                
-        ! ***  Update soil C mass ***          
-        do k = 1, ignd
-          gains = humiftrsveg(i,j,k) * convertUnits ! humification 
-          losses = soilcresveg(i,j,k) * convertUnits ! respiration 
-          
-          if (j < iccp2) then
-            tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses &
-                                                            - (turbSoilC(i,j,k)&
-                                                            - soilCLandCompChg(i,j,k)) 
-          else ! no turbation of LUC product pools.
-            tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses - soilCLandCompChg(i,j,k) 
-          end if
-          !if (tracerSoilCMass(i,j,k) < zero) tracerSoilCMass(i,j,k) = 0.
-        end do
+        ! do k = 1, ignd
+        !   if (j <= icc) then 
+        !     if (k == 1) then 
+        !       ! surface gains 
+        !       gains = (tltrleaf(i,j)  & !leaf litter 
+        !               + tltrstem(i,j)  & ! stem 
+        !               + tltrroot(i,j) * rmatctem(i,j,k) & ! root 
+        !               + reprocost(i,j) )  * convertUnits  ! reproductive tissues
+        !       losses = (litresveg(i,j,k)  & !litter respiration
+        !               + humiftrsveg(i,j,k)  &  ! humification
+        !               + ltrcemls(i,j) ) * convertUnits !combusted
+        !     else 
+        !       ! deeper layers 
+        !       gains = tltrroot(i,j) * rmatctem(i,j,k)  * convertUnits !from roots only.
+        !       losses = (litresveg(i,j,k)  & !litter respiration
+        !               + humiftrsveg(i,j,k)) * convertUnits !humification
+        !     end if                
+        !   else ! bareground or LUC product pools
+        !     gains = 0. ! The gains come from LUC, so are in the litterLandCompChg term.
+        !     losses = (litresveg(i,j,k)  & !litter respiration
+        !             + humiftrsveg(i,j,k)) * convertUnits  ! humification
+        !   end if 
+        ! 
+        !   ! Litter mass is mixed by soil turbation (cryo, bio) so we also consider the turbation movements
+        !   ! but LUC product pools are not considered to be turbated.
+        !   if (j < iccp2) then
+        !     tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses &
+        !                                                   - (turbLitter(i,j,k) &
+        !                                                   - litterLandCompChg(i,j,k))
+        !   else 
+        !     tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + gains - losses  - litterLandCompChg(i,j,k) 
+        !   end if 
+        !   !if (tracerLitrMass(i,j,k) < zero) tracerLitrMass(i,j,k) = 0.
+        ! end do 
+        ! 
+        ! ! ***  Update soil C mass ***          
+        ! do k = 1, ignd
+        !   gains = humiftrsveg(i,j,k) * convertUnits ! humification 
+        !   losses = soilcresveg(i,j,k) * convertUnits ! respiration 
+        ! 
+        !   if (j < iccp2) then
+        !     tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses &
+        !                                                     - (turbSoilC(i,j,k)&
+        !                                                     - soilCLandCompChg(i,j,k)) 
+        !   else ! no turbation of LUC product pools.
+        !     tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) + gains - losses - soilCLandCompChg(i,j,k) 
+        !   end if
+        !   !if (tracerSoilCMass(i,j,k) < zero) tracerSoilCMass(i,j,k) = 0.
+        ! end do
         
         if (sum(litrmass(i,j,:)) < zero) tracerLitrMass(i,j,:) = 0.
         if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.       
@@ -332,9 +337,9 @@ contains
     end do ! i 
     
     ! Check for mass balance for the tracer.
-    if (doTracerBalance) call checkTracerBalance(il1,il2)
+    ! if (doTracerBalance) call checkTracerBalance(il1,il2)
   
-  end subroutine updateSimpleTracer
+  end subroutine prepTracer
 !!@}
 ! -------------------------------------------------------
 !>\ingroup tracer_decay14C
@@ -555,8 +560,10 @@ subroutine checkTracerBalance(il1,il2)
   ! ---------
   
   if (useTracer /= 1) then
-    print*,'checkTracerBalance: useTracer must == 1 for this check, you have:',useTracer 
+    print*,'ERROR! checkTracerBalance: useTracer must == 1 for this check, you have:',useTracer 
+    print*,'Either turn off checkTracerBalance (doTracerBalance == .false.) or set useTracer == 1'
     print*,'Ending run.'
+    print*,' ***^^^***^^^***^^^***^^^***^^^***^^^ '
     call xit('checkTracerBalance',1)
   end if 
   

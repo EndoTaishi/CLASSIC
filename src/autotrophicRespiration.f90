@@ -69,13 +69,13 @@ contains
   real, intent(in) :: rmatctem(ilg,icc,ignd) !<fraction of roots in each layer for each pft
   
   real, intent(out) :: roottemp(ilg,icc) !<root temperature (k)
-  real, intent(out) :: rmsveg(ilg,icc)   !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
-  real, intent(out) :: rmrveg(ilg,icc)   !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
+  real, intent(out) :: rmsveg(ilg,icc)   !< Maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rmrveg(ilg,icc)   !< Maintenance respiration for root for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   
   real, intent(in) :: tracerStemMass(:,:) !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
   real, intent(in) :: tracerRootMass(:,:)!< Tracer mass in the root for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, intent(out) :: rmsTracer(ilg,icc)   !< Tracer maintenance respiration for stem for the CTEM pfts (kg C/m2.day)
-  real, intent(out) :: rmrTracer(ilg,icc)   !< Tracer maintenance respiration for root for the CTEM pfts both (kg c/m2.day)
+  real, intent(out) :: rmsTracer(ilg,icc)   !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+  real, intent(out) :: rmrTracer(ilg,icc)   !< Tracer maintenance respiration for root for the CTEM pfts both (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   
   real tempq10r(ilg,icc) !<
   real tempq10s(ilg)     !<
@@ -186,13 +186,14 @@ contains
         end if 
         
         if (useTracer > 0) then 
-          ! If our tracers are present then calculate the tracer flux values 
+          ! If our tracers are present then calculate the tracer flux values,
+          ! include here the conversion from  kg C/m2.day -> u mol CO2/m2.sec
           if (leapnow) then
             rmsTracer(i,j) = tracerStemMass(i,j) * livstmfr(i,j) * q10funcStem &
-                                   * (bsrtstem(sort(j)) / 366.0)
+                                   * (bsrtstem(sort(j)) / 366.0) * 963.62 
           else 
             rmsTracer(i,j) = tracerStemMass(i,j) * livstmfr(i,j) * q10funcStem &
-                                   * (bsrtstem(sort(j)) / 365.0)
+                                   * (bsrtstem(sort(j)) / 365.0) * 963.62 
           end if         
         end if 
         
@@ -221,12 +222,13 @@ contains
         
         if (useTracer > 0) then 
           ! If our tracers are present then calculate the tracer flux values 
+          ! include here the conversion from  kg C/m2.day -> u mol CO2/m2.sec
           if (leapnow) then 
             rmrTracer(i,j) = tracerRootMass(i,j) * livrotfr(i,j) * q10funcRoot &
-                                        * (bsrtroot(sort(j))/366.0)
+                                        * (bsrtroot(sort(j))/366.0) * 963.62 
           else 
             rmrTracer(i,j) = tracerRootMass(i,j) * livrotfr(i,j) * q10funcRoot &
-                                        * (bsrtroot(sort(j))/365.0)
+                                        * (bsrtroot(sort(j))/365.0) * 963.62 
           end if 
         end if 
 

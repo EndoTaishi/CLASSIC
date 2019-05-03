@@ -29,7 +29,7 @@
 OBJ = fileIOModule.o classic_params.o ctem_statevars.o class_statevars.o peatlands_mod.o \
 	generalUtils.o ctemUtilities.o APREP.o GRALB.o mvidx.o SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o \
 	TNPREP.o WFILL.o CANADD.o GRDRAN.o SNOALBW.o  TPREP.o WFLOW.o CANALB.o CLASSG.o \
-	GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemGatherScatter.o applyAllometry.o ctemg2.o \
+	GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemGatherScatter.o applyAllometry.o \
 	PHTSYN3.o CANVAP.o CLASSI.o CWCALC.o ICEBAL.o SUBCAN.o TSOLVE.o XIT.o CGROW.o CLASSS.o \
 	DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o \
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \

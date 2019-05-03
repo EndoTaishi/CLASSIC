@@ -647,7 +647,7 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
           tracerLitTemp = frltrrt(n) * tracerRootMass(i,j) * fractionPFTburned
           tracerEmitTemp = frco2rt(n) * tracerRootMass(i,j) * fractionPFTburned
           tracerRootMass(i,j)=tracerRootMass(i,j) - tracerLitTemp - tracerEmitTemp
-          
+
           ! The burned litter is placed on the top litter layer except for the root litter which
           ! goes into litter layers according to the root distribution. 
           do k = 1, ignd
@@ -655,10 +655,9 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
           end do
           
           ! The burned litter comes from the first layer
-          tracerLitTemp = frltrbrn(n) *tracerLitrMass(i,j,1) * fractionPFTburned
-          
+          tracerLitTemp = frltrbrn(n) * tracerLitrMass(i,j,1) * fractionPFTburned          
           tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) - tracerLitTemp
-        
+                  
         end if 
         
         !>Output the burned area per PFT (the units here are burned fraction of each PFTs area. So
