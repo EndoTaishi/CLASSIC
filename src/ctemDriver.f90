@@ -660,7 +660,7 @@ contains
   !! Find stem and root maintenance respiration in umol co2/m2/sec
   !! If the tracer is being calculated then we also determine the 
   !! tracer flux.
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'A = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
+  
   call mainres (fcancmx, fc, stemmass, rootmass, & !In
                 il1, il2, ilg, leapnow, & !In
                ta, tbar, rmatctem, sort, isand,& !In
@@ -820,7 +820,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'A = ',abs(tra
                           humiftrs, hutrstep_g, litrfallmoss, ltrestepmoss, &
                           humstepmoss, socrestep ) ! Out 
 
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'B = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
   !> Calculate NEP (net ecosystem productivity), difference between NPP and 
   !! heterotrophic respriation, for each pft and tile                                       
   call calcNEP(il1, il2, ilg, nppveg, hetrsveg, fg, npp, hetrores,  & ! In 
@@ -1037,7 +1036,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'B = ',abs(tra
                           afrleaf,  afrstem,  afrroot, & !Out
                          wtstatus, ltstatus) !Out
 
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'C = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                              
   call updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg, PFTCompetition,& ! In
                                pftexist,gppveg,rmsveg,rmrveg,rmlveg,fcancmx,& ! In 
                                useTracer,tracerNPP, rmsTracer, rmrTracer, tracerRML, tracerGPP,  & ! In 
@@ -1047,7 +1045,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'C = ',abs(tra
                                reprocost, ntchlveg, ntchsveg, ntchrveg, & ! Out 
                                repro_cost_g, tracerReproCost) ! Out 
 
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'D = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
 !   !>
 !   !! Estimate fraction of npp that is to be used for horizontal
 !   !! expansion (lambda) during the next day (i.e. this will be determining
@@ -1197,7 +1194,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'D = ',abs(tra
                  bleafmas, tracerGLeafMass, tracerBLeafMass, & !In/Out
                  flhrloss, leaflitr, phenLeafGtoB, tracerLeafLitr ) ! Out
   
-  if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'E = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
   !> While leaf litter is calculated in the phenology subroutine, stem
   !! and root turnover is calculated in the turnoverStemRoot subroutine.
     call turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg,& !In 
@@ -1219,8 +1215,7 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'D = ',abs(tra
                          tracerGLeafMass,tracerBLeafMass, tracerLitrMass,& ! In/Out 
                          tracerRootMass, tracerStemMass, & ! In/Out 
                          tracerLeafLitr,tracerStemLitr, tracerRootLitr) !In/Out
-  
-  if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'F = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                          
+
   !> Call the mortality subroutine which calculates mortality due to reduced growth and aging. 
   !! Exogenous mortality due to fire and other disturbances and the subsequent litter 
   !! that is generated is calculated in the disturb subroutine.
@@ -1243,7 +1238,7 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'D = ',abs(tra
                             glealtrm, gleafmas, bleafmas, tracerLitrMass,& !In/Out
                             tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass,& ! In/Out 
                             mortLeafGtoB) ! Out
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'G = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
+
   !    ------------------------------------------------------------------
   !>
   !> Call the disturbance subroutine which calculates mortality due to fire and other disturbances.
@@ -1270,7 +1265,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'G = ',abs(tra
                   emit_oc,  emit_bc, burnvegf, bterm_veg,& ! Out (Secondary)
                   mterm_veg,  lterm, smfunc_veg) ! Out (Secondary) 
 
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'H = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
   !> Calculate NBP (net biome production) for each pft by taking into account
   !! C emission losses. The disturbance routine produces emissions due to fire
   !! and while the land use change subroutine calculates emissions due to LUC. 
@@ -1294,7 +1288,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'H = ',abs(tra
                               tracerLitrMass,tracerSoilCMass, &! In/Out
                               turbLitter, turbSoilC) ! Out
 
-if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'I = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
   !> Prepare for the carbon balance check. Calculate total litter fall from each 
   !! component (leaves, stem, and root) from all causes (normal turnover, drought
   !! and cold stress for leaves, mortality, and disturbance), calculate grid-average
@@ -1336,7 +1329,6 @@ if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'I = ',abs(tra
   
     !> Check for mass balance for the tracer if the tracer is being used and 
     !! doTracerBalance is true. 
-    if (abs(tracerlitrmass(1,7,2) - litrmass(1,7,2)) > 0.0001) print*,'J = ',abs(tracerlitrmass(1,7,2) - litrmass(1,7,2))                                                      
     if (useTracer > 0 .and. doTracerBalance) call checkTracerBalance(il1,il2)
     
   end if 

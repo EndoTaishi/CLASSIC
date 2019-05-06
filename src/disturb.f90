@@ -616,48 +616,51 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
         ! goes into litter layers according to the root distribution.
         litrmass(i,j,1) = litrmass(i,j,1) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
                         + rootltdt(i,j) * rmatctem(i,j,1) - ltrcemls(i,j)
+        
         do k = 2, ignd
           litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
         end do
-
+        ! tmpzzz=0.
         if (useTracer > 0) then 
+          
+          ! The burned litter comes out of the first litter layer. Update it first here
+          ! as later we change the tracerLitrMass value so doing it later would change 
+          ! the result.
+          tracerLitTemp = frltrbrn(n) * tracerLitrMass(i,j,1) * fractionPFTburned          
+          tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) - tracerLitTemp
+
           ! Update the tracer pools for fire losses. Need to calculte the litter and emissions
           ! terms since they are dependent upon pool size. 
           tracerLitTemp = frltrglf(n) * tracerGLeafMass(i,j) * fractionPFTburned
           tracerEmitTemp = frco2glf(n) * tracerGLeafMass(i,j) * fractionPFTburned
           tracerGLeafMass(i,j)=tracerGLeafMass(i,j) - tracerLitTemp - tracerEmitTemp
 
-          ! The burned litter is placed on the top litter layer so add the green leaf litter 
+          ! Add the green leaf litter to top litter layer
           tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
-
+          
           tracerLitTemp = frltrblf(n) * tracerBLeafMass(i,j) * fractionPFTburned
           tracerEmitTemp = frco2blf(n) * tracerBLeafMass(i,j) * fractionPFTburned
           tracerBLeafMass(i,j)=tracerBLeafMass(i,j) - tracerLitTemp - tracerEmitTemp
           
-          ! The burned litter is placed on the top litter layer so add the brown leaf litter 
+          ! Add the brown leaf litter to top litter layer
           tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
 
           tracerLitTemp = frltrstm(n) * tracerStemMass(i,j) * fractionPFTburned
           tracerEmitTemp = frco2stm(n) * tracerStemMass(i,j) * fractionPFTburned
           tracerStemMass(i,j)=tracerStemMass(i,j) - tracerLitTemp - tracerEmitTemp
           
-          ! The burned litter is placed on the top litter layer so add the stem litter 
+          ! Add the stem litter to top litter layer
           tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
 
           tracerLitTemp = frltrrt(n) * tracerRootMass(i,j) * fractionPFTburned
           tracerEmitTemp = frco2rt(n) * tracerRootMass(i,j) * fractionPFTburned
           tracerRootMass(i,j)=tracerRootMass(i,j) - tracerLitTemp - tracerEmitTemp
 
-          ! The burned litter is placed on the top litter layer except for the root litter which
-          ! goes into litter layers according to the root distribution. 
+          ! Add the root litter, which goes into litter layers according to the root distribution. 
           do k = 1, ignd
             tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLitTemp * rmatctem(i,j,k)
           end do
-          
-          ! The burned litter comes from the first layer
-          tracerLitTemp = frltrbrn(n) * tracerLitrMass(i,j,1) * fractionPFTburned          
-          tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) - tracerLitTemp
-                  
+
         end if 
         
         !>Output the burned area per PFT (the units here are burned fraction of each PFTs area. So
