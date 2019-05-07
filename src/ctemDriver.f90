@@ -17,7 +17,7 @@ contains
 
   subroutine ctem(   fsnow,     sand,      clay,  & ! In
                  ilg,   il1,      il2,     iday,      radj,  & ! In
-                         ta,     delzw, ancgveg,   rmlcgveg, & ! In
+                  ta,     delzw, ancgveg,   rmlcgveg, & ! In
                       zbotw,  & ! In
                       uwind,    vwind,  lightng,      tbar,  & ! In
                   pfcancmx, nfcancmx,             & ! In
@@ -61,10 +61,7 @@ contains
                                 paicgat,    slaicgat,                & ! Out (Primary)
                  emit_co2,   emit_ch4, reprocost, blfltrdt, glfltrdt, &  ! Out (Primary)
                  glcaemls, blcaemls, rtcaemls, stcaemls,  ltrcemls, &  ! Out (Primary)
-                 ntchlveg, ntchsveg, ntchrveg,  mortLeafGtoB,       &  ! Out (Primary)
-                 phenLeafGtoB,  turbLitter, turbSoilC,             &  ! Out (Primary)
-                 gLeafLandCompChg, bLeafLandCompChg, stemLandCompChg, &! Out (Primary)
-                 rootLandCompChg, litterLandCompChg, soilCLandCompChg, &! Out (Primary)
+                 ntchlveg, ntchsveg, ntchrveg,       &  ! Out (Primary)
                   emit_co,   emit_nmhc,  smfunc_veg,                & ! Out (Secondary)
                    emit_h2,  emit_nox, emit_n2o, emit_pm25,& ! Out (Secondary)
                    emit_tpm, emit_tc,  emit_oc,    emit_bc,& ! Out (Secondary)
@@ -407,16 +404,6 @@ contains
   real, intent(out) :: ntchrveg(ilg,icc)  !<fluxes for each pft: Net change in root biomass, 
                                           !! the net change is the difference between allocation and
                                           !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-  real, intent(out) :: mortLeafGtoB(ilg,icc)  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
-  real, intent(out) :: phenLeafGtoB(ilg,icc)  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
-  real, intent(out) :: turbLitter(ilg,iccp2,ignd)  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: turbSoilC(ilg,iccp2,ignd)   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: gLeafLandCompChg(ilg,icc)    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: bLeafLandCompChg(ilg,icc)    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: stemLandCompChg(ilg,icc)   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: rootLandCompChg(ilg,icc)   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: litterLandCompChg(ilg,iccp2,ignd) !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, intent(out) :: soilCLandCompChg(ilg,iccp2,ignd) !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
 
   ! ---------------------------------------------
   ! Local variables:
@@ -496,15 +483,8 @@ contains
   real :: tracerRML(ilg,icc)     !< Tracer leaf maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
   real :: tracerGPP(ilg,icc) !< Tracer GPP (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
-  !> Initialize the tracer pool trackers for competition and land use change to zero.
-  gLeafLandCompChg = 0.0
-  bLeafLandCompChg = 0.0
-  stemLandCompChg = 0.0
-  rootLandCompChg = 0.0
-  litterLandCompChg = 0.0
-  soilCLandCompChg = 0.0
-
-  !> Begin calculations
+  ! ---------------------------------------------------------------------------
+  ! Begin calculations
 
   !> Generate the sort index for correspondence between CTEM pfts and the
   !>  values in the parameter vectors
@@ -595,21 +575,9 @@ contains
     lucsocin = 0.
   endif !lnduseon
   
-  if (PFTCompetition .or. lnduseon) then
-    !>Save the change in the C pools for the tracer subroutines.
-    gLeafLandCompChg = pglfmass - gleafmas    
-    bLeafLandCompChg = pblfmass - bleafmas    
-    stemLandCompChg = pstemass - stemmass    
-    rootLandCompChg = protmass - rootmass    
-    litterLandCompChg = plitmasspl - litrmass 
-    soilCLandCompChg = psocmasspl - soilcmas  
-  end if 
-
-  !>
-  !!Store green and brown leaf, stem, and root biomass, and litter and
-  !!soil c pool mass in arrays. knowing initial sizes of all pools and
-  !!final sizes at the end of this subroutine, we check for conservation of mass.
-  !!
+  !> Store green and brown leaf, stem, and root biomass, and litter and
+  !! soil c pool mass in arrays. knowing initial sizes of all pools and
+  !! final sizes at the end of this subroutine, we check for conservation of mass.
   plitmass = 0.0
   psocmass = 0.0
   do 130 j = 1, icc
@@ -1192,7 +1160,7 @@ contains
                  fcancmx,  isand, useTracer, &!In 
                  lfstatus,  pandays, colddays, gleafmas, &
                  bleafmas, tracerGLeafMass, tracerBLeafMass, & !In/Out
-                 flhrloss, leaflitr, phenLeafGtoB, tracerLeafLitr ) ! Out
+                 flhrloss, leaflitr, tracerLeafLitr ) ! Out
   
   !> While leaf litter is calculated in the phenology subroutine, stem
   !! and root turnover is calculated in the turnoverStemRoot subroutine.
@@ -1236,8 +1204,7 @@ contains
                             rmatctem, tracerStemMort, tracerRootMort, tracerGLeafMort,  & !In
                             stemmass, rootmass, litrmass, & !In/Out
                             glealtrm, gleafmas, bleafmas, tracerLitrMass,& !In/Out
-                            tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass,& ! In/Out 
-                            mortLeafGtoB) ! Out
+                            tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass) ! In/Out 
 
   !    ------------------------------------------------------------------
   !>
@@ -1281,12 +1248,10 @@ contains
   !! layers. Since this is neither consuming nor adding C, this does not
   !! affect our C balance in balcar. There is also an internal C balance check.
   call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, &!In
-                litrmass,soilcmas, &! In/Out
-                turbLitter, turbSoilC) ! Out
+                litrmass,soilcmas )! In/Out
 
   if (useTracer > 0) call turbation(il1,il2,delzw,zbotw,isand,maxAnnualActLyr,spinfast, &!In
-                              tracerLitrMass,tracerSoilCMass, &! In/Out
-                              turbLitter, turbSoilC) ! Out
+                              tracerLitrMass,tracerSoilCMass) ! In/Out
 
   !> Prepare for the carbon balance check. Calculate total litter fall from each 
   !! component (leaves, stem, and root) from all causes (normal turnover, drought

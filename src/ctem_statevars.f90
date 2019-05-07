@@ -493,18 +493,7 @@ type veg_gat
     real, allocatable, dimension(:,:) :: ntchrveg  !<fluxes for each pft: Net change in root biomass, 
                                                   !! the net change is the difference between allocation and
                                                   !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-    real, allocatable, dimension(:,:) :: mortLeafGtoB  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
-    real, allocatable, dimension(:,:) :: phenLeafGtoB  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
-    real, allocatable, dimension(:,:,:) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:,:) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:) :: gLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:) :: bLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:) :: stemLandCompChg   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:) :: rootLandCompChg   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:,:) :: litterLandCompChg !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    real, allocatable, dimension(:,:,:) :: soilCLandCompChg !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-
-
+    
     real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
     real, allocatable, dimension(:)     :: dayl_max   !< maximum daylength for that location (hours)
@@ -1443,12 +1432,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%ntchlveg(ilg,icc),&
          vgat%ntchsveg(ilg,icc),&
          vgat%ntchrveg(ilg,icc),&
-         vgat%mortLeafGtoB(ilg,icc),&
-         vgat%phenLeafGtoB(ilg,icc),&         
-         vgat%gLeafLandCompChg(ilg,icc),& 
-         vgat%bLeafLandCompChg(ilg,icc),& 
-         vgat%stemLandCompChg(ilg,icc),& 
-         vgat%rootLandCompChg(ilg,icc),& 
          vgat%tltrstem (ilg,icc),&
          vgat%tltrroot (ilg,icc),&
          vgat%leaflitr (ilg,icc),&
@@ -1508,10 +1491,6 @@ allocate(vgat%grclarea(ilg),&
         vgat%humiftrsveg (ilg,iccp2,ignd),& 
         tracer%litrMassgat(ilg,iccp2,ignd),&
         tracer%soilCMassgat(ilg,iccp2,ignd),&
-        vgat%turbLitter(ilg,iccp2,ignd),& 
-        vgat%turbSoilC(ilg,iccp2,ignd),& 
-        vgat%litterLandCompChg(ilg,iccp2,ignd),& 
-        vgat%soilCLandCompChg(ilg,iccp2,ignd),& 
 
 ! allocated with ilg,ignd:
 !          vgat%rgmgat(ilg,ignd),&

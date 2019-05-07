@@ -190,8 +190,7 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, useTracer, & 
                                 rmatctem, tracerStemMort, tracerRootMort, tracerGLeafMort,  & !In
                                 stemmass, rootmass, litrmass, & !In/Out
                                 glealtrm, gleafmas, bleafmas, tracerLitrMass, & !In/Out
-                                tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass,& ! In/Out 
-                                mortLeafGtoB) ! Out
+                                tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass) ! In/Out 
   
   use classic_params, only : ican, nol2pfts,classpfts,ignd,icc,reindexPFTs
   
@@ -224,13 +223,10 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, useTracer, & 
   real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   real, intent(inout) :: tracerGLeafMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
   
-  real, intent(out) :: mortLeafGtoB(ilg,icc)     !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
-  
   integer :: k1,j,m,k2,i,k
   
   !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
   !!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
-  mortLeafGtoB = 0.
   do 830 j = 1, ican
     do 835 m = reindexPFTs(j,1), reindexPFTs(j,2)
       do 840 i = il1, il2
@@ -255,7 +251,6 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, useTracer, & 
 
           gleafmas(i,m) = gleafmas(i,m) - glealtrm(i,m)
           bleafmas(i,m) = bleafmas(i,m) + glealtrm(i,m)
-          mortLeafGtoB(i,m) = glealtrm(i,m)
           glealtrm(i,m) = 0.0
           
           if (useTracer > 0) then ! Update the tracer pools if being used.

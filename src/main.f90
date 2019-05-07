@@ -1070,20 +1070,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: ntchrveg  !<fluxes for each pft: Net change in root biomass, 
                                                 !! the net change is the difference between allocation and
                                                 !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-  real, pointer, dimension(:,:) :: mortLeafGtoB  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
-  real, pointer, dimension(:,:) :: phenLeafGtoB  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
-  real, pointer, dimension(:,:,:) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:,:) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:) :: gLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:) :: bLeafLandCompChg    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:) :: stemLandCompChg   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:) :: rootLandCompChg   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:,:) :: litterLandCompChg !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-  real, pointer, dimension(:,:,:) :: soilCLandCompChg !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-
-
-
-
   real, pointer, dimension(:) :: extnprobgat
   real, pointer, dimension(:) :: prbfrhucgat
   real, pointer, dimension(:) :: dayl_maxgat
@@ -2142,16 +2128,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   ntchlveg          => vgat%ntchlveg
   ntchsveg          => vgat%ntchsveg
   ntchrveg          => vgat%ntchrveg
-  mortLeafGtoB      => vgat%mortLeafGtoB
-  phenLeafGtoB      => vgat%phenLeafGtoB
-  turbLitter        => vgat%turbLitter
-  turbSoilC         => vgat%turbSoilC
-  gLeafLandCompChg  => vgat%gLeafLandCompChg
-  bLeafLandCompChg  => vgat%bLeafLandCompChg
-  stemLandCompChg  => vgat%stemLandCompChg
-  rootLandCompChg  => vgat%rootLandCompChg
-  litterLandCompChg => vgat%litterLandCompChg
-  soilCLandCompChg  => vgat%soilCLandCompChg
   extnprobgat       => vgat%extnprob
   prbfrhucgat       => vgat%prbfrhuc
   daylgat           => vgat%dayl
@@ -2971,10 +2947,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                                       paicgat,         slaicgat,                     &! Out (Primary)
                    emit_co2gat,   emit_ch4gat,        reprocost, blfltrdt,glfltrdt, &! Out (Primary)
                          glcaemls, blcaemls, rtcaemls, stcaemls, ltrcemls, &  ! Out (Primary)
-                        ntchlveg, ntchsveg, ntchrveg, mortLeafGtoB,         &  ! Out (Primary)
-                        phenLeafGtoB, turbLitter, turbSoilC,              &  ! Out (Primary)
-                      gLeafLandCompChg, bLeafLandCompChg, stemLandCompChg, &! Out (Primary)
-                      rootLandCompChg, litterLandCompChg, soilCLandCompChg, &! Out (Primary)
+                        ntchlveg, ntchsveg, ntchrveg,         &  ! Out (Primary)
                     emit_cogat,   emit_nmhcgat,      smfuncveggat,                   &! Out (Secondary)
                          emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,&! Out (Secondary)
                         emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,&! Out (Secondary)

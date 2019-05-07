@@ -21,8 +21,7 @@ contains
 !!@{
 
 subroutine turbation(il1,il2,delzw,zbotw,isand,actlyr,spinfast,  & !In
-                    litter,soilC, & !In/Out 
-                    turbLitter, turbSoilC) ! Out 
+                    litter,soilC) !In/Out 
 
 use classic_params,        only : icc, ilg, ignd, iccp2, iccp1, zero,tolrance,deltat, &
                                 cryodiffus, biodiffus, kterm
@@ -43,10 +42,6 @@ real, intent(in) :: actlyr(:)                   !< active layer depth [m]
 
 real, intent(inout) :: litter(:,:,:)   !< litter mass for the pfts + bare [ \f$kg C/m^2\f$ ]
 real, intent(inout) :: soilC(:,:,:)   !< soil carbon mass for the pfts + bare [ \f$kg C/m^2\f$ ]
-
-real, dimension(ilg,iccp2,ignd), intent(out) :: turbLitter  !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-real, dimension(ilg,iccp2,ignd), intent(out) :: turbSoilC   !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-
 
 ! Local variables:
 real, allocatable, dimension(:) :: avect            !< vectors for tridiagonal solver, subdiagonal a
@@ -240,10 +235,6 @@ do i = il1, il2
     end if !must be some soil (botlyr > 0)
 
 end do !i
-
-! Store the movement of the litter and soil C for output/tracer.
-turbLitter = initLitter - litter
-turbSoilC = initSoilC - soilC
 
 end subroutine turbation
 !>@}

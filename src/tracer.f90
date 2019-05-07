@@ -91,16 +91,12 @@ contains
     ! real, pointer :: ntchrveg(:,:)  !<fluxes for each pft: Net change in root biomass, 
     !                                 !! the net change is the difference between allocation and
     !                                 !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-    ! real, pointer :: mortLeafGtoB(:,:)  !< Green leaf mass converted to brown due to mortality \f$(kg C/m^2)\f$
-    ! real, pointer :: phenLeafGtoB(:,:)  !< Green leaf mass converted to brown due to phenology \f$(kg C/m^2)\f$
     ! real, pointer :: fcancmx(:,:)    !< Maximum fractional coverage of CTEM PFTs, but this can be
     !                                  !! modified by land-use change, and competition between PFTs
     ! real, pointer :: leaflitr(:,:)   !< Leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$). 
     !                                  !! this leaf litter does not include litter generated 
     !                                  !! due to mortality/fire
     ! real, pointer :: rmatctem(:,:,:)   !< Fraction of roots for each of CTEM's PFTs in each soil layer
-    ! real, pointer :: turbLitter(:,:,:) !< Litter gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
-    ! real, pointer :: turbSoilC(:,:,:)  !< Soil C gains/losses due to turbation [ \f$kg C/m^2\f$ ], negative is a gain.
     real, pointer :: gleafmas(:,:)     !< Green leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: bleafmas(:,:)     !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: stemmass(:,:)     !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
@@ -109,12 +105,6 @@ contains
     real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
     real, pointer :: Cmossmas(:)       !<C in moss biomass, \f$kg C/m^2\f$
     real, pointer :: litrmsmoss(:)     !<moss litter mass, \f$kg C/m^2\f$
-    ! real, pointer :: gLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the green leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    ! real, pointer :: bLeafLandCompChg(:,:)    !< Tracker variable for C movement due to competition and LUC in the brown leaf pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    ! real, pointer :: stemLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the stem pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    ! real, pointer :: rootLandCompChg(:,:)   !< Tracker variable for C movement due to competition and LUC in the root pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    ! real, pointer :: litterLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the litter pool  [ \f$kg C/m^2\f$ ], negative is a gain.
-    ! real, pointer :: soilCLandCompChg(:,:,:) !< Tracker variable for C movement due to competition and LUC in the soil C pool  [ \f$kg C/m^2\f$ ], negative is a gain.
     integer, pointer :: ipeatland(:) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     ! 
     ! Local
@@ -151,13 +141,9 @@ contains
     ! ntchlveg          => vgat%ntchlveg
     ! ntchsveg          => vgat%ntchsveg
     ! ntchrveg          => vgat%ntchrveg
-    ! mortLeafGtoB      => vgat%mortLeafGtoB
-    ! phenLeafGtoB      => vgat%phenLeafGtoB
     ! fcancmx           => vgat%fcancmx
     ! leaflitr          => vgat%leaflitr
     ! rmatctem          => vgat%rmatctem
-    ! turbLitter        => vgat%turbLitter
-    ! turbSoilC         => vgat%turbSoilC
     gleafmas          => vgat%gleafmas
     bleafmas          => vgat%bleafmas
     stemmass          => vgat%stemmass
@@ -166,12 +152,6 @@ contains
     soilcmas          => vgat%soilcmas
     Cmossmas          => vgat%Cmossmas
     litrmsmoss        => vgat%litrmsmoss
-    ! gLeafLandCompChg  => vgat%gLeafLandCompChg
-    ! bLeafLandCompChg  => vgat%bLeafLandCompChg
-    ! stemLandCompChg  => vgat%stemLandCompChg
-    ! rootLandCompChg  => vgat%rootLandCompChg
-    ! litterLandCompChg => vgat%litterLandCompChg
-    ! soilCLandCompChg  => vgat%soilCLandCompChg
     ipeatland        => vgat%ipeatland 
     
     ! ---------
