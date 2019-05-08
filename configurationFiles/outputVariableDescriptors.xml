@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2019/4/11">
+<variableSet type="CLASS" version="1.2" created="2019/5/8">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -1893,7 +1893,7 @@
                 <units>kg C m$^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
-        <variable id="84" includeBareGround="true" dormant="false">
+        <variable id="84" includeBareGround="true" dormant="true">
             <standardName>Carbon Mass in Model Litter Pool per layer</standardName>
             <longName>Carbon mass in the form of litter per ground layer of the soil model.</longName>
             <shortName>cLitterperlay</shortName>
@@ -1905,7 +1905,7 @@
                 <units>kg C/m$^2$​</units>
             </variant>
         </variable>
-        <variable id="85" includeBareGround="true" dormant="false">
+        <variable id="85" includeBareGround="true" dormant="true">
             <standardName>Carbon Mass in Model Soil Pool per layer</standardName>
             <longName>Carbon mass per ground layer of the soil model.</longName>
             <shortName>cSoilperlay</shortName>
@@ -2281,7 +2281,7 @@
         </variable>
     </group>
     <group type="tracer">
-        <variable id="86" includeBareGround="false" dormant="false">
+        <variable id="86" includeBareGround="false" dormant="true">
             <standardName>Tracer of leaf carbon</standardName>
             <longName>Tracer of leaf carbon (can be simple tracer, 13C or 14C)</longName>
             <shortName>cLeafTracer</shortName>
@@ -2293,7 +2293,7 @@
                 <units>Depends on tracer</units>
             </variant>
         </variable>
-        <variable id="87" includeBareGround="true" dormant="false">
+        <variable id="87" includeBareGround="true" dormant="true">
             <standardName>Tracer of soil C</standardName>
             <longName>Tracer of soil carbon (can be simple tracer, 14C or 13C)</longName>
             <shortName>cSoilTracer</shortName>
@@ -2305,7 +2305,7 @@
                 <units>Depends on tracer</units>
             </variant>
         </variable>
-        <variable id="88" includeBareGround="true" dormant="false">
+        <variable id="88" includeBareGround="true" dormant="true">
             <standardName>Tracer of litter C</standardName>
             <longName>Tracer of litter carbon (can be simple tracer, 14C or 13C)</longName>
             <shortName>cLitterTracer</shortName>
@@ -2317,7 +2317,7 @@
                 <units>Depends on tracer</units>
             </variant>
         </variable>
-        <variable id="89" includeBareGround="false" dormant="false">
+        <variable id="89" includeBareGround="false" dormant="true">
             <standardName>Tracer of stem C</standardName>
             <longName>Tracer of stem carbon (can be simple tracer, 14C or 13C)</longName>
             <shortName>cStemTracer</shortName>
@@ -2329,7 +2329,7 @@
                 <units>Depends on tracer</units>
             </variant>
         </variable>
-        <variable id="90" includeBareGround="false" dormant="false">
+        <variable id="90" includeBareGround="false" dormant="true">
             <standardName>Tracer of root C</standardName>
             <longName>Tracer of root carbon (can be simple tracer, 14C or 13C)</longName>
             <shortName>cRootTracer</shortName>
