@@ -35,9 +35,14 @@ OBJ = fileIOModule.o classic_params.o ctem_statevars.o class_statevars.o peatlan
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
 	TNPOST.o WEND.o  balanceCarbon.o autotrophicRespiration.o phenolgy.o  \
 	turnover.o mortality.o disturb.o competition_mod.o landuse_change_mod.o soil_ch4uptake.o \
-	allocateCarbon.o heterotrophicRespiration.o soilC_processes.o tracer.o ctemDriver.o outputManager.o \
+	allocateCarbon.o heterotrophicRespiration.o ctemDriver.o outputManager.o \
 	prepareOutputs.o  model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o \
 	xmlManager.o CLASSIC.o
+	# COMBAK PERLAY
+	#allocateCarbon.o heterotrophicRespiration.o soilC_processes.o tracer.o ctemDriver.o outputManager.o \
+	prepareOutputs.o  model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o \
+	xmlManager.o CLASSIC.o
+	# COMBAK PERLAY
 
 # Object files (.o and .mod) are placed into directories named according to the mode. In the serial
 # compiler case, these are placed into the "objectFiles" directory.

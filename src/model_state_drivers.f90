@@ -554,8 +554,12 @@ contains
         real, pointer, dimension(:,:,:) :: bleafmasrow          !< Brown leaf mass for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: stemmassrow          !< Stem mass for each of the CTEM pfts, \f$kg c/m^2\f$
         real, pointer, dimension(:,:,:) :: rootmassrow          !< Root mass for each of the CTEM pfts, \f$kg c/m^2\f$
-        real, pointer, dimension(:,:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-        real, pointer, dimension(:,:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        !COMBAK PERLAY
+        real, pointer, dimension(:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$        
+        ! real, pointer, dimension(:,:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        ! real, pointer, dimension(:,:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        !COMBAK PERLAY
         real, pointer, dimension(:,:,:) :: pstemmassrow         !< Stem mass from previous timestep, is value before fire. used by burntobare subroutine
         real, pointer, dimension(:,:,:) :: pgleafmassrow        !< Green leaf mass from previous timestep, is value before fire. used by burntobare subroutine
         real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -853,8 +857,12 @@ contains
             end do
           end if
 
-          litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
-          soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+          !COMBAK PERLAY
+          litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
+          soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
+          ! litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
+          ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+          !COMBAK PERLAY
           
           ! If a tracer is being used, read in those values.
           if (useTracer > 0) then 
@@ -932,11 +940,14 @@ contains
                 enddo
 
                 lfstatusrow(i,m,1)=2
-                
-                do j = 1,iccp2
-                  litrmassrow(i,m,j,1:ignd)=0.0
-                  soilcmasrow(i,m,j,1:ignd)=0.0
-                enddo
+                !COMBAK PERLAY
+                  litrmassrow(i,m,j)=0.0
+                  soilcmasrow(i,m,j)=0.0                
+                ! do j = 1,iccp2
+                !   litrmassrow(i,m,j,1:ignd)=0.0
+                !   soilcmasrow(i,m,j,1:ignd)=0.0
+                ! enddo
+                !COMBAK PERLAY
               end do ! nmtest
             enddo !nltest
 
@@ -1011,8 +1022,12 @@ contains
         real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
         real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
         real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
-        real, pointer, dimension(:,:,:,:) :: litrmassrow
-        real, pointer, dimension(:,:,:,:) :: soilcmasrow
+        !COMBAK PERLAY
+        real, pointer, dimension(:,:,:) :: litrmassrow
+        real, pointer, dimension(:,:,:) :: soilcmasrow        
+        ! real, pointer, dimension(:,:,:,:) :: litrmassrow
+        ! real, pointer, dimension(:,:,:,:) :: soilcmasrow
+        !COMBAK PERLAY
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
@@ -1098,10 +1113,14 @@ contains
             call ncPut3DVar(rsid, 'bleafmas', bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'rootmass', rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            do k = 1, ignd
-              call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
-              call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
-            end do
+            !COMBAK PERLAY
+              call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1,1], count = [1, 1, iccp2, nmos])
+              call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1 ,1], count = [1, 1, iccp2,nmos])
+            ! do k = 1, ignd
+            !   call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+            !   call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+            ! end do
+            !COMBAK PERLAY
             call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'pandays', real(pandaysrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
@@ -1159,7 +1178,9 @@ contains
         use ctem_statevars, only : c_switch,vrot,tracer
         use classic_params, only : icc,nmos
         use outputManager, only : checkForTime
-        use tracerModule,   only : convertTracerUnits
+        !COMBAK PERLAY
+        ! use tracerModule,   only : convertTracerUnits
+        !COMBAK PERLAY
 
         implicit none
 
@@ -1305,7 +1326,9 @@ contains
             end if
             
             ! Convert the units of the tracer depending on the tracer being simulated.
-            tracerco2conc = convertTracerUnits(tracerco2conc)
+            !COMBAK PERLAY
+            ! tracerco2conc = convertTracerUnits(tracerco2conc)
+            !COMBAK PERLAY
 
         case ('CH4') ! Methane concentration
 
@@ -1554,7 +1577,9 @@ contains
         use ctem_statevars, only : vrot,c_switch,vgat,tracer
         use classic_params, only : nmos
         use generalUtils, only : abandonCell
-        use tracerModule,   only : convertTracerUnits
+        !COMBAK PERLAY
+        ! use tracerModule,   only : convertTracerUnits
+        !COMBAK PERLAY
 
         implicit none
 
@@ -1621,7 +1646,9 @@ contains
               end if
               
               ! Convert the units of the tracer depending on the tracer being simulated.
-              tracerco2conc = convertTracerUnits(tracerco2conc)
+              !COMBAK PERLAY
+              ! tracerco2conc = convertTracerUnits(tracerco2conc)
+              !COMBAK PERLAY
               
         case ('CH4')
 

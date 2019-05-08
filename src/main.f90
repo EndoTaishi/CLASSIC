@@ -67,7 +67,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use metDisaggModule,     only : disaggMet
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
-  use tracerModule,        only : decay14C
+  !COMBAK PERLAY
+  !use tracerModule,        only : decay14C
+  !COMBAK PERLAY
   use applyAllometry,      only : allometry
   use ctemGatherScatter,   only : ctems2, ctemg1,ctemg2
   
@@ -872,8 +874,18 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:,:) :: stmhrlosrow
   real, pointer, dimension(:,:,:,:) :: rmatcrow
   real, pointer, dimension(:,:,:,:) :: rmatctemrow
-  real, pointer, dimension(:,:,:,:) :: litrmassrow
-  real, pointer, dimension(:,:,:,:) :: soilcmasrow
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litrmassrow
+  real, pointer, dimension(:,:,:) :: soilcmasrow
+  real, pointer, dimension(:,:,:) :: litresvegrow
+  real, pointer, dimension(:,:,:) :: soilcresvegrow
+  real, pointer, dimension(:,:,:) :: humiftrsvegrow
+  ! real, pointer, dimension(:,:,:,:) :: litrmassrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcmasrow
+  ! real, pointer, dimension(:,:,:,:) :: litresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: humiftrsvegrow
+  !COMBAK PERLAY
   real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
 
   real, pointer, dimension(:,:,:) :: emit_co2row
@@ -953,15 +965,11 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:,:) :: nppvegrow
   real, pointer, dimension(:,:,:) :: hetroresvegrow
   real, pointer, dimension(:,:,:) :: autoresvegrow
-  real, pointer, dimension(:,:,:,:) :: litresvegrow
-  real, pointer, dimension(:,:,:,:) :: soilcresvegrow
   real, pointer, dimension(:,:,:) :: rmlvegaccrow
   real, pointer, dimension(:,:,:) :: rmsvegrow
   real, pointer, dimension(:,:,:) :: rmrvegrow
   real, pointer, dimension(:,:,:) :: rgvegrow
   real, pointer, dimension(:,:,:) :: litrfallvegrow
-  real, pointer, dimension(:,:,:,:) :: humiftrsvegrow
-
   real, pointer, dimension(:,:,:) :: rothrlosrow
   real, pointer, dimension(:,:,:) :: pfcancmxrow
   real, pointer, dimension(:,:,:) :: nfcancmxrow
@@ -1035,8 +1043,18 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: stmhrlosgat
   real, pointer, dimension(:,:,:) :: rmatcgat
   real, pointer, dimension(:,:,:) :: rmatctemgat
-  real, pointer, dimension(:,:,:) :: litrmassgat
-  real, pointer, dimension(:,:,:) :: soilcmasgat
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:) :: litrmassgat
+  real, pointer, dimension(:,:) :: soilcmasgat
+  real, pointer, dimension(:,:) :: litresveggat
+  real, pointer, dimension(:,:) :: soilcresveggat
+  real, pointer, dimension(:,:) :: humiftrsveggat
+  ! real, pointer, dimension(:,:,:) :: litrmassgat
+  ! real, pointer, dimension(:,:,:) :: soilcmasgat
+  ! real, pointer, dimension(:,:,:) :: litresveggat
+  ! real, pointer, dimension(:,:,:) :: soilcresveggat
+  ! real, pointer, dimension(:,:,:) :: humiftrsveggat
+  !COMBAK PERLAY
   real, pointer, dimension(:,:) :: vgbiomas_veggat
 
   real, pointer, dimension(:,:) :: emit_co2gat
@@ -1125,14 +1143,11 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: nppveggat
   real, pointer, dimension(:,:) :: hetroresveggat
   real, pointer, dimension(:,:) :: autoresveggat
-  real, pointer, dimension(:,:,:) :: litresveggat
-  real, pointer, dimension(:,:,:) :: soilcresveggat
   real, pointer, dimension(:,:) :: rmlvegaccgat
   real, pointer, dimension(:,:) :: rmsveggat
   real, pointer, dimension(:,:) :: rmrveggat
   real, pointer, dimension(:,:) :: rgveggat
   real, pointer, dimension(:,:) :: litrfallveggat
-  real, pointer, dimension(:,:,:) :: humiftrsveggat
   real, pointer, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
 
   real, pointer, dimension(:,:) :: rothrlosgat
@@ -2970,8 +2985,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
           end do
         end do
 
+        ! COMBAK PERLAY
         ! Once a year, calculate the 14C lost to decay if using the 14C tracer.
-        if (useTracer == 2 .and. iday == lastdoy .and. ncount == nday) call decay14C(1,nml)
+        ! if (useTracer == 2 .and. iday == lastdoy .and. ncount == nday) call decay14C(1,nml)
+        ! COMBAK PERLAY
 
       endif  ! if(ncount.eq.nday)
     endif  ! if(ctem_on)

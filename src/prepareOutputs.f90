@@ -1812,8 +1812,12 @@ subroutine convertUnitsCTEM(nltest,nmtest)
   real, pointer, dimension(:,:,:) :: nbpvegrow
   real, pointer, dimension(:,:,:) :: hetroresvegrow
   real, pointer, dimension(:,:,:) :: autoresvegrow
-  real, pointer, dimension(:,:,:,:) :: litresvegrow
-  real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litresvegrow
+  real, pointer, dimension(:,:,:) :: soilcresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: litresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  !COMBAK PERLAY
   real, pointer, dimension(:,:) :: npprow
   real, pointer, dimension(:,:) :: neprow
   real, pointer, dimension(:,:) :: nbprow
@@ -1881,11 +1885,14 @@ subroutine convertUnitsCTEM(nltest,nmtest)
           nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*convertkgC
           hetroresvegrow(i,m,j)=hetroresvegrow(i,m,j)*convertkgC
           autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*convertkgC
-          
-          do k = 1, ignd
-            litresvegrow(i,m,j,k)=litresvegrow(i,m,j,k)*convertkgC
-            soilcresvegrow(i,m,j,k)=soilcresvegrow(i,m,j,k)*convertkgC
-          end do
+          !COMBAK PERLAY
+          litresvegrow(i,m,j)=litresvegrow(i,m,j)*convertkgC
+          soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*convertkgC          
+          ! do k = 1, ignd
+          !   litresvegrow(i,m,j,k)=litresvegrow(i,m,j,k)*convertkgC
+          !   soilcresvegrow(i,m,j,k)=soilcresvegrow(i,m,j,k)*convertkgC
+          ! end do
+          !COMBAK PERLAY
           
           ! emit_co2, like all fire gas fluxes is in kg {species} / m2 / s. So we need
           ! to convert from kg CO2/m2/s to kg C/m2/s. Since 1 g C = 0.083 mole CO2 = 3.664 g CO2
@@ -1899,10 +1906,14 @@ subroutine convertUnitsCTEM(nltest,nmtest)
       hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*convertkgC
       nepvegrow(i,m,iccp1)=nepvegrow(i,m,iccp1)*convertkgC
       nbpvegrow(i,m,iccp1)=nbpvegrow(i,m,iccp1)*convertkgC
-      do k = 1, ignd
-        litresvegrow(i,m,iccp1:iccp2,k)=litresvegrow(i,m,iccp1:iccp2,k)*convertkgC
-        soilcresvegrow(i,m,iccp1:iccp2,k)=soilcresvegrow(i,m,iccp1:iccp2,k)*convertkgC
-      end do
+      !COMBAK PERLAY
+      litresvegrow(i,m,iccp1:iccp2)=litresvegrow(i,m,iccp1:iccp2)*convertkgC
+      soilcresvegrow(i,m,iccp1:iccp2)=soilcresvegrow(i,m,iccp1:iccp2)*convertkgC
+      ! do k = 1, ignd
+      !   litresvegrow(i,m,iccp1:iccp2,k)=litresvegrow(i,m,iccp1:iccp2,k)*convertkgC
+      !   soilcresvegrow(i,m,iccp1:iccp2,k)=soilcresvegrow(i,m,iccp1:iccp2,k)*convertkgC
+      ! end do
+      !COMBAK PERLAY
       npprow(i,m)     =npprow(i,m)*convertkgC
       gpprow(i,m)     =gpprow(i,m)*convertkgC
       neprow(i,m)     =neprow(i,m)*convertkgC
@@ -1973,8 +1984,16 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
   real, pointer, dimension(:,:,:) :: nppvegrow
   real, pointer, dimension(:,:,:) :: hetroresvegrow
   real, pointer, dimension(:,:,:) :: autoresvegrow
-  real, pointer, dimension(:,:,:,:) :: litresvegrow
-  real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litresvegrow
+  real, pointer, dimension(:,:,:) :: soilcresvegrow
+  real, pointer, dimension(:,:,:) :: litrmassrow
+  real, pointer, dimension(:,:,:) :: soilcmasrow
+  ! real, pointer, dimension(:,:,:,:) :: litresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: litrmassrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcmasrow
+  !COMBAK PERLAY
   real, pointer, dimension(:,:,:) :: rmlvegaccrow
   real, pointer, dimension(:,:,:) :: rmsvegrow
   real, pointer, dimension(:,:,:) :: rmrvegrow
@@ -2005,8 +2024,6 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
   real, pointer, dimension(:,:) :: wetfdynrow
   real, pointer, dimension(:,:) :: ch4WetDynrow
   real, pointer, dimension(:,:) :: ch4soillsrow
-  real, pointer, dimension(:,:,:,:) :: litrmassrow
-  real, pointer, dimension(:,:,:,:) :: soilcmasrow
   real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
   real, pointer, dimension(:,:,:) :: stemmassrow
   real, pointer, dimension(:,:,:) :: rootmassrow
@@ -2133,10 +2150,14 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
   real, allocatable, dimension(:,:) :: laimaxg_t  !<
   real, allocatable, dimension(:,:) :: stemmass_t !<
   real, allocatable, dimension(:,:) :: rootmass_t !<
-  real, allocatable, dimension(:,:,:) :: litrmass_t !<
+  ! COMBAK PERLAY
+  real, allocatable, dimension(:,:) :: litrmass_t !<
+  real, allocatable, dimension(:,:) :: soilcmas_t !<
+  ! real, allocatable, dimension(:,:,:) :: litrmass_t !<
+  ! real, allocatable, dimension(:,:,:) :: soilcmas_t !<
+  ! COMBAK PERLAY
   real, allocatable, dimension(:,:) :: gleafmas_t !<
-  real, allocatable, dimension(:,:) :: bleafmas_t !<
-  real, allocatable, dimension(:,:,:) :: soilcmas_t !<
+  real, allocatable, dimension(:,:) :: bleafmas_t !<  
   real, allocatable, dimension(:,:) :: emit_co2_t !<
   real, allocatable, dimension(:,:) :: emit_ch4_t !<
   real, allocatable, dimension(:,:) :: smfuncveg_t!<
@@ -2271,8 +2292,12 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
           ailcg_t (nltest,nmtest),ailcb_t (nltest,nmtest),rmatctem_t (nltest,nmtest,ignd),veghght_t (nltest,nmtest),&
           rootdpth_t (nltest,nmtest),roottemp_t (nltest,nmtest),slai_t (nltest,nmtest),afrroot_t (nltest,nmtest),&
           afrleaf_t (nltest,nmtest),afrstem_t (nltest,nmtest),laimaxg_t (nltest,nmtest),stemmass_t (nltest,nmtest),&
-          rootmass_t (nltest,nmtest),litrmass_t (nltest,nmtest,ignd),gleafmas_t (nltest,nmtest),bleafmas_t(nltest,nmtest),&
-          soilcmas_t (nltest,nmtest,ignd),emit_co2_t (nltest,nmtest),emit_ch4_t (nltest,nmtest),smfuncveg_t (nltest,nmtest) )
+          rootmass_t (nltest,nmtest),gleafmas_t (nltest,nmtest),bleafmas_t(nltest,nmtest),&
+          emit_co2_t (nltest,nmtest),emit_ch4_t (nltest,nmtest),smfuncveg_t (nltest,nmtest), &
+          !COMBAK PERLAY
+          soilcmas_t (nltest,nmtest),litrmass_t (nltest,nmtest) )
+          ! soilcmas_t (nltest,nmtest,ignd),litrmass_t (nltest,nmtest,ignd) )
+          !COMBAK PERLAY
 
 
   ! First set the local variables to 0.
@@ -2295,8 +2320,12 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
   afrleaf_t(:,:)=0.0 ; afrstem_t(:,:)=0.0 ; afrroot_t(:,:)=0.0
   veghght_t(:,:)=0.0 ; rootdpth_t(:,:)=0.0 ; roottemp_t(:,:)=0.0
   slai_t(:,:)=0.0 ; gleafmas_t(:,:) = 0.0 ; bleafmas_t(:,:) = 0.0
-  stemmass_t(:,:) = 0.0 ; rootmass_t(:,:) = 0.0 ; litrmass_t(:,:,:) = 0.0
-  soilcmas_t(:,:,:) = 0.0 ; emit_co2_t(:,:) = 0.0; rmatctem_t(:,:,:)=0.0
+  stemmass_t(:,:) = 0.0 ; rootmass_t(:,:) = 0.0 
+   emit_co2_t(:,:) = 0.0; rmatctem_t(:,:,:)=0.0
+  !COMBAK PERLAY
+  soilcmas_t(:,:) = 0.0 ; litrmass_t(:,:) = 0.0
+  ! soilcmas_t(:,:,:) = 0.0 ; litrmass_t(:,:,:) = 0.0
+  !COMBAK PERLAY
 
   !>Aggregate to the tile avg vars:
   do 60 i=1,nltest
@@ -2327,16 +2356,24 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
 
         do k=1,ignd
           rmatctem_t(i,m,k)=rmatctem_t(i,m,k)+rmatctemrow(i,m,j,k)*fcancmxrow(i,m,j)
-          litrmass_t(i,m,k) = litrmass_t(i,m,k) + litrmassrow(i,m,j,k)*fcancmxrow(i,m,j)
-          soilcmas_t(i,m,k) = soilcmas_t(i,m,k) + soilcmasrow(i,m,j,k)*fcancmxrow(i,m,j)
+          !COMBAK PERLAY
+          litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,j)*fcancmxrow(i,m,j)
+          soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,j)*fcancmxrow(i,m,j)
+          ! litrmass_t(i,m,k) = litrmass_t(i,m,k) + litrmassrow(i,m,j,k)*fcancmxrow(i,m,j)
+          ! soilcmas_t(i,m,k) = soilcmas_t(i,m,k) + soilcmasrow(i,m,j,k)*fcancmxrow(i,m,j)          
+          !COMBAK PERLAY
         end do
       end do !icc
 
       !>Do the bare ground also:
-      do k = 1, ignd
-        litrmass_t(i,m,k) = litrmass_t(i,m,k) + litrmassrow(i,m,iccp1,k)*barefrac
-        soilcmas_t(i,m,k) = soilcmas_t(i,m,k) + soilcmasrow(i,m,iccp1,k)*barefrac
-      end do
+      !COMBAK PERLAY
+        litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,iccp1)*barefrac
+        soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,iccp1)*barefrac
+      ! do k = 1, ignd
+      !   litrmass_t(i,m,k) = litrmass_t(i,m,k) + litrmassrow(i,m,iccp1,k)*barefrac
+      !   soilcmas_t(i,m,k) = soilcmas_t(i,m,k) + soilcmasrow(i,m,iccp1,k)*barefrac
+      ! end do
+      !COMBAK PERLAY
       !>Calculation of grid averaged variables
 
       gpp_g(i) =gpp_g(i) + gpprow(i,m)*FAREROT(i,m)
@@ -2395,8 +2432,12 @@ subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,n
       do k=1,ignd
         rmatctem_g(i,k) = rmatctem_g(i,k) + rmatctem_t(i,m,k) * FAREROT(i,m)
         ! FLAG not putting as per layer yet since it is not presently written out.
-        litrmass_g(i) = litrmass_g(i) + litrmass_t(i,m,k) * FAREROT(i,m)
-        soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i,m,k) * FAREROT(i,m)
+        !COMBAK PERLAY
+        litrmass_g(i) = litrmass_g(i) + litrmass_t(i,m) * FAREROT(i,m)
+        soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i,m) * FAREROT(i,m)
+        ! litrmass_g(i) = litrmass_g(i) + litrmass_t(i,m,k) * FAREROT(i,m)
+        ! soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i,m,k) * FAREROT(i,m)
+        !COMBAK PERLAY
       end do
 70  continue !nmtest
 60 continue !nltest
@@ -2760,11 +2801,17 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
   real, pointer, dimension(:,:,:) :: vgbiomas_mo
   real, pointer, dimension(:,:,:) :: autores_mo
   real, pointer, dimension(:,:,:) :: totcmass_mo
-  real, pointer, dimension(:,:,:,:) :: litrmass_mo
-  real, pointer, dimension(:,:,:,:) :: soilcmas_mo
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litrmass_mo
+  real, pointer, dimension(:,:,:) :: soilcmas_mo
+  real, pointer, dimension(:,:,:) :: litres_mo
+  real, pointer, dimension(:,:,:) :: soilcres_mo
+  ! real, pointer, dimension(:,:,:,:) :: litrmass_mo
+  ! real, pointer, dimension(:,:,:,:) :: soilcmas_mo
+  ! real, pointer, dimension(:,:,:,:) :: litres_mo
+  ! real, pointer, dimension(:,:,:,:) :: soilcres_mo
+  !COMBAK PERLAY
   real, pointer, dimension(:,:,:) :: nep_mo
-  real, pointer, dimension(:,:,:,:) :: litres_mo
-  real, pointer, dimension(:,:,:,:) :: soilcres_mo
   real, pointer, dimension(:,:,:) :: hetrores_mo
   real, pointer, dimension(:,:,:) :: nbp_mo
   real, pointer, dimension(:,:,:) :: emit_co2_mo
@@ -2794,11 +2841,17 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
   real, pointer, dimension(:,:) :: vgbiomas_mo_t
   real, pointer, dimension(:,:) :: autores_mo_t
   real, pointer, dimension(:,:) :: totcmass_mo_t
-  real, pointer, dimension(:,:,:) :: litrmass_mo_t
-  real, pointer, dimension(:,:,:) :: soilcmas_mo_t
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:) :: litrmass_mo_t
+  real, pointer, dimension(:,:) :: soilcmas_mo_t
+  real, pointer, dimension(:,:) :: litres_mo_t
+  real, pointer, dimension(:,:) :: soilcres_mo_t
+  ! real, pointer, dimension(:,:,:) :: litrmass_mo_t
+  ! real, pointer, dimension(:,:,:) :: soilcmas_mo_t
+  ! real, pointer, dimension(:,:,:) :: litres_mo_t
+  ! real, pointer, dimension(:,:,:) :: soilcres_mo_t
+  !COMBAK PERLAY
   real, pointer, dimension(:,:) :: nep_mo_t
-  real, pointer, dimension(:,:,:) :: litres_mo_t
-  real, pointer, dimension(:,:,:) :: soilcres_mo_t
   real, pointer, dimension(:,:) :: hetrores_mo_t
   real, pointer, dimension(:,:) :: nbp_mo_t
   real, pointer, dimension(:,:) :: emit_co2_mo_t
@@ -2838,8 +2891,18 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
   real, pointer, dimension(:,:,:) :: nppvegrow
   real, pointer, dimension(:,:,:) :: hetroresvegrow
   real, pointer, dimension(:,:,:) :: autoresvegrow
-  real, pointer, dimension(:,:,:,:) :: litresvegrow
-  real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litresvegrow
+  real, pointer, dimension(:,:,:) :: soilcresvegrow
+  real, pointer, dimension(:,:,:) :: litrmassrow
+  real, pointer, dimension(:,:,:) :: soilcmasrow
+  real, pointer, dimension(:,:,:) :: humiftrsvegrow
+  ! real, pointer, dimension(:,:,:,:) :: litresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: litrmassrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcmasrow
+  ! real, pointer, dimension(:,:,:,:) :: humiftrsvegrow
+  !COMBAK PERLAY
   real, pointer, dimension(:,:,:) :: rmlvegaccrow
   real, pointer, dimension(:,:,:) :: rmsvegrow
   real, pointer, dimension(:,:,:) :: rmrvegrow
@@ -2871,13 +2934,10 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
   real, pointer, dimension(:,:) :: wetfrac_presrow
   real, pointer, dimension(:,:) :: ch4WetDynrow
   real, pointer, dimension(:,:) :: ch4soillsrow
-  real, pointer, dimension(:,:,:,:) :: litrmassrow
-  real, pointer, dimension(:,:,:,:) :: soilcmasrow
   real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
   real, pointer, dimension(:,:,:) :: stemmassrow
   real, pointer, dimension(:,:,:) :: rootmassrow
   real, pointer, dimension(:,:,:) :: litrfallvegrow
-  real, pointer, dimension(:,:,:,:) :: humiftrsvegrow
   real, pointer, dimension(:,:) ::uvaccrow_m
   real, pointer, dimension(:,:) ::vvaccrow_m
   real, pointer, dimension(:) :: wetfrac_presgat
@@ -2885,8 +2945,16 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
   real, pointer, dimension(:) :: laimaxg_mo_g
   real, pointer, dimension(:) :: stemmass_mo_g
   real, pointer, dimension(:) :: rootmass_mo_g
-  real, pointer, dimension(:,:) :: litrmass_mo_g
-  real, pointer, dimension(:,:) :: soilcmas_mo_g
+  !COMBAK PERLAY
+  real, pointer, dimension(:) :: litres_mo_g
+  real, pointer, dimension(:) :: soilcres_mo_g
+  real, pointer, dimension(:) :: litrmass_mo_g
+  real, pointer, dimension(:) :: soilcmas_mo_g
+  ! real, pointer, dimension(:,:) :: litres_mo_g
+  ! real, pointer, dimension(:,:) :: soilcres_mo_g
+  ! real, pointer, dimension(:,:) :: litrmass_mo_g
+  ! real, pointer, dimension(:,:) :: soilcmas_mo_g
+  !COMBAK PERLAY
   real, pointer, dimension(:) :: litrfall_mo_g
   real, pointer, dimension(:) :: humiftrs_mo_g
   real, pointer, dimension(:) :: npp_mo_g
@@ -2895,8 +2963,6 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
   real, pointer, dimension(:) :: nbp_mo_g
   real, pointer, dimension(:) :: hetrores_mo_g
   real, pointer, dimension(:) :: autores_mo_g
-  real, pointer, dimension(:,:) :: litres_mo_g
-  real, pointer, dimension(:,:) :: soilcres_mo_g
   real, pointer, dimension(:) :: vgbiomas_mo_g
   real, pointer, dimension(:) :: totcmass_mo_g
   real, pointer, dimension(:) :: emit_co2_mo_g
@@ -3183,12 +3249,18 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
       nbp_mo(i,m,j)=nbp_mo(i,m,j)+nbpvegrow(i,m,j)*oneOverDPM
       hetrores_mo(i,m,j)=hetrores_mo(i,m,j)+hetroresvegrow(i,m,j)*oneOverDPM
       autores_mo(i,m,j) =autores_mo(i,m,j)+autoresvegrow(i,m,j)*oneOverDPM
-      do k = 1, ignd
-        litres_mo(i,m,j,k) = litres_mo(i,m,j,k) + litresvegrow(i,m,j,k)*oneOverDPM
-        soilcres_mo(i,m,j,k) = soilcres_mo(i,m,j,k) + soilcresvegrow(i,m,j,k)*oneOverDPM
+      !COMBAK PERLAY   
+        litres_mo(i,m,j) = litres_mo(i,m,j) + litresvegrow(i,m,j)*oneOverDPM
+        soilcres_mo(i,m,j) = soilcres_mo(i,m,j) + soilcresvegrow(i,m,j)*oneOverDPM
         ! Let accumulate, not fluxes nor meant to be mean values.
-        humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j,k)
-      end do
+        humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j)
+      ! do k = 1, ignd
+      !   litres_mo(i,m,j,k) = litres_mo(i,m,j,k) + litresvegrow(i,m,j,k)*oneOverDPM
+      !   soilcres_mo(i,m,j,k) = soilcres_mo(i,m,j,k) + soilcresvegrow(i,m,j,k)*oneOverDPM
+      !   ! Let accumulate, not fluxes nor meant to be mean values.
+      !   humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j,k)
+      ! end do
+      !COMBAK PERLAY   
       emit_co2_mo(i,m,j)=emit_co2_mo(i,m,j)+emit_co2row(i,m,j)*oneOverDPM
       emit_co_mo(i,m,j) =emit_co_mo(i,m,j)+emit_corow(i,m,j)*oneOverDPM
       emit_ch4_mo(i,m,j) =emit_ch4_mo(i,m,j)+emit_ch4row(i,m,j)*oneOverDPM
@@ -3215,11 +3287,16 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
     nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)*oneOverDPM
     nbp_mo(i,m,iccp1)=nbp_mo(i,m,iccp1)+nbpvegrow(i,m,iccp1)*oneOverDPM
     hetrores_mo(i,m,iccp1)=hetrores_mo(i,m,iccp1)+hetroresvegrow(i,m,iccp1)*oneOverDPM
-    do k = 1, ignd
-      litres_mo(i,m,iccp1,k) = litres_mo(i,m,iccp1,k) + litresvegrow(i,m,iccp1,k) * oneOverDPM
-      soilcres_mo(i,m,iccp1,k) = soilcres_mo(i,m,iccp1,k) &
-                               + soilcresvegrow(i,m,iccp1,k) * oneOverDPM
-    end do
+    !COMBAK PERLAY  
+      litres_mo(i,m,iccp1) = litres_mo(i,m,iccp1) + litresvegrow(i,m,iccp1) * oneOverDPM
+      soilcres_mo(i,m,iccp1) = soilcres_mo(i,m,iccp1) &
+                               + soilcresvegrow(i,m,iccp1) * oneOverDPM
+    ! do k = 1, ignd
+    !   litres_mo(i,m,iccp1,k) = litres_mo(i,m,iccp1,k) + litresvegrow(i,m,iccp1,k) * oneOverDPM
+    !   soilcres_mo(i,m,iccp1,k) = soilcres_mo(i,m,iccp1,k) &
+    !                            + soilcresvegrow(i,m,iccp1,k) * oneOverDPM
+    ! end do
+    !COMBAK PERLAY   
     !> Accumulate monthly outputs at the per tile level.
     luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)*oneOverDPM
     lucsocin_mo_t(i,m) =lucsocin_mo_t(i,m)+lucsocinrow(i,m)*oneOverDPM
@@ -3232,9 +3309,13 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
     lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)*oneOverDPM
     !wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
     
+    !COMBAK PERLAY   
     ! NOTE: LUC product pools are kept in layer 1.
     fProductDecomp_mo_t(i,m) = fProductDecomp_mo_t(i,m) &
-                              + (soilcresvegrow(i,m,iccp2,1) + litresvegrow(i,m,iccp2,1)) * oneOverDPM
+                              + (soilcresvegrow(i,m,iccp2) + litresvegrow(i,m,iccp2)) * oneOverDPM
+    ! fProductDecomp_mo_t(i,m) = fProductDecomp_mo_t(i,m) &
+    !                           + (soilcresvegrow(i,m,iccp2,1) + litresvegrow(i,m,iccp2,1)) * oneOverDPM                              
+    !COMBAK PERLAY   
     
 863 continue ! m
 
@@ -3251,30 +3332,44 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
           stemmass_mo(i,m,j)=stemmassrow(i,m,j)
           rootmass_mo(i,m,j)=rootmassrow(i,m,j)
           totcmass_mo(i,m,j)=vgbiomas_vegrow(i,m,j)
-          do k = 1, ignd
-            litrmass_mo(i,m,j,k) = litrmassrow(i,m,j,k)
-            soilcmas_mo(i,m,j,k) = soilcmasrow(i,m,j,k)
-            totcmass_mo(i,m,j) = totcmass_mo(i,m,j) + litrmassrow(i,m,j,k) + soilcmasrow(i,m,j,k)
-          end do
+          !COMBAK PERLAY          
+          litrmass_mo(i,m,j) = litrmassrow(i,m,j)
+          soilcmas_mo(i,m,j) = soilcmasrow(i,m,j)
+          totcmass_mo(i,m,j) = totcmass_mo(i,m,j) + litrmassrow(i,m,j) + soilcmasrow(i,m,j)
+          ! do k = 1, ignd
+          !   litrmass_mo(i,m,j,k) = litrmassrow(i,m,j,k)
+          !   soilcmas_mo(i,m,j,k) = soilcmasrow(i,m,j,k)
+          !   totcmass_mo(i,m,j) = totcmass_mo(i,m,j) + litrmassrow(i,m,j,k) + soilcmasrow(i,m,j,k)
+          ! end do
+          !COMBAK PERLAY
 867               continue
 
         !> Do the bare fraction too
-        do k = 1, ignd
-          litrmass_mo(i,m,iccp1,k) = litrmassrow(i,m,iccp1,k)
-          soilcmas_mo(i,m,iccp1,k) = soilcmasrow(i,m,iccp1,k)
+        !COMBAK PERLAY
+          litrmass_mo(i,m,iccp1) = litrmassrow(i,m,iccp1)
+          soilcmas_mo(i,m,iccp1) = soilcmasrow(i,m,iccp1)
           totcmass_mo(i,m,iccp1) = totcmass_mo(i,m,iccp1) &
-                                  + soilcmasrow(i,m,iccp1,k) + litrmassrow(i,m,iccp1,k)
-        end do 
-        
+                                  + soilcmasrow(i,m,iccp1) + litrmassrow(i,m,iccp1)
+        ! do k = 1, ignd
+        !   litrmass_mo(i,m,iccp1,k) = litrmassrow(i,m,iccp1,k)
+        !   soilcmas_mo(i,m,iccp1,k) = soilcmasrow(i,m,iccp1,k)
+        !   totcmass_mo(i,m,iccp1) = totcmass_mo(i,m,iccp1) &
+        !                           + soilcmasrow(i,m,iccp1,k) + litrmassrow(i,m,iccp1,k)
+        ! end do 
+        !COMBAK PERLAY
         barefrac=1.0
 
         !> Now find the per tile values:
         do j = 1, icc
           vgbiomas_mo_t(i,m) = vgbiomas_mo_t(i,m) + vgbiomas_mo(i,m,j) * fcancmxrow(i,m,j)
-          do k = 1, ignd
-            litrmass_mo_t(i,m,k) = litrmass_mo_t(i,m,k) + litrmass_mo(i,m,j,k) * fcancmxrow(i,m,j)
-            soilcmas_mo_t(i,m,k) = soilcmas_mo_t(i,m,k) + soilcmas_mo(i,m,j,k) * fcancmxrow(i,m,j)
-          end do
+          !COMBAK PERLAY
+            litrmass_mo_t(i,m) = litrmass_mo_t(i,m) + litrmass_mo(i,m,j) * fcancmxrow(i,m,j)
+            soilcmas_mo_t(i,m) = soilcmas_mo_t(i,m) + soilcmas_mo(i,m,j) * fcancmxrow(i,m,j)  
+          ! do k = 1, ignd
+          !   litrmass_mo_t(i,m,k) = litrmass_mo_t(i,m,k) + litrmass_mo(i,m,j,k) * fcancmxrow(i,m,j)
+          !   soilcmas_mo_t(i,m,k) = soilcmas_mo_t(i,m,k) + soilcmas_mo(i,m,j,k) * fcancmxrow(i,m,j)
+          ! end do
+          !COMBAK PERLAY
           stemmass_mo_t(i,m) = stemmass_mo_t(i,m) + stemmass_mo(i,m,j) * fcancmxrow(i,m,j)
           rootmass_mo_t(i,m) = rootmass_mo_t(i,m) + rootmass_mo(i,m,j) * fcancmxrow(i,m,j)
           totcmass_mo_t(i,m) = totcmass_mo_t(i,m) + totcmass_mo(i,m,j) * fcancmxrow(i,m,j)
@@ -3282,28 +3377,43 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
         end do
 
         !>Also add in the bare fraction contributions.
-        do k = 1, ignd
-          litrmass_mo_t(i,m,k) = litrmass_mo_t(i,m,k) + litrmass_mo(i,m,iccp1,k) * barefrac
-          soilcmas_mo_t(i,m,k) = soilcmas_mo_t(i,m,k) + soilcmas_mo(i,m,iccp1,k) * barefrac
-          totcmass_mo_t(i,m) = totcmass_mo_t(i,m) &
-                              + (litrmass_mo(i,m,iccp1,k) + soilcmas_mo(i,m,iccp1,k)) * barefrac                    
-        end do
+        !COMBAK PERLAY
+        litrmass_mo_t(i,m) = litrmass_mo_t(i,m) + litrmass_mo(i,m,iccp1) * barefrac
+        soilcmas_mo_t(i,m) = soilcmas_mo_t(i,m) + soilcmas_mo(i,m,iccp1) * barefrac
+        totcmass_mo_t(i,m) = totcmass_mo_t(i,m) &
+                            + (litrmass_mo(i,m,iccp1) + soilcmas_mo(i,m,iccp1)) * barefrac                    
+        ! do k = 1, ignd
+        !   litrmass_mo_t(i,m,k) = litrmass_mo_t(i,m,k) + litrmass_mo(i,m,iccp1,k) * barefrac
+        !   soilcmas_mo_t(i,m,k) = soilcmas_mo_t(i,m,k) + soilcmas_mo(i,m,iccp1,k) * barefrac
+        !   totcmass_mo_t(i,m) = totcmass_mo_t(i,m) &
+        !                       + (litrmass_mo(i,m,iccp1,k) + soilcmas_mo(i,m,iccp1,k)) * barefrac                    
+        ! end do
+        !COMBAK PERLAY
         
         !> Now find the gridcell level values:
         vgbiomas_mo_g(i) = vgbiomas_mo_g(i) + vgbiomas_mo_t(i,m) * FAREROT(i,m)
-        do k = 1, ignd
-          litrmass_mo_g(i,k) = litrmass_mo_g(i,k) + litrmass_mo_t(i,m,k) * FAREROT(i,m)
-          soilcmas_mo_g(i,k) = soilcmas_mo_g(i,k) + soilcmas_mo_t(i,m,k) * FAREROT(i,m)
-        end do
+        !COMBAK PERLAY
+        litrmass_mo_g(i) = litrmass_mo_g(i) + litrmass_mo_t(i,m) * FAREROT(i,m)
+        soilcmas_mo_g(i) = soilcmas_mo_g(i) + soilcmas_mo_t(i,m) * FAREROT(i,m)
+        ! do k = 1, ignd
+        !   litrmass_mo_g(i,k) = litrmass_mo_g(i,k) + litrmass_mo_t(i,m,k) * FAREROT(i,m)
+        !   soilcmas_mo_g(i,k) = soilcmas_mo_g(i,k) + soilcmas_mo_t(i,m,k) * FAREROT(i,m)
+        ! end do
+        !COMBAK PERLAY
         stemmass_mo_g(i)=stemmass_mo_g(i)+stemmass_mo_t(i,m)*FAREROT(i,m)
         rootmass_mo_g(i)=rootmass_mo_g(i)+rootmass_mo_t(i,m)*FAREROT(i,m)
         totcmass_mo_g(i)=totcmass_mo_g(i)+totcmass_mo_t(i,m)*FAREROT(i,m)
 
         ! Including the LUC product pools. They are per tile values and 
         ! are assumed to occupy the whole tile. Only kept in layer 1.
+        !COMBAK PERLAY
         cProduct_mo_g(i) = cProduct_mo_g(i) &
-                           + (litrmassrow(i,m,iccp2,1) &
-                           + soilcmasrow(i,m,iccp2,1)) * FAREROT(i,m)
+                           + (litrmassrow(i,m,iccp2) &
+                           + soilcmasrow(i,m,iccp2)) * FAREROT(i,m)
+       ! cProduct_mo_g(i) = cProduct_mo_g(i) &
+       !                    + (litrmassrow(i,m,iccp2,1) &
+       !                    + soilcmasrow(i,m,iccp2,1)) * FAREROT(i,m)                          
+        !COMBAK PERLAY
         
 866   continue  !nmtest loop.
 
@@ -3327,10 +3437,14 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
           !nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,j)*fcancmxrow(i,m,j)
           hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,j)*fcancmxrow(i,m,j)
           autores_mo_t(i,m) =autores_mo_t(i,m)+autores_mo(i,m,j)*fcancmxrow(i,m,j)
-          do k = 1, ignd
-            litres_mo_t(i,m,k) = litres_mo_t(i,m,k) + litres_mo(i,m,j,k) * fcancmxrow(i,m,j)
-            soilcres_mo_t(i,m,k) = soilcres_mo_t(i,m,k) + soilcres_mo(i,m,j,k) * fcancmxrow(i,m,j)
-          end do 
+          !COMBAK PERLAY
+          litres_mo_t(i,m) = litres_mo_t(i,m) + litres_mo(i,m,j) * fcancmxrow(i,m,j)
+          soilcres_mo_t(i,m) = soilcres_mo_t(i,m) + soilcres_mo(i,m,j) * fcancmxrow(i,m,j)          
+          ! do k = 1, ignd
+          !   litres_mo_t(i,m,k) = litres_mo_t(i,m,k) + litres_mo(i,m,j,k) * fcancmxrow(i,m,j)
+          !   soilcres_mo_t(i,m,k) = soilcres_mo_t(i,m,k) + soilcres_mo(i,m,j,k) * fcancmxrow(i,m,j)
+          ! end do 
+          !COMBAK PERLAY
           emit_co2_mo_t(i,m)=emit_co2_mo_t(i,m)+emit_co2_mo(i,m,j)*fcancmxrow(i,m,j)
           emit_co_mo_t(i,m) =emit_co_mo_t(i,m)+emit_co_mo(i,m,j)*fcancmxrow(i,m,j)
           emit_ch4_mo_t(i,m) =emit_ch4_mo_t(i,m)+emit_ch4_mo(i,m,j)*fcancmxrow(i,m,j)
@@ -3358,10 +3472,14 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
         !nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,iccp1)*barefrac
         hetrores_mo_t(i,m) = hetrores_mo_t(i,m) + hetrores_mo(i,m,iccp1) * barefrac
         humiftrs_mo_t(i,m) = humiftrs_mo_t(i,m) + humiftrsveg_mo(i,m,iccp1) * barefrac    
-        do k = 1, ignd
-          litres_mo_t(i,m,k) = litres_mo_t(i,m,k) + litres_mo(i,m,iccp1,k) * barefrac
-          soilcres_mo_t(i,m,k) = soilcres_mo_t(i,m,k) + soilcres_mo(i,m,iccp1,k) * barefrac
-        end do
+        !COMBAK PERLAY
+          litres_mo_t(i,m) = litres_mo_t(i,m) + litres_mo(i,m,iccp1) * barefrac
+          soilcres_mo_t(i,m) = soilcres_mo_t(i,m) + soilcres_mo(i,m,iccp1) * barefrac        
+        ! do k = 1, ignd
+        !   litres_mo_t(i,m,k) = litres_mo_t(i,m,k) + litres_mo(i,m,iccp1,k) * barefrac
+        !   soilcres_mo_t(i,m,k) = soilcres_mo_t(i,m,k) + soilcres_mo(i,m,iccp1,k) * barefrac
+        ! end do
+        !COMBAK PERLAY
         
         ! NOTE: NBP is a special case here. The LUC product pool contributions are not  
         ! per PFT, they exist uniformly across a tile, so they are not inclued in the 
@@ -3376,10 +3494,14 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
         nbp_mo_g(i)=nbp_mo_g(i)+nbp_mo_t(i,m)*FAREROT(i,m)
         hetrores_mo_g(i)=hetrores_mo_g(i)+hetrores_mo_t(i,m)*FAREROT(i,m)
         autores_mo_g(i) =autores_mo_g(i) +autores_mo_t(i,m)*FAREROT(i,m)
-        do k = 1, ignd
-          litres_mo_g(i,k) = litres_mo_g(i,k) + litres_mo_t(i,m,k) * FAREROT(i,m)
-          soilcres_mo_g(i,k) = soilcres_mo_g(i,k) + soilcres_mo_t(i,m,k) * FAREROT(i,m)
-        end do
+        !COMBAK PERLAY
+          litres_mo_g(i) = litres_mo_g(i) + litres_mo_t(i,m) * FAREROT(i,m)
+          soilcres_mo_g(i) = soilcres_mo_g(i) + soilcres_mo_t(i,m) * FAREROT(i,m)        
+        ! do k = 1, ignd
+        !   litres_mo_g(i,k) = litres_mo_g(i,k) + litres_mo_t(i,m,k) * FAREROT(i,m)
+        !   soilcres_mo_g(i,k) = soilcres_mo_g(i,k) + soilcres_mo_t(i,m,k) * FAREROT(i,m)
+        ! end do
+        !COMBAK PERLAY
         laimaxg_mo_g(i)=laimaxg_mo_g(i)+laimaxg_mo_t(i,m)*FAREROT(i,m)
         emit_co2_mo_g(i)=emit_co2_mo_g(i)+emit_co2_mo_t(i,m)*FAREROT(i,m)
         emit_co_mo_g(i) =emit_co_mo_g(i)+emit_co_mo_t(i,m)*FAREROT(i,m)
@@ -3434,24 +3556,30 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
       call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
       
+      !COMBAK PERLAY
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[soilcmas_mo_g(i)])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[litres_mo_g(i)])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[soilcres_mo_g(i)])    
       ! Make the bulk litter and soil C pool and respiration temporary variables:     
-      allocate(bulkLitterCarbon(1))
-      allocate(bulkSoilCarbon(1))             
-      allocate(bulkLitterResp(1))   
-      allocate(bulkSoilResp(1))         
-      bulkLitterCarbon(1) = sum(litrmass_mo_g(i,:))
-      bulkSoilCarbon(1) = sum(soilcmas_mo_g(i,:))
-      bulkLitterResp(1) = sum(litres_mo_g(i,:))
-      bulkSoilResp(1) = sum(soilcres_mo_g(i,:))    
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[bulkLitterCarbon])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[bulkSoilCarbon])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[bulkSoilResp])    
-      deallocate(bulkLitterCarbon)
-      deallocate(bulkSoilCarbon)             
-      deallocate(bulkLitterResp)
-      deallocate(bulkSoilResp)             
-
+      ! allocate(bulkLitterCarbon(1))
+      ! allocate(bulkSoilCarbon(1))             
+      ! allocate(bulkLitterResp(1))   
+      ! allocate(bulkSoilResp(1))         
+      ! bulkLitterCarbon(1) = sum(litrmass_mo_g(i,:))
+      ! bulkSoilCarbon(1) = sum(soilcmas_mo_g(i,:))
+      ! bulkLitterResp(1) = sum(litres_mo_g(i,:))
+      ! bulkSoilResp(1) = sum(soilcres_mo_g(i,:))    
+      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[bulkLitterCarbon])
+      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[bulkSoilCarbon])
+      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
+      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[bulkSoilResp])    
+      ! deallocate(bulkLitterCarbon)
+      ! deallocate(bulkSoilCarbon)             
+      ! deallocate(bulkLitterResp)
+      ! deallocate(bulkSoilResp)             
+      !COMBAK PERLAY
+      
       if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_mo_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_g' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_g(i)])
@@ -3506,25 +3634,31 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
           call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i,m,:)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,1:iccp1)])
           
+          !COMBAK PERLAY
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[litrmass_mo(i,m,:)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[soilcmas_mo(i,m,:)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[litres_mo(i,m,:)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[soilcres_mo(i,m,:)])
           ! Make the bulk litter and soil C pool and respiration temporary variables:  
-          allocate(bulkLitterCarbon(iccp1))
-          allocate(bulkSoilCarbon(iccp1))     
-          allocate(bulkLitterResp(iccp1))   
-          allocate(bulkSoilResp(iccp1))   
-          do k = 1,iccp1        
-            bulkLitterCarbon(k) = sum(litrmass_mo(i,m,k,:))
-            bulkSoilCarbon(k) = sum(soilcmas_mo(i,m,k,:))
-            bulkLitterResp(k) = sum(litres_mo(i,m,k,:))
-            bulkSoilResp(k) = sum(soilcres_mo(i,m,k,:))
-          end do         
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[bulkLitterCarbon])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[bulkSoilCarbon])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[bulkLitterResp])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[bulkSoilResp])
-          deallocate(bulkLitterCarbon)
-          deallocate(bulkSoilCarbon)             
-          deallocate(bulkLitterResp)
-          deallocate(bulkSoilResp)  
+          ! allocate(bulkLitterCarbon(iccp1))
+          ! allocate(bulkSoilCarbon(iccp1))     
+          ! allocate(bulkLitterResp(iccp1))   
+          ! allocate(bulkSoilResp(iccp1))   
+          ! do k = 1,iccp1        
+          !   bulkLitterCarbon(k) = sum(litrmass_mo(i,m,k,:))
+          !   bulkSoilCarbon(k) = sum(soilcmas_mo(i,m,k,:))
+          !   bulkLitterResp(k) = sum(litres_mo(i,m,k,:))
+          !   bulkSoilResp(k) = sum(soilcres_mo(i,m,k,:))
+          ! end do         
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[bulkLitterCarbon])
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[bulkSoilCarbon])
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[bulkLitterResp])
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[bulkSoilResp])
+          ! deallocate(bulkLitterCarbon)
+          ! deallocate(bulkSoilCarbon)             
+          ! deallocate(bulkLitterResp)
+          ! deallocate(bulkSoilResp)  
+          !COMBAK PERLAY
           
           if (dofire .or. lnduseon) then
             call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo' ,timeStamp,'fFireCH4',[emit_ch4_mo(i,m,:)])
@@ -3556,28 +3690,34 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr
           call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,1:iccp1)])
           
+          !COMBAK PERLAY
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[litrmass_mo_t(i,:)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[soilcmas_mo_t(i,:)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[litres_mo_t(i,:)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[soilcres_mo_t(i,:)])
           ! Make the bulk litter and soil C pool and respiration temporary variables:  
-          allocate(bulkLitterCarbon(nmtest))
-          allocate(bulkSoilCarbon(nmtest))  
-          allocate(bulkLitterResp(nmtest))   
-          allocate(bulkSoilResp(nmtest))   
-             
-          do m = 1,nmtest        
-            bulkLitterCarbon(m) = sum(litrmass_mo_t(i,m,:))
-            bulkSoilCarbon(m) = sum(soilcmas_mo_t(i,m,:))
-            bulkLitterResp(m) = sum(litres_mo_t(i,m,:))
-            bulkSoilResp(m) = sum(soilcres_mo_t(i,m,:))
-          end do 
-          
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[bulkLitterCarbon])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[bulkSoilCarbon])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[bulkSoilResp])
-
-          deallocate(bulkLitterCarbon)
-          deallocate(bulkSoilCarbon)             
-          deallocate(bulkLitterResp)
-          deallocate(bulkSoilResp)             
+          ! allocate(bulkLitterCarbon(nmtest))
+          ! allocate(bulkSoilCarbon(nmtest))  
+          ! allocate(bulkLitterResp(nmtest))   
+          ! allocate(bulkSoilResp(nmtest))   
+          ! 
+          ! do m = 1,nmtest        
+          !   bulkLitterCarbon(m) = sum(litrmass_mo_t(i,m,:))
+          !   bulkSoilCarbon(m) = sum(soilcmas_mo_t(i,m,:))
+          !   bulkLitterResp(m) = sum(litres_mo_t(i,m,:))
+          !   bulkSoilResp(m) = sum(soilcres_mo_t(i,m,:))
+          ! end do 
+          ! 
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[bulkLitterCarbon])
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[bulkSoilCarbon])
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
+          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[bulkSoilResp])
+          ! 
+          ! deallocate(bulkLitterCarbon)
+          ! deallocate(bulkSoilCarbon)             
+          ! deallocate(bulkLitterResp)
+          ! deallocate(bulkSoilResp)  
+          !COMBAK PERLAY           
 
           call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_t(i,:)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
@@ -3659,11 +3799,17 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
   real, pointer, dimension(:,:,:) :: vgbiomas_yr
   real, pointer, dimension(:,:,:) :: autores_yr
   real, pointer, dimension(:,:,:) :: totcmass_yr
-  real, pointer, dimension(:,:,:,:) :: litrmass_yr
-  real, pointer, dimension(:,:,:,:) :: soilcmas_yr
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litrmass_yr
+  real, pointer, dimension(:,:,:) :: soilcmas_yr
+  real, pointer, dimension(:,:,:) :: litres_yr
+  real, pointer, dimension(:,:,:) :: soilcres_yr
+  ! real, pointer, dimension(:,:,:,:) :: litrmass_yr
+  ! real, pointer, dimension(:,:,:,:) :: soilcmas_yr
+  ! real, pointer, dimension(:,:,:,:) :: litres_yr
+  ! real, pointer, dimension(:,:,:,:) :: soilcres_yr  
+  !COMBAK PERLAY
   real, pointer, dimension(:,:,:) :: nep_yr
-  real, pointer, dimension(:,:,:,:) :: litres_yr
-  real, pointer, dimension(:,:,:,:) :: soilcres_yr
   real, pointer, dimension(:,:,:) :: hetrores_yr
   real, pointer, dimension(:,:,:) :: nbp_yr
   real, pointer, dimension(:,:,:) :: emit_co2_yr
@@ -3691,11 +3837,17 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
   real, pointer, dimension(:,:) :: vgbiomas_yr_t
   real, pointer, dimension(:,:) :: autores_yr_t
   real, pointer, dimension(:,:) :: totcmass_yr_t
-  real, pointer, dimension(:,:,:) :: litrmass_yr_t
-  real, pointer, dimension(:,:,:) :: soilcmas_yr_t
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:) :: litrmass_yr_t
+  real, pointer, dimension(:,:) :: soilcmas_yr_t
+  real, pointer, dimension(:,:) :: litres_yr_t
+  real, pointer, dimension(:,:) :: soilcres_yr_t
+  ! real, pointer, dimension(:,:,:) :: litrmass_yr_t
+  ! real, pointer, dimension(:,:,:) :: soilcmas_yr_t
+  ! real, pointer, dimension(:,:,:) :: litres_yr_t
+  ! real, pointer, dimension(:,:,:) :: soilcres_yr_t 
+  !COMBAK PERLAY
   real, pointer, dimension(:,:) :: nep_yr_t
-  real, pointer, dimension(:,:,:) :: litres_yr_t
-  real, pointer, dimension(:,:,:) :: soilcres_yr_t
   real, pointer, dimension(:,:) :: hetrores_yr_t
   real, pointer, dimension(:,:) :: nbp_yr_t
   real, pointer, dimension(:,:) :: emit_co2_yr_t
@@ -3733,8 +3885,16 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
   real, pointer, dimension(:,:,:) :: nppvegrow
   real, pointer, dimension(:,:,:) :: hetroresvegrow
   real, pointer, dimension(:,:,:) :: autoresvegrow
-  real, pointer, dimension(:,:,:,:) :: litresvegrow
-  real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  !COMBAK PERLAY
+  real, pointer, dimension(:,:,:) :: litrmassrow
+  real, pointer, dimension(:,:,:) :: soilcmasrow
+  real, pointer, dimension(:,:,:) :: litresvegrow
+  real, pointer, dimension(:,:,:) :: soilcresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: litrmassrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcmasrow
+  ! real, pointer, dimension(:,:,:,:) :: litresvegrow
+  ! real, pointer, dimension(:,:,:,:) :: soilcresvegrow
+  !COMBAK PERLAY
   real, pointer, dimension(:,:,:) :: rmlvegaccrow
   real, pointer, dimension(:,:,:) :: rmsvegrow
   real, pointer, dimension(:,:,:) :: rmrvegrow
@@ -3765,8 +3925,6 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
   real, pointer, dimension(:,:) :: wetfdynrow
   real, pointer, dimension(:,:) :: ch4WetDynrow
   real, pointer, dimension(:,:) :: ch4soillsrow
-  real, pointer, dimension(:,:,:,:) :: litrmassrow
-  real, pointer, dimension(:,:,:,:) :: soilcmasrow
   real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
   real, pointer, dimension(:,:,:) :: stemmassrow
   real, pointer, dimension(:,:,:) :: rootmassrow
@@ -3776,16 +3934,22 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
   real, pointer, dimension(:) :: laimaxg_yr_g
   real, pointer, dimension(:) :: stemmass_yr_g
   real, pointer, dimension(:) :: rootmass_yr_g
-  real, pointer, dimension(:,:) :: litrmass_yr_g
-  real, pointer, dimension(:,:) :: soilcmas_yr_g
+  !COMBAK PERLAY
+  real, pointer, dimension(:) :: litrmass_yr_g
+  real, pointer, dimension(:) :: soilcmas_yr_g
+  real, pointer, dimension(:) :: litres_yr_g
+  real, pointer, dimension(:) :: soilcres_yr_g
+  ! real, pointer, dimension(:,:) :: litrmass_yr_g
+  ! real, pointer, dimension(:,:) :: soilcmas_yr_g
+  ! real, pointer, dimension(:,:) :: litres_yr_g
+  ! real, pointer, dimension(:,:) :: soilcres_yr_g
+  !COMBAK PERLAY
   real, pointer, dimension(:) :: npp_yr_g
   real, pointer, dimension(:) :: gpp_yr_g
   real, pointer, dimension(:) :: nep_yr_g
   real, pointer, dimension(:) :: nbp_yr_g
   real, pointer, dimension(:) :: hetrores_yr_g
   real, pointer, dimension(:) :: autores_yr_g
-  real, pointer, dimension(:,:) :: litres_yr_g
-  real, pointer, dimension(:,:) :: soilcres_yr_g
   real, pointer, dimension(:) :: vgbiomas_yr_g
   real, pointer, dimension(:) :: totcmass_yr_g
   real, pointer, dimension(:) :: emit_co2_yr_g
@@ -4050,10 +4214,14 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
       smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+smfuncvegrow(i,m,j)*oneOverDPY
       hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)*oneOverDPY
       autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)*oneOverDPY
-      do k = 1, ignd
-        litres_yr(i,m,j,k) = litres_yr(i,m,j,k) + litresvegrow(i,m,j,k) * oneOverDPY
-        soilcres_yr(i,m,j,k) = soilcres_yr(i,m,j,k) + soilcresvegrow(i,m,j,k) * oneOverDPY
-      end do
+      !COMBAK PERLAY
+      litres_yr(i,m,j) = litres_yr(i,m,j) + litresvegrow(i,m,j) * oneOverDPY
+      soilcres_yr(i,m,j) = soilcres_yr(i,m,j) + soilcresvegrow(i,m,j) * oneOverDPY
+      ! do k = 1, ignd
+      !   litres_yr(i,m,j,k) = litres_yr(i,m,j,k) + litresvegrow(i,m,j,k) * oneOverDPY
+      !   soilcres_yr(i,m,j,k) = soilcres_yr(i,m,j,k) + soilcresvegrow(i,m,j,k) * oneOverDPY
+      ! end do
+      !COMBAK PERLAY
       ! Let accumulate, not a flux or a mean value.
       burnfrac_yr(i,m,j)=burnfrac_yr(i,m,j)+burnvegfrow(i,m,j)
 
@@ -4061,11 +4229,16 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
 
   !>   Also do the bare fraction amounts
   hetrores_yr(i,m,iccp1)=hetrores_yr(i,m,iccp1)+hetroresvegrow(i,m,iccp1)*oneOverDPY
-  do k = 1, ignd
-    litres_yr(i,m,iccp1,k) = litres_yr(i,m,iccp1,k) + litresvegrow(i,m,iccp1,k) * oneOverDPY
-    soilcres_yr(i,m,iccp1,k) = soilcres_yr(i,m,iccp1,k) &
-                               + soilcresvegrow(i,m,iccp1,k) * oneOverDPY
-  end do
+  !COMBAK PERLAY
+    litres_yr(i,m,iccp1) = litres_yr(i,m,iccp1) + litresvegrow(i,m,iccp1) * oneOverDPY
+    soilcres_yr(i,m,iccp1) = soilcres_yr(i,m,iccp1) &
+                               + soilcresvegrow(i,m,iccp1) * oneOverDPY
+  ! do k = 1, ignd
+  !   litres_yr(i,m,iccp1,k) = litres_yr(i,m,iccp1,k) + litresvegrow(i,m,iccp1,k) * oneOverDPY
+  !   soilcres_yr(i,m,iccp1,k) = soilcres_yr(i,m,iccp1,k) &
+  !                              + soilcresvegrow(i,m,iccp1,k) * oneOverDPY
+  ! end do
+  !COMBAK PERLAY
   nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)*oneOverDPY
   nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)*oneOverDPY
 
@@ -4081,11 +4254,15 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
   ch4WetDyn_yr_t(i,m) = ch4WetDyn_yr_t(i,m)+ch4WetDynrow(i,m)*oneOverDPY
   ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m)+ch4soillsrow(i,m)*oneOverDPY
 
-  ! NOTE: LUC product pools are only in layer 1.
+  !COMBAK PERLAY
   fProductDecomp_yr_t(i,m) = fProductDecomp_yr_t(i,m) &
-                            + (soilcresvegrow(i,m,iccp2,1) &
-                            + litresvegrow(i,m,iccp2,1)) * oneOverDPY
-
+                            + (soilcresvegrow(i,m,iccp2) &
+                            + litresvegrow(i,m,iccp2)) * oneOverDPY
+  ! NOTE: LUC product pools are only in layer 1.
+  ! fProductDecomp_yr_t(i,m) = fProductDecomp_yr_t(i,m) &
+  !                           + (soilcresvegrow(i,m,iccp2,1) &
+  !                           + litresvegrow(i,m,iccp2,1)) * oneOverDPY
+  !COMBAK PERLAY
   ! NOTE: NBP is a special case here. The LUC product pool contributions are not  
   ! per PFT, they exist uniformly across a tile, so they are not included in the 
   ! nbp_yr calculation. Instead we need to use the nbp, not nbpveg variable
@@ -4104,24 +4281,34 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
         veghght_yr(i,m,j) = veghghtrow(i,m,j)
         vgbiomas_yr(i,m,j) = vgbiomas_vegrow(i,m,j)
         totcmass_yr(i,m,j) = vgbiomas_yr(i,m,j)
-        
-        do k = 1,ignd 
-          litrmass_yr(i,m,j,k) = litrmassrow(i,m,j,k)
-          soilcmas_yr(i,m,j,k) = soilcmasrow(i,m,j,k)
-          totcmass_yr(i,m,j) = totcmass_yr(i,m,j) + litrmass_yr(i,m,j,k) &
-                                                  + soilcmas_yr(i,m,j,k)
-        end do 
-
+        !COMBAK PERLAY
+          litrmass_yr(i,m,j) = litrmassrow(i,m,j)
+          soilcmas_yr(i,m,j) = soilcmasrow(i,m,j)
+          totcmass_yr(i,m,j) = totcmass_yr(i,m,j) + litrmass_yr(i,m,j) &
+                                                  + soilcmas_yr(i,m,j)
+        ! do k = 1,ignd 
+        !   litrmass_yr(i,m,j,k) = litrmassrow(i,m,j,k)
+        !   soilcmas_yr(i,m,j,k) = soilcmasrow(i,m,j,k)
+        !   totcmass_yr(i,m,j) = totcmass_yr(i,m,j) + litrmass_yr(i,m,j,k) &
+        !                                           + soilcmas_yr(i,m,j,k)
+        ! end do 
+        !COMBAK PERLAY
 925     continue
 
       peatdep_yr_g(i) = peatdep_yr_g(i) + peatdep_yr_t(i,m) * farerot(i,m)    !YW September 04, 2015
       
+      !COMBAK PERLAY
       do k = 1,ignd
-        litrmass_yr(i,m,iccp1,k) = litrmassrow(i,m,iccp1,k)
-        soilcmas_yr(i,m,iccp1,k) = soilcmasrow(i,m,iccp1,k)
-        totcmass_yr(i,m,iccp1) = totcmass_yr(i,m,iccp1) + litrmassrow(i,m,iccp1,k) + soilcmasrow(i,m,iccp1,k)
+        litrmass_yr(i,m,iccp1) = litrmassrow(i,m,iccp1)
+        soilcmas_yr(i,m,iccp1) = soilcmasrow(i,m,iccp1)
+        totcmass_yr(i,m,iccp1) = totcmass_yr(i,m,iccp1) + litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
       end do
-        
+      ! do k = 1,ignd
+      !   litrmass_yr(i,m,iccp1,k) = litrmassrow(i,m,iccp1,k)
+      !   soilcmas_yr(i,m,iccp1,k) = soilcmasrow(i,m,iccp1,k)
+      !   totcmass_yr(i,m,iccp1) = totcmass_yr(i,m,iccp1) + litrmassrow(i,m,iccp1,k) + soilcmasrow(i,m,iccp1,k)
+      ! end do
+      !COMBAK PERLAY
       barefrac = 1.0
 
       !> Add values to the per tile vars
@@ -4158,22 +4345,36 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
         veghght_yr_t(i,m) = veghght_yr_t(i,m)+veghght_yr(i,m,j)*fcancmxrow(i,m,j)
 
         barefrac=barefrac-fcancmxrow(i,m,j)
-        do k = 1, ignd
-          litrmass_yr_t(i,m,k) = litrmass_yr_t(i,m,k) + litrmass_yr(i,m,j,k) * fcancmxrow(i,m,j)
-          soilcmas_yr_t(i,m,k) = soilcmas_yr_t(i,m,k) + soilcmas_yr(i,m,j,k) * fcancmxrow(i,m,j)
-          litres_yr_t(i,m,k) = litres_yr_t(i,m,k) + litres_yr(i,m,j,k) * fcancmxrow(i,m,j)
-          soilcres_yr_t(i,m,k) = soilcres_yr_t(i,m,k) + soilcres_yr(i,m,j,k) * fcancmxrow(i,m,j)
-        end do
+        !COMBAK PERLAY
+          litrmass_yr_t(i,m) = litrmass_yr_t(i,m) + litrmass_yr(i,m,j) * fcancmxrow(i,m,j)
+          soilcmas_yr_t(i,m) = soilcmas_yr_t(i,m) + soilcmas_yr(i,m,j) * fcancmxrow(i,m,j)
+          litres_yr_t(i,m) = litres_yr_t(i,m) + litres_yr(i,m,j) * fcancmxrow(i,m,j)
+          soilcres_yr_t(i,m) = soilcres_yr_t(i,m) + soilcres_yr(i,m,j) * fcancmxrow(i,m,j)
+        ! do k = 1, ignd
+        !   litrmass_yr_t(i,m,k) = litrmass_yr_t(i,m,k) + litrmass_yr(i,m,j,k) * fcancmxrow(i,m,j)
+        !   soilcmas_yr_t(i,m,k) = soilcmas_yr_t(i,m,k) + soilcmas_yr(i,m,j,k) * fcancmxrow(i,m,j)
+        !   litres_yr_t(i,m,k) = litres_yr_t(i,m,k) + litres_yr(i,m,j,k) * fcancmxrow(i,m,j)
+        !   soilcres_yr_t(i,m,k) = soilcres_yr_t(i,m,k) + soilcres_yr(i,m,j,k) * fcancmxrow(i,m,j)
+        ! end do
+        !COMBAK PERLAY
 
       end do !j
-      do k = 1, ignd
-        litrmass_yr_t(i,m,k) = litrmass_yr_t(i,m,k) + litrmass_yr(i,m,iccp1,k) * barefrac
-        soilcmas_yr_t(i,m,k) = soilcmas_yr_t(i,m,k) + soilcmas_yr(i,m,iccp1,k) * barefrac
-        litres_yr_t(i,m,k) = litres_yr_t(i,m,k) + litres_yr(i,m,iccp1,k) * barefrac
-        soilcres_yr_t(i,m,k) = soilcres_yr_t(i,m,k) + soilcres_yr(i,m,iccp1,k) * barefrac
+      !COMBAK PERLAY
+        litrmass_yr_t(i,m) = litrmass_yr_t(i,m) + litrmass_yr(i,m,iccp1) * barefrac
+        soilcmas_yr_t(i,m) = soilcmas_yr_t(i,m) + soilcmas_yr(i,m,iccp1) * barefrac
+        litres_yr_t(i,m) = litres_yr_t(i,m) + litres_yr(i,m,iccp1) * barefrac
+        soilcres_yr_t(i,m) = soilcres_yr_t(i,m) + soilcres_yr(i,m,iccp1) * barefrac
         totcmass_yr_t(i,m) = totcmass_yr_t(i,m) &
-                          + (litrmass_yr(i,m,iccp1,k) + soilcmas_yr(i,m,iccp1,k)) * barefrac
-      end do
+                          + (litrmass_yr(i,m,iccp1) + soilcmas_yr(i,m,iccp1)) * barefrac
+      ! do k = 1, ignd
+      !   litrmass_yr_t(i,m,k) = litrmass_yr_t(i,m,k) + litrmass_yr(i,m,iccp1,k) * barefrac
+      !   soilcmas_yr_t(i,m,k) = soilcmas_yr_t(i,m,k) + soilcmas_yr(i,m,iccp1,k) * barefrac
+      !   litres_yr_t(i,m,k) = litres_yr_t(i,m,k) + litres_yr(i,m,iccp1,k) * barefrac
+      !   soilcres_yr_t(i,m,k) = soilcres_yr_t(i,m,k) + soilcres_yr(i,m,iccp1,k) * barefrac
+      !   totcmass_yr_t(i,m) = totcmass_yr_t(i,m) &
+      !                     + (litrmass_yr(i,m,iccp1,k) + soilcmas_yr(i,m,iccp1,k)) * barefrac
+      ! end do
+      !COMBAK PERLAY
       hetrores_yr_t(i,m)=hetrores_yr_t(i,m)+hetrores_yr(i,m,iccp1)*barefrac
       nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,iccp1)*barefrac
       !nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,iccp1)*barefrac
@@ -4182,12 +4383,18 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
       laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_t(i,m)*FAREROT(i,m)
       stemmass_yr_g(i)=stemmass_yr_g(i)+stemmass_yr_t(i,m)*FAREROT(i,m)
       rootmass_yr_g(i)=rootmass_yr_g(i)+rootmass_yr_t(i,m)*FAREROT(i,m)
-      do k = 1, ignd
-        litrmass_yr_g(i,k) = litrmass_yr_g(i,k) + litrmass_yr_t(i,m,k) * FAREROT(i,m)
-        soilcmas_yr_g(i,k) = soilcmas_yr_g(i,k) + soilcmas_yr_t(i,m,k) * FAREROT(i,m)
-        litres_yr_g(i,k) = litres_yr_g(i,k) + litres_yr_t(i,m,k) * FAREROT(i,m)
-        soilcres_yr_g(i,k) = soilcres_yr_g(i,k) + soilcres_yr_t(i,m,k) * FAREROT(i,m)                  
-      end do
+      !COMBAK PERLAY
+      litrmass_yr_g(i) = litrmass_yr_g(i) + litrmass_yr_t(i,m) * FAREROT(i,m)
+      soilcmas_yr_g(i) = soilcmas_yr_g(i) + soilcmas_yr_t(i,m) * FAREROT(i,m)
+      litres_yr_g(i) = litres_yr_g(i) + litres_yr_t(i,m) * FAREROT(i,m)
+      soilcres_yr_g(i) = soilcres_yr_g(i) + soilcres_yr_t(i,m) * FAREROT(i,m)                  
+      ! do k = 1, ignd
+      !   litrmass_yr_g(i,k) = litrmass_yr_g(i,k) + litrmass_yr_t(i,m,k) * FAREROT(i,m)
+      !   soilcmas_yr_g(i,k) = soilcmas_yr_g(i,k) + soilcmas_yr_t(i,m,k) * FAREROT(i,m)
+      !   litres_yr_g(i,k) = litres_yr_g(i,k) + litres_yr_t(i,m,k) * FAREROT(i,m)
+      !   soilcres_yr_g(i,k) = soilcres_yr_g(i,k) + soilcres_yr_t(i,m,k) * FAREROT(i,m)                  
+      ! end do
+      !COMBAK PERLAY
       vgbiomas_yr_g(i)=vgbiomas_yr_g(i)+vgbiomas_yr_t(i,m)*FAREROT(i,m)
       totcmass_yr_g(i)=totcmass_yr_g(i)+totcmass_yr_t(i,m)*FAREROT(i,m)
       npp_yr_g(i)=npp_yr_g(i)+npp_yr_t(i,m)*FAREROT(i,m)
@@ -4226,10 +4433,14 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
       ! are assumed to occupy the whole tile.
       fProductDecomp_yr_g(i) = fProductDecomp_yr_g(i)&
                          + fProductDecomp_yr_t(i,m) * FAREROT(i,m)
-
+      !COMBAK PERLAY
       cProduct_yr_g(i) = cProduct_yr_g(i) &
-                         + (litrmassrow(i,m,iccp2,1) &
-                         + soilcmasrow(i,m,iccp2,1)) * FAREROT(i,m)
+                         + (litrmassrow(i,m,iccp2) &
+                         + soilcmasrow(i,m,iccp2)) * FAREROT(i,m)
+       ! cProduct_yr_g(i) = cProduct_yr_g(i) &
+       !                    + (litrmassrow(i,m,iccp2,1) &
+       !                    + soilcmasrow(i,m,iccp2,1)) * FAREROT(i,m)                         
+      !COMBAK PERLAY
           
 900 continue !m
 
@@ -4256,27 +4467,31 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
     call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
     call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrMassPerLay_yr_g',timeStamp,'cLitterperlay',[litrmass_yr_g(i,:)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilCMasPerLay_yr_g',timeStamp,'cSoilperlay',[soilcmas_yr_g(i,:)])
-
-    ! Make the bulk litter and soil C pool and respiration temporary variables:  
-    allocate(bulkLitterCarbon(1))
-    allocate(bulkSoilCarbon(1))             
-    allocate(bulkLitterResp(1))   
-    allocate(bulkSoilResp(1))       
-    bulkLitterCarbon(1) = sum(litrmass_yr_g(i,:))
-    bulkSoilCarbon(1) = sum(soilcmas_yr_g(i,:))
-    bulkLitterResp(1) = sum(litres_yr_g(i,:))
-    bulkSoilResp(1) = sum(soilcres_yr_g(i,:))  
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[bulkLitterCarbon])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[bulkSoilCarbon])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[bulkSoilResp])  
-    deallocate(bulkLitterCarbon)
-    deallocate(bulkSoilCarbon)             
-    deallocate(bulkLitterResp)
-    deallocate(bulkSoilResp)             
-
+    !COMBAK PERLAY
+    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrMassPerLay_yr_g',timeStamp,'cLitterperlay',[litrmass_yr_g(i)])
+    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilCMasPerLay_yr_g',timeStamp,'cSoilperlay',[soilcmas_yr_g(i)])
+    ! 
+    ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrMassPerLay_yr_g',timeStamp,'cLitterperlay',[litrmass_yr_g(i,:)])
+    ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilCMasPerLay_yr_g',timeStamp,'cSoilperlay',[soilcmas_yr_g(i,:)])
+    ! 
+    ! ! Make the bulk litter and soil C pool and respiration temporary variables:  
+    ! allocate(bulkLitterCarbon(1))
+    ! allocate(bulkSoilCarbon(1))             
+    ! allocate(bulkLitterResp(1))   
+    ! allocate(bulkSoilResp(1))       
+    ! bulkLitterCarbon(1) = sum(litrmass_yr_g(i,:))
+    ! bulkSoilCarbon(1) = sum(soilcmas_yr_g(i,:))
+    ! bulkLitterResp(1) = sum(litres_yr_g(i,:))
+    ! bulkSoilResp(1) = sum(soilcres_yr_g(i,:))  
+    ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[bulkLitterCarbon])
+    ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[bulkSoilCarbon])
+    ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
+    ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[bulkSoilResp])  
+    ! deallocate(bulkLitterCarbon)
+    ! deallocate(bulkSoilCarbon)             
+    ! deallocate(bulkLitterResp)
+    ! deallocate(bulkSoilResp)             
+    !COMBAK PERLAY
     if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
       call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_g(i)])
     end if
@@ -4344,28 +4559,34 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
         call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
 
-        ! Make the bulk litter and soil C pool and respiration temporary variables:  
-        allocate(bulkLitterCarbon(iccp1))
-        allocate(bulkSoilCarbon(iccp1))     
-        allocate(bulkLitterResp(iccp1))   
-        allocate(bulkSoilResp(iccp1))   
-
-        do k = 1,iccp1        
-          bulkLitterCarbon(k) = sum(litrmass_yr(i,m,k,:))
-          bulkSoilCarbon(k) = sum(soilcmas_yr(i,m,k,:))
-          bulkLitterResp(k) = sum(litres_yr(i,m,k,:))
-          bulkSoilResp(k) = sum(soilcres_yr(i,m,k,:))
-        end do 
-        
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[bulkLitterCarbon])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[bulkSoilCarbon])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[bulkLitterResp])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[bulkSoilResp])
-
-        deallocate(bulkLitterCarbon)
-        deallocate(bulkSoilCarbon)             
-        deallocate(bulkLitterResp)
-        deallocate(bulkSoilResp)             
+        !COMBAK PERLAY
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,:)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,:)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,:)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,:)])
+        ! ! Make the bulk litter and soil C pool and respiration temporary variables:  
+        ! allocate(bulkLitterCarbon(iccp1))
+        ! allocate(bulkSoilCarbon(iccp1))     
+        ! allocate(bulkLitterResp(iccp1))   
+        ! allocate(bulkSoilResp(iccp1))   
+        ! 
+        ! do k = 1,iccp1        
+        !   bulkLitterCarbon(k) = sum(litrmass_yr(i,m,k,:))
+        !   bulkSoilCarbon(k) = sum(soilcmas_yr(i,m,k,:))
+        !   bulkLitterResp(k) = sum(litres_yr(i,m,k,:))
+        !   bulkSoilResp(k) = sum(soilcres_yr(i,m,k,:))
+        ! end do 
+        ! 
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[bulkLitterCarbon])
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[bulkSoilCarbon])
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[bulkLitterResp])
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[bulkSoilResp])
+        ! 
+        ! deallocate(bulkLitterCarbon)
+        ! deallocate(bulkSoilCarbon)             
+        ! deallocate(bulkLitterResp)
+        ! deallocate(bulkSoilResp)       
+        !COMBAK PERLAY      
 
         if (dofire .or. lnduseon) then
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr' ,timeStamp,'fFireCH4',[emit_ch4_yr(i,m,:)])
@@ -4399,29 +4620,35 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,
         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_t' ,timeStamp,'wetlandFrac',[wetfdyn_yr_t(i,:)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_t' ,timeStamp,'soilCH4cons',[ch4soills_yr_t(i,:)])
         
-        ! Make the bulk litter and soil C pool and respiration temporary variables:  
-        allocate(bulkLitterCarbon(nmtest))
-        allocate(bulkSoilCarbon(nmtest))  
-        allocate(bulkLitterResp(nmtest))   
-        allocate(bulkSoilResp(nmtest))   
-           
-        do m = 1,nmtest        
-          bulkLitterCarbon(m) = sum(litrmass_yr_t(i,m,:))
-          bulkSoilCarbon(m) = sum(soilcmas_yr_t(i,m,:))
-          bulkLitterResp(m) = sum(litres_yr_t(i,m,:))
-          bulkSoilResp(m) = sum(soilcres_yr_t(i,m,:))
-        end do 
+        !COMBAK PERLAY
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[litrmass_yr_t(i,:)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[soilcmas_yr_t(i,:)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
+        ! ! Make the bulk litter and soil C pool and respiration temporary variables:  
+        ! allocate(bulkLitterCarbon(nmtest))
+        ! allocate(bulkSoilCarbon(nmtest))  
+        ! allocate(bulkLitterResp(nmtest))   
+        ! allocate(bulkSoilResp(nmtest))   
+        ! 
+        ! do m = 1,nmtest        
+        !   bulkLitterCarbon(m) = sum(litrmass_yr_t(i,m,:))
+        !   bulkSoilCarbon(m) = sum(soilcmas_yr_t(i,m,:))
+        !   bulkLitterResp(m) = sum(litres_yr_t(i,m,:))
+        !   bulkSoilResp(m) = sum(soilcres_yr_t(i,m,:))
+        ! end do 
+        ! 
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[bulkLitterCarbon])
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[bulkSoilCarbon])
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
+        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[bulkSoilResp])
+        ! 
+        ! deallocate(bulkLitterCarbon)
+        ! deallocate(bulkSoilCarbon)             
+        ! deallocate(bulkLitterResp)
+        ! deallocate(bulkSoilResp)             
+        !COMBAK PERLAY
         
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[bulkLitterCarbon])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[bulkSoilCarbon])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[bulkSoilResp])
-
-        deallocate(bulkLitterCarbon)
-        deallocate(bulkSoilCarbon)             
-        deallocate(bulkLitterResp)
-        deallocate(bulkSoilResp)             
-
         if (transientOBSWETF .or. fixedYearOBSWETF .ne. -9999) then
           call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_t(i,:)])
         end if

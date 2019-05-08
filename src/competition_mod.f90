@@ -550,8 +550,11 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
   real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
   real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
-  real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
-  real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+  real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
+  real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+  ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2 !COMBAK PERLAY
+  ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2 !COMBAK PERLAY
+
   real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
   real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
   real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
@@ -600,8 +603,16 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg,icc) :: pbiomasvg, biomasvg
   real, dimension(nilg,icc) :: putaside
   real, dimension(nilg,icc) :: nppvegar
-  real, dimension(nilg,iccp1,ignd) :: pltrmass
-  real, dimension(nilg,iccp1,ignd) :: psocmass
+  !COMBAK PERLAY
+  real, dimension(nilg,iccp1) :: pltrmass
+  real, dimension(nilg,iccp1) :: psocmass
+  real, dimension(nilg,iccp1) :: incrlitr, incrsolc
+  real, dimension(nilg) :: grsumlit, grsumsoc
+  ! real, dimension(nilg,iccp1,ignd) :: pltrmass
+  ! real, dimension(nilg,iccp1,ignd) :: psocmass
+  ! real, dimension(nilg,iccp1,ignd) :: incrlitr, incrsolc
+  ! real, dimension(nilg,ignd) :: grsumlit, grsumsoc
+  !COMBAK PERLAY
   real, dimension(nilg,iccp1) :: deadmass
   real, dimension(nilg,iccp1) :: pdeadmas
   real, dimension(nilg) :: barefrac
@@ -609,7 +620,6 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg,iccp1) ::ownsolc, ownlitr
   real, dimension(nilg,icc) :: baresolc
   real, dimension(nilg,icc) :: barelitr, baresoilc
-  real, dimension(nilg,iccp1,ignd) :: incrlitr, incrsolc
   real, dimension(nilg) :: pvgbioms
   real, dimension(nilg) :: pgavltms
   real, dimension(nilg) :: pgavscms
@@ -617,7 +627,6 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg) :: gavgputa
   real, dimension(nilg) :: gavgnpp
   real, dimension(nilg) :: pbarefra
-  real, dimension(nilg,ignd) :: grsumlit, grsumsoc
 
   ! Model switches:
 
@@ -674,10 +683,14 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
       pblfmass(i,j)=bleafmas(i,j) ! changes so that we can make sure
       protmass(i,j)=rootmass(i,j) ! mass balance is preserved.
       pstmmass(i,j)=stemmass(i,j)
-      do k = 1,ignd
-        pltrmass(i,j,k)=litrmass(i,j,k)
-        psocmass(i,j,k)=soilcmas(i,j,k)
-      end do
+      !COMBAK PERLAY
+      pltrmass(i,j)=litrmass(i,j)
+      psocmass(i,j)=soilcmas(i,j)
+      ! do k = 1,ignd
+      !   pltrmass(i,j,k)=litrmass(i,j,k)
+      !   psocmass(i,j,k)=soilcmas(i,j,k)
+      ! end do
+      !COMBAK PERLAY
       pfcancmx(i,j)=fcancmx(i,j)
 
       colrate(i,j)=0.0         ! colonization rate
@@ -696,8 +709,12 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
       barelitr(i,j)=0.0    ! kg c of litter added to bare fraction
       baresolc(i,j)=0.0    ! and same for soil c
       fraciord(i,j)=0
-      incrlitr(i,j,:)=0.0
-      incrsolc(i,j,:)=0.0
+      !COMBAK PERLAY
+      incrlitr(i,j)=0.0
+      incrsolc(i,j)=0.0
+      ! incrlitr(i,j,:)=0.0
+      ! incrsolc(i,j,:)=0.0
+      !COMBAK PERLAY
       ownlitr(i,j)=0.0
       ownsolc(i,j)=0.0
 160     continue
@@ -733,23 +750,30 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     vgbiomas(i)=0.0
     gavgltms(i)=0.0
     gavgscms(i)=0.0
-    do k = 1,ignd
-      pltrmass(i,iccp1,k)=litrmass(i,iccp1,k)
-      psocmass(i,iccp1,k)=soilcmas(i,iccp1,k)
-    end do
+    !COMBAK PERLAY
+    pltrmass(i,iccp1)=litrmass(i,iccp1)
+    psocmass(i,iccp1)=soilcmas(i,iccp1)
+    grsumlit(i)=0.0
+    grsumsoc(i)=0.0
+    incrlitr(i,iccp1)=0.0
+    incrsolc(i,iccp1)=0.0
+    ! grsumlit(i,:)=0.0
+    ! grsumsoc(i,:)=0.0
+    ! incrlitr(i,iccp1,:)=0.0
+    ! incrsolc(i,iccp1,:)=0.0
+    ! do k = 1,ignd
+    !   pltrmass(i,iccp1,k)=litrmass(i,iccp1,k)
+    !   psocmass(i,iccp1,k)=soilcmas(i,iccp1,k)
+    ! end do
+    !COMBAK PERLAY
     deadmass(i,iccp1)=0.0
     pdeadmas(i,iccp1)=0.0
     add2dead(i,:)=0.0
     gavgputa(i)=0.0 ! grid averaged value of c put aside for allocation
     gavgnpp(i)=0.0  ! grid averaged npp kg c/m2 for balance purposes
     bareiord(i)=0
-    grsumlit(i,:)=0.0
-    grsumsoc(i,:)=0.0
     ownlitr(i,iccp1)=0.0
     ownsolc(i,iccp1)=0.0
-    incrlitr(i,iccp1,:)=0.0
-    incrsolc(i,iccp1,:)=0.0
-
 150   continue
   
   !> initial rank/superiority order for simulating competition. since crops
@@ -1071,47 +1095,68 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
           bleafmas(i,j) = bleafmas(i,j) * term
           stemmass(i,j) = stemmass(i,j) * term
           rootmass(i,j) = rootmass(i,j) * term
-          do k = 1,ignd
-            litrmass(i,j,k) = litrmass(i,j,k) * term
-            soilcmas(i,j,k) = soilcmas(i,j,k) * term
-            incrlitr(i,j,k) = 0.
-            grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
-          end do
+          !COMBAK PERLAY
+          litrmass(i,j) = litrmass(i,j) * term
+          soilcmas(i,j) = soilcmas(i,j) * term
+          incrlitr(i,j) = 0.
+          grsumlit(i) = grsumlit(i) + incrlitr(i,j)
+          ! do k = 1,ignd
+          !   litrmass(i,j,k) = litrmass(i,j,k) * term
+          !   soilcmas(i,j,k) = soilcmas(i,j,k) * term
+          !   incrlitr(i,j,k) = 0.
+          !   grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+          ! end do
+          ! COMBAK PERLAY
+          
           add2allo(i,j) = 0.
 
         else if (fraciord(i,j) == -1) then ! Contract
 
-          do k = 1,ignd
-            ! All npp used for expansion becomes litter plus there is
-            ! additional mortality of the standing biomass. the npp that
-            ! becomes litter is now spread over the whole grid cell.
-            ! all biomass from fraction that dies due to mortality is
-            ! also distributed over the litter pool of whole grid cell.
+          ! All npp used for expansion becomes litter plus there is
+          ! additional mortality of the standing biomass. the npp that
+          ! becomes litter is now spread over the whole grid cell.
+          ! all biomass from fraction that dies due to mortality is
+          ! also distributed over the litter pool of whole grid cell.
 
-            ! FLAG, Put the incrlitr in the first layer (from the leaves and stems)
-            ! but the roots and litr must be put in the proper soil layers. To do
-            ! this we bring in the rmatctem for the root placement. JM Feb 2016
-            if (k == 1) then
-              incrlitr(i,j,k) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
-                                + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) & 
-                                * rmatctem(i,j,k) + litrmass(i,j,k))
-            else
-              incrlitr(i,j,k) = abs(chngfrac(i,j)) * (rootmass(i,j) * rmatctem(i,j,k) + litrmass(i,j,k))
-            end if
+          ! FLAG, Put the incrlitr in the first layer (from the leaves and stems)
+          ! but the roots and litr must be put in the proper soil layers. To do
+          ! this we bring in the rmatctem for the root placement. JM Feb 2016
 
-            grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
-
+          ! COMBAK PERLAY 
+            incrlitr(i,j) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
+                                + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) + litrmass(i,j))
+            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
             ! Chop off soil C from the fraction that goes down and
             ! spread it uniformly over the soil c pool of entire grid cell
-            incrsolc(i,j,k) = abs(chngfrac(i,j)) * soilcmas(i,j,k)
-            grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
-
-          end do
+            incrsolc(i,j) = abs(chngfrac(i,j)) * soilcmas(i,j)
+            grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
+          ! do k = 1,ignd
+          !   if (k == 1) then
+          !     incrlitr(i,j,k) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
+          !                       + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) & 
+          !                       * rmatctem(i,j,k) + litrmass(i,j,k))
+          !   else
+          !     incrlitr(i,j,k) = abs(chngfrac(i,j)) * (rootmass(i,j) * rmatctem(i,j,k) + litrmass(i,j,k))
+          !   end if
+          ! 
+          !   grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+          ! 
+          !   ! Chop off soil C from the fraction that goes down and
+          !   ! spread it uniformly over the soil c pool of entire grid cell
+          !   incrsolc(i,j,k) = abs(chngfrac(i,j)) * soilcmas(i,j,k)
+          !   grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+          ! 
+          ! end do
+          ! COMBAK PERLAY 
 
         else if (fraciord(i,j) == 0) then
 
-          incrlitr(i,j,:) = 0.
-          grsumlit(i,:) = grsumlit(i,:) + incrlitr(i,j,:)
+          ! COMBAK PERLAY 
+          incrlitr(i,j) = 0.
+          grsumlit(i) = grsumlit(i) + incrlitr(i,j)
+          ! incrlitr(i,j,:) = 0.
+          ! grsumlit(i,:) = grsumlit(i,:) + incrlitr(i,j,:)
+          ! COMBAK PERLAY 
 
         endif
 661   continue
@@ -1122,23 +1167,38 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   !! from the decreased fraction and add it to grsumlit & grsumsoc
   !! for spreading over the whole grid cell. If bare fraction increases
   !! then spread its litter and soil c uniformly over the increased fraction.
+  !COMBAK PERLAY
   do 680 i = il1, il2
     if (bareiord(i) == -1) then !decrease in bare area
-      do k = 1,ignd
-        incrlitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1,k)
-        grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,iccp1,k)
+        incrlitr(i,iccp1) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1)
+        grsumlit(i) = grsumlit(i) + incrlitr(i,iccp1)
 
-        incrsolc(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1,k)
-        grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,iccp1,k)
-      end do
+        incrsolc(i,iccp1) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1)
+        grsumsoc(i) = grsumsoc(i) + incrsolc(i,iccp1)
     else if (bareiord(i) == 1) then ! increase in bare area
-      do k = 1,ignd
         term = pbarefra(i) / barefrac(i)
-        litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
-        soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
-      end do
+        litrmass(i,iccp1) = litrmass(i,iccp1) * term
+        soilcmas(i,iccp1) = soilcmas(i,iccp1) * term
     end if
 680   continue
+! do 680 i = il1, il2
+!   if (bareiord(i) == -1) then !decrease in bare area
+!     do k = 1,ignd
+!       incrlitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1,k)
+!       grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,iccp1,k)
+! 
+!       incrsolc(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1,k)
+!       grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,iccp1,k)
+!     end do
+!   else if (bareiord(i) == 1) then ! increase in bare area
+!     do k = 1,ignd
+!       term = pbarefra(i) / barefrac(i)
+!       litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+!       soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+!     end do
+!   end if
+! 680   continue
+!COMBAK PERLAY
 
   !> If a pft is not supposed to exist as indicated by pftexist and its
   !! fractional coverage is really small then get rid of the pft all
@@ -1150,31 +1210,49 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         barefrac(i) = barefrac(i) + fcancmx(i,j)
         term = (barefrac(i) - fcancmx(i,j)) / barefrac(i)
 
-       do k = 1,ignd
-        ! Put the incrlitr in the first layer (from the leaves and stems)
-        ! but the roots and litr must be put in the proper soil layers. To do
-        ! this we bring in the rmatctem for the root placement. JM Feb 2016
-        if (k == 1) then
-          incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
-                                            + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k)&
-                                            + litrmass(i,j,k))
-        else
-          incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
-                                            + litrmass(i,j,k))
-        end if
+        !COMBAK PERLAY
+        incrlitr(i,j) = incrlitr(i,j) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+                                            + stemmass(i,j) + rootmass(i,j) &
+                                            + litrmass(i,j))
 
-        grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
+        grsumlit(i) = grsumlit(i)+ incrlitr(i,j)
 
-        incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
-        grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+        incrsolc(i,j) = incrsolc(i,j) + fcancmx(i,j) * soilcmas(i,j)
+        grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
 
         !> Adjust litter and soil c mass densities for increase in
         !! barefrac over the bare fraction.
+        litrmass(i,iccp1) = litrmass(i,iccp1) * term
+        soilcmas(i,iccp1) = soilcmas(i,iccp1) * term
 
-        litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
-        soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+        ! do k = 1,ignd
+        !  ! Put the incrlitr in the first layer (from the leaves and stems)
+        !  ! but the roots and litr must be put in the proper soil layers. To do
+        !  ! this we bring in the rmatctem for the root placement. JM Feb 2016
+        !  if (k == 1) then
+        !    incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+        !                                      + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k)&
+        !                                      + litrmass(i,j,k))
+        !  else
+        !    incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
+        !                                      + litrmass(i,j,k))
+        !  end if
+        ! 
+        !  grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
+        ! 
+        !  incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
+        !  grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+        ! 
+        !  !> Adjust litter and soil c mass densities for increase in
+        !  !! barefrac over the bare fraction.
+        ! 
+        !  litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+        !  soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+        ! 
+        !  end do
 
-        end do
+        !COMBAK PERLAY
+        
 
         fcancmx(i,j) = 0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27
 
@@ -1186,27 +1264,44 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   do 700 j = 1, icc
     do 701 i = il1, il2
       if (fcancmx(i,j) > zero) then
-        litrmass(i,j,:) = litrmass(i,j,:) + grsumlit(i,:)
-        soilcmas(i,j,:) = soilcmas(i,j,:) + grsumsoc(i,:)
+        !COMBAK PERLAY
+        litrmass(i,j) = litrmass(i,j) + grsumlit(i)
+        soilcmas(i,j) = soilcmas(i,j) + grsumsoc(i)
+        ! litrmass(i,j,:) = litrmass(i,j,:) + grsumlit(i,:)
+        ! soilcmas(i,j,:) = soilcmas(i,j,:) + grsumsoc(i,:)
+        !COMBAK PERLAY
       else
         gleafmas(i,j)=0.0
         bleafmas(i,j)=0.0
         stemmass(i,j)=0.0
-        rootmass(i,j)=0.0  !FLAG, should I set rmatctem to zero here too? JM Feb 2016.
-        litrmass(i,j,:)=0.0
-        soilcmas(i,j,:)=0.0
+        rootmass(i,j)=0.0  
+        !COMBAK PERLAY
+        litrmass(i,j)=0.0
+        soilcmas(i,j)=0.0
+        ! litrmass(i,j,:)=0.0
+        ! soilcmas(i,j,:)=0.0
+        !COMBAK PERLAY
       end if
 701 continue
 700 continue
 
   do 720 i = il1, il2
+    !COMBAK PERLAY
     if (barefrac(i) > zero) then
-      litrmass(i,iccp1,:) = litrmass(i,iccp1,:) + grsumlit(i,:)
-      soilcmas(i,iccp1,:) = soilcmas(i,iccp1,:) + grsumsoc(i,:)
+      litrmass(i,iccp1) = litrmass(i,iccp1) + grsumlit(i)
+      soilcmas(i,iccp1) = soilcmas(i,iccp1) + grsumsoc(i)
     else
-      litrmass(i,iccp1,:) = 0.0
-      soilcmas(i,iccp1,:) = 0.0
+      litrmass(i,iccp1) = 0.0
+      soilcmas(i,iccp1) = 0.0
     end if
+    ! if (barefrac(i) > zero) then
+    !   litrmass(i,iccp1,:) = litrmass(i,iccp1,:) + grsumlit(i,:)
+    !   soilcmas(i,iccp1,:) = soilcmas(i,iccp1,:) + grsumsoc(i,:)
+    ! else
+    !   litrmass(i,iccp1,:) = 0.0
+    !   soilcmas(i,iccp1,:) = 0.0
+    ! end if
+    !COMBAK PERLAY
 720 continue
 
   ! Get fcanmxs for use by CLASS based on the new fcancmxs
@@ -1229,18 +1324,26 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     do 801 i = il1, il2
       vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j)&
                                                + stemmass(i,j) + rootmass(i,j))
-      do k = 1, ignd
-        gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j,k)
-        gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j,k)
-      end do
+      !COMBAK PERLAY
+        gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j)
+        gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j)
+      ! do k = 1, ignd
+      !   gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j,k)
+      !   gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j,k)
+      ! end do
+      !COMBAK PERLAY
 801 continue
 800 continue
 
   do 810 i = il1, il2
-    do k = 1, ignd
-      gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1,k)
-      gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1,k)
-    end do
+    !COMBAK PERLAY
+      gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1)
+      gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1)
+    ! do k = 1, ignd
+    !   gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1,k)
+    !   gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1,k)
+    ! end do
+    !COMBAK PERLAY
 810   continue
   !>
   !> and finally we check the C balance. We were supposed to use a
@@ -1262,15 +1365,24 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         putaside(i,j) = add2allo(i,j) * fcancmx(i,j)
         gavgputa(i) = gavgputa(i) + putaside(i,j)
 
-        do k = 1,ignd
+        !COMBAK PERLAY
           ! litter added to bare
-          barelitr(i,j) = barelitr(i,j) + grsumlit(i,k) * fcancmx(i,j)
-          ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
+          barelitr(i,j) = barelitr(i,j) + grsumlit(i) * fcancmx(i,j)
+          ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j)
 
           ! soil c added to bare
-          baresolc(i,j) = baresolc(i,j) + grsumsoc(i,k) * fcancmx(i,j)
-          ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
-        end do
+          baresolc(i,j) = baresolc(i,j) + grsumsoc(i) * fcancmx(i,j)
+          ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j)
+        ! do k = 1,ignd
+        !   ! litter added to bare
+        !   barelitr(i,j) = barelitr(i,j) + grsumlit(i,k) * fcancmx(i,j)
+        !   ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
+        ! 
+        !   ! soil c added to bare
+        !   baresolc(i,j) = baresolc(i,j) + grsumsoc(i,k) * fcancmx(i,j)
+        !   ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
+        ! end do
+        !COMBAK PERLAY
 
         add2dead(i,j) = add2dead(i,j) + barelitr(i,j) + baresolc(i,j)
 
@@ -1281,10 +1393,14 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 
         gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
-        do k = 1, ignd
-          deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j,k) + soilcmas(i,j,k))
-          pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j,k) + psocmass(i,j,k))
-        end do
+        !COMBAK PERLAY
+          deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j) + soilcmas(i,j))
+          pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j) + psocmass(i,j))
+        ! do k = 1, ignd
+        !   deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j,k) + soilcmas(i,j,k))
+        !   pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j,k) + psocmass(i,j,k))
+        ! end do
+        !COMBAK PERLAY
 
         !!total mass before competition
         befrmass = pbiomasvg(i,j) + nppvegar(i,j) + pdeadmas(i,j)
@@ -1332,16 +1448,24 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
 
   j = iccp1
     do 851 i = il1, il2
-      do k = 1,ignd
-        deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j,k) + soilcmas(i,j,k))
-        pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j,k) + psocmass(i,j,k))
+      !COMBAK PERLAY
+        deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j) + soilcmas(i,j))
+        pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j) + psocmass(i,j))
 
-        add2dead(i,j) = add2dead(i,j) + (grsumlit(i,k) + grsumsoc(i,k)) * barefrac(i)
+        add2dead(i,j) = add2dead(i,j) + (grsumlit(i) + grsumsoc(i)) * barefrac(i)
 
-        ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
-        ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
-      end do
-
+        ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j)
+        ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j)
+      ! do k = 1,ignd
+      !   deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j,k) + soilcmas(i,j,k))
+      !   pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j,k) + psocmass(i,j,k))
+      ! 
+      !   add2dead(i,j) = add2dead(i,j) + (grsumlit(i,k) + grsumsoc(i,k)) * barefrac(i)
+      ! 
+      !   ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
+      !   ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
+      ! end do
+      !COMBAK PERLAY
       befrmass = pdeadmas(i,j) + add2dead(i,j)
       aftrmass = deadmass(i,j) + ownlitr(i,j) + ownsolc(i,j)
 

@@ -358,10 +358,15 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
  &      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),&
  &      stemmassrow(nlat,nmos,icc), rootmassrow(nlat,nmos,icc),&
  &      pstemmassrow(nlat,nmos,icc), pgleafmassrow(nlat,nmos,icc),&
- &      litrmassrow(nlat,nmos,iccp2,ignd),&
  &      gleafmasrow(nlat,nmos,icc), bleafmasrow(nlat,nmos,icc), &
- &      soilcmasrow(nlat,nmos,iccp2,ignd),&
- &      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
+ &      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc),&
+ ! COMBAK PERLAY
+ &      litrmassrow(nlat,nmos,iccp2),&
+ &      soilcmasrow(nlat,nmos,iccp2)
+  ! &      litrmassrow(nlat,nmos,iccp2,ignd),&
+ ! &      soilcmasrow(nlat,nmos,iccp2,ignd),&
+ ! COMBAK PERLAY
+
 !
   integer  pandaysrow(nlat,nmos,icc), lfstatusrow(nlat,nmos,icc),&
  &         colddaysrow(nlat,nmos,2)
@@ -384,7 +389,10 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
  &      dstcemlsrow(nlat,nmos),       litrfallrow(nlat,nmos),&
  &      humiftrsrow(nlat,nmos),       veghghtrow(nlat,nmos,icc),&
  &      litrfallvegrow(nlat,nmos,icc),&
- &      humiftrsvegrow(nlat,nmos,iccp2,ignd),&
+        !COMBAK PERLAY
+ &      humiftrsvegrow(nlat,nmos,iccp2),&
+ ! &      humiftrsvegrow(nlat,nmos,iccp2,ignd),&
+       !COMBAK PERLAY
  &      rootdpthrow(nlat,nmos,icc),   rmlrow(nlat,nmos),&
  &      rmsrow(nlat,nmos),            rmrrow(nlat,nmos),&
  &      tltrleafrow(nlat,nmos,icc),   tltrstemrow(nlat,nmos,icc),&
@@ -419,9 +427,13 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
   real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),&
  &      nbpvegrow(nlat,nmos,iccp1),hetroresvegrow(nlat,nmos,iccp1),&
  &      autoresvegrow(nlat,nmos,icc),&
- &      litresvegrow(nlat,nmos,iccp2,ignd),&
- &      soilcresvegrow(nlat,nmos,iccp2,ignd)
-!
+ !COMBAK PERLAY
+ &      litresvegrow(nlat,nmos,iccp2),&
+ &      soilcresvegrow(nlat,nmos,iccp2)
+ ! &      litresvegrow(nlat,nmos,iccp2,ignd),&
+ ! &      soilcresvegrow(nlat,nmos,iccp2,ignd)
+!COMBAK PERLAY
+
   real  fcancmxgat(ilg,icc),        rmatcgat(ilg,ican,ignd),&
  &      zolncgat(ilg,ican),         paicgat(ilg,ican),&
  &      ailcgat(ilg,ican),          ailcggat(ilg,icc),&
@@ -448,10 +460,15 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
  &      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),&
  &      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),  &
  &      pstemmassgat(ilg,icc),      pgleafmassgat(ilg,icc),  &
- &      litrmassgat(ilg,iccp2,ignd),     gleafmasgat(ilg,icc),&
- &      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp2,ignd),&
- &      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
-!
+ &      gleafmasgat(ilg,icc),       bleafmasgat(ilg,icc), &      
+ &      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc), &
+! COMBAK PERLAY
+&      litrmassgat(ilg,iccp2), &    
+&      soilcmasgat(ilg,iccp2)
+ ! &      litrmassgat(ilg,iccp2,ignd),&
+! &      soilcmasgat(ilg,iccp2,ignd),&
+! COMBAK PERLAY
+
   integer pandaysgat(ilg,icc),      lfstatusgat(ilg,icc),&
  &        colddaysgat(ilg,2)
 
@@ -471,7 +488,11 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
  &      socresgat(ilg),            gppgat(ilg),&
  &      dstcemlsgat(ilg),          litrfallgat(ilg),&
  &      humiftrsgat(ilg),          veghghtgat(ilg,icc),&
- &      litrfallveggat(ilg,icc), humiftrsveggat(ilg,iccp2,ignd),&
+ &      litrfallveggat(ilg,icc), &
+        !COMBAK PERLAY
+         humiftrsveggat(ilg,iccp2),&
+         ! humiftrsveggat(ilg,iccp2,ignd),&         
+         !COMBAK PERLAY
  &      rootdpthgat(ilg,icc),      rmlgat(ilg),&
  &      rmsgat(ilg),               rmrgat(ilg),&
  &      tltrleafgat(ilg,icc),      tltrstemgat(ilg,icc),&
@@ -505,8 +526,13 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
 !
   real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),&
  &     nbpveggat(ilg,iccp1), hetroresveggat(ilg,iccp1),&
- &      autoresveggat(ilg,icc),litresveggat(ilg,iccp2,ignd),&
- &      soilcresveggat(ilg,iccp2,ignd)
+ &      autoresveggat(ilg,icc), &
+ ! COMBAK PERLAY
+        litresveggat(ilg,iccp2),&
+ &      soilcresveggat(ilg,iccp2)
+  !       litresveggat(ilg,iccp2,ignd),&
+  ! &      soilcresveggat(ilg,iccp2,ignd)
+ ! COMBAK PERLAY
 
 !   Methane related variables
    real  ch4WetSpecrow(nlat,nmos),         ch4WetSpecgat(ilg),&
@@ -725,13 +751,19 @@ subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,&
 
   do 103 l=1,iccp2
     do 103 k=1,nml
-      do m = 1,ignd
-        litrmassrow(ilmos(k),jlmos(k),l,m) = litrmassgat(k,l,m)
-        soilcmasrow(ilmos(k),jlmos(k),l,m) = soilcmasgat(k,l,m)
-        litresvegrow(ilmos(k),jlmos(k),l,m) = litresveggat(k,l,m)
-        soilcresvegrow(ilmos(k),jlmos(k),l,m)=soilcresveggat(k,l,m)
-        humiftrsvegrow(ilmos(k),jlmos(k),l,m) = humiftrsveggat(k,l,m)
-        
+      ! COMBAK PERLAY
+      litrmassrow(ilmos(k),jlmos(k),l) = litrmassgat(k,l)
+      soilcmasrow(ilmos(k),jlmos(k),l) = soilcmasgat(k,l)
+      litresvegrow(ilmos(k),jlmos(k),l) = litresveggat(k,l)
+      soilcresvegrow(ilmos(k),jlmos(k),l)=soilcresveggat(k,l)
+      humiftrsvegrow(ilmos(k),jlmos(k),l) = humiftrsveggat(k,l)
+      do m = 1,ignd        
+        ! litrmassrow(ilmos(k),jlmos(k),l,m) = litrmassgat(k,l,m)
+        ! soilcmasrow(ilmos(k),jlmos(k),l,m) = soilcmasgat(k,l,m)
+        ! litresvegrow(ilmos(k),jlmos(k),l,m) = litresveggat(k,l,m)
+        ! soilcresvegrow(ilmos(k),jlmos(k),l,m)=soilcresveggat(k,l,m)
+        ! humiftrsvegrow(ilmos(k),jlmos(k),l,m) = humiftrsveggat(k,l,m)
+      ! COMBAK PERLAY
         tracerSoilCMassrot(ilmos(k),jlmos(k),l,m) =tracerSoilCMassgat(k,l,m)
         tracerLitrMassrot(ilmos(k),jlmos(k),l,m) = tracerLitrMassgat(k,l,m)        
      end do          
@@ -960,9 +992,12 @@ subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,&
      &      pfcancmxgat(ilg,icc),     nfcancmxgat(ilg,icc),&
      &      stemmassgat(ilg,icc),     rootmassgat(ilg,icc),&
      &      pstemmassgat(ilg,icc),    pgleafmassgat(ilg,icc),  &
-     &      litrmassgat(ilg,iccp2,ignd),   gleafmasgat(ilg,icc),&
-     &      bleafmasgat(ilg,icc),     soilcmasgat(ilg,iccp2,ignd),&
-     &      ailcbgat(ilg,icc),        flhrlossgat(ilg,icc)
+     &      gleafmasgat(ilg,icc),     bleafmasgat(ilg,icc), &
+     &      ailcbgat(ilg,icc),        flhrlossgat(ilg,icc), &
+     !COMBAK PERLAY 
+            soilcmasgat(ilg,iccp2), litrmassgat(ilg,iccp2)
+            ! soilcmasgat(ilg,iccp2,ignd), litrmassgat(ilg,iccp2,ignd)
+     !COMBAK PERLAY 
 !
       integer  pandaysgat(ilg,icc),   lfstatusgat(ilg,icc),&
      &         colddaysgat(ilg,2)
@@ -1018,8 +1053,13 @@ subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,&
 !
       real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),&
      &     nbpveggat(ilg,iccp1),    hetroresveggat(ilg,iccp1),&
-     &      autoresveggat(ilg,icc),litresveggat(ilg,iccp2,ignd),&
-     &      soilcresveggat(ilg,iccp2,ignd) 
+     &      autoresveggat(ilg,icc), &
+     ! COMBAK PERLAY
+            litresveggat(ilg,iccp2),&
+     &      soilcresveggat(ilg,iccp2) 
+     !        litresveggat(ilg,iccp2,ignd),&
+     ! &      soilcresveggat(ilg,iccp2,ignd) 
+     ! COMBAK PERLAY
 !
       real  fcancmxrow(nlat,nmos,icc),   rmatcrow(nlat,nmos,ican,ignd),&
      &      zolncrow(nlat,nmos,ican),    paicrow(nlat,nmos,ican),&
@@ -1046,11 +1086,15 @@ subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,&
      &      tbaraccrow_m(nlat,nmos,ignd),&
      &      pfcancmxrow(nlat,nmos,icc),   nfcancmxrow(nlat,nmos,icc),&
      &      stemmassrow(nlat,nmos,icc),   rootmassrow(nlat,nmos,icc),&
-     &      pstemmassrow(nlat,nmos,icc),   pgleafmassrow(nlat,nmos,icc),&
-     &      litrmassrow(nlat,nmos,iccp2,ignd),&
+     &      pstemmassrow(nlat,nmos,icc),   pgleafmassrow(nlat,nmos,icc),&     
      &      gleafmasrow(nlat,nmos,icc),   bleafmasrow(nlat,nmos,icc),&
-     &      soilcmasrow(nlat,nmos,iccp2,ignd),&
-     &      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc)
+     &      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc),&
+     !COMBAK PERLAY 
+     &      soilcmasrow(nlat,nmos,iccp2),&
+     &      litrmassrow(nlat,nmos,iccp2)
+     ! &      soilcmasrow(nlat,nmos,iccp2,ignd),&
+     ! &      litrmassrow(nlat,nmos,iccp2,ignd)
+     !COMBAK PERLAY 
 !
       integer pandaysrow(nlat,nmos,icc),  lfstatusrow(nlat,nmos,icc),&
      &        colddaysrow(nlat,nmos,2)
@@ -1108,8 +1152,12 @@ subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,&
       real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),&
      &     nbpvegrow(nlat,nmos,iccp1), hetroresvegrow(nlat,nmos,iccp1),&
      &      autoresvegrow(nlat,nmos,icc),&
-     &      litresvegrow(nlat,nmos,iccp2,ignd),&
-     &      soilcresvegrow(nlat,nmos,iccp2,ignd)
+     ! COMBAK PERLAY
+     &      litresvegrow(nlat,nmos,iccp2),&
+     &      soilcresvegrow(nlat,nmos,iccp2)
+     ! &      litresvegrow(nlat,nmos,iccp2,ignd),&
+     ! &      soilcresvegrow(nlat,nmos,iccp2,ignd)
+     ! COMBAK PERLAY
      
 !   Methane related variables
         real slopefracrow(nlat,nmos,8),      slopefracgat(ilg,8),&
@@ -1298,15 +1346,24 @@ subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,&
           nbpveggat(k,l)   = nbpvegrow(ilmos(k),jlmos(k),l)
 102   continue
 
+      !COMBAK PERLAY
       do 103 l=1, iccp2
        do 103 k=1,nml
-        do m = 1, ignd
-         litrmassgat(k,l,m)=litrmassrow(ilmos(k),jlmos(k),l,m)
-         soilcmasgat(k,l,m)=soilcmasrow(ilmos(k),jlmos(k),l,m)
-         litresveggat(k,l,m)= litresvegrow(ilmos(k),jlmos(k),l,m)
-         soilcresveggat(k,l,m)= soilcresvegrow(ilmos(k),jlmos(k),l,m)
-        end do
+         litrmassgat(k,l)=litrmassrow(ilmos(k),jlmos(k),l)
+         soilcmasgat(k,l)=soilcmasrow(ilmos(k),jlmos(k),l)
+         litresveggat(k,l)= litresvegrow(ilmos(k),jlmos(k),l)
+         soilcresveggat(k,l)= soilcresvegrow(ilmos(k),jlmos(k),l)
 103   continue
+!       do 103 l=1, iccp2
+!        do 103 k=1,nml
+!         do m = 1, ignd
+!          litrmassgat(k,l,m)=litrmassrow(ilmos(k),jlmos(k),l,m)
+!          soilcmasgat(k,l,m)=soilcmasrow(ilmos(k),jlmos(k),l,m)
+!          litresveggat(k,l,m)= litresvegrow(ilmos(k),jlmos(k),l,m)
+!          soilcresveggat(k,l,m)= soilcresvegrow(ilmos(k),jlmos(k),l,m)
+!         end do
+! 103   continue
+      !COMBAK PERLAY
 !
       do 106 l=1,2     !2 pfts (ndl dcd & crops)
        do 106 k=1,nml

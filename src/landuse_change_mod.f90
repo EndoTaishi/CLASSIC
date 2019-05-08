@@ -247,8 +247,12 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
   real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
   real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
   real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
-  real soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
-  real litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
+  !COMBAK PERLAY
+  real soilcmas(nilg,iccp2) !<soil c mass in kg c/m2, for the 9 pfts + bare
+  real litrmass(nilg,iccp2) !<litter mass in kg c/m2, for the 9 pfts + bare
+  ! real soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
+  ! real litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
+  !COMBAK PERLAY
   real gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
   real gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
   real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
@@ -274,14 +278,21 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
   real grsumcom(nilg) !<grid sum of combustion carbon for all pfts that are chopped
   real grsumpap(nilg) !<grid sum of paper carbon for all pfts that are chopped
   real grsumfur(nilg) !<grid sum of furniture carbon for all pfts that are chopped
-  real grsumlit(nilg,ignd) !<grid sum of litter carbon for all pfts that are chopped
-  real grsumsoc(nilg,ignd) !<grid sum of soil c carbon for all pfts that are chopped
+  !COMBAK PERLAY
+  real grsumlit(nilg) !<grid sum of litter carbon for all pfts that are chopped
+  real grsumsoc(nilg) !<grid sum of soil c carbon for all pfts that are chopped
+  real grdenlit(nilg) !<grid averaged densities for litter carbon
+  real grdensoc(nilg) !<grid averaged densities for soil c carbon
+  ! real grsumlit(nilg,ignd) !<grid sum of litter carbon for all pfts that are chopped
+  ! real grsumsoc(nilg,ignd) !<grid sum of soil c carbon for all pfts that are chopped
+  ! real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
+  ! real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
+  !COMBAK PERLAY
   real pbarefra(nilg) !<initialize previous years's bare fraction to 1.0
   real grdencom(nilg) !<grid averaged densities for combustion carbon
   real grdenpap(nilg) !<grid averaged densities for paper carbon
   real grdenfur(nilg) !<grid averaged densities for furniture carbon
-  real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
-  real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
+  
   real totcmass(nilg) !<total c mass (live+dead)
   real totlmass(nilg) !<total c mass (live)
   real totdmas1(nilg) !<total c mass (dead) litter
@@ -425,8 +436,12 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
       pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
       pgavltms(i)=gavgltms(i)  ! temporary arrays
       pgavscms(i)=gavgscms(i)
-      pluclitpool(i) = litrmass(i,iccp2,1)  !LUC product pools are stored in first layer.
-      plucscpool(i) = soilcmas(i,iccp2,1) !LUC product pools are stored in first layer.
+      !COMBAK PERLAY
+      pluclitpool(i) = litrmass(i,iccp2)  !LUC product pools are stored in first layer.
+      plucscpool(i) = soilcmas(i,iccp2) !LUC product pools are stored in first layer.
+      ! pluclitpool(i) = litrmass(i,iccp2,1)  !LUC product pools are stored in first layer.
+      ! plucscpool(i) = soilcmas(i,iccp2,1) !LUC product pools are stored in first layer.      
+      !COMBAK PERLAY
 
       vgbiomas(i)=0.0
       gavgltms(i)=0.0
@@ -437,13 +452,19 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
                                ! pfts that are chopped
       grsumpap(i)=0.0          ! similarly for paper, 
       grsumfur(i)=0.0          ! furniture,
-      do k = 1,ignd
-          grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
-          grsumsoc(i,k)=0.0          ! soil c
-          grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
-          grdensoc(i,k)=0.0          ! soil c
-      end do
-
+      !COMBAK PERLAY
+      grsumlit(i)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
+      grsumsoc(i)=0.0          ! soil c
+      grdenlit(i)=0.0          ! grid averaged densities for litter, and
+      grdensoc(i)=0.0          ! soil c
+      ! do k = 1,ignd
+      !     grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
+      !     grsumsoc(i,k)=0.0          ! soil c
+      !     grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
+      !     grdensoc(i,k)=0.0          ! soil c
+      ! end do
+      !COMBAK PERLAY
+      
       grdencom(i)=0.0          ! grid averaged densities for combustion carbon,
       grdenpap(i)=0.0          ! paper,
       grdenfur(i)=0.0          ! furniture, 
@@ -568,12 +589,19 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
         else if(j.eq.iccp2) then !LUC product pools cover entire cell.
           term = 1.0
         endif
-        do 342 k = 1, ignd
+        !COMBAK PERLAY
         totdmas1(i)=totdmas1(i)+ &
-                   (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
+                   (term*litrmass(i,j)*grclarea(i)*km2tom2)
         totdmas2(i)=totdmas2(i)+ &
-                   (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
-342       continue
+                   (term*soilcmas(i,j)*grclarea(i)*km2tom2)
+!         do 342 k = 1, ignd
+!         totdmas1(i)=totdmas1(i)+ &
+!                    (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
+!         totdmas2(i)=totdmas2(i)+ &
+!                    (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
+! 342       continue
+      !COMBAK PERLAY
+      
 340   continue
 
       totcmass(i)=totlmass(i)+totdmas1(i)+totdmas2(i)
@@ -667,10 +695,14 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
             bleafmas(i,j)=bleafmas(i,j)*term
             stemmass(i,j)=stemmass(i,j)*term
             rootmass(i,j)=rootmass(i,j)*term
-            do 572 k = 1, ignd
-              litrmass(i,j,k)=litrmass(i,j,k)*term
-              soilcmas(i,j,k)=soilcmas(i,j,k)*term
-572         continue
+            !COMBAK PERLAY
+            litrmass(i,j)=litrmass(i,j)*term
+            soilcmas(i,j)=soilcmas(i,j)*term
+!             do 572 k = 1, ignd
+!               litrmass(i,j,k)=litrmass(i,j,k)*term
+!               soilcmas(i,j,k)=soilcmas(i,j,k)*term
+! 572         continue
+            !COMBAK PERLAY
           endif
 570   continue
 !>
@@ -679,10 +711,14 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 !>
         if(bareiord(i).eq.1)then
           term = pbarefra(i)/barefrac(i)
-          do 582 k = 1, ignd
-          litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
-          soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
-582       continue
+          !COMBAK PERLAY
+          litrmass(i,iccp1)=litrmass(i,iccp1)*term
+          soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
+!           do 582 k = 1, ignd
+!           litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
+!           soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
+! 582       continue
+          !COMBAK PERLAY
         endif
 !>
 !>if any of the pfts fractional coverage decreases, then we chop the
@@ -740,16 +776,27 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 !>off pft needs to be assimilated, and so does soil c from
 !>the chopped off fraction of the chopped pft
 !>
-              do 622 k = 1,ignd
-                incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
-                        *litrmass(i,m,k)*km2tom2
+            !COMBAK PERLAY
+            incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+                    *litrmass(i,m)*km2tom2
 
-                incrsolc=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
-                        *soilcmas(i,m,k)*km2tom2
+            incrsolc=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+                    *soilcmas(i,m)*km2tom2
 
-                grsumlit(i,k)=grsumlit(i,k)+incrlitr
-                grsumsoc(i,k)=grsumsoc(i,k)+incrsolc
-622           continue
+            grsumlit(i)=grsumlit(i)+incrlitr
+            grsumsoc(i)=grsumsoc(i)+incrsolc
+
+!               do 622 k = 1,ignd
+!                 incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+!                         *litrmass(i,m,k)*km2tom2
+! 
+!                 incrsolc=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+!                         *soilcmas(i,m,k)*km2tom2
+! 
+!                 grsumlit(i,k)=grsumlit(i,k)+incrlitr
+!                 grsumsoc(i,k)=grsumsoc(i,k)+incrsolc
+! 622           continue
+            !COMBAK PERLAY
             endif
 
 610     continue
@@ -759,16 +806,26 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 !! from the decreased fraction and add it to grsumlit & grsumsoc for
 !! putting in the LUC product pools
         if(bareiord(i).eq.-1)then
-          do 632 k = 1, ignd
+          !COMBAK PERLAY
           redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
-                    *litrmass(i,iccp1,k)*km2tom2
+                    *litrmass(i,iccp1)*km2tom2
 
           redubmas2=(pbarefra(i)-barefrac(i))*grclarea(i) &
-                    *soilcmas(i,iccp1,k)*km2tom2
+                    *soilcmas(i,iccp1)*km2tom2
 
-            grsumlit(i,k)=grsumlit(i,k)+redubmas1
-            grsumsoc(i,k)=grsumsoc(i,k)+redubmas2
-632       continue
+            grsumlit(i)=grsumlit(i)+redubmas1
+            grsumsoc(i)=grsumsoc(i)+redubmas2
+!           do 632 k = 1, ignd
+!           redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
+!                     *litrmass(i,iccp1,k)*km2tom2
+! 
+!           redubmas2=(pbarefra(i)-barefrac(i))*grclarea(i) &
+!                     *soilcmas(i,iccp1,k)*km2tom2
+! 
+!             grsumlit(i,k)=grsumlit(i,k)+redubmas1
+!             grsumsoc(i,k)=grsumsoc(i,k)+redubmas2
+! 632       continue
+        !COMBAK PERLAY
         endif
 
 !>calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) & grsumfur(i)
@@ -794,43 +851,67 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
         grdencom(i)=grsumcom(i)/(grclarea(i)*km2tom2)
         grdenpap(i)=grsumpap(i)/(grclarea(i)*km2tom2)
         grdenfur(i)=grsumfur(i)/(grclarea(i)*km2tom2)
-        do k = 1,ignd
-            grdenlit(i,k)=grsumlit(i,k)/(grclarea(i)*km2tom2)
-            grdensoc(i,k)=grsumsoc(i,k)/(grclarea(i)*km2tom2)
-        end do
+        !COMBAK PERLAY
+        grdenlit(i)=grsumlit(i)/(grclarea(i)*km2tom2)
+        grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
+        ! do k = 1,ignd
+        !     grdenlit(i,k)=grsumlit(i,k)/(grclarea(i)*km2tom2)
+        !     grdensoc(i,k)=grsumsoc(i,k)/(grclarea(i)*km2tom2)
+        ! end do
+        !COMBAK PERLAY
 
 !>      Now add the C to the gridcell's LUC pools of litter and soil C.
 !!      The fast decaying dead LUC C (paper) and slow (furniture) are kept in
 !!      the first 'soil' layer and iccp2 position. The litter and soil C
-!!      contributions are added to the normal litter and soil C pools below.        
-       litrmass(i,iccp2,1)=litrmass(i,iccp2,1)+grdenpap(i) 
-       soilcmas(i,iccp2,1)=soilcmas(i,iccp2,1)+grdenfur(i) 
+!!      contributions are added to the normal litter and soil C pools below.   
+       !COMBAK PERLAY
+       litrmass(i,iccp2)=litrmass(i,iccp2)+grdenpap(i) 
+       soilcmas(i,iccp2)=soilcmas(i,iccp2)+grdenfur(i) 
+       ! litrmass(i,iccp2,1)=litrmass(i,iccp2,1)+grdenpap(i) 
+       ! soilcmas(i,iccp2,1)=soilcmas(i,iccp2,1)+grdenfur(i) 
+       !COMBAK PERLAY
 
 
 !     Add any adjusted litter and soilc back their respective pools
 
       do 650 j = 1, icc
           if(fcancmx(i,j).gt.zero)then
-                litrmass(i,j,:)=litrmass(i,j,:)+grdenlit(i,:) 
-                soilcmas(i,j,:)=soilcmas(i,j,:)+grdensoc(i,:) 
+                !COMBAK PERLAY
+                litrmass(i,j)=litrmass(i,j)+grdenlit(i) 
+                soilcmas(i,j)=soilcmas(i,j)+grdensoc(i) 
+                ! litrmass(i,j,:)=litrmass(i,j,:)+grdenlit(i,:) 
+                ! soilcmas(i,j,:)=soilcmas(i,j,:)+grdensoc(i,:)                 
+                !COMBAK PERLAY
           else
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
             stemmass(i,j)=0.0
             rootmass(i,j)=0.0
-            litrmass(i,j,:)=0.0  ! set all soil layers to 0
-            soilcmas(i,j,:)=0.0
+            !COMBAK PERLAY
+            litrmass(i,j)=0.0  ! set all soil layers to 0
+            soilcmas(i,j)=0.0
+            ! litrmass(i,j,:)=0.0  ! set all soil layers to 0
+            ! soilcmas(i,j,:)=0.0
+            !COMBAK PERLAY
           endif
 650   continue
 
+        !COMBAK PERLAY
         if(barefrac(i).gt.zero)then
-            litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
-            soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
+            litrmass(i,iccp1)=litrmass(i,iccp1)+grdenlit(i) 
+            soilcmas(i,iccp1)=soilcmas(i,iccp1)+grdensoc(i) 
         else
-          litrmass(i,iccp1,:)=0.0 ! set all soil layers to 0
-          soilcmas(i,iccp1,:)=0.0
+          litrmass(i,iccp1)=0.0 ! set all soil layers to 0
+          soilcmas(i,iccp1)=0.0
         endif
-
+        ! if(barefrac(i).gt.zero)then
+        !     litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
+        !     soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
+        ! else
+        !   litrmass(i,iccp1,:)=0.0 ! set all soil layers to 0
+        !   soilcmas(i,iccp1,:)=0.0
+        ! endif
+        !COMBAK PERLAY
 
 !>the combusted c is used to find the c flux that we can release into the atmosphere.
 
@@ -860,12 +941,18 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
           else if(j.eq.iccp2) then !assumed to be over entire area for LUC product pools
             term = 1.0
           endif
-          do k = 1, ignd
+          !COMBAK PERLAY
           ntotdms1(i)=ntotdms1(i)+ &
-                     (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
+                     (term*litrmass(i,j)*grclarea(i)*km2tom2)
           ntotdms2(i)=ntotdms2(i)+ &
-                     (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
-          end do
+                     (term*soilcmas(i,j)*grclarea(i)*km2tom2)  
+          ! do k = 1, ignd
+          ! ntotdms1(i)=ntotdms1(i)+ &
+          !            (term*litrmass(i,j,k)*grclarea(i)*km2tom2)
+          ! ntotdms2(i)=ntotdms2(i)+ &
+          !            (term*soilcmas(i,j,k)*grclarea(i)*km2tom2)
+          ! end do
+          !COMBAK PERLAY
 710   continue
 
         ntotcmas(i)=ntotlmas(i)+ntotdms1(i)+ntotdms2(i)
@@ -899,25 +986,38 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
       do 750 j = 1, icc
           vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
                      bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          do k = 1, ignd
-            gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
-            gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
-          end do
+         !COMBAK PERLAY
+           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
+           gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)         
+          ! do k = 1, ignd
+          !   gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
+          !   gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+          ! end do
+          !COMBAK PERLAY
 750   continue
-
-        do k = 1,ignd
-            gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1,k) )
-            gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1,k) )
-        end do
-
+        !COMBAK PERLAY
+        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
+        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
+        ! do k = 1,ignd
+        !     gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1,k) )
+        !     gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1,k) )
+        ! end do
+        !COMBAK PERLAY
 !>
 !>just like total amount of carbon must balance, the grid averaged densities must also balance
 !>
-       if( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i)&
-              + pluclitpool(i) + plucscpool(i) &
-              - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
-              - litrmass(i,iccp2,1) - soilcmas(i,iccp2,1) &
-              - grdencom(i)) > tolrance ) then
+        !COMBAK PERLAY
+        if( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i)&
+               + pluclitpool(i) + plucscpool(i) &
+               - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
+               - litrmass(i,iccp2) - soilcmas(i,iccp2) &
+               - grdencom(i)) > tolrance ) then
+       ! if( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i)&
+       !        + pluclitpool(i) + plucscpool(i) &
+       !        - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
+       !        - litrmass(i,iccp2,1) - soilcmas(i,iccp2,1) &
+       !        - grdencom(i)) > tolrance ) then
+        !COMBAK PERLAY              
            write(6,*)'iday = ',iday
            write(6,*)'at grid cell = ',i
            write(6,*)'pbarefra(i) = ',pbarefra(i)

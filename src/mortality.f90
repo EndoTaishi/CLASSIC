@@ -213,7 +213,10 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, useTracer, & 
   real, intent(inout) :: glealtrm(:,:)   !<green leaf litter generated due to mortality \f$(kg C/m^2)\f$
   real, intent(inout) :: stemmass(:,:)   !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: rootmass(:,:)   !<root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
-  real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  !COMBAK PERLAY
+  real, intent(inout) :: litrmass(:,:) !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  ! real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  !COMBAK PERLAY
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: tracerStemMass(:,:)  !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -266,24 +269,29 @@ subroutine updatePoolsMortality(il1, il2, ilg, stemltrm, rootltrm, useTracer, & 
 
         end select
         
-        do 845 k = 1, ignd
-          if (k == 1) then
-            ! The first layer gets the leaf and stem litter. The root litter is given in proportion
-            ! to the root distribution
-            litrmass(i,m,k) = litrmass(i,m,k) + stemltrm(i,m) &
-                                              + rootltrm(i,m) * rmatctem(i,m,k) &
-                                              + glealtrm(i,m)
-                                              
-            if (useTracer > 0) tracerLitrMass(i,m,k) = tracerLitrMass(i,m,k) + tracerStemMort(i,m) &
-                                              + tracerRootMort(i,m) * rmatctem(i,m,k) &
-                                              + tracerGLeafMort(i,m)
-          else
-            litrmass(i,m,k) = litrmass(i,m,k) + rootltrm(i,m) * rmatctem(i,m,k)
-            
-            if (useTracer > 0) tracerLitrMass(i,m,k) = tracerLitrMass(i,m,k) + tracerRootMort(i,m) * rmatctem(i,m,k)
-            
-          end if
-845     continue
+        !COMBAK PERLAY
+        litrmass(i,m) = litrmass(i,m) + stemltrm(i,m) &
+                                          + rootltrm(i,m)  &
+                                          + glealtrm(i,m)
+!         do 845 k = 1, ignd
+!           if (k == 1) then
+!             ! The first layer gets the leaf and stem litter. The root litter is given in proportion
+!             ! to the root distribution
+!             litrmass(i,m,k) = litrmass(i,m,k) + stemltrm(i,m) &
+!                                               + rootltrm(i,m) * rmatctem(i,m,k) &
+!                                               + glealtrm(i,m)
+! 
+!             if (useTracer > 0) tracerLitrMass(i,m,k) = tracerLitrMass(i,m,k) + tracerStemMort(i,m) &
+!                                               + tracerRootMort(i,m) * rmatctem(i,m,k) &
+!                                               + tracerGLeafMort(i,m)
+!           else
+!             litrmass(i,m,k) = litrmass(i,m,k) + rootltrm(i,m) * rmatctem(i,m,k)
+! 
+!             if (useTracer > 0) tracerLitrMass(i,m,k) = tracerLitrMass(i,m,k) + tracerRootMort(i,m) * rmatctem(i,m,k)
+! 
+!           end if
+! 845     continue
+        !COMBAK PERLAY
 840   continue
 835 continue
 830 continue

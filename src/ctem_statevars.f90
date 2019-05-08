@@ -386,11 +386,18 @@ real, allocatable, dimension(:,:,:) :: nbpveg      !<net biome productity for ba
 real, allocatable, dimension(:,:,:) :: hetroresveg !<
 
 ! allocated with nlat,nmos,iccp2,ignd:
-    real, allocatable, dimension(:,:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:,:) :: litresveg   !<
-    real, allocatable, dimension(:,:,:,:) :: soilcresveg !<
-    real, allocatable, dimension(:,:,:,:) :: humiftrsveg !<
+! COMBAK PERLAY
+    real, allocatable, dimension(:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: litresveg   !<
+    real, allocatable, dimension(:,:,:) :: soilcresveg !<
+    real, allocatable, dimension(:,:,:) :: humiftrsveg !<
+    ! real, allocatable, dimension(:,:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    ! real, allocatable, dimension(:,:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    ! real, allocatable, dimension(:,:,:,:) :: litresveg   !<
+    ! real, allocatable, dimension(:,:,:,:) :: soilcresveg !<
+    ! real, allocatable, dimension(:,:,:,:) :: humiftrsveg !<
+! COMBAK PERLAY
 
 ! allocated with nlat,nmos,{some number}:
     integer, allocatable, dimension(:,:,:):: colddays          !<cold days counter for tracking days below a certain
@@ -460,8 +467,12 @@ type veg_gat
     real, allocatable, dimension(:,:) :: stmhrlos   !<stem harvest loss for crops, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: rmatc    !<fraction of roots for each of class' 4 pfts in each soil layer
     real, allocatable, dimension(:,:,:) :: rmatctem !<fraction of roots for each of ctem's 9 pfts in each soil layer
-    real, allocatable, dimension(:,:,:) :: litrmass   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
-    real, allocatable, dimension(:,:,:) :: soilcmas   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    !COMBAK PERLAY
+    real, allocatable, dimension(:,:) :: litrmass   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: soilcmas   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    ! real, allocatable, dimension(:,:,:) :: litrmass   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    ! real, allocatable, dimension(:,:,:) :: soilcmas   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    !COMBAK PERLAY
     real, allocatable, dimension(:,:) :: vgbiomas_veg !<vegetation biomass for each pft
 
     real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide (kg <species> $m^{-2}$$s^{-1}$)
@@ -581,14 +592,19 @@ type veg_gat
     real, allocatable, dimension(:,:) :: nppveg     !<npp for individual pfts, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: hetroresveg!<
     real, allocatable, dimension(:,:) :: autoresveg !<
-    real, allocatable, dimension(:,:,:) :: litresveg  !<
-    real, allocatable, dimension(:,:,:) :: soilcresveg!<
+    !COMBAK PERLAY
+    real, allocatable, dimension(:,:) :: litresveg  !<
+    real, allocatable, dimension(:,:) :: soilcresveg!<
+    real, allocatable, dimension(:,:) :: humiftrsveg!<
+    ! real, allocatable, dimension(:,:,:) :: litresveg  !<
+    ! real, allocatable, dimension(:,:,:) :: soilcresveg!<
+    ! real, allocatable, dimension(:,:,:) :: humiftrsveg!<
+    !COMBAK PERLAY
     real, allocatable, dimension(:,:) :: rmlvegacc  !<
     real, allocatable, dimension(:,:) :: rmsveg     !<stem maintenance resp. rate for each pft
     real, allocatable, dimension(:,:) :: rmrveg     !<root maintenance resp. rate for each pft
     real, allocatable, dimension(:,:) :: rgveg      !<growth resp. rate for each pft
-    real, allocatable, dimension(:,:) :: litrfallveg!<litter fall in \f$kg c/m^2\f$ for each pft
-    real, allocatable, dimension(:,:,:) :: humiftrsveg!<
+    real, allocatable, dimension(:,:) :: litrfallveg!<litter fall in \f$kg c/m^2\f$ for each pft    
     real, allocatable, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
 
     real, allocatable, dimension(:,:) :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
@@ -770,10 +786,16 @@ type ctem_monthly
       real, allocatable, dimension(:,:,:) :: mterm_mo     !<
       real, allocatable, dimension(:,:,:) :: smfuncveg_mo !<
 ! allocated with nlat,nmos,icc/iccp1/iccp2,ignd:
-      real, allocatable, dimension(:,:,:,:) :: litrmass_mo   !<
-      real, allocatable, dimension(:,:,:,:) :: soilcmas_mo   !<
-      real, allocatable, dimension(:,:,:,:) :: litres_mo     !<
-      real, allocatable, dimension(:,:,:,:) :: soilcres_mo   !<
+    !COMBAK PERLAY
+      real, allocatable, dimension(:,:,:) :: litrmass_mo   !<
+      real, allocatable, dimension(:,:,:) :: soilcmas_mo   !<
+      real, allocatable, dimension(:,:,:) :: litres_mo     !<
+      real, allocatable, dimension(:,:,:) :: soilcres_mo   !<
+      ! real, allocatable, dimension(:,:,:,:) :: litrmass_mo   !<
+      ! real, allocatable, dimension(:,:,:,:) :: soilcmas_mo   !<
+      ! real, allocatable, dimension(:,:,:,:) :: litres_mo     !<
+      ! real, allocatable, dimension(:,:,:,:) :: soilcres_mo   !<
+    !COMBAK PERLAY
 
 end type ctem_monthly
 
@@ -828,10 +850,16 @@ type ctem_gridavg_monthly
     real, allocatable, dimension(:) :: fProductDecomp_mo_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
 ! allocated with nlat,ignd:
-    real, allocatable, dimension(:,:) :: litrmass_mo_g !<
-    real, allocatable, dimension(:,:) :: soilcmas_mo_g !<
-    real, allocatable, dimension(:,:) :: litres_mo_g   !<
-    real, allocatable, dimension(:,:) :: soilcres_mo_g !<
+  !COMBAK PERLAY
+    real, allocatable, dimension(:) :: litrmass_mo_g !<
+    real, allocatable, dimension(:) :: soilcmas_mo_g !<
+    real, allocatable, dimension(:) :: litres_mo_g   !<
+    real, allocatable, dimension(:) :: soilcres_mo_g !<
+    ! real, allocatable, dimension(:,:) :: litrmass_mo_g !<
+    ! real, allocatable, dimension(:,:) :: soilcmas_mo_g !<
+    ! real, allocatable, dimension(:,:) :: litres_mo_g   !<
+    ! real, allocatable, dimension(:,:) :: soilcres_mo_g !<
+  !COMBAK PERLAY
 
 end type ctem_gridavg_monthly
 
@@ -887,10 +915,16 @@ type ctem_tileavg_monthly
       real, allocatable, dimension(:,:) :: fProductDecomp_mo_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
       ! allocated with nlat,nmos,ignd:
-      real, allocatable, dimension(:,:,:) :: litrmass_mo_t !<
-      real, allocatable, dimension(:,:,:) :: soilcmas_mo_t !<
-      real, allocatable, dimension(:,:,:) :: litres_mo_t   !<
-      real, allocatable, dimension(:,:,:) :: soilcres_mo_t !<
+      !COMBAK PERLAY
+      real, allocatable, dimension(:,:) :: litrmass_mo_t !<
+      real, allocatable, dimension(:,:) :: soilcmas_mo_t !<
+      real, allocatable, dimension(:,:) :: litres_mo_t   !<
+      real, allocatable, dimension(:,:) :: soilcres_mo_t !<
+      ! real, allocatable, dimension(:,:,:) :: litrmass_mo_t !<
+      ! real, allocatable, dimension(:,:,:) :: soilcmas_mo_t !<
+      ! real, allocatable, dimension(:,:,:) :: litres_mo_t   !<
+      ! real, allocatable, dimension(:,:,:) :: soilcres_mo_t !<      
+      !COMBAK PERLAY
 
 end type ctem_tileavg_monthly
 
@@ -936,11 +970,16 @@ type ctem_annual
       real, allocatable, dimension(:,:,:) :: veghght_yr   !<
 
       ! allocated with nlat,nmos,iccp2,ignd:
-      real, allocatable, dimension(:,:,:,:) :: litrmass_yr!<
-      real, allocatable, dimension(:,:,:,:) :: soilcmas_yr!<
-      real, allocatable, dimension(:,:,:,:) :: litres_yr  !<
-      real, allocatable, dimension(:,:,:,:) :: soilcres_yr!<
-      
+      !COMBAK PERLAY
+      real, allocatable, dimension(:,:,:) :: litrmass_yr!<
+      real, allocatable, dimension(:,:,:) :: soilcmas_yr!<
+      real, allocatable, dimension(:,:,:) :: litres_yr  !<
+      real, allocatable, dimension(:,:,:) :: soilcres_yr!<
+      ! real, allocatable, dimension(:,:,:,:) :: litrmass_yr!<
+      ! real, allocatable, dimension(:,:,:,:) :: soilcmas_yr!<
+      ! real, allocatable, dimension(:,:,:,:) :: litres_yr  !<
+      ! real, allocatable, dimension(:,:,:,:) :: soilcres_yr!<
+      !COMBAK PERLAY
 
 end type ctem_annual
 
@@ -995,10 +1034,16 @@ type ctem_gridavg_annual
     real, allocatable, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
 ! allocated with nlat,ignd:
-    real, allocatable, dimension(:,:) :: litrmass_yr_g !<
-    real, allocatable, dimension(:,:) :: soilcmas_yr_g !<
-    real, allocatable, dimension(:,:) :: litres_yr_g   !<
-    real, allocatable, dimension(:,:) :: soilcres_yr_g !<
+  !COMBAK PERLAY
+    real, allocatable, dimension(:) :: litrmass_yr_g !<
+    real, allocatable, dimension(:) :: soilcmas_yr_g !<
+    real, allocatable, dimension(:) :: litres_yr_g   !<
+    real, allocatable, dimension(:) :: soilcres_yr_g !<
+    ! real, allocatable, dimension(:,:) :: litrmass_yr_g !<
+    ! real, allocatable, dimension(:,:) :: soilcmas_yr_g !<
+    ! real, allocatable, dimension(:,:) :: litres_yr_g   !<
+    ! real, allocatable, dimension(:,:) :: soilcres_yr_g !<
+  !COMBAK PERLAY
 
 end type ctem_gridavg_annual
 
@@ -1052,10 +1097,16 @@ type ctem_tileavg_annual
       real, allocatable, dimension(:,:) :: fProductDecomp_yr_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$    
 
 ! allocated with nlat,nmos,ignd:
-      real, allocatable, dimension(:,:,:) :: litrmass_yr_t !<
-      real, allocatable, dimension(:,:,:) :: soilcmas_yr_t !<
-      real, allocatable, dimension(:,:,:) :: litres_yr_t   !<
-      real, allocatable, dimension(:,:,:) :: soilcres_yr_t !<
+    !COMBAK PERLAY
+      real, allocatable, dimension(:,:) :: litrmass_yr_t !<
+      real, allocatable, dimension(:,:) :: soilcmas_yr_t !<
+      real, allocatable, dimension(:,:) :: litres_yr_t   !<
+      real, allocatable, dimension(:,:) :: soilcres_yr_t !<
+      ! real, allocatable, dimension(:,:,:) :: litrmass_yr_t !<
+      ! real, allocatable, dimension(:,:,:) :: soilcmas_yr_t !<
+      ! real, allocatable, dimension(:,:,:) :: litres_yr_t   !<
+      ! real, allocatable, dimension(:,:,:) :: soilcres_yr_t !<
+    !COMBAK PERLAY
 
 end type ctem_tileavg_annual
 
@@ -1252,12 +1303,18 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%hetroresveg(nlat,nmos,iccp1),&
 
 ! allocated with nlat,nmos,iccp2,ignd:
-        vrot%litrmass(nlat,nmos,iccp2,ignd),&
-        vrot%soilcmas(nlat,nmos,iccp2,ignd),&
-        vrot%litresveg(nlat,nmos,iccp2,ignd),&
-        vrot%soilcresveg(nlat,nmos,iccp2,ignd),&
-        vrot%humiftrsveg(nlat,nmos,iccp2,ignd),&
-
+        !COMBAK PERLAY
+        vrot%litrmass(nlat,nmos,iccp2),&
+        vrot%soilcmas(nlat,nmos,iccp2),&
+        vrot%litresveg(nlat,nmos,iccp2),&
+        vrot%soilcresveg(nlat,nmos,iccp2),&
+        vrot%humiftrsveg(nlat,nmos,iccp2),&
+        ! vrot%litrmass(nlat,nmos,iccp2,ignd),&
+        ! vrot%soilcmas(nlat,nmos,iccp2,ignd),&
+        ! vrot%litresveg(nlat,nmos,iccp2,ignd),&
+        ! vrot%soilcresveg(nlat,nmos,iccp2,ignd),&
+        ! vrot%humiftrsveg(nlat,nmos,iccp2,ignd),&
+        !COMBAK PERLAY
         tracer%litrMassrot(nlat,nmos,iccp2,ignd),&
         tracer%soilCMassrot(nlat,nmos,iccp2,ignd),&
     
@@ -1484,11 +1541,18 @@ allocate(vgat%grclarea(ilg),&
          vgat%hetroresveg (ilg,iccp1),&
 
 ! allocated with ilg, iccp2,ignd:
-        vgat%litrmass (ilg,iccp2,ignd),&
-        vgat%soilcmas (ilg,iccp2,ignd),&
-        vgat%litresveg (ilg,iccp2,ignd),&
-        vgat%soilcresveg (ilg,iccp2,ignd),&
-        vgat%humiftrsveg (ilg,iccp2,ignd),& 
+        !COMBAK PERLAY
+        vgat%litrmass (ilg,iccp2),&
+        vgat%soilcmas (ilg,iccp2),&
+        vgat%litresveg (ilg,iccp2),&
+        vgat%soilcresveg (ilg,iccp2),&
+        vgat%humiftrsveg (ilg,iccp2),& 
+        ! vgat%litrmass (ilg,iccp2,ignd),&
+        ! vgat%soilcmas (ilg,iccp2,ignd),&
+        ! vgat%litresveg (ilg,iccp2,ignd),&
+        ! vgat%soilcresveg (ilg,iccp2,ignd),&
+        ! vgat%humiftrsveg (ilg,iccp2,ignd),& 
+        !COMBAK PERLAY
         tracer%litrMassgat(ilg,iccp2,ignd),&
         tracer%soilCMassgat(ilg,iccp2,ignd),&
 
@@ -1535,10 +1599,16 @@ allocate(vgat%grclarea(ilg),&
          ctem_mo%autores_mo (nlat,nmos,icc),&
          ctem_mo%humiftrsveg_mo (nlat,nmos,iccp2),&
          ctem_mo%totcmass_mo (nlat,nmos,iccp1),&
-         ctem_mo%litrmass_mo (nlat,nmos,iccp2,ignd),&
-         ctem_mo%soilcmas_mo (nlat,nmos,iccp2,ignd),&
-         ctem_mo%litres_mo (nlat,nmos,iccp2,ignd),&
-         ctem_mo%soilcres_mo (nlat,nmos,iccp2,ignd),&
+         !COMBAK PERLAY
+         ctem_mo%litrmass_mo (nlat,nmos,iccp2),&
+         ctem_mo%soilcmas_mo (nlat,nmos,iccp2),&
+         ctem_mo%litres_mo (nlat,nmos,iccp2),&
+         ctem_mo%soilcres_mo (nlat,nmos,iccp2),&
+         ! ctem_mo%litrmass_mo (nlat,nmos,iccp2,ignd),&
+         ! ctem_mo%soilcmas_mo (nlat,nmos,iccp2,ignd),&
+         ! ctem_mo%litres_mo (nlat,nmos,iccp2,ignd),&
+         ! ctem_mo%soilcres_mo (nlat,nmos,iccp2,ignd),&
+         !COMBAK PERLAY
          ctem_mo%nep_mo (nlat,nmos,iccp1),&
          ctem_mo%hetrores_mo (nlat,nmos,iccp1),&
          ctem_mo%nbp_mo (nlat,nmos,iccp1),&
@@ -1562,8 +1632,16 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_mo%laimaxg_mo_g (nlat),&
          ctem_grd_mo%stemmass_mo_g (nlat),&
          ctem_grd_mo%rootmass_mo_g (nlat),&
-         ctem_grd_mo%litrmass_mo_g (nlat,ignd),&
-         ctem_grd_mo%soilcmas_mo_g (nlat,ignd),&
+         !COMBAK PERLAY
+         ctem_grd_mo%litrmass_mo_g (nlat),&
+         ctem_grd_mo%soilcmas_mo_g (nlat),&
+         ctem_grd_mo%litres_mo_g (nlat),&
+         ctem_grd_mo%soilcres_mo_g (nlat),&
+         ! ctem_grd_mo%litrmass_mo_g (nlat,ignd),&
+         ! ctem_grd_mo%soilcmas_mo_g (nlat,ignd),&
+         ! ctem_grd_mo%litres_mo_g (nlat,ignd),&
+         ! ctem_grd_mo%soilcres_mo_g (nlat,ignd),&
+         !COMBAK PERLAY
          ctem_grd_mo%litrfall_mo_g (nlat),&
          ctem_grd_mo%humiftrs_mo_g (nlat),&
          ctem_grd_mo%npp_mo_g (nlat),&
@@ -1572,8 +1650,6 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_mo%nbp_mo_g (nlat),&
          ctem_grd_mo%hetrores_mo_g (nlat),&
          ctem_grd_mo%autores_mo_g (nlat),&
-         ctem_grd_mo%litres_mo_g (nlat,ignd),&
-         ctem_grd_mo%soilcres_mo_g (nlat,ignd),&
          ctem_grd_mo%vgbiomas_mo_g (nlat),&
          ctem_grd_mo%totcmass_mo_g (nlat),&
          ctem_grd_mo%emit_co2_mo_g (nlat),&
@@ -1614,11 +1690,17 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_mo%vgbiomas_mo_t (nlat,nmos),&
          ctem_tile_mo%autores_mo_t (nlat,nmos),&
          ctem_tile_mo%totcmass_mo_t (nlat,nmos),&
-         ctem_tile_mo%litrmass_mo_t (nlat,nmos,ignd),&
-         ctem_tile_mo%soilcmas_mo_t (nlat,nmos,ignd),&
+         !COMBAK PERLAY
+         ctem_tile_mo%litrmass_mo_t (nlat,nmos),&
+         ctem_tile_mo%soilcmas_mo_t (nlat,nmos),&
+         ctem_tile_mo%litres_mo_t (nlat,nmos),&
+         ctem_tile_mo%soilcres_mo_t (nlat,nmos),&
+         ! ctem_tile_mo%litrmass_mo_t (nlat,nmos,ignd),&
+         ! ctem_tile_mo%soilcmas_mo_t (nlat,nmos,ignd),&
+         ! ctem_tile_mo%litres_mo_t (nlat,nmos,ignd),&
+         ! ctem_tile_mo%soilcres_mo_t (nlat,nmos,ignd),&
+         !COMBAK PERLAY
          ctem_tile_mo%nep_mo_t (nlat,nmos),&
-         ctem_tile_mo%litres_mo_t (nlat,nmos,ignd),&
-         ctem_tile_mo%soilcres_mo_t (nlat,nmos,ignd),&
          ctem_tile_mo%hetrores_mo_t (nlat,nmos),&
          ctem_tile_mo%nbp_mo_t (nlat,nmos),&
          ctem_tile_mo%emit_co2_mo_t (nlat,nmos),&
@@ -1657,11 +1739,17 @@ allocate(vgat%grclarea(ilg),&
          ctem_yr%vgbiomas_yr (nlat,nmos,icc),&
          ctem_yr%autores_yr (nlat,nmos,icc),&
          ctem_yr%totcmass_yr (nlat,nmos,iccp1),&
-         ctem_yr%litrmass_yr (nlat,nmos,iccp2,ignd),&
-         ctem_yr%soilcmas_yr (nlat,nmos,iccp2,ignd),&
+         !COMBAK PERLAY
+         ctem_yr%litrmass_yr (nlat,nmos,iccp2),&
+         ctem_yr%soilcmas_yr (nlat,nmos,iccp2),&
+         ctem_yr%litres_yr (nlat,nmos,iccp2),&
+         ctem_yr%soilcres_yr (nlat,nmos,iccp2),&
+         ! ctem_yr%litrmass_yr (nlat,nmos,iccp2,ignd),&
+         ! ctem_yr%soilcmas_yr (nlat,nmos,iccp2,ignd),&
+         ! ctem_yr%litres_yr (nlat,nmos,iccp2,ignd),&
+         ! ctem_yr%soilcres_yr (nlat,nmos,iccp2,ignd),&         
+         !COMBAK PERLAY
          ctem_yr%nep_yr (nlat,nmos,iccp1),&
-         ctem_yr%litres_yr (nlat,nmos,iccp2,ignd),&
-         ctem_yr%soilcres_yr (nlat,nmos,iccp2,ignd),&
          ctem_yr%hetrores_yr (nlat,nmos,iccp1),&
          ctem_yr%nbp_yr (nlat,nmos,iccp1),&
          ctem_yr%emit_co2_yr (nlat,nmos,icc),&
@@ -1685,16 +1773,22 @@ allocate(vgat%grclarea(ilg),&
          ctem_grd_yr%laimaxg_yr_g (nlat),&
          ctem_grd_yr%stemmass_yr_g (nlat),&
          ctem_grd_yr%rootmass_yr_g (nlat),&
-         ctem_grd_yr%litrmass_yr_g (nlat,ignd),&
-         ctem_grd_yr%soilcmas_yr_g (nlat,ignd),&
+         !COMBAK PERLAY
+         ctem_grd_yr%litrmass_yr_g (nlat),&
+         ctem_grd_yr%soilcmas_yr_g (nlat),&
+         ctem_grd_yr%litres_yr_g (nlat),&
+         ctem_grd_yr%soilcres_yr_g (nlat),&
+         ! ctem_grd_yr%litrmass_yr_g (nlat,ignd),&
+         ! ctem_grd_yr%soilcmas_yr_g (nlat,ignd),&
+         ! ctem_grd_yr%litres_yr_g (nlat,ignd),&
+         ! ctem_grd_yr%soilcres_yr_g (nlat,ignd),&
+         !COMBAK PERLAY
          ctem_grd_yr%npp_yr_g (nlat),&
          ctem_grd_yr%gpp_yr_g (nlat),&
          ctem_grd_yr%nep_yr_g (nlat),&
          ctem_grd_yr%nbp_yr_g (nlat),&
          ctem_grd_yr%hetrores_yr_g (nlat),&
          ctem_grd_yr%autores_yr_g (nlat),&
-         ctem_grd_yr%litres_yr_g (nlat,ignd),&
-         ctem_grd_yr%soilcres_yr_g (nlat,ignd),&
          ctem_grd_yr%vgbiomas_yr_g (nlat),&
          ctem_grd_yr%totcmass_yr_g (nlat),&
          ctem_grd_yr%emit_co2_yr_g (nlat),&
@@ -1734,11 +1828,17 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_yr%vgbiomas_yr_t (nlat,nmos),&
          ctem_tile_yr%autores_yr_t (nlat,nmos),&
          ctem_tile_yr%totcmass_yr_t (nlat,nmos),&
-         ctem_tile_yr%litrmass_yr_t (nlat,nmos,ignd),&
-         ctem_tile_yr%soilcmas_yr_t (nlat,nmos,ignd),&
+         !COMBAK PERLAY
+         ctem_tile_yr%litrmass_yr_t (nlat,nmos),&
+         ctem_tile_yr%soilcmas_yr_t (nlat,nmos),&
+         ctem_tile_yr%litres_yr_t (nlat,nmos),&
+         ctem_tile_yr%soilcres_yr_t (nlat,nmos),&
+         ! ctem_tile_yr%litrmass_yr_t (nlat,nmos,ignd),&
+         ! ctem_tile_yr%soilcmas_yr_t (nlat,nmos,ignd),&
+         ! ctem_tile_yr%litres_yr_t (nlat,nmos,ignd),&
+         ! ctem_tile_yr%soilcres_yr_t (nlat,nmos,ignd),&
+         !COMBAK PERLAY
          ctem_tile_yr%nep_yr_t (nlat,nmos),&
-         ctem_tile_yr%litres_yr_t (nlat,nmos,ignd),&
-         ctem_tile_yr%soilcres_yr_t (nlat,nmos,ignd),&
          ctem_tile_yr%hetrores_yr_t (nlat,nmos),&
          ctem_tile_yr%nbp_yr_t (nlat,nmos),&
          ctem_tile_yr%emit_co2_yr_t (nlat,nmos),&
@@ -1935,31 +2035,48 @@ integer :: i,m,j
 do i=1,nltest
     ctem_grd_mo%stemmass_mo_g(i)=0.0
     ctem_grd_mo%rootmass_mo_g(i)=0.0
-    ctem_grd_mo%litrmass_mo_g(i,1:ignd)=0.0
-    ctem_grd_mo%soilcmas_mo_g(i,1:ignd)=0.0
+    !COMBAK PERLAY
+    ctem_grd_mo%litrmass_mo_g(i)=0.0
+    ctem_grd_mo%soilcmas_mo_g(i)=0.0
+    ! ctem_grd_mo%litrmass_mo_g(i,1:ignd)=0.0
+    ! ctem_grd_mo%soilcmas_mo_g(i,1:ignd)=0.0
+    !COMBAK PERLAY
     ctem_grd_mo%vgbiomas_mo_g(i)=0.0
     ctem_grd_mo%totcmass_mo_g(i)=0.0
   do m = 1, nmtest
         ctem_tile_mo%stemmass_mo_t(i,m)=0.0
         ctem_tile_mo%rootmass_mo_t(i,m)=0.0
-        ctem_tile_mo%litrmass_mo_t(i,m,1:ignd)=0.0
-        ctem_tile_mo%soilcmas_mo_t(i,m,1:ignd)=0.0
+        !COMBAK PERLAY
+        ctem_tile_mo%litrmass_mo_t(i,m)=0.0
+        ctem_tile_mo%soilcmas_mo_t(i,m)=0.0
+        ! ctem_tile_mo%litrmass_mo_t(i,m,1:ignd)=0.0
+        ! ctem_tile_mo%soilcmas_mo_t(i,m,1:ignd)=0.0
+        !COMBAK PERLAY
         ctem_tile_mo%vgbiomas_mo_t(i,m)=0.0
         ctem_tile_mo%totcmass_mo_t(i,m)=0.0
         do j = 1,icc
             ctem_mo%stemmass_mo(i,m,j)=0.0
             ctem_mo%rootmass_mo(i,m,j)=0.0
-            ctem_mo%litrmass_mo(i,m,j,1:ignd)=0.0
-            ctem_mo%soilcmas_mo(i,m,j,1:ignd)=0.0
+            !COMBAK PERLAY
+            ctem_mo%litrmass_mo(i,m,j)=0.0
+            ctem_mo%soilcmas_mo(i,m,j)=0.0
+            ! ctem_mo%litrmass_mo(i,m,j,1:ignd)=0.0
+            ! ctem_mo%soilcmas_mo(i,m,j,1:ignd)=0.0
+            !COMBAK PERLAY
             ctem_mo%vgbiomas_mo(i,m,j)=0.0
             ctem_mo%totcmass_mo(i,m,j)=0.0
         end do
         ctem_mo%totcmass_mo(i,m,iccp1)=0.0
-        ctem_mo%litrmass_mo(i,m,iccp1,1:ignd)=0.0
-        ctem_mo%soilcmas_mo(i,m,iccp1,1:ignd)=0.0
-
-        ctem_mo%litrmass_mo(i,m,iccp2,1:ignd)=0.0
-        ctem_mo%soilcmas_mo(i,m,iccp2,1:ignd)=0.0
+        !COMBAK PERLAY
+        ctem_mo%litrmass_mo(i,m,iccp1)=0.0
+        ctem_mo%soilcmas_mo(i,m,iccp1)=0.0
+        ctem_mo%litrmass_mo(i,m,iccp2)=0.0
+        ctem_mo%soilcmas_mo(i,m,iccp2)=0.0
+        ! ctem_mo%litrmass_mo(i,m,iccp1,1:ignd)=0.0
+        ! ctem_mo%soilcmas_mo(i,m,iccp1,1:ignd)=0.0
+        ! ctem_mo%litrmass_mo(i,m,iccp2,1:ignd)=0.0
+        ! ctem_mo%soilcmas_mo(i,m,iccp2,1:ignd)=0.0
+        !COMBAK PERLAY
   end do
 end do
 
@@ -1973,8 +2090,12 @@ do i=1,nltest
     ctem_grd_mo%nbp_mo_g(i)=0.0
     ctem_grd_mo%hetrores_mo_g(i)=0.0
     ctem_grd_mo%autores_mo_g(i)=0.0
-    ctem_grd_mo%litres_mo_g(i,1:ignd)=0.0
-    ctem_grd_mo%soilcres_mo_g(i,1:ignd)=0.0
+    !COMBAK PERLAY
+    ctem_grd_mo%litres_mo_g(i)=0.0
+    ctem_grd_mo%soilcres_mo_g(i)=0.0
+    ! ctem_grd_mo%litres_mo_g(i,1:ignd)=0.0
+    ! ctem_grd_mo%soilcres_mo_g(i,1:ignd)=0.0
+    !COMBAK PERLAY
     ctem_grd_mo%litrfall_mo_g(i)=0.0
     ctem_grd_mo%humiftrs_mo_g(i)=0.0
     ctem_grd_mo%emit_co2_mo_g(i)=0.0
@@ -2014,8 +2135,12 @@ do i=1,nltest
         ctem_tile_mo%nbp_mo_t(i,m)=0.0
         ctem_tile_mo%hetrores_mo_t(i,m)=0.0
         ctem_tile_mo%autores_mo_t(i,m)=0.0
-        ctem_tile_mo%litres_mo_t(i,m,1:ignd)=0.0
-        ctem_tile_mo%soilcres_mo_t(i,m,1:ignd)=0.0
+        !COMBAK PERLAY
+        ctem_tile_mo%litres_mo_t(i,m)=0.0
+        ctem_tile_mo%soilcres_mo_t(i,m)=0.0
+        ! ctem_tile_mo%litres_mo_t(i,m,1:ignd)=0.0
+        ! ctem_tile_mo%soilcres_mo_t(i,m,1:ignd)=0.0        
+        !COMBAK PERLAY
         ctem_tile_mo%litrfall_mo_t(i,m)=0.0
         ctem_tile_mo%humiftrs_mo_t(i,m)=0.0
         ctem_tile_mo%emit_co2_mo_t(i,m)=0.0
@@ -2055,8 +2180,12 @@ do i=1,nltest
             ctem_mo%nbp_mo(i,m,j)=0.0
             ctem_mo%hetrores_mo(i,m,j)=0.0
             ctem_mo%autores_mo(i,m,j)=0.0
-            ctem_mo%litres_mo(i,m,j,1:ignd)=0.0
-            ctem_mo%soilcres_mo(i,m,j,1:ignd)=0.0
+            !COMBAK PERLAY
+            ctem_mo%litres_mo(i,m,j)=0.0
+            ctem_mo%soilcres_mo(i,m,j)=0.0
+            ! ctem_mo%litres_mo(i,m,j,1:ignd)=0.0
+            ! ctem_mo%soilcres_mo(i,m,j,1:ignd)=0.0            
+            !COMBAK PERLAY
             ctem_mo%litrfallveg_mo(i,m,j)=0.0
             ctem_mo%humiftrsveg_mo(i,m,j)=0.0
             ctem_mo%emit_co2_mo(i,m,j)=0.0
@@ -2080,13 +2209,23 @@ do i=1,nltest
         ctem_mo%nep_mo(i,m,iccp1)=0.0
         ctem_mo%nbp_mo(i,m,iccp1)=0.0
         ctem_mo%hetrores_mo(i,m,iccp1)=0.0
-        ctem_mo%litres_mo(i,m,iccp1,1:ignd)=0.0
-        ctem_mo%soilcres_mo(i,m,iccp1,1:ignd)=0.0
         ctem_mo%humiftrsveg_mo(i,m,iccp1)=0.0
-
-        ctem_mo%litres_mo(i,m,iccp2,1:ignd)=0.0
-        ctem_mo%soilcres_mo(i,m,iccp2,1:ignd)=0.0
         ctem_mo%humiftrsveg_mo(i,m,iccp2)=0.0
+
+        !COMBAK PERLAY
+        ctem_mo%litres_mo(i,m,iccp1)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp1)=0.0
+
+        ctem_mo%litres_mo(i,m,iccp2)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp2)=0.0
+        ! ctem_mo%litres_mo(i,m,iccp1,1:ignd)=0.0
+        ! ctem_mo%soilcres_mo(i,m,iccp1,1:ignd)=0.0
+        ! ctem_mo%humiftrsveg_mo(i,m,iccp1)=0.0
+        ! 
+        ! ctem_mo%litres_mo(i,m,iccp2,1:ignd)=0.0
+        ! ctem_mo%soilcres_mo(i,m,iccp2,1:ignd)=0.0
+        ! ctem_mo%humiftrsveg_mo(i,m,iccp2)=0.0        
+        !COMBAK PERLAY
 
     end do !nmtest
 end do ! nltest
@@ -2115,8 +2254,16 @@ do i=1,nltest
     ctem_grd_yr%laimaxg_yr_g(i)=0.0
     ctem_grd_yr%stemmass_yr_g(i)=0.0
     ctem_grd_yr%rootmass_yr_g(i)=0.0
-    ctem_grd_yr%litrmass_yr_g(i,1:ignd)=0.0
-    ctem_grd_yr%soilcmas_yr_g(i,1:ignd)=0.0
+    !COMBAK PERLAY
+    ctem_grd_yr%litrmass_yr_g(i)=0.0
+    ctem_grd_yr%soilcmas_yr_g(i)=0.0
+    ctem_grd_yr%litres_yr_g(i)=0.0
+    ctem_grd_yr%soilcres_yr_g(i)=0.0
+    ! ctem_grd_yr%litrmass_yr_g(i,1:ignd)=0.0
+    ! ctem_grd_yr%soilcmas_yr_g(i,1:ignd)=0.0
+    ! ctem_grd_yr%litres_yr_g(i,1:ignd)=0.0
+    ! ctem_grd_yr%soilcres_yr_g(i,1:ignd)=0.0
+    !COMBAK PERLAY
     ctem_grd_yr%vgbiomas_yr_g(i)=0.0
     ctem_grd_yr%totcmass_yr_g(i)=0.0
     ctem_grd_yr%veghght_yr_g(i)=0.0
@@ -2126,8 +2273,6 @@ do i=1,nltest
     ctem_grd_yr%nbp_yr_g(i)=0.0
     ctem_grd_yr%hetrores_yr_g(i)=0.0
     ctem_grd_yr%autores_yr_g(i)=0.0
-    ctem_grd_yr%litres_yr_g(i,1:ignd)=0.0
-    ctem_grd_yr%soilcres_yr_g(i,1:ignd)=0.0
     ctem_grd_yr%emit_co2_yr_g(i)=0.0
     ctem_grd_yr%emit_co_yr_g(i)=0.0
     ctem_grd_yr%emit_ch4_yr_g(i)=0.0
@@ -2161,8 +2306,16 @@ do i=1,nltest
         ctem_tile_yr%laimaxg_yr_t(i,m)=0.0
         ctem_tile_yr%stemmass_yr_t(i,m)=0.0
         ctem_tile_yr%rootmass_yr_t(i,m)=0.0
-        ctem_tile_yr%litrmass_yr_t(i,m,1:ignd)=0.0
-        ctem_tile_yr%soilcmas_yr_t(i,m,1:ignd)=0.0
+        !COMBAK PERLAY
+        ctem_tile_yr%litrmass_yr_t(i,m)=0.0
+        ctem_tile_yr%soilcmas_yr_t(i,m)=0.0
+        ctem_tile_yr%litres_yr_t(i,m)=0.0
+        ctem_tile_yr%soilcres_yr_t(i,m)=0.0
+        ! ctem_tile_yr%litrmass_yr_t(i,m,1:ignd)=0.0
+        ! ctem_tile_yr%soilcmas_yr_t(i,m,1:ignd)=0.0
+        ! ctem_tile_yr%litres_yr_t(i,m,1:ignd)=0.0
+        ! ctem_tile_yr%soilcres_yr_t(i,m,1:ignd)=0.0
+        !COMBAK PERLAY
         ctem_tile_yr%vgbiomas_yr_t(i,m)=0.0
         ctem_tile_yr%totcmass_yr_t(i,m)=0.0
         ctem_tile_yr%veghght_yr_t(i,m)=0.0
@@ -2172,8 +2325,6 @@ do i=1,nltest
         ctem_tile_yr%nbp_yr_t(i,m)=0.0
         ctem_tile_yr%hetrores_yr_t(i,m)=0.0
         ctem_tile_yr%autores_yr_t(i,m)=0.0
-        ctem_tile_yr%litres_yr_t(i,m,1:ignd)=0.0
-        ctem_tile_yr%soilcres_yr_t(i,m,1:ignd)=0.0
         ctem_tile_yr%emit_co2_yr_t(i,m)=0.0
         ctem_tile_yr%emit_co_yr_t(i,m)=0.0
         ctem_tile_yr%emit_ch4_yr_t(i,m)=0.0
@@ -2206,8 +2357,16 @@ do i=1,nltest
             ctem_yr%laimaxg_yr(i,m,j)=0.0
             ctem_yr%stemmass_yr(i,m,j)=0.0
             ctem_yr%rootmass_yr(i,m,j)=0.0
-            ctem_yr%litrmass_yr(i,m,j,1:ignd)=0.0
-            ctem_yr%soilcmas_yr(i,m,j,1:ignd)=0.0
+            !COMBAK PERLAY
+            ctem_yr%litrmass_yr(i,m,j)=0.0
+            ctem_yr%soilcmas_yr(i,m,j)=0.0
+            ctem_yr%litres_yr(i,m,j)=0.0
+            ctem_yr%soilcres_yr(i,m,j)=0.0
+            ! ctem_yr%litrmass_yr(i,m,j,1:ignd)=0.0
+            ! ctem_yr%soilcmas_yr(i,m,j,1:ignd)=0.0
+            ! ctem_yr%litres_yr(i,m,j,1:ignd)=0.0
+            ! ctem_yr%soilcres_yr(i,m,j,1:ignd)=0.0
+            !COMBAK PERLAY
             ctem_yr%vgbiomas_yr(i,m,j)=0.0
             ctem_yr%totcmass_yr(i,m,j)=0.0
             ctem_yr%veghght_yr(i,m,j)=0.0
@@ -2217,8 +2376,6 @@ do i=1,nltest
             ctem_yr%nbp_yr(i,m,j)=0.0
             ctem_yr%hetrores_yr(i,m,j)=0.0
             ctem_yr%autores_yr(i,m,j)=0.0
-            ctem_yr%litres_yr(i,m,j,1:ignd)=0.0
-            ctem_yr%soilcres_yr(i,m,j,1:ignd)=0.0
             ctem_yr%emit_co2_yr(i,m,j)=0.0
             ctem_yr%emit_co_yr(i,m,j)=0.0
             ctem_yr%emit_ch4_yr(i,m,j)=0.0
@@ -2238,18 +2395,30 @@ do i=1,nltest
         end do
 
         ctem_yr%hetrores_yr(i,m,iccp1)=0.0
-        ctem_yr%litres_yr(i,m,iccp1,1:ignd)=0.0
-        ctem_yr%soilcres_yr(i,m,iccp1,1:ignd)=0.0
         ctem_yr%nep_yr(i,m,iccp1)=0.0
         ctem_yr%nbp_yr(i,m,iccp1)=0.0        
-        ctem_yr%litrmass_yr(i,m,iccp1,1:ignd)=0.0
-        ctem_yr%soilcmas_yr(i,m,iccp1,1:ignd)=0.0
         ctem_yr%totcmass_yr(i,m,iccp1)=0.0
-
-        ctem_yr%litrmass_yr(i,m,iccp2,1:ignd)=0.0
-        ctem_yr%soilcmas_yr(i,m,iccp2,1:ignd)=0.0
-        ctem_yr%litres_yr(i,m,iccp2,1:ignd)=0.0
-        ctem_yr%soilcres_yr(i,m,iccp2,1:ignd)=0.0
+        
+        !COMBAK PERLAY
+        ctem_yr%litres_yr(i,m,iccp1)=0.0
+        ctem_yr%soilcres_yr(i,m,iccp1)=0.0
+        ctem_yr%litrmass_yr(i,m,iccp1)=0.0
+        ctem_yr%soilcmas_yr(i,m,iccp1)=0.0
+        
+        ctem_yr%litrmass_yr(i,m,iccp2)=0.0
+        ctem_yr%soilcmas_yr(i,m,iccp2)=0.0
+        ctem_yr%litres_yr(i,m,iccp2)=0.0
+        ctem_yr%soilcres_yr(i,m,iccp2)=0.0
+        ! ctem_yr%litres_yr(i,m,iccp1,1:ignd)=0.0
+        ! ctem_yr%soilcres_yr(i,m,iccp1,1:ignd)=0.0
+        ! ctem_yr%litrmass_yr(i,m,iccp1,1:ignd)=0.0
+        ! ctem_yr%soilcmas_yr(i,m,iccp1,1:ignd)=0.0
+        ! 
+        ! ctem_yr%litrmass_yr(i,m,iccp2,1:ignd)=0.0
+        ! ctem_yr%soilcmas_yr(i,m,iccp2,1:ignd)=0.0
+        ! ctem_yr%litres_yr(i,m,iccp2,1:ignd)=0.0
+        ! ctem_yr%soilcres_yr(i,m,iccp2,1:ignd)=0.0
+        !COMBAK PERLAY
 
     end do !nmtest
 end do ! nltest

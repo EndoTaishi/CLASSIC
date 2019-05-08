@@ -210,7 +210,10 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tr
   real, intent(inout) :: gleafmas(:,:)   !<green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: bleafmas(:,:)   !<brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
   real, intent(inout) :: stemmass(:,:)   !<stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
-  real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+  !COMBAK PERLAY
+  real, intent(inout) :: litrmass(:,:) !<litter mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+  ! real, intent(inout) :: litrmass(:,:,:) !<litter mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+  !COMBAK PERLAY
   real, intent(inout) :: leaflitr(:,:)   !<leaf litter \f$(kg C/m^2)\f$
   real, intent(inout) :: rootlitr(:,:)   !<root litter \f$(kg C/m^2)\f$
   real, intent(inout) :: stemlitr(:,:)   !<stem litter \f$(kg C/m^2)\f$
@@ -308,26 +311,32 @@ subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tr
   !! subroutine. Also add the reproduction carbon directly to the litter pool
   do 800 i = il1, il2
     do 805 j = 1, icc
-      do 810 k = 1, ignd
-        if (k == 1) then
-          ! The first layer gets the leaf and stem litter as well as the reprocost,
-          ! which is assumed to be cones/seeds. The root litter is given in proportion
-          ! to the root distribution
-          litrmass(i,j,k) = litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
-                            + rootlitr(i,j) * rmatctem(i,j,k) &
-                            + reprocost(i,j) * deltat / 963.62
+      !COMBAK PERLAY
+      litrmass(i,j) = litrmass(i,j) + leaflitr(i,j) + stemlitr(i,j) &
+                        + rootlitr(i,j) &
+                        + reprocost(i,j) * deltat / 963.62
 
-          if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLeafLitr(i,j) + tracerStemLitr(i,j) &
-                              + tracerRootLitr(i,j) * rmatctem(i,j,k) &
-                              + tracerReproCost(i,j) * deltat / 963.62 
-        else ! the lower soil layers get the roots, in the proportion that they
-             ! are in the unfrozen soil column.
-          litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
-          
-          if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerRootLitr(i,j) * rmatctem(i,j,k)
-        end if
-
-810     continue
+!       do 810 k = 1, ignd
+!         if (k == 1) then
+!           ! The first layer gets the leaf and stem litter as well as the reprocost,
+!           ! which is assumed to be cones/seeds. The root litter is given in proportion
+!           ! to the root distribution
+!           litrmass(i,j,k) = litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
+!                             + rootlitr(i,j) * rmatctem(i,j,k) &
+!                             + reprocost(i,j) * deltat / 963.62
+! 
+!           if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLeafLitr(i,j) + tracerStemLitr(i,j) &
+!                               + tracerRootLitr(i,j) * rmatctem(i,j,k) &
+!                               + tracerReproCost(i,j) * deltat / 963.62 
+!         else ! the lower soil layers get the roots, in the proportion that they
+!              ! are in the unfrozen soil column.
+!           litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
+! 
+!           if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerRootLitr(i,j) * rmatctem(i,j,k)
+!         end if
+! 
+! 810     continue
+      !COMBAK PERLAY
 805    continue
 800   continue
 

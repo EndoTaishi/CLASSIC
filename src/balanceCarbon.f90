@@ -68,8 +68,10 @@ contains
       real :: rootmass(ilg,icc)  !<pools (after being updated): root mass for each of the 9 ctem pfts
       real :: gleafmas(ilg,icc)  !<pools (after being updated): green leaf mass for each of the 9 ctem pfts
       real :: bleafmas(ilg,icc)  !<pools (after being updated): brown leaf mass for each of the 9 ctem pfts
-      real :: litrmass(ilg,iccp2,ignd)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
-      real :: soilcmas(ilg,iccp2,ignd)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
+      ! real :: litrmass(ilg,iccp2,ignd)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell !COMBAK PERLAY
+      ! real :: soilcmas(ilg,iccp2,ignd)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell !COMBAK PERLAY
+      real :: litrmass(ilg,iccp2)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
+      real :: soilcmas(ilg,iccp2)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
       real :: ntchlveg(ilg,icc)  !<fluxes for each pft: net change in leaf biomass
       real :: ntchsveg(ilg,icc)  !<fluxes for each pft: net change in stem biomass
       real :: ntchrveg(ilg,icc)  !<fluxes for each pft: net change in root biomass the net change is the difference
@@ -82,9 +84,14 @@ contains
       real :: stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses
       real :: rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses
       real :: ltrcemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: litter carbon emission losses
-      real :: ltresveg(ilg,iccp2,ignd)!<fluxes for each pft: litter respiration for each pft + bare fraction
-      real :: scresveg(ilg,iccp2,ignd)!<fluxes for each pft: soil c respiration for each pft + bare fraction
-      real :: humtrsvg(ilg,iccp2,ignd)!<fluxes for each pft: humification for each pft + bare fraction
+      !COMBAK PERLAY
+      real :: ltresveg(ilg,iccp2)!<fluxes for each pft: litter respiration for each pft + bare fraction
+      real :: scresveg(ilg,iccp2)!<fluxes for each pft: soil c respiration for each pft + bare fraction
+      real :: humtrsvg(ilg,iccp2)!<fluxes for each pft: humification for each pft + bare fraction
+      ! real :: ltresveg(ilg,iccp2,ignd)!<fluxes for each pft: litter respiration for each pft + bare fraction
+      ! real :: scresveg(ilg,iccp2,ignd)!<fluxes for each pft: soil c respiration for each pft + bare fraction
+      ! real :: humtrsvg(ilg,iccp2,ignd)!<fluxes for each pft: humification for each pft + bare fraction
+      !COMBAK PERLAY
       real :: pglfmass(ilg,icc)  !<pools (before being updated): previous green leaf mass
       real :: pblfmass(ilg,icc)  !<pools (before being updated): previous brown leaf mass
       real :: pstemass(ilg,icc)  !<pools (before being updated): previous stem mass
@@ -188,11 +195,16 @@ contains
       littempor = 0.
       litrestemp=0.
       humtrstemp=0.
-      do k = 1,ignd
-       littempor = littempor + litrmass(i,j,k)
-       litrestemp = litrestemp + ltresveg(i,j,k)
-       humtrstemp = humtrstemp + humtrsvg(i,j,k)
-      end do
+      !COMBAK PERLAY
+       littempor = littempor + litrmass(i,j)
+       litrestemp = litrestemp + ltresveg(i,j)
+       humtrstemp = humtrstemp + humtrsvg(i,j)
+      ! do k = 1,ignd
+      !  littempor = littempor + litrmass(i,j,k)
+      !  litrestemp = litrestemp + ltresveg(i,j,k)
+      !  humtrstemp = humtrstemp + humtrsvg(i,j,k)
+      ! end do
+      !COMBAK PERLAY
       diff1=littempor - plitmass(i,j)
       diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j) &
        - litrestemp-humtrstemp-ltrcemls(i,j) &
@@ -213,11 +225,16 @@ contains
              littempor=0.
              litrestemp=0.
              humtrstemp=0.
-             do k = 1, ignd
-               littempor = littempor + litrmass(i,iccp1,k)
-               litrestemp = litrestemp + ltresveg(i,iccp1,k)
-               humtrstemp = humtrstemp + humtrsvg(i,iccp1,k)
-             end do
+             !COMBAK PERLAY
+               littempor = littempor + litrmass(i,iccp1)
+               litrestemp = litrestemp + ltresveg(i,iccp1)
+               humtrstemp = humtrstemp + humtrsvg(i,iccp1)
+             ! do k = 1, ignd
+             !   littempor = littempor + litrmass(i,iccp1,k)
+             !   litrestemp = litrestemp + ltresveg(i,iccp1,k)
+             !   humtrstemp = humtrstemp + humtrsvg(i,iccp1,k)
+             ! end do
+             !COMBAK PERLAY
              diff1=littempor - plitmass(i,iccp1)
              diff2=( -litrestemp-humtrstemp)*( deltat/963.62 )
              if((abs(diff1-diff2)).gt.tolrance)then
@@ -234,11 +251,16 @@ contains
           littempor=0.
           litrestemp=0.
           humtrstemp=0.
-          do k = 1, ignd
-            littempor = littempor + litrmass(i,iccp2,k)
-            litrestemp = litrestemp + ltresveg(i,iccp2,k)
-            humtrstemp = humtrstemp + humtrsvg(i,iccp2,k)
-          end do
+          !COMBAK PERLAY
+            littempor = littempor + litrmass(i,iccp2)
+            litrestemp = litrestemp + ltresveg(i,iccp2)
+            humtrstemp = humtrstemp + humtrsvg(i,iccp2)
+          ! do k = 1, ignd
+          !   littempor = littempor + litrmass(i,iccp2,k)
+          !   litrestemp = litrestemp + ltresveg(i,iccp2,k)
+          !   humtrstemp = humtrstemp + humtrsvg(i,iccp2,k)
+          ! end do
+          !COMBAK PERLAY
           diff1=littempor - plitmass(i,iccp2)
           diff2=( -litrestemp-humtrstemp)*( deltat/963.62 )
 
@@ -257,11 +279,16 @@ contains
            soiltempor = 0.
            scresveg_temp = 0.
            humtrstemp=0.
-           do k = 1, ignd
-             soiltempor = soiltempor + soilcmas(i,j,k)
-             scresveg_temp = scresveg_temp + scresveg(i,j,k)
-             humtrstemp = humtrstemp + humtrsvg(i,j,k)
-           end do
+           ! COMBAK PERLAY 
+           soiltempor = soilcmas(i,j)
+           scresveg_temp = scresveg(i,j)
+           humtrstemp = humtrsvg(i,j)
+           ! do k = 1, ignd
+           !   soiltempor = soiltempor + soilcmas(i,j,k)
+           !   scresveg_temp = scresveg_temp + scresveg(i,j,k)
+           !   humtrstemp = humtrstemp + humtrsvg(i,j,k)
+           ! end do
+           ! COMBAK PERLAY 
            diff1=soiltempor - psocmass(i,j)
            diff2=( humtrstemp-scresveg_temp )*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
@@ -286,11 +313,16 @@ contains
           soiltempor = 0.
           scresveg_temp = 0.
           humtrstemp=0.
-          do k = 1, ignd
-            soiltempor = soiltempor + soilcmas(i,j,k)
-            scresveg_temp = scresveg_temp + scresveg(i,j,k)
-            humtrstemp = humtrstemp + humtrsvg(i,j,k)
-          end do
+          ! COMBAK PERLAY 
+            soiltempor = soilcmas(i,j)
+            scresveg_temp = scresveg(i,j)
+            humtrstemp = humtrsvg(i,j)
+          ! do k = 1, ignd
+          !   soiltempor = soiltempor + soilcmas(i,j,k)
+          !   scresveg_temp = scresveg_temp + scresveg(i,j,k)
+          !   humtrstemp = humtrstemp + humtrsvg(i,j,k)
+          ! end do
+          ! COMBAK PERLAY 
           diff1=soiltempor - psocmass(i,j)
           diff2=( humtrstemp-scresveg_temp )*(deltat/963.62)
           if((abs(diff1-diff2)).gt.tolrance)then
@@ -452,8 +484,10 @@ contains
     real , intent(in) :: gleafmas(:,:)
     real , intent(in) :: rootmass(:,:)
     real , intent(in) :: stemmass(:,:)
-    real , intent(in) :: litrmass(:,:,:)
-    real , intent(in) :: soilCmas(:,:,:)
+    ! real , intent(in) :: litrmass(:,:,:) !COMBAK PERLAY
+    ! real , intent(in) :: soilCmas(:,:,:) !COMBAK PERLAY
+    real , intent(in) :: litrmass(:,:)
+    real , intent(in) :: soilCmas(:,:)
     real , intent(in) :: hutrstep_g(:)
     real , intent(in) :: socrestep(:)
     integer, intent(in) :: ipeatland(:)
@@ -520,16 +554,23 @@ contains
         
         ! Store the per PFT litterfall for outputting.
         litrfallveg(i,j) = (tltrleaf(i,j) + tltrstem(i,j) + tltrroot(i,j))
-        
-        do k = 1, ignd
-          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
+
+        !COMBAK PERLAY
+          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
           if (ipeatland(i)==0) then ! Non-peatlands
-            gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+            gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
           !else
             !Peatland soil C is calculated from peat depth (peatdep) in the peatland
           endif
-        end do
-
+        ! do k = 1, ignd
+        !   gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j,k)
+        !   if (ipeatland(i)==0) then ! Non-peatlands
+        !     gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j,k)
+        !   !else
+        !     !Peatland soil C is calculated from peat depth (peatdep) in the peatland
+        !   endif
+        ! end do
+        !COMBAK PERLAY
         
         vgbiomas_veg(i,j) = gleafmas(i,j) + bleafmas(i,j) + stemmass(i,j)&
                             + rootmass(i,j)
@@ -543,11 +584,16 @@ contains
           
     do 1020 i = il1, il2
       if (ipeatland(i)==0) then
-        do 1025 k  = 1, ignd
+        !COMBAK PERLAY
           ! Add the bare fraction dead C
-          gavgltms(i)=gavgltms(i)+ fg(i) *litrmass(i,iccp1,k)
-          gavgscms(i)=gavgscms(i)+ fg(i) * soilcmas(i,iccp1,k)
-1025    continue                      
+          gavgltms(i)=gavgltms(i)+ fg(i) *litrmass(i,iccp1)
+          gavgscms(i)=gavgscms(i)+ fg(i) * soilcmas(i,iccp1)
+        ! do 1025 k  = 1, ignd
+        !   ! Add the bare fraction dead C
+        !   gavgltms(i)=gavgltms(i)+ fg(i) *litrmass(i,iccp1,k)
+        !   gavgscms(i)=gavgscms(i)+ fg(i) * soilcmas(i,iccp1,k)
+        ! 1025    continue      
+        !COMBAK PERLAY
       else
         litrmsmoss(i) = litrmsmoss(i) + litrfallmoss(i) &  !FLAG, I am thinking this needs to be reset to zero somewhere in ctemDriver, but I don't see it. JM.
                        - ltrestepmoss(i) - humstepmoss(i)     !kg/m2

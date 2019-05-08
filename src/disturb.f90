@@ -115,7 +115,12 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
   real, intent(inout) :: rootmass(ilg,icc)  !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, intent(inout) :: gleafmas(ilg,icc)  !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, intent(inout) :: bleafmas(ilg,icc)  !<brown leaf mass
-  real, intent(inout) :: litrmass(ilg,iccp2,ignd)!<litter mass for each of the 9 pfts
+  
+  !COMBAK PERLAY
+  real, intent(inout) :: litrmass(ilg,iccp2)!<litter mass for each of the CTEM pfts
+  ! real, intent(inout) :: litrmass(:,:,:)!<litter mass for each of the CTEM pfts
+  !COMBAK PERLAY
+  
   real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
   real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
   real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
@@ -308,8 +313,12 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
         !>were left, its unlikely these roots could catch fire. 
         !>Here we ignore the LUC litrmass on iccp2 and the litter on the bare ground 
         !>(iccp1). We only consider the litrmass on layer 1 as the rest are buried.
+        !COMBAK PERLAY
         biomass(i,j) = gleafmas(i,j) + bleafmas(i,j) + stemmass(i,j) &
-                     + litrmass(i,j,1)
+                     + litrmass(i,j)
+       ! biomass(i,j) = gleafmas(i,j) + bleafmas(i,j) + stemmass(i,j) &
+       !              + litrmass(i,j,1)
+        !COMBAK PERLAY
 
         !>Find average biomass over the vegetated fraction
         avgbmass(i) = avgbmass(i) + biomass(i,j) * fcancmx(i,j)
@@ -395,7 +404,10 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
       !> duff fraction for each PFT, Vivek
       !> We only consider the first layer litter
       if (biomass(i,j) .gt. 0. .and. fsnow(i) .eq. 0.) then
-        duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j,1)) / biomass(i,j)
+        !COMBAK PERLAY
+        duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j)) / biomass(i,j)
+        ! duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j,1)) / biomass(i,j)
+        !COMBAK PERLAY
       end if
 
       !> \f$drgtstrs(i,j)\f$ is \f$\phi_{root}\f$ in Melton and Arora GMDD (2015) paper
@@ -604,7 +616,10 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
         rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) * fractionPFTburned
         
         ! The burned litter comes from the first layer
-        ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j,1) * fractionPFTburned
+        !COMBAK PERLAY
+        ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j) * fractionPFTburned
+        ! ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j,1) * fractionPFTburned
+        !COMBAK PERLAY
 
         !>Update the pools:
         gleafmas(i,j)=gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)
@@ -614,12 +629,17 @@ subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer,   & !In
 
         ! The burned litter is placed on the top litter layer except for the root litter which
         ! goes into litter layers according to the root distribution.
-        litrmass(i,j,1) = litrmass(i,j,1) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
-                        + rootltdt(i,j) * rmatctem(i,j,1) - ltrcemls(i,j)
-        
-        do k = 2, ignd
-          litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
-        end do
+        !COMBAK PERLAY
+        litrmass(i,j) = litrmass(i,j) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
+                        + rootltdt(i,j) - ltrcemls(i,j)
+        ! 
+        ! litrmass(i,j,1) = litrmass(i,j,1) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
+        !                 + rootltdt(i,j) * rmatctem(i,j,1) - ltrcemls(i,j)
+        ! 
+        ! do k = 2, ignd
+        !   litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
+        ! end do
+        !COMBAK PERLAY
         ! tmpzzz=0.
         if (useTracer > 0) then 
           
@@ -767,8 +787,13 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
   real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, dimension(nilg,icc), intent(inout) :: rootmass    !< roots carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for individual pfts,  \f$u-mol co_2/m^2.sec\f$
-  real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-  real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+  
+  !COMBAK PERLAY
+  real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+  real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+  ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+  ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+  !COMBAK PERLAY
   real, dimension(nilg,icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
   real, dimension(nilg,icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
 
@@ -778,8 +803,12 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
   real :: term                                  !< temp variable for change in fraction due to fire
   real, dimension(nilg) :: pbarefra             !< bare fraction prior to fire
   real, dimension(nilg) :: barefrac             !< bare fraction of grid cell
-  real, dimension(nilg,ignd) :: litr_lost            !< litter that is transferred to bare 
-  real, dimension(nilg,ignd) :: soilc_lost           !< soilc that is transferred to bare
+  !COMBAK PERLAY
+  real, dimension(nilg) :: litr_lost            !< litter that is transferred to bare 
+  real, dimension(nilg) :: soilc_lost           !< soilc that is transferred to bare
+  ! real, dimension(nilg,ignd) :: litr_lost            !< litter that is transferred to bare 
+  ! real, dimension(nilg,ignd) :: soilc_lost           !< soilc that is transferred to bare
+  !COMBAK PERLAY
   real, dimension(nilg) :: vgbiomas_temp        !< grid averaged vegetation biomass for internal checks, \f$kg c/m^2\f$
   real, dimension(nilg) :: gavgltms_temp        !< grid averaged litter mass for internal checks, \f$kg c/m^2\f$
   real, dimension(nilg) :: gavgscms_temp        !< grid averaged soil c mass for internal checks, \f$kg c/m^2\f$
@@ -797,8 +826,12 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
     vgbiomas_temp(i)=0.0
     gavgltms_temp(i)=0.0
     gavgscms_temp(i)=0.0
-    litr_lost(i,:)=0.0
-    soilc_lost(i,:)=0.0
+    !COMBAK PERLAY
+    litr_lost(i)=0.0
+    soilc_lost(i)=0.0
+    ! litr_lost(i,:)=0.0
+    ! soilc_lost(i,:)=0.0
+    !COMBAK PERLAY
   10  continue
   !>
   !>  Account for disturbance creation of bare ground. This occurs with relatively low
@@ -880,10 +913,14 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
           !>remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
           !>our carbon balance works out.
           frac_chang = pftfracb(i,j) - pftfraca(i,j)
-          do k = 1, ignd
-            litr_lost(i,k)= litr_lost(i,k) + litrmass(i,j,k) * frac_chang
-            soilc_lost(i,k)= soilc_lost(i,k) + soilcmas(i,j,k) * frac_chang
-          end do
+          !COMBAK PERLAY
+            litr_lost(i)= litr_lost(i) + litrmass(i,j) * frac_chang
+            soilc_lost(i)= soilc_lost(i) + soilcmas(i,j) * frac_chang  
+          ! do k = 1, ignd
+          !   litr_lost(i,k)= litr_lost(i,k) + litrmass(i,j,k) * frac_chang
+          !   soilc_lost(i,k)= soilc_lost(i,k) + soilcmas(i,j,k) * frac_chang
+          ! end do
+          !COMBAK PERLAY
         ! else
           ! no changes
         end if
@@ -895,10 +932,14 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
     if (shifts_occur(i)) then !>only do checks if we actually shifted fractions here.
 
       if(barefrac(i) >= zero .and. barefrac(i) > pbarefra(i))then
-        do k = 1, ignd
-          litrmass(i,iccp1,k) = (litrmass(i,iccp1,k)*pbarefra(i) + litr_lost(i,k)) / barefrac(i)
-          soilcmas(i,iccp1,k) = (soilcmas(i,iccp1,k)*pbarefra(i) + soilc_lost(i,k)) / barefrac(i)
-        end do
+        !COMBAK PERLAY
+          litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)
+          soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
+        ! do k = 1, ignd
+        !   litrmass(i,iccp1,k) = (litrmass(i,iccp1,k)*pbarefra(i) + litr_lost(i,k)) / barefrac(i)
+        !   soilcmas(i,iccp1,k) = (soilcmas(i,iccp1,k)*pbarefra(i) + soilc_lost(i,k)) / barefrac(i)
+        ! end do
+        !COMBAK PERLAY
       else if (barefrac(i) .lt. 0.) then
         write(6,*)' In burntobare you have negative bare area, which should be impossible...'
         write(6,*)' bare is',barefrac(i),' original was',pbarefra(i)
@@ -916,18 +957,26 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
 
         vgbiomas_temp(i)=vgbiomas_temp(i)+fcancmx(i,j)*(gleafmas(i,j)+&
         bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-        do k = 1, ignd
-          gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j,k)
-          gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j,k)
-        end do
+        !COMBAK PERLAY
+        gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j)
+        gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j)
+        ! do k = 1, ignd
+        !   gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j,k)
+        !   gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j,k)
+        ! end do
+        !COMBAK PERLAY
 
 250   continue
 
       !then add the bare ground in.
-      do k = 1, ignd  !FLAG I think we can keep this as per grid like this. JM Feb 8 2016.
-        gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1,k)
-        gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1,k)
-      end do
+      !COMBAK PERLAY
+      gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1)
+      gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1)
+      ! do k = 1, ignd  !FLAG I think we can keep this as per grid like this. JM Feb 8 2016.
+      !   gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1,k)
+      !   gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1,k)
+      ! end do
+      !COMBAK PERLAY
 
       if(abs(vgbiomas_temp(i)-pvgbioms(i)).gt.tolrance)then
         write(6,*)'grid averaged biomass densities do not balance'
