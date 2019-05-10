@@ -101,7 +101,7 @@ if (PFTCompetition) then
                         nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
                     end if
                     barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
-!print*,k,i,m,j,nfcancmxrow(i,m,j),seed,barfm(i,m)
+
                     !> Keep track of the non-crop nfcancmx for use in loop below.
                     !> pftarrays keeps track of the nfcancmxrow for all non-crops
                     !> indexposj and indexposm store the index values of the non-crops
@@ -109,11 +109,10 @@ if (PFTCompetition) then
                     !> these arrays.
                     pftarrays(i,m,k) = nfcancmxrow(i,m,j)
                     indexposj(i,m,k) = j
-! print*,indexposj(i,m,k)
-                    !indexposm(i,m,k) = n
+
                     n = n+1
                     k = k+1
-                    !if (j == icc) k=1  !reset k for next tile
+
                 end if !crops
             end do !icc
         end do !nmos
@@ -144,15 +143,7 @@ if (PFTCompetition) then
 end if  ! PFTCompetition
 
 !> get fcans for use by class using the nfcancmxs just read in
-! k1=0
 do 997 j = 1, ican
-    ! if(j.eq.1) then
-    ! k1 = k1 + 1
-    ! else
-    ! k1 = k1 + nol2pfts(j-1)
-    ! endif
-    ! k2 = k1 + nol2pfts(j) - 1
-    ! do 998 n = k1, k2
     do 998 n = reindexPFTs(j,1), reindexPFTs(j,2)
     do i = 1, nlat
         do m = 1, nmos
@@ -180,14 +171,14 @@ end subroutine initializeLandCover
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
 !> @author Vivek Arora
-subroutine    luc(         il1,       il2,  nilg,                   & ! In
-                        grclarea, pfcancmx, nfcancmx,      iday,    & ! In
-                       todfrac,     yesfrac, interpol, PFTCompetition, & ! In
-                       leapnow,                                        & ! In
-                      gleafmas,    bleafmas, stemmass,       rootmass,    & ! In / Out
-                      litrmass,    soilcmas, vgbiomas,       gavgltms,    & ! In / Out
-                      gavgscms,     fcancmx,   fcanmx,                    & ! In / Out
-                      lucemcom,    lucltrin, lucsocin)                ! Out
+subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, useTracer, & ! In
+                grclarea, iday, todfrac, yesfrac, interpol,  & ! In
+                pfcancmx, nfcancmx, & ! In/ Out 
+                gleafmas, bleafmas, stemmass, rootmass, & ! In / Out
+                litrmass, soilcmas, vgbiomas, gavgltms, & ! In / Out
+                gavgscms, fcancmx, fcanmx, tracerLitrMass, tracerSoilCMass, & ! In/Out
+                tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In / Out
+                lucemcom, lucltrin, lucsocin) ! Out
   !
   !     ----------------------------------------------------------------
   !
@@ -224,42 +215,52 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 
   implicit none
 
-  integer il1               !<il1=1
-  integer il2               !<il2=nilg
-  integer nilg              !<no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
-  integer i, j, k, m, n, q !, k1, k2, q !FLAG q needed? JM
-  integer iday              !<day of year
-  integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
-  integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
-  integer bareiord(nilg)    !<bare fraction increases or decreases
-  integer lrgstpft(1)       !<
-  logical leapnow           !< true if this year is a leap year. Only used if the switch 'leap' is true.
-  logical  interpol         !<if todfrac & yesfrac are provided then interpol must be set to false so that
+  integer, intent(in) :: il1   !<il1=1
+  integer, intent(in) :: il2   !<il2=nilg
+  integer, intent(in) :: nilg  !<no. of grid cells in latitude circle(this is passed in as
+                               !! either ilg or nlat depending on comp/mos)
+  integer, intent(in) :: iday       !<day of year
+  logical, intent(in) :: leapnow    !< true if this year is a leap year. Only used if the switch 'leap' is true.
+  logical, intent(in) ::  interpol  !<if todfrac & yesfrac are provided then interpol must be set to false so that
                             !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx
                             !<which are year end values
-  logical  luctkplc(nilg)   !<
-  logical  PFTCompetition   !<true if the competition subroutine is on.
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                            
+  real, intent(in) :: grclarea(nilg)       !<gcm grid cell area, km2                                    
+  logical, intent(in) :: PFTCompetition   !<true if the competition subroutine is on.
+  real, intent(in) :: todfrac(nilg,icc)    !<today's fractional coverage of all pfts
+  real, intent(in) :: yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
 
-  real gleafmas(nilg,icc)   !<green or live leaf mass in kg c/m2, for the 9 pfts
-  real bleafmas(nilg,icc)   !<brown or dead leaf mass in kg c/m2, for the 9 pfts
-  real stemmass(nilg,icc)   !<stem biomass in kg c/m2, for the 9 pfts
-  real rootmass(nilg,icc)   !<root biomass in kg c/m2, for the 9 pfts
-  real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
-  real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
-  real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
-  real soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
-  real litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
-  real gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
-  real gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
-  real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
-  real fcancmy(nilg,icc)    !<
-  real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
-  real yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
+  real, intent(inout) :: gleafmas(nilg,icc)   !<green or live leaf mass in kg c/m2, for the 9 pfts
+  real, intent(inout) :: bleafmas(nilg,icc)   !<brown or dead leaf mass in kg c/m2, for the 9 pfts
+  real, intent(inout) :: stemmass(nilg,icc)   !<stem biomass in kg c/m2, for the 9 pfts
+  real, intent(inout) :: rootmass(nilg,icc)   !<root biomass in kg c/m2, for the 9 pfts
+  real, intent(inout) :: fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
+  real, intent(inout) :: pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
+  real, intent(inout) :: vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
+  real, intent(inout) :: soilcmas(nilg,iccp2,ignd) !<soil c mass in kg c/m2, for the 9 pfts + bare
+  real, intent(inout) :: litrmass(nilg,iccp2,ignd) !<litter mass in kg c/m2, for the 9 pfts + bare
+  real, intent(inout) :: gavgltms(nilg)       !<grid averaged litter mass including the LUC product pool, kg c/m2
+  real, intent(inout) :: gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
+  real, intent(inout) :: nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
+  real, intent(inout) :: fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+  
+  real, intent(out) :: lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
+  real, intent(out) :: lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
+  real, intent(out) :: lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
 
-  real fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+  ! Local variables
   real delfrac(nilg,icc)    !<
   real abvgmass(nilg,icc)   !<above-ground biomass
-  real grclarea(nilg)       !<gcm grid cell area, km2
   real combustc(nilg,icc)   !<total carbon from deforestation- combustion
   real paperc(nilg,icc)     !<total carbon from deforestation- paper
   real furnturc(nilg,icc)   !<total carbon from deforestation- furniture
@@ -267,7 +268,8 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
   real incrsolc             !<
   real chopedbm(nilg)       !<chopped off biomass
   real compdelfrac(nilg,icc)!<with competition on, this is the change in pft frac per timestep
-
+  real fcancmy(nilg,icc)    !<
+  integer i, j, k, m, n, q 
   real redubmas1      !<
   real term           !<
   real barefrac(nilg) !<initialize bare fraction to 1.0
@@ -276,37 +278,38 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
   real grsumfur(nilg) !<grid sum of furniture carbon for all pfts that are chopped
   real grsumlit(nilg,ignd) !<grid sum of litter carbon for all pfts that are chopped
   real grsumsoc(nilg,ignd) !<grid sum of soil c carbon for all pfts that are chopped
+  real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
+  real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
   real pbarefra(nilg) !<initialize previous years's bare fraction to 1.0
   real grdencom(nilg) !<grid averaged densities for combustion carbon
   real grdenpap(nilg) !<grid averaged densities for paper carbon
   real grdenfur(nilg) !<grid averaged densities for furniture carbon
-  real grdenlit(nilg,ignd) !<grid averaged densities for litter carbon
-  real grdensoc(nilg,ignd) !<grid averaged densities for soil c carbon
+  integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
+  integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
+  integer bareiord(nilg)    !<bare fraction increases or decreases
+  integer lrgstpft(1)       !<
+  logical  luctkplc(nilg)   !<
   real totcmass(nilg) !<total c mass (live+dead)
   real totlmass(nilg) !<total c mass (live)
   real totdmas1(nilg) !<total c mass (dead) litter
   real ntotcmas(nilg) !<total c mass (live+dead) after luc treatment
   real ntotlmas(nilg) !<total c mass (live) after luc treatment
   real ntotdms1(nilg) !<total c mass (dead) litter after luc treatment
-  real lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
   real pvgbioms(nilg) !<Vegetation biomass on entering subroutine
   real pgavltms(nilg) !<Litter mass on entering subroutine
   real pgavscms(nilg) !<Soil C mass on entering subroutine
   real pluclitpool(nilg) !<LUC paper pool on entering subroutine
   real plucscpool(nilg) !<LUC furniture pool on entering subroutine
-
   real redubmas2      !<
-  real lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
-  real lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
   real totdmas2(nilg) !<total c mass (dead) soil c
   real ntotdms2(nilg) !<total c mass (dead) soil c after luc treatment
-
   real pftarrays(nilg,icc-numcrops) !<
   integer indexpos(nilg,icc-numcrops) !<
-
-  !>find/use provided current and previous day's fractional coverage
-  !>if competition is on, we will adjust these later.
-
+  
+  ! -------------------------------------
+  
+  !> Find/use provided current and previous day's fractional coverage
+  !! if competition is on, we will adjust these later.
   if(interpol) then !> perform interpolation
    do 110 j = 1, icc
     do 111 i = il1, il2
@@ -327,8 +330,7 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 
       if( fcancmx(i,j).lt.0.0.and.abs(fcancmx(i,j)).lt.1.0e-05)then
         fcancmx(i,j)=0.0
-      else if( fcancmx(i,j).lt.0.0.and. &
-            abs(fcancmx(i,j)).ge.1.0e-05)then
+      else if( fcancmx(i,j) < 0.0 .and. abs(fcancmx(i,j)).ge.1.0e-05)then
         write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
         write(6,*)'fractional coverage cannot be negative'
         call xit('luc',-1)
@@ -597,15 +599,7 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 
       !> Find above ground biomass and treatment index for combust, paper,
       !> and furniture
-      !k1=0
       do 500 j = 1, ican
-        ! if(j.eq.1) then
-        !   k1 = k1 + 1
-        ! else
-        !   k1 = k1 + nol2pfts(j-1)
-        ! endif
-        ! k2 = k1 + nol2pfts(j) - 1
-        ! do 510 m = k1, k2
         do 510 m = reindexPFTs(j,1), reindexPFTs(j,2)
           abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
           select case(classpfts(j))
@@ -663,6 +657,7 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
       do 570 j = 1, icc
           if(fraciord(i,j).eq.1)then
             term = fcancmy(i,j)/fcancmx(i,j)
+            
             gleafmas(i,j)=gleafmas(i,j)*term
             bleafmas(i,j)=bleafmas(i,j)*term
             stemmass(i,j)=stemmass(i,j)*term
@@ -671,6 +666,17 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
               litrmass(i,j,k)=litrmass(i,j,k)*term
               soilcmas(i,j,k)=soilcmas(i,j,k)*term
 572         continue
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerGLeafMass(i,j) = tracerGLeafMass(i,j) * term
+              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) * term
+              tracerStemMass(i,j) = tracerStemMass(i,j) * term
+              tracerRootMass(i,j) = tracerRootMass(i,j) * term
+              do k = 1, ignd
+                tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) * term
+                tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) * term
+              end do  
+            end if 
+
           endif
 570   continue
 !>
@@ -682,6 +688,10 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
           do 582 k = 1, ignd
           litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
           soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerLitrMass(i,iccp1,k) = tracerLitrMass(i,iccp1,k) * term
+            tracerSoilCMass(i,iccp1,k) = tracerSoilCMass(i,iccp1,k) * term            
+          end if 
 582       continue
         endif
 !>
@@ -794,6 +804,10 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 !!      contributions are added to the normal litter and soil C pools below.        
        litrmass(i,iccp2,1)=litrmass(i,iccp2,1)+grdenpap(i) 
        soilcmas(i,iccp2,1)=soilcmas(i,iccp2,1)+grdenfur(i) 
+       if (useTracer > 0) then ! Now same operation for tracer
+         tracerLitrMass(i,iccp2,1) = tracerLitrMass(i,iccp2,1) + grdenpap(i) 
+         tracerSoilCMass(i,iccp2,1) = tracerSoilCMass(i,iccp2,1) + grdenfur(i) 
+       end if 
 
 
 !     Add any adjusted litter and soilc back their respective pools
@@ -802,6 +816,10 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
           if(fcancmx(i,j).gt.zero)then
                 litrmass(i,j,:)=litrmass(i,j,:)+grdenlit(i,:) 
                 soilcmas(i,j,:)=soilcmas(i,j,:)+grdensoc(i,:) 
+                if (useTracer > 0) then ! Now same operation for tracer
+                  tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + grdenlit(i,:) 
+                  tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + grdensoc(i,:) 
+                end if 
           else
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
@@ -809,15 +827,31 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
             rootmass(i,j)=0.0
             litrmass(i,j,:)=0.0  ! set all soil layers to 0
             soilcmas(i,j,:)=0.0
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerGLeafMass(i,j) = 0.
+              tracerBLeafMass(i,j) = 0.
+              tracerStemMass(i,j) = 0.
+              tracerRootMass(i,j) = 0.
+              tracerLitrMass(i,j,:) = 0.
+              tracerSoilCMass(i,j,:) = 0.
+            end if 
           endif
 650   continue
 
         if(barefrac(i).gt.zero)then
             litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
             soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + grdenlit(i,:) 
+              tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + grdensoc(i,:) 
+            end if 
         else
           litrmass(i,iccp1,:)=0.0 ! set all soil layers to 0
           soilcmas(i,iccp1,:)=0.0
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerLitrMass(i,iccp1,:) = 0.0 ! set all soil layers to 0
+            tracerSoilCMass(i,iccp1,:) = 0.0          
+          end if 
         endif
 
 

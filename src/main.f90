@@ -2906,7 +2906,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                          taaccgat_t,    dlzwgat, ancgvgac_t,   rmlcgvga_t,& ! In
                             zbtwgat, & ! In
                          uvaccgat_t,  vvaccgat_t,    lightng, tbaraccgat_t,   &! In
-                        pfcancmxgat, nfcancmxgat,                & ! In
                            sdepgat,    spinfast,   todfrac,& ! In 
                          netrad_gat,  preacc_gat,   PSISGAT,                  &! In 
                           grclarea,    popdingat,     isndgat,                &! In
@@ -2917,6 +2916,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
                        wtablegat, maxAnnualActLyrGAT,  & ! In
                       PFTCompetition,    dofire,     lnduseon, inibioclim,    & ! In
                       leapnow,       useTracer,    tracerCO2gat,           &! In
+                        pfcancmxgat, nfcancmxgat,                & ! In                      
                         stemmassgat, rootmassgat, litrmassgat, gleafmasgat,& ! In/Out
                         bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,& ! In/Out
                            zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,& ! In/Out
