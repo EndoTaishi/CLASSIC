@@ -20,7 +20,6 @@ contains
                   ta,     delzw, ancgveg,   rmlcgveg, & ! In
                       zbotw,  & ! In
                       uwind,    vwind,  lightng,      tbar,  & ! In
-                  pfcancmx, nfcancmx,             & ! In
                    soildpth, spinfast,   todfrac,& ! In
                      netrad,   precip,    psisat,            & ! In
                    grclarea,   popdin,    isand,             & ! In
@@ -31,6 +30,7 @@ contains
                   wtable,   maxAnnualActLyr,         & ! In
                   PFTCompetition,  dofire,  lnduseon,  inibioclim,  & ! In
                      leapnow, useTracer,  tracerCO2,        & ! In
+                    pfcancmx, nfcancmx,             & ! In/Out                     
                    stemmass, rootmass, litrmass,  gleafmas,& ! In/ Out
                    bleafmas, soilcmas,    ailcg,      ailc,& ! In/ Out
                       zolnc, rmatctem,    rmatc,     ailcb,& ! In/ Out
@@ -202,9 +202,7 @@ contains
   real, dimension(ilg), intent(in) :: vwind               !< v wind speed, m/s
   real, dimension(ilg), intent(in) ::  precip             !<daily precipitation (mm/day)
   real, dimension(ilg), intent(in) ::  netrad             !<daily net radiation (w/m2)
-  real, dimension(ilg), intent(in) :: lightng             !< total lightning frequency, flashes/km2.year
-  real, dimension(ilg,icc), intent(in) :: pfcancmx        !<previous year's fractional coverages of pfts
-  real, dimension(ilg,icc), intent(in) :: nfcancmx        !<next year's fractional coverages of pfts
+  real, dimension(ilg), intent(in) :: lightng             !< total lightning frequency, flashes/km2.year    
   real, dimension(ilg,icc), intent(in) :: todfrac         !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
   real, dimension(ilg), intent(in) :: ch4conc             !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
   real, dimension(ilg), intent(in) :: wetfrac             !< Prescribed fraction of wetlands in a grid cell
@@ -236,6 +234,8 @@ contains
   integer, dimension(ilg,icc), intent(inout) :: lfstatus  !<leaf phenology status
   real, dimension(ilg,icc), intent(inout) :: fcancmx      !< max. fractional coverage of CTEM's pfts, but this can be
                                                           !< modified by land-use change, and competition between pfts
+  real, dimension(ilg,icc), intent(inout) :: pfcancmx        !<previous year's fractional coverages of pfts
+  real, dimension(ilg,icc), intent(inout) :: nfcancmx        !<next year's fractional coverages of pfts
   real, dimension(ilg,ican,ignd), intent(inout) :: rmatc  !<fraction of roots for each of class' 4 pfts in each soil layer
   real, dimension(ilg), intent(inout) :: surmncur         !<number of months with surplus water for current year
   real, dimension(ilg), intent(inout) :: defmncur         !<number of months with water deficit for current year
@@ -570,14 +570,13 @@ contains
      enddo
     enddo
 
-    call luc(    il1,      il2,   ilg,  &
-                   grclarea, pfcancmx, nfcancmx,     iday,&
-               todfrac,  yesfrac_comp,     .true.,  PFTCompetition,  &
-                   leapnow,                               &
-                   gleafmas, bleafmas, stemmass, rootmass,&
-                   litrmass, soilcmas, vgbiomas, gavgltms,&
-                   gavgscms,  fcancmx,   fcanmx,&
-                   lucemcom, lucltrin, lucsocin)
+    call luc(il1, il2, ilg, PFTCompetition, leapnow, & ! In
+              grclarea, iday, todfrac, yesfrac_comp, .true., & ! In
+              pfcancmx, nfcancmx, &! In/Out 
+              gleafmas, bleafmas, stemmass, rootmass,&! In/Out 
+              litrmass, soilcmas, vgbiomas, gavgltms,&! In/Out 
+              gavgscms,  fcancmx,   fcanmx,&! In/Out 
+              lucemcom, lucltrin, lucsocin) !Out 
   else
     lucemcom = 0.
     lucltrin = 0.
