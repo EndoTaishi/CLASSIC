@@ -693,19 +693,11 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
 !!from the chopped off fraction of this pft, gets assimilated into
 !!soil c of all existing pfts as well.
 !!
-      ! k1=0
       do 600 j = 1, ican
-        ! if(j.eq.1) then
-        !   k1 = k1 + 1
-        ! else
-        !   k1 = k1 + nol2pfts(j-1)
-        ! endif
-        ! k2 = k1 + nol2pfts(j) - 1
-        !do 610 m = k1, k2
         do 610 m = reindexPFTs(j,1), reindexPFTs(j,2)
             if(fraciord(i,m).eq.-1)then
 
-!>chop off above ground biomass
+              !>chop off above ground biomass
               redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *abvgmass(i,m)*km2tom2
 
@@ -716,30 +708,27 @@ subroutine    luc(         il1,       il2,  nilg,                   & ! In
                 write(6,*)'grid cell = ',i,' pft = ',m
                 call xit('luc',-8)
               endif
-!>
-!>rootmass needs to be chopped as well and all of it goes to the litter/paper pool
-!>
+
+              !>rootmass needs to be chopped as well and all of it goes to the litter/paper pool
               redubmas2=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i)  &
                        *rootmass(i,m)*km2tom2
 
-!>keep adding chopped off biomass for each pft to get the total for a grid cell for diagnostics
-
+              !>keep adding chopped off biomass for each pft to get the total for a grid cell for diagnostics
               chopedbm(i)=chopedbm(i) + redubmas1 + redubmas2
 
-!>find what's burnt, and what's converted to paper & furniture
+              !>find what's burnt, and what's converted to paper & furniture
               combustc(i,m)=combust(treatind(i,m))*redubmas1
               paperc(i,m)=paper(treatind(i,m))*redubmas1 + redubmas2
               furnturc(i,m)=furniture(treatind(i,m))*redubmas1
 
-!>keep adding all this for a given grid cell
+              !>keep adding all this for a given grid cell
               grsumcom(i)=grsumcom(i)+combustc(i,m)
               grsumpap(i)=grsumpap(i)+paperc(i,m)
               grsumfur(i)=grsumfur(i)+furnturc(i,m)
-!>
-!>litter from the chopped off fraction of the chopped
-!>off pft needs to be assimilated, and so does soil c from
-!>the chopped off fraction of the chopped pft
-!>
+
+              !>litter from the chopped off fraction of the chopped
+              !>off pft needs to be assimilated, and so does soil c from
+              !>the chopped off fraction of the chopped pft
               do 622 k = 1,ignd
                 incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                         *litrmass(i,m,k)*km2tom2

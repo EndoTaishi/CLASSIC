@@ -469,16 +469,15 @@ end subroutine existence
 !! forms. either option may be used.
 !!@author V. Arora, J. Melton, Y. Peng
 
-subroutine competition(  iday,       il1,        il2,       nilg, & ! In
-                       nppveg,     dofire,    leapnow, &! In
-                     pftexist,  geremort,   intrmort,             &! In
-                     gleafmas,  bleafmas,   stemmass,   rootmass, &! In
-                     litrmass,  soilcmas,   grclarea,     lambda, &! In
-                     burnvegf,      sort,  pstemmass, pgleafmass, &! In
-                     rmatctem, &! In
-                      fcancmx,    fcanmx,   vgbiomas,   gavgltms, & ! In / Out
-                     gavgscms,   bmasveg,                         & ! In / Out
-                     add2allo,   colrate,   mortrate) ! Out
+subroutine competition(iday, il1, il2, nilg, nppveg, dofire, leapnow, useTracer, &! In
+                     pftexist, geremort, intrmort, pgleafmass, rmatctem, &! In
+                     grclarea, lambda, burnvegf, sort, pstemmass, &! In
+                     gleafmas, bleafmas, stemmass, rootmass, &! In/Out
+                     litrmass, soilcmas, fcancmx, fcanmx, & !In/Out 
+                     tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In/Out 
+                     tracerLitrMass, tracerSoilCMass, & ! In/Out                      
+                     vgbiomas, gavgltms, gavgscms, bmasveg, & ! In / Out
+                     add2allo, colrate,   mortrate) ! Out
 
   !      9  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
   !     J. Melton       carbon pools
@@ -537,6 +536,11 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
                                                           !< size 12 of parameter vectors
   logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
   logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
   real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
   real, dimension(nilg,icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
   real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
@@ -552,6 +556,12 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
   real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
   real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
   real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
   real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
   real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
@@ -618,6 +628,10 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   real, dimension(nilg) :: gavgnpp
   real, dimension(nilg) :: pbarefra
   real, dimension(nilg,ignd) :: grsumlit, grsumsoc
+  real :: tracerGrSumLit(nilg,ignd) 
+  real :: tracerGrSumSOC(nilg,ignd) 
+  real :: tracerIncrLitr(nilg,iccp1,ignd)
+  real :: tracerIncrSolC(nilg,iccp1,ignd)
 
   ! Model switches:
 
@@ -698,6 +712,8 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
       fraciord(i,j)=0
       incrlitr(i,j,:)=0.0
       incrsolc(i,j,:)=0.0
+      tracerIncrLitr(i,j,:)=0.0
+      tracerIncrSolC(i,j,:)=0.0
       ownlitr(i,j)=0.0
       ownsolc(i,j)=0.0
 160     continue
@@ -745,10 +761,15 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
     bareiord(i)=0
     grsumlit(i,:)=0.0
     grsumsoc(i,:)=0.0
+    tracerGrSumLit(i,:)=0.
+    tracerGrSumSOC(i,:)=0.
     ownlitr(i,iccp1)=0.0
     ownsolc(i,iccp1)=0.0
     incrlitr(i,iccp1,:)=0.0
     incrsolc(i,iccp1,:)=0.0
+    tracerIncrLitr(i,iccp1,:)=0.0
+    tracerIncrSolC(i,iccp1,:)=0.0
+
 
 150   continue
   
@@ -1058,7 +1079,6 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   !! 3. fraciord = -1, which means all of the npp is to be used for
   !! litter generation but in addition some more litter will be
   !! generated from mortality of the standing biomass.
-  
   do 660 j = 1, icc
     if (.not. crop(j)) then  ! do not run for crops
       do 661 i = il1, il2
@@ -1071,14 +1091,29 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
           bleafmas(i,j) = bleafmas(i,j) * term
           stemmass(i,j) = stemmass(i,j) * term
           rootmass(i,j) = rootmass(i,j) * term
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) * term
+            tracerBLeafMass(i,j) = tracerBLeafMass(i,j) * term
+            tracerStemMass(i,j) = tracerStemMass(i,j) * term
+            tracerRootMass(i,j) = tracerRootMass(i,j) * term            
+          end if 
+
           do k = 1,ignd
             litrmass(i,j,k) = litrmass(i,j,k) * term
             soilcmas(i,j,k) = soilcmas(i,j,k) * term
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) * term
+              tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) * term
+            end if 
             incrlitr(i,j,k) = 0.
             grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerIncrLitr(i,j,k) = 0.
+              tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,j,k)              
+            end if 
           end do
           add2allo(i,j) = 0.
-
+          
         else if (fraciord(i,j) == -1) then ! Contract
 
           do k = 1,ignd
@@ -1088,9 +1123,9 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
             ! all biomass from fraction that dies due to mortality is
             ! also distributed over the litter pool of whole grid cell.
 
-            ! FLAG, Put the incrlitr in the first layer (from the leaves and stems)
+            ! Put the incrlitr in the first layer (from the leaves and stems)
             ! but the roots and litr must be put in the proper soil layers. To do
-            ! this we bring in the rmatctem for the root placement. JM Feb 2016
+            ! this we bring in the rmatctem for the root placement. 
             if (k == 1) then
               incrlitr(i,j,k) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
                                 + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) & 
@@ -1098,7 +1133,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
             else
               incrlitr(i,j,k) = abs(chngfrac(i,j)) * (rootmass(i,j) * rmatctem(i,j,k) + litrmass(i,j,k))
             end if
-
+            
             grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
 
             ! Chop off soil C from the fraction that goes down and
@@ -1106,12 +1141,32 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
             incrsolc(i,j,k) = abs(chngfrac(i,j)) * soilcmas(i,j,k)
             grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
 
+            if (useTracer > 0) then ! Now same operation for tracer
+              if (k == 1) then
+                tracerIncrLitr(i,j,k) = abs(chngfrac(i,j)) * (tracerGLeafMass(i,j) &
+                                  + tracerBLeafMass(i,j) + tracerStemMass(i,j) + tracerRootMass(i,j) & 
+                                  * rmatctem(i,j,k) + tracerLitrMass(i,j,k))
+              else
+                tracerIncrLitr(i,j,k) = abs(chngfrac(i,j)) * (tracerRootMass(i,j) * rmatctem(i,j,k) &
+                                          + tracerLitrMass(i,j,k))
+              end if
+              tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,j,k)
+              
+              tracerIncrSolC(i,j,k) = abs(chngfrac(i,j)) * tracerSoilCMass(i,j,k)
+              tracerGrSumSOC(i,k) = tracerGrSumSOC(i,k) + tracerIncrSolC(i,j,k)
+              
+            end if 
+            
           end do
 
         else if (fraciord(i,j) == 0) then
 
           incrlitr(i,j,:) = 0.
           grsumlit(i,:) = grsumlit(i,:) + incrlitr(i,j,:)
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerIncrLitr(i,j,:) = 0.
+            tracerGrSumLit(i,:) = tracerGrSumLit(i,:) + tracerIncrLitr(i,j,:)            
+          end if 
 
         endif
 661   continue
@@ -1124,6 +1179,7 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
   !! then spread its litter and soil c uniformly over the increased fraction.
   do 680 i = il1, il2
     if (bareiord(i) == -1) then !decrease in bare area
+      
       do k = 1,ignd
         incrlitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1,k)
         grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,iccp1,k)
@@ -1131,11 +1187,26 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         incrsolc(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1,k)
         grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,iccp1,k)
       end do
+      
+      if (useTracer > 0) then ! Now same operation for tracer
+        do k = 1,ignd
+          tracerIncrLitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * tracerLitrMass(i,iccp1,k)
+          tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,iccp1,k)
+
+          tracerIncrSolC(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * tracerSoilCMass(i,iccp1,k)
+          tracerGrSumSOC(i,k) = tracerGrSumSOC(i,k) + tracerIncrSolC(i,iccp1,k)
+        end do        
+      end if 
+      
     else if (bareiord(i) == 1) then ! increase in bare area
-      do k = 1,ignd
-        term = pbarefra(i) / barefrac(i)
+      term = pbarefra(i) / barefrac(i)      
+      do k = 1,ignd        
         litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
         soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+        if (useTracer > 0) then ! Now same operation for tracer
+          tracerLitrMass(i,iccp1,k) = tracerLitrMass(i,iccp1,k) * term
+          tracerSoilCMass(i,iccp1,k) = tracerSoilCMass(i,iccp1,k) * term          
+        end if 
       end do
     end if
 680   continue
@@ -1150,30 +1221,50 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         barefrac(i) = barefrac(i) + fcancmx(i,j)
         term = (barefrac(i) - fcancmx(i,j)) / barefrac(i)
 
-       do k = 1,ignd
-        ! Put the incrlitr in the first layer (from the leaves and stems)
-        ! but the roots and litr must be put in the proper soil layers. To do
-        ! this we bring in the rmatctem for the root placement. JM Feb 2016
-        if (k == 1) then
-          incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
-                                            + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k)&
-                                            + litrmass(i,j,k))
-        else
-          incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
-                                            + litrmass(i,j,k))
-        end if
+        do k = 1,ignd
+          ! Put the incrlitr in the first layer (from the leaves and stems)
+          ! but the roots and litr must be put in the proper soil layers. To do
+          ! this we bring in the rmatctem for the root placement. JM Feb 2016
+          if (k == 1) then
+            incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+                                              + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k)&
+                                              + litrmass(i,j,k))
+          else
+            incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
+                                              + litrmass(i,j,k))
+          end if
 
-        grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
+          grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
 
-        incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
-        grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+          incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
+          grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+          
+          if (useTracer > 0) then ! Now same operation for tracer
+            if (k == 1) then
+              tracerIncrLitr(i,j,k) = tracerIncrLitr(i,j,k) + fcancmx(i,j) * (tracerGLeafMass(i,j) &
+                                                + tracerBLeafMass(i,j) &
+                                                + tracerStemMass(i,j) + tracerRootMass(i,j) * rmatctem(i,j,k)&
+                                                + tracerLitrMass(i,j,k))
+            else
+              tracerIncrLitr(i,j,k) = tracerIncrLitr(i,j,k) + fcancmx(i,j) * (tracerRootMass(i,j) * rmatctem(i,j,k) &
+                                                + tracerLitrMass(i,j,k))
+            end if
 
-        !> Adjust litter and soil c mass densities for increase in
-        !! barefrac over the bare fraction.
+            tracerGrSumLit(i,k) = tracerGrSumLit(i,k)+ tracerIncrLitr(i,j,k)
 
-        litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
-        soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+            tracerIncrSolC(i,j,k) = tracerIncrSolC(i,j,k) + fcancmx(i,j) * tracerSoilCMass(i,j,k)
+            tracerGrSumSOC(i,k) = tracerGrSumSOC(i,k) + tracerIncrSolC(i,j,k)          
+          end if 
 
+          !> Adjust litter and soil c mass densities for increase in
+          !! barefrac over the bare fraction.
+          litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+          soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+          
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerLitrMass(i,iccp1,k) = tracerLitrMass(i,iccp1,k) * term
+            tracerSoilCMass(i,iccp1,k) = tracerSoilCMass(i,iccp1,k) * term
+          end if 
         end do
 
         fcancmx(i,j) = 0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27
@@ -1181,13 +1272,17 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
       end if
 691 continue
 690 continue
-
+  
   !> Spread litter and soil c over all pfts and the barefrac
   do 700 j = 1, icc
     do 701 i = il1, il2
       if (fcancmx(i,j) > zero) then
         litrmass(i,j,:) = litrmass(i,j,:) + grsumlit(i,:)
         soilcmas(i,j,:) = soilcmas(i,j,:) + grsumsoc(i,:)
+        if (useTracer > 0) then ! Now same operation for tracer
+          tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + tracerGrSumLit(i,:)
+          tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + tracerGrSumSOC(i,:)          
+        end if 
       else
         gleafmas(i,j)=0.0
         bleafmas(i,j)=0.0
@@ -1195,6 +1290,14 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
         rootmass(i,j)=0.0  !FLAG, should I set rmatctem to zero here too? JM Feb 2016.
         litrmass(i,j,:)=0.0
         soilcmas(i,j,:)=0.0
+        if (useTracer > 0) then ! Now same operation for tracer
+          tracerGLeafMass(i,j) = 0.0
+          tracerBLeafMass(i,j) = 0.0
+          tracerStemMass(i,j) = 0.0
+          tracerRootMass(i,j) = 0.0  
+          tracerLitrMass(i,j,:) = 0.0
+          tracerSoilCMass(i,j,:) = 0.0
+        end if 
       end if
 701 continue
 700 continue
@@ -1207,6 +1310,15 @@ subroutine competition(  iday,       il1,        il2,       nilg, & ! In
       litrmass(i,iccp1,:) = 0.0
       soilcmas(i,iccp1,:) = 0.0
     end if
+    if (useTracer > 0) then ! Now same operation for tracer
+      if (barefrac(i) > zero) then
+        tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + tracerGrSumLit(i,:)
+        tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + tracerGrSumSOC(i,:)
+      else
+        tracerLitrMass(i,iccp1,:) = 0.0
+        tracerSoilCMass(i,iccp1,:) = 0.0
+      end if      
+    end if 
 720 continue
 
   ! Get fcanmxs for use by CLASS based on the new fcancmxs

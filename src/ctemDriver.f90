@@ -72,7 +72,7 @@ contains
                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,& ! Out (Secondary)
                  hetrsveg,autoresveg, ltresveg, scresveg,& ! Out (Secondary)
                    nppmoss,     armoss,                  & ! Out (Secondary)
-                        cc,         mm) ! Out (Secondary)
+                        colrate,         mortrate) ! Out (Secondary)
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM)
 !             Main Ctem Subroutine Compatible With CLASS
@@ -145,7 +145,7 @@ contains
                                 crop,repro_fraction,&
                                 rmortmoss,humicfacmoss,GRAV,RHOW,RHOICE,&
                                classpfts,ctempfts,iccp2,humicfac_bg,&
-                               nol2pfts,deltat
+                               nol2pfts,deltat,tolrance
      
 
   use landuse_change,     only : luc
@@ -372,8 +372,8 @@ contains
   real, dimension(ilg), intent(out) :: ch4WetSpec            !<
   real, dimension(ilg), intent(out) :: wetfdyn            !<
   real, dimension(ilg), intent(out) :: ch4WetDyn            !<
-  real, dimension(ilg,icc), intent(out) :: cc             !<
-  real, dimension(ilg,icc), intent(out) :: mm             !<  
+  real, dimension(ilg,icc), intent(out) :: colrate        !< colonization rate (1/day)
+  real, dimension(ilg,icc), intent(out) :: mortrate       !< mortality rate
   real, dimension(ilg,icc), intent(out) :: afrleaf        !<allocation fraction for leaves
   real, dimension(ilg,icc), intent(out) :: afrstem        !<allocation fraction for stem
   real, dimension(ilg,icc), intent(out) :: afrroot        !<allocation fraction for root
@@ -414,15 +414,15 @@ contains
   real fc(ilg)  !< Fraction of grid cell that is covered by canopy 
   real fg(ilg)  !< Fraction of grid cell that is bare ground.
   ! real term        !<
-  real pglfmass(ilg,icc)  !<
-  real pblfmass(ilg,icc)  !<
-  real pstemass(ilg,icc)  !<
-  real protmass(ilg,icc)  !<
-  real plitmass(ilg,iccp2)!<
-  real psocmass(ilg,iccp2)!<
-  real pvgbioms(ilg)      !<
-  real pgavltms(ilg)      !<
-  real pgavscms(ilg)      !<
+  real pglfmass(ilg,icc)  !<Prior timestep green leaf mass for each of the CTEM pfts, \f$(kg C/m^2)\f$
+  real pblfmass(ilg,icc)  !<Prior timestep brown leaf mass for each of the CTEM pfts, \f$(kg C/m^2)\f$
+  real pstemass(ilg,icc)  !<Prior timestep stem mass for each of the CTEM pfts, \f$(kg C/m^2)\f$
+  real protmass(ilg,icc)  !<Prior timestep root mass for each of the CTEM pfts, \f$(kg C/m^2)\f$
+  real plitmass(ilg,iccp2)!<Prior timestep litter mass for each of the CTEM pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  real psocmass(ilg,iccp2)!<Prior timestep soil carbon mass for each of the CTEM pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
+  real pvgbioms(ilg)      !<Prior timestep 
+  real pgavltms(ilg)      !<Prior timestep 
+  real pgavscms(ilg)      !<Prior timestep 
   !real anveg(ilg,icc)    !<
   ! real rmveg(ilg,icc)    !<
   real pheanveg(ilg,icc) !<
@@ -430,8 +430,6 @@ contains
   ! real ltrestep(ilg,iccp2,ignd) !<
   ! real screstep(ilg,iccp2,ignd) !<
   ! real hutrstep(ilg,iccp2,ignd) !<
-  real plitmasspl(ilg,iccp2,ignd) !<
-  real psocmasspl(ilg,iccp2,ignd) !<
   real rootlitr(ilg,icc) !<root litter \f$(kg C/m^2)\f$
   real stemlitr(ilg,icc) !<stem litter \f$(kg C/m^2)\f$
   ! real nppvgstp(ilg,icc) 
@@ -493,18 +491,6 @@ contains
   !> Set up the tracer for today
   if (useTracer > 0) call prepTracer(il1, il2,ilg, tracerCO2,& ! In 
                                      tracerValue) !Out
-
-  if (PFTCompetition .or. lnduseon) then
-    !>Store green and brown leaf, stem, and root biomass, and litter and
-    !!soil c pool mass in arrays. We use these to track C movements due to
-    !! LUC and competition for tracer.
-    pglfmass = gleafmas    !<green leaf mass from last time step
-    pblfmass = bleafmas    !<brown leaf mass from last time step
-    pstemass = stemmass    !<stem mass from last time step
-    protmass = rootmass    !<root mass from last time step
-    plitmasspl = litrmass  !<litter mass from last time step
-    psocmasspl = soilcmas  !< soil C mass from last time step
-  end if 
   
   if (PFTCompetition) then
           
@@ -519,7 +505,7 @@ contains
                       annpcp, dry_season_length )
 
     if (inibioclim) then
-      !>
+      
       !>If first day of year then based on updated bioclimatic parameters
       !!find if pfts can exist or not.
       !!If .not. inibioclim then it is the first year of a run that you do not have the
@@ -532,20 +518,18 @@ contains
                       gdd5,      aridity,  srplsmon,   defctmon,  &
                   anndefct,     annsrpls,    annpcp,   pftexist,  &
                   dry_season_length )
-      !>
-      !!Call competition subroutine which on the basis of previous day's
-      !!npp estimates changes in fractional coverage of pfts
-      !!
-      call competition (iday,     1,        il2,      ilg,& !In
-                          nppveg,   dofire, leapnow,& !In
-                         pftexist, geremort, intrmort,& !In
-                         gleafmas, bleafmas, stemmass, rootmass,& !In
-                         litrmass, soilcmas, grclarea,   lambda,& !In
-                         burnvegf, sort,  pstemmass, & !In
-                         pgleafmass, rmatctem,& !In
-                         fcancmx,   fcanmx, vgbiomas, gavgltms,& !In/Out
-                         gavgscms, bmasveg,  & !In/Out
-                         add2allo,      cc,      mm) !Out 
+                  
+      !> Call competition subroutine which on the basis of previous day's
+      !! NPP estimates changes in fractional coverage of pfts
+      call competition (iday, 1, il2, ilg, nppveg, dofire, leapnow, useTracer, & !In
+                        pftexist, geremort, intrmort, pgleafmass, rmatctem, & !In
+                        grclarea, lambda, burnvegf, sort,  pstemmass, & !In                        
+                        gleafmas, bleafmas, stemmass, rootmass,& !In/Out
+                        litrmass, soilcmas, fcancmx,   fcanmx, & !In/Out
+                        tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In/Out 
+                        tracerLitrMass, tracerSoilCMass, & ! In/Out 
+                        vgbiomas, gavgltms, gavgscms, bmasveg, & !In/Out
+                        add2allo, colrate, mortrate) !Out 
 
     end if ! inibioclim
   endif  ! if (PFTCompetition)
@@ -589,8 +573,6 @@ contains
       do k = 1, ignd !FLAG at this stage keep as per pft and per tile. JM Feb8 2016.
         plitmass(i,j)=plitmass(i,j) + litrmass(i,j,k)    !litter mass from last time step
         psocmass(i,j)=psocmass(i,j) + soilcmas(i,j,k)    !soil c mass from last time step
-        plitmasspl(i,j,k)= litrmass(i,j,k) 
-        psocmasspl(i,j,k)= soilcmas(i,j,k) 
       end do
 140     continue
 130   continue
