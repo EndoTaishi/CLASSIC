@@ -664,10 +664,12 @@ subroutine competition(iday, il1, il2, nilg, nppveg, dofire, leapnow, useTracer,
 
   !>First, let's adjust the fractions if fire is turned on.
   if (dofire) then
-
-    call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
-                    rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
-                    nppveg)
+    
+    call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms, & !In
+                    burnvegf, pstemmass, pgleafmass, useTracer, & ! In 
+                    fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
+                    litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
+                    tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out 
 
     !>Since the biomass pools could have changed, update bmasveg.
     do i = il1, il2

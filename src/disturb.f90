@@ -743,9 +743,13 @@ end subroutine disturb
 !! also run a small check to make sure grid averaged quantities do not get messed up.
 !> @author Joe Melton
 
-subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass,&
-                      nppveg)
+subroutine burntobare(il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, & !In
+                      burnvegf, pstemmass, pgleafmass, useTracer, & ! In 
+                      fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
+                      litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
+                      tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out 
+                                            
+
 
   use classic_params, only : crop, icc, seed, standreplace, grass, zero, &
                           iccp1, tolrance, numcrops,iccp2,ignd
@@ -755,13 +759,21 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
   integer, intent(in) :: il1
   integer, intent(in) :: il2
   integer, intent(in) :: nilg       !< no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
   integer, dimension(icc), intent(in) :: sort             !< index for correspondence between 9 ctem pfts and
                                                           !< size 12 of parameter vectors
   real, dimension(nilg), intent(in) :: pvgbioms           !< initial veg biomass
   real, dimension(nilg), intent(in) :: pgavltms           !< initial litter mass
   real, dimension(nilg), intent(in) :: pgavscms           !< initial soil c mass
-  real, dimension(nilg,icc), intent(inout) :: fcancmx     !< initial fractions of the ctem pfts
   real, dimension(nilg,icc), intent(in) :: burnvegf       !< per PFT fraction burned of that PFTs area
+  real, dimension(nilg,icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
+  real, dimension(nilg,icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
+  
+  real, dimension(nilg,icc), intent(inout) :: fcancmx     !< initial fractions of the ctem pfts
   real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
   real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -769,8 +781,12 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
   real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for individual pfts,  \f$u-mol co_2/m^2.sec\f$
   real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
   real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-  real, dimension(nilg,icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
-  real, dimension(nilg,icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
   logical, dimension(nilg) :: shifts_occur      !< true if any fractions changed
   integer :: i, j, n, k
@@ -778,8 +794,10 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
   real :: term                                  !< temp variable for change in fraction due to fire
   real, dimension(nilg) :: pbarefra             !< bare fraction prior to fire
   real, dimension(nilg) :: barefrac             !< bare fraction of grid cell
-  real, dimension(nilg,ignd) :: litr_lost            !< litter that is transferred to bare 
-  real, dimension(nilg,ignd) :: soilc_lost           !< soilc that is transferred to bare
+  real, dimension(nilg,ignd) :: litr_lost       !< litter that is transferred to bare 
+  real, dimension(nilg,ignd) :: soilc_lost      !< soilc that is transferred to bare
+  real :: tracerLitrLost(nilg,ignd)       !< tracer litter that is transferred to bare 
+  real :: tracerSoilCLost(nilg,ignd)      !< tracer soilc that is transferred to bare
   real, dimension(nilg) :: vgbiomas_temp        !< grid averaged vegetation biomass for internal checks, \f$kg c/m^2\f$
   real, dimension(nilg) :: gavgltms_temp        !< grid averaged litter mass for internal checks, \f$kg c/m^2\f$
   real, dimension(nilg) :: gavgscms_temp        !< grid averaged soil c mass for internal checks, \f$kg c/m^2\f$
@@ -799,6 +817,8 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
     gavgscms_temp(i)=0.0
     litr_lost(i,:)=0.0
     soilc_lost(i,:)=0.0
+    tracerLitrLost(i,:)=0.0
+    tracerSoilCLost(i,:)=0.0
   10  continue
   !>
   !>  Account for disturbance creation of bare ground. This occurs with relatively low
@@ -873,6 +893,14 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
           stemmass(i,j)=stemmass(i,j)*term
           rootmass(i,j)=rootmass(i,j)*term
           nppveg(i,j)  =nppveg(i,j)*term
+          
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) * term
+            tracerBLeafMass(i,j) = tracerBLeafMass(i,j) * term
+            tracerStemMass(i,j) = tracerStemMass(i,j) * term
+            tracerRootMass(i,j) = tracerRootMass(i,j) * term            
+          end if 
+          
           !>
           !>Soil and litter carbon are treated such that we actually transfer the carbon
           !>to the bare fraction since it would remain in place as a location was devegetated
@@ -883,6 +911,10 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
           do k = 1, ignd
             litr_lost(i,k)= litr_lost(i,k) + litrmass(i,j,k) * frac_chang
             soilc_lost(i,k)= soilc_lost(i,k) + soilcmas(i,j,k) * frac_chang
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerLitrLost(i,k)= tracerLitrLost(i,k) + tracerLitrMass(i,j,k) * frac_chang
+              tracerSoilCLost(i,k)= tracerSoilCLost(i,k) + tracerSoilCMass(i,j,k) * frac_chang
+            end if             
           end do
         ! else
           ! no changes
@@ -898,6 +930,12 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
         do k = 1, ignd
           litrmass(i,iccp1,k) = (litrmass(i,iccp1,k)*pbarefra(i) + litr_lost(i,k)) / barefrac(i)
           soilcmas(i,iccp1,k) = (soilcmas(i,iccp1,k)*pbarefra(i) + soilc_lost(i,k)) / barefrac(i)
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerLitrMass(i,iccp1,k) = (tracerLitrMass(i,iccp1,k)*pbarefra(i) &
+                                         + tracerLitrLost(i,k)) / barefrac(i)
+            tracerSoilCMass(i,iccp1,k) = (tracerSoilCMass(i,iccp1,k)*pbarefra(i) &
+                                          + tracerSoilCLost(i,k)) / barefrac(i)
+          end if             
         end do
       else if (barefrac(i) .lt. 0.) then
         write(6,*)' In burntobare you have negative bare area, which should be impossible...'
