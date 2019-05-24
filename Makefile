@@ -84,6 +84,7 @@ else ifeq ($(mode), parallel)
 else
 	# Serial compiler.
 	COMPILER = gfortran
+	mode = serial
 	ODIR = objectFiles
 	# Fortran Flags.
 	FFLAGS = -O3 -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -J$(ODIR) #-Wall -Wextra
