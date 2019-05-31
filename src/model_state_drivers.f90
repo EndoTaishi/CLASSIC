@@ -1087,7 +1087,7 @@ contains
         integer, intent(in), optional :: projLatInd
         integer :: lengthOfFile
         integer :: lonloc,latloc
-        integer :: i,arrindex,m,numPFTsinFile,d
+        integer :: i,arrindex,arrindex2,ntimes,m,numPFTsinFile,d
         real, dimension(:), allocatable :: fileTime
         logical, pointer :: projectedGrid
         logical, pointer :: transientCO2
@@ -1108,10 +1108,16 @@ contains
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
 
+        integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
+        integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+
         real, dimension(5) :: dateTime
-        real :: startLGHTTime,startWETTime
+        real :: startTime,endTime
         logical :: dummyVar
         integer :: lastDOY
+
+        readMetStartYear => c_switch%readMetStartYear
+        readMetEndYear   => c_switch%readMetEndYear
         
         projectedGrid   => c_switch%projectedGrid
         transientCO2    => c_switch%transientCO2
@@ -1144,23 +1150,33 @@ contains
 
             lengthOfFile = ncGetDimLen(co2id, 'time')
             allocate(fileTime(lengthOfFile))
-            allocate(CO2Time(lengthOfFile))
 
             fileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthOfFile])
 
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                CO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
+                fileTime(i)=dateTime(1) ! Rewrite putting in the year
             end do
 
             if (transientCO2) then
-                ! We read in the whole CO2 times series and store it.
-                allocate(CO2FromFile(lengthOfFile))
-                CO2FromFile = ncGet1DVar(CO2id, trim(co2VarName), start = [1], count = [lengthOfFile])
+                ! Find the requested years in the file.
+                arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+                if (arrindex == 0) stop ('getInput says: The CO2 file does not contain first requested year')
+                arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+                if (arrindex2 == 0) stop ('getInput says: The CO2 file does not contain last requested year')
+                ntimes=arrindex2-arrindex+1
+
+                ! Read in and keep only the required elements.
+
+                allocate(CO2FromFile(ntimes))
+                CO2FromFile = ncGet1DVar(CO2id, trim(co2VarName), start = [arrindex], count = [ntimes])
+
+                allocate(CO2Time(ntimes))
+                CO2Time = int(fileTime(arrindex:arrindex2))
             else
                 ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
+                arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearCO2))
                 if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
 
                 ! We read in only the suggested year
@@ -1172,23 +1188,33 @@ contains
 
             lengthOfFile = ncGetDimLen(ch4id, 'time')
             allocate(fileTime(lengthOfFile))
-            allocate(CH4Time(lengthOfFile))
 
             fileTime = ncGet1DVar(ch4id, 'time', start = [1], count = [lengthOfFile])
 
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                CH4Time(i) = int(dateTime(1)) ! Rewrite putting in the year
+                fileTime(i) = dateTime(1) ! Rewrite putting in the year
             end do
 
             if (transientCH4) then
-                ! We read in the whole CH3 times series and store it.
-                allocate(CH4FromFile(lengthOfFile))
-                CH4FromFile = ncGet1DVar(ch4id, trim(ch4VarName), start = [1], count = [lengthOfFile])
+                ! Find the requested years in the file.
+                arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+                if (arrindex == 0) stop ('getInput says: The CH4 file does not contain first requested year')
+                arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+                if (arrindex2 == 0) stop ('getInput says: The CH4 file does not contain last requested year')
+                ntimes=arrindex2-arrindex+1
+
+                ! Read in and keep only the required elements.
+
+                allocate(CH4FromFile(ntimes))
+                CH4FromFile = ncGet1DVar(ch4id, trim(ch4VarName), start = [arrindex], count = [ntimes])
+
+                allocate(CH4Time(ntimes))
+                CH4Time = int(fileTime(arrindex:arrindex2))
             else
                 ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
+                arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearCH4))
                 if (arrindex == 0) stop ('getInput says: The CH4 file does not contain requested year')
 
                 ! We read in only the suggested year
@@ -1200,14 +1226,13 @@ contains
 
             lengthOfFile = ncGetDimLen(popid, 'time')
             allocate(fileTime(lengthOfFile))
-            allocate(POPDTime(lengthOfFile))
 
             fileTime = ncGet1DVar(popid, 'time', start = [1], count = [lengthOfFile])
 
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                POPDTime(i) = int(dateTime(1)) ! Rewrite putting in the year
+                fileTime(i) = dateTime(1) ! Rewrite putting in the year
             end do
 
             if (.not. projectedGrid) then
@@ -1220,12 +1245,23 @@ contains
             end if
 
             if (transientPOPD) then
-                ! We read in the whole POPD times series and store it.
-                allocate(POPDFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+                ! Find the requested years in the file.
+                arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+                if (arrindex == 0) stop ('getInput says: The POPD file does not contain first requested year')
+                arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+                if (arrindex2 == 0) stop ('getInput says: The POPD file does not contain last requested year')
+                ntimes=arrindex2-arrindex+1
+                
+                ! Read in and keep only the required elements.
+
+                allocate(POPDFromFile(ntimes))
+                POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,arrindex], count = [1,1,ntimes])
+
+                allocate(POPDTime(ntimes))
+                POPDTime = int(fileTime(arrindex:arrindex2))
             else
                 ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
+                arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearPOPD))
                 if (arrindex == 0) stop ('getInput says: The POPD file does not contain requested year')
 
                 ! We read in only the suggested year
@@ -1238,7 +1274,6 @@ contains
 
             lengthOfFile = ncGetDimLen(lghtid, 'time')
             allocate(fileTime(lengthOfFile))
-            allocate(LGHTTime(lengthOfFile))
 
             fileTime = ncGet1DVar(lghtid, 'time', start = [1], count = [lengthOfFile])
 
@@ -1246,7 +1281,7 @@ contains
             ! We want to retain all except the partial day.
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                LGHTTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
+                fileTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
 
             if (.not. projectedGrid) then
@@ -1261,16 +1296,31 @@ contains
             ! Units expected are "strikes km-2 yr-1"
 
             if (transientLGHT) then
-                ! We read in the whole LGHT times series and store it.
-                allocate(LGHTFromFile(lengthOfFile))
-                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+                ! Find the beginning and end day in the file. 
+                ! Assume we are grabbing from first day of start year to last day of last year.
 
+                startTime = real(readMetStartYear) * 10000. + 1. * 100. + 1.
+                endTime = real(readMetEndYear) * 10000. + 12. * 100. + 31.
+                
+                arrindex = checkForTime(lengthOfFile,fileTime,startTime)
+                if (arrindex == 0) stop ('getInput says: The LGHT file does not contain first requested day')
+                arrindex2 = checkForTime(lengthOfFile,fileTime,endTime)
+                if (arrindex2 == 0) stop ('getInput says: The LGHT file does not contain last requested day')
+                ntimes=arrindex2-arrindex+1
+                
+                ! Read in and keep only the required elements.
+
+                allocate(LGHTFromFile(ntimes))
+                LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,ntimes])
+
+                allocate(LGHTTime(ntimes))
+                LGHTTime = fileTime(arrindex:arrindex2)
             else
                 ! Find the requested day and year in the file.
                 ! Assume we are grabbing from day 1
-                startLGHTTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
+                startTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
 
-                arrindex = checkForTime(lengthOfFile,LGHTTime,startLGHTTime)
+                arrindex = checkForTime(lengthOfFile,fileTime,startTime)
                 if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
                 ! We read in only the suggested year of daily inputs
@@ -1283,7 +1333,6 @@ contains
                 LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
                 ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
-                deallocate(LGHTTime)
                 allocate(LGHTTime(lastDOY))
                 do d = 1,lastDOY
                     LGHTTime(d) = real(d)
@@ -1295,14 +1344,13 @@ contains
 
             lengthOfFile = ncGetDimLen(lucid, 'time')
             allocate(fileTime(lengthOfFile))
-            allocate(LUCTime(lengthOfFile))
 
             fileTime = ncGet1DVar(lucid, 'time', start = [1], count = [lengthOfFile])
 
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                LUCTime(i) = int(dateTime(1)) ! Rewrite putting in only the year
+                fileTime(i) = dateTime(1) ! Rewrite putting in only the year
             end do
 
             if (.not. projectedGrid) then
@@ -1319,12 +1367,23 @@ contains
             if (numPFTsinFile .ne. icc) stop ('getInput says: LUC file does not have expected number of PFTs')
 
             if (lnduseon) then
-                ! We read in the whole LUC times series and store it.
-                allocate(LUCFromFile(icc,lengthOfFile))
-                LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
+                ! Find the requested years in the file.
+                arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+                if (arrindex == 0) stop ('getInput says: The LUC file does not contain first requested year')
+                arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+                if (arrindex2 == 0) stop ('getInput says: The LUC file does not contain last requested year')
+                ntimes=arrindex2-arrindex+1
+
+                ! Read in and keep only the required elements.
+
+                allocate(LUCFromFile(icc,ntimes))
+                LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,ntimes])
+
+                allocate(LUCTime(ntimes))
+                LUCTime = int(fileTime(arrindex:arrindex2))
             else
                 ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
+                arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearLUC))
                 if (arrindex == 0) stop ('getInput says: The LUC file does not contain requested year')
 
                 ! We read in only the suggested year
@@ -1341,7 +1400,6 @@ contains
 
             lengthOfFile = ncGetDimLen(obswetid, 'time')
             allocate(fileTime(lengthOfFile))
-            allocate(OBSWETFTime(lengthOfFile))
 
             fileTime = ncGet1DVar(obswetid, 'time', start = [1], count = [lengthOfFile])
 
@@ -1349,7 +1407,7 @@ contains
             ! We want to retain all except any partial day info.
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
-                OBSWETFTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
+                fileTime(i) = dateTime(1) * 10000. + dateTime(2) * 100. + dateTime(3)
             end do
 
             if (.not. projectedGrid) then
@@ -1362,18 +1420,32 @@ contains
             end if
 
             if (transientOBSWETF) then
-                ! We read in the whole OBSWETF times series and store it.
-                allocate(OBSWETFFromFile(lengthOfFile))
-                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+                ! Find the beginning and end day in the file. 
+                ! Assume we are grabbing from first day of start year to last day of last year.
 
+                startTime = real(readMetStartYear) * 10000. + 1. * 100. + 1.
+                endTime = real(readMetEndYear) * 10000. + 12. * 100. + 31.
+
+                arrindex = checkForTime(lengthOfFile,fileTime,startTime)
+                if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain first requested day')
+                arrindex2 = checkForTime(lengthOfFile,fileTime,endTime)
+                if (arrindex2 == 0) stop ('getInput says: The OBSWETF file does not contain last requested day')
+                ntimes=arrindex2-arrindex+1
+
+                ! Read in and keep only the required elements.
+
+                allocate(OBSWETFFromFile(ntimes))
+                OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,ntimes])
+
+                allocate(OBSWETFTime(ntimes))
+                OBSWETFTime = fileTime(arrindex:arrindex2)
             else
-
                 ! Find the requested day and year in the file.
                 ! Assume we are grabbing from day 1
-                startWETTime = real(fixedYearOBSWETF) * 10000. + 1. * 100. + 1.
+                startTime = real(fixedYearOBSWETF) * 10000. + 1. * 100. + 1.
 
                 ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,OBSWETFTime,startWETTime)
+                arrindex = checkForTime(lengthOfFile,fileTime,startTime)
                 if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
                 ! We read in only the suggested year's worth of daily data
@@ -1384,8 +1456,7 @@ contains
                 allocate(OBSWETFFromFile(lastDOY))
                 OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
-                ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
-                deallocate(OBSWETFTime)
+                ! Lastly, remake the OBSWETFTime to be only counting for one year for simplicity
                 allocate(OBSWETFTime(lastDOY))
                 do d = 1,lastDOY
                     OBSWETFTime(d) = real(d)
