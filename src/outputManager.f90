@@ -253,7 +253,7 @@ contains
         logical                                 :: valid
 
         valid = .true.
-        if (timeFreq == 'annually') then
+        if (c_switch%doAnnualOutput .and. timeFreq == 'annually') then
             descriptor%timeFreq = timeFreq
         elseif (c_switch%domonthoutput .and. timeFreq == 'monthly') then
             descriptor%timeFreq = timeFreq
