@@ -101,7 +101,7 @@ if (PFTCompetition) then
                         nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
                     end if
                     barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
-!print*,k,i,m,j,nfcancmxrow(i,m,j),seed,barfm(i,m)
+
                     !> Keep track of the non-crop nfcancmx for use in loop below.
                     !> pftarrays keeps track of the nfcancmxrow for all non-crops
                     !> indexposj and indexposm store the index values of the non-crops
@@ -109,11 +109,10 @@ if (PFTCompetition) then
                     !> these arrays.
                     pftarrays(i,m,k) = nfcancmxrow(i,m,j)
                     indexposj(i,m,k) = j
-! print*,indexposj(i,m,k)
-                    !indexposm(i,m,k) = n
+
                     n = n+1
                     k = k+1
-                    !if (j == icc) k=1  !reset k for next tile
+
                 end if !crops
             end do !icc
         end do !nmos
@@ -144,15 +143,7 @@ if (PFTCompetition) then
 end if  ! PFTCompetition
 
 !> get fcans for use by class using the nfcancmxs just read in
-! k1=0
 do 997 j = 1, ican
-    ! if(j.eq.1) then
-    ! k1 = k1 + 1
-    ! else
-    ! k1 = k1 + nol2pfts(j-1)
-    ! endif
-    ! k2 = k1 + nol2pfts(j) - 1
-    ! do 998 n = k1, k2
     do 998 n = reindexPFTs(j,1), reindexPFTs(j,2)
     do i = 1, nlat
         do m = 1, nmos
@@ -180,13 +171,14 @@ end subroutine initializeLandCover
 !! related carbon emissions. set of rules are followed to determine the fate of carbon that
 !! results from deforestation or replacement of grasslands by crops.
 !> @author Vivek Arora
-subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
+subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, useTracer, & ! In
                 grclarea, iday, todfrac, yesfrac, interpol,  & ! In
                 pfcancmx, nfcancmx, & ! In/ Out 
-                gleafmas, bleafmas, stemmass, rootmass, & ! In / Out
-                litrmass, soilcmas, vgbiomas, gavgltms, & ! In / Out
-                gavgscms, fcancmx, fcanmx, & ! In / Out
-                lucemcom, lucltrin, lucsocin) ! Out
+                      gleafmas,    bleafmas, stemmass,       rootmass,    & ! In / Out
+                      litrmass,    soilcmas, vgbiomas,       gavgltms,    & ! In / Out
+                gavgscms, fcancmx, fcanmx, tracerLitrMass, tracerSoilCMass, & ! In/Out
+                tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In / Out
+                      lucemcom,    lucltrin, lucsocin)                ! Out
   !
   !     ----------------------------------------------------------------
   !
@@ -230,8 +222,13 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
   integer, intent(in) :: iday       !<day of year
   logical, intent(in) :: leapnow    !< true if this year is a leap year. Only used if the switch 'leap' is true.
   logical, intent(in) ::  interpol  !<if todfrac & yesfrac are provided then interpol must be set to false so that
-                                    !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx
-                                    !<which are year end values
+                            !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx
+                            !<which are year end values
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                            
   real, intent(in) :: grclarea(nilg)       !<gcm grid cell area, km2                                    
   logical, intent(in) :: PFTCompetition   !<true if the competition subroutine is on.
   real, intent(in) :: todfrac(nilg,icc)    !<today's fractional coverage of all pfts
@@ -254,6 +251,13 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
   real, intent(inout) :: gavgscms(nilg)       !<grid averaged soil c mass including the LUC product pool, kg c/m2
   real, intent(inout) :: nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
   real, intent(inout) :: fcanmx(nilg,icp1)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+  real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
+  real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+
   real, intent(out) :: lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
   real, intent(out) :: lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
   real, intent(out) :: lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
@@ -623,15 +627,7 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
 
       !> Find above ground biomass and treatment index for combust, paper,
       !> and furniture
-      !k1=0
       do 500 j = 1, ican
-        ! if(j.eq.1) then
-        !   k1 = k1 + 1
-        ! else
-        !   k1 = k1 + nol2pfts(j-1)
-        ! endif
-        ! k2 = k1 + nol2pfts(j) - 1
-        ! do 510 m = k1, k2
         do 510 m = reindexPFTs(j,1), reindexPFTs(j,2)
           abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
           select case(classpfts(j))
@@ -696,11 +692,21 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
             !COMBAK PERLAY
             litrmass(i,j)=litrmass(i,j)*term
             soilcmas(i,j)=soilcmas(i,j)*term
-!             do 572 k = 1, ignd
-!               litrmass(i,j,k)=litrmass(i,j,k)*term
-!               soilcmas(i,j,k)=soilcmas(i,j,k)*term
-! 572         continue
-            !COMBAK PERLAY
+            !do 572 k = 1, ignd
+            !  litrmass(i,j,k)=litrmass(i,j,k)*term
+            !  soilcmas(i,j,k)=soilcmas(i,j,k)*term
+!572         continue
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerGLeafMass(i,j) = tracerGLeafMass(i,j) * term
+              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) * term
+              tracerStemMass(i,j) = tracerStemMass(i,j) * term
+              tracerRootMass(i,j) = tracerRootMass(i,j) * term
+              do k = 1, ignd
+                tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) * term
+                tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) * term
+              end do  
+            end if 
+
           endif
 570   continue
 !>
@@ -712,10 +718,14 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
           !COMBAK PERLAY
           litrmass(i,iccp1)=litrmass(i,iccp1)*term
           soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
-!           do 582 k = 1, ignd
-!           litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
-!           soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
-! 582       continue
+          do 582 k = 1, ignd
+          !litrmass(i,iccp1,k)=litrmass(i,iccp1,k)*term
+          !soilcmas(i,iccp1,k)=soilcmas(i,iccp1,k)*term
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerLitrMass(i,iccp1,k) = tracerLitrMass(i,iccp1,k) * term
+            tracerSoilCMass(i,iccp1,k) = tracerSoilCMass(i,iccp1,k) * term            
+          end if 
+582       continue
           !COMBAK PERLAY
         endif
 !>
@@ -727,19 +737,11 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
 !!from the chopped off fraction of this pft, gets assimilated into
 !!soil c of all existing pfts as well.
 !!
-      ! k1=0
       do 600 j = 1, ican
-        ! if(j.eq.1) then
-        !   k1 = k1 + 1
-        ! else
-        !   k1 = k1 + nol2pfts(j-1)
-        ! endif
-        ! k2 = k1 + nol2pfts(j) - 1
-        !do 610 m = k1, k2
         do 610 m = reindexPFTs(j,1), reindexPFTs(j,2)
             if(fraciord(i,m).eq.-1)then
 
-!>chop off above ground biomass
+              !>chop off above ground biomass
               redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *abvgmass(i,m)*km2tom2
 
@@ -750,35 +752,33 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
                 write(6,*)'grid cell = ',i,' pft = ',m
                 call xit('luc',-8)
               endif
-!>
-!>rootmass needs to be chopped as well and all of it goes to the litter/paper pool
-!>
+
+              !>rootmass needs to be chopped as well and all of it goes to the litter/paper pool
               redubmas2=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i)  &
                        *rootmass(i,m)*km2tom2
 
-!>keep adding chopped off biomass for each pft to get the total for a grid cell for diagnostics
-
+              !>keep adding chopped off biomass for each pft to get the total for a grid cell for diagnostics
               chopedbm(i)=chopedbm(i) + redubmas1 + redubmas2
 
-!>find what's burnt, and what's converted to paper & furniture
+              !>find what's burnt, and what's converted to paper & furniture
               combustc(i,m)=combust(treatind(i,m))*redubmas1
               paperc(i,m)=paper(treatind(i,m))*redubmas1 + redubmas2
               furnturc(i,m)=furniture(treatind(i,m))*redubmas1
 
-!>keep adding all this for a given grid cell
+              !>keep adding all this for a given grid cell
               grsumcom(i)=grsumcom(i)+combustc(i,m)
               grsumpap(i)=grsumpap(i)+paperc(i,m)
               grsumfur(i)=grsumfur(i)+furnturc(i,m)
-!>
+
 !>litter from the chopped off fraction of the chopped
 !>off pft needs to be assimilated, and so does soil c from
 !>the chopped off fraction of the chopped pft
 !>
             !COMBAK PERLAY
-            incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+                incrlitr=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                     *litrmass(i,m)*km2tom2
 
-            incrsolc=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
+                incrsolc=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                     *soilcmas(i,m)*km2tom2
 
             grsumlit(i)=grsumlit(i)+incrlitr
@@ -861,13 +861,17 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
 !>      Now add the C to the gridcell's LUC pools of litter and soil C.
 !!      The fast decaying dead LUC C (paper) and slow (furniture) are kept in
 !!      the first 'soil' layer and iccp2 position. The litter and soil C
-!!      contributions are added to the normal litter and soil C pools below.   
+!!      contributions are added to the normal litter and soil C pools below.        
        !COMBAK PERLAY
        litrmass(i,iccp2)=litrmass(i,iccp2)+grdenpap(i) 
        soilcmas(i,iccp2)=soilcmas(i,iccp2)+grdenfur(i) 
        ! litrmass(i,iccp2,1)=litrmass(i,iccp2,1)+grdenpap(i) 
        ! soilcmas(i,iccp2,1)=soilcmas(i,iccp2,1)+grdenfur(i) 
        !COMBAK PERLAY
+       if (useTracer > 0) then ! Now same operation for tracer
+         tracerLitrMass(i,iccp2,1) = tracerLitrMass(i,iccp2,1) + grdenpap(i) 
+         tracerSoilCMass(i,iccp2,1) = tracerSoilCMass(i,iccp2,1) + grdenfur(i) 
+       end if 
 
 
 !     Add any adjusted litter and soilc back their respective pools
@@ -880,6 +884,10 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
                 ! litrmass(i,j,:)=litrmass(i,j,:)+grdenlit(i,:) 
                 ! soilcmas(i,j,:)=soilcmas(i,j,:)+grdensoc(i,:)                 
                 !COMBAK PERLAY
+                if (useTracer > 0) then ! Now same operation for tracer
+                  tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + grdenlit(i,:) 
+                  tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + grdensoc(i,:) 
+                end if 
           else
             gleafmas(i,j)=0.0
             bleafmas(i,j)=0.0
@@ -891,6 +899,14 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
             ! litrmass(i,j,:)=0.0  ! set all soil layers to 0
             ! soilcmas(i,j,:)=0.0
             !COMBAK PERLAY
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerGLeafMass(i,j) = 0.
+              tracerBLeafMass(i,j) = 0.
+              tracerStemMass(i,j) = 0.
+              tracerRootMass(i,j) = 0.
+              tracerLitrMass(i,j,:) = 0.
+              tracerSoilCMass(i,j,:) = 0.
+            end if 
           endif
 650   continue
 
@@ -898,17 +914,22 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, & ! In
         if(barefrac(i).gt.zero)then
             litrmass(i,iccp1)=litrmass(i,iccp1)+grdenlit(i) 
             soilcmas(i,iccp1)=soilcmas(i,iccp1)+grdensoc(i) 
+            !litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
+            !soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
+            if (useTracer > 0) then ! Now same operation for tracer
+              tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + grdenlit(i,:) 
+              tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + grdensoc(i,:) 
+            end if 
         else
           litrmass(i,iccp1)=0.0 ! set all soil layers to 0
           soilcmas(i,iccp1)=0.0
+          !litrmass(i,iccp1,:)=0.0 ! set all soil layers to 0
+          !soilcmas(i,iccp1,:)=0.0
+          if (useTracer > 0) then ! Now same operation for tracer
+            tracerLitrMass(i,iccp1,:) = 0.0 ! set all soil layers to 0
+            tracerSoilCMass(i,iccp1,:) = 0.0          
+          endif
         endif
-        ! if(barefrac(i).gt.zero)then
-        !     litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
-        !     soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
-        ! else
-        !   litrmass(i,iccp1,:)=0.0 ! set all soil layers to 0
-        !   soilcmas(i,iccp1,:)=0.0
-        ! endif
         !COMBAK PERLAY
 
 !>the combusted c is used to find the c flux that we can release into the atmosphere.

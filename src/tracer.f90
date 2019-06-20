@@ -63,6 +63,8 @@ contains
     integer, intent(in) :: il2 !<other variables: il2=ilg
     integer, intent(in) :: ilg !<number of grid cells in this latitude band.
 
+    real, intent(out) :: tracerValue(ilg) !< Temporary variable containing the tracer CO2 value to be used. Units vary.
+
     real, pointer :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -84,7 +86,6 @@ contains
     ! 
     ! Local
     integer :: i,j,k
-    real, intent(out) :: tracerValue(ilg) !< Temporary variable containing the tracer CO2 value to be used. Units vary.
     
     ! Point pointers 
     tracerGLeafMass   => tracer%gLeafMassgat
@@ -129,8 +130,7 @@ contains
           if (gleafmas(i,j) < zero) tracerGLeafMass(i,j) = 0.
         end if
         if (sum(litrmass(i,j,:)) < zero) tracerLitrMass(i,j,:) = 0.
-        if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.       
-           
+        if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.                  
       end do ! j 
       
       if (ipeatland(i) > 0) print*,'Tracer not set up yet for peatlands.'
@@ -169,10 +169,10 @@ contains
     real, pointer :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-    real, pointer :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
-    real, pointer :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-    integer, pointer :: spinfast              !< Set this to a higher number up to 10 to spin up
-                                              !< soil carbon pool faster
+    real, pointer :: tracerMossCMass(:)        !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+    real, pointer :: tracerMossLitrMass(:)     !< Tracer mass in moss litter, \f$kg C/m^2\f$
+    integer, pointer :: spinfast               !< Set this to a higher number up to 10 to spin up
+                                               !< soil carbon pool faster
 
     integer  :: i,j,k    !counters
     real :: dfac    !< decay constant. \f$y^{-1}\f$
