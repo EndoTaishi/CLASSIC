@@ -885,8 +885,11 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, useTracer, & ! In
                 ! soilcmas(i,j,:)=soilcmas(i,j,:)+grdensoc(i,:)                 
                 !COMBAK PERLAY
                 if (useTracer > 0) then ! Now same operation for tracer
-                  tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + grdenlit(i,:) 
-                  tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + grdensoc(i,:) 
+                  !COMBAK PERLAY
+                  !tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + grdenlit(i,:) 
+                  !tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + grdensoc(i,:) 
+                  tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + grdenlit(i) 
+                  tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + grdensoc(i) 
                 end if 
           else
             gleafmas(i,j)=0.0
@@ -917,8 +920,10 @@ subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, useTracer, & ! In
             !litrmass(i,iccp1,:)=litrmass(i,iccp1,:)+grdenlit(i,:) 
             !soilcmas(i,iccp1,:)=soilcmas(i,iccp1,:)+grdensoc(i,:) 
             if (useTracer > 0) then ! Now same operation for tracer
-              tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + grdenlit(i,:) 
-              tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + grdensoc(i,:) 
+              ! tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + grdenlit(i,:) 
+              ! tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + grdensoc(i,:) 
+              tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + grdenlit(i) 
+              tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + grdensoc(i) 
             end if 
         else
           litrmass(i,iccp1)=0.0 ! set all soil layers to 0

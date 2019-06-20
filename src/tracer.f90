@@ -78,8 +78,10 @@ contains
     real, pointer :: bleafmas(:,:)     !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: stemmass(:,:)     !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: rootmass(:,:)     !< Root mass for each of the CTEM PFTs, \f$kg c/m^2\f$
-    real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
-    real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    !COMBAK PERLAY
+    ! real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    ! real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    !COMBAK PERLAY
     real, pointer :: Cmossmas(:)       !<C in moss biomass, \f$kg C/m^2\f$
     real, pointer :: litrmsmoss(:)     !<moss litter mass, \f$kg C/m^2\f$
     integer, pointer :: ipeatland(:) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
@@ -100,8 +102,9 @@ contains
     bleafmas          => vgat%bleafmas
     stemmass          => vgat%stemmass
     rootmass          => vgat%rootmass
-    litrmass          => vgat%litrmass
-    soilcmas          => vgat%soilcmas
+    !COMBAK PERLAY
+    ! litrmass          => vgat%litrmass
+    ! soilcmas          => vgat%soilcmas
     Cmossmas          => vgat%Cmossmas
     litrmsmoss        => vgat%litrmsmoss
     ipeatland        => vgat%ipeatland 
@@ -129,8 +132,10 @@ contains
           if (bleafmas(i,j) < zero) tracerBLeafMass(i,j) = 0.
           if (gleafmas(i,j) < zero) tracerGLeafMass(i,j) = 0.
         end if
-        if (sum(litrmass(i,j,:)) < zero) tracerLitrMass(i,j,:) = 0.
-        if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.                  
+        !COMBAK PERLAY
+        !if (sum(litrmass(i,j,:)) < zero) tracerLitrMass(i,j,:) = 0.
+        !if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.                  
+        !COMBAK PERLAY
       end do ! j 
       
       if (ipeatland(i) > 0) print*,'Tracer not set up yet for peatlands.'
@@ -329,8 +334,9 @@ subroutine checkTracerBalance(il1,il2)
   real, pointer :: bleafmas(:,:)     !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
   real, pointer :: stemmass(:,:)     !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
   real, pointer :: rootmass(:,:)     !< Root mass for each of the CTEM PFTs, \f$kg c/m^2\f$
-  real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
-  real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+  !COMBAK PERLAY
+  ! real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+  ! real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
   integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
                       ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                       !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
@@ -351,8 +357,9 @@ subroutine checkTracerBalance(il1,il2)
   bleafmas          => vgat%bleafmas
   stemmass          => vgat%stemmass
   rootmass          => vgat%rootmass
-  litrmass          => vgat%litrmass
-  soilcmas          => vgat%soilcmas
+  !COMBAK PERLAY
+  ! litrmass          => vgat%litrmass
+  ! soilcmas          => vgat%soilcmas
   useTracer         => c_switch%useTracer
   
   ! ---------
@@ -402,22 +409,23 @@ subroutine checkTracerBalance(il1,il2)
         end if 
       end if 
 
-      do k = 1, ignd
-        ! green leaf mass 
-        if (abs(tracerLitrMass(i,j,k) - litrmass(i,j,k)) > tolrance) then 
-          print*,'checkTracerBalance: Tracer balance fail for litter mass'
-          print*,i,'PFT',j,'layer',k,'tracerLitrMass',tracerLitrMass(i,j,k),&
-                    'litrmass',litrmass(i,j,k)            
-          call xit('checkTracerBalance',-1)
-        end if 
-        ! green leaf mass 
-        if (abs(tracerSoilCMass(i,j,k) - soilcmas(i,j,k)) > tolrance) then 
-          print*,'checkTracerBalance: Tracer balance fail for soil C mass'
-          print*,i,'PFT',j,'layer',k,'tracerSoilCMass',tracerSoilCMass(i,j,k),&
-                    'soilcmas',soilcmas(i,j,k)    
-          call xit('checkTracerBalance',-1)
-        end if 
-      end do 
+      !COMBAK PERLAY
+      ! do k = 1, ignd
+      !   ! green leaf mass 
+      !   if (abs(tracerLitrMass(i,j,k) - litrmass(i,j,k)) > tolrance) then 
+      !     print*,'checkTracerBalance: Tracer balance fail for litter mass'
+      !     print*,i,'PFT',j,'layer',k,'tracerLitrMass',tracerLitrMass(i,j,k),&
+      !               'litrmass',litrmass(i,j,k)            
+      !     call xit('checkTracerBalance',-1)
+      !   end if 
+      !   ! green leaf mass 
+      !   if (abs(tracerSoilCMass(i,j,k) - soilcmas(i,j,k)) > tolrance) then 
+      !     print*,'checkTracerBalance: Tracer balance fail for soil C mass'
+      !     print*,i,'PFT',j,'layer',k,'tracerSoilCMass',tracerSoilCMass(i,j,k),&
+      !               'soilcmas',soilcmas(i,j,k)    
+      !     call xit('checkTracerBalance',-1)
+      !   end if 
+      ! end do 
     end do
   end do  
 
