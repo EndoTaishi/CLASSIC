@@ -5,6 +5,7 @@ var searchData=
   ['abszero',['abszero',['../namespaceclassic__params.html#a0cd9f92ef25a93ec404e15fa84637f33',1,'classic_params']]],
   ['acidgat',['acidgat',['../structclass__statevars_1_1class__gather.html#abaed10e79cc08627ee52b26c74305720',1,'class_statevars::class_gather']]],
   ['actlyr',['actlyr',['../structclass__statevars_1_1class__rotated.html#ad8a01437993556cd096386d02b10301d',1,'class_statevars::class_rotated']]],
+  ['actlyrthisyrrot',['actlyrthisyrrot',['../structclass__statevars_1_1class__rotated.html#ae306b54b1d72da5db82f0d2d1c97ab58',1,'class_statevars::class_rotated']]],
   ['acvdgat',['acvdgat',['../structclass__statevars_1_1class__gather.html#aa3cc6089e9f0e4b0bbc32c1d23dbd05a',1,'class_statevars::class_gather']]],
   ['afrleaf',['afrleaf',['../structctem__statevars_1_1veg__rot.html#a6940a2c87afbfb988b72f1b553407535',1,'ctem_statevars::veg_rot::afrleaf()'],['../structctem__statevars_1_1veg__gat.html#aa78bfdc1d005c92664ed2fafb724ef67',1,'ctem_statevars::veg_gat::afrleaf()']]],
   ['afrroot',['afrroot',['../structctem__statevars_1_1veg__rot.html#ad71980a0eef734d58d49b053ee1fa14e',1,'ctem_statevars::veg_rot::afrroot()'],['../structctem__statevars_1_1veg__gat.html#a761d02e761e0451993829ecbfaca4250',1,'ctem_statevars::veg_gat::afrroot()']]],

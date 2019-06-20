@@ -343,269 +343,273 @@ end subroutine mosspht
 !!@{
 !> Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)
 !> @author Yuanqiao Wu
-subroutine  hetres_peat(    il1,          il2,          ilg,   ipeatland,   &
-                          isand,   litrmsmoss,      peatdep,      wtable,   &
-                           tbar,        thliq,        thice,       thpor,   & 
-                             bi,        zbotw,        delzw,      psisat,   &
-                litresms, socresp, resoxic, resanoxic)
+subroutine  hetres_peat(    il1,          il2,          ilg,   ipeatland,   & ! In 
+                          isand,   litrmsmoss,      peatdep,      wtable,   & ! In 
+                          tbar,        thliq,        thice,       thpor,   & ! In 
+                          bi,        zbotw,        delzw,      psisat,   &! In 
+                          useTracer, tracerMossLitrMass, & ! In                              
+                          litresms, socresp, resoxic, resanoxic, & ! Out 
+                          litResMossTracer, soCResPeatTracer ) ! Out 
+                          
+  !   History:
 
+  ! J. Melton Sep 26 2016
+  !   - Bring into rest of model and model formatting, convert to doxygen compatible code
+  !   ----------------------------------
 
-!   History:
+  use classic_params,      only :icc, ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms,TFREZ
 
-! J. Melton Sep 26 2016
-!   - Bring into rest of model and model formatting, convert to doxygen compatible code
-!   ----------------------------------
+  implicit none
 
-use classic_params,      only :icc, ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms,TFREZ
+  integer, intent(in) :: il1, il2, ilg
+  integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. 
+                                !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+                                !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                                !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                                !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.                                      
+  integer, dimension(ilg,ignd), intent(in) :: isand   !<
+  integer, dimension(ilg), intent(in) :: ipeatland    !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
+  real, dimension(ilg), intent(in) :: peatdep         !<
+  real, dimension(ilg), intent(in) :: litrmsmoss      !<
+  real, dimension(ilg,ignd), intent(in) :: thliq      !<
+  real, dimension(ilg,ignd), intent(in) :: thice      !<
+  real, dimension(ilg,ignd), intent(in) :: thpor      !<
+  real, dimension(ilg,ignd), intent(in) :: bi         !<
+  real, dimension(ilg,ignd), intent(in) :: zbotw      !<
+  real, dimension(ilg,ignd), intent(in) :: delzw      !<
+  real, dimension(ilg,ignd), intent(in) :: psisat     !< saturated matrix potential in soil (m)
+  real, dimension(ilg), intent(in) :: wtable          !< water table (m)
+  real, dimension(ilg,ignd), intent(in) :: tbar       !< soil temperature (K)
+  real, intent(in) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
-implicit none
+  real, dimension(ilg), intent(out) :: litresms        !< moss litter respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
+  real, dimension(ilg), intent(out) :: socresp         !< soil C respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
+  real, dimension(ilg), intent(out) :: resoxic         !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
+  real, dimension(ilg), intent(out) :: resanoxic       !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
+  real, intent(out) :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) 
+  real, intent(out) :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
-!     inputs
-integer, intent(in) :: il1, il2, ilg
-integer, dimension(ilg,ignd), intent(in) :: isand   !<
-integer, dimension(ilg), intent(in) :: ipeatland    !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
-real, dimension(ilg), intent(in) :: peatdep         !<
-real, dimension(ilg), intent(in) :: litrmsmoss      !<
-real, dimension(ilg,ignd), intent(in) :: thliq      !<
-real, dimension(ilg,ignd), intent(in) :: thice      !<
-real, dimension(ilg,ignd), intent(in) :: thpor      !<
-real, dimension(ilg,ignd), intent(in) :: bi         !<
-real, dimension(ilg,ignd), intent(in) :: zbotw      !<
-real, dimension(ilg,ignd), intent(in) :: delzw      !<
-real, dimension(ilg,ignd), intent(in) :: psisat     !< saturated matrix potential in soil (m)
-real, dimension(ilg), intent(in) :: wtable          !< water table (m)
-real, dimension(ilg,ignd), intent(in) :: tbar       !< soil temperature (K)
+  !     internal variables
+  integer :: i,j
+  real:: Cso (ilg)            !< carbon mass in the oxic compartment ($kg C m^{-2}$)
+  real:: Csa (ilg)            !< carbon mass in the anxic compartment ($kg C m^{-2}$)
+  !real:: tracerCso (ilg)      !< Tracer carbon mass in the oxic compartment ($kg C m^{-2}$)
+  !real:: tracerCsa (ilg)      !< Tracer carbon mass in the anxic compartment ($kg C m^{-2}$)
+  real:: fto(ilg)             !< temperature factor of the oxic soil respiration
+  real:: fta(ilg)             !< temperature factor of the anoxic soil respiration
+  real:: tsoilo(ilg)          !< average temperature in the oxic compartment(C)
+  real:: tsoila(ilg)          !< average temperature of the anoxic compartment (C)
+  real:: ewtable(ilg)         !< effective water table depth (m)
+  real:: ratescpo(ilg)        !< oxic respiration rate constant($\mu mol CO_2 [kg C]^{-2} s^{-1}$)
+  real:: ratescpa(ilg)        !< anoxic respiration rate constant($\mu mol CO_2 [kg C]^{-2} s^{-1}$)
+  real:: psi(ilg,ignd)        !< matrix potential of soil layers (Pa)
+  real:: q10funcms(ilg)       !< q10 fuction for moss litter respiration
+  real:: ltrmosclms(ilg)      !< moisture scale for litter respiration
+  real:: litrtempms(ilg)      !< temperature of the moss litter
+  real:: litpsims(ilg)        !< matrix potential of litter
+  real:: litrq10ms(ilg)       !< q10 coefficient as a functon of T (as in CTEM)
+  real:: soilq10o(ilg)        !< q10 coefficient of oxic soil
+  real:: soilq10a(ilg)        !< q10 coefficient of anoxic soil
+  integer:: lewtable(ilg)     !< layer index of the water table layer
 
-! outputs
+  !    ------------------------------------------------------------------
+  !
+  !    initialization
+  litresms(:) = 0.0
+  socresp(:) = 0.0
+  resoxic(:) = 0.0
+  resanoxic(:) = 0.0
+  tsoilo(:) = 0.0
+  tsoila(:) = 0.0
+  litResMossTracer = 0.
+  soCResPeatTracer = 0.
 
-real, dimension(ilg), intent(out) :: litresms        !< moss litter respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
-real, dimension(ilg), intent(out) :: socresp         !< soil C respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
-real, dimension(ilg), intent(out) :: resoxic         !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
-real, dimension(ilg), intent(out) :: resanoxic       !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
+  !> Calculate soil respiration from peat
 
-!     internal variables
-
-integer :: i,j
-real:: Cso (ilg)            !< carbon mass in the oxic compartment ($kg C m^{-2}$)
-real:: Csa (ilg)            !< carbon mass in the anxic compartment ($kg C m^{-2}$)
-real:: fto(ilg)             !< temperature factor of the oxic soil respiration
-real:: fta(ilg)             !< temperature factor of the anoxic soil respiration
-real:: tsoilo(ilg)          !< average temperature in the oxic compartment(C)
-real:: tsoila(ilg)          !< average temperature of the anoxic compartment (C)
-real:: ewtable(ilg)         !< effective water table depth (m)
-real:: ratescpo(ilg)        !< oxic respiration rate constant($\mu mol CO_2 [kg C]^{-2} s^{-1}$)
-real:: ratescpa(ilg)        !< anoxic respiration rate constant($\mu mol CO_2 [kg C]^{-2} s^{-1}$)
-real:: psi(ilg,ignd)        !< matrix potential of soil layers (Pa)
-real:: q10funcms(ilg)       !< q10 fuction for moss litter respiration
-real:: ltrmosclms(ilg)      !< moisture scale for litter respiration
-real:: litrtempms(ilg)      !< temperature of the moss litter
-real:: litpsims(ilg)        !< matrix potential of litter
-real:: litrq10ms(ilg)       !< q10 coefficient as a functon of T (as in CTEM)
-real:: soilq10o(ilg)        !< q10 coefficient of oxic soil
-real:: soilq10a(ilg)        !< q10 coefficient of anoxic soil
-integer:: lewtable(ilg)     !< layer index of the water table layer
-
-!    -------------common block parameters --------------
-!real     TFREZ
-!real     DELT,TFREZ
-
-!COMMON /CLASS1/ TFREZ
-!COMMON /CLASS1/ DELT,TFREZ ! EC Jan 19 2017.
-
-!    ------------------------------------------------------------------
-!
-!    initialization
-litresms(:) = 0.0
-socresp(:) = 0.0
-resoxic(:) = 0.0
-resanoxic(:) = 0.0
-tsoilo(:) = 0.0
-tsoila(:) = 0.0
-
-!>    ** calculate soil respiration from peat
-
-!>    find the effective water table depth and the layer index to divide
-!!    the peat soil into two compartments
-
-do i= il1, il2
- if (ipeatland(i) > 0) then ! only operate on peat tiles
-
-    ewtable(i)= wtable(i)
-    if (ewtable(i) .le. 0.0) then ! flooded
+  !> Find the effective water table depth and the layer index to divide
+  !! the peat soil into two compartments
+  do i= il1, il2
+    
+    if (ipeatland(i) > 0) then ! only operate on peat tiles
+      
+      ewtable(i)= wtable(i)
+      if (ewtable(i) <= 0.0) then ! flooded
         lewtable(i) = 0
-    elseif (ewtable(i) .le. 0.1) then ! below ground surface but in the moss layer
+      else if (ewtable(i) <= 0.1) then ! below ground surface but in the moss layer
         lewtable(i) = 1
-    else ! deeper in the soil column.
-        do j = 1, ignd
-            if (ewtable(i) .gt. zbotw(i,j)) then
-                lewtable(i)=j+1
-            endif
-        enddo
-    endif
+      else ! deeper in the soil column.
+          do j = 1, ignd
+            if (ewtable(i) > zbotw(i,j)) then
+              lewtable(i) = j + 1
+            end if
+          end do
+      end if
 
-!>    find the temperature in litter, oxic soil and anoxic soil in kelvin
-!!    lewtable is the layer index of the water table layer, lewtable = 0
-!!    indicates WTD is above the ground surface.
-!!    Set the oxic layer temperature to dctmin (minimum soil respiration
-!!    temperature) when the entire soil is in the anoxic zone.
+      !> Find the temperature in litter, oxic soil and anoxic soil in kelvin
+      !! lewtable is the layer index of the water table layer, lewtable = 0
+      !! indicates WTD is above the ground surface.
+      !! Set the oxic layer temperature to dctmin (minimum soil respiration
+      !! temperature) when the entire soil is in the anoxic zone.
 
-    if (lewtable(i) .eq. 0)   then  !WT is at or above the surface
+      if (lewtable(i) == 0)   then  !WT is at or above the surface
+
         do j = 1, ignd ! so find the temp of the total soil column.
-                       ! FLAG JM - this might not be appropriate for runs with the newer deeper soils and 20 layers! Sep 30 2016.
-            tsoila(i) = tsoila(i)+tbar(i,j)*delzw(i,j)
-        enddo
-        tsoila(i)=tsoila(i)/zbotw(i,ignd)
+          ! FLAG JM - this might not be appropriate for runs with the newer deeper soils and 20 layers! Sep 30 2016.
+          tsoila(i) = tsoila(i) + tbar(i,j) * delzw(i,j)
+        end do
+        tsoila(i) = tsoila(i) / zbotw(i,ignd)
         tsoilo(i) = dctmin
 
-    elseif (lewtable(i) .eq. 1) then     !WT is at the first layer
-        tsoilo(i)=tbar(i,1)
-        do j= lewtable(i)+1, ignd
-            tsoila(i)=tsoila(i)+ tbar(i,j)*delzw(i,j)
-        enddo
-        tsoila(i)=(tsoila(i)+tbar(i,1)*(zbotw(i,lewtable(i)) &
-                -ewtable(i)))/(zbotw(i,ignd)-ewtable(i))
+      else if (lewtable(i) == 1) then     !WT is at the first layer
 
-    else                                !WT is below layer 1
-        do j = 1,lewtable(i)-1
-            tsoilo(i) = tsoilo(i)+ tbar(i,j)*delzw(i,j)
-        enddo
-        tsoilo(i)= (tsoilo(i)+ tbar(i,lewtable(i))* &
-                (ewtable(i)-zbotw(i,lewtable(i)-1)))/ewtable(i)
-        do j = ignd,lewtable(i)+1,-1
-            tsoila(i) = tsoila(i)+ tbar(i,j)*delzw(i,j)
-        enddo
-        tsoila(i)= (tsoila(i)+tbar(i,lewtable(i))* &
-                (zbotw(i,lewtable(i))-ewtable(i)) )/ &
-                (zbotw(i,ignd)-ewtable(i))
-    endif
+        tsoilo(i) = tbar(i,1)
+        do j = lewtable(i)+1, ignd
+          tsoila(i) = tsoila(i) + tbar(i,j) * delzw(i,j)
+        end do
+        tsoila(i) = (tsoila(i) + tbar(i,1) * (zbotw(i,lewtable(i)) - ewtable(i))) &
+                    / (zbotw(i,ignd) - ewtable(i))
 
-!>    calculate the temperature multiplier (ftsocres) for oxic and anoxic
-!!   soil compartments
+      else                                !WT is below layer 1
 
-    soilq10o(i) = tanhq10(1) + tanhq10(2)* ( tanh( tanhq10(3)*(tanhq10(4)-(tsoilo(i)-tfrez))))
-    soilq10a(i) = tanhq10(1) + tanhq10(2)* ( tanh( tanhq10(3)*(tanhq10(4)-(tsoila(i)-tfrez))))
+        do j = 1, lewtable(i)-1
+          tsoilo(i) = tsoilo(i) + tbar(i,j) * delzw(i,j)
+        end do
+        tsoilo(i) = (tsoilo(i) + tbar(i,lewtable(i)) * (ewtable(i) - zbotw(i,lewtable(i)-1))) &
+                                            / ewtable(i)
+        do j = ignd, lewtable(i)+1, -1
+            tsoila(i) = tsoila(i) + tbar(i,j) * delzw(i,j)
+        end do
+        tsoila(i) = (tsoila(i) + tbar(i,lewtable(i)) &
+                         * (zbotw(i,lewtable(i)) - ewtable(i)) ) &
+                         / (zbotw(i,ignd) - ewtable(i))
 
-    fto(i)= soilq10o(i)**(0.1*(tsoilo(i)-tfrez-15.0))
-    fta(i)= soilq10a(i)**(0.1*(tsoila(i)-tfrez-15.0))
+      end if
 
-!>    find the heterotrophic respiration rate constant in the oxic and
-!!    anoxic (unit in yr-1), based on Fig.2b in Frolking 2001
+      !> Calculate the temperature multiplier (ftsocres) for oxic and anoxic
+      !! soil compartments
 
-    if (ipeatland(i) == 1) then !bogs
-        if (ewtable(i) .lt. 0.0) then !flooded
+      soilq10o(i) = tanhq10(1) + tanhq10(2) * (tanh(tanhq10(3) * (tanhq10(4) - (tsoilo(i) - tfrez))))
+      soilq10a(i) = tanhq10(1) + tanhq10(2) * (tanh(tanhq10(3) * (tanhq10(4) - (tsoila(i) - tfrez))))
 
-            ratescpo(i)=0.0
-            ratescpa(i)=-0.183*exp(-18.0*peatdep(i))+0.03*peatdep(i)+0.0134
+      fto(i) = soilq10o(i)**(0.1 * (tsoilo(i) - tfrez - 15.0))
+      fta(i) = soilq10a(i)**(0.1 * (tsoila(i) - tfrez - 15.0))
 
-        elseif (ewtable(i).lt.0.30 .and.ewtable(i).ge.0.0) then !within the first 30 cm of surface
+      !> Find the heterotrophic respiration rate constant in the oxic and
+      !! anoxic (unit in yr-1), based on Fig.2b in Frolking 2001
 
-            ratescpo(i)=0.009*(1-exp(-20.*ewtable(i)))+0.015*ewtable(i)
-            ratescpa(i)=0.009*exp(-20.*ewtable(i))-0.183*exp(-18.*peatdep(i))-0.015*ewtable(i)+0.0044
+      if (ipeatland(i) == 1) then !bogs
+        if (ewtable(i) < 0.0) then !flooded
 
-        elseif (ewtable(i) .ge. 0.30) then !deeper in the soil column
+          ratescpo(i) = 0.0
+          ratescpa(i) = -0.183 * exp(-18.0 * peatdep(i)) + 0.03 * peatdep(i) + 0.0134
 
-            ratescpo(i)=0.0134-0.183*exp(-18.*ewtable(i))+0.003*ewtable(i)
-            ratescpa(i)=-0.183*exp(-18.*peatdep(i))+0.003*(peatdep(i)-wtable(i))+0.183*exp(-18.*ewtable(i))
-!           ratescpa(i)=-0.183*exp(-18*peatdep(i))+0.003*(peatdep(i)-wtable(i))+0.183*exp(-18*ewtable(i))-0.004504   !for continuity
-        endif
+        else if (ewtable(i) < 0.30 .and. ewtable(i) >= 0.0) then !within the first 30 cm of surface
 
-    elseif (ipeatland(i) == 2)  then !fens
-        if (ewtable(i) .lt. 0.0) then !flooded
+          ratescpo(i) = 0.009 * (1 - exp(-20. * ewtable(i))) + 0.015 * ewtable(i)
+          ratescpa(i) = 0.009 * exp(-20. * ewtable(i)) - 0.183 * exp(-18. * peatdep(i)) -0.015 * ewtable(i) + 0.0044
 
-            ratescpo(i) = 0.0
-            ratescpa(i) = 0.01512 -1.12*exp(-25.*peatdep(i))
+        else if (ewtable(i) >= 0.30) then !deeper in the soil column
 
-        elseif(ewtable(i).lt. 0.30 .and.ewtable(i).ge. 0.0)then !within the first 30 cm of surface
+          ratescpo(i) = 0.0134 - 0.183 * exp(-18. * ewtable(i)) + 0.003 * ewtable(i)
+          ratescpa(i) = -0.183 * exp(-18. * peatdep(i)) + 0.003 * (peatdep(i) - wtable(i)) &
+                                           + 0.183 * exp(-18. * ewtable(i))
+  ! ratescpa(i)=-0.183*exp(-18*peatdep(i))+0.003*(peatdep(i)-wtable(i))+0.183*exp(-18*ewtable(i))-0.004504   !for continuity
+        end if
+      elseif (ipeatland(i) == 2)  then !fens
+        if (ewtable(i) < 0.0) then !flooded
 
-            ratescpo(i) = -0.01*exp(-40.*ewtable(i))+0.015*ewtable(i)+0.01
-            ratescpa(i) = abs(-0.01*exp(-40.*ewtable(i))-1.12*exp( &
-                            -25.*peatdep(i))+0.015*ewtable(i)+0.005119)
+          ratescpo(i) = 0.0
+          ratescpa(i) = 0.01512 - 1.12 * exp(-25. * peatdep(i))
 
-        elseif(ewtable(i) .ge. 0.30) then !deeper in the soil column
+        else if (ewtable(i) < 0.30 .and. ewtable(i) >= 0.0) then !within the first 30 cm of surface
 
-            ratescpo(i) = 0.01512-1.12*exp(-25*ewtable(i))
-            ratescpa(i) = -1.12*(exp(-25.*peatdep(i))-exp(-25.*ewtable(i)))
-        endif
-    endif
+          ratescpo(i) = -0.01 * exp(-40. * ewtable(i)) + 0.015 * ewtable(i) + 0.01
+          ratescpa(i) = abs(-0.01 * exp(-40. * ewtable(i)) - 1.12 * exp( &
+                          -25. * peatdep(i)) + 0.015 * ewtable(i) + 0.005119)
 
-!>  Convert respiration rates from kg c/kg c.year to u-mol co2/kgC/s
-    ratescpo(i) = 2.64 * ratescpo(i)
-    ratescpa(i) = 2.64 * ratescpa(i)
+        else if(ewtable(i) >= 0.30) then !deeper in the soil column
 
-!>    Find the carbon storage in oxic and anoxic compartments (Cso. Csa)
-!!    The water table depth delineates the oxic and anoxic compartments.
-!!    functions (R**2 = 0.9999) determines the carbon content of each
-!!    compartment from a peat bulk density profile based on unpulished
-!!    data from P.J.H. Richard (described in fig. 1, Frokling et al.(2001)
-!!    conversion of peat into carbon with 48.7% (Mer Bleue unpublished data,
-!!    Moore)
+          ratescpo(i) = 0.01512 - 1.12 * exp(-25 * ewtable(i))
+          ratescpa(i) = -1.12 * (exp(-25. * peatdep(i)) - exp(-25. * ewtable(i)))
+        end if
+      end if
 
-    Cso(i) = peatStorage(ewtable(i))
-    !Cso(i) = (4056.6*ewtable(i)**2+72067.0*ewtable(i))*0.487/1000.0
-    Csa(i) = peatStorage(peatdep(i)) - Cso(i)
-    !Csa(i) = ((4056.6*peatdep(i)**2+72067.0*peatdep(i))*0.487/1000.0)-Cso(i)
+      !>  Convert respiration rates from kg c/kg c.year to u-mol co2/kgC/s
+      ratescpo(i) = 2.64 * ratescpo(i)
+      ratescpa(i) = 2.64 * ratescpa(i)
 
-!>    Find the soil respiration rate in Cso and Csa umol/m2/s.
-!!    Moisture multiplier (0.025) indicates rate reduction in decomposition due
-!!    to anoxia (Frolking et al. 2001), only applied to anoxic layer
+      !> Find the carbon storage in oxic and anoxic compartments (Cso. Csa)
+      !! The water table depth delineates the oxic and anoxic compartments.
+      !! functions (R**2 = 0.9999) determines the carbon content of each
+      !! compartment from a peat bulk density profile based on unpulished
+      !! data from P.J.H. Richard (described in fig. 1, Frokling et al.(2001)
+      !! conversion of peat into carbon with 48.7% (Mer Bleue unpublished data,
+      !! Moore)
 
-    resoxic(i)   = ratescpo(i)*Cso(i)*fto(i)
-    resanoxic(i) = ratescpa(i)*Csa(i)*fta(i) *0.025
-    socresp(i)   = resoxic(i) + resanoxic(i)
+      Cso(i) = peatStorage(ewtable(i))
+      !Cso(i) = (4056.6*ewtable(i)**2+72067.0*ewtable(i))*0.487/1000.0
+      Csa(i) = peatStorage(peatdep(i)) - Cso(i)
+      !Csa(i) = ((4056.6*peatdep(i)**2+72067.0*peatdep(i))*0.487/1000.0)-Cso(i)
+      
+      !> Find the soil respiration rate in Cso and Csa umol/m2/s.
+      !! Moisture multiplier (0.025) indicates rate reduction in decomposition due
+      !! to anoxia (Frolking et al. 2001), only applied to anoxic layer
 
-!>    **calcualte litter respiration of moss
+      resoxic(i)   = ratescpo(i) * Cso(i) * fto(i)
+      resanoxic(i) = ratescpa(i) * Csa(i) * fta(i) * 0.025
+      socresp(i)   = resoxic(i) + resanoxic(i)
+      
 
-!>    first find the matrix potential of the soil layers
-    do 60 j = 1, ignd
-        if(isand(i,j).eq.-3.or.isand(i,j).eq.-4) then  !ice or rock
+      !> Calcualte litter respiration of moss
 
-            psi(i,j) = 10000.0 ! a large number so that ltrmoscl = 0.2
-
+      !> First find the matrix potential of the soil layers
+      do 60 j = 1, ignd
+        if(isand(i,j) == -3 .or. isand(i,j) == -4) then  !ice or rock
+          psi(i,j) = 10000.0 ! a large number so that ltrmoscl = 0.2
         else ! soils
-            if (thliq(i,j)+ thice(i,j)+0.01 < thpor(i,j).and.  tbar(i,j) <273.16) then
-                psi(i,j) = 0.001
-            elseif (thice(i,j) > thpor(i,j))    then
-                psi(i,j) = 0.001   !set to saturation
-            else
-                psi(i,j)=psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thice(i,j)))**(-bi(i,j))
-            endif
-        endif
-60    continue
+          if (thliq(i,j) + thice(i,j) + 0.01 < thpor(i,j) .and. tbar(i,j) < 273.16) then
+              psi(i,j) = 0.001
+          else if (thice(i,j) > thpor(i,j)) then
+              psi(i,j) = 0.001   !set to saturation
+          else
+              psi(i,j) = psisat(i,j) * (thliq(i,j) / (thpor(i,j) - thice(i,j)))**(-bi(i,j))
+          end if
+        end if
+  60  continue
 
-!!    litter in peatlands can be saturated so we limit the rate by high
-!!    moisuture level similar to soil in CTEM, but less effectively (the
-!!    min moisture factor is at 0.5 for moss litter but at 0.2 for soil).
+      !! Litter in peatlands can be saturated so we limit the rate by high
+      !! moisuture level similar to soil in CTEM, but less effectively (the
+      !! min moisture factor is at 0.5 for moss litter but at 0.2 for soil).
 
-    litpsims(i) = psi(i,1)
-!    limit of ltrmoscalms at saturation
-    if (litpsims(i) .gt. 10000.0) then
-            ltrmosclms(i) = 0.2
-        elseif (litpsims(i).le. 10000.0 .and.litpsims(i).gt. 6.0) then
-        ltrmosclms(i)=1.0-0.8*((log10(litpsims(i))-log10(6.0))/(log10(10000.0)-log10(6.0)) )**1
-        elseif (litpsims(i).le. 6.0 .and.litpsims(i).gt. 4.0) then
-            ltrmosclms(i)=1.0
-        elseif (litpsims(i).le. 4.0 .and. litpsims(i).gt.psisat(i,1))then
-            ltrmosclms(i)=1.0-0.99*((log10(4.0)-log10(litpsims(i)))/(log10(4.0)-log10(psisat(i,1))))
-        elseif (litpsims(i) .le. psisat(i,1))                     then
-        ltrmosclms(i)=0.01
-        endif
-!    -----------------------------------------------------------------
+      litpsims(i) = psi(i,1)
+      
+      ! limit of ltrmoscalms at saturation
+      if (litpsims(i) > 10000.0) then
+        ltrmosclms(i) = 0.2
+      else if (litpsims(i) <= 10000.0 .and. litpsims(i) >  6.0) then
+        ltrmosclms(i) = 1.0 - 0.8 * ((log10(litpsims(i)) - log10(6.0)) / (log10(10000.0) - log10(6.0)))**1
+      else if (litpsims(i) <= 6.0 .and. litpsims(i) > 4.0) then
+        ltrmosclms(i) = 1.0
+      else if (litpsims(i) <= 4.0 .and. litpsims(i) > psisat(i,1)) then
+        ltrmosclms(i) = 1.0 - 0.99 * ((log10(4.0) - log10(litpsims(i))) / (log10(4.0) - log10(psisat(i,1))))
+      else if (litpsims(i) <= psisat(i,1)) then
+        ltrmosclms(i) = 0.01
+      end if
+    
+      ltrmosclms(i) = max(0.0, min(ltrmosclms(i), 1.0))
 
-        ltrmosclms(i)=max(0.0,min(ltrmosclms(i),1.0))
+      !! Find the temperature factor for moss litter respiration
+      litrtempms(i) = tbar(i,1) - tfrez
+      litrq10ms(i) = tanhq10(1) + tanhq10(2)* (tanh(tanhq10(3) * (tanhq10(4) - litrtempms(i))))
+      q10funcms(i) = litrq10ms(i)**(0.1 * (litrtempms(i) - 15.0))
 
-!!    find the temperature factor for moss litter respiration
-    litrtempms(i)=tbar(i,1)-tfrez
-        litrq10ms(i) = tanhq10(1) + tanhq10(2)* &
-&            ( tanh( tanhq10(3)*(tanhq10(4)-litrtempms(i))  ) )
-    q10funcms(i)= litrq10ms(i)**(0.1*(litrtempms(i)-15.0))
-
-!!    calculate the litter respiration rate in mosses and converts it
-!!     from kg c/kg c.year to u-mol co2/kg c.s using 2.64
-    litresms(i)=ltrmosclms(i)*litrmsmoss(i)*bsrateltms*2.64*q10funcms(i)
+      !! Calculate the litter respiration rate in mosses and converts it
+      !! from kg c/kg c.year to u-mol co2/kg c.s using 2.64
+      litresms(i)=ltrmosclms(i)*litrmsmoss(i)*bsrateltms*2.64*q10funcms(i)
 
     end if !ipeatland
-end do !i loop
-return
+  end do !i loop
+  return
 
 end subroutine hetres_peat
 

@@ -27,7 +27,7 @@ C!@author D. Verseghy, M. Lazare
      J                   VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
      K                   SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
      L                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,
-     M                   DLATGAT,ILMOS,JLMOS,
+     M                   DLATGAT,maxAnnualActLyrGAT,ILMOS,JLMOS,
      N                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,
      O                   TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
      P                   TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT,
@@ -51,7 +51,7 @@ C!@author D. Verseghy, M. Lazare
      +                  VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
      +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW,
-     +                  DLATROW)
+     +                  DLATROW,maxAnnualActLyrROT)
 
 C
 C     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT,ASVDROT,
@@ -132,6 +132,7 @@ C
       REAL WSNOROT(NL,NM)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
       REAL REFROT(NL,NM)    !<Snow grain size (for ISNOALB=1 option)
       REAL BCSNROT(NL,NM)   !<Black carbon mixing ratio (for ISNOALB=1 option)  [kg m-3]
+      REAL maxAnnualActLyrROT(NL, NT)  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).                                      
 C
       REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG),
      1        TPNDGAT(ILG),      ZPNDGAT(ILG),      TBASGAT(ILG),
@@ -139,7 +140,8 @@ C
      3        SNOGAT (ILG),      TCANGAT(ILG),      RCANGAT(ILG),
      4        SCANGAT(ILG),      GROGAT (ILG),      CMAIGAT(ILG),
      5        TSFSGAT(ILG,4),    TACGAT (ILG),      QACGAT (ILG),
-     6        WSNOGAT(ILG),      REFGAT (ILG),      BCSNGAT(ILG)
+     6        WSNOGAT(ILG),      REFGAT (ILG),      BCSNGAT(ILG),
+     7        maxAnnualActLyrGAT(ILG) 
 C
 C     * GATHER-SCATTER INDEX ARRAYS.
 C
@@ -363,6 +365,7 @@ C----------------------------------------------------------------------
           SNOGAT (K)=SNOROT (ILMOS(K),JLMOS(K))
           REFGAT (K)=REFROT (ILMOS(K),JLMOS(K))
           BCSNGAT(K)=BCSNROT(ILMOS(K),JLMOS(K))
+          maxAnnualActLyrGAT(k)=maxAnnualActLyrROT(ILMOS(K),JLMOS(K)) 
           WSNOGAT(K)=WSNOROT(ILMOS(K),JLMOS(K))
           TCANGAT(K)=TCANROT(ILMOS(K),JLMOS(K))
           RCANGAT(K)=RCANROT(ILMOS(K),JLMOS(K))

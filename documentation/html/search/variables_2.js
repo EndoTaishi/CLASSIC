@@ -47,6 +47,7 @@ var searchData=
   ['cproduct_5fmo_5fg',['cproduct_mo_g',['../structctem__statevars_1_1ctem__gridavg__monthly.html#a94d41c0181aa2d1d866cbedb3851dbe7',1,'ctem_statevars::ctem_gridavg_monthly']]],
   ['cproduct_5fyr_5fg',['cproduct_yr_g',['../structctem__statevars_1_1ctem__gridavg__annual.html#a795722328f5c9265eba05c3e850301d9',1,'ctem_statevars::ctem_gridavg_annual']]],
   ['crop',['crop',['../namespaceclassic__params.html#a6af203de7b89084fca1c2a6a88fcccac',1,'classic_params']]],
+  ['cryodiffus',['cryodiffus',['../namespaceclassic__params.html#acd306edd956f111551b796c060862896',1,'classic_params']]],
   ['cszgat',['cszgat',['../structclass__statevars_1_1class__gather.html#a8ffc8d191632aee12dfb790ec2f4bd91',1,'class_statevars::class_gather']]],
   ['ct',['ct',['../namespaceclassic__params.html#a4fad56d54b335aa5cc5a14d21b48bf5e',1,'classic_params']]],
   ['ctem_5fon',['ctem_on',['../structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f',1,'ctem_statevars::ctem_switches']]],

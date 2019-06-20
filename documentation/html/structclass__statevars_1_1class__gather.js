@@ -149,6 +149,7 @@ var structclass__statevars_1_1class__gather =
     [ "jlmos", "structclass__statevars_1_1class__gather.html#a4a39585d1a6078a5e9f66350c83c44b0", null ],
     [ "jwmos", "structclass__statevars_1_1class__gather.html#acb56c42877c77e33a9d68f80e67a0380", null ],
     [ "lnz0gat", "structclass__statevars_1_1class__gather.html#afe1b493d02667082659d23bea633cfec", null ],
+    [ "maxannualactlyrgat", "structclass__statevars_1_1class__gather.html#ab5eaacffd3e5c92c57a74b5999117c3c", null ],
     [ "padrgat", "structclass__statevars_1_1class__gather.html#ab9b78e81142044d7e9207624a86d6acd", null ],
     [ "paidgat", "structclass__statevars_1_1class__gather.html#a557ea36dcb5866b6ab7f13eede7eacc2", null ],
     [ "pamngat", "structclass__statevars_1_1class__gather.html#a9078db81f2e4e41684f96467e89826c7", null ],

@@ -103,7 +103,7 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Central module for all land use change operations. </p>
-<p>The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) <a class="el" href="citelist.html#CITEREF_Arora2010-416">[9]</a>. When the area of crop PFTs changes, CTEM generates LUC emissions. In the simulation where fractional coverage of PFTs is specified, the changes in fractional coverage of crop PFTs are made consistent with changes in the fractional coverage of natural non-crop PFTs. That is, an increase or decrease in the area of crop PFTs is associated with a corresponding decrease or increase in the area of non-crop PFTs. This approach is taken by Wang et al. (2006) <a class="el" href="citelist.html#CITEREF_Wang2006-he">[85]</a>, which allows one to reconstruct historical land cover given a spatial data set of changes in crop area over the historical period and an estimate of potential natural land cover for the pre-industrial period (as described in Sect. methods}). When competition between PFTs for space is allowed, only the fractional coverage of crop PFTs is specified. Similar to a simulation with prescribed PFT fractions, when the area of crop PFTs increases, the fractional coverage of non-crop PFTs is decreased in proportion to their existing coverage (Wang et al. (2006) <a class="el" href="citelist.html#CITEREF_Wang2006-he">[85]</a>. Alternatively, and in contrast to the simulation with prescribed PFT fractions, when the area of crop PFTs decreases then the generated bare fraction is available for recolonization by non-crop PFTs.</p>
+<p>The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) <a class="el" href="citelist.html#CITEREF_Arora2010-416">[9]</a>. When the area of crop PFTs changes, CTEM generates LUC emissions. In the simulation where fractional coverage of PFTs is specified, the changes in fractional coverage of crop PFTs are made consistent with changes in the fractional coverage of natural non-crop PFTs. That is, an increase or decrease in the area of crop PFTs is associated with a corresponding decrease or increase in the area of non-crop PFTs. This approach is taken by Wang et al. (2006) <a class="el" href="citelist.html#CITEREF_Wang2006-he">[88]</a>, which allows one to reconstruct historical land cover given a spatial data set of changes in crop area over the historical period and an estimate of potential natural land cover for the pre-industrial period (as described in Sect. methods}). When competition between PFTs for space is allowed, only the fractional coverage of crop PFTs is specified. Similar to a simulation with prescribed PFT fractions, when the area of crop PFTs increases, the fractional coverage of non-crop PFTs is decreased in proportion to their existing coverage (Wang et al. (2006) <a class="el" href="citelist.html#CITEREF_Wang2006-he">[88]</a>. Alternatively, and in contrast to the simulation with prescribed PFT fractions, when the area of crop PFTs decreases then the generated bare fraction is available for recolonization by non-crop PFTs.</p>
 <p>A decrease in the area of natural non-crop PFTs, associated with an increase in area of crop PFTs, results in deforested biomass (while the term <img class="formulaInl" alt="$\textit{deforested}$" src="form_832.png"/> implies clearing of forests, the same processes can occur in grasslands as well and is meant here to imply removal of the biomass). The deforested biomass is divided into three components: (i) the component that is combusted or used for fuel wood immediately after natural vegetated is deforested and which contributes to atmospheric <img class="formulaInl" alt="$CO_2$" src="form_545.png"/>, (ii) the component left as slash or used for pulp and paper products and (iii) the component that is used for long-lasting wood products. The fractions allocated to these three components depend on whether the PFTs are woody or herbaceous and on their aboveground vegetation biomass density (see Table 1 of <a class="el" href="citelist.html#CITEREF_Arora2010-416">[9]</a>). To account for the timescales involved, the fraction allocated to slash or pulp and paper products is transferred to the model's litter pool and the fraction allocated to long-lasting wood products is allocated to the model's soil carbon pool. While they are place in the litter and soil carbon pools, these LUC products are kept separate to allow accurate accounting. Land use change associated with a decrease in the area of natural vegetation thus redistributes carbon from living vegetation to dead litter and soil carbon pools and emits <img class="formulaInl" alt="$CO_2$" src="form_545.png"/> to the atmosphere through direct burning of the deforested biomass. The net result is positive LUC carbon emissions from land to the atmosphere.</p>
 <p>When croplands are abandoned, the area of natural PFTs increases. In simulations with prescribed fractional coverage of PFTs this results in a decreased carbon density for all model pools as the same amount of carbon is spread over a larger fraction of the grid cell. This reduced density implies that natural vegetation is able to take up carbon as it comes into equilibrium with the driving climate and atmospheric <img class="formulaInl" alt="$CO_2$" src="form_545.png"/> concentration. This creates the carbon sink associated with abandonment of croplands as natural vegetation grows in its place. In simulations with competition between PFTs, the abandoned land is treated as bare ground, which is subsequently available for recolonization, as mentioned above. As natural vegetation expands into bare ground it takes up carbon, again creating the carbon sink associated with abandonment of croplands. The net result is negative LUC carbon emissions as carbon is taken from atmosphere to grow vegetation over the area that was previously a cropland. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -242,13 +242,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2,ignd)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2,ignd)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
@@ -340,8 +340,6 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<hr/>
- <h2>Constants and parameters are located in <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a> </h2>
 <p>find/use provided current and previous day's fractional coverage if competition is on, we will adjust these later.</p>
 <p>perform interpolation</p>
 <p>use provided values but still check they are not negative</p>
@@ -353,8 +351,8 @@ Functions/Subroutines</h2></td></tr>
 <p>find previous day's bare fraction using previous day's fcancmxs</p>
 <p>check if the interpol didn't mess up the pbarefra. if so, take the extra amount from the pft with the largest area. but you can't take it from crops!</p>
 <p>based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.</p>
-<pre class="fragment">find above ground biomass and treatment index for combust, paper,
-and furniture </pre><p>check if a pft's fractional cover is increasing or decreasing</p>
+<p>Find above ground biomass and treatment index for combust, paper, and furniture</p>
+<p>check if a pft's fractional cover is increasing or decreasing</p>
 <p>check if bare fraction increases of decreases</p>
 <p>if the fractional coverage of pfts increases then spread their live &amp; dead biomass uniformly over the new fraction. this effectively reduces their per m2 c density.</p>
 <p>if bare fraction increases then spread its litter and soil c uniformly over the increased fraction</p>
@@ -365,20 +363,20 @@ and furniture </pre><p>check if a pft's fractional cover is increasing or decrea
 <p>find what's burnt, and what's converted to paper &amp; furniture</p>
 <p>keep adding all this for a given grid cell</p>
 <p>litter from the chopped off fraction of the chopped off pft needs to be assimilated, and so does soil c from the chopped off fraction of the chopped pft</p>
-<p>if bare fraction decreases then chop off the litter and soil c from the decreased fraction and add it to grsumlit &amp; grsumsoc for spreading over the whole grid cell</p>
+<p>if bare fraction decreases then chop off the litter and soil c from the decreased fraction and add it to grsumlit &amp; grsumsoc for putting in the LUC product pools</p>
 <p>calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) &amp; grsumfur(i)</p>
 <p>spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts, including the bare fraction.</p>
 <p>convert the available c into density</p>
 <pre class="fragment"> Now add the C to the gridcell's LUC pools of litter and soil C.
  The fast decaying dead LUC C (paper) and slow (furniture) are kept in
  the first 'soil' layer and iccp2 position. The litter and soil C
- contributions are added to the normal litter and soil C pools below. </pre><p>the combusted c is used to find the c flux that we can release into the atmosphere.</p>
+ contributions are added to the normal litter and soil C pools below.         </pre><p>the combusted c is used to find the c flux that we can release into the atmosphere.</p>
 <p>convert all land use change fluxes to u-mol CO2-C/m2.sec</p>
 <p>and finally we see if the total amount of carbon is conserved</p>
 <p>total litter mass (before + input from chopped off biomass) and after must be same</p>
 <p>for conservation totcmass(i) must be equal to ntotcmas(i) plus combustion carbon losses</p>
 <p>update grid averaged vegetation biomass, and litter and soil c densities</p>
-<p>just like total amount of carbon must balance, the grid averagred densities must also balance</p>
+<p>just like total amount of carbon must balance, the grid averaged densities must also balance</p>
 
 </div>
 </div>
@@ -388,7 +386,7 @@ and furniture </pre><p>check if a pft's fractional cover is increasing or decrea
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacelanduse__change.html">landuse_change</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
+    <li class="footer">Generated on Thu Apr 11 2019 11:13:45 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -41,3 +41,5 @@ The original met file looks like this:
          12  0    1  1901   209.75   259.21    0.0000E+00     8.12   5.894E-03    0.96    99254.02
          12 30    1  1901   209.69   252.32    0.0000E+00     8.49   6.011E-03    0.93    99256.34
          [...]
+
+It is important to ensure there are no extra columns or trailing white spaces after the pressure field.

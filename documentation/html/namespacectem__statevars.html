@@ -107,7 +107,7 @@ Data Types</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's variables monthly averaged (per pft)  <a href="structctem__statevars_1_1ctem__monthly.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html">ctem_switches</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">switches for running the model, read from the joboptions file  <a href="structctem__statevars_1_1ctem__switches.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switches for running the model, read from the joboptions file.  <a href="structctem__statevars_1_1ctem__switches.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__tile__level.html">ctem_tile_level</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's variables per tile.  <a href="structctem__statevars_1_1ctem__tile__level.html#details">More...</a><br /></td></tr>
@@ -117,6 +117,8 @@ Data Types</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__tileavg__monthly.html">ctem_tileavg_monthly</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's variables per tile monthly values.  <a href="structctem__statevars_1_1ctem__tileavg__monthly.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1tracerstype.html">tracerstype</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__gat.html">veg_gat</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's 'gat' vars.  <a href="structctem__statevars_1_1veg__gat.html#details">More...</a><br /></td></tr>
@@ -131,10 +133,6 @@ Functions/Subroutines</h2></td></tr>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#a069aa6fb4b132ef4fe61febb61d40ec1">initrowvars</a> ()</td></tr>
 <tr class="memdesc:a069aa6fb4b132ef4fe61febb61d40ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes 'row' variables. <br /></td></tr>
 <tr class="separator:a069aa6fb4b132ef4fe61febb61d40ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcc1311f7dd0743cf4002b0d2635e824"><td class="memItemLeft" align="right" valign="top"><a id="afcc1311f7dd0743cf4002b0d2635e824"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#afcc1311f7dd0743cf4002b0d2635e824">resetmonthend</a> (nltest, nmtest)</td></tr>
-<tr class="memdesc:afcc1311f7dd0743cf4002b0d2635e824"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets monthly variables at month end in preparation for next month. <br /></td></tr>
-<tr class="separator:afcc1311f7dd0743cf4002b0d2635e824"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a090f13e5df0ad3551010689fcf82a0ac"><td class="memItemLeft" align="right" valign="top"><a id="a090f13e5df0ad3551010689fcf82a0ac"></a>
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#a090f13e5df0ad3551010689fcf82a0ac">resetyearend</a> (nltest, nmtest)</td></tr>
 <tr class="memdesc:a090f13e5df0ad3551010689fcf82a0ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets annual variables in preparation for next year. <br /></td></tr>
@@ -148,6 +146,10 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#ad342e3a360b7b12a40b1c80a251d95b9">alloc_ctem_vars</a> ()</td></tr>
 <tr class="memdesc:ad342e3a360b7b12a40b1c80a251d95b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate the biogeochemistry (CTEM) variables in preparation for a simulation. <br /></td></tr>
 <tr class="separator:ad342e3a360b7b12a40b1c80a251d95b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc1311f7dd0743cf4002b0d2635e824"><td class="memItemLeft" align="right" valign="top"><a id="afcc1311f7dd0743cf4002b0d2635e824"></a>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacectem__statevars.html#afcc1311f7dd0743cf4002b0d2635e824">resetmonthend</a> (nltest, nmtest)</td></tr>
+<tr class="memdesc:afcc1311f7dd0743cf4002b0d2635e824"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets monthly variables at month end in preparation for next month. <br /></td></tr>
+<tr class="separator:afcc1311f7dd0743cf4002b0d2635e824"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -160,6 +162,9 @@ type(<a class="el" href="structctem__statevars_1_1veg__rot.html">veg_rot</a>), t
 <tr class="memitem:ae21be54e6097f1f897ddbb5a7265d301"><td class="memItemLeft" align="right" valign="top"><a id="ae21be54e6097f1f897ddbb5a7265d301"></a>
 type(<a class="el" href="structctem__statevars_1_1veg__gat.html">veg_gat</a>), target, save&#160;</td><td class="memItemRight" valign="bottom"><b>vgat</b></td></tr>
 <tr class="separator:ae21be54e6097f1f897ddbb5a7265d301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c4751d17cd0e71155f74489aeb25922"><td class="memItemLeft" align="right" valign="top"><a id="a5c4751d17cd0e71155f74489aeb25922"></a>
+type(<a class="el" href="structctem__statevars_1_1tracerstype.html">tracerstype</a>), target, save&#160;</td><td class="memItemRight" valign="bottom"><b>tracer</b></td></tr>
+<tr class="separator:a5c4751d17cd0e71155f74489aeb25922"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35e3e81a8d12b67b5bc48767779ffe4d"><td class="memItemLeft" align="right" valign="top"><a id="a35e3e81a8d12b67b5bc48767779ffe4d"></a>
 type(<a class="el" href="structctem__statevars_1_1ctem__tile__level.html">ctem_tile_level</a>), target, save&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_tile</b></td></tr>
 <tr class="separator:a35e3e81a8d12b67b5bc48767779ffe4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,14 +189,26 @@ type(<a class="el" href="structctem__statevars_1_1ctem__tileavg__annual.html">ct
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the biogeochemistry-related variable type structures. </p>
-<dl class="section author"><dt>Author</dt><dd>J. Melton </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>J. Melton Variable types herein:<ol type="1">
+<li>c_switch (<a class="el" href="structctem__statevars_1_1ctem__switches.html" title="Switches for running the model, read from the joboptions file. ">ctem_switches</a>) - Switches for running the model, read from the joboptions file</li>
+<li>vrot (<a class="el" href="structctem__statevars_1_1veg__rot.html" title="CTEM&#39;s &#39;rot&#39; vars. ">veg_rot</a>) - CTEM's 'rot' vars</li>
+<li>vgat (<a class="el" href="structctem__statevars_1_1veg__gat.html" title="CTEM&#39;s &#39;gat&#39; vars. ">veg_gat</a>) - CTEM's 'gat' vars</li>
+<li>ctem_tile (<a class="el" href="structctem__statevars_1_1ctem__tile__level.html" title="CTEM&#39;s variables per tile. ">ctem_tile_level</a>) - CTEM's variables per tile</li>
+<li>ctem_mo (<a class="el" href="structctem__statevars_1_1ctem__monthly.html" title="CTEM&#39;s variables monthly averaged (per pft) ">ctem_monthly</a>) - CTEM's variables monthly averaged (per pft)</li>
+<li>ctem_grd_mo (<a class="el" href="structctem__statevars_1_1ctem__gridavg__monthly.html" title="CTEM&#39;s grid average monthly values. ">ctem_gridavg_monthly</a>) - CTEM's grid average monthly values</li>
+<li>ctem_tile_mo (<a class="el" href="structctem__statevars_1_1ctem__tileavg__monthly.html" title="CTEM&#39;s variables per tile monthly values. ">ctem_tileavg_monthly</a>) - CTEM's variables per tile monthly values</li>
+<li>ctem_yr (<a class="el" href="structctem__statevars_1_1ctem__annual.html" title="CTEM&#39;s average annual values (per PFT) ">ctem_annual</a>) - CTEM's average annual values (per PFT)</li>
+<li>ctem_grd_yr (<a class="el" href="structctem__statevars_1_1ctem__gridavg__annual.html" title="CTEM&#39;s grid average annual values. ">ctem_gridavg_annual</a>) - CTEM's grid average annual values</li>
+<li>ctem_tile_yr (<a class="el" href="structctem__statevars_1_1ctem__tileavg__annual.html" title="CTEM&#39;s variables per tile annual values. ">ctem_tileavg_annual</a>) - CTEM's variables per tile annual values </li>
+</ol>
+</dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacectem__statevars.html">ctem_statevars</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
+    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

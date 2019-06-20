@@ -3,11 +3,14 @@
  LON=  19.691,          ! Longitude of the grid cell in degrees
  NMTEST= 1,             ! Number of tiles
  IGND= 3,               ! Number of soil layers
- ICAN= 4,               ! Number of physics (CLASS) PFTs. Make sure this matches what is in your run parameters namelist!
+ ICAN= 4,               ! Number of physics (CLASS) PFTs. Make sure this matches what is in your run parameters namelist and the information below!
  ICC= 9,                ! Number of biogeochemical (CTEM) PFTs. Make sure this matches what is in your run parameters namelist!
  /
 
 &CLASSICVARS
+
+! NOTE: Since this file is only intended to be an example of how to setup the namelist, use your judgement
+! on what values are best for your site(s). Consult the CLASSIC manual for further guidance.
  
  !<Mosaic tile type identifier (1 for land surface, 0 for inland lake)
  MIDROT=   1,
@@ -121,29 +124,89 @@
  
  ! Green leaf mass for each of the CTEM pfts [kg C m^-2 ]
  gleafmasrow(1,1:9)= 4*0.0,  1.275E-003,  8.571E-002,  1.274E-002,  4.195E-004, 4.67E-002,
+
+ ! Universal tracer for green leaf mass for each of the CTEM pfts [kg C m^-2 ]
+ tracerGLeafMass(1,1:9)= 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
    
  ! Brown leaf mass for each of the CTEM pfts. Only used for grass PFTs, all others can be set to 0. [kg C m^-2 ]
  bleafmasrow(1,1:9)= 7*0.0, 4.099E-003,  4.96E-002,
  
+ ! Universal tracer for brown leaf mass for each of the CTEM pfts. Only used for grass PFTs. [kg C m^-2 ]
+ tracerBLeafMass(1,1:9)= 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+ 
  ! Stem mass for each of the CTEM pfts, grass should be set to 0. [kg C m^-2 ]
  stemmassrow(1,1:9)= 4*0.0 ,  9.472E-002, 0.189,  4.185E-003, 2*0.0,
 
+ ! Universal tracer for stem mass for each of the CTEM pfts. [kg C m^-2 ]
+ tracerStemMass(1,1:9)= 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+
 ! Root mass for each of the CTEM pfts, [kg C m^-2 ]
  rootmassrow(1,1:9)= 4*0.0,  8.07E-002,  4.437E-002,  2.6639E-003,  9.209E-002, 1.217,
- 
+
+ ! Universal tracer for root mass for each of the CTEM pfts, [kg C m^-2 ]
+ tracerRootMass(1,1:9)= 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+
  ! Litter mass for each of the CTEM pfts, bare ground, and the land use change product pool  [kg C m^-2 ]
- litrmassrow(1,1:9)= 4*0.0,  3.91E-002, 0.132,  1.43, 8.01E-002, 0.645, 
+ ! These can all be set to 0 and the model will determine the litter contents 
+ litrmassrow(1,1:9,1)= 0.0, 0.0, 0.0, 0.0, 0.298, 0.132, 1.43, 0.750, 0.645, 
+ litrmassrow(1,1:9,2)= 0.0, 0.0, 0.0, 0.0, 0.198, 0.082, 0.63, 0.50, 0.45, 
+ litrmassrow(1,1:9,3)= 0.0, 0.0, 0.0, 0.0, 0.08,  0.02,  0.3, 0.0, 0.005, 
+ 
  ! Bareground is only used when competition or land use change creates bare ground Can otherwise be set to 0. (array position icc+1)
- litrmassrow(1,10)=0.0,
+ litrmassrow(1,10,1)=0.0,
+ litrmassrow(1,10,2)=0.0,
+ litrmassrow(1,10,3)=0.0,
+ 
  ! The land use change product pool is only used when land use change is turned on. Can otherwise be set to 0. (array position icc+2)
- litrmassrow(1,11)=0.0,
+ litrmassrow(1,11,1)=0.0,
+ litrmassrow(1,11,2)=0.0,
+ litrmassrow(1,11,3)=0.0,
+
+ ! Universal tracer for litter mass for each of the CTEM pfts, bare ground, and the land use change product pool  [kg C m^-2 ]
+ tracerLitrMass(1,1:9,1)= 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+ tracerLitrMass(1,1:9,2)= 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+ tracerLitrMass(1,1:9,3)= 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+
+! Universal tracer for litter mass bareground. Only used when competition or land use change creates bare ground. (array position icc+1)
+ tracerLitrMass(1,10,1)=1.0,
+ tracerLitrMass(1,10,2)=1.0,
+ tracerLitrMass(1,10,3)=1.0,
+
+ ! Universal tracer for litter mass. The land use change product pool is only used when land use change is turned on.(array position icc+2)
+ tracerLitrMass(1,11,1)=1.0,
+ tracerLitrMass(1,11,2)=1.0,
+ tracerLitrMass(1,11,3)=1.0,
 
  ! Soil carbon mass for each of the CTEM pfts, bare ground, and the land use change product pool  [kg C m^-2 ]
- soilcmasrow(1,1:9)= 4*0.0,  0.298, 0.132,  1.43, 0.750, 0.645, 
+ ! These can all be set to 0 and the model will determine the soil C contents 
+ soilcmasrow(1,1:9,1)= 0.0, 0.0, 0.0, 0.0, 0.298, 0.132, 1.43, 0.750, 0.645, 
+ soilcmasrow(1,1:9,2)= 0.0, 0.0, 0.0, 0.0, 0.198, 0.082, 0.63, 0.50, 0.45, 
+ soilcmasrow(1,1:9,3)= 0.0, 0.0, 0.0, 0.0, 0.08,  0.02,  0.3, 0.0, 0.005, 
+ 
  ! Bareground is only used when competition or land use change creates bare ground Can otherwise be set to 0. (array position icc+1)
- soilcmasrow(1,10)=0.0,
+ soilcmasrow(1,10,1)=0.0,
+ soilcmasrow(1,10,2)=0.0,
+ soilcmasrow(1,10,3)=0.0,
+ 
  ! The land use change product pool is only used when land use change is turned on. Can otherwise be set to 0. (array position icc+2)
- soilcmasrow(1,11)=0.0,
+ soilcmasrow(1,11,1)=0.0,
+ soilcmasrow(1,11,2)=0.0,
+ soilcmasrow(1,11,3)=0.0,
+
+ ! Universal tracer for soil carbon mass for each of the CTEM pfts, bare ground, and the land use change product pool  [kg C m^-2 ]
+ tracerSoilCMass(1,1:9,1)= 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+ tracerSoilCMass(1,1:9,2)= 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+ tracerSoilCMass(1,1:9,3)= 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
+
+ ! Universal tracer for soil C. Bareground is only used when competition or land use change creates bare ground. (array position icc+1)
+ tracerSoilCMass(1,10,1)=1.0,
+ tracerSoilCMass(1,10,2)=1.0,
+ tracerSoilCMass(1,10,3)=1.0,
+
+ ! Universal tracer for soil C. The land use change product pool is only used when land use change is turned on. (array position icc+2)
+ tracerSoilCMass(1,11,1)=1.0,
+ tracerSoilCMass(1,11,2)=1.0,
+ tracerSoilCMass(1,11,3)=1.0,
 
  ! Leaf phenology status [ ] (1 = max growth, 2 = normal growth, 3 = leaf fall, 4 = no leaves)
  lfstatusrow(1,1:9)= 4*4,1,2*2, 2*1,
@@ -161,10 +224,21 @@
  ! Carbon in moss biomass [kg C m^-2]
  Cmossmas= 0.,
  
+ ! Universal tracer for carbon in moss biomass [kg C m^-2]
+ tracerMossCMass= 1.,
+
  ! Moss litter mass [kg C m^-2]
  litrmsmoss= 0.,
  
+ ! Universal tracer for moss litter mass [kg C m^-2]
+ tracerMossLitrMass= 1.,
+ 
  ! Depth of living moss [ m ]
- dmoss = 0.
+ dmoss = 0.,
+ 
+ !< Active layer depth maximum over the e-folding period specified by parameter eftime [m]. It will be calculated 
+ ! as the model runs so this value can just be set to some deep depth.
+ maxAnnualActLyr = 999.
+ 
  
  /

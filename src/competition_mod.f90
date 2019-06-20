@@ -469,939 +469,1025 @@ end subroutine existence
 !! forms. either option may be used.
 !!@author V. Arora, J. Melton, Y. Peng
 
-subroutine competition(  iday,       il1,        il2,       nilg, &
-                       nppveg,     dofire,    leapnow, &
-                     pftexist,  geremort,   intrmort,             &
-                     gleafmas,  bleafmas,   stemmass,   rootmass, &
-                     litrmass,  soilcmas,   grclarea,     lambda, &
-                     burnvegf,      sort,  pstemmass, pgleafmass, &
-!    ------------------- inputs above this line -------------------
-                      fcancmx,    fcanmx,   vgbiomas,   gavgltms, &
-                     gavgscms,   bmasveg,                         &
-!    ------------------- updates above this line ------------------
-                     add2allo,   colrate,   mortrate)
- !    ------------------- outputs above this line -----------------
+subroutine competition(  iday,       il1,        il2,       nilg, & ! In
+                       nppveg,     dofire,    leapnow, &! In
+                     pftexist,  geremort,   intrmort,             &! In
+                     gleafmas,  bleafmas,   stemmass,   rootmass, &! In
+                     litrmass,  soilcmas,   grclarea,     lambda, &! In
+                     burnvegf,      sort,  pstemmass, pgleafmass, &! In
+                     rmatctem, &! In
+                      fcancmx,    fcanmx,   vgbiomas,   gavgltms, & ! In / Out
+                     gavgscms,   bmasveg,                         & ! In / Out
+                     add2allo,   colrate,   mortrate) ! Out
 
-!     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We
-!     J. Melton       now have a constant reproductive cost
-!
-!     26  Mar 2014  - Move disturbance adjustments back via a subroutine called
-!     J. Melton       burntobare
-!
-!     20  Feb 2014  - Move adjustments due to disturbance out of here and into
-!     J. Melton       disturbance subroutine.
-!
-!     27  Jan 2014  - Moved parameters to global file (classic_params.f90)
-!     J. Melton
+  !      9  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
+  !     J. Melton       carbon pools
+  !
+  !     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We
+  !     J. Melton       now have a constant reproductive cost
+  !
+  !     26  Mar 2014  - Move disturbance adjustments back via a subroutine called
+  !     J. Melton       burntobare
+  !
+  !     20  Feb 2014  - Move adjustments due to disturbance out of here and into
+  !     J. Melton       disturbance subroutine.
+  !
+  !     27  Jan 2014  - Moved parameters to global file (classic_params.f90)
+  !     J. Melton
 
-!     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
-!     J. Melton
+  !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
+  !     J. Melton
 
-!     17  Oct 2012  - Adapt subroutine to any number of crops or grass
-!     J. Melton       pfts
-!
-!     1   Oct 2012  - Update subroutine and implement for running with
-!     Y. Peng         mosaic version of class 3.6
-!
-!     27  May 2004  - This subroutine calculates the competition between
-!     V. Arora        pFTs based on Lotka-Volterra eqns. ot its modified
-!                     forms. either option may be used.
-!
-!                     PFTs that may exist are allowed to PFTCompetition for
-!                     available space in a grid cell. pfts that can't
-!                     exist based on long term bioclimatic parameters
-!                     are slowly killed by increasing their mortality.
-!
+  !     17  Oct 2012  - Adapt subroutine to any number of crops or grass
+  !     J. Melton       pfts
+  !
+  !     1   Oct 2012  - Update subroutine and implement for running with
+  !     Y. Peng         mosaic version of class 3.6
+  !
+  !     27  May 2004  - This subroutine calculates the competition between
+  !     V. Arora        pFTs based on Lotka-Volterra eqns. ot its modified
+  !                     forms. either option may be used.
+  !
+  !                     PFTs that may exist are allowed to compete for
+  !                     available space in a grid cell. pfts that can't
+  !                     exist based on long term bioclimatic parameters
+  !                     are slowly killed by increasing their mortality.
+  !
 
-use classic_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
-                        icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolrance, crop, grass, numgrass,iccp2, ignd, icp1, &
-                        nol2pfts
+  use classic_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
+                          icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
+                          tolrance, crop, grass, numgrass,iccp2, ignd, icp1, &
+                          nol2pfts,reindexPFTs
 
-use disturbance_scheme, only : burntobare
+  use disturbance_scheme, only : burntobare
 
 
-implicit none
+  implicit none
 
-! arguments
+  ! arguments
 
-integer, intent(in) :: iday                             !< day of the year
-integer, intent(in) :: nilg                             !< no. of grid cells in latitude circle
-                                                        !<(this is passed in as either ilg or nlat depending on mos/comp)
-integer, intent(in) :: il1                              !< il1=1
-integer, intent(in) :: il2                              !< il2=nilg
-logical ,intent(in) :: dofire                           !< if true then we have disturbance on.
-real,  dimension(nilg),  intent(in) :: grclarea         !< grid cell area, km^2
-integer, dimension(icc), intent(in) :: sort             !< index for correspondence between 9 ctem pfts and
-                                                        !< size 12 of parameter vectors
-logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
-logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
-real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
-real, dimension(nilg,icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
-real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
-real, dimension(nilg,icc), intent(in) :: burnvegf       !< fractional areas burned, for 9 ctem pfts
-real, dimension(nilg,icc), intent(in) :: pstemmass      !< stem mass from previous timestep, is value before fire. used by burntobare subroutine
-real, dimension(nilg,icc), intent(in) :: pgleafmass     !< root mass from previous timestep, is value before fire. used by burntobare subroutine
-real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
-real, dimension(nilg,icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
-real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
-real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
-real, dimension(nilg),     intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
-real, dimension(nilg),     intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
-real, dimension(nilg,icc), intent(out) :: add2allo      !< npp kg c/m2.day that is used for expansion and
-                                                        !< subsequently allocated to leaves, stem, and root via
-                                                        !< the allocation part of the model.
-real, dimension(nilg,icc), intent(out) :: colrate       !< colonization rate (1/day)
-real, dimension(nilg,icc), intent(out) :: mortrate      !< mortality rate
+  integer, intent(in) :: iday                             !< day of the year
+  integer, intent(in) :: nilg                             !< no. of grid cells in latitude circle
+                                                          !<(this is passed in as either ilg or nlat depending on mos/comp)
+  integer, intent(in) :: il1                              !< il1=1
+  integer, intent(in) :: il2                              !< il2=nilg
+  logical ,intent(in) :: dofire                           !< if true then we have disturbance on.
+  real,  dimension(nilg),  intent(in) :: grclarea         !< grid cell area, km^2
+  integer, dimension(icc), intent(in) :: sort             !< index for correspondence between 9 ctem pfts and
+                                                          !< size 12 of parameter vectors
+  logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
+  logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
+  real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
+  real, dimension(nilg,icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
+  real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
+  real, dimension(nilg,icc), intent(in) :: burnvegf       !< fractional areas burned, for 9 ctem pfts
+  real, dimension(nilg,icc), intent(in) :: pstemmass      !< stem mass from previous timestep, is value before fire. used by burntobare subroutine
+  real, dimension(nilg,icc), intent(in) :: pgleafmass     !< root mass from previous timestep, is value before fire. used by burntobare subroutine
+  real, dimension(nilg,icc,ignd), intent(in) :: rmatctem  ! fraction of roots for each of ctem's 9 pfts in each soil layer
+  real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
+  real, dimension(nilg,icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+  real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts, kg c/m2
+  real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
+  real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
+  real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
+  real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
+  real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+  ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2 !COMBAK PERLAY
+  ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2 !COMBAK PERLAY
 
-! local variables
+  real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
+  real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
+  real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
+  real, dimension(nilg),     intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
+  real, dimension(nilg),     intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
+  real, dimension(nilg,icc), intent(out) :: add2allo      !< npp kg c/m2.day that is used for expansion and
+                                                          !< subsequently allocated to leaves, stem, and root via
+                                                          !< the allocation part of the model.
+  real, dimension(nilg,icc), intent(out) :: colrate       !< colonization rate (1/day)
+  real, dimension(nilg,icc), intent(out) :: mortrate      !< mortality rate
 
-integer :: i, j
-integer :: n, k, k1, k2, l, a, b, g
-integer :: sdfracin
-integer, dimension(nilg) :: t1
-integer, dimension(icc-numcrops) :: inirank
-integer, dimension(nilg,icc-numcrops) :: rank
-integer, dimension(nilg,icc-numcrops) :: exist1
-integer, dimension(nilg,icc-numcrops) :: useexist
-integer, dimension(nilg,icc) :: fraciord
-integer, dimension(nilg) :: bareiord
+  ! local variables
 
-real :: befrmass, aftrmass
-real :: sum1, sum2, sum3,term,sum4
-real :: colmult
-real, dimension(nilg,icc) :: mrtboclm
-real, dimension(nilg,icc) :: usenppvg
-real, dimension(nilg) :: temp
-real, dimension(nilg,icc-numcrops) :: usefrac, usec, usem
-real, dimension(nilg,icc-numcrops) :: frac
-real, dimension(nilg,icc-numcrops) :: c1
-real, dimension(nilg,icc-numcrops) :: m1
-real, dimension(nilg,icc-numcrops) :: term2, term3, term4, colterm, deathterm
-real, dimension(nilg,icc-numcrops) :: delfrac
-real, dimension(nilg) :: cropfrac, vegfrac
-real, dimension(nilg,icc) :: chngfrac
-real, dimension(nilg,icc) :: expnterm, mortterm
-real, dimension(nilg,icc) :: pglfmass
-real, dimension(nilg,icc) :: pblfmass
-real, dimension(nilg,icc) :: protmass
-real, dimension(nilg,icc) :: pstmmass
-real, dimension(nilg,icc) :: pfcancmx
-real, dimension(nilg) :: mincfrac
-real, dimension(nilg,icc) :: pbiomasvg, biomasvg
-real, dimension(nilg,icc) :: putaside
-real, dimension(nilg,icc) :: nppvegar
-real, dimension(nilg,iccp1) :: pltrmass
-real, dimension(nilg,iccp1) :: psocmass
-real, dimension(nilg,iccp1) :: deadmass
-real, dimension(nilg,iccp1) :: pdeadmas
-real, dimension(nilg) :: barefrac
-real, dimension(nilg,icc) :: usebmsvg
-real, dimension(nilg,iccp1) ::ownsolc, ownlitr
-real, dimension(nilg,icc) :: baresolc
-real, dimension(nilg,icc) :: barelitr, baresoilc
-real, dimension(nilg,iccp1) :: incrlitr, incrsolc
-real, dimension(nilg) :: pvgbioms
-real, dimension(nilg) :: pgavltms
-real, dimension(nilg) :: pgavscms
-real, dimension(nilg) :: add2dead
-real, dimension(nilg) :: gavgputa
-real, dimension(nilg) :: gavgnpp
-real, dimension(nilg) :: pbarefra
-real, dimension(nilg) :: grsumlit, grsumsoc
+  integer :: i, j
+  integer :: n, k, k1, k2, l, a, b, g
+  integer :: sdfracin
+  integer, dimension(nilg) :: t1
+  integer, dimension(icc-numcrops) :: inirank
+  integer, dimension(nilg,icc-numcrops) :: rank
+  integer, dimension(nilg,icc-numcrops) :: exist1
+  integer, dimension(nilg,icc-numcrops) :: useexist
+  integer, dimension(nilg,icc) :: fraciord
+  integer, dimension(nilg) :: bareiord
 
-!     ---------------------------------------------------------------
-!     Constants and parameters are located in classic_params.f90
-!     ---------------------------------------------------------------
+  real :: befrmass, aftrmass
+  real :: sum1, sum2, sum3,term,sum4
+  real :: colmult
+  real, dimension(nilg,icc) :: mrtboclm
+  real, dimension(nilg,icc) :: usenppvg
+  real, dimension(nilg) :: temp
+  real, dimension(nilg,icc-numcrops) :: usefrac, usec, usem
+  real, dimension(nilg,icc-numcrops) :: frac
+  real, dimension(nilg,icc-numcrops) :: c1
+  real, dimension(nilg,icc-numcrops) :: m1
+  real, dimension(nilg,icc-numcrops) :: term2, term3, term4, colterm, deathterm
+  real, dimension(nilg,icc-numcrops) :: delfrac
+  real, dimension(nilg) :: cropfrac, vegfrac
+  real, dimension(nilg,icc) :: chngfrac
+  real, dimension(nilg,icc) :: expnterm, mortterm
+  real, dimension(nilg,icc) :: pglfmass
+  real, dimension(nilg,icc) :: pblfmass
+  real, dimension(nilg,icc) :: protmass
+  real, dimension(nilg,icc) :: pstmmass
+  real, dimension(nilg,icc) :: pfcancmx
+  real, dimension(nilg) :: mincfrac
+  real, dimension(nilg,icc) :: pbiomasvg, biomasvg
+  real, dimension(nilg,icc) :: putaside
+  real, dimension(nilg,icc) :: nppvegar
+  !COMBAK PERLAY
+  real, dimension(nilg,iccp1) :: pltrmass
+  real, dimension(nilg,iccp1) :: psocmass
+  real, dimension(nilg,iccp1) :: incrlitr, incrsolc
+  real, dimension(nilg) :: grsumlit, grsumsoc
+  ! real, dimension(nilg,iccp1,ignd) :: pltrmass
+  ! real, dimension(nilg,iccp1,ignd) :: psocmass
+  ! real, dimension(nilg,iccp1,ignd) :: incrlitr, incrsolc
+  ! real, dimension(nilg,ignd) :: grsumlit, grsumsoc
+  !COMBAK PERLAY
+  real, dimension(nilg,iccp1) :: deadmass
+  real, dimension(nilg,iccp1) :: pdeadmas
+  real, dimension(nilg) :: barefrac
+  real, dimension(nilg,icc) :: usebmsvg
+  real, dimension(nilg,iccp1) ::ownsolc, ownlitr
+  real, dimension(nilg,icc) :: baresolc
+  real, dimension(nilg,icc) :: barelitr, baresoilc
+  real, dimension(nilg) :: pvgbioms
+  real, dimension(nilg) :: pgavltms
+  real, dimension(nilg) :: pgavscms
+  real, dimension(nilg,iccp1) :: add2dead
+  real, dimension(nilg) :: gavgputa
+  real, dimension(nilg) :: gavgnpp
+  real, dimension(nilg) :: pbarefra
 
-! Model switches:
+  ! Model switches:
 
-! set desired model to be used to .true. and all other to .false.
-!                ** ONLY ONE (1) can be true!! **
-logical, parameter :: lotvol=.false. !< original lotka-volterra eqns.
-logical, parameter :: arora =.true.  !< modified form of lv eqns with f missing
-logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing and a modified self-thinning term
+  ! set desired model to be used to .true. and all other to .false.
+  !                ** ONLY ONE (1) can be true!! **
+  logical, parameter :: lotvol=.false. !< original lotka-volterra eqns.
+  logical, parameter :: arora =.true.  !< modified form of lv eqns with f missing
+  logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing and a modified self-thinning term
 
-!     ---------------------------------------------------------------
-!>
-!>set competition parameters according to the model chosen
-!>
-      if (lotvol) then
-        a=1 !< alpha. this is the b in the arora & boer (2006) paper
-        b=1 !< beta
-        g=0 !< gamma
-        colmult=4.00  !< multiplier for colonization rate
-      else if (arora) then
-        a=0 !< alpha
-        b=1 !< beta
-        g=0 !< gamma
-        colmult=1.00  !< multiplier for colonization rate
-      else if (boer) then
-        a=0 !< alpha
-        b=1 !< beta
-        g=1 !< gamma
-        colmult=1.00 !< multiplier for colonization rate
-      endif
+  !     ---------------------------------------------------------------
+  !>
+  !>set competition parameters according to the model chosen
+  !>
+  if (lotvol) then
+    a=1 !< alpha. this is the b in the arora & boer (2006) paper
+    b=1 !< beta
+    g=0 !< gamma
+    colmult=4.00  !< multiplier for colonization rate
+  else if (arora) then
+    a=0 !< alpha
+    b=1 !< beta
+    g=0 !< gamma
+    colmult=1.00  !< multiplier for colonization rate
+  else if (boer) then
+    a=0 !< alpha
+    b=1 !< beta
+    g=1 !< gamma
+    colmult=1.00 !< multiplier for colonization rate
+  endif
 
-!     ---------------------------------------------------------------
+  !>First, let's adjust the fractions if fire is turned on.
+  if (dofire) then
 
-!>First, let's adjust the fractions if fire is turned on.
+    call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
+                    rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
+                    nppveg)
 
-    if (dofire) then
+    !>Since the biomass pools could have changed, update bmasveg.
+    do i = il1, il2
+      do j = 1, icc
+        if (fcancmx(i,j) > 0.0) then
+          bmasveg(i,j) = gleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
+        endif
+      end do
+    end do 
 
-        call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
-                      nppveg)
+  end if
 
-      !>Since the biomass pools could have changed, update bmasveg.
-      do 190 i = il1, il2
-        do 195 j = 1, icc
-         if (fcancmx(i,j).gt.0.0) then
-          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
-         endif
-195     continue
-190   continue
+  !>Do our usual initialization
 
-    end if
+  do 150 i = il1, il2
+    do 160 j = 1, icc
+      pglfmass(i,j)=gleafmas(i,j) ! save all biomasses before making
+      pblfmass(i,j)=bleafmas(i,j) ! changes so that we can make sure
+      protmass(i,j)=rootmass(i,j) ! mass balance is preserved.
+      pstmmass(i,j)=stemmass(i,j)
+      !COMBAK PERLAY
+      pltrmass(i,j)=litrmass(i,j)
+      psocmass(i,j)=soilcmas(i,j)
+      ! do k = 1,ignd
+      !   pltrmass(i,j,k)=litrmass(i,j,k)
+      !   psocmass(i,j,k)=soilcmas(i,j,k)
+      ! end do
+      !COMBAK PERLAY
+      pfcancmx(i,j)=fcancmx(i,j)
 
-!>Do our usual initialization
-
-      do 150 i = il1, il2
-        do 160 j = 1, icc
-          pglfmass(i,j)=gleafmas(i,j) ! save all biomasses before making
-          pblfmass(i,j)=bleafmas(i,j) ! changes so that we can make sure
-          protmass(i,j)=rootmass(i,j) ! mass balance is preserved.
-          pstmmass(i,j)=stemmass(i,j)
-          pltrmass(i,j)=litrmass(i,j)
-          psocmass(i,j)=soilcmas(i,j)
-          pfcancmx(i,j)=fcancmx(i,j)
-
-          colrate(i,j)=0.0         ! colonization rate
-          mortrate(i,j)=0.0        ! mortality rate
-          mrtboclm(i,j)=0.0 ! mortality rate if long-term bioclimatic
-!                           ! conditions become unfavourable
-          usenppvg(i,j)=0.0
-          chngfrac(i,j)=0.0
-          expnterm(i,j)=0.0
-          mortterm(i,j)=0.0
-          add2allo(i,j)=0.0
-          biomasvg(i,j)=0.0
-          pbiomasvg(i,j)=0.0
-          nppvegar(i,j)=0.0
-          deadmass(i,j)=0.0
-          pdeadmas(i,j)=0.0
-          barelitr(i,j)=0.0    ! kg c of litter added to bare fraction
-          baresolc(i,j)=0.0    ! and same for soil c
-          fraciord(i,j)=0
-          incrlitr(i,j)=0.0
-          incrsolc(i,j)=0.0
-          ownlitr(i,j)=0.0
-          ownsolc(i,j)=0.0
+      colrate(i,j)=0.0         ! colonization rate
+      mortrate(i,j)=0.0        ! mortality rate
+      mrtboclm(i,j)=0.0 ! mortality rate if long-term bioclimatic conditions become unfavourable
+      usenppvg(i,j)=0.0
+      chngfrac(i,j)=0.0
+      expnterm(i,j)=0.0
+      mortterm(i,j)=0.0
+      add2allo(i,j)=0.0
+      biomasvg(i,j)=0.0
+      pbiomasvg(i,j)=0.0
+      nppvegar(i,j)=0.0
+      deadmass(i,j)=0.0
+      pdeadmas(i,j)=0.0
+      barelitr(i,j)=0.0    ! kg c of litter added to bare fraction
+      baresolc(i,j)=0.0    ! and same for soil c
+      fraciord(i,j)=0
+      !COMBAK PERLAY
+      incrlitr(i,j)=0.0
+      incrsolc(i,j)=0.0
+      ! incrlitr(i,j,:)=0.0
+      ! incrsolc(i,j,:)=0.0
+      !COMBAK PERLAY
+      ownlitr(i,j)=0.0
+      ownsolc(i,j)=0.0
 160     continue
 
-      do 170 j = 1, icc-numcrops
-          rank(i,j)=j
-          frac(i,j)=0.0
-          c1(i,j)=0.0
-          m1(i,j)=0.0
-          usefrac(i,j)=0.0
-          usec(i,j)=0.0
-          usem(i,j)=0.0
-          colterm(i,j)=0.0
-          deathterm(i,j)=0.0
-          term2(i,j)=0.0
-          term3(i,j)=0.0
-          term4(i,j)=0.0
-          delfrac(i,j)=0.0
-          exist1(i,j)=0
-          useexist(i,j)=0
+  do 170 j = 1, icc-numcrops
+      rank(i,j)=j
+      frac(i,j)=0.0
+      c1(i,j)=0.0
+      m1(i,j)=0.0
+      usefrac(i,j)=0.0
+      usec(i,j)=0.0
+      usem(i,j)=0.0
+      colterm(i,j)=0.0
+      deathterm(i,j)=0.0
+      term2(i,j)=0.0
+      term3(i,j)=0.0
+      term4(i,j)=0.0
+      delfrac(i,j)=0.0
+      exist1(i,j)=0
+      useexist(i,j)=0
 170   continue
 
-        cropfrac(i)=0.0
-        vegfrac(i)=0.0
-        temp(i)=0.0
-        t1(i)=0
-        mincfrac(i)=0.0
-        barefrac(i)=1.0
-        pbarefra(i)=1.0
-        pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
-        pgavltms(i)=gavgltms(i)  ! temporary arrays
-        pgavscms(i)=gavgscms(i)
-        vgbiomas(i)=0.0
-        gavgltms(i)=0.0
-        gavgscms(i)=0.0
-        pltrmass(i,iccp1)=litrmass(i,iccp1)
-        psocmass(i,iccp1)=soilcmas(i,iccp1)
-        deadmass(i,iccp1)=0.0
-        pdeadmas(i,iccp1)=0.0
-        add2dead(i)=0.0
-        gavgputa(i)=0.0 ! grid averaged value of c put aside for allocation
-        gavgnpp(i)=0.0  ! grid averaged npp kg c/m2 for balance purposes
-        bareiord(i)=0
-        grsumlit(i)=0.0
-        grsumsoc(i)=0.0
-        ownlitr(i,iccp1)=0.0
-        ownsolc(i,iccp1)=0.0
-        incrlitr(i,iccp1)=0.0
-        incrsolc(i,iccp1)=0.0
-
+    cropfrac(i)=0.0
+    vegfrac(i)=0.0
+    temp(i)=0.0
+    t1(i)=0
+    mincfrac(i)=0.0
+    barefrac(i)=1.0
+    pbarefra(i)=1.0
+    pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
+    pgavltms(i)=gavgltms(i)  ! temporary arrays
+    pgavscms(i)=gavgscms(i)
+    vgbiomas(i)=0.0
+    gavgltms(i)=0.0
+    gavgscms(i)=0.0
+    !COMBAK PERLAY
+    pltrmass(i,iccp1)=litrmass(i,iccp1)
+    psocmass(i,iccp1)=soilcmas(i,iccp1)
+    grsumlit(i)=0.0
+    grsumsoc(i)=0.0
+    incrlitr(i,iccp1)=0.0
+    incrsolc(i,iccp1)=0.0
+    ! grsumlit(i,:)=0.0
+    ! grsumsoc(i,:)=0.0
+    ! incrlitr(i,iccp1,:)=0.0
+    ! incrsolc(i,iccp1,:)=0.0
+    ! do k = 1,ignd
+    !   pltrmass(i,iccp1,k)=litrmass(i,iccp1,k)
+    !   psocmass(i,iccp1,k)=soilcmas(i,iccp1,k)
+    ! end do
+    !COMBAK PERLAY
+    deadmass(i,iccp1)=0.0
+    pdeadmas(i,iccp1)=0.0
+    add2dead(i,:)=0.0
+    gavgputa(i)=0.0 ! grid averaged value of c put aside for allocation
+    gavgnpp(i)=0.0  ! grid averaged npp kg c/m2 for balance purposes
+    bareiord(i)=0
+    ownlitr(i,iccp1)=0.0
+    ownsolc(i,iccp1)=0.0
 150   continue
-!>
-!!initial rank/superiority order for simulating competition. since crops
-!!are not in competition their rank doesn't matter and
-!!therefore we only have icc-2 ranks corresponding to the remaining pfts.
-!!the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.
-      do j = 1,icc-numcrops
-         inirank(j)=j
-         do 180 i = il1, il2
-           rank(i,j)=inirank(j)
-180      continue
-      end do
-!>
-!!Estimate colonization and mortality rate for each pft, except for
-!!crops whose fractional coverage is prescribed.
-!!
-      do 200 j = 1, icc
-       if(.not. crop(j))then  ! do not run for crops
-        do 210 i = il1, il2
-!>
-!!colonization rate (1/day). the factor (deltat/963.62) converts
-!!npp from u-mol co2-c/m2.sec -> kg c/m2.day
-!!
-          usebmsvg(i,j)= min(5.0, max(0.25, bmasveg(i,j)))
+  
+  !> initial rank/superiority order for simulating competition. since crops
+  !! are not in competition their rank doesn't matter and
+  !! therefore we only have icc-2 ranks corresponding to the remaining pfts.
+  !! the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.
+  do j = 1, icc-numcrops
+    inirank(j) = j
+    do i = il1, il2
+      rank(i,j) = inirank(j)
+    end do 
+  end do
+  
+  !> Estimate colonization and mortality rate for each PFT, except for
+  !! crops whose fractional coverage is prescribed.
+  do 200 j = 1, icc
+    if (.not. crop(j)) then  ! do not run for crops
+      do 210 i = il1, il2
 
-          colrate(i,j)=lambda(i,j)*max(0.0,nppveg(i,j))*(deltat/963.62)* &
-                colmult*(1.0/(bio2sap(sort(j))*usebmsvg(i,j)))
-!>
-!!mortality rate is the sum of growth related mortality, intrinsic mortality,
-!! and an additional mortality that kicks in
-!!when long term averaged bioclimatic conditions become unfavourable for a pft.
-!!this last term is based on the binary array pftexist.
-!!
-          if(.not. pftexist(i,j))then
+        !> Colonization rate (1/day). the factor (deltat/963.62) converts
+        !! NPP from u-mol co2-c/m2.sec -> kg c/m2.day
+        usebmsvg(i,j) = min(5.0, max(0.25, bmasveg(i,j)))
 
-            if (leapnow) then
-              mrtboclm(i,j)=bioclimrt/366.0
-            else
-              mrtboclm(i,j)=bioclimrt/365.0
-            endif
+        colrate(i,j) = lambda(i,j) * max(0.0, nppveg(i,j)) * (deltat / 963.62) &
+                       * colmult * (1.0 / (bio2sap(sort(j)) * usebmsvg(i,j)))
 
-          endif
-
-          mortrate(i,j)=geremort(i,j)+intrmort(i,j)+mrtboclm(i,j)
-
-210     continue
-       endif
-200   continue
-!>
-!!---> from here on we assume that we only have icc-numcrops pfts <----
-!!since crops are not part of the competition.
-!!
-!!based on npp for each pft find the competition ranks / superiority
-!!order for simulating competition. note that crops
-!!are not in competition, so the competition is between the
-!!remaining pfts. in addition pfts which shouldn't exist in the
-!!grid cell because of unfavourable values of long-term climatic
-!!conditions are considered inferior.
-!!
-      do 220 j = 1, icc
-        do 221 i = il1, il2
-
-!        find crop fraction
-         if (crop(j)) then
-           cropfrac(i)=cropfrac(i)+fcancmx(i,j)
-         endif
-
-!        prepare to rank the tree pfts according to their colonization rates
-         if (pftexist(i,j)) then
-           usenppvg(i,j)=colrate(i,j)
-         end if
-
-221     continue
-220   continue
-!>
-!!bubble sort according to colonization rates NOTE - this only works if no tree species are
-!!indexed at positions > numtreepfts, i.e. the trees must be a contiguous
-!!unit at the start of the indexes. JM Jun 2014
-      do 270 j = 1, numtreepfts
-        do 280 n = 1, numtreepfts
-          do 290 i = il1, il2
-            if(usenppvg(i,n).lt.usenppvg(i,j))then
-              temp(i)=usenppvg(i,n)
-              usenppvg(i,n)=usenppvg(i,j)
-              usenppvg(i,j)=temp(i)
-              t1(i)=rank(i,n)
-              rank(i,n)=rank(i,j)
-              rank(i,j)=t1(i)
-            endif
-290       continue
-280     continue
-270   continue
-!>
-!!the rank of c3 and c4 grass is also determined on the basis of
-!!their npp but grasses are always assumed to be inferior to tree pfts
-!!
-! Find index of the first grass pft and give it to the temp variable, k.
-do j = 1,icc
-  if (grass(j)) then
-    k=j
-    exit
-  end if
-end do
-
-! Also now bubble sort the grass. WARNING:Again this assumes, like the trees, that all grass are
-! contiguous in the arrays. Additionally it assumes that crops are specified before grass!
-do 300 j = k, k+numgrass-1
-  do 305 n = k, k+numgrass-1
-    do 310 i = il1, il2
-      if(usenppvg(i,n).lt.usenppvg(i,j))then
-        temp(i)=usenppvg(i,n)
-        usenppvg(i,n)=usenppvg(i,j)
-        usenppvg(i,j)=temp(i)
-        t1(i)=rank(i,n-numcrops)
-        rank(i,n-numcrops)=rank(i,j-numcrops)
-        rank(i,j-numcrops)=t1(i)
-      endif
-310       continue
-305     continue
-300   continue
-!>
-!!with the ranks of all pfts in all grid cells we can now simulate
-!!competition between them. for lotka-volterra eqns we need a
-!!minimum seeding fraction otherwise the pfts will not expand at all.
-!!
-      do 330 j = 1, icc-numcrops   ! j now goes from 1 to icc-numcrops
-        if(j.le.numtreepfts)then
-          n=j
-        else
-          n=j+numcrops
-        endif
-        do 340 i = il1, il2
-          frac(i,j)=max(seed,fcancmx(i,n))
-          if (pftexist(i,n)) then
-           exist1(i,j)=1
-           c1(i,j)=colrate(i,n)
+        !> Mortality rate is the sum of growth related mortality, intrinsic mortality,
+        !! and an additional mortality that kicks in when long term averaged 
+        !! bioclimatic conditions become unfavourable for a PFT. This last term is based
+        !! on the binary array pftexist.
+        if (.not. pftexist(i,j)) then
+          if (leapnow) then
+            mrtboclm(i,j) = bioclimrt / 366.0
           else
-           exist1(i,j)=0
-           c1(i,j)=0.0
+            mrtboclm(i,j) = bioclimrt / 365.0
           end if
-          m1(i,j)=mortrate(i,n)
-340     continue
-330   continue
+        end if
 
-!>arrange colonization and mortality rates, and fractions, according to superiority ranks
+        mortrate(i,j) = geremort(i,j) + intrmort(i,j) + mrtboclm(i,j)
 
-      do 350 n = 1, icc-numcrops   ! n now goes from 1 to icc-numcrops
-        do 360 i = il1, il2
-          usefrac(i,n)=frac(i,rank(i,n))
-          usec(i,n)=c1(i,rank(i,n))
-          usem(i,n)=m1(i,rank(i,n))
-          useexist(i,n)=exist1(i,rank(i,n))
-360     continue
-350   continue
+      210 continue
+    end if
+200 continue
 
-      do 400 n = 1, icc-numcrops   ! n now goes from 1 to icc-numcrops
-        do 410 i = il1, il2
+  !> From here on we assume that we only have icc-numcrops pfts
+  !! since crops are not part of the competition.
+  !!
+  !! Based on NPP for each PFT find the competition ranks / superiority
+  !! order for simulating competition. Note that crops
+  !! are not in competition, so the competition is between the
+  !! remaining pfts. In addition PFTs which shouldn't exist in the
+  !! grid cell because of unfavourable values of long-term climatic
+  !! conditions are considered inferior.
 
-          colterm(i,n)=usec(i,n)*(usefrac(i,n)**a) ! colonization term
+  do 220 j = 1, icc
+    do 221 i = il1, il2
 
-          sum1 = cropfrac(i)+seed !minbare
-          do 420 k = 1, n-1, 1
-            sum1 = sum1 + usefrac(i,k)
-420       continue
+      ! Find crop fraction
+      if (crop(j)) then
+        cropfrac(i) = cropfrac(i) + fcancmx(i,j)
+      end if
 
-          term2(i,n)=usec(i,n)*(usefrac(i,n)**a)*(sum1+(usefrac(i,n)**b)) ! self & expansion thinning
-          term3(i,n)=usem(i,n)*usefrac(i,n) ! mortality term
+      ! Prepare to rank the tree pfts according to their colonization rates
+      if (pftexist(i,j)) then
+        usenppvg(i,j) = colrate(i,j)
+      end if
 
-          sum2 = 0.0
-          do 430 j = 1, n-1, 1
-            sum3 = cropfrac(i)
-            do 440 k = 1, j-1, 1
-              sum3 = sum3 + usefrac(i,k)
-440         continue
-            sum4 = cropfrac(i)
-            do 450 k = 1, j, 1
-              sum4 = sum4 + usefrac(i,k)
-450         continue
-            sum2 = sum2 + ( &
-            ( ((1.-sum3)**g)*usec(i,j)*(usefrac(i,j)**a)*usefrac(i,n) )/ &
-            ( (1.-sum4)**g )  )
-430       continue
-          term4(i,n)=sum2  ! invasion
-          deathterm(i,n) = term2(i,n) + term3(i,n) + term4(i,n)
-          delfrac(i,n)=colterm(i,n)-deathterm(i,n) ! delta fraction
+221 continue
+220 continue
 
-410     continue
-400   continue
+  !> Bubble sort according to colonization rates WARNING - this only works if no tree species are
+  !! indexed at positions > numtreepfts, i.e. the trees must be a contiguous
+  !! unit at the start of the indexes. 
+  do 270 j = 1, numtreepfts
+    do 280 n = 1, numtreepfts
+      do 290 i = il1, il2
+        if (usenppvg(i,n) < usenppvg(i,j)) then
+          temp(i) = usenppvg(i,n)
+          usenppvg(i,n) = usenppvg(i,j)
+          usenppvg(i,j) = temp(i)
+          t1(i) = rank(i,n)
+          rank(i,n) = rank(i,j)
+          rank(i,j) = t1(i)
+        end if
+290   continue
+280 continue
+270 continue
 
-!>update fractions and check if all fractions are +ve
+  !> The rank of grasses is also determined on the basis of
+  !! their NPP but grasses are always assumed to be inferior to tree pfts
 
-      do 500 n = 1, icc-numcrops
-        do 510 i = il1, il2
-          usefrac(i,n)=usefrac(i,n)+delfrac(i,n)
-          if(usefrac(i,n).lt.0.0)then
-            write(6,*)'fractional coverage -ve for cell ',i,' and pft',n
-            call xit('competition',-5)
-          endif
-          usefrac(i,n)=max(seed,usefrac(i,n))
-510     continue
-500   continue
-!>
-!!with the minimum seeding fraction prescription, especially for
-!!lotka volterra eqns the total veg fraction may exceed 1. to
-!!prevent this we need to adjust fractional coverage of all non-crop
-!!pfts that do not have the minimum fraction.
-!!
-      do 530 i = il1, il2
-        vegfrac(i)=cropfrac(i)   !total vegetation fraction
-        mincfrac(i)=cropfrac(i)  !sum of mininum prescribed & crop fractions
-530   continue
+  ! Find index of the first grass pft and give it to the temp variable, k.
+  do j = 1,icc
+    if (grass(j)) then
+      k = j
+      exit
+    end if
+  end do
 
-      do 540 n = 1, icc-numcrops
-        do 541 i = il1, il2
-          vegfrac(i)=vegfrac(i)+usefrac(i,n)
-          if(abs(usefrac(i,n)-seed).le.zero) then
-            mincfrac(i)= mincfrac(i)+ usefrac(i,n)
-          endif
-541     continue
-540   continue
+  ! Also now bubble sort the grass. WARNING:Again this assumes, like the trees, that all grass are
+  ! contiguous in the arrays. Additionally it assumes that crops are specified before grass!
+  do 300 j = k, k+numgrass-1
+    do 305 n = k, k+numgrass-1
+      do 310 i = il1, il2
+        if (usenppvg(i,n) < usenppvg(i,j)) then
+          temp(i) = usenppvg(i,n)
+          usenppvg(i,n) = usenppvg(i,j)
+          usenppvg(i,j) = temp(i)
+          t1(i) = rank(i,n-numcrops)
+          rank(i,n-numcrops) = rank(i,j - numcrops)
+          rank(i,j-numcrops) = t1(i)
+        end if
+310   continue
+305 continue
+300 continue
 
-      do 550 n = 1, icc-numcrops
-        do 551 i = il1, il2
-          if(vegfrac(i).gt.1.0.and. &
-          abs(usefrac(i,n)-seed).gt.zero) then
-            term =(1.-mincfrac(i))/(vegfrac(i)-mincfrac(i))
-            usefrac(i,n)=usefrac(i,n)*term
-          endif
-551     continue
-550   continue
+  !> With the ranks of all pfts in all grid cells we can now simulate
+  !! competition between them. For Lotka-Volterra eqns we need a
+  !! minimum seeding fraction otherwise the pfts will not expand.
+  do 330 j = 1, icc-numcrops   ! j now goes from 1 to icc-numcrops
+    if (j <= numtreepfts) then
+      n = j
+    else
+      n = j + numcrops
+    end if
+    do 340 i = il1, il2
+      frac(i,j) = max(seed, fcancmx(i,n))
+      if (pftexist(i,n)) then
+       exist1(i,j) = 1
+       c1(i,j) = colrate(i,n)
+      else
+       exist1(i,j) = 0
+       c1(i,j) = 0.0
+      end if
+      m1(i,j) = mortrate(i,n)
+340 continue
+330 continue
 
-!>check again that total veg frac doesn't exceed 1.
+  !> Arrange colonization and mortality rates, and fractions, according to superiority ranks
+  do 350 n = 1, icc-numcrops   ! n now goes from 1 to icc-numcrops
+    do 360 i = il1, il2
+      usefrac(i,n) = frac(i,rank(i,n))
+      usec(i,n) = c1(i,rank(i,n))
+      usem(i,n) = m1(i,rank(i,n))
+      useexist(i,n) = exist1(i,rank(i,n))
+360 continue
+350 continue
 
-      do 560 i = il1, il2
-        vegfrac(i)=cropfrac(i) !total vegetation fraction
-560   continue
+  do 400 n = 1, icc-numcrops   ! n now goes from 1 to icc-numcrops
+    do 410 i = il1, il2
 
-      do 570 n = 1, icc-numcrops
-        do 571 i = il1, il2
-          vegfrac(i)=vegfrac(i)+usefrac(i,n)
-571     continue
-570   continue
+      colterm(i,n) = usec(i,n) * (usefrac(i,n)**a) ! colonization term
 
-      do 580 i = il1, il2
-        if(vegfrac(i).gt.1.0+1e-5)then
-          write(6,*)'vegetation fraction in cell ',i,' greater than'
-          write(6,*)'1.0 and equal to ',vegfrac(i)
-          call xit('competition',-6)
-        endif
-580   continue
-!>
-!!map delfrac to chngfrac so that we get change in fraction
-!!corresponding to the actual number of pfts
-!!
-      do 590 j = 1, icc-numcrops   ! j now goes from 1 to icc-numcrops
-        do 591 i = il1, il2
+      sum1 = cropfrac(i) + seed !minbare
+      do k = 1, n-1, 1
+        sum1 = sum1 + usefrac(i,k)
+      end do
 
-          if(rank(i,j).le.numtreepfts)then
-            k=rank(i,j)
-          else
-            k=rank(i,j)+2
-          endif
-          expnterm(i,k)=colterm(i,j)
-          mortterm(i,k)=deathterm(i,j)
-          fcancmx(i,k)=usefrac(i,j)
-          chngfrac(i,k)=fcancmx(i,k)-pfcancmx(i,k)
+      term2(i,n) = usec(i,n) * (usefrac(i,n)**a) * (sum1 + (usefrac(i,n)**b)) ! self & expansion thinning
+      term3(i,n) = usem(i,n) * usefrac(i,n) ! mortality term
 
-591     continue
-590   continue
+      sum2 = 0.0
+      do 430 j = 1, n-1, 1
+        sum3 = cropfrac(i)
+        do k = 1, j-1, 1
+          sum3 = sum3 + usefrac(i,k)
+        end do 
+        sum4 = cropfrac(i)
+        do k = 1, j, 1
+          sum4 = sum4 + usefrac(i,k)
+        end do 
+        sum2 = sum2 + ((((1. - sum3)**g) * usec(i,j) * (usefrac(i,j)**a) * usefrac(i,n)) &
+                          / ((1. - sum4)**g))
+430   continue
+      term4(i,n) = sum2  ! invasion
+      deathterm(i,n) = term2(i,n) + term3(i,n) + term4(i,n)
+      delfrac(i,n) = colterm(i,n) - deathterm(i,n) ! delta fraction
 
-!>---> from here on we get back to our usual icc pfts <----
+410 continue
+400 continue
 
-!>get bare fraction
+  !> Update fractions and check if all fractions are positive
+  do 500 n = 1, icc-numcrops
+    do 510 i = il1, il2
+      usefrac(i,n) = usefrac(i,n) + delfrac(i,n)
+      if(usefrac(i,n) < 0.0)then
+        write(6,*)'fractional coverage -ve for cell ',i,' and pft',n
+        call xit('competition',-5)
+      endif
+      usefrac(i,n) = max(seed, usefrac(i,n))
+510 continue
+500 continue
 
-      do 600 j = 1, icc
-        do 601 i = il1, il2
-          barefrac(i)=barefrac(i)-fcancmx(i,j)
-          pbarefra(i)=pbarefra(i)-pfcancmx(i,j)
-601     continue
-600   continue
+  !> With the minimum seeding fraction prescription, especially for
+  !! Lotka Volterra eqns the total veg fraction may exceed 1. to
+  !! prevent this we need to adjust fractional coverage of all non-crop
+  !! pfts that do not have the minimum fraction.
 
-!>check if a pft's fractional cover is increasing or decreasing
+  do 530 i = il1, il2
+    vegfrac(i) = cropfrac(i)   !total vegetation fraction
+    mincfrac(i) = cropfrac(i)  !sum of mininum prescribed & crop fractions
+530 continue
 
-      do 620 j = 1, icc
-        do 621 i = il1, il2
-          if( ( fcancmx(i,j).gt.pfcancmx(i,j)) .and. &
-             (abs(pfcancmx(i,j)-fcancmx(i,j)).gt.zero) ) then
-              fraciord(i,j)=1
-          else if( ( fcancmx(i,j).lt.pfcancmx(i,j)) .and. &
-                  (abs(pfcancmx(i,j)-fcancmx(i,j)).gt.zero) ) then
-              fraciord(i,j)=-1
-          endif
-621     continue
-620   continue
+  do 540 n = 1, icc-numcrops
+    do 541 i = il1, il2
+      vegfrac(i) = vegfrac(i) + usefrac(i,n)
+      if (abs(usefrac(i,n) - seed) <= zero) then
+        mincfrac(i) = mincfrac(i) + usefrac(i,n)
+      end if
+541 continue
+540 continue
 
-!>check if bare fraction increases or decreases
+  do 550 n = 1, icc-numcrops
+    do 551 i = il1, il2
+      if (vegfrac(i) > 1.0 .and. abs(usefrac(i,n) - seed) > zero) then
+        term = (1. - mincfrac(i)) / (vegfrac(i) - mincfrac(i))
+        usefrac(i,n) = usefrac(i,n) * term
+      end if
+551 continue
+550 continue
 
-      do 640 i = il1, il2
-        if( ( barefrac(i).gt.pbarefra(i)) .and. &
-           (abs(pbarefra(i)-barefrac(i)).gt.zero) ) then
-              bareiord(i)=1  ! increase in bare area
-        else if ( ( barefrac(i).lt.pbarefra(i)) .and. &
-                 (abs(pbarefra(i)-barefrac(i)).gt.zero) ) then
-              bareiord(i)=-1 ! decrease in bare area
-        endif
-640   continue
-!>
-!!now that we know the change in fraction for every pft we use its
-!!npp for spatial expansion and litter generation. we also spread
-!!vegetation biomass uniformly over the new fractions, and generate
-!!additional litter from mortality if the fractions decrease.
-!!
-!!three things can happen here
-!!
-!!1. fraciord = 0, which means all npp that was used for expansion
-!!becomes litter, due to self/expansion thinning and mortality.
-!!
-!!2. fraciord = 1, which means a part of or full npp is used for
-!!expansion but some litter may also be generated. the part of
-!!npp that is used for expansion needs to be allocated to leaves,
-!!stem, and root. rather than doing this here we will let the
-!!allocation part handle this. so allocation module will allocate
-!!not only the npp that is used for pure vertical expansion but
-!!also this npp. but we will do our part here and spread the
-!!vegetation biomass over the new increased fraction.
-!!
-!!3. fraciord = -1, which means all of the npp is to be used for
-!!litter generation but in addition some more litter will be
-!!generated from mortality of the standing biomass.
-!!
-      do 660 j = 1, icc
-       if(.not. crop(j))then  ! do not run for crops
-        do 661 i = il1, il2
+  !> Check again that total veg frac doesn't exceed 1.
+  do 560 i = il1, il2
+    vegfrac(i) = cropfrac(i) !total vegetation fraction
+560 continue
 
-          if(fraciord(i,j).eq.1)then ! Expand
+  do 570 n = 1, icc-numcrops
+    do 571 i = il1, il2
+      vegfrac(i) = vegfrac(i) + usefrac(i,n)
+571 continue
+570 continue
 
-!           reduce biomass density by spreading over larger fraction
+  do 580 i = il1, il2
+    if (vegfrac(i) > 1.0 + 1.e-5) then
+      write(6,*)'vegetation fraction in cell ',i,' greater than'
+      write(6,*)'1.0 and equal to ',vegfrac(i)
+      call xit('competition',-6)
+    end if
+580 continue
 
-            term = (pfcancmx(i,j)/fcancmx(i,j))
+  !> Map delfrac to chngfrac so that we get change in fraction
+  !! corresponding to the actual number of pfts
+  do 590 j = 1, icc-numcrops   ! j now goes from 1 to icc-numcrops
+    do 591 i = il1, il2
+      if (rank(i,j) <= numtreepfts) then
+        k=rank(i,j)
+      else
+        k=rank(i,j)+2
+      end if
+      expnterm(i,k) = colterm(i,j)
+      mortterm(i,k) = deathterm(i,j)
+      fcancmx(i,k) = usefrac(i,j)
+      chngfrac(i,k) = fcancmx(i,k) - pfcancmx(i,k)
+591 continue
+590 continue
 
-            gleafmas(i,j) = gleafmas(i,j)*term
-            bleafmas(i,j) = bleafmas(i,j)*term
-            stemmass(i,j) = stemmass(i,j)*term
-            rootmass(i,j) = rootmass(i,j)*term
-            litrmass(i,j) = litrmass(i,j)*term
-            soilcmas(i,j) = soilcmas(i,j)*term
+  ! ---> from here on we get back to our usual icc pfts <----
 
-!           only a fraction of npp becomes litter which for simplicity
-!           and for now we spread over the whole grid cell
+  ! get bare fraction
+  do 600 j = 1, icc
+    do 601 i = il1, il2
+      barefrac(i) = barefrac(i) - fcancmx(i,j)
+      pbarefra(i) = pbarefra(i) - pfcancmx(i,j)
+601 continue
+600 continue
 
-!            if(expnterm(i,j).le.zero.and.mortterm(i,j).gt.zero)then
-!              write(6,*)'expansion term<= zero when fractional coverage'
-!              write(6,*)'is increasing for pft',j,' in grid cell',i
-!              write(*,*)'pfcancmx(',i,',',j,')=',pfcancmx(i,j)
-!              write(*,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
-!              write(*,*)'expnterm(',i,',',j,')=',expnterm(i,j)
-!              call xit('competition',-7)
-!            else if(expnterm(i,j).le.zero.and.mortterm(i,j).le.zero)then
-!              term = 1.0
-!            else
-!              term = (mortterm(i,j)/expnterm(i,j))
-!            endif
+  !> Check if a pft's fractional cover is increasing or decreasing
+  do 620 j = 1, icc
+    do 621 i = il1, il2
+      if ((fcancmx(i,j) > pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
+        fraciord(i,j) = 1
+      else if ((fcancmx(i,j) < pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
+        fraciord(i,j) = -1
+      end if
+621 continue
+620 continue
 
-!            add2allo(i,j)=(1.-term)
+  !> Check if bare fraction increases or decreases
+  do 640 i = il1, il2
+    if ((barefrac(i) > pbarefra(i)) .and. (abs(pbarefra(i) - barefrac(i)) > zero)) then
+      bareiord(i) = 1  ! increase in bare area
+    else if ((barefrac(i) < pbarefra(i)) .and. (abs(pbarefra(i) - barefrac(i)) > zero)) then
+      bareiord(i) = -1 ! decrease in bare area
+    end if
+640 continue
 
-!           the factor (deltat/963.62) converts npp from u-mol co2-c/m2.sec
-!           -> kg c/m2.deltat
+  !> Now that we know the change in fraction for every pft we use its
+  !! NPP for spatial expansion and litter generation. we also spread
+  !! vegetation biomass uniformly over the new fractions, and generate
+  !! additional litter from mortality if the fractions decrease.
+  !!
+  !! Three things can happen here
+  !!
+  !! 1. fraciord = 0, which means all npp that was used for expansion
+  !! becomes litter, due to self/expansion thinning and mortality.
+  !!
+  !! 2. fraciord = 1, which means a part of or full npp is used for
+  !! expansion but some litter may also be generated. the part of
+  !! npp that is used for expansion needs to be allocated to leaves,
+  !! stem, and root. rather than doing this here we will let the
+  !! allocation part handle this. so allocation module will allocate
+  !! not only the npp that is used for pure vertical expansion but
+  !! also this npp. but we will do our part here and spread the
+  !! vegetation biomass over the new increased fraction.
+  !!
+  !! 3. fraciord = -1, which means all of the npp is to be used for
+  !! litter generation but in addition some more litter will be
+  !! generated from mortality of the standing biomass.
+  
+  do 660 j = 1, icc
+    if (.not. crop(j)) then  ! do not run for crops
+      do 661 i = il1, il2
+        if (fraciord(i,j) == 1) then ! Expand
 
-            ! Not in use. JM Jun 2014.
-            !incrlitr(i,j) = term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-            incrlitr(i,j) = 0.
-            grsumlit(i)=grsumlit(i)+incrlitr(i,j)
+          ! Reduce biomass density by spreading over larger fraction
+          term = pfcancmx(i,j) / fcancmx(i,j)
 
-!           ! Not in use. JM Jun 2014. -rest put aside for allocation
-!           add2allo(i,j) = add2allo(i,j)* max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*&
-!                          (pfcancmx(i,j)/fcancmx(i,j))
-            add2allo(i,j) = 0.
+          gleafmas(i,j) = gleafmas(i,j) * term
+          bleafmas(i,j) = bleafmas(i,j) * term
+          stemmass(i,j) = stemmass(i,j) * term
+          rootmass(i,j) = rootmass(i,j) * term
+          !COMBAK PERLAY
+          litrmass(i,j) = litrmass(i,j) * term
+          soilcmas(i,j) = soilcmas(i,j) * term
+          incrlitr(i,j) = 0.
+          grsumlit(i) = grsumlit(i) + incrlitr(i,j)
+          ! do k = 1,ignd
+          !   litrmass(i,j,k) = litrmass(i,j,k) * term
+          !   soilcmas(i,j,k) = soilcmas(i,j,k) * term
+          !   incrlitr(i,j,k) = 0.
+          !   grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+          ! end do
+          ! COMBAK PERLAY
+          
+          add2allo(i,j) = 0.
 
-          else if(fraciord(i,j).eq.-1)then ! Contract
-!>
-!!All npp used for expansion becomes litter plus there is additional mortality of the standing biomass. the npp that
-!!becomes litter is now spread over the whole grid cell. all biomass from fraction that dies due to mortality is
-!!also distributed over the litter pool of whole grid cell.
-!!
+        else if (fraciord(i,j) == -1) then ! Contract
+
+          ! All npp used for expansion becomes litter plus there is
+          ! additional mortality of the standing biomass. the npp that
+          ! becomes litter is now spread over the whole grid cell.
+          ! all biomass from fraction that dies due to mortality is
+          ! also distributed over the litter pool of whole grid cell.
+
+          ! FLAG, Put the incrlitr in the first layer (from the leaves and stems)
+          ! but the roots and litr must be put in the proper soil layers. To do
+          ! this we bring in the rmatctem for the root placement. JM Feb 2016
+
+          ! COMBAK PERLAY 
             incrlitr(i,j) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
-                            + bleafmas(i,j) + stemmass(i,j) &
-                            + rootmass(i,j) + litrmass(i,j))
-
-            ! Not in use. JM Jun 2014.
-            !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-            incrlitr(i,j) = incrlitr(i,j)
+                                + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) + litrmass(i,j))
             grsumlit(i) = grsumlit(i) + incrlitr(i,j)
-
-!           Chop off soil c from the fraction that goes down and
-!           spread it uniformly over the soil c pool of entire grid cell
-
+            ! Chop off soil C from the fraction that goes down and
+            ! spread it uniformly over the soil c pool of entire grid cell
             incrsolc(i,j) = abs(chngfrac(i,j)) * soilcmas(i,j)
             grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
+          ! do k = 1,ignd
+          !   if (k == 1) then
+          !     incrlitr(i,j,k) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
+          !                       + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) & 
+          !                       * rmatctem(i,j,k) + litrmass(i,j,k))
+          !   else
+          !     incrlitr(i,j,k) = abs(chngfrac(i,j)) * (rootmass(i,j) * rmatctem(i,j,k) + litrmass(i,j,k))
+          !   end if
+          ! 
+          !   grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+          ! 
+          !   ! Chop off soil C from the fraction that goes down and
+          !   ! spread it uniformly over the soil c pool of entire grid cell
+          !   incrsolc(i,j,k) = abs(chngfrac(i,j)) * soilcmas(i,j,k)
+          !   grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+          ! 
+          ! end do
+          ! COMBAK PERLAY 
 
-          else if(fraciord(i,j).eq.0)then
+        else if (fraciord(i,j) == 0) then
 
-            ! Not in use. JM Jun 2014.
-!           all npp used for expansion becomes litter
-            !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j)
-            incrlitr(i,j) = 0.
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
-
-          endif
-
-661     continue
-       endif
-660   continue
-!>
-!!if bare fraction decreases then chop off the litter and soil c
-!!from the decreased fraction and add it to grsumlit & grsumsoc
-!!for spreading over the whole grid cell. if bare fraction increases
-!!then spread its litter and soil c uniformly over the increased fraction.
-!!
-      do 680 i = il1, il2
-        if(bareiord(i).eq.-1)then !decrease in bare area
-
-          incrlitr(i,iccp1) =(pbarefra(i)-barefrac(i))*litrmass(i,iccp1)
-          grsumlit(i)=grsumlit(i)+incrlitr(i,iccp1)
-
-          incrsolc(i,iccp1) = (pbarefra(i)-barefrac(i))*soilcmas(i,iccp1)
-          grsumsoc(i)=grsumsoc(i)+incrsolc(i,iccp1)
-
-        else if(bareiord(i).eq.1)then ! increase in bare area
-
-          term = pbarefra(i)/barefrac(i)
-          litrmass(i,iccp1)=litrmass(i,iccp1)*term
-          soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
+          ! COMBAK PERLAY 
+          incrlitr(i,j) = 0.
+          grsumlit(i) = grsumlit(i) + incrlitr(i,j)
+          ! incrlitr(i,j,:) = 0.
+          ! grsumlit(i,:) = grsumlit(i,:) + incrlitr(i,j,:)
+          ! COMBAK PERLAY 
 
         endif
+661   continue
+    endif
+660 continue
+
+  !> If bare fraction decreases then chop off the litter and soil c
+  !! from the decreased fraction and add it to grsumlit & grsumsoc
+  !! for spreading over the whole grid cell. If bare fraction increases
+  !! then spread its litter and soil c uniformly over the increased fraction.
+  !COMBAK PERLAY
+  do 680 i = il1, il2
+    if (bareiord(i) == -1) then !decrease in bare area
+        incrlitr(i,iccp1) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1)
+        grsumlit(i) = grsumlit(i) + incrlitr(i,iccp1)
+
+        incrsolc(i,iccp1) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1)
+        grsumsoc(i) = grsumsoc(i) + incrsolc(i,iccp1)
+    else if (bareiord(i) == 1) then ! increase in bare area
+        term = pbarefra(i) / barefrac(i)
+        litrmass(i,iccp1) = litrmass(i,iccp1) * term
+        soilcmas(i,iccp1) = soilcmas(i,iccp1) * term
+    end if
 680   continue
-!>
-!!if a pft is not supposed to exist as indicated by pftexist and its
-!!fractional coverage is really small then get rid of the pft all
-!!together and spread its live and dead biomass over the grid cell.
-!!
-      do 690 j = 1, icc
-        do 691 i = il1, il2
-          if(.not. pftexist(i,j).and.fcancmx(i,j).lt.1.0e-05)then
+! do 680 i = il1, il2
+!   if (bareiord(i) == -1) then !decrease in bare area
+!     do k = 1,ignd
+!       incrlitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1,k)
+!       grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,iccp1,k)
+! 
+!       incrsolc(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1,k)
+!       grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,iccp1,k)
+!     end do
+!   else if (bareiord(i) == 1) then ! increase in bare area
+!     do k = 1,ignd
+!       term = pbarefra(i) / barefrac(i)
+!       litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+!       soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+!     end do
+!   end if
+! 680   continue
+!COMBAK PERLAY
 
-            incrlitr(i,j)=incrlitr(i,j)+fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
-              +stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
-            grsumlit(i) = grsumlit(i)+ incrlitr(i,j)
+  !> If a pft is not supposed to exist as indicated by pftexist and its
+  !! fractional coverage is really small then get rid of the pft all
+  !! together and spread its live and dead biomass over the grid cell.
+  do 690 j = 1, icc
+    do 691 i = il1, il2
+      if (.not. pftexist(i,j) .and. fcancmx(i,j) < 1.0e-05) then
 
-            incrsolc(i,j)=incrsolc(i,j)+fcancmx(i,j)*soilcmas(i,j)
-            grsumsoc(i)=grsumsoc(i)+incrsolc(i,j)
+        barefrac(i) = barefrac(i) + fcancmx(i,j)
+        term = (barefrac(i) - fcancmx(i,j)) / barefrac(i)
 
-            barefrac(i)=barefrac(i)+fcancmx(i,j)
+        !COMBAK PERLAY
+        incrlitr(i,j) = incrlitr(i,j) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+                                            + stemmass(i,j) + rootmass(i,j) &
+                                            + litrmass(i,j))
 
-!>adjust litter and soil c mass densities for increase in
-!>barefrac over the bare fraction.
+        grsumlit(i) = grsumlit(i)+ incrlitr(i,j)
 
-            term = (barefrac(i)-fcancmx(i,j))/barefrac(i)
-            litrmass(i,iccp1) = litrmass(i,iccp1)*term
-            soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
+        incrsolc(i,j) = incrsolc(i,j) + fcancmx(i,j) * soilcmas(i,j)
+        grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
 
-            fcancmx(i,j)=0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27
+        !> Adjust litter and soil c mass densities for increase in
+        !! barefrac over the bare fraction.
+        litrmass(i,iccp1) = litrmass(i,iccp1) * term
+        soilcmas(i,iccp1) = soilcmas(i,iccp1) * term
 
-          endif
-691     continue
-690   continue
+        ! do k = 1,ignd
+        !  ! Put the incrlitr in the first layer (from the leaves and stems)
+        !  ! but the roots and litr must be put in the proper soil layers. To do
+        !  ! this we bring in the rmatctem for the root placement. JM Feb 2016
+        !  if (k == 1) then
+        !    incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+        !                                      + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k)&
+        !                                      + litrmass(i,j,k))
+        !  else
+        !    incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
+        !                                      + litrmass(i,j,k))
+        !  end if
+        ! 
+        !  grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
+        ! 
+        !  incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
+        !  grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+        ! 
+        !  !> Adjust litter and soil c mass densities for increase in
+        !  !! barefrac over the bare fraction.
+        ! 
+        !  litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
+        !  soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+        ! 
+        !  end do
 
-!>spread litter and soil c over all pfts and the barefrac
+        !COMBAK PERLAY
+        
 
-      do 700 j = 1, icc
-        do 701 i = il1, il2
-          if(fcancmx(i,j).gt.zero)then
-            litrmass(i,j)=litrmass(i,j)+grsumlit(i)
-            soilcmas(i,j)=soilcmas(i,j)+grsumsoc(i)
-          else
-            gleafmas(i,j)=0.0
-            bleafmas(i,j)=0.0
-            stemmass(i,j)=0.0
-            rootmass(i,j)=0.0
-            litrmass(i,j)=0.0
-            soilcmas(i,j)=0.0
-          endif
-701     continue
-700   continue
+        fcancmx(i,j) = 0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27
 
-      do 720 i = il1, il2
-        if(barefrac(i).gt.zero)then
-          litrmass(i,iccp1)=litrmass(i,iccp1)+grsumlit(i)
-          soilcmas(i,iccp1)=soilcmas(i,iccp1)+grsumsoc(i)
-        else
-          litrmass(i,iccp1)=0.0
-          soilcmas(i,iccp1)=0.0
-        endif
-720   continue
+      end if
+691 continue
+690 continue
 
-!>get fcanmxs for use by class based on the new fcancmxs
+  !> Spread litter and soil c over all pfts and the barefrac
+  do 700 j = 1, icc
+    do 701 i = il1, il2
+      if (fcancmx(i,j) > zero) then
+        !COMBAK PERLAY
+        litrmass(i,j) = litrmass(i,j) + grsumlit(i)
+        soilcmas(i,j) = soilcmas(i,j) + grsumsoc(i)
+        ! litrmass(i,j,:) = litrmass(i,j,:) + grsumlit(i,:)
+        ! soilcmas(i,j,:) = soilcmas(i,j,:) + grsumsoc(i,:)
+        !COMBAK PERLAY
+      else
+        gleafmas(i,j)=0.0
+        bleafmas(i,j)=0.0
+        stemmass(i,j)=0.0
+        rootmass(i,j)=0.0  
+        !COMBAK PERLAY
+        litrmass(i,j)=0.0
+        soilcmas(i,j)=0.0
+        ! litrmass(i,j,:)=0.0
+        ! soilcmas(i,j,:)=0.0
+        !COMBAK PERLAY
+      end if
+701 continue
+700 continue
 
-      do 740 j = 1, ican
-        do 741 i = il1, il2
-           fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
-741     continue
-740   continue
+  do 720 i = il1, il2
+    !COMBAK PERLAY
+    if (barefrac(i) > zero) then
+      litrmass(i,iccp1) = litrmass(i,iccp1) + grsumlit(i)
+      soilcmas(i,iccp1) = soilcmas(i,iccp1) + grsumsoc(i)
+    else
+      litrmass(i,iccp1) = 0.0
+      soilcmas(i,iccp1) = 0.0
+    end if
+    ! if (barefrac(i) > zero) then
+    !   litrmass(i,iccp1,:) = litrmass(i,iccp1,:) + grsumlit(i,:)
+    !   soilcmas(i,iccp1,:) = soilcmas(i,iccp1,:) + grsumsoc(i,:)
+    ! else
+    !   litrmass(i,iccp1,:) = 0.0
+    !   soilcmas(i,iccp1,:) = 0.0
+    ! end if
+    !COMBAK PERLAY
+720 continue
 
-      k1=0
-      do 750 j = 1, ican
-        if(j.eq.1) then
-          k1 = k1 + 1
-        else
-          k1 = k1 + nol2pfts(j-1)
-        endif
-        k2 = k1 + nol2pfts(j) - 1
-        do 751 l = k1, k2
-          do 752 i = il1, il2
-            fcanmx(i,j)=fcanmx(i,j)+fcancmx(i,l)
-752       continue
-751     continue
-750   continue
+  ! Get fcanmxs for use by CLASS based on the new fcancmxs
+  do 740 j = 1, ican
+    do 741 i = il1, il2
+       fcanmx(i,j) = 0.0 ! fractional coverage of class' pfts
+741 continue
+740 continue
 
-!>update grid averaged vegetation biomass, and litter and soil c densities
+  do 750 j = 1, ican
+    do 751 l = reindexPFTs(j,1), reindexPFTs(j,2)
+      do 752 i = il1, il2
+        fcanmx(i,j) = fcanmx(i,j) + fcancmx(i,l)
+752   continue
+751 continue
+750 continue
 
-      do 800 j = 1, icc
-        do 801 i = il1, il2
-          vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
-                     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
-          gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-801     continue
-800   continue
+  !> Update grid averaged vegetation biomass, and litter and soil c densities
+  do 800 j = 1, icc
+    do 801 i = il1, il2
+      vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j)&
+                                               + stemmass(i,j) + rootmass(i,j))
+      !COMBAK PERLAY
+        gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j)
+        gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j)
+      ! do k = 1, ignd
+      !   gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j,k)
+      !   gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j,k)
+      ! end do
+      !COMBAK PERLAY
+801 continue
+800 continue
 
-      do 810 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
-        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
+  do 810 i = il1, il2
+    !COMBAK PERLAY
+      gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1)
+      gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1)
+    ! do k = 1, ignd
+    !   gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1,k)
+    !   gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1,k)
+    ! end do
+    !COMBAK PERLAY
 810   continue
-!>
-!>and finally we check the c balance. we were supposed to use a
-!!fraction of npp for competition. some of it is used for expansion
-!!(this is what we save for allocation), and the rest becomes litter.
-!!so for each pft the total c mass in vegetation and litter pools
-!!must all add up to the same value as before competition.
-!!
-      do 830 j = 1, icc
-       if (.not. crop(j)) then
-        do 831 i = il1, il2
+  !>
+  !> and finally we check the C balance. We were supposed to use a
+  !! fraction of NPP for competition. Some of it is used for expansion
+  !! (this is what we save for allocation), and the rest becomes litter.
+  !! so for each pft the total C mass in vegetation and litter pools
+  !! must all add up to the same value as before competition.
+  !!
+  do 830 j = 1, icc
+    if (.not. crop(j)) then
+      do 831 i = il1, il2
 
-          biomasvg(i,j)=fcancmx(i,j)* &
-           (gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          pbiomasvg(i,j)=pfcancmx(i,j)* &
-           (pglfmass(i,j)+pblfmass(i,j)+protmass(i,j)+pstmmass(i,j))
+        biomasvg(i,j) = fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
+                                        + stemmass(i,j) + rootmass(i,j))
+        pbiomasvg(i,j) = pfcancmx(i,j) * (pglfmass(i,j) + pblfmass(i,j) &
+                                        + protmass(i,j) + pstmmass(i,j))
 
-!         part of npp that we will use later for allocation
-          putaside(i,j)=add2allo(i,j)*fcancmx(i,j)
+        ! part of npp that we will use later for allocation
+        putaside(i,j) = add2allo(i,j) * fcancmx(i,j)
+        gavgputa(i) = gavgputa(i) + putaside(i,j)
 
-          gavgputa(i) = gavgputa(i) + putaside(i,j)
+        !COMBAK PERLAY
+          ! litter added to bare
+          barelitr(i,j) = barelitr(i,j) + grsumlit(i) * fcancmx(i,j)
+          ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j)
 
-!         litter added to bare
-          barelitr(i,j)=grsumlit(i)*fcancmx(i,j)
-          ownlitr(i,j)=incrlitr(i,j)
+          ! soil c added to bare
+          baresolc(i,j) = baresolc(i,j) + grsumsoc(i) * fcancmx(i,j)
+          ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j)
+        ! do k = 1,ignd
+        !   ! litter added to bare
+        !   barelitr(i,j) = barelitr(i,j) + grsumlit(i,k) * fcancmx(i,j)
+        !   ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
+        ! 
+        !   ! soil c added to bare
+        !   baresolc(i,j) = baresolc(i,j) + grsumsoc(i,k) * fcancmx(i,j)
+        !   ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
+        ! end do
+        !COMBAK PERLAY
 
-!         soil c added to bare
-          baresolc(i,j)=grsumsoc(i)*fcancmx(i,j)
-          ownsolc(i,j)=incrsolc(i,j)
+        add2dead(i,j) = add2dead(i,j) + barelitr(i,j) + baresolc(i,j)
 
-          add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
+        ! Not in use. JM Jun 2014.
+        ! npp we had in first place to expand
+        ! nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
+        nppvegar(i,j) = 0.
 
-!         Not in use. JM Jun 2014.
-!         npp we had in first place to expand
-!         nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-          nppvegar(i,j)=0.
+        gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
-          gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
+        !COMBAK PERLAY
+          deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j) + soilcmas(i,j))
+          pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j) + psocmass(i,j))
+        ! do k = 1, ignd
+        !   deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j,k) + soilcmas(i,j,k))
+        !   pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j,k) + psocmass(i,j,k))
+        ! end do
+        !COMBAK PERLAY
 
-          deadmass(i,j)=fcancmx(i,j)*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pfcancmx(i,j)*(pltrmass(i,j)+psocmass(i,j))
+        !!total mass before competition
+        befrmass = pbiomasvg(i,j) + nppvegar(i,j) + pdeadmas(i,j)
 
-!!total mass before competition
-          befrmass=pbiomasvg(i,j)+nppvegar(i,j)+pdeadmas(i,j)
+        !!total mass after competition
+        aftrmass = biomasvg(i,j) + putaside(i,j) + deadmass(i,j) - barelitr(i,j) &
+                                  - baresolc(i,j) + ownlitr(i,j) + ownsolc(i,j)
 
-!!total mass after competition
-          aftrmass=biomasvg(i,j)+putaside(i,j)+deadmass(i,j)- &
-                  barelitr(i,j)-baresolc(i,j)+ownlitr(i,j)+ownsolc(i,j)
+        if (abs(befrmass - aftrmass) > tolrance) then
+          write(6,*)'total biomass for pft',j,', and grid cell =',i
+          write(6,*)'does not balance before and after competition'
+          write(6,*)' '
+          write(6,*)'chngfrac(',i,',',j,')=',chngfrac(i,j)
+          write(6,*)'fraciord(',i,',',j,')=',fraciord(i,j)
+          write(6,*)' '
+          write(6,*)'pbiomasvg(',i,',',j,')=',pbiomasvg(i,j)
+          write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
+          write(6,*)'nppvegar(',i,',',j,')=',nppvegar(i,j)
+          write(6,*)' '
+          write(6,*)' biomasvg(',i,',',j,')=',biomasvg(i,j)
+          write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
+          write(6,*)'putaside(',i,',',j,')=',putaside(i,j)
+          write(6,*)' '
+          write(6,*)'before biomass density = ',gleafmas(i,j)+ &
+                bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
+          write(6,*)'after  biomass density = ',pglfmass(i,j)+ &
+               pblfmass(i,j)+protmass(i,j)+pstmmass(i,j)
+          write(6,*)' '
+          write(6,*)'barelitr(',i,',',j,')=',barelitr(i,j)
+          write(6,*)'baresolc(',i,',',j,')=',baresolc(i,j)
+          write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
+          write(6,*)'ownsolc(',i,',',j,')=',ownsolc(i,j)
+          write(6,*)' '
+          write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
+          write(6,*)'pfcancmx(',i,',',j,')=',pfcancmx(i,j)
+          write(6,*)' '
+          write(6,*)'abs(befrmass-aftrmass)=',abs(befrmass-aftrmass)
+          call xit('competition',-8)
+        end if
+831   continue
+    end if
+830 continue
 
-          if(abs(befrmass-aftrmass).gt.tolrance)then
-            write(6,*)'total biomass for pft',j,', and grid cell =',i
-            write(6,*)'does not balance before and after competition'
-            write(6,*)' '
-            write(6,*)'chngfrac(',i,',',j,')=',chngfrac(i,j)
-            write(6,*)'fraciord(',i,',',j,')=',fraciord(i,j)
-            write(6,*)' '
-            write(6,*)'pbiomasvg(',i,',',j,')=',pbiomasvg(i,j)
-            write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
-            write(6,*)'nppvegar(',i,',',j,')=',nppvegar(i,j)
-            write(6,*)' '
-            write(6,*)' biomasvg(',i,',',j,')=',biomasvg(i,j)
-            write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
-            write(6,*)'putaside(',i,',',j,')=',putaside(i,j)
-            write(6,*)' '
-            write(6,*)'before biomass density = ',gleafmas(i,j)+ &
-                  bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
-            write(6,*)'after  biomass density = ',pglfmass(i,j)+ &
-                 pblfmass(i,j)+protmass(i,j)+pstmmass(i,j)
-            write(6,*)' '
-            write(6,*)'barelitr(',i,',',j,')=',barelitr(i,j)
-            write(6,*)'baresolc(',i,',',j,')=',baresolc(i,j)
-            write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
-            write(6,*)'ownsolc(',i,',',j,')=',ownsolc(i,j)
-            write(6,*)' '
-            write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
-            write(6,*)'pfcancmx(',i,',',j,')=',pfcancmx(i,j)
-            write(6,*)' '
-            write(6,*)'abs(befrmass-aftrmass)=',abs(befrmass-aftrmass)
-            call xit('competition',-8)
-          endif
+  !>check balance over the bare fraction
 
-831     continue
-       endif
-830   continue
+  j = iccp1
+    do 851 i = il1, il2
+      !COMBAK PERLAY
+        deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j) + soilcmas(i,j))
+        pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j) + psocmass(i,j))
 
-!>check balance over the bare fraction
+        add2dead(i,j) = add2dead(i,j) + (grsumlit(i) + grsumsoc(i)) * barefrac(i)
 
-      j = iccp1
-        do 851 i = il1, il2
-          deadmass(i,j)=barefrac(i)*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pbarefra(i)*(pltrmass(i,j)+psocmass(i,j))
+        ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j)
+        ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j)
+      ! do k = 1,ignd
+      !   deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j,k) + soilcmas(i,j,k))
+      !   pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j,k) + psocmass(i,j,k))
+      ! 
+      !   add2dead(i,j) = add2dead(i,j) + (grsumlit(i,k) + grsumsoc(i,k)) * barefrac(i)
+      ! 
+      !   ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
+      !   ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
+      ! end do
+      !COMBAK PERLAY
+      befrmass = pdeadmas(i,j) + add2dead(i,j)
+      aftrmass = deadmass(i,j) + ownlitr(i,j) + ownsolc(i,j)
 
-          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i)
+      if (abs(befrmass - aftrmass) > tolrance) then
+        write(6,*)'total dead mass for grid cell =',i,'does not balance over bare'
+        write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
+        write(6,*)'add2dead(',i,') term=',add2dead(i,j)
+        write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
+        write(6,*)' '
+        write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
+        write(6,*)'ownsolc(',i,',',j,')=',ownsolc(i,j)
+        write(6,*)' '
+        write(6,*)'pbarefra(',i,')=',pbarefra(i)
+        write(6,*)'bareiord(',i,') =',bareiord(i)
+        write(6,*)'barefrac(',i,')=',barefrac(i)
+        write(6,*)' '
+        write(6,*)'abs(befrmass-aftrmass)=',abs(befrmass-aftrmass)
+        call xit('competition',-9)
+      end if
+851 continue
 
-          ownlitr(i,j)=incrlitr(i,j)
-          ownsolc(i,j)=incrsolc(i,j)
-
-          befrmass=pdeadmas(i,j)+add2dead(i)
-          aftrmass=deadmass(i,j)+ownlitr(i,j)+ownsolc(i,j)
-
-          if(abs(befrmass-aftrmass).gt.tolrance)then
-            write(6,*)'total dead mass for grid cell =',i,'does not balance over bare'
-            write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
-            write(6,*)'add2dead(',i,') term=',add2dead(i)
-            write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
-            write(6,*)' '
-            write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
-            write(6,*)'ownsolc(',i,',',j,')=',ownsolc(i,j)
-            write(6,*)' '
-            write(6,*)'pbarefra(',i,')=',pbarefra(i)
-            write(6,*)'bareiord(',i,') =',bareiord(i)
-            write(6,*)'barefrac(',i,')=',barefrac(i)
-            write(6,*)' '
-            write(6,*)'abs(befrmass-aftrmass)=',abs(befrmass-aftrmass)
-            call xit('competition',-9)
-          endif
-851     continue
-
-      return
+  return
 
 end subroutine competition
 !>@}

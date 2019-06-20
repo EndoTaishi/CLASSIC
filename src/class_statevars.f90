@@ -46,6 +46,7 @@ type class_gather
     real, allocatable, dimension(:) :: TPNDGAT !<Temperature of ponded water [K]
     real, allocatable, dimension(:) :: TSNOGAT !<Snowpack temperature [K]
     real, allocatable, dimension(:) :: WSNOGAT !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+    real, allocatable, dimension(:)  :: maxAnnualActLyrGAT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     real, allocatable, dimension(:) :: ZPNDGAT !<Depth of ponded water on surface [m]
     real, allocatable, dimension(:) :: REFGAT  !<
     real, allocatable, dimension(:) :: BCSNGAT !<
@@ -597,8 +598,10 @@ type class_rotated
     real, allocatable, dimension(:,:) :: WTRSROT !<
     real, allocatable, dimension(:,:) :: SFRHROT !<
     real, allocatable, dimension(:,:) :: wtableROT !<
-    real, allocatable, dimension(:,:)  :: FTABLE !<Depth to frozen water table (m)
-    real, allocatable, dimension(:,:)  :: ACTLYR !<Active layer depth (m)
+    real, allocatable, dimension(:,:) :: FTABLE !<Depth to frozen water table (m)
+    real, allocatable, dimension(:,:) :: ACTLYR !<Active layer depth (m)
+    real, allocatable, dimension(:,:) :: maxAnnualActLyrROT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+    real, allocatable, dimension(:,:) :: actLyrThisYrROT !< Annual active layer depth maximum starting from summer solstice for the present year (m)
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
     integer, allocatable, dimension(:,:,:) :: ISNDROT !<Sand content flag, used to delineate non-soils.
@@ -817,6 +820,7 @@ allocate(class_gat% ILMOS   (ilg),&
          class_gat%TPNDGAT(ilg),&
          class_gat%TSNOGAT(ilg),&
          class_gat%WSNOGAT(ilg),&
+         class_gat%maxAnnualActLyrGAT(ilg),&
          class_gat%ZPNDGAT(ilg),&
          class_gat%REFGAT(ilg),&
          class_gat%BCSNGAT(ilg),&
@@ -1414,6 +1418,8 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot% SFRHROT (nlat,nmos),&
          class_rot% wtableROT(nlat,nmos),&
          class_rot% ACTLYR(nlat,nmos),&
+         class_rot% maxAnnualActLyrROT(nlat,nmos),&
+         class_rot% actLyrThisYrROT(nlat,nmos),&
          class_rot% FTABLE(nlat,nmos),&
          class_rot%PREACC_M(nlat,nmos),&
          class_rot%GTACC_M (nlat,nmos),&
@@ -1878,6 +1884,9 @@ subroutine initRowVars(nml)
             class_rot%THLQROW(I,J)=0.
 500                 CONTINUE
 525             CONTINUE
+
+      ! Initialize to 0 for the start of a run.
+      class_rot%actLyrThisYrROT(:,:) = 0.
 
 end subroutine initRowVars
 !>@}

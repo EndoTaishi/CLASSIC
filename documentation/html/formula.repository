@@ -1670,3 +1670,42 @@
 \form#1669:$[kg C m^{-2} s^{-1}]$
 \form#1670:$(kg C/m^2)$
 \form#1671:$\mu mol CO_2 m^{-2} s^{-1}$
+\form#1672:$(m^2/d)$
+\form#1673:\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \hspace{10pt}[Eqn 1] \]
+\form#1674:\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i f(z), \nonumber \\ i = \mathrm{D}, \mathrm{H}. \hspace{10pt}[Eqn 2] \]
+\form#1675:\[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i = \mathrm{D}, \mathrm{H}, \hspace{10pt}[Eqn 3]\]
+\form#1676:$ T_{crit} $
+\form#1677:$1\,C$
+\form#1678:\[ f_{15}(Q_{10,(T_i < T_{crit})}) = f_{15}(Q_{10}) * 0.1 \]
+\form#1679:$0.04 > \vert\Psi_i\vert \geq \vert\Psi_{sat,i}\vert$
+\form#1680:\[ f(\Psi_i)_\mathrm{H,(D, i>1)} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi_i\vert} {\log(0.04)-\log\vert\Psi_{sat,i}\vert} \hspace{10pt}[Eqn 4]\]
+\form#1681:\[f(\Psi_i)_{D,i=1} = 1\nonumber; \hspace{10pt}[Eqn 5]\]
+\form#1682:$0.06 \geq \vert\Psi_i\vert \geq 0.04$
+\form#1683:\[ f(\Psi_i)_{D,H} = 1; \hspace{10pt}[Eqn 6]\]
+\form#1684:$100.0 \geq \vert\Psi_i\vert > 0.06$
+\form#1685:\[ f(\Psi_i)_{D,H} = 1 - 0.8\frac{\log\vert\Psi_i\vert-\log(0.06)}{\log(100)-\log(0.06)}; \hspace{10pt}[Eqn 7]\]
+\form#1686:$\vert\Psi_i\vert > 100.0$
+\form#1687:\[ f(\Psi_i)_{D,H}=0.2. \hspace{10pt}[Eqn 8]\]
+\form#1688:$f(z)$
+\form#1689:$z_t$
+\form#1690:\[ f(z_i) =\exp (-z_i / z_t) \hspace{10pt}[Eqn 9]\]
+\form#1691:\[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \hspace{10pt}[Eqn 10] \]
+\form#1692:\[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \hspace{10pt}[Eqn 11]\]
+\form#1693:$yr^{-1}$
+\form#1694:$^{14}C$
+\form#1695:$\Delta ^{14}C$
+\form#1696:$\Delta ^{14}C = 1000 \left( \left[ 1 + \frac{\delta ^{14}C}{1000} \frac{0.975^2}{1 + \frac{\delta ^{13}C}{1000}} - 1 \right] \right)$
+\form#1697:$\Delta ^{14}C = 1000 \left( \left[ 1 + \frac{\delta ^{14}C}{1000} \right] \frac{0.975^2}{1 + \frac{\delta ^{13}C}{1000}} - 1 \right)$
+\form#1698:$\delta ^{14}C$
+\form#1699:$^{13}C$
+\form#1700:$\delta ^{13}C$
+\form#1701:$\Delta ^{14}C = \delta ^{14}C = 1000 \left(\frac{A_s}{A_{abs}} - 1 \right)$
+\form#1702:$^{14}$
+\form#1703:$A_{abs}$
+\form#1704:$^{-12}$
+\form#1705:$\pm$
+\form#1706:$^{-15}$
+\form#1707:$ A_s = 10^{-12}\left( \frac{\Delta ^{14}C}{1000} + 1 \right)$
+\form#1708:$10^{-12}$
+\form#1709:$10^{-15}$
+\form#1710:$^{14}C/C$

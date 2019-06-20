@@ -27,6 +27,7 @@ public :: allocateParamsCLASSIC
 public :: readin_PFTnums
 public :: readin_params
 public :: prepareGlobalParams
+private :: findPFTindexes
 
 ! Constants
 
@@ -47,6 +48,8 @@ real, parameter :: SBC = 5.66796E-8     !< Stefan-Boltzmann constant ($W m^{-2} 
 real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air ($J kg^{-1} K^{-1}$) (GCM name: CPRES)
 real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
 real, parameter :: STD_PRESS = 101325.0 !<Standard atmospheric pressure (Pa)
+
+real, parameter :: lambda14C = 8267.  !< radioactive decay rate for 14C, corresponds to a half life of 5730 years. (\f$yr^{-1}\f$)
 
 ! FLAG below not used anywhere.
 !AI=2.88053E+6/1004.5
@@ -157,6 +160,7 @@ integer, dimension(:), allocatable :: nol2pfts !< Number of level 2 PFTs calcula
 logical, dimension(:), allocatable :: crop     !< simple crop matrix, define number and position of the crops (NOTE: dimension icc)
 logical, dimension(:), allocatable :: grass    !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
 integer, dimension(:), allocatable :: CL4CTEM  !< Indexing of the CTEM-level PFTs into a CLASS PFT-level array.
+integer, dimension(:,:), allocatable :: reindexPFTs !< Reindexing arrays of CLASS variables into the parameters arrays at the CTEM level.
 
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
@@ -374,6 +378,10 @@ real :: alpha_hetres                !< parameter for finding litter temperature 
 real :: bsratelt_g                  !< bare ground litter respiration rate at 15 c in kg c/kg c.year
 real :: bsratesc_g                  !< bare ground soil c respiration rates at 15 c in kg c/kg c.year
 real :: a_hetr                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
+real :: r_depthredu                 !< Following Lawrence et al. Environ. Res. Lett.,2015. we adopt 10.0 as our value, controls
+                                    !!  decomposition at depth to account for observed reductions that are independent of temp and moisture.
+real :: tcrit                       !< temperature below which respiration is inhibited. [ C ]
+real :: frozered                    !< factor to reduce respiration by for temps below tcrit
 
 ! landuse_change_mod.f90 parameters: --------------
 
@@ -479,6 +487,20 @@ integer, dimension(2) :: coldlmt!< No. of days for which some temperature has to
 real, dimension(2) :: coldthrs  !<1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees \n
                                 !!2.  8 c threshold for initiating "harvest" for crops, the array colddays tracks days corresponding to these thresholds
 real :: roothrsh                !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
+
+! Turbation (in soilC_processes.f90) parameters: ---------------------------------
+
+real :: cryodiffus            !< Diffusivity (or simply the rate of the cryoturbation) \f$(m^2/d)\f$
+                              !! value from \cite Koven2011-796 - 5 cm2/yr. 
+real :: biodiffus             !< Diffusivity (or simply the rate of the bioturbation) \f$(m^2/d)\f$
+                              !! value from \cite Koven2011-796 - 1 cm2/yr.                                   
+real :: kterm                 !< Constant used in determination of depth at which cryoturbation ceases
+real :: eftime                !< e-folding time scale for updating mean active layer depth used in determining the depth 
+                              !! roots can penetrate. (years)
+                              
+real :: efoldfact             !<Calculated factor used in determining the e-folding time of average active layer depth.
+                              !! this is calculated based on the eftime parameter.
+
 
 ! soil_ch4uptake parameters: -----------------------------
 
@@ -709,6 +731,7 @@ subroutine allocateParamsCLASSIC()
     allocate(GROWYR(18,4,2),&
             ZORAT(ican),&
             classpfts(ican),&
+            reindexPFTs(ican,2),&
             CANEXT(ican),&
             XLEAF(ican),&
             RSMN(ican), &
@@ -889,6 +912,9 @@ subroutine readin_params
         bsratelt_g,&
         bsratesc_g,&
         a_hetr,&
+        r_depthredu, &
+        tcrit, &
+        frozered, &
         combust,&
         paper,&
         furniture,&
@@ -947,6 +973,10 @@ subroutine readin_params
         coldlmt,&
         coldthrs,&
         roothrsh,&
+        cryodiffus, &
+        biodiffus, &
+        kterm, &
+        eftime, &
         D_air,&
         g_0,&
         betaCH4,&
@@ -1012,16 +1042,13 @@ subroutine readin_params
         nol2pfts(i)=isumc  ! number of level 2 pfts
     end do
     
+    ! Find the reindexing array to go from CLASS PFTs to CTEM PFTs in the parameter
+    ! arrays.
+    reindexPFTs = findPFTindexes()
+    
     ! Calculate the CL4CTEM which helps index CTEM to CLASS in APREP.
-    k1c=0
     do i = 1, ican
-      if(i.eq.1) then
-        k1c = k1c + 1
-      else
-        k1c = k1c + nol2pfts(i-1)
-      endif
-      k2c = k1c + nol2pfts(i) - 1
-      do m = k1c, k2c
+      do m = reindexPFTs(i,1), reindexPFTs(i,2)
         CL4CTEM(m) = i
       end do
     end do
@@ -1044,7 +1071,7 @@ subroutine readin_params
           call XIT('classic_params',-1)
         end select
     end do
-
+    
     !Overwrite the prescribed vars with the compete ones if competition is on.
     if (PFTCompetitionSwitch) then
         omega = omega_compete
@@ -1057,9 +1084,39 @@ subroutine readin_params
         maxage = maxage_compete
         drlsrtmx = drlsrtmx_compete
     end if
+    
+    ! Determine the efoldfact parameter which is calculated from eftime.    
+    efoldfact = exp(-1.0 / eftime)
 
 end subroutine readin_params
 !!@}
+
+! ---------------------------------------------------------------------------------------------------
+!>\ingroup classic_params_reindexPFTs
+!!@{
+!> Provides indexes to relate the CLASS PFTs to the CTEM ones in the 
+!! parameter arrays.
+  function findPFTindexes()
+    
+    implicit none 
+    
+    integer :: j,k1c,k2c    
+    integer :: findPFTindexes(ican,2)
+    
+    k1c = 0
+    do j = 1, ican      
+      if (j == 1) then
+        k1c = k1c + 1
+      else
+        k1c = k1c + nol2pfts(j-1)
+      endif
+      k2c = k1c + nol2pfts(j) - 1
+      findPFTindexes(j,1) = k1c
+      findPFTindexes(j,2) = k2c      
+    end do 
+
+  end function findPFTindexes
+
 
 !>\file
 !> This module holds CLASSIC globally accessible parameters
