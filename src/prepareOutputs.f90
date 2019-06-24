@@ -765,6 +765,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
   real, allocatable, dimension(:) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
   real, allocatable, dimension(:) :: WTBLACC !<Depth of water table in soil [m]
   real, allocatable, dimension(:) :: ALTOTACC!<Broadband albedo [-]
+        real, allocatable, dimension(:) :: ALSNOACC!<Snow albedo [-]
   real, allocatable, dimension(:,:) :: TBARACC  !< Temperature of soil layers [K] (accumulated)
   real, allocatable, dimension(:,:) :: THLQACC  !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
   real, allocatable, dimension(:,:) :: THICACC  !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
@@ -791,6 +792,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
   real, pointer, dimension(:,:,:) :: THLQROT      !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
   real, pointer, dimension(:,:) :: ALIRROT        !< Diagnosed total near-infrared albedo of land surface [ ]
   real, pointer, dimension(:,:) :: ALVSROT        !< Diagnosed total visible albedo of land surface [ ]
+        real, pointer, dimension(:,:) :: ALBSROT        !< Snow albedo [ ]
   real, pointer, dimension(:,:) :: WSNOROT        !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
   real, pointer, dimension(:,:) :: SNOROT         !< Mass of snow pack \f$[kg m^{-2}]\f$
   real, pointer, dimension(:,:) :: RHOSROT        !< Density of snow \f$[kg m^{-3}]\f$
@@ -808,6 +810,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
   real, dimension(:), pointer :: TAROW            !< Air temperature at reference height [K]
 
   real, pointer, dimension(:,:) :: ALTOTACC_M     !< Broadband albedo [-] (accumulated)
+        real, pointer, dimension(:,:) :: ALSNOACC_M     !< Snow albedo [-] (accumulated)
   real, pointer, dimension(:,:) :: PREACC_M       !< Surface precipitation rate \f$[kg m^{-2} ]\f$ (accumulated)
   real, pointer, dimension(:,:) :: GTACC_M        !< Diagnosed effective surface black-body temperature [K] (accumulated)
   real, pointer, dimension(:,:) :: QEVPACC_M      !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$ (accumulated)
@@ -852,6 +855,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
   GTROT => class_rot%GTROT
   ALIRROT => class_rot%ALIRROT
   ALVSROT => class_rot%ALVSROT
+        ALBSROT => class_rot%ALBSROT
   FSGGROT => class_rot%FSGGROT
   FSGSROT => class_rot%FSGSROT
   FSGVROT => class_rot%FSGVROT
@@ -894,6 +898,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
 !         PRESACC_M => class_rot%PRESACC_M
 !         QAACC_M  => class_rot%QAACC_M
   ALTOTACC_M => class_rot%ALTOTACC_M
+        ALSNOACC_M => class_rot%ALSNOACC_M 
   EVAPACC_M   => class_rot%EVAPACC_M
   FLUTACC_M   => class_rot%FLUTACC_M
   altotcntr_d => class_rot%altotcntr_d
@@ -904,6 +909,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
       if (FSSROW(I) .gt. 0.) then
         ALTOTACC_M(I,M) = ALTOTACC_M(I,M) + (FSSROW(I)-(FSGVROT(I,M)&
                            +FSGSROT(I,M)+FSGGROT(I,M)))/FSSROW(I)
+                    ALSNOACC_M(I,M) = ALSNOACC_M(I,M) + ALBSROT(I,M)
         if (i == 1) altotcntr_d(i)=altotcntr_d(i) + 1 !only count once per gridcell, not per tile
       end if
 
@@ -954,7 +960,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
         RHOSACC(nltest),ROFACC(nltest),SCANACC(nltest),SNOACC(nltest), &
         TAACC(nltest),TCANACC(nltest),TSNOACC(nltest),UVACC(nltest), &
         WSNOACC(nltest),WTBLACC(nltest),ALTOTACC(nltest),TBARACC(nltest,ignd),&
-        THLQACC(nltest,ignd),THICACC(nltest,ignd))
+        THLQACC(nltest,ignd),THICACC(nltest,ignd),ALSNOACC(nltest),)
         ! UVACC_M,PRESACC_M,QAACC_M
 
     ALIRACC(:)=0.0 ; ALVSACC(:)=0.0 ; EVAPACC(:)=0.0 ;   FLINACC(:)=0.0
@@ -964,7 +970,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
     RHOSACC(:)=0.0 ;  ROFACC(:)=0.0 ; SCANACC(:)=0.0 ;   SNOACC(:)=0.0
     TAACC(:)=0.0   ; TCANACC(:)=0.0 ; TSNOACC(:)=0.0 ;   UVACC(:)=0.0
     WSNOACC(:)=0.0 ; WTBLACC(:)=0.0 ; ALTOTACC(:)=0.0 ; THLQACC(:,:)=0.0
-    THICACC(:,:)=0.0 ; TBARACC(:,:)=0.0
+    THICACC(:,:)=0.0 ; TBARACC(:,:)=0.0 ; ALSNOACC(:)=0.0
 
 
     DO I=1,NLTEST
@@ -979,6 +985,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
         OVRACC(I)=OVRACC(I)+OVRACC_M(I,M)*FAREROT(I,M)
         WTBLACC(I)=WTBLACC(I)+WTBLACC_M(I,M)*FAREROT(I,M)
         ALTOTACC(I)=ALTOTACC(I) + ALTOTACC_M(I,M)*FAREROT(I,M)
+                    ALSNOACC(I)=ALSNOACC(I) + ALSNOACC_M(I,M)*FAREROT(I,M)
         DO J=1,IGND
           TBARACC(I,J)=TBARACC(I,J)+TBARACC_M(I,M,J)*FAREROT(I,M)
           THLQACC(I,J)=THLQACC(I,J)+THLQACC_M(I,M,J)*FAREROT(I,M)
@@ -1012,8 +1019,10 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
     do i = 1,nltest
       if (altotcntr_d(i) > 0) then
           ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
+                    ALSNOACC(I)=ALSNOACC(I)/REAL(altotcntr_d(i))
       else
           ALTOTACC(I)=0.
+                    ALSNOACC(I)=0.
       end if
       FSSTAR=FSINACC(I)/real(nday)*(1.-ALTOTACC(I))
       call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_d' ,timeStamp,'rss', [FSSTAR])
@@ -1026,7 +1035,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
       call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_d',timeStamp,'tsl', [(TBARACC(I,:)/REAL(NDAY))-TFREZ])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_d',timeStamp,'mrsll', [THLQACC(I,:)/REAL(NDAY)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_d',timeStamp,'mrsfl', [THICACC(I,:)/REAL(NDAY)])
-
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_d' ,timeStamp,'snm', [HMFNACC(I)])
 !                 !                 BEG=FSSTAR+FLSTAR-QH-QE
 
 ! Below are obviously not daily ones but I copy in as a reminder of what likely will be put out daily.
@@ -1041,7 +1050,7 @@ subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
-!
+! call writeOutput1D(lonLocalIndex,latLocalIndex,'alsnoacc',timeStamp,'albsn', [ALSNOACC(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
@@ -1269,6 +1278,7 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
   real, dimension(:), pointer :: TAROW
   real, dimension(:), pointer :: PREROW
   real, dimension(:,:), pointer :: ALVSROT
+        real, dimension(:,:), pointer :: ALBSROT
   real, dimension(:,:), pointer :: FAREROT
   real, dimension(:,:), pointer :: ALIRROT
   real, dimension(:,:), pointer :: GTROT
@@ -1309,6 +1319,7 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
   real, pointer, dimension(:) :: ACTLYR_MAX_MO
   real, pointer, dimension(:) :: FTABLE_MAX_MO
   real, pointer, dimension(:) :: ALTOTACC_MO
+        real, pointer, dimension(:) :: ALSNOACC_MO
   real, pointer, dimension(:) :: GROUNDEVAP
   real, pointer, dimension(:) :: CANOPYEVAP
   real, pointer, dimension(:,:) :: TBARACC_MO
@@ -1340,6 +1351,7 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
   THICROT         => class_rot%THICROT
   QFCROT          => class_rot%QFCROT
   ALVSROT         => class_rot%ALVSROT
+  ALBSROT         => class_rot%ALBSROT
   FAREROT         => class_rot%FAREROT
   ALIRROT         => class_rot%ALIRROT
   GTROT           => class_rot%GTROT
@@ -1391,6 +1403,7 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
   GROUNDEVAP        => class_out%GROUNDEVAP
   CANOPYEVAP        => class_out%CANOPYEVAP
   ALTOTACC_MO       => class_out%ALTOTACC_MO
+  ALSNOACC_MO       => class_out%ALSNOACC_MO
   altotcntr_m       => class_out%altotcntr_m
   MRSO_MO           => class_out%MRSO_MO
   MRSOL_MO           => class_out%MRSOL_MO
@@ -1438,6 +1451,7 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
     IF(FSSROW(I).GT.0.0) THEN
       ALTOTACC_MO(I)=ALTOTACC_MO(I) + ( (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
       /FSSROW(I) )*FAREROT(I,M)
+      ALSNOACC_MO(I) = ALSNOACC_MO(I) + ALBSROT(I,M)
       altotcntr_m(i) = altotcntr_m(i) + 1
     ENDIF
 
@@ -1477,8 +1491,14 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
       !             ENDIF
 
       ! Albedo is only counted when sun is above horizon so it uses its own counter.\
-      ALTOTACC_MO(I) = 0.
-      if (altotcntr_m(i) > 0) ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(altotcntr_m(i))
+
+                if (altotcntr_m(i) > 0) then
+                    ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(altotcntr_m(i))
+                    ALSNOACC_MO(I) = ALSNOACC_MO(I)/REAL(altotcntr_m(i))
+                else
+                     ALTOTACC_MO(I) = 0.
+                    ALSNOACC_MO(I) = 0.
+                end if
 
       FLUTACC_MO(I)=FLUTACC_MO(I)/REAL(NDMONTH)
       FSINACC_MO(I)=FSINACC_MO(I)/REAL(NDMONTH)
@@ -1531,6 +1551,7 @@ subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,
       call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'alsnoacc_mo',timeStamp,'albsn', [ALSNOACC_MO(I)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)-TFREZ])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])

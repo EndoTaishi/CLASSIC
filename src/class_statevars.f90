@@ -32,6 +32,9 @@ type class_gather
     integer, allocatable, dimension(:) :: JWMOS     !<Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
     integer, allocatable, dimension(:) :: IGDRGAT   !<Index of soil layer in which bedrock is encountered
 
+    real, allocatable, dimension(:) :: GCGAT   !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
+    real, allocatable, dimension(:) :: TZSGAT  !< Vertical temperature gradient in a snow pack 
+    real, allocatable, dimension(:) :: PCSNGAT !< Snow fall flux \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: ALBSGAT !<Snow albedo [ ]
     real, allocatable, dimension(:) :: CMAIGAT !<Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: GROGAT  !<Vegetation growth index [ ]
@@ -704,6 +707,7 @@ type class_rotated
     real, allocatable, dimension(:,:) :: RCANACC_M             !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:,:) :: SCANACC_M             !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:,:) :: ALTOTACC_M            !< Daily broadband albedo
+    real, allocatable, dimension(:,:) :: ALSNOACC_M            !<Daily snow albedo [ ]
     real, allocatable, dimension(:,:) :: GROACC_M              !< Vegetation growth index [ ]  
     real, allocatable, dimension(:,:) :: FSINACC_M             !< Downwelling shortwave radiation above surface \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:,:) :: FLINACC_M             !< Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
@@ -747,7 +751,8 @@ type class_moyr_output
     real, allocatable, dimension(:) :: FTABLE_MAX_MO
     real, allocatable, dimension(:) :: MRSO_MO      !< Total Soil Moisture Content [kg $m^{-2}$]
     real, allocatable, dimension(:,:):: MRSOL_MO     !< Total water content of soil layer [kg $m^{-2}$]
-    real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo
+    real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo [ ] 
+    real, allocatable, dimension(:) :: ALSNOACC_MO  !< Snow albedo [ ] 
     real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
     real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
     integer, allocatable, dimension(:) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
@@ -807,6 +812,9 @@ allocate(class_gat% ILMOS   (ilg),&
          class_gat% JWMOS   (ilg),&
          class_gat%IGDRGAT  (ilg),&
          class_gat% ALBSGAT (ilg),&
+         class_gat% GCGAT (ilg),&
+         class_gat% TZSGAT (ilg),&      
+         class_gat% PCSNGAT (ilg),&      
          class_gat% CMAIGAT (ilg),&
          class_gat% GROGAT  (ilg),&
          class_gat% QACGAT  (ilg),&
@@ -1276,6 +1284,7 @@ allocate(class_rot% CSZROW  (nlat),&
          class_out%FTABLE_MIN_MO (nlat),&
          class_out%FTABLE_MAX_MO (nlat),&
          class_out%ALTOTACC_MO (nlat),&
+         class_out%ALSNOACC_MO (nlat),&
          class_out%MRSO_MO (nlat),&
          class_out%GROUNDEVAP (nlat),&
          class_out%CANOPYEVAP (nlat),&
@@ -1439,6 +1448,7 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot%RCANACC_M(nlat,nmos),&
          class_rot%SCANACC_M(nlat,nmos),&
          class_rot%ALTOTACC_M(nlat,nmos),&
+         class_rot%ALSNOACC_M(nlat,nmos),&
          class_rot%GROACC_M(nlat,nmos),&
          class_rot%FSINACC_M (nlat,nmos),&
          class_rot%FLINACC_M(nlat,nmos),&
@@ -1570,6 +1580,7 @@ do i=1,nltest
     class_out%CANOPYEVAP(I)=0.
     class_out%GROUNDEVAP(I)=0.
     class_out%ALTOTACC_MO(I)=0.
+    class_out%ALSNOACC_MO(I)=0.
     class_out%altotcntr_m(i)=0
     class_out%MRSO_MO(i) = 0.
 
@@ -1671,6 +1682,7 @@ DO I=1,NLTEST
         class_rot%PRESACC_M(i,m) = 0.
         class_rot%QAACC_M(i,m) = 0.
         class_rot%ALTOTACC_M(i,m) = 0.
+        class_rot%ALSNOACC_M(i,m) = 0.
         class_rot%EVAPACC_M(i,m) = 0.
         class_rot%FLUTACC_M(i,m) = 0.
 

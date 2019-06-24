@@ -487,7 +487,9 @@ contains
         use ctem_statevars,     only : c_switch,vrot,vgat,tracer
         use class_statevars,    only : class_rot,class_gat
         use classic_params,        only : icc,iccp2,nmos,ignd,icp1,nlat,ican,pi,crop,TFREZ,&
-                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB
+                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB,&
+                                          albdif_lut,albdir_lut,trandif_lut,trandir_lut,&
+                                          nsmu,nsalb,nbc,nreff,nswe,nbnd_lut
 
         implicit none
 
@@ -557,6 +559,7 @@ contains
         logical, pointer :: inibioclim
         logical, pointer :: start_bare
         logical, pointer :: lnduseon
+        integer, pointer :: isnoalb
         integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
                             ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                             !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
@@ -607,6 +610,9 @@ contains
 
         integer :: i,m,j,n
         real :: bots
+        integer :: ipnt,albdim 
+        integer :: isalb,ismu,isgs,iswe,ibc 
+        real, dimension(:,:,:), allocatable :: tmpalb
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -616,6 +622,7 @@ contains
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
         useTracer         => c_switch%useTracer
+        isnoalb           => c_switch%isnoalb
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -784,6 +791,60 @@ contains
           bots = bots + delz(n)
           ZBOT(n) = bots
         end do
+
+        if (isnoalb == 1) then 
+          ! Read in the look up table that is used by the four-band albedo parameterization
+          
+          ! Determine the size of the arrays to be read in.
+          albdim = NSWE * NREFF * NSMU * NSALB * NBC
+          allocate(tmpalb(4,4,albdim))
+          
+          ! Diffuse albedo
+          tmpalb(1,1,:) = ncGet1DVar(initid, 'albedoDiffuse1', start = [1], count = [albdim])
+          tmpalb(1,2,:) = ncGet1DVar(initid, 'albedoDiffuse2', start = [1], count = [albdim])
+          tmpalb(1,3,:) = ncGet1DVar(initid, 'albedoDiffuse3', start = [1], count = [albdim])
+          tmpalb(1,4,:) = ncGet1DVar(initid, 'albedoDiffuse4', start = [1], count = [albdim])
+          
+          ! Direct albedo
+          tmpalb(2,1,:) = ncGet1DVar(initid, 'albedoDirect1', start = [1], count = [albdim])
+          tmpalb(2,2,:) = ncGet1DVar(initid, 'albedoDirect2', start = [1], count = [albdim])
+          tmpalb(2,3,:) = ncGet1DVar(initid, 'albedoDirect3', start = [1], count = [albdim])
+          tmpalb(2,4,:) = ncGet1DVar(initid, 'albedoDirect4', start = [1], count = [albdim])
+          
+          ! Diffuse transmissivity
+          tmpalb(3,1,:) = ncGet1DVar(initid, 'transmisDiffuse1', start = [1], count = [albdim])
+          tmpalb(3,2,:) = ncGet1DVar(initid, 'transmisDiffuse2', start = [1], count = [albdim])
+          tmpalb(3,3,:) = ncGet1DVar(initid, 'transmisDiffuse3', start = [1], count = [albdim])
+          tmpalb(3,4,:) = ncGet1DVar(initid, 'transmisDiffuse4', start = [1], count = [albdim])
+          
+          ! Direct transmissivity
+          tmpalb(4,1,:) = ncGet1DVar(initid, 'transmisDirect1', start = [1], count = [albdim])
+          tmpalb(4,2,:) = ncGet1DVar(initid, 'transmisDirect2', start = [1], count = [albdim])
+          tmpalb(4,3,:) = ncGet1DVar(initid, 'transmisDirect3', start = [1], count = [albdim])
+          tmpalb(4,4,:) = ncGet1DVar(initid, 'transmisDirect4', start = [1], count = [albdim])
+                    
+          do i = 1, nbnd_lut 
+            ipnt = 1
+            DO isalb = 1, nsalb !nsfa
+              DO ismu = 1, nsmu
+                DO isgs = 1, nreff !nsgs
+                  DO iswe = 1, nswe
+                    DO ibc = 1, nbc                    
+                      albdif_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(1,i,ipnt)
+                      albdir_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(2,i,ipnt)
+                      trandif_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(3,i,ipnt)
+                      trandir_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(4,i,ipnt)
+                      ipnt = ipnt + 1
+                    END DO ! ibc
+                  END DO ! iswe
+                END DO ! isgs
+              END DO ! ismu
+            END DO ! isalb
+          end do !nbnd 
+          
+          deallocate(tmpalb)
+
+        end if !isnoalb
         
 
         if (.not. ctem_on) then

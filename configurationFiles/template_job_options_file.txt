@@ -37,7 +37,8 @@
                         ! Balcar checks for conservation of carbon.
     
     ! Model tracer 
-        useTracer = 0 ,     ! useTracer = 0, the tracer code is not used. 
+        useTracer = 0 ,     ! **NOT OPERATIONAL -> keep useTracer = 0.
+                            ! useTracer = 0, the tracer code is not used. 
                             ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
                             !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
                             ! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
@@ -116,7 +117,9 @@
                   ! a polynomial curve between 0 C and 6 C.
     IWF = 0 ,     ! if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4),
                   ! the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
-    isnoalb = 0 , ! if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
+    isnoalb = 0 , ! if isnoalb is set to 0, the original two-band snow albedo algorithms are used. 
+                  ! if it is set to 1, the new four-band routines are used. 
+                  ! At present, the four band algorithm should NOT be used offline.
 
  ! Iteration scheme
     ! ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature

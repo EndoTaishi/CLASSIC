@@ -48,7 +48,8 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
 
   use classic_params,         only : nlat,nmos,ilg,nmon,ican, ignd, icc, monthend, &
                                   modelpft, l2max,deltat,NBS, readin_params,nol2pfts, &
-                                  DELT,TFREZ,zbldJobOpt,zrfhJobOpt,zrfmJobOpt
+                                  DELT,TFREZ,zbldJobOpt,zrfhJobOpt,zrfmJobOpt, &
+                                  REFF0_LAND,ZSNMIN,ZSNMAX2
                                   
   use landuse_change,      only : initializeLandCover
   use ctem_statevars,      only : vrot,vgat,c_switch,initrowvars,&
@@ -67,11 +68,10 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   use metDisaggModule,     only : disaggMet
   use outputManager,       only : consecDays
   use ctemDriver,          only : ctem
-  !COMBAK PERLAY
-  !use tracerModule,        only : decay14C
-  !COMBAK PERLAY
+  use tracerModule,        only : decay14C
   use applyAllometry,      only : allometry
   use ctemGatherScatter,   only : ctems2, ctemg1,ctemg2
+  use fourBandAlbedo,      only : fourBandDriver
   
   implicit none
 
@@ -128,6 +128,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   integer, pointer, dimension(:) :: JWMOS !<Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
   integer, pointer, dimension(:) :: IGDRGAT   !<Index of soil layer in which bedrock is encountered
 
+  real, pointer, dimension(:) :: GCGAT   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
+  real, pointer, dimension(:) :: TZSGAT  !< Vertical temperature gradient in a snow pack 
+  real, pointer, dimension(:) :: PCSNGAT !< Snow fall flux \f$[kg m^{-2} s^{-1} ]\f$
   real, pointer, dimension(:) :: ALBSGAT !<Snow albedo [ ]
   real, pointer, dimension(:) :: CMAIGAT !<Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
   real, pointer, dimension(:) :: GROGAT  !<Vegetation growth index [ ]
@@ -143,7 +146,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:) :: TSNOGAT !<Snowpack temperature [K]
   real, pointer, dimension(:) :: WSNOGAT !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
   real, pointer, dimension(:) :: ZPNDGAT !<Depth of ponded water on surface [m]
-  real, pointer, dimension(:) :: REFGAT  !<
+  real, pointer, dimension(:) :: REFGAT  !<Snow grain size (for ISNOALB=1 option)  [m]
   real, pointer, dimension(:) :: BCSNGAT !<
   real, pointer, dimension(:) :: AGIDGAT !<Optional user-specified value of ground near-infrared albedo to override CLASS-calculated value [ ]
   real, pointer, dimension(:) :: AGVDGAT !<Optional user-specified value of ground visible albedo to override CLASS-calculated value [ ]
@@ -203,8 +206,8 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:) :: SFCUBS  !<
   real, pointer, dimension(:) :: SFCVBS  !<
   real, pointer, dimension(:) :: USTARBS !<
-  real, pointer, dimension(:) :: TCSNOW  !<
-  real, pointer, dimension(:) :: GSNOW   !<
+  real, pointer, dimension(:) :: TCSNOW  !<Thermal conductivity of snow \f$[W m^{-1} K^{-1}]\f$ 
+  real, pointer, dimension(:) :: GSNOW   !<Diagnostic heat flux at snow surface for use in CCCma black carbon deposition scheme \f$[W m^{-2}]\f$
   real, pointer, dimension(:) :: ALIRGAT !<Diagnosed total near-infrared albedo of land surface [ ]
   real, pointer, dimension(:) :: ALVSGAT !<Diagnosed total visible albedo of land surface [ ]
   real, pointer, dimension(:) :: CDHGAT  !<Surface drag coefficient for heat [ ]
@@ -279,7 +282,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:) :: FCS     !<
   real, pointer, dimension(:) :: FGS     !<
   real, pointer, dimension(:) :: RBCOEF  !<
-  real, pointer, dimension(:) :: ZSNOW   !<
+  real, pointer, dimension(:) :: ZSNOW   !<Depth of snow pack \f$[m] (z_s)\f$ 
   real, pointer, dimension(:) :: FSVF    !<
   real, pointer, dimension(:) :: FSVFS   !<
   real, pointer, dimension(:) :: ALVSCN  !<
@@ -528,7 +531,7 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   real, pointer, dimension(:,:) :: TSNOROT !<
   real, pointer, dimension(:,:) :: WSNOROT !<
   real, pointer, dimension(:,:) :: ZPNDROT !<
-  real, pointer, dimension(:,:) :: REFROT  !<
+        real, pointer, dimension(:,:) :: REFROT  !<Snow grain size (for ISNOALB=1 option)  [m]
   real, pointer, dimension(:,:) :: BCSNROT !<
   real, pointer, dimension(:,:) :: AGIDROT !<
   real, pointer, dimension(:,:) :: AGVDROT !<
@@ -1303,6 +1306,9 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   IGDRGAT => class_gat%IGDRGAT
   DELZ    => class_gat%DELZ
   ZBOT    => class_gat%ZBOT
+        GCGAT   => class_gat%GCGAT
+        TZSGAT  => class_gat%TZSGAT
+        PCSNGAT => class_gat%PCSNGAT
   ALBSGAT => class_gat%ALBSGAT
   CMAIGAT => class_gat%CMAIGAT
   GROGAT  => class_gat%GROGAT
@@ -2317,7 +2323,6 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
   NTLD=NMOS
 
   !> The parameter JLAT is calculated from DLATROW as the nearest integer value,
-
   DLATROW(1) = latitude
   JLAT=NINT(DLATROW(1))
   DLONROW(1) = longitude
@@ -2644,6 +2649,15 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
           SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,&
           GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW,&
           DLATROW,maxAnnualActLyrROT )
+
+    ! FLAG New for Jason's Albedo
+    ! Calculate snow fall flux in kg/m2/s  
+    if (isnoalb .eq. 1) then
+      DO K=1,NML
+        PCSNGAT(K)=SPCPGAT(K)*RHSIGAT(K)  ! snowfall rate * density of fresh snow                  
+      ENDDO
+    end if
+    ! End flag
 
     !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
     !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
@@ -2985,14 +2999,20 @@ subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, l
           end do
         end do
 
-        ! COMBAK PERLAY
-        ! Once a year, calculate the 14C lost to decay if using the 14C tracer.
-        ! if (useTracer == 2 .and. iday == lastdoy .and. ncount == nday) call decay14C(1,nml)
-        ! COMBAK PERLAY
+        !Once a year, calculate the 14C lost to decay if using the 14C tracer.
+        if (useTracer == 2 .and. &
+            iday == lastdoy .and. ncount == nday) call decay14C(1,nml)
 
       endif  ! if(ncount.eq.nday)
     endif  ! if(ctem_on)
 
+    if (isnoalb .eq. 1) then
+      call fourBandDriver(NML,SNOGAT,GCGAT,TSNOGAT,& !in 
+                          ZSNOW,TCSNOW,GSNOW,PCSNGAT,WSNOGAT,& !in 
+                          ALBSGAT,RHOSGAT,& !in/out
+                          TZSGAT,REFGAT) ! out 
+    end if 
+            
     !> CLASSS performs the scatter operation, scattering the variables from
     !>the long vectors of mosaic tiles back onto the configuration of mosaic tiles within grid cells.
 

@@ -343,6 +343,12 @@
                 <units>fraction</units>
             </variant>
             <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>altotacc</nameInCode>
+                <units>fraction</units>
+            </variant>
+            <variant>
                 <timeFrequency>halfhourly</timeFrequency>
                 <outputForm>grid</outputForm>
                 <nameInCode>altot_hh</nameInCode>
@@ -985,6 +991,25 @@
                 <units>kg m$^{-2}$</units>
             </variant>
         </variable>
+        <variable id="81" includeBareGround="false" dormant="false">
+            <standardName>Snow Albedo</standardName>
+            <longName>Albedo of the snow-covered surface, averaged over the grid cell.</longName>
+            <shortName>albsn</shortName>
+            <defaultUnits>-</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>alsnoacc_mo</nameInCode>
+                <units>-</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>alsnoacc</nameInCode>
+                <units>-</units>
+            </variant>
+        </variable>
+
     </group>
     <group type="ctem">
         <variable id="23" includeBareGround="false" dormant="false">

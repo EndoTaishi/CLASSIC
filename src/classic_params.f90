@@ -162,6 +162,19 @@ logical, dimension(:), allocatable :: grass    !< simple grass matric, define th
 integer, dimension(:), allocatable :: CL4CTEM  !< Indexing of the CTEM-level PFTs into a CLASS PFT-level array.
 integer, dimension(:,:), allocatable :: reindexPFTs !< Reindexing arrays of CLASS variables into the parameters arrays at the CTEM level.
 
+! Four-band albedo information 
+INTEGER, PARAMETER :: nsmu     = 10
+INTEGER, PARAMETER :: nsalb    = 11
+INTEGER, PARAMETER :: nbc      = 20
+INTEGER, PARAMETER :: nreff    = 10
+INTEGER, PARAMETER :: nswe     = 11
+INTEGER, PARAMETER :: nbnd_lut = 4
+
+REAL, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: albdif_lut
+REAL, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: albdir_lut
+REAL, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: trandif_lut
+REAL, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: trandir_lut
+
 ! ============================================================
 ! Read in from the namelist: ---------------------------------
 
@@ -246,6 +259,11 @@ real, dimension(:), allocatable  :: ALDN !< Lookup tables for dry NIR soil albed
 
 ! SNINFL parameters: ----------------------
 real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight percentage)
+
+! Four-band albedo information 
+REAL :: REFF0_LAND  ! "climatological" snow grain size, SSA = 60 m^2/kg   
+REAL :: ZSNMIN
+REAL :: ZSNMAX2
 
 ! ----------------------
 ! ----------------------
@@ -832,6 +850,9 @@ subroutine readin_params
         ALDV,&
         ALDN,&
         WSNCAP,&
+        REFF0_LAND,&
+        ZSNMIN,&
+        ZSNMAX2,&
         modelpft,&
         classpfts, &
         ctempfts,&

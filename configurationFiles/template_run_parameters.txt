@@ -261,6 +261,21 @@ DELT = 1800.0,
 
   ! Maximum water retention capacity of the snow pack (weight percentage)
   WSNCAP = 0.04, 
+  
+! Four-band albedo parameters:
+
+  ! "climatological" snow grain size, SSA = 60 m^2/kg   
+  REFF0_LAND = 5.452563E-5, 
+  
+  ZSNMIN=5.E-2,          !FLAG - JM adding in Jason Cole's Albedo.
+  ZSNMAX2=25.E-2,        !FLAG - JM adding in Jason Cole's Albedo.                 
+  
+  ! Only needed when BCCONC is turned on.
+  ! #  if defined (pla)
+  !REAL, PARAMETER :: ZSNMIN=5.E-2,ZSNMAX1=20.E-2,ZSNMAX2=25.E-2
+  ! #  else
+  ! REAL, PARAMETER :: ZSNMIN=5.E-2,ZSNMAX1=10.E-2,ZSNMAX2=25.E-2
+  ! #  endif
 
 ! -------------------------------------
 
