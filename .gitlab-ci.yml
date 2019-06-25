@@ -1,0 +1,86 @@
+before_script:
+
+stages:
+ - setup
+ - build
+ - run
+ - test
+
+after_script:
+
+prepare_binary_folder:
+  stage: setup
+  script:
+    - if [ -d "~/tmp/CLASSIC" ]; then
+    -   rm -rf ~/tmp/CLASSIC
+    - else
+    -   mkdir -p ~/tmp/CLASSIC
+    - fi
+    - echo "setup complete"
+
+compile:
+  stage: build
+  script:
+    - /usr/bin/make mode=ppp
+    - cp -r bin/* ~/tmp/CLASSIC
+    - echo "compilation complete"
+
+run:ctem_on:
+  stage: run
+  script:
+    - tools/regression-testing/job_submit_ctem_on.sh
+    - echo "job submitted"
+  artifacts:
+    paths:
+      - job_id.txt
+
+run:ctem_off:
+  stage: run
+  script:
+    - tools/regression-testing/job_submit_ctem_off.sh
+    - echo "job submitted"
+  artifacts:
+    paths:
+      - job_id.txt
+
+run:ctem_compete:
+  stage: run
+  script:
+    - tools/regression-testing/job_submit_ctem_compete.sh
+    - echo "job submitted"
+  artifacts:
+    paths:
+      - job_id.txt
+
+regression_test:ctem_on:
+  stage: test
+  script:
+    - tools/regression-testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression-testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_on
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression-testing/verification.sh ctem_on
+    - echo "regression test complete"
+  dependencies:
+    - run:ctem_on
+
+retression_test:ctem_off:
+  stage: test
+  script:
+    - tools/regression-testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression-testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_off
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression-testing/verification.sh ctem_off
+    - echo "regression test complete"
+  dependencies:
+    - run:ctem_off
+
+retression_test:ctem_compete:
+  stage: test
+  script:
+    - tools/regression-testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression-testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_compete
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression-testing/verification.sh ctem_compete
+    - echo "regression test complete"
+  dependencies:
+    - run:ctem_compete

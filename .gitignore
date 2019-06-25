@@ -1,5 +1,6 @@
 objectFiles/*.o
 objectFiles/*.mod
+objectFiles_*
 or/.project
 tools/metASCIILoader/.settings
 tools/metASCIILoader/.cproject
@@ -11,8 +12,12 @@ tools/outputVariableEditor/.project
 tools/outputVariableEditor/.tern-project
 tools/initFileConverter/*.o
 tools/initFileConverter/*.mod
+tools/regression-testing/output/*
 bin/CLASSIC
 oldcode
 *.nc
 outputFiles/*
 inputFiles/*
+src/backups/
+bib*
+cite*

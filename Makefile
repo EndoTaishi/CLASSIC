@@ -9,7 +9,7 @@
 # make
 
 # where <mode> is:
-# 
+#
 # serial        - compiles code for serial runs using the GNU compiler on the local platform (default)
 # parallel      - compiles code for parallel runs using the GNU compiler on the local platform
 # ppp           - compiles code for parallel runs using the Intel compiler on the front-ends
@@ -27,14 +27,15 @@
 
 # Object files
 OBJ = fileIOModule.o classic_params.o ctem_statevars.o class_statevars.o peatlands_mod.o \
-	generalUtils.o ctemUtilities.o APREP.o GRALB.o mvidx.o fourBandAlbedo.o \
-	SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o \
-	TNPREP.o WFILL.o CANADD.o GRDRAN.o SNOALBW.o  TPREP.o WFLOW.o CANALB.o CLASSG.o \
-	GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemGatherScatter.o applyAllometry.o \
-	PHTSYN3.o CANVAP.o CLASSI.o CWCALC.o ICEBAL.o SUBCAN.o TSOLVE.o XIT.o CGROW.o CLASSS.o \
-	DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o \
-	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
-	TNPOST.o WEND.o  balanceCarbon.o autotrophicRespiration.o phenolgy.o  \
+	generalUtils.o ctemUtilities.o calcLandSurfParams.o groundAlbedo.o mvidx.o fourBandAlbedo.o \
+	SNOW_ALBVAL.o SNOW_TRANVAL.o snowAlbedoTransmiss.o soilHeatFluxPrep.o waterInfiltrateUnsat.o checksum.o \
+	canopyInterception.o waterFlowNonInfiltrate.o snowAging.o  energyBudgetPrep.o waterInfiltrateSat.o canopyAlbedoTransmiss.o \
+	classGather.o waterFlowInfiltrate.o snowSublimation.o energBalVegSolve.o waterCalcPrep.o wetland_methane.o \
+	ctemGatherScatter.o applyAllometry.o photosynCanopyConduct.o canopyWaterUpdate.o \
+	atmosphericVarsCalc.o canopyPhaseChange.o iceSheetBalance.o waterUnderCanopy.o energBalNoVegSolve.o errorHandler.o classGrowthIndex.o classScatter.o \
+	DIASURFZ.o screenRelativeHumidity.o pondedWaterFreeze.o snowTempUpdate.o checkWaterBudget.o energyBudgetDriver.o DRCOEF.o SLDIAG.o TMCALC.o snowHeatCond.o \
+	radiationDriver.o waterBudgetDriver.o FLXSURFZ.o snowInfiltrateRipen.o snowMelt.o soilWaterPhaseChg.o soilProperties.o energyWaterBalanceCheck.o classGatherPrep.o snowAddNew.o \
+	soilHeatFluxCleanup.o waterBaseflow.o  balanceCarbon.o autotrophicRespiration.o phenolgy.o  \
 	turnover.o mortality.o disturb.o competition_mod.o landuse_change_mod.o soil_ch4uptake.o \
 	allocateCarbon.o heterotrophicRespiration.o tracer.o ctemDriver.o outputManager.o \
 	prepareOutputs.o  model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o \
@@ -83,11 +84,11 @@ else ifeq ($(mode), parallel)
         # Parallel compiler.
         COMPILER = mpif90
         # Fortran Flags. The following is specific to the gfortran compiler.
-        FFLAGS = -DPARALLEL -O3 -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -J$(ODIR)  
+        FFLAGS = -DPARALLEL -O3 -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -J$(ODIR)
         # Include Flags.
-        IFLAGS =  -I${HOME}/PnetCDF/include 
+        IFLAGS =  -I${HOME}/PnetCDF/include
         # Library Flags.
-        LFLAGS = -L${HOME}/PnetCDF/lib -lnetcdf -ldl -lz -lm 
+        LFLAGS = -L${HOME}/PnetCDF/lib -lnetcdf -ldl -lz -lm
 else
 	# Serial compiler.
 	COMPILER = gfortran
@@ -100,7 +101,7 @@ else
 	IFLAGS = -I/usr/include
 	# Library Flags.
 	#LFLAGS = -L/home/rjm/Public/NETCDF/lib -lnetcdff -L/home/rjm/Public/NETCDF/lib -fPIC -lnetcdf -lnetcdf -L/home/rjm/Public/NETCDF/lib
-	LFLAGS = -lnetcdff -ldl -lz -lm 
+	LFLAGS = -lnetcdff -ldl -lz -lm
 endif
 
 # Create required directory/.gitignore file, if missing.
@@ -119,7 +120,7 @@ $(ODIR)/%.o: src/%.f90
 # Compile object files from .f (Fortran 77) sources
 $(ODIR)/%.o: src/%.f
 	$(COMPILER) $(FFLAGS) $(IFLAGS) -c $< -o $@
-	
+
 # Properly reference the ODIR for the linking
 OBJD = $(patsubst %,$(ODIR)/%,$(OBJ))
 
