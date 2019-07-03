@@ -1,7 +1,7 @@
 ASCII to NetCDF CO2 file loader
 ========
 
-The ghgASCIILoader program takes in ASCII GHG files and converts them to the newer NetCDF format.
+The ghgASCIILoader program takes in ASCII GHG files and converts them to NetCDF format.
 
 # Compile
 
@@ -14,11 +14,11 @@ To run the program, use the following command:
 
 `bin/ghgASCIILoader  [ghg name, e.g. CO2] [input file]`
 
-Where ghg name is either 'CO2' or 'CH4' and the input file is an ASCII text file with year and GHG mole fraction.
+Where ghg name is either 'CO2' or 'CH4' and the input file is an ASCII text file with year and GHG mole fraction. Expected units for both are ppmv.
 
 # Structure
 
-The original met file looks like this:
+The text GHG file is expected to look like this:
 
 `1700  276.59`
 `1701  276.62`
