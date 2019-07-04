@@ -1,8 +1,9 @@
 &joboptions
 
 ! Model grid description
-    projectedGrid = .false. !< True if you have a projected lon lat grid, false if not. Projected grids can only have
-                            !! regions referenced by the indexes, not coordinates, when running a sub-region
+    projectedGrid = .false. ! True if you have a projected lon lat grid, false if not. Projected grids
+                            ! can only have regions referenced by the indexes, not coordinates, when 
+                            ! running a sub-region
 
 ! Meteorological options:
     readMetStartYear = 1850  ! First year of meteorological forcing to read in from the met file
@@ -20,16 +21,30 @@
         metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2.nc' ,     !< location of the model initialization file
-    rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
-                                               !! typically here you will just copy the init_file and rename it so it can be overwritten.
+    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2-actlyr.nc' ,     !< location of the model initialization file
+    rs_file_to_overwrite = 'rsFile.nc' ,      ! location of the existing netcdf file that will be 
+                                              ! **overwritten** for the restart file typically here you
+                                              !  will just copy the init_file and rename it so it can be
+                                              ! overwritten.
 ! Namelist of model parameters
     runparams_file = 'configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
 
 ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     ! set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         ! lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
-    spinfast = 1 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
+    spinfast = 1 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final
+                        ! round of spin up and transient runs. Setting to 1 also causes the calling of the balcar subroutine.
+                        ! Balcar checks for conservation of carbon.
+    
+    ! Model tracer 
+        useTracer = 0 ,     ! **NOT OPERATIONAL -> keep useTracer = 0.
+                            ! useTracer = 0, the tracer code is not used. 
+                            ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
+                            !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                            ! useTracer = 2 [Not implemented yet] means the tracer is 14C and will then call a 14C decay scheme. 
+                            ! useTracer = 3 [Not implemented yet] means the tracer is 13C and will then call a 13C fractionation scheme. 
+        tracerCO2file = 'inputFiles/tracerCO2.nc'  ! Tracer CO2 file, this file needs to be correctly chosen for the useTracer option. It uses the transientCO2 
+                            ! and fixedYearCO2 switches to determine how it is read in.
 
     !CO2 switches:
         transientCO2 = .true. , ! Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
@@ -70,7 +85,7 @@
         ! not used at all.
         lnduseon = .true. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
-        fixedYearLUC = 1901 ,
+        fixedYearLUC = 1850 ,
 
     ! Wetland switches:
         ! If you wish to read in and use observed wetland fractions, there are two options. If you wish time
@@ -102,7 +117,9 @@
                   ! a polynomial curve between 0 C and 6 C.
     IWF = 0 ,     ! if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4),
                   ! the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
-    isnoalb = 0 , ! if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
+    isnoalb = 0 , ! if isnoalb is set to 0, the original two-band snow albedo algorithms are used. 
+                  ! if it is set to 1, the new four-band routines are used. 
+                  ! At present, the four band algorithm should NOT be used offline.
 
  ! Iteration scheme
     ! ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
@@ -126,7 +143,7 @@
     output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
     xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
-    doperpftoutput = .false. ,   ! Switch for making extra output files that are at the per PFT level
+    doperpftoutput = .true. ,   ! Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level
 
     dohhoutput = .false. ,      ! Switch for making half hourly output files 

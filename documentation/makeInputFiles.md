@@ -2,7 +2,7 @@
 
 1. @ref makeMet
 2. @ref makeInit
-3. Greenhouse gas inputs
+3. @ref ghgfiles
 4. @ref makeOther
 5. @ref inputFileForm
 
@@ -34,7 +34,7 @@ CLASSIC requires the meteorological inputs as described here. The input files ar
                 lat:_Endianness = "little" ;
             double time(time) ;
                 time:standard_name = "time" ;
-                time:units = "day as %Y%m%d.%f" ;
+                time:units = "**day as %Y%m%d.%f**" ;
                 time:calendar = "proleptic_gregorian" ;
                 time:axis = "T" ;
                 time:_Storage = "chunked" ;
@@ -49,36 +49,25 @@ CLASSIC requires the meteorological inputs as described here. The input files ar
                 pres:_ChunkSizes = 464280, 8, 16 ;
                 pres:_Endianness = "little" ;
 
-        // global attributes:
-                :CDI = "Climate Data Interface version 1.9.0 (http://mpimet.mpg.de/cdi)" ;
-                :Conventions = "CF-1.4" ;
-                :source = "Data is provided from the Japanese 55-year Reanalysis (JRA-55) project carried out by the Japan Meteorological Agency (JMA)" ;
-                :institution = "Produced at the Climatic Research Unit, UEA, Norwich UK" ;
-                :title = "CRUJRA Pressure: a forcing dataset based on JRA-55 on a half-degree grid" ;
-                :comment = "A copy of JRA-55 year 1958 regridded to CRU 0.5 grid" ;
-                :version_control = "V1.1: Regridding algorithm improvements and other corrections" ;
-                :CDO = "Climate Data Operators version 1.9.0 (http://mpimet.mpg.de/cdo)" ;
-                :NCO = "4.3.4" ;
-                :_SuperblockVersion = 2 ;
-                :_IsNetcdf4 = 1 ;
-                :_Format = "netCDF-4" ;
         }
 Importantly,
 
 - Only one variable per file besides lon, lat, and time.
 - Note the time units.
 - The file is chunked (which depends on the grid being used. What you see here is optimal for T63 global runs). Chunking is not needed for site-level runs. More on chunking in @ref inputFileForm.
-- CLASSIC expects the first time step to be 0 hour 0 minute (in hh:mm:ss format - 00:00:00).
+- CLASSIC expects the first time step to be 0 hour 0 minute (in hh:mm:ss format 00:00:00).
 
-If you have ACSCII met files from a site, see [ASCII to NetCDF met file loader](@ref asciiMet) to use the provided tool to convert them to the appropriate netCDF format.
+If you have existing ACSCII met files from a site, see [ASCII to NetCDF met file loader](@ref asciiMet) to use the provided tool to convert them to the appropriate netCDF format.
 
 # Preparation of the model initialization file {#makeInit}
 
 If you have the old format .INI (and CTEM's .CTM) initialization files, there is a [tool to convert them to netCDF format](@ref initTool) for use in CLASSIC. The tool itself is located in tools/initFileConverter.
 
-If you have a netCDF format initialization/restart file that you wish to edit, you can use the [script created for that purpose](@ref modifyRS). It is located in tools/modifyRestartFile.
+If you have a netCDF format initialization/restart file that you wish to edit, you can use the [script created for that purpose](@ref modifyRS). It is located in tools/modifyRestartFile. This is designed for regional/global scale edits. For site-level files (single point) it is likely easier to use a combination of ncdump/ncgen.
 
 An ncdump of a properly formatted, global-scale, initialization file is included below. Note that for a physics-only run (CTEM off), many of the variables will not be read in. See the [manual's mainpage](@ref main) for links to sections describing the variables.
+
+**FLAG COMBAK**
 
             netcdf initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2 {
             dimensions:
@@ -390,6 +379,10 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		:created_by = "Joe Melton, CCCma" ;
             }
 
+# Greenhouse gas inputs files {#ghgfiles}
+
+A tool has been created to help [create GHG input files](@ref makeGHGfiles)
+
 # Making input files for other input variables {#makeOther}
 
 Most other CLASSIC input files are not desired or needed for point runs of the model. If you require input files for regional or global simulations we can likely provide you with versions we use in our runs. Please contact joe.melton@canada.ca for access to the files we presently have available. The possible inputs are listed in Additional inputs depending on model configuration. Because these files are not required of most users we have not set up tools to help generate the files.
@@ -428,8 +421,8 @@ It is recommended that:
 4.  The chunk sizes for the lat and lon dimensions in the above examples be used for those domains. However, it may be that for files with longer time series, the chunk sizes for the lat and lon dimensions need to be adjusted (i.e. reduced).
 5.  The output file is checked to ensure that the chunking was done properly. This can be done using "ncdump -hs output_file". The output from "ncdump" should show the variable with the chunk sizes used by the "ncks" utility and the time variable should also be chunked with the total number of time steps. The lat and lon variables will not be chunked (i.e. will be shown as "contiguous" in the ncdump output).
 
-> **Caveats**
+> **Caveats for ECCC users**
 
-> **Note that local implementations of nco/ncks may not support all the features needed to properly process and chunk files suitable for use on the Science network. On each ppp, /usr/bin/ncks appears to work well and it is recommended to use it rather than a local implementation of nco to do the chunking if there are issues encountered locally.**
+> **Local implementations of nco/ncks may not support all the features needed to properly process and chunk files suitable for use on the ECCC Science network. On each ppp, /usr/bin/ncks appears to work well and it is recommended to use it rather than a local implementation of nco to do the chunking if there are issues encountered locally.**
 
 > **Chunking (via ncks) requires that the entire file be placed into memory. If there is insufficient RAM, the chunking will fail. Note that there is over 200 GB of RAM available on each node of the ppp.**

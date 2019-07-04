@@ -3,6 +3,8 @@ var searchData=
   ['earthrad',['earthrad',['../namespaceclassic__params.html#a51c24034e6b8592f8a2b732765ea5d46',1,'classic_params']]],
   ['ec',['ec',['../namespaceclassic__params.html#ae7a199da66739a4ba50fa7668b18b0c8',1,'classic_params']]],
   ['efgat',['efgat',['../structclass__statevars_1_1class__gather.html#ad0c7f9c1c7917876e955cd15840e8e6f',1,'class_statevars::class_gather']]],
+  ['efoldfact',['efoldfact',['../namespaceclassic__params.html#a725119b5531e8ad167ca983008d6c1c7',1,'classic_params']]],
+  ['eftime',['eftime',['../namespaceclassic__params.html#a4e1823931c779f38a74b65485621bdc8',1,'classic_params']]],
   ['ej',['ej',['../namespaceclassic__params.html#af9fee55c9292f2de267f222aa07359e8',1,'classic_params']]],
   ['ektau',['ektau',['../namespaceclassic__params.html#a7acf6ddc0d6dbba2f0252d3a864c779d',1,'classic_params']]],
   ['emif_5fbc',['emif_bc',['../namespaceclassic__params.html#a34b7475c37ff41741d34f1a94397a723',1,'classic_params']]],

@@ -230,6 +230,8 @@ contains
                 validGroup = .true.
             elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
                 validGroup = .true.
+            elseif (c_switch%useTracer > 0 .and. trim(descriptor%group) == "tracer") then
+                validGroup = .true.              
             else
                 validGroup = .false.
             end if
@@ -253,7 +255,7 @@ contains
         logical                                 :: valid
 
         valid = .true.
-        if (timeFreq == 'annually') then
+        if (c_switch%doAnnualOutput .and. timeFreq == 'annually') then
             descriptor%timeFreq = timeFreq
         elseif (c_switch%domonthoutput .and. timeFreq == 'monthly') then
             descriptor%timeFreq = timeFreq

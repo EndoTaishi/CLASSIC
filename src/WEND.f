@@ -118,9 +118,18 @@ C
 C
 C     * SOIL INFORMATION ARRAYS.
 C
-      REAL THPOR (ILG,IG), THLRET(ILG,IG), THLMIN(ILG,IG), 
-     1     BI    (ILG,IG), PSISAT(ILG,IG), GRKSAT(ILG,IG), 
-     2     THFC  (ILG,IG), DELZW (ILG,IG), XDRAIN(ILG)
+      REAL THPOR (ILG,IG)   !<Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$ 
+      REAL THLRET(ILG,IG)   !<Liquid water retention capacity for organic 
+                            !<soil \f$[m^3 m^{-3} ] (\theta_{l,ret})\f$
+      REAL THLMIN(ILG,IG)   !<Residual soil liquid water content (variable, accounting for unfrozen 
+                            !<water in frozen soils) remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
+      REAL BI    (ILG,IG)   !<Clapp and Hornberger empirical "b" parameter [ ] (b)
+      REAL PSISAT(ILG,IG)   !<Soil moisture suction at saturation \f$[m] (\Psi_{sat})\f$
+      REAL GRKSAT(ILG,IG)   !<Hydraulic conductivity of soil at 
+                            !<saturation \f$[m s^{-1}] (K_{sat})\f$
+      REAL THFC  (ILG,IG)   !<Field capacity \f$[m^3 m^{-3}]\f$
+      REAL DELZW (ILG,IG)   !<Permeable depth of soil layer \f$[m] (\Delta_{zg,w})\f$
+      REAL XDRAIN(ILG)      !<Drainage index for water flow at bottom of soil profile [ ]
 C  
       INTEGER              ISAND (ILG,IG)
 C

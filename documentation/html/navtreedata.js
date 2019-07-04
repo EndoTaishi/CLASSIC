@@ -6,6 +6,7 @@ var NAVTREE =
     [ "Create netcdf model initialization files from depricated INI (and CTM) file formats or fortran namelists", "initTool.html", null ],
     [ "Modify netcdf model initialization files for whole fields or point locations", "modifyRS.html", null ],
     [ "Bibliography", "citelist.html", null ],
+    [ "Modules", "modules.html", "modules" ],
     [ "Modules", null, [
       [ "Modules List", "namespaces.html", "namespaces" ],
       [ "Module Members", "namespacemembers.html", [
@@ -35,15 +36,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classic__params_8f90.html#a4c2987d6fb18ee95e277fc1b7b6c839f",
-"classic__params_8f90.html#afd1314c8b33fc3227a819a31dd8fd4c8",
-"model__state__drivers_8f90.html#ab2815a18447016b858ff4927e2dfe868",
-"structclass__statevars_1_1class__gather.html#a42daed1df1687406eea7391a4a55d9a0",
-"structclass__statevars_1_1class__moyr__output.html#a2d7c47167c5b88832a74cfd4638633a8",
-"structclass__statevars_1_1class__rotated.html#ab0b879a5553ab9013f70837d74f772af",
-"structctem__statevars_1_1ctem__monthly.html#acf6c9c59e530eacf92e14dbd7c57eb6d",
-"structctem__statevars_1_1veg__gat.html#a544cb35279f72e9609d283396e716a18",
-"structctem__statevars_1_1veg__rot.html#ac31fd6a90e0c93f0568ea04b44275317"
+"classic__params_8f90.html#a48ff892caffc1b58daf6d59b6c73d762",
+"classic__params_8f90.html#aeaa0e2881f588bb7a55bad4692675cfe",
+"model__state__drivers_8f90.html#a4b3213973ea8637808d81c82d26d6703",
+"structclass__statevars_1_1class__gather.html#a159968eb05cdc8f1ae5406fbe032fef3",
+"structclass__statevars_1_1class__gather.html#ae6f0ae2b8d610832dd2c731d1e83a249",
+"structclass__statevars_1_1class__rotated.html#a8eae2a8e211c7666acb7b2882c732bbf",
+"structctem__statevars_1_1ctem__gridavg__monthly.html#a5130d81f33f8d84d0409ad15ed89eae5",
+"structctem__statevars_1_1tracerstype.html#ab4337cfdff6ff6fe93254425f8ba3bdf",
+"structctem__statevars_1_1veg__rot.html#a40f5acf4a3bcb4402025a56acb347e24",
+"xmlParser_8f90.html#aa4b95f1e5c5b23365da1bd7d65a2735f"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

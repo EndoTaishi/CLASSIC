@@ -136,6 +136,14 @@ integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a851669da614fd5bd39036d820305ee48">co2fromfile</a></td></tr>
 <tr class="memdesc:a851669da614fd5bd39036d820305ee48"><td class="mdescLeft">&#160;</td><td class="mdescRight">The array of CO2 values (ppm) from the CO2File. <br /></td></tr>
 <tr class="separator:a851669da614fd5bd39036d820305ee48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238008dc89796c5e1e0578eaa37bf250"><td class="memItemLeft" align="right" valign="top"><a id="a238008dc89796c5e1e0578eaa37bf250"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a238008dc89796c5e1e0578eaa37bf250">tracerco2time</a></td></tr>
+<tr class="memdesc:a238008dc89796c5e1e0578eaa37bf250"><td class="mdescLeft">&#160;</td><td class="mdescRight">The time (years) from the tracerCO2File. <br /></td></tr>
+<tr class="separator:a238008dc89796c5e1e0578eaa37bf250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3213973ea8637808d81c82d26d6703"><td class="memItemLeft" align="right" valign="top"><a id="a4b3213973ea8637808d81c82d26d6703"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a4b3213973ea8637808d81c82d26d6703">tracerco2fromfile</a></td></tr>
+<tr class="memdesc:a4b3213973ea8637808d81c82d26d6703"><td class="mdescLeft">&#160;</td><td class="mdescRight">The array of tracerCO2 values (varied units) from the tracerCO2File. <br /></td></tr>
+<tr class="separator:a4b3213973ea8637808d81c82d26d6703"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a65753df111802135e246c79cbcde84"><td class="memItemLeft" align="right" valign="top"><a id="a9a65753df111802135e246c79cbcde84"></a>
 integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a9a65753df111802135e246c79cbcde84">ch4time</a></td></tr>
 <tr class="memdesc:a9a65753df111802135e246c79cbcde84"><td class="mdescLeft">&#160;</td><td class="mdescRight">The time (years) from the CH4File. <br /></td></tr>
@@ -346,6 +354,12 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><b>input</b></td></tr
 <tr class="memitem:a64ab2144fc90a1a02854685a9980891c"><td class="memItemLeft" align="right" valign="top"><a id="a64ab2144fc90a1a02854685a9980891c"></a>
 character(80)&#160;</td><td class="memItemRight" valign="bottom"><b>co2varname</b></td></tr>
 <tr class="separator:a64ab2144fc90a1a02854685a9980891c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a920224e789cd9bf83a49793999d7c034"><td class="memItemLeft" align="right" valign="top"><a id="a920224e789cd9bf83a49793999d7c034"></a>
+integer&#160;</td><td class="memItemRight" valign="bottom"><b>tracerco2id</b></td></tr>
+<tr class="separator:a920224e789cd9bf83a49793999d7c034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8213b6a39b932d3bf100704521a3edca"><td class="memItemLeft" align="right" valign="top"><a id="a8213b6a39b932d3bf100704521a3edca"></a>
+character(80)&#160;</td><td class="memItemRight" valign="bottom"><b>tracerco2varname</b></td></tr>
+<tr class="separator:a8213b6a39b932d3bf100704521a3edca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61467869be3ad1a191f0fffedce4d5d0"><td class="memItemLeft" align="right" valign="top"><a id="a61467869be3ad1a191f0fffedce4d5d0"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><b>ch4id</b></td></tr>
 <tr class="separator:a61467869be3ad1a191f0fffedce4d5d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -577,7 +591,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <p>Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on) </p>
 <dl class="section author"><dt>Author</dt><dd>Joe Melton </dd></dl>
 <p>GCROW, the GCM surface descriptor variable. For land surfaces (including inland water) it has a value of -1.</p>
-<p>depth, ZSNL, is assigned its operational value of 0.10 m.</p>
 <p>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.</p>
 <p>Take the first tile value now and put it over the other tiles</p>
 <p>if this run uses the competition and starts from bare ground, set up the model state here. this overwrites what was read in from the initialization file. </p>
@@ -782,7 +795,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

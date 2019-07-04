@@ -261,6 +261,21 @@ DELT = 1800.0,
 
   ! Maximum water retention capacity of the snow pack (weight percentage)
   WSNCAP = 0.04, 
+  
+! Four-band albedo parameters:
+
+  ! "climatological" snow grain size, SSA = 60 m^2/kg   
+  REFF0_LAND = 5.452563E-5, 
+  
+  ZSNMIN=5.E-2,          !FLAG - JM adding in Jason Cole's Albedo.
+  ZSNMAX2=25.E-2,        !FLAG - JM adding in Jason Cole's Albedo.                 
+  
+  ! Only needed when BCCONC is turned on.
+  ! #  if defined (pla)
+  !REAL, PARAMETER :: ZSNMIN=5.E-2,ZSNMAX1=20.E-2,ZSNMAX2=25.E-2
+  ! #  else
+  ! REAL, PARAMETER :: ZSNMIN=5.E-2,ZSNMAX1=10.E-2,ZSNMAX2=25.E-2
+  ! #  endif
 
 ! -------------------------------------
 
@@ -763,6 +778,16 @@ kn(10:12)  =0.46, 0.44, 0.00,
 
     !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
     a_hetr = 4.0,
+    
+    !< Following Lawrence et al. Environ. Res. Lett.,2015. we adopt 10.0 as our value, controls
+    !!  decomposition at depth to account for observed reductions that are independent of temp and moisture.
+    r_depthredu = 10.0,
+
+    !< Temperature below which respiration is inhibited. [ C ]
+    tcrit = -1.0,
+    
+    !< Factor to reduce respiration by for temps below tcrit
+    frozered = 0.1,   
 
 ! landuse_change_mod.f90 parameters: --------------
 ! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!
@@ -1042,6 +1067,23 @@ kn(10:12)  =0.46, 0.44, 0.00,
     !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
     roothrsh = 8.0,
 
+! turbation (in soilC_processes.f90) parameters: ---------------------------------
+
+    !< Diffusivity (or simply the rate of the cryoturbation) \f$(m^2/d)\f$
+    !! value from \cite Koven2011-796 - 5 cm2/yr. 
+    cryodiffus = 1.36986E-6,           
+
+    !< Diffusivity (or simply the rate of the bioturbation) \f$(m^2/d)\f$
+    !! value from \cite Koven2011-796 - 1 cm2/yr. 
+    biodiffus = 2.73972E-7,
+                                                            
+    !< Constant used in determination of depth at which cryoturbation ceases                                                            
+    kterm = 3.0,       
+    
+    !< e-folding time scale for updating mean active layer depth used in determining the depth 
+    !! roots can penetrate. (years)
+    eftime = 10.0,        
+                                  
 ! soil_ch4uptake parameters: -----------------------------
 
     !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP

@@ -13,7 +13,8 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
 2. @subpage overviewCTEM
 3. @subpage PFTsCLASSIC
 4. @subpage compvsmosaic
-5. @subpage basicInputs "The four basic types of data that are required to run CLASSIC"
+5. @subpage basicInputs "The five basic types of data that are required to run CLASSIC"
+  - @subpage modelParams
   - @subpage forcingData
   - @subpage vegetationData
     - @subpage vegCLASSonly
@@ -36,10 +37,11 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
     - @subpage initWetArea
   - @subpage initPeat "Peatlands"
   - @subpage inputLUC
+  - @subpage tracers "Carbon tracers"
 7. @subpage makeInputFiles
   - @subpage makeMet "Meteorological inputs"
   - @subpage makeInit "The model initialization and restart files"
-  - Greenhouse gas inputs
+  - @subpage ghgfiles "Greenhouse gas inputs"
   - @subpage makeOther "Other inputs"
 8. @subpage runPrep "Preparing a CLASSIC run"
   - @subpage Environ

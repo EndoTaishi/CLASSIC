@@ -65,10 +65,12 @@ var structctem__statevars_1_1ctem__switches =
     [ "runparams_file", "structctem__statevars_1_1ctem__switches.html#ab8fea46fcc551ace6e446abe8005f1f5", null ],
     [ "spinfast", "structctem__statevars_1_1ctem__switches.html#a55460bfaad642095697779680a5acfa5", null ],
     [ "start_bare", "structctem__statevars_1_1ctem__switches.html#a03e1c96d2bd2c171fa6573ebe3bab7ef", null ],
+    [ "tracerco2file", "structctem__statevars_1_1ctem__switches.html#a7fde1fb2110ad04a2aa2c6dc8334cdc9", null ],
     [ "transientch4", "structctem__statevars_1_1ctem__switches.html#a5f60afade189e33c44a42ee0f9084dc4", null ],
     [ "transientco2", "structctem__statevars_1_1ctem__switches.html#a580b5134660a387d93dabc8d8018bdd4", null ],
     [ "transientlght", "structctem__statevars_1_1ctem__switches.html#a6c9cfc7112284f914bf0cce1f15bd929", null ],
     [ "transientobswetf", "structctem__statevars_1_1ctem__switches.html#a1a43cc70758dee3b038a76169f5be4fc", null ],
     [ "transientpopd", "structctem__statevars_1_1ctem__switches.html#aaa89b65cbe72a24c1e2965a1c08f07aa", null ],
+    [ "usetracer", "structctem__statevars_1_1ctem__switches.html#acdeaad7d44052c26b571a7974df9d163", null ],
     [ "xmlfile", "structctem__statevars_1_1ctem__switches.html#afa2f463a9cbcb11eb55e06fc6d2e723a", null ]
 ];

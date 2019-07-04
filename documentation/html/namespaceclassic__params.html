@@ -94,7 +94,7 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="separator:a8dd9a8ba262d70191b64622ca6871c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cd9f92ef25a93ec404e15fa84637f33"><td class="memItemLeft" align="right" valign="top"><a id="a0cd9f92ef25a93ec404e15fa84637f33"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a0cd9f92ef25a93ec404e15fa84637f33">abszero</a> = 1e-12</td></tr>
-<tr class="memdesc:a0cd9f92ef25a93ec404e15fa84637f33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defintion of zero, this one is for <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a> and <a class="el" href="allocate_8f.html" title="Performs allocation of carbon gained by photosynthesis into plant structural pools. ">allocate.f</a>. <br /></td></tr>
+<tr class="memdesc:a0cd9f92ef25a93ec404e15fa84637f33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defintion of zero, this one is for <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a> and allocate.f. <br /></td></tr>
 <tr class="separator:a0cd9f92ef25a93ec404e15fa84637f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51c24034e6b8592f8a2b732765ea5d46"><td class="memItemLeft" align="right" valign="top"><a id="a51c24034e6b8592f8a2b732765ea5d46"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a51c24034e6b8592f8a2b732765ea5d46">earthrad</a> = 6371.22</td></tr>
@@ -144,6 +144,10 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ad4ada8d03ea9a6f820be4356fc87eb06">std_press</a> = 101325.0</td></tr>
 <tr class="memdesc:ad4ada8d03ea9a6f820be4356fc87eb06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Standard atmospheric pressure (Pa) <br /></td></tr>
 <tr class="separator:ad4ada8d03ea9a6f820be4356fc87eb06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aade8664d01bae9a5bbc501172534d84a"><td class="memItemLeft" align="right" valign="top"><a id="aade8664d01bae9a5bbc501172534d84a"></a>
+real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#aade8664d01bae9a5bbc501172534d84a">lambda14c</a> = 8267.</td></tr>
+<tr class="memdesc:aade8664d01bae9a5bbc501172534d84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">radioactive decay rate for 14C, corresponds to a half life of 5730 years. ( <img class="formulaInl" alt="$yr^{-1}$" src="form_1673.png"/>) <br /></td></tr>
+<tr class="separator:aade8664d01bae9a5bbc501172534d84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc934d6adff6a8b2a87743aaad87289c"><td class="memItemLeft" align="right" valign="top"><a id="adc934d6adff6a8b2a87743aaad87289c"></a>
 integer, dimension(12)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#adc934d6adff6a8b2a87743aaad87289c">monthdays</a> = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]</td></tr>
 <tr class="memdesc:adc934d6adff6a8b2a87743aaad87289c"><td class="mdescLeft">&#160;</td><td class="mdescRight">days in each month <br /></td></tr>
@@ -420,6 +424,40 @@ logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac98036ee564952fd0d591342387b4cc4">cl4ctem</a></td></tr>
 <tr class="memdesc:ac98036ee564952fd0d591342387b4cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexing of the CTEM-level PFTs into a CLASS PFT-level array. <br /></td></tr>
 <tr class="separator:ac98036ee564952fd0d591342387b4cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54db7e01cbeea949a39dcf22fcd13719"><td class="memItemLeft" align="right" valign="top"><a id="a54db7e01cbeea949a39dcf22fcd13719"></a>
+integer, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a54db7e01cbeea949a39dcf22fcd13719">reindexpfts</a></td></tr>
+<tr class="memdesc:a54db7e01cbeea949a39dcf22fcd13719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reindexing arrays of CLASS variables into the parameters arrays at the CTEM level. <br /></td></tr>
+<tr class="separator:a54db7e01cbeea949a39dcf22fcd13719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52d0b42400f98e07a3ca594fe2e715e7"><td class="memItemLeft" align="right" valign="top"><a id="a52d0b42400f98e07a3ca594fe2e715e7"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>nsmu</b> = 10</td></tr>
+<tr class="separator:a52d0b42400f98e07a3ca594fe2e715e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d7a7190c64c25f4bbd198a1a83bae7c"><td class="memItemLeft" align="right" valign="top"><a id="a0d7a7190c64c25f4bbd198a1a83bae7c"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>nsalb</b> = 11</td></tr>
+<tr class="separator:a0d7a7190c64c25f4bbd198a1a83bae7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad650ac73a298542463ffe53746d5287d"><td class="memItemLeft" align="right" valign="top"><a id="ad650ac73a298542463ffe53746d5287d"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>nbc</b> = 20</td></tr>
+<tr class="separator:ad650ac73a298542463ffe53746d5287d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87d8e8361e1c5e70cddddd931d941dcc"><td class="memItemLeft" align="right" valign="top"><a id="a87d8e8361e1c5e70cddddd931d941dcc"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>nreff</b> = 10</td></tr>
+<tr class="separator:a87d8e8361e1c5e70cddddd931d941dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fb26ce732273de1c8bfeed9cbf173cb"><td class="memItemLeft" align="right" valign="top"><a id="a8fb26ce732273de1c8bfeed9cbf173cb"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>nswe</b> = 11</td></tr>
+<tr class="separator:a8fb26ce732273de1c8bfeed9cbf173cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced877410f15e73e462daa79fa24be07"><td class="memItemLeft" align="right" valign="top"><a id="aced877410f15e73e462daa79fa24be07"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>nbnd_lut</b> = 4</td></tr>
+<tr class="separator:aced877410f15e73e462daa79fa24be07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57aea2948599a35e27e8d2318e02fdd2"><td class="memItemLeft" align="right" valign="top"><a id="a57aea2948599a35e27e8d2318e02fdd2"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>albdif_lut</b></td></tr>
+<tr class="separator:a57aea2948599a35e27e8d2318e02fdd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e5ef0cc9f7712dd68a197cb38f1ac62"><td class="memItemLeft" align="right" valign="top"><a id="a7e5ef0cc9f7712dd68a197cb38f1ac62"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>albdir_lut</b></td></tr>
+<tr class="separator:a7e5ef0cc9f7712dd68a197cb38f1ac62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ddc24888c1f9534e174db00b761a569"><td class="memItemLeft" align="right" valign="top"><a id="a8ddc24888c1f9534e174db00b761a569"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>trandif_lut</b></td></tr>
+<tr class="separator:a8ddc24888c1f9534e174db00b761a569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a171b96c6181237cfc5f3972aab7a7756"><td class="memItemLeft" align="right" valign="top"><a id="a171b96c6181237cfc5f3972aab7a7756"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>trandir_lut</b></td></tr>
+<tr class="separator:a171b96c6181237cfc5f3972aab7a7756"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04dce684649235360071af62a0de7dd0"><td class="memItemLeft" align="right" valign="top"><a id="a04dce684649235360071af62a0de7dd0"></a>
 character(5), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a04dce684649235360071af62a0de7dd0">classpfts</a></td></tr>
 <tr class="memdesc:a04dce684649235360071af62a0de7dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">CLASS (physics) PFTs. <br /></td></tr>
@@ -643,6 +681,15 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a664c7429262f23114f589f07943c357f">wsncap</a></td></tr>
 <tr class="memdesc:a664c7429262f23114f589f07943c357f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum water retention capacity of the snow pack (weight percentage) <br /></td></tr>
 <tr class="separator:a664c7429262f23114f589f07943c357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e9256ca80b00c30d88da4a268e72250"><td class="memItemLeft" align="right" valign="top"><a id="a4e9256ca80b00c30d88da4a268e72250"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>reff0_land</b></td></tr>
+<tr class="separator:a4e9256ca80b00c30d88da4a268e72250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4beca5e09d071f7515caa5dfc13beb03"><td class="memItemLeft" align="right" valign="top"><a id="a4beca5e09d071f7515caa5dfc13beb03"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>zsnmin</b></td></tr>
+<tr class="separator:a4beca5e09d071f7515caa5dfc13beb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a882c1f4465f984f564ca36559519296f"><td class="memItemLeft" align="right" valign="top"><a id="a882c1f4465f984f564ca36559519296f"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>zsnmax2</b></td></tr>
+<tr class="separator:a882c1f4465f984f564ca36559519296f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b74fec0837d9da97084df14d8f1c7e3"><td class="memItemLeft" align="right" valign="top"><a id="a9b74fec0837d9da97084df14d8f1c7e3"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a9b74fec0837d9da97084df14d8f1c7e3">kn</a></td></tr>
 <tr class="memdesc:a9b74fec0837d9da97084df14d8f1c7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
@@ -1007,6 +1054,18 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#abdc804f931cd40aea48063ecd61f6e88">a_hetr</a></td></tr>
 <tr class="memdesc:abdc804f931cd40aea48063ecd61f6e88"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool <br /></td></tr>
 <tr class="separator:abdc804f931cd40aea48063ecd61f6e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8c5cf5ee8f81e829f8b14c8b529a0da"><td class="memItemLeft" align="right" valign="top"><a id="ac8c5cf5ee8f81e829f8b14c8b529a0da"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ac8c5cf5ee8f81e829f8b14c8b529a0da">r_depthredu</a></td></tr>
+<tr class="memdesc:ac8c5cf5ee8f81e829f8b14c8b529a0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Following Lawrence et al. Environ. Res. Lett.,2015. we adopt 10.0 as our value, controls decomposition at depth to account for observed reductions that are independent of temp and moisture. <br /></td></tr>
+<tr class="separator:ac8c5cf5ee8f81e829f8b14c8b529a0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb7e095d5d427057e18b543df9bde713"><td class="memItemLeft" align="right" valign="top"><a id="afb7e095d5d427057e18b543df9bde713"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#afb7e095d5d427057e18b543df9bde713">tcrit</a></td></tr>
+<tr class="memdesc:afb7e095d5d427057e18b543df9bde713"><td class="mdescLeft">&#160;</td><td class="mdescRight">temperature below which respiration is inhibited. [ C ] <br /></td></tr>
+<tr class="separator:afb7e095d5d427057e18b543df9bde713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa64666a170a707d48a796e503adf7ea"><td class="memItemLeft" align="right" valign="top"><a id="aaa64666a170a707d48a796e503adf7ea"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#aaa64666a170a707d48a796e503adf7ea">frozered</a></td></tr>
+<tr class="memdesc:aaa64666a170a707d48a796e503adf7ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">factor to reduce respiration by for temps below tcrit <br /></td></tr>
+<tr class="separator:aaa64666a170a707d48a796e503adf7ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa178af7b3316603795f181606b542af3"><td class="memItemLeft" align="right" valign="top"><a id="aa178af7b3316603795f181606b542af3"></a>
 real, dimension(3)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#aa178af7b3316603795f181606b542af3">combust</a></td></tr>
 <tr class="memdesc:aa178af7b3316603795f181606b542af3"><td class="mdescLeft">&#160;</td><td class="mdescRight">how much deforested/chopped off biomass is combusted (these absolutely must add to 1.0!) <br /></td></tr>
@@ -1217,6 +1276,26 @@ integer, dimension(2)&#160;</td><td class="memItemRight" valign="bottom"><a clas
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a931fcc6cc83bc0c4e314a67a0ba57f5b">roothrsh</a></td></tr>
 <tr class="memdesc:a931fcc6cc83bc0c4e314a67a0ba57f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius. <br /></td></tr>
 <tr class="separator:a931fcc6cc83bc0c4e314a67a0ba57f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd306edd956f111551b796c060862896"><td class="memItemLeft" align="right" valign="top"><a id="acd306edd956f111551b796c060862896"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#acd306edd956f111551b796c060862896">cryodiffus</a></td></tr>
+<tr class="memdesc:acd306edd956f111551b796c060862896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity (or simply the rate of the cryoturbation) <img class="formulaInl" alt="$(m^2/d)$" src="form_1674.png"/> value from <a class="el" href="citelist.html#CITEREF_Koven2011-796">[45]</a> - 5 cm2/yr. <br /></td></tr>
+<tr class="separator:acd306edd956f111551b796c060862896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="memItemLeft" align="right" valign="top"><a id="a6a6ebb6f7a81fd386074ddb97cc4c729"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a6a6ebb6f7a81fd386074ddb97cc4c729">biodiffus</a></td></tr>
+<tr class="memdesc:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity (or simply the rate of the bioturbation) <img class="formulaInl" alt="$(m^2/d)$" src="form_1674.png"/> value from <a class="el" href="citelist.html#CITEREF_Koven2011-796">[45]</a> - 1 cm2/yr. <br /></td></tr>
+<tr class="separator:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2c506f404dd5b55393ada2c9f809622"><td class="memItemLeft" align="right" valign="top"><a id="ab2c506f404dd5b55393ada2c9f809622"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ab2c506f404dd5b55393ada2c9f809622">kterm</a></td></tr>
+<tr class="memdesc:ab2c506f404dd5b55393ada2c9f809622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constant used in determination of depth at which cryoturbation ceases. <br /></td></tr>
+<tr class="separator:ab2c506f404dd5b55393ada2c9f809622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e1823931c779f38a74b65485621bdc8"><td class="memItemLeft" align="right" valign="top"><a id="a4e1823931c779f38a74b65485621bdc8"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a4e1823931c779f38a74b65485621bdc8">eftime</a></td></tr>
+<tr class="memdesc:a4e1823931c779f38a74b65485621bdc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">e-folding time scale for updating mean active layer depth used in determining the depth roots can penetrate. (years) <br /></td></tr>
+<tr class="separator:a4e1823931c779f38a74b65485621bdc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725119b5531e8ad167ca983008d6c1c7"><td class="memItemLeft" align="right" valign="top"><a id="a725119b5531e8ad167ca983008d6c1c7"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a725119b5531e8ad167ca983008d6c1c7">efoldfact</a></td></tr>
+<tr class="memdesc:a725119b5531e8ad167ca983008d6c1c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated factor used in determining the e-folding time of average active layer depth. this is calculated based on the eftime parameter. <br /></td></tr>
+<tr class="separator:a725119b5531e8ad167ca983008d6c1c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9349dd4f37e04a79463e88731c3f4fa4"><td class="memItemLeft" align="right" valign="top"><a id="a9349dd4f37e04a79463e88731c3f4fa4"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a9349dd4f37e04a79463e88731c3f4fa4">d_air</a></td></tr>
 <tr class="memdesc:a9349dd4f37e04a79463e88731c3f4fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity of CH4 in air (cm^2 s^-1) @ STP. <br /></td></tr>
@@ -1316,7 +1395,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="separator:a00ecc97130988670c1826e54f5507309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70387b47d7f92d08b9eb331ab197cd5d"><td class="memItemLeft" align="right" valign="top"><a id="a70387b47d7f92d08b9eb331ab197cd5d"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a70387b47d7f92d08b9eb331ab197cd5d">vmax</a></td></tr>
-<tr class="memdesc:a70387b47d7f92d08b9eb331ab197cd5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[43]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
+<tr class="memdesc:a70387b47d7f92d08b9eb331ab197cd5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, ( <img class="formulaInl" alt="$(mol CO_2 m^{-2} s^{-1}$" src="form_543.png"/>) values are mainly derived from <a class="el" href="citelist.html#CITEREF_kattge20090c0">[41]</a> which doesn't include c4. also see <a class="el" href="citelist.html#CITEREF_Alton2017-pd">[3]</a> <br /></td></tr>
 <tr class="separator:a70387b47d7f92d08b9eb331ab197cd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad04a9dc1e9e328efa3b79d36b37ee2f0"><td class="memItemLeft" align="right" valign="top"><a id="ad04a9dc1e9e328efa3b79d36b37ee2f0"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ad04a9dc1e9e328efa3b79d36b37ee2f0">reqiter</a></td></tr>
@@ -1473,7 +1552,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceclassic__params.html">classic_params</a></li>
-    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

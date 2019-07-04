@@ -8,10 +8,12 @@ var searchData=
   ['tnpost',['tnpost',['../TNPOST_8f.html#a1d7de0e4ebe964e4c638efcb49b3c740',1,'TNPOST.f']]],
   ['tnprep',['tnprep',['../TNPREP_8f.html#ab5cfd35272325655f17bcc52acb00535',1,'TNPREP.f']]],
   ['tprep',['tprep',['../TPREP_8f.html#a7e4916d23e9c1a0300f168e58bbf7ae4',1,'TPREP.f']]],
+  ['tridiag',['tridiag',['../group__tridiag.html#ga4fe3cf136177a8b79351094c7755882b',1,'soilc_processes']]],
   ['tsolvc',['tsolvc',['../TSOLVC_8f.html#a824dab26436ace6ad8f0f9e2f6908ce2',1,'TSOLVC.f']]],
   ['tsolve',['tsolve',['../TSOLVE_8f.html#a6e73723f0d6d00d8dc1c69c462493fe2',1,'TSOLVE.f']]],
   ['tspost',['tspost',['../TSPOST_8f.html#aea20a5bd0b4d139bb0537c5e0a79788f',1,'TSPOST.f']]],
   ['tsprep',['tsprep',['../TSPREP_8f.html#acec92f86df665884ec221b869cfa7f7a',1,'TSPREP.f']]],
-  ['turnoverstemroot',['turnoverstemroot',['../namespaceturnover.html#a671d52dc9ffb402a00e952db68fff5ef',1,'turnover']]],
+  ['turbation',['turbation',['../group__turbation.html#gaf3201878bfaeecfead45c1e73123370a',1,'soilc_processes']]],
+  ['turnoverstemroot',['turnoverstemroot',['../namespaceturnover.html#abec3639aac34d75dd54f0d5ff5e739c9',1,'turnover']]],
   ['twcalc',['twcalc',['../TWCALC_8f.html#a70ccee2822c2cc573ae3aca26942288a',1,'TWCALC.f']]]
 ];

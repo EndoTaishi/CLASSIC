@@ -2,6 +2,7 @@ var structclass__statevars_1_1class__rotated =
 [
     [ "acidrot", "structclass__statevars_1_1class__rotated.html#af19254de40161b7cec3e0291dde3590e", null ],
     [ "actlyr", "structclass__statevars_1_1class__rotated.html#ad8a01437993556cd096386d02b10301d", null ],
+    [ "actlyrthisyrrot", "structclass__statevars_1_1class__rotated.html#ae306b54b1d72da5db82f0d2d1c97ab58", null ],
     [ "acvdrot", "structclass__statevars_1_1class__rotated.html#afadf950c2df1ebbd453cad7717f6c56e", null ],
     [ "agidrot", "structclass__statevars_1_1class__rotated.html#a91acd392145ff4e440c9bc1b38b01410", null ],
     [ "agvdrot", "structclass__statevars_1_1class__rotated.html#abdca374967cf11aa5f25ee9cbcb7cd73", null ],
@@ -16,6 +17,7 @@ var structclass__statevars_1_1class__rotated =
     [ "aliracc_m", "structclass__statevars_1_1class__rotated.html#a8aef87eb2a958e9fa7129f203a69a8af", null ],
     [ "alirrot", "structclass__statevars_1_1class__rotated.html#a3a13eeaca8c3dd6ca5b5383e8b41c6a9", null ],
     [ "alirrow", "structclass__statevars_1_1class__rotated.html#a3b3cb6b6d7149e14a8e55c067060accb", null ],
+    [ "alsnoacc_m", "structclass__statevars_1_1class__rotated.html#a3228e00864beaa5efdd1a04e5889522e", null ],
     [ "altotacc_m", "structclass__statevars_1_1class__rotated.html#a07ae9d3041a6f1392b9df661d283d532", null ],
     [ "altotcntr_d", "structclass__statevars_1_1class__rotated.html#ab8208b6e0b495f7caffcabdf43266436", null ],
     [ "alvcrot", "structclass__statevars_1_1class__rotated.html#ad8000700f6beb58164a2403cb4232373", null ],
@@ -129,6 +131,7 @@ var structclass__statevars_1_1class__rotated =
     [ "isndrot", "structclass__statevars_1_1class__rotated.html#a2a9941aeb151d1c7817384cf6501a6e4", null ],
     [ "itctrot", "structclass__statevars_1_1class__rotated.html#aa6882c9893af7cb1e2836d91e68a9c92", null ],
     [ "lnz0rot", "structclass__statevars_1_1class__rotated.html#a279b2a2f62ed9f4ff9ba3640b9a83e94", null ],
+    [ "maxannualactlyrrot", "structclass__statevars_1_1class__rotated.html#aaacced452a90e57b857bcc2aec987863", null ],
     [ "midrot", "structclass__statevars_1_1class__rotated.html#aa706491576ce9f93710b0df985ea0db8", null ],
     [ "orgmrot", "structclass__statevars_1_1class__rotated.html#aacc759c8b1efca519784483bc241c9cb", null ],
     [ "ovracc_m", "structclass__statevars_1_1class__rotated.html#a5f0c0c4fe5a239c53de62a3714b24ba9", null ],

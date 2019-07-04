@@ -15,12 +15,13 @@ CLASSIC can be run in several different configurations, some of which require ad
   3.  @ref initWetArea
 5. [Peatlands](@ref initPeat)
 6. @ref inputLUC
+7. [Tracers](@ref tracers)
 
 ---
 
 # Atmospheric carbon dioxide concentration {#initCO2}
 
-**Annual** atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and 'ncdump -hs' on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units.
+**Annual** atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and `ncdump -hs` on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units. **FLAG return to this!! The chunking should be listed here**
 
         dimensions:
             time = 318 ;
@@ -45,11 +46,11 @@ CLASSIC can be run in several different configurations, some of which require ad
 
 # Atmospheric methane concentration {#initCH4}
 
-**Annual** atmospheric methane concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.
+**Annual** atmospheric methane concentrations are needed for CLASSIC runs with biogeochemistry on (CTEM on). The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.
 
 # Lightning frequency for fire ignition {#initLightFire}
 
-**Daily** cloud-to-ground lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use daily lightning frequency. If you have mean monthly values you can interpolate them to daily values (cdo inttime is useful here). An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. Note the units of the lght_lisotd and time variables.
+**Daily cloud-to-ground** lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use daily lightning frequency. If you have mean monthly values you can interpolate them to daily values (cdo inttime is useful here). An `ncdump -hs` of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. Note the units of the lght_lisotd and time variables.
 
         netcdf lisotd_1995_2014_climtlgl_lghtng_as_ts_1700_2050_chunked {
         dimensions:
@@ -91,7 +92,7 @@ CLASSIC can be run in several different configurations, some of which require ad
 
 # Population density for fire ignition/suppresion {#initPopd}
 
-Fire uses a time series of **annually** varying population density for fire suppression and ignition. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
+Fire uses a time series of **annually** varying population density for fire suppression and ignition. An `ncdump -hs` of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time.
 
           netcdf POPD_annual_1700_2017_T63_chunked {
           dimensions:
@@ -131,23 +132,23 @@ Fire uses a time series of **annually** varying population density for fire supp
 
 # Climatic variables for PFT competition simulations {#initClimComp}
 
-The PFT competition scheme (@ref competition_scheme) uses bioclimatic variables to determine if a PFT can establish and attempt to colonize a grid cell (see @ref competition_scheme.bioclim and @ref competition_scheme.existence). These climatic variables are written to the model restart file for use to initialize a future run. They are also either read in from the initialization file or are determined during a model run (model switch- inibioclim).
+The PFT competition scheme (@ref competition_scheme) uses bioclimatic variables to determine if a PFT can establish and attempt to colonize a grid cell (see @ref competition_scheme.bioclim and @ref competition_scheme.existence). These climatic variables are written to the model restart file for use to initialize a future run. They are also either read in from the initialization file or are determined during a model run (model switch *inibioclim* in the job options file). 
 
-- anndefct Annual water deficit, i.e. daily values of potential evaporation that exceed precipitation accumulated over a year [mm]
-- annsrpls Annual water deficit, i.e. daily values of precipitation that exceed potential evaporation accumulated over a year [mm]
-- annpcp Annual precipitation [mm]
-- aridity Aridity index, ratio of potential evaporation to precipitation []
-- defctmon Number of months in a year with water deficit i.e. precipitation less than potential evaporation [months]
-- srplsmon Number of months in a year with surplus water i.e. precipitation more than potential evaporation [months]
-- dry_season_length Length of consecutive dry season in months, where a dry month is defined as the month in which potential evaporation exceeds precipitation [months]
-- gdd5 Growing degree days above 5 C [days]
-- tcoldm Temperature of the coldest month [deg C]
-- twarmm Temperature of the warmest month [deg C]
+- *anndefct* Annual water deficit, i.e. daily values of potential evaporation that exceed precipitation accumulated over a year [mm]
+- *annsrpls* Annual water deficit, i.e. daily values of precipitation that exceed potential evaporation accumulated over a year [mm]
+- *annpcp* Annual precipitation [mm]
+- *aridity* Aridity index, ratio of potential evaporation to precipitation [ ]
+- *defctmon* Number of months in a year with water deficitm, i.e. precipitation less than potential evaporation [months]
+- *srplsmon* Number of months in a year with surplus water, i.e. precipitation more than potential evaporation [months]
+- *dry_season_length* Length of consecutive dry season in months, where a dry month is defined as the month in which potential evaporation exceeds precipitation [months]
+- *gdd5* Growing degree days above 5 C [days]
+- *tcoldm* Temperature of the coldest month [deg C]
+- *twarmm* Temperature of the warmest month [deg C]
 
 
 # Rice agriculature {#initRice}
 
-COMBAK
+**COMBAK**
 
 float rice(months, lat, lon) ;
   rice:_FillValue = -999.f ;
@@ -158,7 +159,7 @@ float rice(months, lat, lon) ;
 
 # Orographic information for dynamic wetland scheme {#initWetSlope}
 
-Eight slope based fractions a read in from the model initialization file for calculating dynamic wetland fractions. As the soil moisture in a grid cell increases above specified thresholds then the really flat portions of the grid cell are assumed to gradually turn into wetlands. The eight slope based fractions correspond to the fraction of the grid cell that have slope less than 0.025%, 0.05%, 0.1%, 0.15%, 0.20%, 0.25%, 0.3% and 0.35% . The numbers used by CTEM are based on 1/60th degree (1 minute) resolution digital elevation data. The relevant variables in the initialization file are shown below. In the file, slope is a dimension and slopefrac is a variable.
+Eight slope based fractions are read in from the model initialization file for calculating dynamic wetland fractions. As the soil moisture in a grid cell increases above specified thresholds then the really flat portions of the grid cell are assumed to gradually turn into wetlands. The eight slope based fractions correspond to the fraction of the grid cell that have slope less than 0.025%, 0.05%, 0.1%, 0.15%, 0.20%, 0.25%, 0.3% and 0.35%. The numbers used by CLASSIC are based on 1/60th degree (1 minute) resolution digital elevation data. The relevant variables in the initialization file are shown below. In the file, *slope* is a dimension and *slopefrac* is a variable.
 
         double slope(slope) ;
           slope:long_name = "wetland slope fractions for 0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope threshold" ;
@@ -210,7 +211,7 @@ Eight slope based fractions a read in from the model initialization file for cal
 
 # Peatland variables {#initPeat}
 
-Peatlands are simulated following the parameterization of \cite Wu2016-zt. The peatland areas are specified by a ipeatland flag in the initialization file:
+Peatlands are simulated following the parameterization of Wu et al. (2016) \cite Wu2016-zt. The peatland areas are specified by the *ipeatland* flag in the initialization file:
 
         float ipeatland(tile, lat, lon) ;
           ipeatland:_FillValue = -999.f ;
@@ -234,7 +235,7 @@ There are several prognostic variables that are associated with the peatland are
           dmoss:units = "m" ;
           dmoss:long_name = "Depth of living moss" ;
 
-If you are running a single site peatland then the peatland tile is the whole grid cell. If you are running large regions you may wish to have the peatlands as a separate tile. This is done by having an nmtest > 1.
+If you are running a single site peatland then the peatland tile is the whole grid cell. If you are running large regions you may wish to have the peatlands as a separate tile. This is done by having an *nmtest* > 1 and setting up each tile appropriately.
 
           int nmtest(lat, lon) ;
             nmtest:_FillValue = -999 ;
@@ -242,12 +243,12 @@ If you are running a single site peatland then the peatland tile is the whole gr
 
 # Land use change (LUC) {#inputLUC}
 
-The LUC file contains an **annual** time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, **lev** and time.
+The LUC file contains an **annual** time series of fractional coverage of each of the CLASSIC PFTs. An `ncdump -hs` of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, **lev** and time.
 
         netcdf GCP_2018_land_cover_CTEM_fractions_1700_2018_T63_chunked {
         dimensions:
         	time = UNLIMITED ; // (319 currently)
-        	**lev = 9** ;
+        	**lev = 9** ; ! This corresponds to number of biogeochemical (CTEM) PFTs.
         	lat = 64 ;
         	lon = 128 ;
         variables:
@@ -285,3 +286,6 @@ The LUC file contains an **annual** time series of fractional coverage of each o
         		time:_ChunkSizes = 319 ;
         		time:_Endianness = "little" ;
 
+# Tracers {#tracers}
+
+In development.

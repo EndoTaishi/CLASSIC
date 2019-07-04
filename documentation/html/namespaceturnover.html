@@ -90,27 +90,27 @@ $(document).ready(function(){initNavTree('namespaceturnover.html','');});
 <p>The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/> <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) associated with turnover of stem ( <img class="formulaInl" alt="$D_\mathrm{S}$" src="form_1462.png"/>) and root ( <img class="formulaInl" alt="$D_\mathrm{R}$" src="form_1463.png"/>) components is calculated based on the amount of biomass in the respective components ( <img class="formulaInl" alt="$C_\mathrm{S}, C_\mathrm{R}$" src="form_1464.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) and their respective turnover timescales ( <img class="formulaInl" alt="$\tau_\mathrm{S}$" src="form_1465.png"/> and <img class="formulaInl" alt="$\tau_\mathrm{R}$" src="form_1466.png"/>; <img class="formulaInl" alt="$yr$" src="form_1003.png"/>; see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>) as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]" src="form_1467.png"/>
 </p>
-<p>.  
+<p> Litter contributions are either put in the first soil layer (leaf and stem litter) whereas root litter is added in proportion to the root distribution to non-perennially frozen soil layers. For defining which layers are frozen, we use the active layer depth.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a729c2cccb9b56c2a6b1ed5c85b37e68a"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#a729c2cccb9b56c2a6b1ed5c85b37e68a">updatepoolsturnover</a> (il1, il2, reprocost, stemmass, rootmass, litrmass, rootlitr, gleafmas, bleafmas, leaflitr, stemlitr)</td></tr>
-<tr class="memdesc:a729c2cccb9b56c2a6b1ed5c85b37e68a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update green leaf biomass for trees and crops, brown leaf biomass for grasses, stem and root biomass for litter deductions, and update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool.  <a href="#a729c2cccb9b56c2a6b1ed5c85b37e68a">More...</a><br /></td></tr>
-<tr class="separator:a729c2cccb9b56c2a6b1ed5c85b37e68a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e19f6c0f442da1480f343386f58e83f"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#a3e19f6c0f442da1480f343386f58e83f">updatepoolsturnover</a> (il1, il2, ilg, reprocost, rmatctem, useTracer, tracerReproCost, stemmass, rootmass, litrmass, rootlitr, gleafmas, bleafmas, leaflitr, stemlitr, tracerGLeafMass, tracerBLeafMass, tracerLitrMass, tracerRootMass, tracerStemMass, tracerLeafLitr, tracerStemLitr, tracerRootLitr)</td></tr>
+<tr class="memdesc:a3e19f6c0f442da1480f343386f58e83f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update green leaf biomass for trees and crops, brown leaf biomass for grasses, stem and root biomass for litter deductions, and update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool.  <a href="#a3e19f6c0f442da1480f343386f58e83f">More...</a><br /></td></tr>
+<tr class="separator:a3e19f6c0f442da1480f343386f58e83f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a671d52dc9ffb402a00e952db68fff5ef"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#a671d52dc9ffb402a00e952db68fff5ef">turnoverstemroot</a> (stemmass, rootmass, lfstatus, ailcg, il1, il2, ilg, leapnow, sort, fcancmx, stmhrlos, rothrlos, stemlitr, rootlitr)</td></tr>
-<tr class="memdesc:a671d52dc9ffb402a00e952db68fff5ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from stem and root turnover.  <a href="#a671d52dc9ffb402a00e952db68fff5ef">More...</a><br /></td></tr>
-<tr class="separator:a671d52dc9ffb402a00e952db68fff5ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abec3639aac34d75dd54f0d5ff5e739c9"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceturnover.html#abec3639aac34d75dd54f0d5ff5e739c9">turnoverstemroot</a> (stemmass, rootmass, lfstatus, ailcg, il1, il2, ilg, leapnow, useTracer, sort, fcancmx, tracerStemMass, tracerRootMass, stmhrlos, rothrlos, stemlitr, rootlitr, tracerStemLitr, tracerRootLitr)</td></tr>
+<tr class="memdesc:abec3639aac34d75dd54f0d5ff5e739c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the litter generated from stem and root turnover.  <a href="#abec3639aac34d75dd54f0d5ff5e739c9">More...</a><br /></td></tr>
+<tr class="separator:abec3639aac34d75dd54f0d5ff5e739c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/> <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) associated with turnover of stem ( <img class="formulaInl" alt="$D_\mathrm{S}$" src="form_1462.png"/>) and root ( <img class="formulaInl" alt="$D_\mathrm{R}$" src="form_1463.png"/>) components is calculated based on the amount of biomass in the respective components ( <img class="formulaInl" alt="$C_\mathrm{S}, C_\mathrm{R}$" src="form_1464.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) and their respective turnover timescales ( <img class="formulaInl" alt="$\tau_\mathrm{S}$" src="form_1465.png"/> and <img class="formulaInl" alt="$\tau_\mathrm{R}$" src="form_1466.png"/>; <img class="formulaInl" alt="$yr$" src="form_1003.png"/>; see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>) as </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]" src="form_1467.png"/>
 </p>
-<p>. </p>
+<p> Litter contributions are either put in the first soil layer (leaf and stem litter) whereas root litter is added in proportion to the root distribution to non-perennially frozen soil layers. For defining which layers are frozen, we use the active layer depth. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="a671d52dc9ffb402a00e952db68fff5ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a671d52dc9ffb402a00e952db68fff5ef">&#9670;&nbsp;</a></span>turnoverstemroot()</h2>
+<a id="abec3639aac34d75dd54f0d5ff5e739c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abec3639aac34d75dd54f0d5ff5e739c9">&#9670;&nbsp;</a></span>turnoverstemroot()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -118,86 +118,116 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public turnover::turnoverstemroot </td>
           <td>(</td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>stemmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>rootmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">integer, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>lfstatus</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>ailcg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(icc)&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
           <td class="paramname"><em>sort</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>fcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
           <td class="paramname"><em>stmhrlos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
           <td class="paramname"><em>rothrlos</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>stemlitr</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>rootlitr</em>&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>rootlitr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>tracerStemLitr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>tracerRootLitr</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -211,30 +241,36 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramname">lfstatus</td><td>leaf status. an integer indicating if leaves are in "max. growth", "normal growth", "fall/harvest", or "no leaves" mode. see phenolgy subroutine for more details.</td></tr>
-    <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
-    <tr><td class="paramname">sort</td><td>index for correspondence between 9 ctem pfts and size 12 of parameter vectors</td></tr>
-    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">ailcg</td><td>green or live lai</td></tr>
-    <tr><td class="paramname">fcancmx</td><td>max. fractional coverage of ctem's 9 pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
-    <tr><td class="paramname">stemlitr</td><td>stem litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">rootlitr</td><td>root litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramname">rothrlos</td><td>root death for crops. when in "harvest" mode for crops, root is assumed to die in a similar way as stem is harvested.</td></tr>
-    <tr><td class="paramname">stmhrlos</td><td>stem harvest loss for crops. when in "harvest" mode for crops, stem is also assumed to be harvested and this generates litter. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lfstatus</td><td>leaf status. an integer indicating if leaves are in "max.  
+ growth", "normal growth", "fall/harvest", or "no leaves" mode. see phenolgy subroutine for more details.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between ctem pfts and size of parameter vectors</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stemmass</td><td>stem mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rootmass</td><td>root mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the roots for each of the CTEM pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ailcg</td><td>green or live lai</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of CTEM pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">rothrlos</td><td>root death for crops. when in "harvest" mode for crops, root is assumed to die in a similar way as stem is harvested.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">stmhrlos</td><td>stem harvest loss for crops. when in "harvest" mode for crops, stem is also assumed to be harvested and this generates litter.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">stemlitr</td><td>stem litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rootlitr</td><td>root litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">tracerstemlitr</td><td>Tracer stem litter <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">tracerrootlitr</td><td>Tracer root litter <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>Calculate normal stem and root litter using the amount of stem and root biomass and their turnover time scales.</p>
-<p>if crops are in harvest mode then we start harvesting stem as well. if stem has already been harvested then we set the stem harvest loss equal to zero. the roots of the crop die in a similar way.</p>
-<p>add stem and root litter from all sources</p>
+<p>If crops are in harvest mode then we start harvesting stem as well. If stem has already been harvested then we set the stem harvest loss equal to zero. the roots of the crop die in a similar way.</p>
+<p>add stem and root litter from all sources </p>
 
 </div>
 </div>
-<a id="a729c2cccb9b56c2a6b1ed5c85b37e68a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a729c2cccb9b56c2a6b1ed5c85b37e68a">&#9670;&nbsp;</a></span>updatepoolsturnover()</h2>
+<a id="a3e19f6c0f442da1480f343386f58e83f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e19f6c0f442da1480f343386f58e83f">&#9670;&nbsp;</a></span>updatepoolsturnover()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -254,8 +290,32 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>reprocost</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>rmatctem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerReproCost</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -303,7 +363,55 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
-          <td class="paramname"><em>stemlitr</em>&#160;</td>
+          <td class="paramname"><em>stemlitr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerGLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerBLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLeafLitr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerStemLitr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerRootLitr</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -319,7 +427,11 @@ Functions/Subroutines</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg (no. of grid cells in latitude circle)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ilg</td><td>no. of grid cells/tiles in latitude circle</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">reprocost</td><td>Cost of making reproductive tissues, only non-zero when NPP is positive ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracerreprocost</td><td>Tracer cost of making reproductive tissues, only non-zero when NPP is positive ( <img class="formulaInl" alt="$\tracer C units m^{-2} s^{-1}$" src="form_1709.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rmatctem</td><td>fraction of roots for each of ctem's 9 pfts in each soil layer</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>root mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">gleafmas</td><td>green leaf mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
@@ -327,12 +439,20 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter mass for each of the ctem pfts, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">leaflitr</td><td>leaf litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rootlitr</td><td>root litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">stemlitr</td><td>stem litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/> </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">stemlitr</td><td>stem litter <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerstemlitr</td><td>Tracer stem litter <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerrootlitr</td><td>Tracer root litter <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerleaflitr</td><td>Tracer leaf litter generated by normal turnover, cold and drought stress, and leaf fall/harvest, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracergleafmass</td><td>Tracer mass in the green leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerbleafmass</td><td>Tracer mass in the brown leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the roots for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>Update stem and root biomass for litter deductions</p>
-<p>Update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool</p>
+<p>Update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool </p>
 
 </div>
 </div>
@@ -342,7 +462,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceturnover.html">turnover</a></li>
-    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

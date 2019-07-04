@@ -113,6 +113,18 @@ integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#af4037019a861fe4c05ca107b208a8021">igdrgat</a></td></tr>
 <tr class="memdesc:af4037019a861fe4c05ca107b208a8021"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index of soil layer in which bedrock is encountered. <br /></td></tr>
 <tr class="separator:af4037019a861fe4c05ca107b208a8021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda8a6ec7d097a8f32d605923ea834bd"><td class="memItemLeft" align="right" valign="top"><a id="afda8a6ec7d097a8f32d605923ea834bd"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#afda8a6ec7d097a8f32d605923ea834bd">gcgat</a></td></tr>
+<tr class="memdesc:afda8a6ec7d097a8f32d605923ea834bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land) <br /></td></tr>
+<tr class="separator:afda8a6ec7d097a8f32d605923ea834bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fd24e58cbd7d33604b602cbbc405ee6"><td class="memItemLeft" align="right" valign="top"><a id="a6fd24e58cbd7d33604b602cbbc405ee6"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#a6fd24e58cbd7d33604b602cbbc405ee6">tzsgat</a></td></tr>
+<tr class="memdesc:a6fd24e58cbd7d33604b602cbbc405ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertical temperature gradient in a snow pack. <br /></td></tr>
+<tr class="separator:a6fd24e58cbd7d33604b602cbbc405ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae05373e758e0ecd8c206e5e5a0058ad7"><td class="memItemLeft" align="right" valign="top"><a id="ae05373e758e0ecd8c206e5e5a0058ad7"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#ae05373e758e0ecd8c206e5e5a0058ad7">pcsngat</a></td></tr>
+<tr class="memdesc:ae05373e758e0ecd8c206e5e5a0058ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snow fall flux <img class="formulaInl" alt="$[kg m^{-2} s^{-1} ]$" src="form_219.png"/>. <br /></td></tr>
+<tr class="separator:ae05373e758e0ecd8c206e5e5a0058ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedc8f015166e893abba041bc35271e09"><td class="memItemLeft" align="right" valign="top"><a id="aedc8f015166e893abba041bc35271e09"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#aedc8f015166e893abba041bc35271e09">albsgat</a></td></tr>
 <tr class="memdesc:aedc8f015166e893abba041bc35271e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snow albedo [ ]. <br /></td></tr>
@@ -169,6 +181,10 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#aebcf26539cf06260a9f1e086b34834c9">wsnogat</a></td></tr>
 <tr class="memdesc:aebcf26539cf06260a9f1e086b34834c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/>. <br /></td></tr>
 <tr class="separator:aebcf26539cf06260a9f1e086b34834c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5eaacffd3e5c92c57a74b5999117c3c"><td class="memItemLeft" align="right" valign="top"><a id="ab5eaacffd3e5c92c57a74b5999117c3c"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#ab5eaacffd3e5c92c57a74b5999117c3c">maxannualactlyrgat</a></td></tr>
+<tr class="memdesc:ab5eaacffd3e5c92c57a74b5999117c3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active layer depth maximum over the e-folding period specified by parameter eftime (m). <br /></td></tr>
+<tr class="separator:ab5eaacffd3e5c92c57a74b5999117c3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbe6f54a24c8f4561cee7fc3613e1ec2"><td class="memItemLeft" align="right" valign="top"><a id="acbe6f54a24c8f4561cee7fc3613e1ec2"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html#acbe6f54a24c8f4561cee7fc3613e1ec2">zpndgat</a></td></tr>
 <tr class="memdesc:acbe6f54a24c8f4561cee7fc3613e1ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth of ponded water on surface [m]. <br /></td></tr>
@@ -1234,7 +1250,7 @@ integer, dimension(:,:,:), allocatable&#160;</td><td class="memItemRight" valign
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceclass__statevars.html">class_statevars</a></li><li class="navelem"><a class="el" href="structclass__statevars_1_1class__gather.html">class_gather</a></li>
-    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

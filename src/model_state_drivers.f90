@@ -23,6 +23,8 @@ module model_state_drivers
 
     integer, dimension(:), allocatable :: CO2Time           !< The time (years) from the CO2File
     real, dimension(:), allocatable :: CO2FromFile          !< The array of CO2 values (ppm) from the CO2File
+    integer, dimension(:), allocatable :: tracerCO2Time     !< The time (years) from the tracerCO2File
+    real, dimension(:), allocatable :: tracerCO2FromFile    !< The array of tracerCO2 values (varied units) from the tracerCO2File    
     integer, dimension(:), allocatable :: CH4Time           !< The time (years) from the CH4File
     real, dimension(:), allocatable :: CH4FromFile          !< The array of CH4 values (ppm) from the CH4File
     integer, dimension(:), allocatable :: POPDTime          !< The time (years) from the population density file
@@ -61,6 +63,8 @@ module model_state_drivers
     integer :: rsid                                 !> netcdf file id for the model restart file
     integer :: co2id                                !> netcdf file id for the CO2 input file
     character(80) :: co2VarName                  !> Name of variable in file
+    integer :: tracerco2id                                !> netcdf file id for the CO2 input file
+    character(80) :: tracerco2VarName                  !> Name of variable in file    
     integer :: ch4id                                !> netcdf file id for the CH4 input file
     character(80) :: ch4VarName                  !> Name of variable in file
     integer :: popid                                !> netcdf file id for the population density input file
@@ -98,6 +102,7 @@ contains
         character(350), pointer          :: init_file
         character(350), pointer          :: rs_file_to_overwrite
         character(350), pointer          :: CO2File
+        character(350), pointer          :: tracerCO2File
         character(350), pointer          :: CH4File
         character(350), pointer          :: POPDFile
         character(350), pointer          :: LGHTFile
@@ -110,7 +115,8 @@ contains
         character(350), pointer          :: metFileQa
         character(350), pointer          :: metFileUv
         character(350), pointer          :: metFilePres
-        logical, pointer                 :: ctem_on
+        integer, pointer                 :: useTracer
+        logical, pointer                 :: ctem_on        
         logical, pointer                 :: projectedGrid
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
@@ -132,6 +138,8 @@ contains
         init_file               => c_switch%init_file
         rs_file_to_overwrite    => c_switch%rs_file_to_overwrite
         CO2File                 => c_switch%CO2File
+        tracerCO2File           => c_switch%tracerCO2File
+        useTracer               => c_switch%useTracer
         CH4File                 => c_switch%CH4File
         POPDFile                => c_switch%POPDFile
         LGHTFile                => c_switch%LGHTFile
@@ -155,7 +163,6 @@ contains
         ! ------------
 
         !> First, open initial conditions file.
-
         initid = ncOpen(init_file, NF90_NOWRITE)
 
         if (.not. projectedGrid) then
@@ -419,6 +426,17 @@ contains
             co2VarName = ncGetVarName(co2id)
             ch4id = ncOpen(CH4File, nf90_nowrite)
             ch4VarName = ncGetVarName(ch4id)
+            if (useTracer > 0) then 
+              tracerco2id = ncOpen(tracerCO2File, nf90_nowrite)
+              ! 14C has different values depending on latitudional bands. The expected 
+              ! input file is from CMIP6 and it splits the bands as follows:
+              ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N), 
+              ! and Northern Hemisphere (30-90°N). Since at this stage of 
+              ! CLASSIC we don't know the latitude of the cell being simulated 
+              ! we need to get tracerco2VarName later for 14C simulations.
+              if (useTracer /= 2) tracerco2VarName = ncGetVarName(tracerco2id)
+                
+            end if 
             if (dofire) then
                 popid = ncOpen(POPDFile, nf90_nowrite)
                 popVarName = ncGetVarName(popid)
@@ -466,10 +484,12 @@ contains
         ! J. Melton
         ! Nov 2016
 
-        use ctem_statevars,     only : c_switch,vrot,vgat
+        use ctem_statevars,     only : c_switch,vrot,vgat,tracer
         use class_statevars,    only : class_rot,class_gat
         use classic_params,        only : icc,iccp2,nmos,ignd,icp1,nlat,ican,pi,crop,TFREZ,&
-                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB
+                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB,&
+                                          albdif_lut,albdir_lut,trandif_lut,trandir_lut,&
+                                          nsmu,nsalb,nbc,nreff,nswe,nbnd_lut
 
         implicit none
 
@@ -531,6 +551,7 @@ contains
         real, pointer, dimension(:,:,:)  :: TSFSROT !<Ground surface temperature over subarea [K]
         real, pointer, dimension(:,:) :: TACROT  !<Temperature of air within vegetation canopy \f$[K] (T_{ac} )\f$
         real, pointer, dimension(:,:) :: QACROT  !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ] (q_{ac} )\f$
+        real, pointer, dimension(:,:)  :: maxAnnualActLyr  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
         integer, pointer, dimension(:,:,:,:) :: ITCTROT !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
         logical, pointer :: ctem_on
         logical, pointer :: dofire
@@ -538,13 +559,34 @@ contains
         logical, pointer :: inibioclim
         logical, pointer :: start_bare
         logical, pointer :: lnduseon
+        integer, pointer :: isnoalb
+        integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
+                            ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
+                            !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                            ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                            ! useTracer = 3 [Not implemented yet means the tracer is 13C and will then call a 13C fractionation scheme. 
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
-        real, pointer, dimension(:,:,:) :: gleafmasrow          !
-        real, pointer, dimension(:,:,:) :: bleafmasrow          !
-        real, pointer, dimension(:,:,:) :: stemmassrow          !
-        real, pointer, dimension(:,:,:) :: rootmassrow          !
-        real, pointer, dimension(:,:,:) :: pstemmassrow         !
-        real, pointer, dimension(:,:,:) :: pgleafmassrow        !
+        real, pointer, dimension(:,:,:) :: gleafmasrow          !< Green leaf mass for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: bleafmasrow          !< Brown leaf mass for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: stemmassrow          !< Stem mass for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: rootmassrow          !< Root mass for each of the CTEM pfts, \f$kg c/m^2\f$
+        !COMBAK PERLAY
+        real, pointer, dimension(:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$        
+        ! real, pointer, dimension(:,:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        ! real, pointer, dimension(:,:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        !COMBAK PERLAY
+        real, pointer, dimension(:,:,:) :: pstemmassrow         !< Stem mass from previous timestep, is value before fire. used by burntobare subroutine
+        real, pointer, dimension(:,:,:) :: pgleafmassrow        !< Green leaf mass from previous timestep, is value before fire. used by burntobare subroutine
+        real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerRootMass       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerLitrMass       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerSoilCMass      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:) :: tracerMossCMass      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: tracerMossLitrMass   !< Tracer mass in moss litter, \f$kg C/m^2\f$
+
         real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
         real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
         real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
@@ -555,13 +597,11 @@ contains
         real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
         real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
         real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
-        real, pointer, dimension(:,:,:) :: litrmassrow
-        real, pointer, dimension(:,:,:) :: soilcmasrow
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         real, pointer, dimension(:,:,:) :: slopefrac
         integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland switch: 0 = not a peatland, 1= bog, 2 = fen
-        real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: Cmossmas          !< Carbon in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
         real, pointer, dimension(:) :: grclarea            !<area of the grid cell, \f$km^2\f$
@@ -570,6 +610,9 @@ contains
 
         integer :: i,m,j,n
         real :: bots
+        integer :: ipnt,albdim 
+        integer :: isalb,ismu,isgs,iswe,ibc 
+        real, dimension(:,:,:), allocatable :: tmpalb
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -578,6 +621,8 @@ contains
         inibioclim        => c_switch%inibioclim
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
+        useTracer         => c_switch%useTracer
+        isnoalb           => c_switch%isnoalb
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -605,6 +650,14 @@ contains
         litrmsmoss        => vrot%litrmsmoss
         dmoss             => vrot%dmoss
         grclarea          => vgat%grclarea
+        tracerGLeafMass   => tracer%gLeafMassrot
+        tracerBLeafMass   => tracer%bLeafMassrot
+        tracerStemMass    => tracer%stemMassrot
+        tracerRootMass    => tracer%rootMassrot
+        tracerLitrMass    => tracer%litrMassrot
+        tracerSoilCMass   => tracer%soilCMassrot
+        tracerMossCMass   => tracer%mossCMassrot
+        tracerMossLitrMass => tracer%mossLitrMassrot
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
         RSMNROT           => class_rot%RSMNROT
@@ -660,6 +713,8 @@ contains
         TACROT            => class_rot%TACROT
         QACROT            => class_rot%QACROT
         ITCTROT           => class_rot%ITCTROT
+        maxAnnualActLyr   => class_rot%maxAnnualActLyrROT
+        
         ! ----------------------------
 
         do i = 1, nlat
@@ -691,6 +746,7 @@ contains
         RHOSROT = ncGet2DVar(initid, 'RHOS', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         GROROT = ncGet2DVar(initid, 'GRO', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         MIDROT = ncGet2DVar(initid, 'MID', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format=[nlat, nmos])
+        maxAnnualActLyr = ncGet2DVar(initid, 'maxAnnualActLyr', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         LNZ0ROT = ncGet3DVar(initid, 'LNZ0', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         ALVCROT = ncGet3DVar(initid, 'ALVC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         ALICROT = ncGet3DVar(initid, 'ALIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
@@ -698,6 +754,7 @@ contains
         PAMXROT = ncGet3DVar(initid, 'PAMX', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         CMASROT = ncGet3DVar(initid, 'CMAS', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
         ROOTROT = ncGet3DVar(initid, 'ROOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ican, nmos], format = [nlat, nmos, ican])
+        
         ! The following six are parameters that can be made to spatially vary by uncommenting below and including them in the
         ! model init file. However, in practice these parameters are used with spatially invariable values so are read in from 
         ! the CLASSIC namelist in classic_params.f90. 
@@ -734,33 +791,85 @@ contains
           bots = bots + delz(n)
           ZBOT(n) = bots
         end do
+
+        if (isnoalb == 1) then 
+          ! Read in the look up table that is used by the four-band albedo parameterization
+          
+          ! Determine the size of the arrays to be read in.
+          albdim = NSWE * NREFF * NSMU * NSALB * NBC
+          allocate(tmpalb(4,4,albdim))
+          
+          ! Diffuse albedo
+          tmpalb(1,1,:) = ncGet1DVar(initid, 'albedoDiffuse1', start = [1], count = [albdim])
+          tmpalb(1,2,:) = ncGet1DVar(initid, 'albedoDiffuse2', start = [1], count = [albdim])
+          tmpalb(1,3,:) = ncGet1DVar(initid, 'albedoDiffuse3', start = [1], count = [albdim])
+          tmpalb(1,4,:) = ncGet1DVar(initid, 'albedoDiffuse4', start = [1], count = [albdim])
+          
+          ! Direct albedo
+          tmpalb(2,1,:) = ncGet1DVar(initid, 'albedoDirect1', start = [1], count = [albdim])
+          tmpalb(2,2,:) = ncGet1DVar(initid, 'albedoDirect2', start = [1], count = [albdim])
+          tmpalb(2,3,:) = ncGet1DVar(initid, 'albedoDirect3', start = [1], count = [albdim])
+          tmpalb(2,4,:) = ncGet1DVar(initid, 'albedoDirect4', start = [1], count = [albdim])
+          
+          ! Diffuse transmissivity
+          tmpalb(3,1,:) = ncGet1DVar(initid, 'transmisDiffuse1', start = [1], count = [albdim])
+          tmpalb(3,2,:) = ncGet1DVar(initid, 'transmisDiffuse2', start = [1], count = [albdim])
+          tmpalb(3,3,:) = ncGet1DVar(initid, 'transmisDiffuse3', start = [1], count = [albdim])
+          tmpalb(3,4,:) = ncGet1DVar(initid, 'transmisDiffuse4', start = [1], count = [albdim])
+          
+          ! Direct transmissivity
+          tmpalb(4,1,:) = ncGet1DVar(initid, 'transmisDirect1', start = [1], count = [albdim])
+          tmpalb(4,2,:) = ncGet1DVar(initid, 'transmisDirect2', start = [1], count = [albdim])
+          tmpalb(4,3,:) = ncGet1DVar(initid, 'transmisDirect3', start = [1], count = [albdim])
+          tmpalb(4,4,:) = ncGet1DVar(initid, 'transmisDirect4', start = [1], count = [albdim])
+                    
+          do i = 1, nbnd_lut 
+            ipnt = 1
+            DO isalb = 1, nsalb !nsfa
+              DO ismu = 1, nsmu
+                DO isgs = 1, nreff !nsgs
+                  DO iswe = 1, nswe
+                    DO ibc = 1, nbc                    
+                      albdif_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(1,i,ipnt)
+                      albdir_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(2,i,ipnt)
+                      trandif_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(3,i,ipnt)
+                      trandir_lut(ibc,iswe,isgs,ismu,isalb,i)=tmpalb(4,i,ipnt)
+                      ipnt = ipnt + 1
+                    END DO ! ibc
+                  END DO ! iswe
+                END DO ! isgs
+              END DO ! ismu
+            END DO ! isalb
+          end do !nbnd 
+          
+          deallocate(tmpalb)
+
+        end if !isnoalb
         
 
         if (.not. ctem_on) then
-            FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
-            ! Error check:
-            do i = 1,nlat
-                do m = 1,nmos
-                    if (FAREROT(i,m) .gt. 1.0) then
-                        print *,'FAREROT > 1',FAREROT(I,M)
-                        call XIT('read_initialstate', -1)
-                    end if
-                enddo
-            enddo
-            !else fcancmx is read in instead and fcanrot is derived later.
+          FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
+          ! Error check:
+          do i = 1,nlat
+            do m = 1,nmos
+              if (FAREROT(i,m) .gt. 1.0) then
+                print *,'FAREROT > 1',FAREROT(I,M)
+                call XIT('read_initialstate', -1)
+              end if
+            end do
+          end do
+          !else fcancmx is read in instead and fcanrot is derived later.
         end if
 
-!     Complete some initial set up work. The limiting snow
-!> depth, ZSNL, is assigned its operational value of 0.10 m.
+        ! Complete some initial set up work. The limiting snow
+        ! depth, ZSNL, is assigned its operational value of 0.10 m.
         DO 100 I=1,nlat
             DO 100 M=1,nmos
-
                 DO J=1,IGND
-                    TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
+                  TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
                 ENDDO
                 TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
                 TCANROT(I,M)=TCANROT(I,M)+TFREZ
-
                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
                 TBASROT(I,M)=TBARROT(I,M,IGND)
                 CMAIROT(I,M)=0.
@@ -772,7 +881,6 @@ contains
                 TSFSROT(I,M,4)=TBARROT(I,M,1)
                 TACROT (I,M)=TCANROT(I,M)
                 QACROT (I,M)=0.5E-2
-
 100     CONTINUE
 
         ! Set the counter for the number of iterations required to solve surface energy balance for the elements of the four subareas to zero.
@@ -781,126 +889,145 @@ contains
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
         do i = 1,nlat
-            do j = 1,nmos
-                do m = 1,ignd-1
-                    if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
-                        THLQROT(i,j,m:ignd) = 0.
-                        THICROT(i,j,m:ignd) = 0.
-                        exit
-                    end if
-                end do
+          do j = 1,nmos
+            do m = 1,ignd-1
+              if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
+                THLQROT(i,j,m:ignd) = 0.
+                THICROT(i,j,m:ignd) = 0.
+                exit
+              end if
             end do
+          end do
         end do
 
         if (ctem_on) then
 
-            grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
+          grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
 
-            do i = 1,nmos
-                grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
+          do i = 1,nmos
+            grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
+          end do
+
+          slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, 8, nmos], format = [nlat, nmos, 8])
+          Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+          litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+          dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+          fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+
+          gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+
+          !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+          if (dofire .and. PFTCompetition) then
+            do i = 1,nlat
+              do m = 1,nmos
+                do j =1,icc
+                  pstemmassrow(i,m,j)=stemmassrow(i,m,j)
+                  pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
+                end do
+              end do
+            end do
+          end if
+
+          !COMBAK PERLAY
+          litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
+          soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
+          ! litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
+          ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+          !COMBAK PERLAY
+          
+          ! If a tracer is being used, read in those values.
+          if (useTracer > 0) then 
+            tracerGLeafMass = ncGet3DVar(initid, 'tracerGLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerStemMass = ncGet3DVar(initid, 'tracerStemMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerRootMass = ncGet3DVar(initid, 'tracerRootMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
+            tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
+            tracerMossCMass = ncGet2DVar(initid, 'tracerMossCMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+            tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])      
+          end if
+
+          lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+
+          if (PFTCompetition .and. inibioclim) then  !read in the bioclimatic parameters
+
+            twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            gdd5(:,1) = ncGet1DVar(initid, 'gdd5', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            aridity(:,1) = ncGet1DVar(initid, 'aridity', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            srplsmon(:,1) = ncGet1DVar(initid, 'srplsmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            defctmon(:,1) = ncGet1DVar(initid, 'defctmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            anndefct(:,1) = ncGet1DVar(initid, 'anndefct', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+            dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+
+            !>Take the first tile value now and put it over the other tiles
+            do m = 1,nmos
+              twarmm(:,m)=twarmm(:,1)
+              tcoldm(:,m)=tcoldm(:,1)
+              gdd5(:,m)=gdd5(:,1)
+              aridity(:,m)=aridity(:,1)
+              srplsmon(:,m)=srplsmon(:,1)
+              defctmon(:,m)=defctmon(:,1)
+              anndefct(:,m)=anndefct(:,1)
+              annsrpls(:,m)=annsrpls(:,1)
+              annpcp(:,m)=annpcp(:,1)
+              dry_season_length(:,m) =dry_season_length(:,1)
             end do
 
-            slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, 8, nmos], format = [nlat, nmos, 8])
-            Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-            fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          else if (PFTCompetition .and. .not. inibioclim) then ! set them to zero
 
-            gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            twarmm=0.0
+            tcoldm=0.0
+            gdd5=0.0
+            aridity=0.0
+            srplsmon=0.0
+            defctmon=0.0
+            anndefct=0.0
+            annsrpls=0.0
+            annpcp=0.0
+            dry_season_length = 0.0
 
-            !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-            if (dofire .and. PFTCompetition) then
-                do i = 1,nlat
-                    do m = 1,nmos
-                        do j =1,icc
-                            pstemmassrow(i,m,j)=stemmassrow(i,m,j)
-                            pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
-                        end do
-                    end do
-                end do
-            end if
+          endif
 
-            !litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
-            !soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
-            litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
-            soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
-            lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+          !>if this run uses the competition and starts from bare ground, set up the model state here. this
+          !>overwrites what was read in from the initialization file.            
+          
+          if (PFTCompetition .and. start_bare) then
+            
+            ! If useTracer > 0 then the tracer values are left initialized at what they were read in as.
+            do i=1,nlat
+              do m = 1,nmos
+                do j = 1,icc
+                  if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
+                  gleafmasrow(i,m,j)=0.0
+                  bleafmasrow(i,m,j)=0.0
+                  stemmassrow(i,m,j)=0.0
+                  rootmassrow(i,m,j)=0.0
+                  lfstatusrow(i,m,j)=4
+                  pandaysrow(i,m,j)=0
+                enddo
 
-            if (PFTCompetition .and. inibioclim) then  !read in the bioclimatic parameters
+                lfstatusrow(i,m,1)=2
+                !COMBAK PERLAY
+                  litrmassrow(i,m,j)=0.0
+                  soilcmasrow(i,m,j)=0.0                
+                ! do j = 1,iccp2
+                !   litrmassrow(i,m,j,1:ignd)=0.0
+                !   soilcmasrow(i,m,j,1:ignd)=0.0
+                ! enddo
+                !COMBAK PERLAY
+              end do ! nmtest
+            enddo !nltest
 
-                twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                gdd5(:,1) = ncGet1DVar(initid, 'gdd5', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                aridity(:,1) = ncGet1DVar(initid, 'aridity', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                srplsmon(:,1) = ncGet1DVar(initid, 'srplsmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                defctmon(:,1) = ncGet1DVar(initid, 'defctmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                anndefct(:,1) = ncGet1DVar(initid, 'anndefct', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
-                dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+          end if !if (PFTCompetition .and. start_bare)
 
-                !>Take the first tile value now and put it over the other tiles
-                do m = 1,nmos
-                    twarmm(:,m)=twarmm(:,1)
-                    tcoldm(:,m)=tcoldm(:,1)
-                    gdd5(:,m)=gdd5(:,1)
-                    aridity(:,m)=aridity(:,1)
-                    srplsmon(:,m)=srplsmon(:,1)
-                    defctmon(:,m)=defctmon(:,1)
-                    anndefct(:,m)=anndefct(:,1)
-                    annsrpls(:,m)=annsrpls(:,1)
-                    annpcp(:,m)=annpcp(:,1)
-                    dry_season_length(:,m) =dry_season_length(:,1)
-                end do
-
-            else if (PFTCompetition .and. .not. inibioclim) then ! set them to zero
-
-                twarmm=0.0
-                tcoldm=0.0
-                gdd5=0.0
-                aridity=0.0
-                srplsmon=0.0
-                defctmon=0.0
-                anndefct=0.0
-                annsrpls=0.0
-                annpcp=0.0
-                dry_season_length = 0.0
-
-            endif
-
-            !>if this run uses the competition and starts from bare ground, set up the model state here. this
-            !>overwrites what was read in from the initialization file.
-            if (PFTCompetition .and. start_bare) then
-
-                do i=1,nlat
-                    do m = 1,nmos
-
-                        do j = 1,icc
-                            if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
-                            gleafmasrow(i,m,j)=0.0
-                            bleafmasrow(i,m,j)=0.0
-                            stemmassrow(i,m,j)=0.0
-                            rootmassrow(i,m,j)=0.0
-                            lfstatusrow(i,m,j)=4
-                            pandaysrow(i,m,j)=0
-                        enddo
-
-                        lfstatusrow(i,m,1)=2
-
-                        do j = 1,iccp2
-                            litrmassrow(i,m,j)=0.0
-                            soilcmasrow(i,m,j)=0.0
-                        enddo
-                    end do ! nmtest
-                enddo !nltest
-
-            end if !if (PFTCompetition .and. start_bare)
-
-        end if !ctem_on
+      end if !ctem_on
 
     end subroutine read_initialstate
 
@@ -915,7 +1042,7 @@ contains
 
     subroutine write_restart(lonIndex,latIndex)
 
-        use ctem_statevars,     only : c_switch,vrot
+        use ctem_statevars,     only : c_switch,vrot,tracer
         use class_statevars,    only : class_rot
         use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp2,TFREZ
 
@@ -940,15 +1067,25 @@ contains
         real, pointer, dimension(:,:)   :: ALBSROT
         real, pointer, dimension(:,:)   :: RHOSROT
         real, pointer, dimension(:,:)   :: GROROT
+        real, pointer, dimension(:,:)   :: maxAnnualActLyr  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
 
         logical, pointer :: ctem_on
         logical, pointer :: PFTCompetition
         logical, pointer :: lnduseon
+        integer, pointer :: useTracer
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
         real, pointer, dimension(:,:,:) :: stemmassrow          !
         real, pointer, dimension(:,:,:) :: rootmassrow          !
+        real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:) :: tracerRootMass       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerLitrMass       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:,:,:) :: tracerSoilCMass      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+        real, pointer, dimension(:,:) :: tracerMossCMass      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: tracerMossLitrMass   !< Tracer mass in moss litter, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
         real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
         real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
@@ -959,18 +1096,26 @@ contains
         real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
         real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
         real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
+        !COMBAK PERLAY
         real, pointer, dimension(:,:,:) :: litrmassrow
-        real, pointer, dimension(:,:,:) :: soilcmasrow
+        real, pointer, dimension(:,:,:) :: soilcmasrow        
+        ! real, pointer, dimension(:,:,:,:) :: litrmassrow
+        ! real, pointer, dimension(:,:,:,:) :: soilcmasrow
+        !COMBAK PERLAY
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
+        ! local
+        integer :: k
+        
         ! point pointers:
         ctem_on           => c_switch%ctem_on
         PFTCompetition    => c_switch%PFTCompetition
         lnduseon          => c_switch%lnduseon
+        useTracer         => c_switch%useTracer
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -993,6 +1138,14 @@ contains
         Cmossmas          => vrot%Cmossmas
         litrmsmoss        => vrot%litrmsmoss
         dmoss             => vrot%dmoss
+        tracerGLeafMass   => tracer%gLeafMassrot
+        tracerBLeafMass   => tracer%bLeafMassrot
+        tracerStemMass    => tracer%stemMassrot
+        tracerRootMass    => tracer%rootMassrot
+        tracerLitrMass    => tracer%litrMassrot
+        tracerSoilCMass   => tracer%soilCMassrot
+        tracerMossCMass   => tracer%mossCMassrot
+        tracerMossLitrMass => tracer%mossLitrMassrot
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
         TBARROT           => class_rot%TBARROT
@@ -1008,6 +1161,7 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
+        maxAnnualActLyr   => class_rot%maxAnnualActLyrROT
 
         call ncPut2DVar(rsid, 'FARE', FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
@@ -1024,6 +1178,7 @@ contains
         call ncPut2DVar(rsid, 'ALBS', ALBSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'RHOS', RHOSROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'GRO', GROROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'maxAnnualActLyr', maxAnnualActLyr, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
         if (ctem_on) then
 
@@ -1032,13 +1187,33 @@ contains
             call ncPut3DVar(rsid, 'bleafmas', bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'rootmass', rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos])
-            call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos])
+            !COMBAK PERLAY
+              call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1,1], count = [1, 1, iccp2, nmos])
+              call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1 ,1], count = [1, 1, iccp2,nmos])
+            ! do k = 1, ignd
+            !   call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+            !   call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+            ! end do
+            !COMBAK PERLAY
             call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'pandays', real(pandaysrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut2DVar(rsid, 'Cmossmas', Cmossmas, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
             call ncPut2DVar(rsid, 'litrmsmoss', litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
             call ncPut2DVar(rsid, 'dmoss', dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+
+            ! If a tracer is being used, read in those values.
+            if (useTracer > 0) then 
+              call ncPut3DVar(rsid, 'tracerGLeafMass', tracerGLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              call ncPut3DVar(rsid, 'tracerBLeafMass', tracerBLeafMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              call ncPut3DVar(rsid, 'tracerStemMass', tracerStemMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              call ncPut3DVar(rsid, 'tracerRootMass', tracerRootMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+              do k = 1, ignd
+                call ncPut3DVar(rsid, 'tracerLitrMass', tracerLitrMass(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+                call ncPut3DVar(rsid, 'tracerSoilCMass', tracerSoilCMass(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+              end do
+              call ncPut2DVar(rsid, 'tracerMossCMass', tracerMossCMass, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+              call ncPut2DVar(rsid, 'tracerMossLitrMass', tracerMossLitrMass, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+            end if
 
             if (PFTCompetition) then
 
@@ -1074,9 +1249,12 @@ contains
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp,findLeapYears
-        use ctem_statevars, only : c_switch,vrot
+        use ctem_statevars, only : c_switch,vrot,tracer
         use classic_params, only : icc,nmos
         use outputManager, only : checkForTime
+        !COMBAK PERLAY
+        ! use tracerModule,   only : convertTracerUnits
+        !COMBAK PERLAY
 
         implicit none
 
@@ -1104,9 +1282,16 @@ contains
         integer, pointer :: fixedYearOBSWETF
         logical, pointer :: leap
         real, pointer, dimension(:,:) :: co2concrow
+        real, pointer, dimension(:,:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: fcancmxrow
+        integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used. 
+                            ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the 
+                            !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.                         
+                            ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. 
+                            ! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme. 
+
 
         integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
         integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
@@ -1133,10 +1318,12 @@ contains
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
         leap            => c_switch%leap
+        useTracer       => c_switch%useTracer 
         co2concrow      => vrot%co2conc
+        tracerco2conc   => tracer%tracerCO2rot
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
-        fcancmxrow      => vrot%fcancmx
+        fcancmxrow      => vrot%fcancmx        
 
         select case (trim(inputRequested))
 
@@ -1183,6 +1370,55 @@ contains
                 i = 1 ! offline nlat is always 1 so just set
                 co2concrow(i,:) = ncGet1DVar(CO2id, trim(co2VarName), start = [arrindex], count = [1])
             end if
+
+        case ('tracerCO2') ! tracer Carbon dioxide atmospheric values. 
+        
+            lengthOfFile = ncGetDimLen(tracerco2id, 'time')
+            allocate(fileTime(lengthOfFile))
+            allocate(tracerCO2Time(lengthOfFile))
+        
+            fileTime = ncGet1DVar(tracerCO2id, 'time', start = [1], count = [lengthOfFile])
+            
+            if (useTracer == 2) then 
+              ! 14C has different values depending on latitudional bands. The expected 
+              ! input file is from CMIP6 and it splits the bands as follows:
+              ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N), 
+              ! and Northern Hemisphere (30-90°N). We now assign the file 
+              ! variable name here 
+              if (latitude > 30.) then
+                tracerco2VarName = 'NH_D14C'
+              else if (latitude <= 30. .and. latitude >= -30.) then 
+                tracerco2VarName = 'Tropics_D14C'
+              else if (latitude < -30.) then 
+                tracerco2VarName = 'SH_D14C'
+              end if
+            end if 
+        
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile  
+              dateTime = parseTimeStamp(fileTime(i))
+              tracerCO2Time(i) = int(dateTime(1)) ! Rewrite putting in the year
+            end do
+        
+            if (transientCO2) then
+                ! We read in the whole CO2 times series and store it.
+                allocate(tracerCO2FromFile(lengthOfFile))
+                tracerCO2FromFile = ncGet1DVar(tracerCO2id, trim(tracerco2VarName), start = [1], count = [lengthOfFile])
+                
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(tracerCO2Time),real(fixedYearCO2))
+                if (arrindex == 0) stop ('getInput says: The tracer CO2 file does not contain requested year')
+        
+                ! We read in only the suggested year
+                i = 1 ! always 1 offline.
+                tracerco2conc(i,:) = ncGet1DVar(tracerco2id, trim(tracerco2VarName), start = [arrindex], count = [1])
+            end if
+            
+            ! Convert the units of the tracer depending on the tracer being simulated.
+            !COMBAK PERLAY
+            ! tracerco2conc = convertTracerUnits(tracerco2conc)
+            !COMBAK PERLAY
 
         case ('CH4') ! Methane concentration
 
@@ -1483,9 +1719,12 @@ contains
     subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
 
         use outputManager, only : checkForTime
-        use ctem_statevars, only : vrot,c_switch,vgat
+        use ctem_statevars, only : vrot,c_switch,vgat,tracer
         use classic_params, only : nmos
         use generalUtils, only : abandonCell
+        !COMBAK PERLAY
+        ! use tracerModule,   only : convertTracerUnits
+        !COMBAK PERLAY
 
         implicit none
 
@@ -1497,6 +1736,7 @@ contains
         integer :: arrindex,lengthTime,i,m
         real :: LGHTTimeNow,OBSWTimeNow
         real, pointer, dimension(:,:) :: co2concrow
+        real, pointer, dimension(:,:) :: tracerco2conc
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
         real, pointer, dimension(:,:,:) :: nfcancmxrow
@@ -1509,6 +1749,7 @@ contains
         character(4) :: seqstring
 
         co2concrow      => vrot%co2conc
+        tracerco2conc   => tracer%tracerCO2rot
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
         nfcancmxrow     => vrot%nfcancmx
@@ -1534,6 +1775,26 @@ contains
               co2concrow(i,:) = CO2FromFile(arrindex)
             end if
 
+          case ('tracerCO2')
+
+              lengthTime = size(tracerCO2Time)
+
+              ! Find the requested year in the file.
+              arrindex = checkForTime(lengthTime,real(tracerCO2Time),real(yearNeeded))
+              
+              if (arrindex == 0) then
+                write (seqstring,'(I0)') yearNeeded
+                call abandonCell('updateInput says: The tracerCO2 file does not contain requested year: '//seqstring)
+              else
+                i = 1 ! offline nlat is always 1 so just set
+                tracerco2conc(i,:) = tracerCO2FromFile(arrindex)                
+              end if
+              
+              ! Convert the units of the tracer depending on the tracer being simulated.
+              !COMBAK PERLAY
+              ! tracerco2conc = convertTracerUnits(tracerco2conc)
+              !COMBAK PERLAY
+              
         case ('CH4')
 
             lengthTime = size(CH4Time)

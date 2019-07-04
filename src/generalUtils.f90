@@ -232,17 +232,19 @@ module generalUtils
     !> Finds the active layer depth and depth to the frozen water table.
     !! @author Joe Melton
     !!
-    subroutine findPermafrostVars(nltest,nmtest)
+    subroutine findPermafrostVars(nltest,nmtest,iday)
 
-      use classic_params, only : ignd,tfrez
+      use classic_params, only : ignd,tfrez,eftime,efoldfact
       use class_statevars, only : class_rot,class_gat
 
       implicit none
 
       integer, intent(in) :: nmtest
       integer, intent(in) :: nltest
+      integer, intent(in) :: iday 
       real, pointer, dimension(:,:)  :: ftable      !<Depth to frozen water table (m)
       real, pointer, dimension(:,:)  :: actlyr      !<Active layer depth (m)
+      real, pointer, dimension(:) :: dlatrow        !< Latitude (degrees)
       real, pointer, dimension(:,:,:) :: tbarrot    !<Temperature of soil layers [K]
       integer, pointer, dimension(:,:,:) :: isndrot !<Sand content flag, used to delineate non-soils.
       real, pointer, dimension(:,:,:) :: thicrot    !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -250,10 +252,15 @@ module generalUtils
       real, pointer, dimension(:,:,:) :: dlzwrot    !<Permeable thickness of soil layer [m]
       real, pointer, dimension(:) :: delz           !<Overall thickness of soil layer [m]
       real, pointer, dimension(:,:,:) :: thmrot     !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
+      real, pointer, dimension(:,:) :: actLyrThisYr !< Annual active layer depth maximum starting from summer solstice for the present year (m)
+      real, pointer, dimension(:,:) :: maxAnnualActLyr !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+      
       integer :: i, j, m
 
       ftable  => class_rot%ftable
       actlyr  => class_rot%actlyr
+      maxAnnualActLyr => class_rot%maxAnnualActLyrROT
+      actLyrThisYr => class_rot%actLyrThisYrROT
       tbarrot => class_rot%tbarrot
       thlqrot => class_rot%thlqrot
       thicrot => class_rot%thicrot
@@ -261,6 +268,7 @@ module generalUtils
       dlzwrot => class_rot%dlzwrot
       delz    => class_gat%delz
       thmrot => class_rot%thmrot
+      dlatrow => class_rot%dlatrow
       !---
 
       actlyr=0.0
@@ -268,22 +276,45 @@ module generalUtils
       do j=1,ignd
         do i = 1, nltest
           do m = 1,nmtest
-            if(abs(tbarrot(i,m,j)-tfrez).lt.0.0001) then
-              if(isndrot(i,m,j).gt.-3) then
-                actlyr(i,m)=actlyr(i,m)+(thlqrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)))*dlzwrot(i,m,j)
-                ftable(i,m)=ftable(i,m)+(thicrot(i,m,j)/(thlqrot(i,m,j)+thicrot(i,m,j)-thmrot(i,m,j)))*dlzwrot(i,m,j)
+            if(abs(tbarrot(i,m,j)-tfrez) < 0.0001) then
+              if(isndrot(i,m,j) > -3) then
+                actlyr(i,m) = actlyr(i,m) + (thlqrot(i,m,j) / (thlqrot(i,m,j) &
+                             + thicrot(i,m,j))) * dlzwrot(i,m,j)
+                ftable(i,m) = ftable(i,m) + (thicrot(i,m,j) / (thlqrot(i,m,j) &
+                             + thicrot(i,m,j) - thmrot(i,m,j))) * dlzwrot(i,m,j)
                   !elseif(isndgat(1,j).eq.-3) then
                   !    actlyr=actlyr+delz(j)
                   !    ftable=ftable+delz(j)
               endif
-            elseif(tbarrot(i,m,j).gt.tfrez) then
-              actlyr(i,m)=actlyr(i,m)+delz(j)
-              ftable(i,m)=ftable(i,m)+delz(j)
+            elseif(tbarrot(i,m,j) > tfrez) then
+              actlyr(i,m) = actlyr(i,m) + delz(j)
+              ftable(i,m) = ftable(i,m) + delz(j)
             endif
+            
           end do
         end do
       end do
+      
+      do i = 1, nltest
+        do m = 1,nmtest
 
+          ! Once a year we adjust the maximum annual active layer depth
+          ! in an e-folding sense with the
+          ! present maxmimum active layer depth for the year ending on the summer
+          ! solstice. The maximum values are used in bio2str
+          ! to ensure roots are not placed into frozen soil layers.    
+                              
+          if ((dlatrow(i) > 0. .and. iday == 355) & !Boreal winter solstice.
+            .or. (dlatrow(i) < 0. .and. iday == 172)) then  !Austral winter solstice.
+            maxAnnualActLyr(i,m) = maxAnnualActLyr(i,m) * efoldfact &
+                             + actLyrThisYr(i,m) * (1.0 - efoldfact)
+            actLyrThisYr(i,m) = 0.0
+          else
+            ! Compare the present active layer depth against actLyrThisYr
+            actLyrThisYr(i,m) = max(actLyrThisYr(i,m), actlyr(i,m))
+          end if
+        end do
+      end do
 
     end subroutine findPermafrostVars
     !!@}
@@ -306,7 +337,7 @@ module generalUtils
         endif
     end function closeEnough
     !!@}
-
+! ---------------------------------------------------------------------------------------------------
     !>\ingroup generalUtils_initRandomSeed
     !!@{
     !! This subroutine sets a repeatable seed for the random number generator. 

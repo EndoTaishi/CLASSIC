@@ -19,10 +19,7 @@ var searchData=
   ['competition_5fmod_2ef90',['competition_mod.f90',['../competition__mod_8f90.html',1,'']]],
   ['ctem_5fstatevars_2ef90',['ctem_statevars.f90',['../ctem__statevars_8f90.html',1,'']]],
   ['ctemdriver_2ef90',['ctemDriver.f90',['../ctemDriver_8f90.html',1,'']]],
-  ['ctemg1_2ef',['ctemg1.f',['../ctemg1_8f.html',1,'']]],
-  ['ctemg2_2ef',['ctemg2.f',['../ctemg2_8f.html',1,'']]],
-  ['ctems1_2ef',['ctems1.f',['../ctems1_8f.html',1,'']]],
-  ['ctems2_2ef',['ctems2.f',['../ctems2_8f.html',1,'']]],
+  ['ctemgatherscatter_2ef90',['ctemGatherScatter.f90',['../ctemGatherScatter_8f90.html',1,'']]],
   ['ctemutilities_2ef90',['ctemUtilities.f90',['../ctemUtilities_8f90.html',1,'']]],
   ['cwcalc_2ef',['CWCALC.f',['../CWCALC_8f.html',1,'']]]
 ];

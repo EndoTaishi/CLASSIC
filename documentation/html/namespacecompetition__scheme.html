@@ -99,9 +99,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a39e601873347975c05eae5e06202729c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a PFT can exist in a grid cell based on climatic conditions.  <a href="#a39e601873347975c05eae5e06202729c">More...</a><br /></td></tr>
 <tr class="separator:a39e601873347975c05eae5e06202729c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:af586f9e217dd8a4785c4553ddd10042e"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#af586f9e217dd8a4785c4553ddd10042e">competition</a> (iday, il1, il2, nilg, nppveg, dofire, leapnow, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
-<tr class="memdesc:af586f9e217dd8a4785c4553ddd10042e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified forms. either option may be used.  <a href="#af586f9e217dd8a4785c4553ddd10042e">More...</a><br /></td></tr>
-<tr class="separator:af586f9e217dd8a4785c4553ddd10042e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d7c7b99adda5fbec621f38b81aeb60"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a48d7c7b99adda5fbec621f38b81aeb60">competition</a> (iday, il1, il2, nilg, nppveg, dofire, leapnow, useTracer, pftexist, geremort, intrmort, pgleafmass, rmatctem, grclarea, lambda, burnvegf, sort, pstemmass, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, fcancmx, fcanmx, tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass, tracerLitrMass, tracerSoilCMass, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
+<tr class="memdesc:a48d7c7b99adda5fbec621f38b81aeb60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified forms. either option may be used.  <a href="#a48d7c7b99adda5fbec621f38b81aeb60">More...</a><br /></td></tr>
+<tr class="separator:a48d7c7b99adda5fbec621f38b81aeb60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="memItemLeft" align="right" valign="top">real function, dimension(ilg, icc), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a5513e158bc2a8e9b7618fe7b9a83c2f9">expansion</a> (il1, il2, ilg, sort, ailcg, lfstatus, nppveg, pftexist)</td></tr>
 <tr class="memdesc:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimate fraction of NPP that is to be used for horizontal expansion (lambda) during the next day (i.e. this will be determining the colonization rate in competition).  <a href="#a5513e158bc2a8e9b7618fe7b9a83c2f9">More...</a><br /></td></tr>
@@ -110,11 +110,11 @@ Functions/Subroutines</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Performs competition between PFTs for space. </p>
 <h1>Competition parameterization</h1>
-<p>Competition between PFTs in CTEM is based upon modified L&ndash;V equations (Arora and Boer, 2006a,b) <a class="el" href="citelist.html#CITEREF_Arora2006-pp">[7]</a> <a class="el" href="citelist.html#CITEREF_Arora2006-ax">[8]</a>. The L&ndash;V equations (Lotka 1925 <a class="el" href="citelist.html#CITEREF_Lotka1925-dg">[56]</a> , Volterra 1926 <a class="el" href="citelist.html#CITEREF_Volterra1926-iz">[83]</a> ) have been adapted from their initial application for simulating predator&ndash;prey interactions in ecosystem models as described below.</p>
+<p>Competition between PFTs in CTEM is based upon modified L&ndash;V equations (Arora and Boer, 2006a,b) <a class="el" href="citelist.html#CITEREF_Arora2006-pp">[7]</a> <a class="el" href="citelist.html#CITEREF_Arora2006-ax">[8]</a>. The L&ndash;V equations (Lotka 1925 <a class="el" href="citelist.html#CITEREF_Lotka1925-dg">[57]</a> , Volterra 1926 <a class="el" href="citelist.html#CITEREF_Volterra1926-iz">[86]</a> ) have been adapted from their initial application for simulating predator&ndash;prey interactions in ecosystem models as described below.</p>
 <p>The change in fractional coverage ( <img class="formulaInl" alt="$f$" src="form_428.png"/>) of a PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> through time, <img class="formulaInl" alt="$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}$" src="form_430.png"/>, is expressed as the result of mortality, and competition and colonization (CC) interactions with the other PFTs present in a grid cell and bare ground, collectively represented as <img class="formulaInl" alt="$B$" src="form_431.png"/> where <img class="formulaInl" alt="$\alpha \notin B$" src="form_432.png"/>: </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.\qquad (Eqn 1) \]" src="form_1601.png"/>
 </p>
-<p>The CC interactions are represented symbolically by the <img class="formulaInl" alt="$g(f_\alpha, f_B)$" src="form_434.png"/> function. Mortality is assumed to be proportional to the number density of plants and represented by the mortality term, <img class="formulaInl" alt="$m_{\alpha} f_\alpha$" src="form_435.png"/>. The PFT-dependent mortality rate ( <img class="formulaInl" alt="$m_{\alpha}$" src="form_436.png"/>; <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) (described further in mortality.f) produces bare ground via a number of processes, and that bare ground is subsequently available for colonization. We consider the fractional coverage for <img class="formulaInl" alt="$N$" src="form_438.png"/> PFTs plus bare ground ( <img class="formulaInl" alt="$f_{N+1}$" src="form_439.png"/> = <img class="formulaInl" alt="$f_{bare}$" src="form_440.png"/>) where <img class="formulaInl" alt="$\sum_{j=1}^{N+1} f_{j}=1$" src="form_441.png"/>. For competition between unequal competitors, the PFTs are ranked in terms of their dominance. If PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is the most dominant, it will invade the area of other PFTs and the bare ground ( <img class="formulaInl" alt="$f_B$" src="form_442.png"/>, <img class="formulaInl" alt="$\alpha \notin B$" src="form_432.png"/>). Woody PFTs are all more dominant than grass PFTs since trees can successfully invade grasses by overshading them (Siemann and Rogers, 2003)<a class="el" href="citelist.html#CITEREF_Siemann2003-jl">[75]</a> and thus are ranked higher. Within tree or grass PFTs the dominance rank of a PFT is calculated based upon its colonization rate ( <img class="formulaInl" alt="$c_\alpha$" src="form_443.png"/>; <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) with higher colonization rates giving a higher dominance ranking. For the general case of PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> with a dominance rank of <img class="formulaInl" alt="$i$" src="form_444.png"/>, we describe the ranking from most dominant to least as 1, 2, <img class="formulaInl" alt="${\ldots}$" src="form_445.png"/>, <img class="formulaInl" alt="$i-1$" src="form_446.png"/>, <img class="formulaInl" alt="$i$" src="form_444.png"/>, <img class="formulaInl" alt="$i+1$" src="form_447.png"/>, <img class="formulaInl" alt="${\ldots}$" src="form_445.png"/>, <img class="formulaInl" alt="$N$" src="form_438.png"/>. Equation 1 can then be reformulated following a phenomenological approach as</p>
+<p>The CC interactions are represented symbolically by the <img class="formulaInl" alt="$g(f_\alpha, f_B)$" src="form_434.png"/> function. Mortality is assumed to be proportional to the number density of plants and represented by the mortality term, <img class="formulaInl" alt="$m_{\alpha} f_\alpha$" src="form_435.png"/>. The PFT-dependent mortality rate ( <img class="formulaInl" alt="$m_{\alpha}$" src="form_436.png"/>; <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) (described further in mortality.f) produces bare ground via a number of processes, and that bare ground is subsequently available for colonization. We consider the fractional coverage for <img class="formulaInl" alt="$N$" src="form_438.png"/> PFTs plus bare ground ( <img class="formulaInl" alt="$f_{N+1}$" src="form_439.png"/> = <img class="formulaInl" alt="$f_{bare}$" src="form_440.png"/>) where <img class="formulaInl" alt="$\sum_{j=1}^{N+1} f_{j}=1$" src="form_441.png"/>. For competition between unequal competitors, the PFTs are ranked in terms of their dominance. If PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> is the most dominant, it will invade the area of other PFTs and the bare ground ( <img class="formulaInl" alt="$f_B$" src="form_442.png"/>, <img class="formulaInl" alt="$\alpha \notin B$" src="form_432.png"/>). Woody PFTs are all more dominant than grass PFTs since trees can successfully invade grasses by overshading them (Siemann and Rogers, 2003)<a class="el" href="citelist.html#CITEREF_Siemann2003-jl">[77]</a> and thus are ranked higher. Within tree or grass PFTs the dominance rank of a PFT is calculated based upon its colonization rate ( <img class="formulaInl" alt="$c_\alpha$" src="form_443.png"/>; <img class="formulaInl" alt="$day^{-1}$" src="form_437.png"/>) with higher colonization rates giving a higher dominance ranking. For the general case of PFT <img class="formulaInl" alt="$\alpha$" src="form_429.png"/> with a dominance rank of <img class="formulaInl" alt="$i$" src="form_444.png"/>, we describe the ranking from most dominant to least as 1, 2, <img class="formulaInl" alt="${\ldots}$" src="form_445.png"/>, <img class="formulaInl" alt="$i-1$" src="form_446.png"/>, <img class="formulaInl" alt="$i$" src="form_444.png"/>, <img class="formulaInl" alt="$i+1$" src="form_447.png"/>, <img class="formulaInl" alt="${\ldots}$" src="form_445.png"/>, <img class="formulaInl" alt="$N$" src="form_438.png"/>. Equation 1 can then be reformulated following a phenomenological approach as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1} +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\ - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1), \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}\qquad (Eqn 2) \]" src="form_1622.png"/>
 </p>
@@ -426,8 +426,8 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="af586f9e217dd8a4785c4553ddd10042e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af586f9e217dd8a4785c4553ddd10042e">&#9670;&nbsp;</a></span>competition()</h2>
+<a id="a48d7c7b99adda5fbec621f38b81aeb60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d7c7b99adda5fbec621f38b81aeb60">&#9670;&nbsp;</a></span>competition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -477,6 +477,12 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">logical, dimension(nilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>pftexist</em>, </td>
         </tr>
@@ -491,6 +497,48 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>intrmort</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>pgleafmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>rmatctem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg), intent(in)&#160;</td>
+          <td class="paramname"><em>grclarea</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>lambda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>burnvegf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
+          <td class="paramname"><em>sort</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>pstemmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -531,42 +579,6 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg), intent(in)&#160;</td>
-          <td class="paramname"><em>grclarea</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>lambda</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>burnvegf</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
-          <td class="paramname"><em>sort</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>pstemmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>pgleafmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
           <td class="paramname"><em>fcancmx</em>, </td>
         </tr>
@@ -575,6 +587,42 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension(nilg,icp1), intent(inout)&#160;</td>
           <td class="paramname"><em>fcanmx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerGLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerBLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerSoilCMass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -639,6 +687,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between 9 ctem pfts and size 12 of parameter vectors</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pftexist</td><td>indicating pfts exist (T) or not (F)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geremort</td><td>growth related mortality (1/day)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">intrmort</td><td>intrinsic (age related) mortality (1/day)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">lambda</td><td>fraction of npp that is used for spatial expansion</td></tr>
@@ -653,6 +702,12 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, kg c/m2</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter mass for each of the 9 ctem pfts + bare, kg c/m2</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracergleafmass</td><td>Tracer mass in the green leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerbleafmass</td><td>Tracer mass in the brown leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the roots for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracersoilcmass</td><td>Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>fractional coverage of ctem's 9 pfts</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">fcanmx</td><td>fractional coverage of class' 4 pfts</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">vgbiomas</td><td>grid averaged vegetation biomass, kg c/m2</td></tr>
@@ -669,38 +724,34 @@ Functions/Subroutines</h2></td></tr>
 <p>Since the biomass pools could have changed, update bmasveg.</p>
 <p>Do our usual initialization</p>
 <p>initial rank/superiority order for simulating competition. since crops are not in competition their rank doesn't matter and therefore we only have icc-2 ranks corresponding to the remaining pfts. the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.</p>
-<p>Estimate colonization and mortality rate for each pft, except for crops whose fractional coverage is prescribed.</p>
-<p>colonization rate (1/day). the factor (deltat/963.62) converts npp from u-mol co2-c/m2.sec -&gt; kg c/m2.day</p>
-<p>mortality rate is the sum of growth related mortality, intrinsic mortality, and an additional mortality that kicks in when long term averaged bioclimatic conditions become unfavourable for a pft. this last term is based on the binary array pftexist.</p>
-<p>&mdash;&gt; from here on we assume that we only have icc-numcrops pfts &lt;-&mdash; since crops are not part of the competition.</p>
-<p>based on npp for each pft find the competition ranks / superiority order for simulating competition. note that crops are not in competition, so the competition is between the remaining pfts. in addition pfts which shouldn't exist in the grid cell because of unfavourable values of long-term climatic conditions are considered inferior.</p>
-<p>bubble sort according to colonization rates NOTE - this only works if no tree species are indexed at positions &gt; numtreepfts, i.e. the trees must be a contiguous unit at the start of the indexes. JM Jun 2014</p>
-<p>the rank of c3 and c4 grass is also determined on the basis of their npp but grasses are always assumed to be inferior to tree pfts</p>
-<p>with the ranks of all pfts in all grid cells we can now simulate competition between them. for lotka-volterra eqns we need a minimum seeding fraction otherwise the pfts will not expand at all.</p>
-<p>arrange colonization and mortality rates, and fractions, according to superiority ranks</p>
-<p>update fractions and check if all fractions are +ve</p>
-<p>with the minimum seeding fraction prescription, especially for lotka volterra eqns the total veg fraction may exceed 1. to prevent this we need to adjust fractional coverage of all non-crop pfts that do not have the minimum fraction.</p>
-<p>check again that total veg frac doesn't exceed 1.</p>
-<p>map delfrac to chngfrac so that we get change in fraction corresponding to the actual number of pfts</p>
-<p>&mdash;&gt; from here on we get back to our usual icc pfts &lt;-&mdash;</p>
-<p>get bare fraction</p>
-<p>check if a pft's fractional cover is increasing or decreasing</p>
-<p>check if bare fraction increases or decreases</p>
-<p>now that we know the change in fraction for every pft we use its npp for spatial expansion and litter generation. we also spread vegetation biomass uniformly over the new fractions, and generate additional litter from mortality if the fractions decrease.</p>
-<p>three things can happen here</p>
+<p>Estimate colonization and mortality rate for each PFT, except for crops whose fractional coverage is prescribed.</p>
+<p>Colonization rate (1/day). the factor (deltat/963.62) converts NPP from u-mol co2-c/m2.sec -&gt; kg c/m2.day</p>
+<p>Mortality rate is the sum of growth related mortality, intrinsic mortality, and an additional mortality that kicks in when long term averaged bioclimatic conditions become unfavourable for a PFT. This last term is based on the binary array pftexist.</p>
+<p>From here on we assume that we only have icc-numcrops pfts since crops are not part of the competition.</p>
+<p>Based on NPP for each PFT find the competition ranks / superiority order for simulating competition. Note that crops are not in competition, so the competition is between the remaining pfts. In addition PFTs which shouldn't exist in the grid cell because of unfavourable values of long-term climatic conditions are considered inferior.</p>
+<p>Bubble sort according to colonization rates WARNING - this only works if no tree species are indexed at positions &gt; numtreepfts, i.e. the trees must be a contiguous unit at the start of the indexes.</p>
+<p>The rank of grasses is also determined on the basis of their NPP but grasses are always assumed to be inferior to tree pfts</p>
+<p>With the ranks of all pfts in all grid cells we can now simulate competition between them. For Lotka-Volterra eqns we need a minimum seeding fraction otherwise the pfts will not expand.</p>
+<p>Arrange colonization and mortality rates, and fractions, according to superiority ranks</p>
+<p>Update fractions and check if all fractions are positive</p>
+<p>With the minimum seeding fraction prescription, especially for Lotka Volterra eqns the total veg fraction may exceed 1. to prevent this we need to adjust fractional coverage of all non-crop pfts that do not have the minimum fraction.</p>
+<p>Check again that total veg frac doesn't exceed 1.</p>
+<p>Map delfrac to chngfrac so that we get change in fraction corresponding to the actual number of pfts</p>
+<p>Check if a pft's fractional cover is increasing or decreasing</p>
+<p>Check if bare fraction increases or decreases</p>
+<p>Now that we know the change in fraction for every pft we use its NPP for spatial expansion and litter generation. we also spread vegetation biomass uniformly over the new fractions, and generate additional litter from mortality if the fractions decrease.</p>
+<p>Three things can happen here</p>
 <ol type="1">
 <li>fraciord = 0, which means all npp that was used for expansion becomes litter, due to self/expansion thinning and mortality.</li>
 <li>fraciord = 1, which means a part of or full npp is used for expansion but some litter may also be generated. the part of npp that is used for expansion needs to be allocated to leaves, stem, and root. rather than doing this here we will let the allocation part handle this. so allocation module will allocate not only the npp that is used for pure vertical expansion but also this npp. but we will do our part here and spread the vegetation biomass over the new increased fraction.</li>
 <li>fraciord = -1, which means all of the npp is to be used for litter generation but in addition some more litter will be generated from mortality of the standing biomass.</li>
 </ol>
-<p>All npp used for expansion becomes litter plus there is additional mortality of the standing biomass. the npp that becomes litter is now spread over the whole grid cell. all biomass from fraction that dies due to mortality is also distributed over the litter pool of whole grid cell.</p>
-<p>if bare fraction decreases then chop off the litter and soil c from the decreased fraction and add it to grsumlit &amp; grsumsoc for spreading over the whole grid cell. if bare fraction increases then spread its litter and soil c uniformly over the increased fraction.</p>
-<p>if a pft is not supposed to exist as indicated by pftexist and its fractional coverage is really small then get rid of the pft all together and spread its live and dead biomass over the grid cell.</p>
-<p>adjust litter and soil c mass densities for increase in barefrac over the bare fraction.</p>
-<p>spread litter and soil c over all pfts and the barefrac</p>
-<p>get fcanmxs for use by class based on the new fcancmxs</p>
-<p>update grid averaged vegetation biomass, and litter and soil c densities</p>
-<p>and finally we check the c balance. we were supposed to use a fraction of npp for competition. some of it is used for expansion (this is what we save for allocation), and the rest becomes litter. so for each pft the total c mass in vegetation and litter pools must all add up to the same value as before competition.</p>
+<p>If bare fraction decreases then chop off the litter and soil c from the decreased fraction and add it to grsumlit &amp; grsumsoc for spreading over the whole grid cell. If bare fraction increases then spread its litter and soil c uniformly over the increased fraction.</p>
+<p>If a pft is not supposed to exist as indicated by pftexist and its fractional coverage is really small then get rid of the pft all together and spread its live and dead biomass over the grid cell.</p>
+<p>Adjust litter and soil c mass densities for increase in barefrac over the bare fraction.</p>
+<p>Spread litter and soil c over all pfts and the barefrac</p>
+<p>Update grid averaged vegetation biomass, and litter and soil c densities</p>
+<p>and finally we check the C balance. We were supposed to use a fraction of NPP for competition. Some of it is used for expansion (this is what we save for allocation), and the rest becomes litter. so for each pft the total C mass in vegetation and litter pools must all add up to the same value as before competition.</p>
 <p>check balance over the bare fraction </p>
 
 </div>
@@ -941,7 +992,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacecompetition__scheme.html">competition_scheme</a></li>
-    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
