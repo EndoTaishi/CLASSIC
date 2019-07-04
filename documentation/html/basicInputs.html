@@ -85,7 +85,10 @@ $(document).ready(function(){initNavTree('basicInputs.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><ol type="1">
+<li><a class="el" href="basicInputs.html#modelParams">Model parameters</a></li>
 <li><a class="el" href="basicInputs.html#forcingData">Atmospheric Forcing Data</a></li>
+</ol>
+<ol type="1">
 <li><a class="el" href="basicInputs.html#vegetationData">Input Vegetation Data</a><ul>
 <li><a class="el" href="basicInputs.html#vegCLASSonly">Required vegetation data</a></li>
 <li><a class="el" href="basicInputs.html#vegCTEMtoo">Required vegetation data for a biogeochemical simulation (CLASS+CTEM)</a></li>
@@ -100,93 +103,102 @@ $(document).ready(function(){initNavTree('basicInputs.html','');});
 <li><a class="el" href="basicInputs.html#exModSets">Example model setups</a> <hr/>
 </li>
 </ol>
+<h1><a class="anchor" id="modelParams"></a>
+Model parameters</h1>
+<p>Model parameters are read in from an external file. Three options are supplied. configurationFiles</p>
 <h1><a class="anchor" id="forcingData"></a>
 Atmospheric Forcing Data</h1>
 <p>At each physics time step, for each grid cell or modelled area, the following atmospheric forcing data are,</p>
 <p><b>Required</b>:</p><ul>
-<li>FDLROW Downwelling longwave sky radiation <img class="formulaInl" alt="$[ W m^{-2} ]$" src="form_1509.png"/></li>
-<li>PREROW Surface precipitation rate <img class="formulaInl" alt="$[kg m^{-2} s^{-1} ]$" src="form_219.png"/><ul>
-<li>CLASSIC is able to run with total incoming precipitation, partitioning it into rainfall and snowfall on the basis of empirically-derived equations. If the rainfall rate (RPREROW) and snowfall rate (SPREROW) are available, they could be used instead. The model_state_driver.getMet and model_state_drivers.updateMet subroutines should be modified accordingly, and the job options switch IPCP should be set to 4 (more on this in <a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a>).</li>
+<li><em>FDL</em> Downwelling longwave sky radiation [ <img class="formulaInl" alt="$ W m^{-2}$" src="form_1679.png"/> ]</li>
+<li><em>PRE</em> Surface precipitation rate [ <img class="formulaInl" alt="$kg m^{-2} s^{-1}$" src="form_38.png"/> ]<ul>
+<li>CLASSIC is able to run with total incoming precipitation by partitioning it into rainfall and snowfall on the basis of empirically-derived equations. If the rainfall rate (<em>RPRE</em>) and snowfall rate (<em>SPRE</em>) are available, they could be used instead. The model_state_driver.getMet and model_state_drivers.updateMet subroutines should be modified accordingly, and the job options switch <em>IPCP</em> should be set to 4 (more on this in <a class="el" href="runPrep.html#setupJobOpts">Setting up the joboptions file</a>).</li>
 </ul>
 </li>
-<li>PRESROW Surface air pressure <img class="formulaInl" alt="$[P_a ]$" src="form_1510.png"/></li>
-<li>QAROW Specific humidity at reference height <img class="formulaInl" alt="$[kg kg^{-1} ]$" src="form_233.png"/></li>
-<li>TAROW Air temperature at reference height [degree C]<ul>
-<li>For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure, Pa . For field data, the actual measured air temperature at the reference height should be used, since in this case the adiabatic extrapolation is performed within CLASS.</li>
-<li><b>Note: In CLASSIC, TAROW is in Kelvin, however the driver expects the air temperature in units of degrees celsius. The conversion is done in <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a>.</b></li>
+<li><em>PRES</em> Surface air pressure [ <img class="formulaInl" alt="$P_a$" src="form_1681.png"/> ]</li>
+<li><em>QA</em> Specific humidity at reference height [ <img class="formulaInl" alt="$kg kg^{-1}$" src="form_1682.png"/> ]</li>
+<li><em>TA</em> Air temperature at reference height [degree C]<ul>
+<li>For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure, Pa.</li>
+<li>For field data, the actual measured air temperature at the reference height should be used, since in this case the adiabatic extrapolation is performed within CLASS.</li>
+<li><b>Note: In CLASSIC, <em>TA</em> is in Kelvin, however the driver expects the air temperature in units of degrees Celsius.</b></li>
 </ul>
 </li>
-<li>VMODROW Wind speed at reference height <img class="formulaInl" alt="$[m s^-1 ]$" src="form_1511.png"/><ul>
-<li>Atmospheric models provide the zonal and meridional components of the wind velocity, but CLASS does not actually require information on wind direction. Thus, if only the scalar wind speed is available, either ULROW or VLROW can be set to it, and the other to zero. (Both of these terms, plus the scalar wind speed VMODROW, must be supplied to CLASS.)</li>
+<li><em>VMOD</em> Wind speed at reference height [ <img class="formulaInl" alt="$m s^-1$" src="form_1683.png"/> ]<ul>
+<li>Atmospheric models provide the zonal and meridional components of the wind velocity, but CLASS does not actually require information on wind direction. Thus, if only the scalar wind speed is available, either <em>UL</em> or <em>VL</em> can be set to it, and the other to zero. (Both of these terms, plus the scalar wind speed <em>VMOD</em>, must be supplied to CLASS.)</li>
 </ul>
 </li>
-<li>FSSROW Downwelling shortwave radiation incident on a horizontal surface <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/> -CLASS ordinarily requires that the forcing incoming shortwave radiation be partitioned into the visible and near-infrared components. If these are not available, however, they can each be roughly estimated as approximately half of the total incoming solar radiation. Note: if the ISNOALB switch (see below) is set to 1, the incoming shortwave radiation is required in four wavelength bands, and the direct and diffuse components are required as well.</li>
+<li><em>FSS</em> Downwelling shortwave radiation incident on a horizontal surface [ <img class="formulaInl" alt="$W m^{-2}$" src="form_37.png"/> ] -CLASS ideally recieves the forcing incoming shortwave radiation partitioned into the visible and near-infrared components. Since these are rarely available, they can each be roughly estimated as approximately half of the total incoming solar radiation (as is done in the model code in <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a>). Note: if the ISNOALB switch (see below) is set to 1, the incoming shortwave radiation is required in four wavelength bands, and the direct and diffuse components are required as well. At present this model option is not operational (the test version does not use four band inputs)</li>
 </ul>
 <p><b>Optional</b>:</p><ul>
-<li>FCLOROW Fractional cloud cover [ ]<ul>
-<li>The fractional cloud cover is used in the calculation of the transmissivity of the vegetation canopy. If it is not available it can be estimated on the basis of the solar zenith angle and the occurrence of precipitation. You will need to then override the estimation done by generalUtils.findCloudiness</li>
+<li><em>FCLO</em> Fractional cloud cover [ ]<ul>
+<li>The fractional cloud cover is used in the calculation of the transmissivity of the vegetation canopy. If it is not available it is estimated on the basis of the solar zenith angle and the occurrence of precipitation. If you do have the fractional cloud cover, you will need to properly input it to the model and then override the estimation done by generalUtils.findCloudiness</li>
 </ul>
 </li>
-<li>FSIHROW Near infrared shortwave radiation incident on a horizontal surface <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/> (see above for FSSROW, set in <a class="el" href="main_8f90.html">main.f90</a>)</li>
-<li>FSVHROW Visible shortwave radiation incident on a horizontal surface <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/> (see above for FSSROW, set in <a class="el" href="main_8f90.html">main.f90</a>)</li>
-<li>ULROW Zonal component of wind velocity <img class="formulaInl" alt="$[m s^{-1} ]$" src="form_236.png"/> (see above for VMODROW, set in <a class="el" href="main_8f90.html">main.f90</a>)</li>
-<li>VLROW Meridional component of wind velocity <img class="formulaInl" alt="$[m s^{-1} ]$" src="form_236.png"/> (see above for VMODROW, set in <a class="el" href="main_8f90.html">main.f90</a>)</li>
+<li><em>FSIH</em> Near infrared shortwave radiation incident on a horizontal surface see above for *FSS*, set in <a class="el" href="main_8f90.html"><img class="formulaInl" alt="" src=".png"/>#37 </a></li>
+<li><em>FSVH</em> Visible shortwave radiation incident on a horizontal surface see above for *FSS*, set in <a class="el" href="main_8f90.html"><img class="formulaInl" alt="" src=".png"/>#37 </a></li>
+<li><em>UL</em> Zonal component of wind velocity see above for *VMOD*, set in <a class="el" href="main_8f90.html"><img class="formulaInl" alt="" src=".png"/>#1410 </a></li>
+<li><em>VL</em> Meridional component of wind velocity see above for *VMOD*, set in <a class="el" href="main_8f90.html"><img class="formulaInl" alt="" src=".png"/>#1410 </a></li>
 </ul>
 <p><b>Specified</b>:</p><ul>
-<li>ZBLDROW Atmospheric blending height for surface roughness length averaging [m]<ul>
-<li>If the surface being modelled is a very heterogeneous one, care must be taken to ensure that the reference heights are greater than the “blending height”, the distance above the surface at which the atmospheric variables are not dominated by any one surface type. In principle this height depends on the length scale of the roughness elements; it may be as large as 50-100 m. In CLASSIC the blending height is used in averaging the roughness lengths over the modelled area, and is read in separately from ZRFMROW and ZRFHROW as ZBLDROW.</li>
+<li><em>ZBLD</em> Atmospheric blending height for surface roughness length averaging [m]<ul>
+<li>If the surface being modelled is a very heterogeneous one, care must be taken to ensure that the reference heights are greater than the “blending height”, the distance above the surface at which the atmospheric variables are not dominated by any one surface type. In principle this height depends on the length scale of the roughness elements; it may be as large as 50-100 m. In CLASSIC the blending height is used in averaging the roughness lengths over the modelled area, and is read in separately from <em>ZRFM</em> and <em>ZRFH</em> as <em>ZBLD</em>.</li>
 </ul>
 </li>
-<li>ZRFHROW Reference height associated with forcing air temperature and humidity [m]</li>
-<li>ZRFMROW Reference height associated with forcing wind speed [m]<ul>
-<li>In atmospheric models the forcing wind speed, air temperature and specific humidity are obtained from the lowest modelled atmospheric layer, and thus the reference height will be the height above the “surface” (i.e. the location where the wind speed is zero and the pressure is equal to the surface pressure Pa) corresponding to that lowest layer. Some atmospheric models use a vertical co-ordinate system in which the momentum and thermodynamic levels are staggered, and if so, ZFRMROW and ZRFHROW will have different values. If that is the case, the switch ISLFD in the job options file should be set to 2, so that the subroutines <a class="el" href="FLXSURFZ_8f.html">FLXSURFZ.f</a> and <a class="el" href="DIASURFZ_8f.html">DIASURFZ.f</a> are called, since the other options do not support different reference heights. In the case of field data, the reference height is the height above the ground surface at which the variables are measured. If the measurement height for wind speed is different from that for the air temperature and specific humidity, again the ISLFD switch in the job options file should be set to 2.</li>
-<li><b>Note</b> that neither ZRFHROW nor ZRFMROW may be smaller than the vegetation canopy height, as this will cause the model run to crash.</li>
+<li><em>ZRFH</em> Reference height associated with forcing air temperature and humidity [m]</li>
+<li><em>ZRFM</em> Reference height associated with forcing wind speed [m]<ul>
+<li>In atmospheric models the forcing wind speed, air temperature and specific humidity are obtained from the lowest modelled atmospheric layer, and thus the reference height will be the height above the “surface” (i.e. the location where the wind speed is zero and the pressure is equal to the surface pressure, Pa) corresponding to that lowest layer. Some atmospheric models use a vertical co-ordinate system in which the momentum and thermodynamic levels are staggered, and if so, <em>ZFRM</em> and <em>ZRFH</em> will have different values. If that is the case, the switch <em>ISLFD</em> in the job options file should be set to 2, so that the subroutines <a class="el" href="FLXSURFZ_8f.html">FLXSURFZ.f</a> and <a class="el" href="DIASURFZ_8f.html">DIASURFZ.f</a> are called, since the other options do not support different reference heights.</li>
+<li>In the case of field data, the reference height is the height above the ground surface at which the variables are measured. If the measurement height for wind speed is different from that for the air temperature and specific humidity, again the <em>ISLFD</em> switch in the job options file should be set to 2.</li>
+<li><b>Note</b> neither <em>ZRFH</em> nor <em>ZRFM</em> may be smaller than the vegetation canopy height, as this will cause the model run to crash.</li>
 </ul>
 </li>
-<li>GC GCM surface descriptor<ul>
-<li>For land surfaces (inc. inland water) set to -1</li>
+<li><em>GC</em> GCM surface descriptor<ul>
+<li>For land surfaces (inc. inland water) set it to -1</li>
 </ul>
 </li>
 </ul>
 <h2>Advisement regarding the physics timestep</h2>
-<p>The length of the time step should be carefully considered in assembling the forcing data. CLASS has been designed to run at a time step of 30 minutes or less, and the explicit prognostic time stepping scheme used for the soil, snow and vegetation variables is based on this assumption. Longer time steps may lead to the emergence of numerical instabilities in the modelled prognostic variables. The physics timestep can be changed in CLASSBD.f</p>
+<p>The length of the time step should be carefully considered in assembling the forcing data. CLASS has been designed to run at a time step of 30 minutes or less, and the explicit prognostic time stepping scheme used for the soil, snow and vegetation variables is based on this assumption. Longer time steps may lead to the emergence of numerical instabilities in the modelled prognostic variables. The physics timestep can be changed in the run parameters namelist file.</p>
 <h1><a class="anchor" id="vegetationData"></a>
 Input Vegetation Data</h1>
 <p>CLASSIC can be run with either dynamic vegetation (CTEM+CLASS) or a physics only simulation (CLASS). The model inputs differ between the two configurations with some input vegetation data for a CLASS-only run ignored when CTEM is turned on. As well CTEM requires some additional inputs not needed for CLASS-only runs as described below.</p>
 <h2><a class="anchor" id="vegCLASSonly"></a>
 Required vegetation data</h2>
-<p>The typical four main vegetation categories for the model physics (CLASS) are needleleaf trees, broadleaf trees, crops and grass (e.g. ican = 4). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT (see below). Thus these arrays have a larger dimension of ican + 1 rather than ican. The model is capable of extensions beyond these initial four PFTs, however there are checks in the model code that look for known PFTs (e.g. 'NdlTr' , 'BdlTr', 'Crops', 'Grass'). If a PFT is introduced that is not known, the model will bail and let the user know where the PFT check failed. This is designed to prevent poorly considered additions and ensure developers are aware of where the different PFTs branch in the code.</p>
-<p>For each of the CLASS PFTs the following data are required for each mosaic tile over each grid cell or modelled area (<b>NOTE</b>: When CTEM is turned on, i.e. dynamic vegetation is desired and the variables indicated in bold font are overwritten by CTEM during model run (specifically in <a class="el" href="APREP_8f.html">APREP.f</a>). FCANROT may be overwritten if land use change or competition between PFTs is turned on.)</p>
+<p>The typical main vegetation categories for the model physics (CLASS) are needleleaf trees, broadleaf trees, broadleaf shrubs, crops and grass (e.g. ican = 5). However this is adaptable and can include further PFTs depending on model configuration. There are checks in the model code that look for known PFTs (e.g. 'NdlTr', 'BdlTr', 'BdlSh', 'Crops', 'Grass'). If a PFT is introduced that is not known, the model will bail and let the user know where the PFT check failed. This is designed to prevent poorly considered additions and ensure developers are aware of where the different PFTs branch in the code. Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for <em>FCAN</em>, <em>ALVC</em>, <em>ALIC</em> and <em>LNZ0</em> (see below). Thus these arrays have a larger dimension of ican + 1 rather than ican.</p>
+<p>For each of the CLASS PFTs the following data are required for each mosaic tile over each grid cell or modelled area (<b>NOTE</b>: When CTEM is turned on, i.e. dynamic vegetation is desired, the variables indicated in bold font are overwritten by CTEM during the model run (specifically in calcLandSurfParams.f90). <em>FCAN</em> may be overwritten if land use change or competition between PFTs is turned on.)</p>
 <ol type="1">
-<li>ALICROT Average near-IR albedo of vegetation category when fully-leafed [ ]</li>
-<li>ALVCROT Average visible albedo of vegetation category when fully-leafed [ ]</li>
-<li><b>CMASROT</b> Annual maximum canopy mass for vegetation category <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
-<li><b>FCANROT</b> Annual maximum fractional coverage of modelled area [ ]<ul>
+<li><em>ALIC</em> Average near-IR albedo of vegetation category when fully-leafed [ ]</li>
+<li><em>ALVC</em> Average visible albedo of vegetation category when fully-leafed [ ]</li>
+<li><b>CMAS</b> Annual maximum canopy mass for vegetation category [ <img class="formulaInl" alt="$kg m^{-2}$" src="form_31.png"/> ]</li>
+<li><b>FCAN</b> Annual maximum fractional coverage of modelled area [ ]<ul>
 <li>This variable is only read-in when CTEM is off.</li>
 </ul>
 </li>
-<li><b>LNZ0ROT</b> Natural logarithm of maximum vegetation roughness length [ ]</li>
-<li><b>PAMNROT</b> Annual minimum plant area index of vegetation category [ ]</li>
-<li><b>PAMXROT</b> Annual maximum plant area index of vegetation category [ ]</li>
-<li>PSGAROT Soil moisture suction coefficient (used in stomatal resistance calculation) [ ]</li>
-<li>PSGBROT Soil moisture suction coefficient (used in stomatal resistance calculation) [ ]</li>
-<li>QA50ROT Reference value of incoming shortwave radiation (used in stomatal resistance calculation) <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/></li>
-<li><b>ROOTROT</b> Annual maximum rooting depth of vegetation category [m]</li>
-<li>RSMNROT Minimum stomatal resistance of vegetation category <img class="formulaInl" alt="$[s m^{-1} ]$" src="form_242.png"/></li>
-<li>VPDAROT Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]</li>
-<li>VPDBROT Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]</li>
+<li><b>LNZ0</b> Natural logarithm of maximum vegetation roughness length [ ]</li>
+<li><b>PAMN</b> Annual minimum plant area index of vegetation category [ ]</li>
+<li><b>PAMX</b> Annual maximum plant area index of vegetation category [ ]</li>
+<li><b>ROOT</b> Annual maximum rooting depth of vegetation category [m]</li>
 </ol>
-<p>In physics only runs (CLASS only), the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine <a class="el" href="APREP_8f.html">APREP.f</a>):</p>
+<h3>Variables not presently read in</h3>
+<p>These variables are not presently read-in by CLASSIC but could be if desired.</p>
+<ol type="1">
+<li><em>PSGA</em> Soil moisture suction coefficient (used in stomatal resistance calculation) [ ]</li>
+<li><em>PSGB</em> Soil moisture suction coefficient (used in stomatal resistance calculation) [ ]</li>
+<li><em>QA50</em> Reference value of incoming shortwave radiation (used in stomatal resistance calculation) [ <img class="formulaInl" alt="$W m^{-2}$" src="form_37.png"/> ]</li>
+<li><em>RSMN</em> Minimum stomatal resistance of vegetation category [ <img class="formulaInl" alt="$s m^{-1}$" src="form_214.png"/> ]</li>
+<li><em>VPDA</em> Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]</li>
+<li><em>VPDB</em> Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]</li>
+</ol>
+<p>In <b>physics only runs (CLASS only)</b>, the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine calcLandSurfParams.f90):</p>
 <ul>
-<li>CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by PAMXROT and PAMNROT.</li>
-<li>The areal coverage of crops varies from zero in the winter to FCANROT at the height of the growing season, and their physiological characteristics undergo a corresponding cycle.</li>
+<li>CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by <em>PAMX</em> and <em>PAMN</em>.</li>
+<li>The areal coverage of crops varies from zero in the winter to <em>FCAN</em> at the height of the growing season, and their physiological characteristics undergo a corresponding cycle.</li>
 <li>Grasses remain constant year-round.</li>
 </ul>
 <p>Ideally the vegetation parameters should be measured at the modelled location. Of course this is not always possible, especially when running over a large modelling domain. As a guide, the table below provides generic values from the literature for the 20 categories of globally significant vegetation types. If more than one type of vegetation in a given category is present on the modelled area, the parameters for the category should be areally averaged over the vegetation types present.</p>
 <div class="image">
 <img src="landcovercat_table.png" alt="landcovercat_table.png"/>
 </div>
- For the stomatal resistance parameters, typical values for the four principal vegetation types are given below:</p>
+ For the non-required stomatal resistance parameters, typical values for the four principal vegetation types are given below:</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \begin{tabular}{ | l | c | c | c | c | c | c | } &amp; RSMN &amp; QA50 &amp; VPDA &amp; VPDB &amp; PSGA &amp; PSGB \\ Needleleaf trees &amp; 200.0 &amp; 30.0 &amp; 0.65 &amp; 1.05 &amp; 100.0 &amp; 5.0 \\ Broadleaf trees &amp; 125.0 &amp; 40.0 &amp; 0.50 &amp; 0.60 &amp; 100.0 &amp; 5.0 \\ Crops &amp; 85.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ Grass &amp; 100.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ \end{tabular} \]" src="form_1512.png"/>
 </p>
@@ -194,21 +206,21 @@ Required vegetation data</h2>
 Required vegetation data for a biogeochemical simulation (CLASS+CTEM)</h2>
 <p>In addition to the CLASS variables described above, CTEM requires the following further information about the vegetation:</p>
 <ul>
-<li>fcancmx Fractional coverage of CTEM PFTs per grid cell []</li>
+<li><em>fcancmx</em> Fractional coverage of CTEM PFTs per grid cell [ ]</li>
 </ul>
 <p>If land use is being simulated this value will come from a land use change file (see <a class="el" href="CTEMaddInputs.html#inputLUC">Land use change (LUC)</a>) otherwise it is taken from the model initialization file and kept constant thoughout a run (provided competition between PFTs is not turned on).</p>
 <h1><a class="anchor" id="soilData"></a>
 Input Soil Data</h1>
 <p>The following specifications are required for each modelled soil layer:</p>
 <ul>
-<li>DELZ Layer thickness [m]</li>
+<li><em>DELZ</em> Layer thickness [m]</li>
 </ul>
-<p>The standard operational configuration for CLASS used to consist of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. Now, CLASSIC supports any number and thickness of ground layers. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems. As a rule of thumb, the thicknesses of layers should be limited to <img class="formulaInl" alt="$\geq$" src="form_272.png"/> 0.10 m. DELZ is the same across all grid cells.</p>
+<p>CLASSIC supports any number and thickness of ground layers. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems. As a rule of thumb, the thicknesses of layers should be limited to <img class="formulaInl" alt="$\geq$" src="form_272.png"/> 0.10 m. <em>DELZ</em> is the same across all grid cells (the soil permeable depth, <em>SDEP</em>, can vary, see below).</p>
 <p>For each of the modelled soil layers on each of the mosaic tiles, the following texture data are required:</p>
 <ul>
-<li>CLAYROT Percentage clay content</li>
-<li>ORGMROT Percentage organic matter content</li>
-<li>SANDROT Percentage sand content</li>
+<li><em>CLAY</em> Percentage clay content</li>
+<li><em>ORGM</em> Percentage organic matter content</li>
+<li><em>SAND</em> Percentage sand content</li>
 </ul>
 <div class="image">
 <img src="percentSand.png" alt="percentSand.png"/>
@@ -216,120 +228,124 @@ Input Soil Data</h1>
 Percent Sand</div></div>
 <ul>
 <li>For mineral soils, the percentages of sand, clay and organic matter content need not add up to 100%, since the residual is assigned to silt content. If the exact sand, clay and organic matter contents are not known, estimates can be made for the general soil type on the basis of the standard USDA texture triangle shown above. Organic matter contents in mineral soils are typically not more than a few percent.</li>
-<li>If the layer consists of bed rock, SANDROT is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, CLAYROT and ORGMROT are not used and are set to zero.</li>
-<li>Highly organic soils have different behaviour if the area is being modelled as a peatland:<ul>
-<li>If the peatland flag is 0, that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one (generally takes as a &gt; 30% organic matter), SANDROT, CLAYROT and ORGMROT are used differently. The sand content is assigned a flag value of -2. The peat texture is assigned to be fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[51]</a>). The current default is for the first layer to be assumed as fibric, the second and third as hemic and any lower layers as sapric until bedrock or a sand value &gt; 0 is reached. CLAYROT is not used and can be set to zero.</li>
-<li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see <a class="el" href="CLASSB_8f.html">CLASSB.f</a>)</li>
+<li>If the layer consists of bedrock, <em>SAND</em> is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, <em>CLAYROT</em> and <em>ORGMROT</em> are not used and can be set to zero.</li>
+<li><p class="startli">Highly organic soils have different behaviour if the area is being modelled as a peatland:</p><ul>
+<li>If the peatland flag is 0 (ipeatland = 0 in the model initialization file), that is the tile is not being modelled as a peatland, and the soil layer is a fully organic one (generally takes as <img class="formulaInl" alt="$\geq$" src="form_272.png"/> 30% organic matter), <em>SANDROT</em>, <em>CLAYROT</em> and <em>ORGMROT</em> are used differently. The sand content should be assigned a flag value of -2. The peat texture is then assigned to be fibric, hemic or sapric (see Letts et al. (2000) <a class="el" href="citelist.html#CITEREF_Letts2000-pg">[51]</a>). The current default is for the first layer to be assumed as fibric, the second and third as hemic and any lower layers as sapric until bedrock or a sand value &gt; 0 (i.e. mineral soil) is reached. <em>CLAYROT</em> is not used and can be set to zero.</li>
+<li>If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a>. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see run parameters namelist file)</li>
 </ul>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular}{ | l | c | c | c | } Soil layer type &amp; SAND &amp; CLAY &amp; ORGM \\ Mineral &amp; $&gt;=$ 0 &amp; $&gt;=$ 0 &amp; $&gt;=$ 0 \\ Peat &amp; -2 &amp; ignored &amp; ignored \\ Bedrock &amp; -3 &amp; ignored &amp; ignored \\ Ice sheet &amp; -4 &amp; ignored &amp; ignored \\ \end{tabular} \]" src="form_1684.png"/>
+</p>
 </li>
 </ul>
-<p>SANDROT, CLAYROT and ORGMROT are utilized in the calculation of the soil layer thermal and hydraulic properties in <a class="el" href="CLASSB_8f.html">CLASSB.f</a>. If measured values of these properties are available, they could be used instead (with modificiations to the code).</p>
+<p><em>SAND</em>, <em>CLAY</em> and <em>ORGM</em> are utilized in the calculation of the soil layer thermal and hydraulic properties in soilProperties.f90. If measured values of these properties are available, they could be used instead (with modificiations to the code).</p>
 <p>For each of the mosaic tiles over the modelled area, the following surface parameters must be specified:</p>
 <ul>
-<li>DRNROT Soil drainage index<ul>
-<li>The drainage index, DRNROT, is usually set to 0.005 except in cases of deep soils where it is desired to suppress drainage from the bottom of the soil profile (e.g. in bogs, or in deep soils with a high water table). In such cases it is set to 0. A value of 1 is freely draining.</li>
+<li><em>DRN</em> Soil drainage index<ul>
+<li>The drainage index is usually set to 0.005 except in cases of deep soils where it is desired to suppress drainage from the bottom of the soil profile (e.g. in bogs, or in deep soils with a high water table). In such cases it is set to 0. A value of 1 is freely draining.</li>
 </ul>
 </li>
-<li>FAREROT Fractional coverage of mosaic tile on the modelled area (also discussed <a class="el" href="compvsmosaic.html">here</a>)</li>
-<li>MIDROT Mosaic tile type identifier (1 for land surface, 0 for inland lake) (also discussed <a class="el" href="compvsmosaic.html">here</a>)</li>
-<li>SDEPROT Soil permeable depth [m]<ul>
-<li>The soil permeable depth, i.e. the depth to bedrock, may be less than the modelled thermal depth of the soil profile. If the depth to bedrock occurs within a soil layer, CLASS assigns the specified mineral or organic soil characteristics to the part of the layer above bedrock, and values corresponding to rock to the portion below. All layers fully below SDEPROT are treated as rock. These layers should be given a sand value of -3.</li>
+<li><em>FARE</em> Fractional coverage of mosaic tile on the modelled area (also discussed <a class="el" href="compvsmosaic.html">here</a>)</li>
+<li><em>MID</em> Mosaic tile type identifier (1 for land surface, 0 for inland lake) (also discussed <a class="el" href="compvsmosaic.html">here</a>)</li>
+<li><em>SDEP</em> Soil permeable depth [m]<ul>
+<li>The soil permeable depth, i.e. the depth to bedrock, may be less than the modelled thermal depth of the soil profile. If the depth to bedrock occurs within a soil layer, CLASS assigns the specified mineral or organic soil characteristics to the part of the layer above bedrock, and values corresponding to rock to the portion below. All layers fully below <em>SDEP</em> are treated as rock. These layers will be given a sand value of -3.</li>
 </ul>
 </li>
-<li>SOCIROT Soil colour index<ul>
-<li>The soil colour index is used to assign the soil albedo. It ranges from 1 to 20; low values indicate bright soils and high values indicate dark (see Lawrence and Chase (2007) <a class="el" href="citelist.html#CITEREF_Lawrence2007-bc">[49]</a>). The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in <a class="el" href="CLASSB_8f.html">CLASSB.f</a>.</li>
+<li><em>SOCI</em> Soil colour index<ul>
+<li>The soil colour index is used to assign the soil albedo. It ranges from 1 to 20; low values indicate bright soils and high values indicate dark (see Lawrence and Chase (2007) <a class="el" href="citelist.html#CITEREF_Lawrence2007-bc">[49]</a>). The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in soilProperties.f90 .</li>
 </ul>
 </li>
 </ul>
-<p>CLASS provides a means of accounting for the possibility of the depth to bedrock falling within a layer, and therefore of phase changes of water taking place in only the upper part of the layer, by introducing the variable TBASROT, which refers to the temperature of the lower part of the layer containing the bedrock. At the beginning of the time step the temperature of the upper part of the layer is disaggregated from the overall average layer temperature using the saved value of TBASROT. The heat flow between the upper part of the soil layer and the lower part is diagnosed from the heat flux at the top of the layer. The upper layer temperature and TBASROT are stepped ahead separately, and the net heat flux in the upper part of the layer is used in the phase change of water if appropriate. The upper layer temperature and TBASROT are re-aggregated at the end of the time step to yield once again the overall average layer temperature.</p>
+<p>CLASS provides a means of accounting for the possibility of the depth to bedrock falling within a layer, and therefore of phase changes of water taking place in only the upper part of the layer, by introducing the variable <em>TBAS</em>, which refers to the temperature of the lower part of the layer containing the bedrock. At the beginning of the time step the temperature of the upper part of the layer is disaggregated from the overall average layer temperature using the saved value of <em>TBAS</em>. The heat flow between the upper part of the soil layer and the lower part is diagnosed from the heat flux at the top of the layer. The upper layer temperature and <em>TBAS</em> are stepped ahead separately, and the net heat flux in the upper part of the layer is used in the phase change of water if appropriate. The upper layer temperature and <em>TBAS</em> are re-aggregated at the end of the time step to yield once again the overall average layer temperature.</p>
 <p>Two variables, assumed to be constant over the grid cell, are provided if required for atmospheric model runs:</p>
 <ul>
-<li>GGEOROW Geothermal heat flux <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/><ul>
+<li><em>GGEO</em> Geothermal heat flux [ <img class="formulaInl" alt="$W m^{-2} $" src="form_1685.png"/>]<ul>
 <li>Unless the soil depth is very large and/or the run is very long, the geothermal heat flux can be set to zero. Since this is rarely used, this is not presently read in from the initialization file.</li>
 </ul>
 </li>
-<li>Z0ORROW Orographic roughness length [m]<ul>
-<li>Z0ORROW is the surface roughness length representing the contribution of orography or other terrain effects to the overall roughness, which becomes important when the modelled grid cell is very large (e.g. in a GCM). For field studies it can be set to zero. It is presently not required as input for a model run and is set to zero in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a></li>
+<li><em>Z0OR</em> Orographic roughness length [m]<ul>
+<li><em>Z0OR</em> is the surface roughness length representing the contribution of orography or other terrain effects to the overall roughness, which becomes important when the modelled grid cell is very large (e.g. in a GCM). For field studies it can be set to zero. It is presently not required as input for a model run and is set to zero in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a></li>
 </ul>
 </li>
 </ul>
-<p>Four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used (Presently they are not read in).</p>
+<p>Four parameters are required for modelling lateral movement of soil water: <em>GRKF</em>, <em>WFCI</em>, <em>WFSF</em> and <em>XSLP</em>. However, the routines for interflow and streamflow modelling are not implemented in this version of CLASSIC, so they are not read in.</p>
 <ul>
-<li>grclarea Area of grid cell <img class="formulaInl" alt="$[km^{2} ]$" src="form_1567.png"/></li>
+<li><em>grclarea</em> Area of grid cell [ <img class="formulaInl" alt="$km^{2}$" src="form_1568.png"/> ]</li>
 </ul>
-<p>Area of the grid cell is required if CTEM is on. It is used for calculations relating to fire (<a class="el" href="namespacedisturbance__scheme.html#a790568168f75647afbda949e92aaba28">disturbance_scheme::disturb</a>) and land use change (<a class="el" href="namespacelanduse__change.html#a1265e66b0149913c626546a9a86a3892">landuse_change::luc</a>). Both of those subroutines are not generally used (or meaningful) at the point scale so the grclarea can be set to an arbitrary number like 100 <img class="formulaInl" alt="$km^{2}$" src="form_1568.png"/>.</p>
+<p>Area of the grid cell is required if CTEM is on. It is used for calculations relating to fire (<a class="el" href="namespacedisturbance__scheme.html#a790568168f75647afbda949e92aaba28">disturbance_scheme::disturb</a>) and land use change (<a class="el" href="namespacelanduse__change.html#a1265e66b0149913c626546a9a86a3892">landuse_change::luc</a>). Both of those subroutines are not generally used (or meaningful) at the point scale so for point scale runs <em>grclarea</em> can be set to an arbitrary number like 100 <img class="formulaInl" alt="$km^{2}$" src="form_1568.png"/>.</p>
 <h1><a class="anchor" id="initProgVar"></a>
 Initialization of Prognostic Variables</h1>
 <h2><a class="anchor" id="initPhysProgVar"></a>
 Initialization of Physics Prognostic Variables</h2>
 <p>CLASSIC requires initial values of the land surface prognostic variables, either from the most recent atmospheric model integration or from field measurements. These are listed below, with guidelines for specifying values for each if measured values are not available.</p>
 <ul>
-<li>TBARROT Temperature of soil layers [K]</li>
-<li>THICROT Volumetric frozen water content of soil layers <img class="formulaInl" alt="$[m^3 m^{-3} ]$" src="form_239.png"/></li>
-<li>THLQROT Volumetric liquid water content of soil layers <img class="formulaInl" alt="$[m^3 m^{-3} ]$" src="form_239.png"/></li>
+<li><em>TBAR</em> Temperature of soil layers [K]</li>
+<li><em>THIC</em> Volumetric frozen water content of soil layers [ <img class="formulaInl" alt="$m^3 m^{-3}$" src="form_41.png"/> ]</li>
+<li><em>THLQ</em> Volumetric liquid water content of soil layers [ <img class="formulaInl" alt="$m^3 m^{-3} $" src="form_1686.png"/>]</li>
 </ul>
-<p>TBARROT, THLQROT and THICROT are required for each of the modelled soil layers. Thin soil layers near the surface equilibrate quickly, but thicker, deeper layers respond more slowly, and long-term biases can be introduced into the simulation if their temperatures and moisture contents are not initialized to reasonable values. If measured values are not available, for the moisture contents, it may be better to err on the low side, since soil moisture recharge typically takes place on shorter time scales than soil moisture loss. Field capacity is commonly used as an initial value. If the soil layer temperature is above freezing, the liquid moisture content would be set to the field capacity and the frozen moisture content to zero; if the layer temperature is below zero, the liquid moisture content would be set to the minimum value and the frozen moisture content to the field capacity minus the minimum value (THLMIN; see <a class="el" href="CLASSB_8f.html">CLASSB.f</a>). Very deep soil temperatures do not have a large effect on surface fluxes, but errors in their initial values can adversely affect hydrological simulations. For rock or ice layers, THLQROT and THICROT should both be set to zero.</p>
+<p><em>TBAR</em>, <em>THLQ</em> and <em>THIC</em> are required for each of the modelled soil layers. Thin soil layers near the surface equilibrate quickly, but thicker, deeper layers respond more slowly, and long-term biases can be introduced into the simulation if their temperatures and moisture contents are not initialized to reasonable values or the model is not spun up for a suitably long period. If measured values are not available, for the moisture contents, it may be better to err on the low side, since soil moisture recharge typically takes place on shorter time scales than soil moisture loss. Field capacity is commonly used as an initial value. If the soil layer temperature is above freezing, the liquid moisture content would be set to the field capacity and the frozen moisture content to zero; if the layer temperature is below zero, the liquid moisture content would be set to the minimum value and the frozen moisture content to the field capacity minus the minimum value (<em>THLMIN</em>; see soilProperties.f90). Very deep soil temperatures do not have a large effect on surface fluxes, but errors in their initial values can adversely affect hydrological simulations. For rock or ice sheet layers, <em>THLQ</em> and <em>THIC</em> should both be set to zero.</p>
 <ul>
-<li>TBASROT Temperature of bedrock in the last permeable soil layer [K]</li>
+<li><em>TBAS</em> Temperature of bedrock in the last permeable soil layer [K]</li>
 </ul>
-<p>If CLASSIC is run with more than 3 soil layers, a separate calculation of TBASROT is deemed unnecessary (see <a class="el" href="TMCALC_8f.html">TMCALC.f</a>). If the model is run with only 3 layers then TBASROT is used. Generally this can be initialized to the temperature of the third soil layer (as is presently done in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a>) and is not required to be read in from the initialization file.</p>
+<p>If CLASSIC is run with more than 3 soil layers, a separate calculation of <em>TBAS</em> is deemed unnecessary (see <b><a class="el" href="TMCALC_8f.html" title="Calculates overland flow; steps ahead pond and soil layer temperatures, and checks for freezing of th...">TMCALC.f</a></b>). If the model is run with only 3 layers then <em>TBAS</em> is used. Generally this can be initialized to the temperature of the third soil layer (as is presently done in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a>) and it is not required to be read in from the initialization file.</p>
 <ul>
-<li>SNOROT Mass of snow pack <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
-<li>TSNOROT Snowpack temperature [K]</li>
-<li>WSNOROT Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
-<li>ALBSROT Snow albedo [ ]</li>
-<li>RHOSROT Density of snow <img class="formulaInl" alt="$[kg m^{-3} ]$" src="form_234.png"/></li>
+<li><em>SNO</em> Mass of snow pack [ <img class="formulaInl" alt="$kg m^{-2}$" src="form_31.png"/> ]</li>
+<li><em>TSNO</em> Snowpack temperature [K]</li>
+<li><em>WSNO</em> Liquid water content of snow pack [ <img class="formulaInl" alt="$kg m^{-2} $" src="form_1687.png"/>]</li>
+<li><em>ALBS</em> Snow albedo [ ]</li>
+<li><em>RHOS</em> Density of snow [ <img class="formulaInl" alt="$kg m^{-3}$" src="form_44.png"/> ]</li>
 </ul>
-<p>It is best to begin a simulation in snow-free conditions, so that the snow simulation can start from the simplest possible state where SNOROT, TSNOROT, ALBSROT, RHOSROT and WSNOROT are all initialized to zero. If erroneous values of the snow variables are specified as initial conditions, this can lead to a persistent bias in the land surface simulation. It can also lead to instability and resulting model crashes. These variables are, however, written to the restart file allowing one to restart the model from the same state (for example, after a spinup to begin a transient simulation). WSNOROT is not written or read-in from the restart file as its influence is small.</p>
+<p>It is best to begin a simulation in snow-free conditions, so that the snow simulation can start from the simplest possible state where <em>SNO</em>, <em>TSNO</em>, <em>ALBS</em>, <em>RHOS</em> and <em>WSNO</em> are all initialized to zero. If erroneous values of the snow variables are specified as initial conditions, this can lead to a persistent bias in the land surface simulation. It can also lead to instability and resulting model crashes. These variables are, however, written to the restart file allowing one to restart the model from the same state (for example, after a spinup to begin a transient simulation). <em>WSNO</em> is not written or read-in from the restart file as its influence is small.</p>
 <ul>
-<li>TACROT Temperature of air within vegetation canopy [K]</li>
-<li>TCANROT Vegetation canopy temperature [K]</li>
-<li>RCANROT Intercepted liquid water stored on canopy <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
-<li>SCANROT Intercepted frozen water stored on canopy <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
-<li>QACROT Specific humidity of air within vegetation canopy space <img class="formulaInl" alt="$[kg kg^{-1} ]$" src="form_233.png"/></li>
-<li>CMAIROT Aggregated mass of vegetation canopy <img class="formulaInl" alt="$[kg m^{-2} ]$" src="form_232.png"/></li>
+<li><em>TAC</em> Temperature of air within vegetation canopy [K]</li>
+<li><em>TCAN</em> Vegetation canopy temperature [K]</li>
+<li><em>RCAN</em> Intercepted liquid water stored on canopy [ <img class="formulaInl" alt="$kg m^{-2} $" src="form_1687.png"/>]</li>
+<li><em>SCAN</em> Intercepted frozen water stored on canopy [ <img class="formulaInl" alt="$kg m^{-2} $" src="form_1687.png"/>]</li>
+<li><em>QAC</em> Specific humidity of air within vegetation canopy space [ <img class="formulaInl" alt="$kg kg^{-1} $" src="form_1688.png"/>]</li>
+<li><em>CMAI</em> Aggregated mass of vegetation canopy [ <img class="formulaInl" alt="$kg m^{-2} $" src="form_1687.png"/>]</li>
 </ul>
-<p>The vegetation canopy has a relatively small heat capacity and water storage capacity compared with the soil, so its temperature and intercepted water stores equilibrate quite quickly. TCANROT and TACROT can be initialized to the air temperature and QACROT to the air specific humidity. RCANROT and SCANROT can be initialized to zero. CMAIROT, which is used only in the diagnostic energy balance check during the time step, can also be set to zero. At present the initialization file does not contain TACROT, QACROT or CMAIROT. All are initialized in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a></p>
+<p>The vegetation canopy has a relatively small heat capacity and water storage capacity compared with the soil, so its temperature and intercepted water stores equilibrate quite quickly. <em>TCAN</em> and <em>TAC</em> can be initialized to the air temperature and <em>QAC</em> to the air specific humidity. <em>RCAN</em> and <em>SCAN</em> can be initialized to zero. <em>CMAI</em>, which is used only in the diagnostic energy balance check during the time step, can also be set to zero. At present the initialization file does not contain <em>TAC</em>, <em>QAC</em> or <em>CMAI</em>. All are initialized in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a></p>
 <ul>
-<li>GROROT Vegetation growth index [ ]</li>
+<li><em>GRO</em> Vegetation growth index [ ]<ul>
+<li>GROROT should be initialized to 1 during the growing season and to 0 otherwise.</li>
 </ul>
-<p>GROROT should be initialized to 1 during the growing season and to 0 otherwise.</p>
-<ul>
-<li>TPNDROT Temperature of ponded water [K]</li>
-<li>TSFSROT Ground surface temperature over subarea [K]</li>
-<li>ZPNDROT Depth of ponded water on surface [m]</li>
+</li>
+<li><em>TPND</em> Temperature of ponded water [K]</li>
+<li><em>TSFS</em> Ground surface temperature over subarea [K]</li>
+<li><em>ZPND</em> Depth of ponded water on surface [m]</li>
 </ul>
-<p>Surface ponded water is a small term and is ephemeral in nature, so ZPNDROT and TPNDROT can both be initialized to zero. TSFSROT is included simply to provide a first guess for the surface temperature iteration in the next time step, so it can be initialized to an arbitrary value (presently it is not read in but rather set in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a> for the snow-covered subareas of the surface to the freezing point of water; for the snow-free subareas to the temperature of the first soil layer).</p>
+<p>Surface ponded water is a small term and is ephemeral in nature, so <em>ZPND</em> and <em>TPND</em> can both be initialized to zero. <em>TSFS</em> is included simply to provide a first guess for the surface temperature iteration in the next time step, so it can be initialized to an arbitrary value (presently it is not read in but rather set in <a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">model_state_drivers::read_initialstate</a> for the snow-covered subareas of the surface to the freezing point of water; for the snow-free subareas to the temperature of the first soil layer).</p>
 <h2><a class="anchor" id="initCTEMProgVar"></a>
 Initialization of Biogeochemical Prognostic Variables</h2>
 <p>CTEM's initialization variables are generally PFT dependent. Several model options require extra initialization variables which are described in <a class="el" href="CTEMaddInputs.html">Additional inputs depending on model configuration</a>.</p>
 <ul>
-<li>gleafmas Green leaf mass <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/></li>
-<li>bleafmas Brown leaf mass <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/><ul>
+<li><em>gleafmas</em> Green leaf mass [ <img class="formulaInl" alt="$kg C m^{-2} $" src="form_1689.png"/>]</li>
+<li><em>bleafmas</em> Brown leaf mass [ <img class="formulaInl" alt="$kg C m^{-2} $" src="form_1689.png"/>]<ul>
 <li>Brown leaf mass is only for grasses, all of other PFTs have a value of zero.</li>
 </ul>
 </li>
-<li>rootmass Root mass <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/><ul>
-<li>Root mass is assumed to include both the fine and coarse root masses of the plants. No distinction is made.</li>
+<li><em>rootmass</em> Root mass [ <img class="formulaInl" alt="$kg C m^{-2} $" src="form_1689.png"/>]<ul>
+<li>Root mass is assumed to include both the fine and coarse root masses of the plants. No distinction is made within the model.</li>
 </ul>
 </li>
-<li>stemmass Green Stem mass <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/><ul>
+<li><em>stemmass</em> Stem mass [ <img class="formulaInl" alt="$kg C m^{-2} $" src="form_1689.png"/>]<ul>
 <li>Grasses and crops have no stem mass so are given values of zero.</li>
 </ul>
 </li>
-<li>soilcmas Soil C mass per soil layer <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/></li>
-<li>litrmass Litter mass per soil layer <img class="formulaInl" alt="$[kg C m^{-2} ]$" src="form_1566.png"/><ul>
-<li>Both litrmass and soilcmas are per PFT but also the arrays contain two additional values: <b>bareground (icc + 1)</b>, where icc is the number of CTEM PFTs), and the <b>land use change (LUC) product pool (icc + 2)</b>. Soil C can be within the bare ground when land use change, competition or fire create bare ground that used to have vegetation. That C then continues to respire even though the vegetation have left that area. The LUC product pool represent the C that is converted into LUC products (soil C is 'furniture'- effectively a long lived C storage pool for the C removed from the landscape due to LUC whereas litter is 'paper', a short lived pool). The LUC C respires in response to environmental cues similar to litter and soil C in a manner similar to that material being in a landfill, for e.g.</li>
+<li><em>soilcmas</em> Soil C mass per soil layer [ <img class="formulaInl" alt="$kg C m^{-2} $" src="form_1689.png"/>]</li>
+<li><em>litrmass</em> Litter mass per soil layer [ <img class="formulaInl" alt="$kg C m^{-2} $" src="form_1689.png"/>]<ul>
+<li>Both <em>litrmass</em> and <em>soilcmas</em> are per PFT but also the arrays contain two additional values:</li>
+<li><b>bareground (icc + 1)</b>, where icc is the number of CTEM PFTs, and the <b>land use change (LUC) product pool (icc + 2)</b>. Soil C can be within the bare ground when land use change, competition or fire create bare ground that used to have vegetation. That C then continues to respire even though the vegetation have left that area. The LUC product pool represent the C that is converted into LUC products (soil C is 'furniture'- effectively a long lived C storage pool for the C removed from the landscape due to LUC whereas litter is 'paper', a short lived pool). The LUC C respires in response to environmental cues similar to litter and soil C in a manner similar to that material being in a landfill, for e.g.</li>
 </ul>
 </li>
 </ul>
-<p>Specify initialization amounts for green leaf biomass, brown leaf biomass, stem biomass, litter and soil carbon mass for the CTEM PFTs. When growing vegetation from bare ground set these to zero or if no values are known.</p>
+<p>Specify initialization amounts for green leaf, brown leaf, root and stem biomass, litter and soil carbon mass for each CTEM PFT. When growing vegetation from bare ground set these to zero or if no values are known.</p>
 <ul>
-<li>lfstatus Leaf pheological state []<ul>
+<li><em>lfstatus</em> Leaf pheological state [ ]<ul>
 <li>The phenology subroutine of CTEM tracks leaf status according to four plants states, 1) leaf onset or maximum growth, 2) normal growth, 3) leaf fall, and 4) no leaves state. When leaf status is set to 4 the model thinks there are no leaves. When initializing from bare ground with no vegetation set this to 4.</li>
 </ul>
 </li>
-<li>pandays Days with positive net photosynthesis [Days]<ul>
+<li><em>pandays</em> Days with positive net photosynthesis [Days]<ul>
 <li>The phenology subroutine of CTEM tracks days with positive net photosynthesis to initiate leaf onset. When net photosynthesis is positive for seven days, favourable weather is assumed to arrive and, leaf onset begins. If this variable is set to 7 then the model will think that favourable weather has arrived. When initializing from bare ground with no vegetation set this variable to 0.</li>
 </ul>
 </li>
@@ -338,24 +354,19 @@ Initialization of Biogeochemical Prognostic Variables</h2>
 Example model setups</h1>
 <p>Here are a few example situations for physics only runs (CLASS alone).</p>
 <ol type="1">
-<li>sum(FCAN) = 1 and FARE &gt; 0 - Simulate all vegetated ground and no bare ground. If FCAN(ican+1) &gt; 0 this includes some urban area.</li>
-<li>sum(FCAN) &lt; 1 and FARE &gt; 0 - Simulate vegetated ground and some bare ground (1 - sum(FCAN)). If FCAN(ican+1) &gt; 0 this includes some urban area.</li>
-<li>sum(FCAN) = 0 and FARE &gt; 0 - Only simulate bare ground.</li>
-<li>sum(FCAN) = 0 and FARE = 0 - Don't simulate this cell, it is a lake or something.</li>
+<li>sum(<em>FCAN</em>) = 1 and <em>FARE</em> &gt; 0 - Simulate all vegetated ground with no bare ground. If <em>FCAN(ican+1)</em> &gt; 0 this includes some urban area.</li>
+<li>sum(<em>FCAN</em>) &lt; 1 and <em>FARE</em> &gt; 0 - Simulate vegetated ground and some bare ground (1 - sum(<em>FCAN</em>)). If <em>FCAN(ican+1)</em> &gt; 0 this includes some urban area.</li>
+<li>sum(<em>FCAN</em>) = 0 and <em>FARE</em> &gt; 0 - Only simulate bare ground.</li>
+<li>sum(<em>FCAN</em>) = 0 and <em>FARE</em> = 0 - Don't simulate this cell, it is a lake or something.</li>
 </ol>
-<p>Variations of <b>bare ground</b>:</p><ol type="1">
-<li>If SAND = -4 then this cell is a glacier. Set all ground layers SAND to -4.</li>
-<li>If SAND = -3 then this layer is rock. The SAND flag can differ per layer so you may have permeable soils underlain by bedrock in which case your soil will have SAND values &gt; 0 but your bedrock layers should be SAND = -3. If the whole ground column is rock then all layers should be set to -3.</li>
-<li>If SAND = -2 then this layer is peat.</li>
-</ol>
-<p>If biogeochemistry is turned on (CTEM on) then we have a subtle difference in that fcancmx is used and determines the fcan(1:ican) values. Assumedly if you have some vegetation then at least one ground layer should be soil (SAND &gt; 0). </p>
+<p>If biogeochemistry is turned on (CTEM on) then we have a subtle difference in that <em>fcancmx</em> is used and determines the <em>fcan(1:ican)</em> values. Assumedly if you have some vegetation then at least one ground layer should be soil (<em>SAND</em> &gt; 0). </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:21 for CLASSIC by
+    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

@@ -104,12 +104,13 @@ $(document).ready(function(){initNavTree('CTEMaddInputs.html','');});
 </ol>
 </li>
 <li><a class="el" href="CTEMaddInputs.html#initPeat">Peatlands</a></li>
-<li><a class="el" href="CTEMaddInputs.html#inputLUC">Land use change (LUC)</a> <hr/>
+<li><a class="el" href="CTEMaddInputs.html#inputLUC">Land use change (LUC)</a></li>
+<li><a class="el" href="CTEMaddInputs.html#tracers">Tracers</a> <hr/>
 </li>
 </ol>
 <h1><a class="anchor" id="initCO2"></a>
 Atmospheric carbon dioxide concentration</h1>
-<p><b>Annual</b> atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and 'ncdump -hs' on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units. </p><pre class="fragment">    dimensions:
+<p><b>Annual</b> atmospheric carbon dioxide concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file. If you use the NCO tool ncdump, and <code>ncdump -hs</code> on a properly formatted file you should yield something similar to below (only relevant sections shown here for a file with 318 years of data). Note the time units. <b>FLAG return to this!! The chunking should be listed here</b> </p><pre class="fragment">    dimensions:
         time = 318 ;
     variables:
         float mole_fraction_of_carbon_dioxide_in_air(time) ;
@@ -130,10 +131,10 @@ Atmospheric carbon dioxide concentration</h1>
 </pre><p>The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.</p>
 <h1><a class="anchor" id="initCH4"></a>
 Atmospheric methane concentration</h1>
-<p><b>Annual</b> atmospheric methane concentrations are needed for CLASS+CTEM runs. The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.</p>
+<p><b>Annual</b> atmospheric methane concentrations are needed for CLASSIC runs with biogeochemistry on (CTEM on). The annual values are read in from a netcdf file similar to CO2. The file format is the same as CO2. The variable name is not important as long as it is the only variable in the file besides time. Units expected are ppmv.</p>
 <h1><a class="anchor" id="initLightFire"></a>
 Lightning frequency for fire ignition</h1>
-<p><b>Daily</b> cloud-to-ground lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use daily lightning frequency. If you have mean monthly values you can interpolate them to daily values (cdo inttime is useful here). An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. Note the units of the lght_lisotd and time variables. </p><pre class="fragment">    netcdf lisotd_1995_2014_climtlgl_lghtng_as_ts_1700_2050_chunked {
+<p><b>Daily cloud-to-ground</b> lightning frequency is used by the disturbance subroutine for fire. The code at present is set to use daily lightning frequency. If you have mean monthly values you can interpolate them to daily values (cdo inttime is useful here). An <code>ncdump -hs</code> of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. Note the units of the lght_lisotd and time variables. </p><pre class="fragment">    netcdf lisotd_1995_2014_climtlgl_lghtng_as_ts_1700_2050_chunked {
     dimensions:
         lat = 64 ;
         time = UNLIMITED ; // (128535 currently)
@@ -171,7 +172,7 @@ Lightning frequency for fire ignition</h1>
             time:_Endianness = "little" ;
 </pre><h1><a class="anchor" id="initPopd"></a>
 Population density for fire ignition/suppresion</h1>
-<p>Fire uses a time series of <b>annually</b> varying population density for fire suppression and ignition. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. </p><pre class="fragment">      netcdf POPD_annual_1700_2017_T63_chunked {
+<p>Fire uses a time series of <b>annually</b> varying population density for fire suppression and ignition. An <code>ncdump -hs</code> of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, and time. </p><pre class="fragment">      netcdf POPD_annual_1700_2017_T63_chunked {
       dimensions:
         lat = 64 ;
         lon = 128 ;
@@ -208,26 +209,26 @@ Population density for fire ignition/suppresion</h1>
             time:_Endianness = "little" ;
 </pre><h1><a class="anchor" id="initClimComp"></a>
 Climatic variables for PFT competition simulations</h1>
-<p>The PFT competition scheme (<a class="el" href="namespacecompetition__scheme.html">competition_scheme</a>) uses bioclimatic variables to determine if a PFT can establish and attempt to colonize a grid cell (see <a class="el" href="namespacecompetition__scheme.html#a8976936d6f76c8619f6602153b8355f9">competition_scheme::bioclim</a> and <a class="el" href="namespacecompetition__scheme.html#a39e601873347975c05eae5e06202729c">competition_scheme::existence</a>). These climatic variables are written to the model restart file for use to initialize a future run. They are also either read in from the initialization file or are determined during a model run (model switch- inibioclim).</p>
+<p>The PFT competition scheme (<a class="el" href="namespacecompetition__scheme.html">competition_scheme</a>) uses bioclimatic variables to determine if a PFT can establish and attempt to colonize a grid cell (see <a class="el" href="namespacecompetition__scheme.html#a8976936d6f76c8619f6602153b8355f9">competition_scheme::bioclim</a> and <a class="el" href="namespacecompetition__scheme.html#a39e601873347975c05eae5e06202729c">competition_scheme::existence</a>). These climatic variables are written to the model restart file for use to initialize a future run. They are also either read in from the initialization file or are determined during a model run (model switch <em>inibioclim</em> in the job options file).</p>
 <ul>
-<li>anndefct Annual water deficit, i.e. daily values of potential evaporation that exceed precipitation accumulated over a year [mm]</li>
-<li>annsrpls Annual water deficit, i.e. daily values of precipitation that exceed potential evaporation accumulated over a year [mm]</li>
-<li>annpcp Annual precipitation [mm]</li>
-<li>aridity Aridity index, ratio of potential evaporation to precipitation []</li>
-<li>defctmon Number of months in a year with water deficit i.e. precipitation less than potential evaporation [months]</li>
-<li>srplsmon Number of months in a year with surplus water i.e. precipitation more than potential evaporation [months]</li>
-<li>dry_season_length Length of consecutive dry season in months, where a dry month is defined as the month in which potential evaporation exceeds precipitation [months]</li>
-<li>gdd5 Growing degree days above 5 C [days]</li>
-<li>tcoldm Temperature of the coldest month [deg C]</li>
-<li>twarmm Temperature of the warmest month [deg C]</li>
+<li><em>anndefct</em> Annual water deficit, i.e. daily values of potential evaporation that exceed precipitation accumulated over a year [mm]</li>
+<li><em>annsrpls</em> Annual water deficit, i.e. daily values of precipitation that exceed potential evaporation accumulated over a year [mm]</li>
+<li><em>annpcp</em> Annual precipitation [mm]</li>
+<li><em>aridity</em> Aridity index, ratio of potential evaporation to precipitation [ ]</li>
+<li><em>defctmon</em> Number of months in a year with water deficitm, i.e. precipitation less than potential evaporation [months]</li>
+<li><em>srplsmon</em> Number of months in a year with surplus water, i.e. precipitation more than potential evaporation [months]</li>
+<li><em>dry_season_length</em> Length of consecutive dry season in months, where a dry month is defined as the month in which potential evaporation exceeds precipitation [months]</li>
+<li><em>gdd5</em> Growing degree days above 5 C [days]</li>
+<li><em>tcoldm</em> Temperature of the coldest month [deg C]</li>
+<li><em>twarmm</em> Temperature of the warmest month [deg C]</li>
 </ul>
 <h1><a class="anchor" id="initRice"></a>
 Rice agriculature</h1>
-<p>COMBAK</p>
+<p><b>COMBAK</b></p>
 <p>float rice(months, lat, lon) ; rice:_FillValue = -999.f ; rice:units = "-" ; rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;</p>
 <h1><a class="anchor" id="initWetSlope"></a>
 Orographic information for dynamic wetland scheme</h1>
-<p>Eight slope based fractions a read in from the model initialization file for calculating dynamic wetland fractions. As the soil moisture in a grid cell increases above specified thresholds then the really flat portions of the grid cell are assumed to gradually turn into wetlands. The eight slope based fractions correspond to the fraction of the grid cell that have slope less than 0.025%, 0.05%, 0.1%, 0.15%, 0.20%, 0.25%, 0.3% and 0.35% . The numbers used by CTEM are based on 1/60th degree (1 minute) resolution digital elevation data. The relevant variables in the initialization file are shown below. In the file, slope is a dimension and slopefrac is a variable. </p><pre class="fragment">    double slope(slope) ;
+<p>Eight slope based fractions are read in from the model initialization file for calculating dynamic wetland fractions. As the soil moisture in a grid cell increases above specified thresholds then the really flat portions of the grid cell are assumed to gradually turn into wetlands. The eight slope based fractions correspond to the fraction of the grid cell that have slope less than 0.025%, 0.05%, 0.1%, 0.15%, 0.20%, 0.25%, 0.3% and 0.35%. The numbers used by CLASSIC are based on 1/60th degree (1 minute) resolution digital elevation data. The relevant variables in the initialization file are shown below. In the file, <em>slope</em> is a dimension and <em>slopefrac</em> is a variable. </p><pre class="fragment">    double slope(slope) ;
       slope:long_name = "wetland slope fractions for 0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope threshold" ;
       ...
     float slopefrac(slope, tile, lat, lon) ;
@@ -271,7 +272,7 @@ Prescribed wetland area</h1>
                       time:_ChunkSizes = 65700 ;
 </pre><h1><a class="anchor" id="initPeat"></a>
 Peatland variables</h1>
-<p>Peatlands are simulated following the parameterization of <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a>. The peatland areas are specified by a ipeatland flag in the initialization file: </p><pre class="fragment">    float ipeatland(tile, lat, lon) ;
+<p>Peatlands are simulated following the parameterization of Wu et al. (2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[86]</a>. The peatland areas are specified by the <em>ipeatland</em> flag in the initialization file: </p><pre class="fragment">    float ipeatland(tile, lat, lon) ;
       ipeatland:_FillValue = -999.f ;
       ipeatland:units = "-" ;
       ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
@@ -289,15 +290,15 @@ Peatland variables</h1>
       dmoss:_FillValue = -999.f ;
       dmoss:units = "m" ;
       dmoss:long_name = "Depth of living moss" ;
-</pre><p>If you are running a single site peatland then the peatland tile is the whole grid cell. If you are running large regions you may wish to have the peatlands as a separate tile. This is done by having an nmtest &gt; 1. </p><pre class="fragment">      int nmtest(lat, lon) ;
+</pre><p>If you are running a single site peatland then the peatland tile is the whole grid cell. If you are running large regions you may wish to have the peatlands as a separate tile. This is done by having an <em>nmtest</em> &gt; 1 and setting up each tile appropriately. </p><pre class="fragment">      int nmtest(lat, lon) ;
         nmtest:_FillValue = -999 ;
         nmtest:long_name = "Number of tiles in each grid cell" ;
 </pre><h1><a class="anchor" id="inputLUC"></a>
 Land use change (LUC)</h1>
-<p>The LUC file contains an <b>annual</b> time series of fractional coverage of each of the CTEM PFTs. An ncdump -hs of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, <b>lev</b> and time. </p><pre class="fragment">    netcdf GCP_2018_land_cover_CTEM_fractions_1700_2018_T63_chunked {
+<p>The LUC file contains an <b>annual</b> time series of fractional coverage of each of the CLASSIC PFTs. An <code>ncdump -hs</code> of a properly formatted file is below. Note the file is chunked for a T63 grid (128 x 64), other grids may require different chunk sizes for optimal performance. The variable name is not important as long as it is the only variable in the file besides lat ,lon, <b>lev</b> and time. </p><pre class="fragment">    netcdf GCP_2018_land_cover_CTEM_fractions_1700_2018_T63_chunked {
     dimensions:
         time = UNLIMITED ; // (319 currently)
-        **lev = 9** ;
+        **lev = 9** ; ! This corresponds to number of biogeochemical (CTEM) PFTs.
         lat = 64 ;
         lon = 128 ;
     variables:
@@ -333,13 +334,17 @@ Land use change (LUC)</h1>
             time:calendar = "proleptic_gregorian" ;
             time:_Storage = "chunked" ;
             time:_ChunkSizes = 319 ;
-            time:_Endianness = "little" ;</pre> </div></div><!-- contents -->
+            time:_Endianness = "little" ;
+</pre><h1><a class="anchor" id="tracers"></a>
+Tracers</h1>
+<p>In development. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
+    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

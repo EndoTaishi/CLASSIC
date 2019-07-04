@@ -1,5 +1,8 @@
 var NAVTREEINDEX9 =
 {
+"structctem__statevars_1_1veg__rot.html#ac31fd6a90e0c93f0568ea04b44275317":[6,0,1,9,50],
+"structctem__statevars_1_1veg__rot.html#ac3bc64976cb4deecb67382e92beb9e9b":[6,0,1,9,60],
+"structctem__statevars_1_1veg__rot.html#ac6480cd6c98f68577256aeb75d6dfdbd":[6,0,1,9,83],
 "structctem__statevars_1_1veg__rot.html#ac650e4cdd83740ac7ff27189ad342013":[6,0,1,9,9],
 "structctem__statevars_1_1veg__rot.html#ac9545d9728428a476c5610c881bfe39f":[6,0,1,9,142],
 "structctem__statevars_1_1veg__rot.html#aca1b008eac61979976c79f37fbb4bd87":[6,0,1,9,59],

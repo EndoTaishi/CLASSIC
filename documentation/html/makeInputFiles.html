@@ -87,7 +87,7 @@ $(document).ready(function(){initNavTree('makeInputFiles.html','');});
 <div class="textblock"><ol type="1">
 <li><a class="el" href="makeInputFiles.html#makeMet">Preparation of files for meteorological inputs</a></li>
 <li><a class="el" href="makeInputFiles.html#makeInit">Preparation of the model initialization file</a></li>
-<li>Greenhouse gas inputs</li>
+<li><a class="el" href="makeInputFiles.html#ghgfiles">Greenhouse gas inputs files</a></li>
 <li><a class="el" href="makeInputFiles.html#makeOther">Making input files for other input variables</a></li>
 <li><a class="el" href="makeInputFiles.html#inputFileForm">Some notes on input file format</a> <hr/>
 </li>
@@ -116,7 +116,7 @@ Preparation of files for meteorological inputs</h1>
             lat:_Endianness = "little" ;
         double time(time) ;
             time:standard_name = "time" ;
-            time:units = "day as %Y%m%d.%f" ;
+            time:units = "**day as %Y%m%d.%f**" ;
             time:calendar = "proleptic_gregorian" ;
             time:axis = "T" ;
             time:_Storage = "chunked" ;
@@ -131,33 +131,21 @@ Preparation of files for meteorological inputs</h1>
             pres:_ChunkSizes = 464280, 8, 16 ;
             pres:_Endianness = "little" ;
 
-    // global attributes:
-            :CDI = "Climate Data Interface version 1.9.0 (http://mpimet.mpg.de/cdi)" ;
-            :Conventions = "CF-1.4" ;
-            :source = "Data is provided from the Japanese 55-year Reanalysis (JRA-55) project carried out by the Japan Meteorological Agency (JMA)" ;
-            :institution = "Produced at the Climatic Research Unit, UEA, Norwich UK" ;
-            :title = "CRUJRA Pressure: a forcing dataset based on JRA-55 on a half-degree grid" ;
-            :comment = "A copy of JRA-55 year 1958 regridded to CRU 0.5 grid" ;
-            :version_control = "V1.1: Regridding algorithm improvements and other corrections" ;
-            :CDO = "Climate Data Operators version 1.9.0 (http://mpimet.mpg.de/cdo)" ;
-            :NCO = "4.3.4" ;
-            :_SuperblockVersion = 2 ;
-            :_IsNetcdf4 = 1 ;
-            :_Format = "netCDF-4" ;
     }
 </pre><p> Importantly,</p>
 <ul>
 <li>Only one variable per file besides lon, lat, and time.</li>
 <li>Note the time units.</li>
 <li>The file is chunked (which depends on the grid being used. What you see here is optimal for T63 global runs). Chunking is not needed for site-level runs. More on chunking in <a class="el" href="makeInputFiles.html#inputFileForm">Some notes on input file format</a>.</li>
-<li>CLASSIC expects the first time step to be 0 hour 0 minute (in hh:mm:ss format - 00:00:00).</li>
+<li>CLASSIC expects the first time step to be 0 hour 0 minute (in hh:mm:ss format 00:00:00).</li>
 </ul>
-<p>If you have ACSCII met files from a site, see <a class="el" href="asciiMet.html">ASCII to NetCDF met file loader</a> to use the provided tool to convert them to the appropriate netCDF format.</p>
+<p>If you have existing ACSCII met files from a site, see <a class="el" href="asciiMet.html">ASCII to NetCDF met file loader</a> to use the provided tool to convert them to the appropriate netCDF format.</p>
 <h1><a class="anchor" id="makeInit"></a>
 Preparation of the model initialization file</h1>
 <p>If you have the old format .INI (and CTEM's .CTM) initialization files, there is a <a class="el" href="initTool.html">tool to convert them to netCDF format</a> for use in CLASSIC. The tool itself is located in tools/initFileConverter.</p>
-<p>If you have a netCDF format initialization/restart file that you wish to edit, you can use the <a class="el" href="modifyRS.html">script created for that purpose</a>. It is located in tools/modifyRestartFile.</p>
-<p>An ncdump of a properly formatted, global-scale, initialization file is included below. Note that for a physics-only run (CTEM off), many of the variables will not be read in. See the <a class="el" href="index.html#main">manual's mainpage</a> for links to sections describing the variables. </p><pre class="fragment">        netcdf initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2 {
+<p>If you have a netCDF format initialization/restart file that you wish to edit, you can use the <a class="el" href="modifyRS.html">script created for that purpose</a>. It is located in tools/modifyRestartFile. This is designed for regional/global scale edits. For site-level files (single point) it is likely easier to use a combination of ncdump/ncgen.</p>
+<p>An ncdump of a properly formatted, global-scale, initialization file is included below. Note that for a physics-only run (CTEM off), many of the variables will not be read in. See the <a class="el" href="index.html#main">manual's mainpage</a> for links to sections describing the variables.</p>
+<p><b>FLAG COMBAK</b> </p><pre class="fragment">        netcdf initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2 {
         dimensions:
             tile = 1 ;
             lat = 64 ;
@@ -466,7 +454,10 @@ Preparation of the model initialization file</h1>
                 :creation_date = "Wed Sep 19 10:22:05 2018" ;
                 :created_by = "Joe Melton, CCCma" ;
         }
-</pre><h1><a class="anchor" id="makeOther"></a>
+</pre><h1><a class="anchor" id="ghgfiles"></a>
+Greenhouse gas inputs files</h1>
+<p>A tool has been created to help create GHG input files</p>
+<h1><a class="anchor" id="makeOther"></a>
 Making input files for other input variables</h1>
 <p>Most other CLASSIC input files are not desired or needed for point runs of the model. If you require input files for regional or global simulations we can likely provide you with versions we use in our runs. Please contact <a href="#" onclick="location.href='mai'+'lto:'+'joe'+'.m'+'elt'+'on'+'@ca'+'na'+'da.'+'ca'; return false;">joe.m<span style="display: none;">.nosp@m.</span>elto<span style="display: none;">.nosp@m.</span>n@can<span style="display: none;">.nosp@m.</span>ada.<span style="display: none;">.nosp@m.</span>ca</a> for access to the files we presently have available. The possible inputs are listed in Additional inputs depending on model configuration. Because these files are not required of most users we have not set up tools to help generate the files.</p>
 <h1><a class="anchor" id="inputFileForm"></a>
@@ -488,10 +479,10 @@ Some notes on input file format</h1>
 <li>The output file is checked to ensure that the chunking was done properly. This can be done using "ncdump -hs output_file". The output from "ncdump" should show the variable with the chunk sizes used by the "ncks" utility and the time variable should also be chunked with the total number of time steps. The lat and lon variables will not be chunked (i.e. will be shown as "contiguous" in the ncdump output).</li>
 </ol>
 <blockquote class="doxtable">
-<p><b>Caveats</b> </p>
+<p><b>Caveats for ECCC users</b> </p>
 </blockquote>
 <blockquote class="doxtable">
-<p><b>Note that local implementations of nco/ncks may not support all the features needed to properly process and chunk files suitable for use on the Science network. On each ppp, /usr/bin/ncks appears to work well and it is recommended to use it rather than a local implementation of nco to do the chunking if there are issues encountered locally.</b> </p>
+<p><b>Local implementations of nco/ncks may not support all the features needed to properly process and chunk files suitable for use on the ECCC Science network. On each ppp, /usr/bin/ncks appears to work well and it is recommended to use it rather than a local implementation of nco to do the chunking if there are issues encountered locally.</b> </p>
 </blockquote>
 <blockquote class="doxtable">
 <p><b>Chunking (via ncks) requires that the entire file be placed into memory. If there is insufficient RAM, the chunking will fail. Note that there is over 200 GB of RAM available on each node of the ppp.</b> </p>
@@ -502,7 +493,7 @@ Some notes on input file format</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Fri Mar 29 2019 15:25:22 for CLASSIC by
+    <li class="footer">Generated on Wed Jul 3 2019 22:27:19 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
