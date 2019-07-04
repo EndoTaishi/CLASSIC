@@ -1,4 +1,4 @@
-ASCII to NetCDF CO2 file loader
+ASCII to NetCDF CO2 file loader {#makeGHGfiles}
 ========
 
 The ghgASCIILoader program takes in ASCII GHG files and converts them to NetCDF format.
