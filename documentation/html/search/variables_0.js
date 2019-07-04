@@ -39,6 +39,8 @@ var searchData=
   ['alpha_5fhetres',['alpha_hetres',['../namespaceclassic__params.html#aaf9f46a31a137d2682de74c9c6dc5859',1,'classic_params']]],
   ['alpha_5fmoss',['alpha_moss',['../namespaceclassic__params.html#a89a9a64059efb3c75dedc6b4262e8242',1,'classic_params']]],
   ['alpha_5fphtsyn',['alpha_phtsyn',['../namespaceclassic__params.html#a25595d784771921e64e46e016d3848c5',1,'classic_params']]],
+  ['alsnoacc_5fm',['alsnoacc_m',['../structclass__statevars_1_1class__rotated.html#a3228e00864beaa5efdd1a04e5889522e',1,'class_statevars::class_rotated']]],
+  ['alsnoacc_5fmo',['alsnoacc_mo',['../structclass__statevars_1_1class__moyr__output.html#ada1dc8ec8e206cdbcfb8917f441cec42',1,'class_statevars::class_moyr_output']]],
   ['altotacc_5fm',['altotacc_m',['../structclass__statevars_1_1class__rotated.html#a07ae9d3041a6f1392b9df661d283d532',1,'class_statevars::class_rotated']]],
   ['altotacc_5fmo',['altotacc_mo',['../structclass__statevars_1_1class__moyr__output.html#a6614841f589b4658192d49676cc092cb',1,'class_statevars::class_moyr_output']]],
   ['altotacc_5fyr',['altotacc_yr',['../structclass__statevars_1_1class__moyr__output.html#addd8904d5436316eb407f18c112ed81c',1,'class_statevars::class_moyr_output']]],

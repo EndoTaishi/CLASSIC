@@ -99,9 +99,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memdesc:a39e601873347975c05eae5e06202729c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a PFT can exist in a grid cell based on climatic conditions.  <a href="#a39e601873347975c05eae5e06202729c">More...</a><br /></td></tr>
 <tr class="separator:a39e601873347975c05eae5e06202729c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a7b8206f6824e504df2840628f78e05f0"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a7b8206f6824e504df2840628f78e05f0">competition</a> (iday, il1, il2, nilg, nppveg, dofire, leapnow, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, rmatctem, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
-<tr class="memdesc:a7b8206f6824e504df2840628f78e05f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified forms. either option may be used.  <a href="#a7b8206f6824e504df2840628f78e05f0">More...</a><br /></td></tr>
-<tr class="separator:a7b8206f6824e504df2840628f78e05f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d7c7b99adda5fbec621f38b81aeb60"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a48d7c7b99adda5fbec621f38b81aeb60">competition</a> (iday, il1, il2, nilg, nppveg, dofire, leapnow, useTracer, pftexist, geremort, intrmort, pgleafmass, rmatctem, grclarea, lambda, burnvegf, sort, pstemmass, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, fcancmx, fcanmx, tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass, tracerLitrMass, tracerSoilCMass, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
+<tr class="memdesc:a48d7c7b99adda5fbec621f38b81aeb60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified forms. either option may be used.  <a href="#a48d7c7b99adda5fbec621f38b81aeb60">More...</a><br /></td></tr>
+<tr class="separator:a48d7c7b99adda5fbec621f38b81aeb60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="memItemLeft" align="right" valign="top">real function, dimension(ilg, icc), public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecompetition__scheme.html#a5513e158bc2a8e9b7618fe7b9a83c2f9">expansion</a> (il1, il2, ilg, sort, ailcg, lfstatus, nppveg, pftexist)</td></tr>
 <tr class="memdesc:a5513e158bc2a8e9b7618fe7b9a83c2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimate fraction of NPP that is to be used for horizontal expansion (lambda) during the next day (i.e. this will be determining the colonization rate in competition).  <a href="#a5513e158bc2a8e9b7618fe7b9a83c2f9">More...</a><br /></td></tr>
@@ -426,8 +426,8 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="a7b8206f6824e504df2840628f78e05f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b8206f6824e504df2840628f78e05f0">&#9670;&nbsp;</a></span>competition()</h2>
+<a id="a48d7c7b99adda5fbec621f38b81aeb60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d7c7b99adda5fbec621f38b81aeb60">&#9670;&nbsp;</a></span>competition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -477,6 +477,12 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">logical, dimension(nilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>pftexist</em>, </td>
         </tr>
@@ -495,38 +501,14 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
-          <td class="paramname"><em>gleafmas</em>, </td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>pgleafmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
-          <td class="paramname"><em>bleafmas</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
-          <td class="paramname"><em>stemmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
-          <td class="paramname"><em>rootmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2,ignd), intent(inout)&#160;</td>
-          <td class="paramname"><em>litrmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2,ignd), intent(inout)&#160;</td>
-          <td class="paramname"><em>soilcmas</em>, </td>
+          <td class="paramtype">real, dimension(nilg,icc,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>rmatctem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -561,14 +543,38 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>pgleafmass</em>, </td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>gleafmas</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,icc,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>rmatctem</em>, </td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>bleafmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>stemmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>rootmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramname"><em>litrmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -581,6 +587,42 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension(nilg,icp1), intent(inout)&#160;</td>
           <td class="paramname"><em>fcanmx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerGLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerBLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerSoilCMass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -645,6 +687,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between 9 ctem pfts and size 12 of parameter vectors</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pftexist</td><td>indicating pfts exist (T) or not (F)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geremort</td><td>growth related mortality (1/day)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">intrmort</td><td>intrinsic (age related) mortality (1/day)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">lambda</td><td>fraction of npp that is used for spatial expansion</td></tr>
@@ -659,6 +702,12 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, kg c/m2</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter mass for each of the 9 ctem pfts + bare, kg c/m2</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracergleafmass</td><td>Tracer mass in the green leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerbleafmass</td><td>Tracer mass in the brown leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the roots for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracersoilcmass</td><td>Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>fractional coverage of ctem's 9 pfts</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">fcanmx</td><td>fractional coverage of class' 4 pfts</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">vgbiomas</td><td>grid averaged vegetation biomass, kg c/m2</td></tr>
@@ -943,7 +992,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacecompetition__scheme.html">competition_scheme</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

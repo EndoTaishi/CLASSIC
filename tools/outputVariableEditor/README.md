@@ -3,8 +3,7 @@ Configuring the model outputs via the CLASSIC code and Output Variable Editor (O
 
 All CLASSIC model outputs are written to netcdf files. Outputs are first specified in an xml file where the relevant metadata is assigned. Then within the CLASSIC code the variable of interest is appropriately prepared for writing at the half-hourly, daily, monthly, or annual timestep (see @ref writeOutput).
 
-
-The Output Variable Editor (OVE) is a web interface that allows a user to configure the output variables for the CLASSIC. Using this interface the user can load an existing XML file and add/remove variables and variants. Once the changes are complete, the user may download an updated version of the XML configuration file.
+The Output Variable Editor (OVE) is a web interface that allows a user to configure the output variables for CLASSIC. Using this interface the user can load an existing XML file and add/remove variables and variants. Once the changes are complete, the user may download an updated version of the XML configuration file.
 
 # The XML Document Structure {#xmlStruct}
 The XML document follows a hierarchical structure which has the **variableSet** as a root node. This node has a number of **group** child nodes, as well as attributes such as *type, version and created*. The **group** nodes have a number of **variable** child nodes.

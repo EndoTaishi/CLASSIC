@@ -4,6 +4,7 @@ var searchData=
   ['balcar',['balcar',['../balanceCarbon_8f90.html#af253dc9509af90e006c1ac17d283ac15',1,'balancecarbon']]],
   ['basic_20model_20inputs_20to_20run_20classic',['Basic model inputs to run CLASSIC',['../basicInputs.html',1,'index']]],
   ['bb',['bb',['../namespaceclassic__params.html#ad24c3ab9e4d5558ff5544d9d3254a921',1,'classic_params']]],
+  ['bcconc',['bcconc',['../fourBandAlbedo_8f90.html#a557e6910d6d30151d653b63bd5966310',1,'fourbandalbedo']]],
   ['beta2',['beta2',['../namespaceclassic__params.html#a41c6cc262e5a4d11173944ff66c878e3',1,'classic_params']]],
   ['betach4',['betach4',['../namespaceclassic__params.html#a95b818619e2b53769535e87df0cdc8a3',1,'classic_params']]],
   ['bigat',['bigat',['../structclass__statevars_1_1class__gather.html#aec72f9a82bc6d8223f15c8dbfa83f3e8',1,'class_statevars::class_gather']]],
@@ -12,7 +13,6 @@ var searchData=
   ['bioclimrt',['bioclimrt',['../namespaceclassic__params.html#a33367a5af847d458749f4597eb787687',1,'classic_params']]],
   ['biodiffus',['biodiffus',['../namespaceclassic__params.html#a6a6ebb6f7a81fd386074ddb97cc4c729',1,'classic_params']]],
   ['blcaemls',['blcaemls',['../structctem__statevars_1_1veg__gat.html#a4f26ea5eda7abf1888506dcbb6320a1c',1,'ctem_statevars::veg_gat']]],
-  ['bleaflandcompchg',['bleaflandcompchg',['../structctem__statevars_1_1veg__gat.html#a73e37c11ebe37fa774b0e4c94d094ca9',1,'ctem_statevars::veg_gat']]],
   ['bleafmas',['bleafmas',['../structctem__statevars_1_1veg__rot.html#a9c9f85a3e1d9255d0d9c7e13c733b05b',1,'ctem_statevars::veg_rot::bleafmas()'],['../structctem__statevars_1_1veg__gat.html#a0adf3e8544766c0c2b1aa5bf5a35f166',1,'ctem_statevars::veg_gat::bleafmas()']]],
   ['bleafmassgat',['bleafmassgat',['../structctem__statevars_1_1tracerstype.html#a0059fef02821ef293bb75dcca570da74',1,'ctem_statevars::tracerstype']]],
   ['bleafmassrot',['bleafmassrot',['../structctem__statevars_1_1tracerstype.html#ab4337cfdff6ff6fe93254425f8ba3bdf',1,'ctem_statevars::tracerstype']]],
@@ -31,7 +31,7 @@ var searchData=
   ['bsrtstem',['bsrtstem',['../namespaceclassic__params.html#a1283836c6ecfe3a92d4b4499082c7c94',1,'classic_params']]],
   ['bterm',['bterm',['../structctem__statevars_1_1veg__rot.html#a59d1e9d2ef25aab0fef2f1ac9fb887f8',1,'ctem_statevars::veg_rot::bterm()'],['../structctem__statevars_1_1veg__gat.html#a6eb79d568f9890a7ad8e2f3a16d9f738',1,'ctem_statevars::veg_gat::bterm()']]],
   ['burnfrac',['burnfrac',['../structctem__statevars_1_1veg__rot.html#a161d199608759429573e65948ed921e8',1,'ctem_statevars::veg_rot::burnfrac()'],['../structctem__statevars_1_1veg__gat.html#a1a311685a3cd4112ef9ca1ec166347fe',1,'ctem_statevars::veg_gat::burnfrac()']]],
-  ['burntobare',['burntobare',['../namespacedisturbance__scheme.html#ae72fa0c94541c3e88a45d71f2442be9c',1,'disturbance_scheme']]],
+  ['burntobare',['burntobare',['../namespacedisturbance__scheme.html#abbef7aa316639f4d767b3481f6ac987b',1,'disturbance_scheme']]],
   ['burnvegf',['burnvegf',['../structctem__statevars_1_1veg__rot.html#ae32805074cf8a0909d11c0007a301ffc',1,'ctem_statevars::veg_rot::burnvegf()'],['../structctem__statevars_1_1veg__gat.html#a93e2f6b40b49ca383377fc0093fba3a6',1,'ctem_statevars::veg_gat::burnvegf()']]],
   ['bibliography',['Bibliography',['../citelist.html',1,'']]]
 ];

@@ -1,5 +1,8 @@
 var searchData=
 [
+  ['rdsdps',['rdsdps',['../fourBandAlbedo_8f90.html#ad40d49f810b67cf25a9467056d829a2b',1,'fourbandalbedo']]],
+  ['rdsdry',['rdsdry',['../fourBandAlbedo_8f90.html#a806afd8cc58feb9bf5c0900eb07d7895',1,'fourbandalbedo']]],
+  ['rdswet',['rdswet',['../fourBandAlbedo_8f90.html#a4f7344d60df1d7da6bd7ba96018afbd8',1,'fourbandalbedo']]],
   ['read_5ffrom_5fjob_5foptions',['read_from_job_options',['../namespacereadjobopts.html#a5268da7645aca23a7943f73c564a4a77',1,'readjobopts']]],
   ['read_5finitialstate',['read_initialstate',['../namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a',1,'model_state_drivers']]],
   ['read_5fmodelsetup',['read_modelsetup',['../namespacemodel__state__drivers.html#a9082d4f86f78f0dca4f7e3ed00c55b02',1,'model_state_drivers']]],

@@ -8,6 +8,7 @@ var index =
     ] ],
     [ "Composite vs. mosaic representation", "compvsmosaic.html", null ],
     [ "Basic model inputs to run CLASSIC", "basicInputs.html", [
+      [ "Model parameters", "basicInputs.html#modelParams", null ],
       [ "Atmospheric Forcing Data", "basicInputs.html#forcingData", null ],
       [ "Input Vegetation Data", "basicInputs.html#vegetationData", [
         [ "Development history of CLASS", "overviewCLASS.html#devHistory", null ],
@@ -31,11 +32,13 @@ var index =
       [ "Orographic information for dynamic wetland scheme", "CTEMaddInputs.html#initWetSlope", null ],
       [ "Prescribed wetland area", "CTEMaddInputs.html#initWetArea", null ],
       [ "Peatland variables", "CTEMaddInputs.html#initPeat", null ],
-      [ "Land use change (LUC)", "CTEMaddInputs.html#inputLUC", null ]
+      [ "Land use change (LUC)", "CTEMaddInputs.html#inputLUC", null ],
+      [ "Tracers", "CTEMaddInputs.html#tracers", null ]
     ] ],
     [ "Creation and formatting of model input files", "makeInputFiles.html", [
       [ "Preparation of files for meteorological inputs", "makeInputFiles.html#makeMet", null ],
       [ "Preparation of the model initialization file", "makeInputFiles.html#makeInit", null ],
+      [ "Greenhouse gas inputs files", "makeInputFiles.html#ghgfiles", null ],
       [ "Making input files for other input variables", "makeInputFiles.html#makeOther", null ],
       [ "Some notes on input file format", "makeInputFiles.html#inputFileForm", null ]
     ] ],

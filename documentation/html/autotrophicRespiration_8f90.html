@@ -91,9 +91,9 @@ $(document).ready(function(){initNavTree('autotrophicRespiration_8f90.html','');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a1f39733a528db46b6fdab6484f69441d"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autotrophicRespiration_8f90.html#a1f39733a528db46b6fdab6484f69441d">autotrophicrespiration::mainres</a> (fcan, fct, stemmass, rootmass, il1, il2, ilg, leapnow, ta, tbar, rmatctem, sort, isand, rmsveg, rmrveg, roottemp)</td></tr>
-<tr class="memdesc:a1f39733a528db46b6fdab6484f69441d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates maintenance respiration for roots and stems.  <a href="autotrophicRespiration_8f90.html#a1f39733a528db46b6fdab6484f69441d">More...</a><br /></td></tr>
-<tr class="separator:a1f39733a528db46b6fdab6484f69441d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fb58b90c84475fadac1c3172db4894f"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="autotrophicRespiration_8f90.html#a5fb58b90c84475fadac1c3172db4894f">autotrophicrespiration::mainres</a> (fcan, fct, stemmass, rootmass, il1, il2, ilg, leapnow, ta, tbar, rmatctem, sort, isand, useTracer, tracerStemMass, tracerRootMass, rmsveg, rmrveg, roottemp, rmsTracer, rmrTracer)</td></tr>
+<tr class="memdesc:a5fb58b90c84475fadac1c3172db4894f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates maintenance respiration for roots and stems.  <a href="autotrophicRespiration_8f90.html#a5fb58b90c84475fadac1c3172db4894f">More...</a><br /></td></tr>
+<tr class="separator:a5fb58b90c84475fadac1c3172db4894f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Autotrophic respiration. Leaf respiration is calculated in phtsyn subroutine, while stem and root maintenance respiration are calculated here. </p>
@@ -126,8 +126,8 @@ Functions/Subroutines</h2></td></tr>
 <img class="formulaDsp" alt="\[ NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}. \]" src="form_862.png"/>
 </p>
  </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="file_a1f39733a528db46b6fdab6484f69441d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_a1f39733a528db46b6fdab6484f69441d">&#9670;&nbsp;</a></span>mainres()</h2>
+<a id="file_a5fb58b90c84475fadac1c3172db4894f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a5fb58b90c84475fadac1c3172db4894f">&#9670;&nbsp;</a></span>mainres()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -135,98 +135,128 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public autotrophicrespiration::mainres </td>
           <td>(</td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>fcan</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>fct</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>stemmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>rootmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>ta</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>tbar</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>rmatctem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(icc)&#160;</td>
+          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
           <td class="paramname"><em>sort</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">integer, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>isand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>rmsveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>rmrveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>roottemp</em>&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>roottemp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>rmsTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
+          <td class="paramname"><em>rmrTracer</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -240,34 +270,35 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramname">sort</td><td>index for correspondence between 9 pfts and 12 values in the parameter vectors</td></tr>
-    <tr><td class="paramname">isand</td><td>flag for bedrock or ice in a soil layer</td></tr>
-    <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
-    <tr><td class="paramname">fcan</td><td>fractional coverage of ctem's 9 pfts over the given sub-area</td></tr>
-    <tr><td class="paramname">fct</td><td>sum of all fcan fcan &amp; fct are not used at this time but could be used at some later stage</td></tr>
-    <tr><td class="paramname">stemmass</td><td>stem biomass for the 9 pfts in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">ta</td><td>Air temperature, K</td></tr>
-    <tr><td class="paramname">tbar</td><td>Soil temperature, K</td></tr>
-    <tr><td class="paramname">rootmass</td><td>root biomass for the 9 pfts in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">rmsveg</td><td>maintenance respiration for stem for the 9 pfts</td></tr>
-    <tr><td class="paramname">rmrveg</td><td>maintenance respiration for root for the 9 pfts both in u mol co2/m2. sec</td></tr>
-    <tr><td class="paramname">rmatctem</td><td>fraction of roots in each layer for each pft</td></tr>
-    <tr><td class="paramname">roottemp</td><td>root temperature (k) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ilg</td><td>Number of grid cells in latitude circle</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between 9 pfts and 12 values in the parameter vectors</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isand</td><td>flag for bedrock or ice in a soil layer</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fcan</td><td>fractional coverage of ctem's 9 pfts over the given sub-area</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fct</td><td>sum of all fcan fcan &amp; fct are not used at this time but could be used at some later stage</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stemmass</td><td>stem biomass for the 9 pfts in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ta</td><td>Air temperature, K</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>Soil temperature, K</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rootmass</td><td>root biomass for the 9 pfts in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rmatctem</td><td>fraction of roots in each layer for each pft</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">roottemp</td><td>root temperature (k)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rmsveg</td><td>Maintenance respiration for stem for the CTEM pfts ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rmrveg</td><td>Maintenance respiration for root for the CTEM pfts ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the root for each of the CTEM pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rmstracer</td><td>Tracer maintenance respiration for stem for the CTEM pfts ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rmrtracer</td><td>Tracer maintenance respiration for root for the CTEM pfts both ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>) </td></tr>
   </table>
   </dd>
 </dl>
-<hr/>
-<p> Constants and parameters are located in <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a></p>
-<p>set the following switch to .true. for using constant temperature indepedent q10 specified below</p>
+<p>Set the following switch to .true. for using constant temperature indepedent q10 specified below</p>
 <p>q10 - if using a constant temperature independent value, i.e. if consq10 is set to true</p>
-<hr/>
-<p>initialize required arrays to zero</p>
-<p>initialization ends</p>
-<p>based on root and stem biomass, find fraction which is live. for stem this would be the sapwood to total wood ratio.</p>
-<p>fraction of roots for each vegetation type, for each soil layer, in each grid cell is given by rmatctem (grid cell, veg type, soil layer) which bio2str subroutine calculates. rmatctem can thus be used to find average root temperature for each plant functional type</p>
-<p>we assume that stem temperature is same as air temperature, ta. using stem and root temperatures we can find their maintenance respirations rates</p>
+<p>Based on root and stem biomass, find fraction which is live. for stem this would be the sapwood to total wood ratio.</p>
+<p>Fraction of roots for each vegetation type, for each soil layer, in each grid cell is given by rmatctem (grid cell, veg type, soil layer) which bio2str subroutine calculates. rmatctem can thus be used to find average root temperature for each plant functional type</p>
+<p>We assume that stem temperature is same as air temperature, ta. using stem and root temperatures we can find their maintenance respirations rates</p>
 <p>first find the q10 response function to scale base respiration rate from 15 c to current temperature, we do the stem first.</p>
 <p>when finding temperature dependent q10, use temperature which is close to average of actual temperature and the temperature at which base rate is specified</p>
 <p>This q10 value is then used with the base rate of respiration (commonly taken at some reference temperature (15 deg c), see Tjoelker et al. 2009 New Phytologist or Atkin et al. 2000 New Phyto for an example.). Long-term acclimation to temperature could be occuring see King et al. 2006 Nature SOM for a possible approach. JM.</p>
@@ -283,7 +314,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="autotrophicRespiration_8f90.html">autotrophicRespiration.f90</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:43 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:55 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

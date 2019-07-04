@@ -24,6 +24,7 @@ var searchData=
   ['domonthoutput',['domonthoutput',['../structctem__statevars_1_1ctem__switches.html#a34dbd55de80592ffc606195bfa8fc404',1,'ctem_statevars::ctem_switches']]],
   ['doperpftoutput',['doperpftoutput',['../structctem__statevars_1_1ctem__switches.html#a1b6607120fb9c5497adbab9c8730f5b4',1,'ctem_statevars::ctem_switches']]],
   ['dopertileoutput',['dopertileoutput',['../structctem__statevars_1_1ctem__switches.html#a1924e505ca103581172e57bf31e6d19b',1,'ctem_statevars::ctem_switches']]],
+  ['dotracerbalance',['dotracerbalance',['../tracer_8f90.html#a3cf1db654c35816a9dff780ad8160908',1,'tracermodule']]],
   ['drgat',['drgat',['../structclass__statevars_1_1class__gather.html#ae8abd6b84352019c50b8d2f28e8ceb90',1,'class_statevars::class_gather']]],
   ['drgta',['drgta',['../namespaceclassic__params.html#a99720b1522654c4b7fceabaa68785bb6',1,'classic_params']]],
   ['drlsrtmx',['drlsrtmx',['../namespaceclassic__params.html#ab9f7cf4ea6cea153912f25746df82ad7',1,'classic_params']]],

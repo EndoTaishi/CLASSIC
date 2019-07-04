@@ -30,7 +30,6 @@ var searchData=
   ['modelpft',['modelpft',['../namespaceclassic__params.html#ab457bf39ad7f125d29101b027a243468',1,'classic_params']]],
   ['monthdays',['monthdays',['../namespaceclassic__params.html#adc934d6adff6a8b2a87743aaad87289c',1,'classic_params']]],
   ['monthend',['monthend',['../namespaceclassic__params.html#af86caf23d6ec90586f9e31e41bdba40f',1,'classic_params']]],
-  ['mortleafgtob',['mortleafgtob',['../structctem__statevars_1_1veg__gat.html#ac72749f70cf6b6aa5211dd9dc3b1f303',1,'ctem_statevars::veg_gat']]],
   ['mosscmassgat',['mosscmassgat',['../structctem__statevars_1_1tracerstype.html#af497c88b5b2c05b84e54c752855611f6',1,'ctem_statevars::tracerstype']]],
   ['mosscmassrot',['mosscmassrot',['../structctem__statevars_1_1tracerstype.html#a4e954edc898d5285c256b6f02949068a',1,'ctem_statevars::tracerstype']]],
   ['mosslitrmassgat',['mosslitrmassgat',['../structctem__statevars_1_1tracerstype.html#a53c700fb7b84d9d63c1d7217f40e9015',1,'ctem_statevars::tracerstype']]],

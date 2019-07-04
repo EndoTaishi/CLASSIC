@@ -92,9 +92,9 @@ $(document).ready(function(){initNavTree('namespacepeatlands__mod.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:afbec70365270a6b437813d88e74f145a"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#afbec70365270a6b437813d88e74f145a">hetres_peat</a> (il1, il2, ilg, ipeatland, isand, litrmsmoss, peatdep, wtable, tbar, thliq, thice, thpor, bi, zbotw, delzw, psisat, litresms, socresp, resoxic, resanoxic)</td></tr>
-<tr class="memdesc:afbec70365270a6b437813d88e74f145a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)  <a href="#afbec70365270a6b437813d88e74f145a">More...</a><br /></td></tr>
-<tr class="separator:afbec70365270a6b437813d88e74f145a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72058c7a755ec00db85f4447808d170f"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#a72058c7a755ec00db85f4447808d170f">hetres_peat</a> (il1, il2, ilg, ipeatland, isand, litrmsmoss, peatdep, wtable, tbar, thliq, thice, thpor, bi, zbotw, delzw, psisat, useTracer, tracerMossLitrMass, litresms, socresp, resoxic, resanoxic, litResMossTracer, soCResPeatTracer)</td></tr>
+<tr class="memdesc:a72058c7a755ec00db85f4447808d170f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid average peat soil heterotrophic respiration subroutine (equations are in module-level description)  <a href="#a72058c7a755ec00db85f4447808d170f">More...</a><br /></td></tr>
+<tr class="separator:a72058c7a755ec00db85f4447808d170f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47508fa361b2265282e44efbeccf4539"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepeatlands__mod.html#a47508fa361b2265282e44efbeccf4539">peatdayend</a> (nml)</td></tr>
 <tr class="memdesc:a47508fa361b2265282e44efbeccf4539"><td class="mdescLeft">&#160;</td><td class="mdescRight">At the end of the day update the degree days for moss photosynthesis and the peat bottom layer depth.  <a href="#a47508fa361b2265282e44efbeccf4539">More...</a><br /></td></tr>
 <tr class="separator:a47508fa361b2265282e44efbeccf4539"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,8 +167,8 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $" src="form_977.png"/></p>
 <p>where <img class="formulaInl" alt="$\Delta z $" src="form_978.png"/> is the thickness of soil layer (unit: m), <img class="formulaInl" alt="$\theta_l $" src="form_979.png"/> and <img class="formulaInl" alt="$\theta_i$" src="form_757.png"/> are the liquid and frozen water contents (unit, m <img class="formulaInl" alt="$^3$" src="form_886.png"/> / m <img class="formulaInl" alt="$^3$" src="form_886.png"/>), <img class="formulaInl" alt="$\theta_{ret}$" src="form_980.png"/> and <img class="formulaInl" alt="$\theta_p$" src="form_90.png"/> are the water retention capacity and the porosity, and <img class="formulaInl" alt="$z_b$" src="form_46.png"/> (unit: m) is the bottom depth of the soil layer. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="afbec70365270a6b437813d88e74f145a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbec70365270a6b437813d88e74f145a">&#9670;&nbsp;</a></span>hetres_peat()</h2>
+<a id="a72058c7a755ec00db85f4447808d170f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72058c7a755ec00db85f4447808d170f">&#9670;&nbsp;</a></span>hetres_peat()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -272,6 +272,18 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerMossLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
           <td class="paramname"><em>litresms</em>, </td>
         </tr>
@@ -291,7 +303,19 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
-          <td class="paramname"><em>resanoxic</em>&#160;</td>
+          <td class="paramname"><em>resanoxic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>litResMossTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>soCResPeatTracer</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -305,27 +329,31 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Yuanqiao Wu</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ipeatland</td><td>peatland flag, 0 = not peatland, 1 = bog, 2 = fen</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>saturated matrix potential in soil (m)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">wtable</td><td>water table (m)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>soil temperature (K)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracermosslitrmass</td><td>Tracer mass in moss litter, <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/></td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">litresms</td><td>moss litter respiration ($ mol CO_2 m^{-2} s^{-1}$)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">socresp</td><td>soil C respiration ($ mol CO_2 m^{-2} s^{-1}$)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">resoxic</td><td>respiration rate of the oxic compartment ($ mol CO_2 m^{-2} s^{-1}$)</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">resanoxic</td><td>respiration rate of the oxic compartment ($ mol CO_2 m^{-2} s^{-1}$) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">resanoxic</td><td>respiration rate of the oxic compartment ($ mol CO_2 m^{-2} s^{-1}$)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">litresmosstracer</td><td>Tracer moss litter respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">socrespeattracer</td><td>Tracer heterotrophic repsiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>) </td></tr>
   </table>
   </dd>
 </dl>
-<p>** calculate soil respiration from peat</p>
-<p>find the effective water table depth and the layer index to divide the peat soil into two compartments</p>
-<p>find the temperature in litter, oxic soil and anoxic soil in kelvin lewtable is the layer index of the water table layer, lewtable = 0 indicates WTD is above the ground surface. Set the oxic layer temperature to dctmin (minimum soil respiration temperature) when the entire soil is in the anoxic zone.</p>
-<p>calculate the temperature multiplier (ftsocres) for oxic and anoxic soil compartments</p>
-<p>find the heterotrophic respiration rate constant in the oxic and anoxic (unit in yr-1), based on Fig.2b in Frolking 2001</p>
+<p>Calculate soil respiration from peat</p>
+<p>Find the effective water table depth and the layer index to divide the peat soil into two compartments</p>
+<p>Find the temperature in litter, oxic soil and anoxic soil in kelvin lewtable is the layer index of the water table layer, lewtable = 0 indicates WTD is above the ground surface. Set the oxic layer temperature to dctmin (minimum soil respiration temperature) when the entire soil is in the anoxic zone.</p>
+<p>Calculate the temperature multiplier (ftsocres) for oxic and anoxic soil compartments</p>
+<p>Find the heterotrophic respiration rate constant in the oxic and anoxic (unit in yr-1), based on Fig.2b in Frolking 2001</p>
 <p>Convert respiration rates from kg c/kg c.year to u-mol co2/kgC/s</p>
 <p>Find the carbon storage in oxic and anoxic compartments (Cso. Csa) The water table depth delineates the oxic and anoxic compartments. functions (R**2 = 0.9999) determines the carbon content of each compartment from a peat bulk density profile based on unpulished data from P.J.H. Richard (described in fig. 1, Frokling et al.(2001) conversion of peat into carbon with 48.7% (Mer Bleue unpublished data, Moore)</p>
 <p>Find the soil respiration rate in Cso and Csa umol/m2/s. Moisture multiplier (0.025) indicates rate reduction in decomposition due to anoxia (Frolking et al. 2001), only applied to anoxic layer</p>
-<p>**calcualte litter respiration of moss</p>
-<p>first find the matrix potential of the soil layers </p>
+<p>Calcualte litter respiration of moss</p>
+<p>First find the matrix potential of the soil layers </p>
 
 </div>
 </div>
@@ -553,7 +581,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacepeatlands__mod.html">peatlands_mod</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:45 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

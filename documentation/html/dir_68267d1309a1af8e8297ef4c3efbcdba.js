@@ -1,6 +1,6 @@
 var dir_68267d1309a1af8e8297ef4c3efbcdba =
 [
-    [ "allocate.f", "allocate_8f.html", "allocate_8f" ],
+    [ "allocateCarbon.f90", "allocateCarbon_8f90.html", "allocateCarbon_8f90" ],
     [ "applyAllometry.f90", "applyAllometry_8f90.html", "applyAllometry_8f90" ],
     [ "APREP.f", "APREP_8f.html", "APREP_8f" ],
     [ "autotrophicRespiration.f90", "autotrophicRespiration_8f90.html", "autotrophicRespiration_8f90" ],
@@ -24,10 +24,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "competition_mod.f90", "competition__mod_8f90.html", "competition__mod_8f90" ],
     [ "ctem_statevars.f90", "ctem__statevars_8f90.html", "ctem__statevars_8f90" ],
     [ "ctemDriver.f90", "ctemDriver_8f90.html", "ctemDriver_8f90" ],
-    [ "ctemg1.f", "ctemg1_8f.html", "ctemg1_8f" ],
-    [ "ctemg2.f", "ctemg2_8f.html", "ctemg2_8f" ],
-    [ "ctems1.f", "ctems1_8f.html", "ctems1_8f" ],
-    [ "ctems2.f", "ctems2_8f.html", "ctems2_8f" ],
+    [ "ctemGatherScatter.f90", "ctemGatherScatter_8f90.html", "ctemGatherScatter_8f90" ],
     [ "ctemUtilities.f90", "ctemUtilities_8f90.html", "ctemUtilities_8f90" ],
     [ "CWCALC.f", "CWCALC_8f.html", "CWCALC_8f" ],
     [ "DIASURFZ.f", "DIASURFZ_8f.html", "DIASURFZ_8f" ],
@@ -35,6 +32,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "DRCOEF.f", "DRCOEF_8f.html", "DRCOEF_8f" ],
     [ "fileIOModule.F90", "fileIOModule_8F90.html", "fileIOModule_8F90" ],
     [ "FLXSURFZ.f", "FLXSURFZ_8f.html", "FLXSURFZ_8f" ],
+    [ "fourBandAlbedo.f90", "fourBandAlbedo_8f90.html", "fourBandAlbedo_8f90" ],
     [ "GATPREP.f", "GATPREP_8f.html", "GATPREP_8f" ],
     [ "generalUtils.f90", "generalUtils_8f90.html", "generalUtils_8f90" ],
     [ "GRALB.f", "GRALB_8f.html", "GRALB_8f" ],

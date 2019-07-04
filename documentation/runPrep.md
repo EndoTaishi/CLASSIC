@@ -41,11 +41,11 @@ From Kurtzer et al. (2017) \cite Kurtzer2017-xc :
 
 > Singularity offers mobility of compute by enabling environments to be completely portable via a single image file,  and is designed with the features necessary to allow seamless integration with any scientific computational resources. ... Mobility of compute is defined as the ability to define, create, and maintain a workflow locally while remaining confident that the workflow can be executed on different hosts, Linux operating systems, and/or cloud service providers. In essence, mobility of compute means being able to contain the entire software stack, from data files up through the library stack, and reliability move it from system to system. Mobility of compute is an essential building block for reproducible science, and consistent and continuous deployment of applications. ... Many of the same features that facilitate mobility also facilitate reproducibility. Once a contained workflow has been defined, the container image can be snapshotted, archived, and locked down such that it can be used later and the user can be confident that the code within the container has not changed. The container is not subject to any external influence from the host operating system (aside from the kernel which is ubiquitous of any OS level virtualization solution).... Singularity can give the user the freedom they need to install the applications, versions, and dependencies for their workflows without impacting the system in any way. Users can define their own working environment and literally copy that environment image (a single file) to a shared resource, and run their workflow inside that image.
 
-A nice benefit of containers is that they are designed to be easy to use \cite Kurtzer2017-xc :
+A nice benefit of containers is that they are designed to be easy to use (Kurtzer et al., 2017) \cite Kurtzer2017-xc :
 
 > The goal of Singularity is to support existing and traditional HPC resources as easily as installing a single package onto the host operating system. For the administrators of the hosts, some configuration may be required via a single configuration file, however the default values are tuned to be generally applicable for shared environments.
 
-System administrators will be comforted to know \cite Kurtzer2017-xc :
+System administrators will be comforted to know (Kurtzer et al., 2017) \cite Kurtzer2017-xc :
 
 > Singularity does not provide a pathway for privilege escalation (which makes it truly applicable for multi-tenant shared scientific compute resources). This means that in the runtime environment, a user inside a Singularity container is the same user as outside the container. If a user wants to be root inside the container, they must first become root outside the container. Considering on most shared resources the user will not have root access means they will not have root access within their containers either. This simple concept thus defines the Singularity usage workflow.
 
@@ -85,7 +85,7 @@ E.g. test if gfortran is installed:
         compilation terminated.
         Singularity jormelton-containerCLASSIC-master-latest.simg:~>
 
-And test for something that is not installed:
+And test for something that we know is not installed:
 
         Singularity jormelton-containerCLASSIC-master-latest.simg:~> okular
         bash: okular: command not found
@@ -124,16 +124,16 @@ This can demonstrated by an example in which a remote server is visible on the h
         acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell ../../jormelton-containerCLASSIC-master-latest.simg 
         Singularity: Invoking an interactive shell within container...
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63
-        ls: cannot access '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63': No such file or directory
+        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017
+        ls: cannot access '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017': No such file or directory
 
         Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> exit
         exit
 
-        acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell -B /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63 ../../jormelton-containerCLASSIC-master-latest.simg 
+        acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell -B /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017 ../../jormelton-containerCLASSIC-master-latest.simg 
         Singularity: Invoking an interactive shell within container...
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63
+        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017
         dlwrf_T63_chunked_1700_2017.nc dswrf_v1.1.5_T63_chunked_1700_2017.nc spfh_T63_chunked_1700_2017.nc ...
         
 This -B flag can be very useful when using a Vagrant box to run CLASSIC on a Windows, Mac or even Linux machine. The -B flag can point to the [synced folder](https://www.vagrantup.com/docs/synced-folders/basic_usage.html).
@@ -142,7 +142,7 @@ This -B flag can be very useful when using a Vagrant box to run CLASSIC on a Win
 
 CLASSIC's Makefile facilitates the compilation of the model code for running in serial mode or in parallel.
 
-The basic command "make" (without options) compiles the code for running in serial mode.
+The basic command "make" (without options) compiles the code for running in serial mode. The executable placed in the bin directory is then 'CLASSIC_serial'
 
 The "mode" option can be specified on the "make" command line to target different platforms and/or compilation modes as follows:
 
@@ -164,9 +164,9 @@ There are two additional modes that are particularly useful for users with acces
 
 These modes are unlikely to be useful for non-ECCC users.
 
-Upon compilation, all object (.o) and module (.mod) files are placed into an "objectFiles" directory. These directories are labelled with an additional suffix according to the compilation mode used (except for the serial mode case). Executables are placed in the "bin" directory, again labelled according to the compilation mode.
+Upon compilation, all object (.o) and module (.mod) files are placed into an "objectFiles" directory. These directories are labelled with an additional suffix according to the compilation mode used. Executables are placed in the "bin" directory, again labelled according to the compilation mode.
 
-A useful command is 'make clean', which removes all *.o *.mod files (for a specified mode). This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make. Note that a re-compilation will overwrite an existing executable of the same name (i.e. mode) in the "bin" directory.
+A useful command is 'make mode={serial,parallel,etc.} clean', which removes all *.o *.mod files (for a specified mode). This can allow a fresh compilation which can be handy if some parameters are changed that aren't being refreshed on a make. Note that a re-compilation will overwrite an existing executable of the same name (i.e. mode) in the "bin" directory.
 
 # Setting up the joboptions file {#setupJobOpts}
 
@@ -207,11 +207,9 @@ The next series of switches relate to CTEM. If you wish to run a physics only ru
         ! CTEM (biogeochemistry) switches:
          ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                                 !< lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
-            icc = 9 ,           !< Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
-            l2max = 3 ,         !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
             spinfast = 3 ,      !< Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
 
-The CO2 and CH4 switches behave similarly. If a constant [CO2] is desired, transientCO2 is set to .false. and the year of observed CO2 is specified in fixedYearCO2. The [CO2] of the corresponding year is selected from the CO2File and used for the run. Simlarly for CH4. If are interested in simulating methane related variables then simply copy your CO2File to be your CH4file (e.g. cp CO2file.nc fakeCH4file.nc, and then specify the fakeCH4file.nc for the CH4File since the model expects a file there). If for some reason you wish to run with non-historical [CO2], you could edit your CO2File (using a combination of the NCO tools ncdump and ncgen, for example) to include a future year with associated CO2 value (like 2050 and 500ppm for example)
+The CO2 and CH4 switches behave similarly. If a constant [CO2] is desired, transientCO2 is set to .false. and the year of observed CO2 is specified in fixedYearCO2. The [CO2] of the corresponding year is selected from the CO2File and used for the run. Simlarly for CH4. If are **not** interested in simulating methane related variables then simply copy your CO2File to be your CH4file (e.g. 'cp CO2file.nc fakeCH4file.nc', and then specify the fakeCH4file.nc for the CH4File since the model expects a file there). If for some reason you wish to run with non-historical [CO2], you could edit your CO2File (using a combination of the NCO tools ncdump and ncgen, for example) to include a future year with associated CO2 value (like 2050 and 500ppm for example)
 
         !CO2 switches:
             transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
@@ -277,7 +275,6 @@ CLASS switches determine the configuration of the physics only as well as CLASS+
 
         ! Physics switches:
 
-            ican = 4 ,     !< Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
             IDISP = 0 ,    !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
                             !< of the "terrain". if idisp=1, vegetation displacement heights are calculated.
             IZREF = 2 ,    !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
@@ -340,6 +337,8 @@ Model outputs are in netcdf format. The outputs metadata is read in from an xmlF
 
             domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
             JMOSTY = 1901 ,             !< Year to start writing out the monthly output files.
+            
+            doAnnualOutput = .true. ,   ! Switch for making annual output files 
 
 Comments can be added to output files using the Comment field below. Also comments can be left in the joboptions file after the backslash.
 

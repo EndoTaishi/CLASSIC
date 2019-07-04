@@ -16,5 +16,6 @@ var structctem__statevars_1_1tracerstype =
     [ "soilcmassrot", "structctem__statevars_1_1tracerstype.html#a87dbd2d9af7674fc8c61ac9f7150d766", null ],
     [ "stemmassgat", "structctem__statevars_1_1tracerstype.html#af8b9fc2b6c4f0a6c712c472d9dcf9c6f", null ],
     [ "stemmassrot", "structctem__statevars_1_1tracerstype.html#af40fcf4a2fb521cd862ddbcf1624f592", null ],
-    [ "tracerco2rot", "structctem__statevars_1_1tracerstype.html#ac285b19bbeaff802242f0fd3d35ffe4e", null ]
+    [ "tracerco2gat", "structctem__statevars_1_1tracerstype.html#ab3d66e3700b234250947aed64a09c9fe", null ],
+    [ "tracerco2rot", "structctem__statevars_1_1tracerstype.html#a004d8cdd2cb757983c9a0e70e11c8704", null ]
 ];

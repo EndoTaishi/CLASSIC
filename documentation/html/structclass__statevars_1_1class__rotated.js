@@ -17,6 +17,7 @@ var structclass__statevars_1_1class__rotated =
     [ "aliracc_m", "structclass__statevars_1_1class__rotated.html#a8aef87eb2a958e9fa7129f203a69a8af", null ],
     [ "alirrot", "structclass__statevars_1_1class__rotated.html#a3a13eeaca8c3dd6ca5b5383e8b41c6a9", null ],
     [ "alirrow", "structclass__statevars_1_1class__rotated.html#a3b3cb6b6d7149e14a8e55c067060accb", null ],
+    [ "alsnoacc_m", "structclass__statevars_1_1class__rotated.html#a3228e00864beaa5efdd1a04e5889522e", null ],
     [ "altotacc_m", "structclass__statevars_1_1class__rotated.html#a07ae9d3041a6f1392b9df661d283d532", null ],
     [ "altotcntr_d", "structclass__statevars_1_1class__rotated.html#ab8208b6e0b495f7caffcabdf43266436", null ],
     [ "alvcrot", "structclass__statevars_1_1class__rotated.html#ad8000700f6beb58164a2403cb4232373", null ],

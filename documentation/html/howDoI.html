@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('howDoI.html','');});
 </ol>
 <h1><a class="anchor" id="chgSoil"></a>
 Change the number/depth/etc of soil layers?</h1>
-<p>Information about the soil layers is taken in from the initialization netcdf file. <a class="el" href="namespacemodel__state__drivers.html#a9082d4f86f78f0dca4f7e3ed00c55b02" title="Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 off...">model_state_drivers::read_modelsetup</a> reads the netcdf for the number of soil layers (ignd). The ZBOT variable in the intialization file is the depth to the bottom of each layer. So change the initialization file for the number and depths of the soil layers as required and CLASSIC will simply read them in.</p>
+<p>Information about the soil layers is taken in from the initialization netcdf file. <a class="el" href="namespacemodel__state__drivers.html#a9082d4f86f78f0dca4f7e3ed00c55b02" title="Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 off...">model_state_drivers::read_modelsetup</a> reads the netcdf for the number of soil layers (<em>ignd</em>). The <em>DELZ</em> variable in the intialization file is the thickness of each layer. So change the initialization file for the number and thicknesses of the soil layers as required and CLASSIC will simply read them in.</p>
 <h1><a class="anchor" id="failStart"></a>
 My run starts and I get an immediate fail!</h1>
 <p>If you start a new run and it immediately fails with an output something like: </p><pre class="fragment">    Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC&gt; bin/CLASSIC configurationFiles/template_job_options_file.txt 254.85/53.98
@@ -105,13 +105,13 @@ My run starts and I get an immediate fail!</h1>
 </pre><p>This is a general indication of a problem in your initialization file. Often it is fixed by setting snow/liquid in the canopy to zero (see <a class="el" href="basicInputs.html#initPhysProgVar">Initialization of Physics Prognostic Variables</a>). You may also get snow energy/water balance failing, again look to <a class="el" href="basicInputs.html#initPhysProgVar">Initialization of Physics Prognostic Variables</a> for advice with setup.</p>
 <h1><a class="anchor" id="makeClean"></a>
 My run won't compile but I didn't do anything I can think of.</h1>
-<p>Sometimes you need to run a 'make clean' to clean out old .mod and .o files that might be causing issues. Do that and then recompile.</p>
+<p>Sometimes you need to run a '<code>make mode=???? clean</code>' (where mode is the one you used to compile the code, for site-level it is typically <code>serial</code>) to clean out old .mod and .o files that might be causing issues. Do that and then recompile.</p>
 <h1><a class="anchor" id="soilColourIndex"></a>
 initFileConverter tells me I need a soil colour index</h1>
-<p>Soil colour index is described in <a class="el" href="basicInputs.html#soilData">Input Soil Data</a> and used in <a class="el" href="CLASSB_8f.html" title="Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. ">CLASSB.f</a>. A global file of soil colour index produced by Peter Lawrence (NCAR) can be obtained from <a href="ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc">ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc</a></p>
+<p>Soil colour index is described in <a class="el" href="basicInputs.html#soilData">Input Soil Data</a> and used in soilProperties.f90. A global file of soil colour index produced by Peter Lawrence (NCAR) can be obtained from <a href="ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc">ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc</a></p>
 <h1><a class="anchor" id="windowsEndings"></a>
 Gotcha for Windows users</h1>
-<p>Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, which Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from <a href="http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html">http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html</a>)</p>
+<p>Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, while Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from <a href="http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html">http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html</a>)</p>
 <p>Any CLASSIC tool that reads in ASCII expects the Linux/Unix line endings. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
@@ -119,7 +119,7 @@ Gotcha for Windows users</h1>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">CLASSIC main page</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

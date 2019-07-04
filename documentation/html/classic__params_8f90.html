@@ -101,7 +101,7 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="separator:a8dd9a8ba262d70191b64622ca6871c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cd9f92ef25a93ec404e15fa84637f33"><td class="memItemLeft" align="right" valign="top"><a id="a0cd9f92ef25a93ec404e15fa84637f33"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a0cd9f92ef25a93ec404e15fa84637f33">classic_params::abszero</a> = 1e-12</td></tr>
-<tr class="memdesc:a0cd9f92ef25a93ec404e15fa84637f33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defintion of zero, this one is for <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a> and <a class="el" href="allocate_8f.html" title="Performs allocation of carbon gained by photosynthesis into plant structural pools. ">allocate.f</a>. <br /></td></tr>
+<tr class="memdesc:a0cd9f92ef25a93ec404e15fa84637f33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defintion of zero, this one is for <a class="el" href="main_8f90.html" title="Main model driver for CLASSIC in stand-alone mode using specified boundary conditions and atmospheric...">main.f90</a> and allocate.f. <br /></td></tr>
 <tr class="separator:a0cd9f92ef25a93ec404e15fa84637f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51c24034e6b8592f8a2b732765ea5d46"><td class="memItemLeft" align="right" valign="top"><a id="a51c24034e6b8592f8a2b732765ea5d46"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a51c24034e6b8592f8a2b732765ea5d46">classic_params::earthrad</a> = 6371.22</td></tr>
@@ -153,7 +153,7 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="separator:ad4ada8d03ea9a6f820be4356fc87eb06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aade8664d01bae9a5bbc501172534d84a"><td class="memItemLeft" align="right" valign="top"><a id="aade8664d01bae9a5bbc501172534d84a"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#aade8664d01bae9a5bbc501172534d84a">classic_params::lambda14c</a> = 8267.</td></tr>
-<tr class="memdesc:aade8664d01bae9a5bbc501172534d84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">radioactive decay rate for 14C, corresponds to a half life of 5730 years. ( <img class="formulaInl" alt="$yr^{-1}$" src="form_1693.png"/>) <br /></td></tr>
+<tr class="memdesc:aade8664d01bae9a5bbc501172534d84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">radioactive decay rate for 14C, corresponds to a half life of 5730 years. ( <img class="formulaInl" alt="$yr^{-1}$" src="form_1673.png"/>) <br /></td></tr>
 <tr class="separator:aade8664d01bae9a5bbc501172534d84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc934d6adff6a8b2a87743aaad87289c"><td class="memItemLeft" align="right" valign="top"><a id="adc934d6adff6a8b2a87743aaad87289c"></a>
 integer, dimension(12)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#adc934d6adff6a8b2a87743aaad87289c">classic_params::monthdays</a> = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]</td></tr>
@@ -435,6 +435,36 @@ integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bo
 integer, dimension(:,:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a54db7e01cbeea949a39dcf22fcd13719">classic_params::reindexpfts</a></td></tr>
 <tr class="memdesc:a54db7e01cbeea949a39dcf22fcd13719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reindexing arrays of CLASS variables into the parameters arrays at the CTEM level. <br /></td></tr>
 <tr class="separator:a54db7e01cbeea949a39dcf22fcd13719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52d0b42400f98e07a3ca594fe2e715e7"><td class="memItemLeft" align="right" valign="top"><a id="a52d0b42400f98e07a3ca594fe2e715e7"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::nsmu</b> = 10</td></tr>
+<tr class="separator:a52d0b42400f98e07a3ca594fe2e715e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d7a7190c64c25f4bbd198a1a83bae7c"><td class="memItemLeft" align="right" valign="top"><a id="a0d7a7190c64c25f4bbd198a1a83bae7c"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::nsalb</b> = 11</td></tr>
+<tr class="separator:a0d7a7190c64c25f4bbd198a1a83bae7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad650ac73a298542463ffe53746d5287d"><td class="memItemLeft" align="right" valign="top"><a id="ad650ac73a298542463ffe53746d5287d"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::nbc</b> = 20</td></tr>
+<tr class="separator:ad650ac73a298542463ffe53746d5287d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87d8e8361e1c5e70cddddd931d941dcc"><td class="memItemLeft" align="right" valign="top"><a id="a87d8e8361e1c5e70cddddd931d941dcc"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::nreff</b> = 10</td></tr>
+<tr class="separator:a87d8e8361e1c5e70cddddd931d941dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fb26ce732273de1c8bfeed9cbf173cb"><td class="memItemLeft" align="right" valign="top"><a id="a8fb26ce732273de1c8bfeed9cbf173cb"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::nswe</b> = 11</td></tr>
+<tr class="separator:a8fb26ce732273de1c8bfeed9cbf173cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced877410f15e73e462daa79fa24be07"><td class="memItemLeft" align="right" valign="top"><a id="aced877410f15e73e462daa79fa24be07"></a>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::nbnd_lut</b> = 4</td></tr>
+<tr class="separator:aced877410f15e73e462daa79fa24be07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57aea2948599a35e27e8d2318e02fdd2"><td class="memItemLeft" align="right" valign="top"><a id="a57aea2948599a35e27e8d2318e02fdd2"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::albdif_lut</b></td></tr>
+<tr class="separator:a57aea2948599a35e27e8d2318e02fdd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e5ef0cc9f7712dd68a197cb38f1ac62"><td class="memItemLeft" align="right" valign="top"><a id="a7e5ef0cc9f7712dd68a197cb38f1ac62"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::albdir_lut</b></td></tr>
+<tr class="separator:a7e5ef0cc9f7712dd68a197cb38f1ac62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ddc24888c1f9534e174db00b761a569"><td class="memItemLeft" align="right" valign="top"><a id="a8ddc24888c1f9534e174db00b761a569"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::trandif_lut</b></td></tr>
+<tr class="separator:a8ddc24888c1f9534e174db00b761a569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a171b96c6181237cfc5f3972aab7a7756"><td class="memItemLeft" align="right" valign="top"><a id="a171b96c6181237cfc5f3972aab7a7756"></a>
+real, dimension(nbc, nswe, nreff, nsmu, nsalb, nbnd_lut)&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::trandir_lut</b></td></tr>
+<tr class="separator:a171b96c6181237cfc5f3972aab7a7756"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04dce684649235360071af62a0de7dd0"><td class="memItemLeft" align="right" valign="top"><a id="a04dce684649235360071af62a0de7dd0"></a>
 character(5), dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a04dce684649235360071af62a0de7dd0">classic_params::classpfts</a></td></tr>
 <tr class="memdesc:a04dce684649235360071af62a0de7dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">CLASS (physics) PFTs. <br /></td></tr>
@@ -658,6 +688,15 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a664c7429262f23114f589f07943c357f">classic_params::wsncap</a></td></tr>
 <tr class="memdesc:a664c7429262f23114f589f07943c357f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum water retention capacity of the snow pack (weight percentage) <br /></td></tr>
 <tr class="separator:a664c7429262f23114f589f07943c357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e9256ca80b00c30d88da4a268e72250"><td class="memItemLeft" align="right" valign="top"><a id="a4e9256ca80b00c30d88da4a268e72250"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::reff0_land</b></td></tr>
+<tr class="separator:a4e9256ca80b00c30d88da4a268e72250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4beca5e09d071f7515caa5dfc13beb03"><td class="memItemLeft" align="right" valign="top"><a id="a4beca5e09d071f7515caa5dfc13beb03"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::zsnmin</b></td></tr>
+<tr class="separator:a4beca5e09d071f7515caa5dfc13beb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a882c1f4465f984f564ca36559519296f"><td class="memItemLeft" align="right" valign="top"><a id="a882c1f4465f984f564ca36559519296f"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>classic_params::zsnmax2</b></td></tr>
+<tr class="separator:a882c1f4465f984f564ca36559519296f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b74fec0837d9da97084df14d8f1c7e3"><td class="memItemLeft" align="right" valign="top"><a id="a9b74fec0837d9da97084df14d8f1c7e3"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a9b74fec0837d9da97084df14d8f1c7e3">classic_params::kn</a></td></tr>
 <tr class="memdesc:a9b74fec0837d9da97084df14d8f1c7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
@@ -1246,11 +1285,11 @@ real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="separator:a931fcc6cc83bc0c4e314a67a0ba57f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd306edd956f111551b796c060862896"><td class="memItemLeft" align="right" valign="top"><a id="acd306edd956f111551b796c060862896"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#acd306edd956f111551b796c060862896">classic_params::cryodiffus</a></td></tr>
-<tr class="memdesc:acd306edd956f111551b796c060862896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity (or simply the rate of the cryoturbation) <img class="formulaInl" alt="$(m^2/d)$" src="form_1672.png"/> value from <a class="el" href="citelist.html#CITEREF_Koven2011-796">[45]</a> - 5 cm2/yr. <br /></td></tr>
+<tr class="memdesc:acd306edd956f111551b796c060862896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity (or simply the rate of the cryoturbation) <img class="formulaInl" alt="$(m^2/d)$" src="form_1674.png"/> value from <a class="el" href="citelist.html#CITEREF_Koven2011-796">[45]</a> - 5 cm2/yr. <br /></td></tr>
 <tr class="separator:acd306edd956f111551b796c060862896"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="memItemLeft" align="right" valign="top"><a id="a6a6ebb6f7a81fd386074ddb97cc4c729"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#a6a6ebb6f7a81fd386074ddb97cc4c729">classic_params::biodiffus</a></td></tr>
-<tr class="memdesc:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity (or simply the rate of the bioturbation) <img class="formulaInl" alt="$(m^2/d)$" src="form_1672.png"/> value from <a class="el" href="citelist.html#CITEREF_Koven2011-796">[45]</a> - 1 cm2/yr. <br /></td></tr>
+<tr class="memdesc:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diffusivity (or simply the rate of the bioturbation) <img class="formulaInl" alt="$(m^2/d)$" src="form_1674.png"/> value from <a class="el" href="citelist.html#CITEREF_Koven2011-796">[45]</a> - 1 cm2/yr. <br /></td></tr>
 <tr class="separator:a6a6ebb6f7a81fd386074ddb97cc4c729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2c506f404dd5b55393ada2c9f809622"><td class="memItemLeft" align="right" valign="top"><a id="ab2c506f404dd5b55393ada2c9f809622"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclassic__params.html#ab2c506f404dd5b55393ada2c9f809622">classic_params::kterm</a></td></tr>
@@ -1471,7 +1510,7 @@ subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="classic__params_8f90.html">classic_params.f90</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:55 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

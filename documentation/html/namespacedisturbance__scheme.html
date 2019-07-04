@@ -91,13 +91,13 @@ $(document).ready(function(){initNavTree('namespacedisturbance__scheme.html','')
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a790568168f75647afbda949e92aaba28"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#a790568168f75647afbda949e92aaba28">disturb</a> (stemmass, rootmass, gleafmas, bleafmas, thliq, THLW, THFC, uwind, vwind, lightng, fcancmx, litrmass, rmatctem, ilg, il1, il2, sort, grclarea, thice, popdin, lucemcom, dofire, currlat, iday, fsnow, isand, stemltdt, rootltdt, glfltrdt, blfltrdt, glcaemls, rtcaemls, stcaemls, blcaemls, ltrcemls, burnfrac, pstemmass, pgleafmass, emit_co2, emit_ch4, emit_co, emit_nmhc, emit_h2, emit_nox, emit_n2o, emit_pm25, emit_tpm, emit_tc, emit_oc, emit_bc, burnvegf, bterm_veg, mterm_veg, lterm, smfunc_veg)</td></tr>
-<tr class="memdesc:a790568168f75647afbda949e92aaba28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates whether fire occurs, burned area, amount of C emitted and litter generated.  <a href="#a790568168f75647afbda949e92aaba28">More...</a><br /></td></tr>
-<tr class="separator:a790568168f75647afbda949e92aaba28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8f4c04e07fc312fdd2d425ef69e0878"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#ac8f4c04e07fc312fdd2d425ef69e0878">disturb</a> (thliq, THLW, THFC, uwind, useTracer, vwind, lightng, fcancmx, isand, rmatctem, ilg, il1, il2, sort, grclarea, thice, popdin, lucemcom, dofire, currlat, iday, fsnow, stemmass, rootmass, gleafmas, bleafmas, litrmass, tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass, tracerLitrMass, stemltdt, rootltdt, glfltrdt, blfltrdt, glcaemls, rtcaemls, stcaemls, blcaemls, ltrcemls, burnfrac, pstemmass, pgleafmass, emit_co2, emit_ch4, emit_co, emit_nmhc, emit_h2, emit_nox, emit_n2o, emit_pm25, emit_tpm, emit_tc, emit_oc, emit_bc, burnvegf, bterm_veg, mterm_veg, lterm, smfunc_veg)</td></tr>
+<tr class="memdesc:ac8f4c04e07fc312fdd2d425ef69e0878"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates whether fire occurs, burned area, amount of C emitted and litter generated.  <a href="#ac8f4c04e07fc312fdd2d425ef69e0878">More...</a><br /></td></tr>
+<tr class="separator:ac8f4c04e07fc312fdd2d425ef69e0878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:ae72fa0c94541c3e88a45d71f2442be9c"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#ae72fa0c94541c3e88a45d71f2442be9c">burntobare</a> (il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, fcancmx, burnvegf, stemmass, rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, nppveg)</td></tr>
-<tr class="memdesc:ae72fa0c94541c3e88a45d71f2442be9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction. And while we are doing this also run a small check to make sure grid averaged quantities do not get messed up.  <a href="#ae72fa0c94541c3e88a45d71f2442be9c">More...</a><br /></td></tr>
-<tr class="separator:ae72fa0c94541c3e88a45d71f2442be9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbef7aa316639f4d767b3481f6ac987b"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedisturbance__scheme.html#abbef7aa316639f4d767b3481f6ac987b">burntobare</a> (il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, burnvegf, pstemmass, pgleafmass, useTracer, fcancmx, stemmass, rootmass, gleafmas, bleafmas, litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass)</td></tr>
+<tr class="memdesc:abbef7aa316639f4d767b3481f6ac987b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction. And while we are doing this also run a small check to make sure grid averaged quantities do not get messed up.  <a href="#abbef7aa316639f4d767b3481f6ac987b">More...</a><br /></td></tr>
+<tr class="separator:abbef7aa316639f4d767b3481f6ac987b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Calculates disturbance as both natural and human-influenced fires. </p>
@@ -133,7 +133,7 @@ Functions/Subroutines</h2></td></tr>
 <img class="formulaDsp" alt="\[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}].\qquad (Eqn 7) \]" src="form_1580.png"/>
 </p>
 <p>The population data used to calculate probability of fire ignition caused by humans and anthropogenic fire suppression (discussed further down in this section) is read in as a model geophysical field.</p>
-<p>The probability of fire due to the combustibility of the fuel, <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/>, is dependent on the soil moisture in vegetation's root zone and in the litter layer. The root-zone soil wetness ( <img class="formulaInl" alt="$\phi_{root}$" src="form_558.png"/>, <a class="el" href="allocate_8f.html" title="Performs allocation of carbon gained by photosynthesis into plant structural pools. ">allocate.f</a> Eqn. 1) is used as a surrogate for the vegetation moisture content and the soil wetness of the top soil layer as a surrogate for the litter moisture content. If a grid cell is covered by snow, <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/> is set to zero. The probability of fire conditioned on soil wetness in vegetation's rooting zone, <img class="formulaInl" alt="$P_{m,V}$" src="form_600.png"/>, is then</p>
+<p>The probability of fire due to the combustibility of the fuel, <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/>, is dependent on the soil moisture in vegetation's root zone and in the litter layer. The root-zone soil wetness ( <img class="formulaInl" alt="$\phi_{root}$" src="form_558.png"/>, allocate.f Eqn. 1) is used as a surrogate for the vegetation moisture content and the soil wetness of the top soil layer as a surrogate for the litter moisture content. If a grid cell is covered by snow, <img class="formulaInl" alt="$P_\mathrm{m}$" src="form_570.png"/> is set to zero. The probability of fire conditioned on soil wetness in vegetation's rooting zone, <img class="formulaInl" alt="$P_{m,V}$" src="form_600.png"/>, is then</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ P_{m,V} = 1-\tanh \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\qquad (Eqn 8)\]" src="form_1581.png"/>
 </p>
@@ -225,8 +225,8 @@ Functions/Subroutines</h2></td></tr>
 </p>
 <p>After bare ground generation associated with fire, the thinned biomass is spread uniformly over the remaining fraction of a PFT. However, it is ensured that the carbon density of the remaining biomass does not increase to a value above what it was before the fire occurred. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="ae72fa0c94541c3e88a45d71f2442be9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae72fa0c94541c3e88a45d71f2442be9c">&#9670;&nbsp;</a></span>burntobare()</h2>
+<a id="abbef7aa316639f4d767b3481f6ac987b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbef7aa316639f4d767b3481f6ac987b">&#9670;&nbsp;</a></span>burntobare()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -276,14 +276,32 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
-          <td class="paramname"><em>fcancmx</em>, </td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>burnvegf</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>burnvegf</em>, </td>
+          <td class="paramname"><em>pstemmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>pgleafmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>fcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -312,32 +330,56 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2,ignd), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,iccp2,ignd), intent(inout)&#160;</td>
+          <td class="paramtype">real, dimension(nilg,iccp2), intent(inout)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>pstemmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nilg,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>pgleafmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(nilg,icc), intent(inout)&#160;</td>
-          <td class="paramname"><em>nppveg</em>&#160;</td>
+          <td class="paramname"><em>nppveg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerSoilCMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerGLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerBLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -352,12 +394,15 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">nilg</td><td>no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between 9 ctem pfts and size 12 of parameter vectors</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pvgbioms</td><td>initial veg biomass</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pgavltms</td><td>initial litter mass</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pgavscms</td><td>initial soil c mass</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>initial fractions of the ctem pfts</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">burnvegf</td><td>per PFT fraction burned of that PFTs area</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pstemmass</td><td>grid averaged stemmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pgleafmass</td><td>grid averaged rootmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>initial fractions of the ctem pfts</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">gleafmas</td><td>green leaf carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">stemmass</td><td>stem carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
@@ -365,8 +410,12 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">nppveg</td><td>npp for individual pfts, <img class="formulaInl" alt="$u-mol co_2/m^2.sec$" src="form_564.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>soil carbon mass for each of the 9 ctem pfts + bare, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter carbon mass for each of the 9 ctem pfts + bare, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pstemmass</td><td>grid averaged stemmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pgleafmass</td><td>grid averaged rootmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/> </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracergleafmass</td><td>Tracer mass in the green leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerbleafmass</td><td>Tracer mass in the brown leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the roots for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracersoilcmass</td><td>Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/> </td></tr>
   </table>
   </dd>
 </dl>
@@ -384,8 +433,8 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="a790568168f75647afbda949e92aaba28"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a790568168f75647afbda949e92aaba28">&#9670;&nbsp;</a></span>disturb()</h2>
+<a id="ac8f4c04e07fc312fdd2d425ef69e0878"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8f4c04e07fc312fdd2d425ef69e0878">&#9670;&nbsp;</a></span>disturb()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -393,103 +442,85 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public disturbance_scheme::disturb </td>
           <td>(</td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>stemmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>rootmass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>gleafmas</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
-          <td class="paramname"><em>bleafmas</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>thliq</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>THLW</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>THFC</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>uwind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>vwind</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>lightng</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>fcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp2,ignd)&#160;</td>
-          <td class="paramname"><em>litrmass</em>, </td>
+          <td class="paramtype">integer, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>isand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>rmatctem</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>ilg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(icc)&#160;</td>
+          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
           <td class="paramname"><em>sort</em>, </td>
         </tr>
         <tr>
@@ -501,109 +532,163 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>thice</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>popdin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>lucemcom</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>dofire</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>currlat</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>iday</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>fsnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ilg,ignd)&#160;</td>
-          <td class="paramname"><em>isand</em>, </td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>stemmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>rootmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>gleafmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(inout)&#160;</td>
+          <td class="paramname"><em>bleafmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramname"><em>litrmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerStemMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerRootMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerGLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerBLeafMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>stemltdt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>rootltdt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>glfltrdt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>blfltrdt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>glcaemls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>rtcaemls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>stcaemls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>blcaemls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>ltrcemls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
           <td class="paramname"><em>burnfrac</em>, </td>
         </tr>
         <tr>
@@ -621,103 +706,103 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_co2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_ch4</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_co</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_nmhc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_h2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_nox</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_n2o</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_pm25</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_tpm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_tc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_oc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>emit_bc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>burnvegf</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>bterm_veg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>mterm_veg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
           <td class="paramname"><em>lterm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(out)&#160;</td>
           <td class="paramname"><em>smfunc_veg</em>&#160;</td>
         </tr>
         <tr>
@@ -732,55 +817,61 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramname">sort</td><td>index for correspondence between 9 pfts and size 12 of parameters vectors</td></tr>
-    <tr><td class="paramname">dofire</td><td>boolean, if true allow fire, if false no fire.</td></tr>
-    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">gleafmas</td><td>green leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">bleafmas</td><td>brown leaf mass</td></tr>
-    <tr><td class="paramname">thliq</td><td>liquid soil moisture content</td></tr>
-    <tr><td class="paramname">thlw</td><td>wilting point soil moisture content</td></tr>
-    <tr><td class="paramname">thfc</td><td>field capacity soil moisture content</td></tr>
-    <tr><td class="paramname">uwind</td><td>wind speed, <img class="formulaInl" alt="$m/s$" src="form_553.png"/></td></tr>
-    <tr><td class="paramname">vwind</td><td>wind speed, <img class="formulaInl" alt="$m/s$" src="form_553.png"/></td></tr>
-    <tr><td class="paramname">fcancmx</td><td>fractional coverages of ctem's 9 pfts</td></tr>
-    <tr><td class="paramname">lightng</td><td>total <img class="formulaInl" alt="$lightning, flashes/(km^2 . year)$" src="form_554.png"/> it is assumed that cloud to ground lightning is some fixed fraction of total lightning.</td></tr>
-    <tr><td class="paramname">litrmass</td><td>litter mass for each of the 9 pfts</td></tr>
-    <tr><td class="paramname">rmatctem</td><td>fraction of roots in each soil layer for each pft</td></tr>
-    <tr><td class="paramname">thice</td><td>frozen soil moisture content over canopy fraction</td></tr>
-    <tr><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_534.png"/></td></tr>
-    <tr><td class="paramname">lucemcom</td><td>land use change (luc) related combustion emission losses, <img class="formulaInl" alt="$u-mol co2/m2.sec$" src="form_555.png"/></td></tr>
-    <tr><td class="paramname">fsnow</td><td>fraction of snow simulated by class</td></tr>
-    <tr><td class="paramname">stemltdt</td><td>stem litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
-    <tr><td class="paramname">rootltdt</td><td>root litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
-    <tr><td class="paramname">glfltrdt</td><td>green leaf litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
-    <tr><td class="paramname">glcaemls</td><td>green leaf carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">rtcaemls</td><td>root carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">stcaemls</td><td>stem carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">ltrcemls</td><td>litter carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">blfltrdt</td><td>brown leaf litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
-    <tr><td class="paramname">blcaemls</td><td>brown leaf carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramname">burnfrac</td><td>total areal fraction burned, (%)</td></tr>
-    <tr><td class="paramname">emit_co2</td><td>carbon dioxide</td></tr>
-    <tr><td class="paramname">emit_co</td><td>carbon monoxide</td></tr>
-    <tr><td class="paramname">emit_ch4</td><td>methane</td></tr>
-    <tr><td class="paramname">emit_nmhc</td><td>non-methane hydrocarbons</td></tr>
-    <tr><td class="paramname">emit_h2</td><td>hydrogen gas</td></tr>
-    <tr><td class="paramname">emit_nox</td><td>nitrogen oxides</td></tr>
-    <tr><td class="paramname">emit_n2o</td><td>nitrous oxide</td></tr>
-    <tr><td class="paramname">emit_pm25</td><td>particulate matter less than 2.5 um in diameter</td></tr>
-    <tr><td class="paramname">emit_tpm</td><td>total particulate matter</td></tr>
-    <tr><td class="paramname">emit_tc</td><td>total carbon</td></tr>
-    <tr><td class="paramname">emit_oc</td><td>organic carbon</td></tr>
-    <tr><td class="paramname">emit_bc</td><td>black carbon</td></tr>
-    <tr><td class="paramname">lterm</td><td>lightning fire probability term</td></tr>
-    <tr><td class="paramname">grclarea</td><td>gcm grid cell area, <img class="formulaInl" alt="$km^2$" src="form_532.png"/></td></tr>
-    <tr><td class="paramname">burnvegf</td><td>per PFT fraction burned of that PFTs area</td></tr>
-    <tr><td class="paramname">bterm_veg</td><td>biomass fire probability term, Vivek</td></tr>
-    <tr><td class="paramname">mterm_veg</td><td>moisture fire probability term, Vivek</td></tr>
-    <tr><td class="paramname">smfunc_veg</td><td>soil moisture dependence on fire spread rate, Vivek </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between 9 pfts and size 12 of parameters vectors</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dofire</td><td>boolean, if true allow fire, if false no fire</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thliq</td><td>liquid soil moisture content</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thlw</td><td>wilting point soil moisture content</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thfc</td><td>field capacity soil moisture content</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">uwind</td><td>wind speed, <img class="formulaInl" alt="$m/s$" src="form_553.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vwind</td><td>wind speed, <img class="formulaInl" alt="$m/s$" src="form_553.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fcancmx</td><td>fractional coverages of ctem's 9 pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lightng</td><td>total <img class="formulaInl" alt="$lightning, flashes/(km^2 . year)$" src="form_554.png"/> it is assumed that cloud to ground lightning is some fixed fraction of total lightning.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rmatctem</td><td>fraction of roots in each soil layer for each pft</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thice</td><td>frozen soil moisture content over canopy fraction</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_534.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lucemcom</td><td>land use change (luc) related combustion emission losses, <img class="formulaInl" alt="$u-mol co2/m2.sec$" src="form_555.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fsnow</td><td>fraction of snow simulated by class</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">gleafmas</td><td>green leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf mass</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter mass for each of the CTEM pfts</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracergleafmass</td><td>Tracer mass in the green leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerbleafmass</td><td>Tracer mass in the brown leaf pool for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerstemmass</td><td>Tracer mass in the stem for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerrootmass</td><td>Tracer mass in the roots for each of the CTEM pfts, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$tracer C units/m^2$" src="form_1675.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">stemltdt</td><td>stem litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rootltdt</td><td>root litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">glfltrdt</td><td>green leaf litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">burnvegf</td><td>per PFT fraction burned of that PFTs area</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">bterm_veg</td><td>biomass fire probability term, Vivek</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mterm_veg</td><td>moisture fire probability term, Vivek</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">lterm</td><td>lightning fire probability term</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">smfunc_veg</td><td>soil moisture dependence on fire spread rate, Vivek</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">glcaemls</td><td>green leaf carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rtcaemls</td><td>root carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">stcaemls</td><td>stem carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ltrcemls</td><td>litter carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">blfltrdt</td><td>brown leaf litter generated due to disturbance <img class="formulaInl" alt="$(kg c/m^2)$" src="form_1526.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">blcaemls</td><td>brown leaf carbon emission losses, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">burnfrac</td><td>total areal fraction burned, (%)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_co2</td><td>carbon dioxide</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_co</td><td>carbon monoxide</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_ch4</td><td>methane</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_nmhc</td><td>non-methane hydrocarbons</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_h2</td><td>hydrogen gas</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_nox</td><td>nitrogen oxides</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_n2o</td><td>nitrous oxide</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_pm25</td><td>particulate matter less than 2.5 um in diameter</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_tpm</td><td>total particulate matter</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_tc</td><td>total carbon</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_oc</td><td>organic carbon</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">emit_bc</td><td>black carbon</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">grclarea</td><td>gcm grid cell area, <img class="formulaInl" alt="$km^2$" src="form_532.png"/> </td></tr>
   </table>
   </dd>
 </dl>
@@ -863,7 +954,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacedisturbance__scheme.html">disturbance_scheme</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:45 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

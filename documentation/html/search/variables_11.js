@@ -61,7 +61,6 @@ var searchData=
   ['rootdpth',['rootdpth',['../structctem__statevars_1_1veg__rot.html#aca39c048200ed6df9951955024d7e035',1,'ctem_statevars::veg_rot::rootdpth()'],['../structctem__statevars_1_1veg__gat.html#adc00bce954810bf5c168fa7730100b08',1,'ctem_statevars::veg_gat::rootdpth()']]],
   ['rootgat',['rootgat',['../structclass__statevars_1_1class__gather.html#ae55ca015675206efa3b94dd711f00b44',1,'class_statevars::class_gather']]],
   ['roothrsh',['roothrsh',['../namespaceclassic__params.html#a931fcc6cc83bc0c4e314a67a0ba57f5b',1,'classic_params']]],
-  ['rootlandcompchg',['rootlandcompchg',['../structctem__statevars_1_1veg__gat.html#a712a187e6a12c570177f1977f5412f2b',1,'ctem_statevars::veg_gat']]],
   ['rootlife',['rootlife',['../namespaceclassic__params.html#a0a36a5c11a55b2d0d8484d692342510f',1,'classic_params']]],
   ['rootmass',['rootmass',['../structctem__statevars_1_1veg__rot.html#af6b8d7af0af225cf28fe922d6c162470',1,'ctem_statevars::veg_rot::rootmass()'],['../structctem__statevars_1_1veg__gat.html#adb6e33fa44a382d663a602046c0c9d4e',1,'ctem_statevars::veg_gat::rootmass()']]],
   ['rootmassgat',['rootmassgat',['../structctem__statevars_1_1tracerstype.html#a811a968d70713a3da64bfb2654e0311d',1,'ctem_statevars::tracerstype']]],

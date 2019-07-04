@@ -88,15 +88,15 @@ $(document).ready(function(){initNavTree('group__turbation.html','');});
 <p>Simulation of soil C movement due to turbation processes (presently only cryo).  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga98c23aa0e8d321dd915319e7878cb4a0"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__turbation.html#ga98c23aa0e8d321dd915319e7878cb4a0">soilc_processes::turbation</a> (il1, il2, delzw, zbotw, isand, actlyr, spinfast, litrmass, soilcmas, turbLitter, turbSoilC)</td></tr>
-<tr class="separator:ga98c23aa0e8d321dd915319e7878cb4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf3201878bfaeecfead45c1e73123370a"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__turbation.html#gaf3201878bfaeecfead45c1e73123370a">soilc_processes::turbation</a> (il1, il2, delzw, zbotw, isand, actlyr, spinfast, litter, soilC)</td></tr>
+<tr class="separator:gaf3201878bfaeecfead45c1e73123370a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Simulation of soil C movement due to turbation processes (presently only cryo). </p>
 <p>Modelled simply as a diffusion process. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="ga98c23aa0e8d321dd915319e7878cb4a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga98c23aa0e8d321dd915319e7878cb4a0">&#9670;&nbsp;</a></span>turbation()</h2>
+<a id="gaf3201878bfaeecfead45c1e73123370a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf3201878bfaeecfead45c1e73123370a">&#9670;&nbsp;</a></span>turbation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -116,25 +116,25 @@ $(document).ready(function(){initNavTree('group__turbation.html','');});
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>delzw</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>zbotw</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramtype">integer, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>isand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(:), intent(in)&#160;</td>
           <td class="paramname"><em>actlyr</em>, </td>
         </tr>
         <tr>
@@ -146,26 +146,14 @@ $(document).ready(function(){initNavTree('group__turbation.html','');});
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(inout)&#160;</td>
-          <td class="paramname"><em>litrmass</em>, </td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>litter</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(inout)&#160;</td>
-          <td class="paramname"><em>soilcmas</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(out)&#160;</td>
-          <td class="paramname"><em>turbLitter</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(out)&#160;</td>
-          <td class="paramname"><em>turbSoilC</em>&#160;</td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>soilC</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -184,10 +172,8 @@ $(document).ready(function(){initNavTree('group__turbation.html','');});
     <tr><td class="paramdir">[in]</td><td class="paramname">zbotw</td><td>Bottom of soil layers [m]</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">isand</td><td>flag for non-permeable layers</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">actlyr</td><td>active layer depth [m]</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter mass for the pfts + bare [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ]</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>soil carbon mass for the pfts + bare [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ]</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">turblitter</td><td>Litter gains/losses due to turbation [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ], negative is a gain.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">turbsoilc</td><td>Soil C gains/losses due to turbation [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ], negative is a gain. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">litter</td><td>litter mass for the pfts + bare [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ]</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">soilc</td><td>soil carbon mass for the pfts + bare [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ] </td></tr>
   </table>
   </dd>
 </dl>
@@ -215,7 +201,7 @@ $(document).ready(function(){initNavTree('group__turbation.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

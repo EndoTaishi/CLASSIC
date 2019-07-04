@@ -87,8 +87,8 @@ $(document).ready(function(){initNavTree('dir_68267d1309a1af8e8297ef4c3efbcdba.h
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
 Files</h2></td></tr>
-<tr class="memitem:allocate_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="allocate_8f.html">allocate.f</a></td></tr>
-<tr class="memdesc:allocate_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs allocation of carbon gained by photosynthesis into plant structural pools. <br /></td></tr>
+<tr class="memitem:allocateCarbon_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="allocateCarbon_8f90.html">allocateCarbon.f90</a></td></tr>
+<tr class="memdesc:allocateCarbon_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs allocation of carbon gained by photosynthesis into plant structural pools. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:applyAllometry_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="applyAllometry_8f90.html">applyAllometry.f90</a></td></tr>
 <tr class="memdesc:applyAllometry_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies allometric relationships to converts biomass to structural attributes. <br /></td></tr>
@@ -159,17 +159,7 @@ Files</h2></td></tr>
 <tr class="memitem:ctemDriver_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemDriver_8f90.html">ctemDriver.f90</a></td></tr>
 <tr class="memdesc:ctemDriver_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Principle driver for CTEM. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ctemg1_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemg1_8f.html">ctemg1.f</a></td></tr>
-<tr class="memdesc:ctemg1_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs initial 'gather' operation on CTEM variables for consistency with physics variables gather operations. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ctemg2_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemg2_8f.html">ctemg2.f</a></td></tr>
-<tr class="memdesc:ctemg2_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs subsequent 'gather' operation on CTEM variables for consistency with physics variables gather operations. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ctems1_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctems1_8f.html">ctems1.f</a></td></tr>
-<tr class="memdesc:ctems1_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs intial scatter operation on biogeochemical variables. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ctems2_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctems2_8f.html">ctems2.f</a></td></tr>
-<tr class="memdesc:ctems2_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs subsequent scatter operation on biogeochemical variables. <br /></td></tr>
+<tr class="memitem:ctemGatherScatter_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemGatherScatter_8f90.html">ctemGatherScatter.f90</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ctemUtilities_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctemUtilities_8f90.html">ctemUtilities.f90</a></td></tr>
 <tr class="memdesc:ctemUtilities_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central module for CTEM (biogeochemical)-related utilities. <br /></td></tr>
@@ -191,6 +181,9 @@ Files</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:FLXSURFZ_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="FLXSURFZ_8f.html">FLXSURFZ.f</a></td></tr>
 <tr class="memdesc:FLXSURFZ_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates surface layer transfer coefficients and fluxes FLXSURFZ is a variant of FLXSURF3 that permits to input wind and temperature (humidity) at different levels. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:fourBandAlbedo_8f90"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fourBandAlbedo_8f90.html">fourBandAlbedo.f90</a></td></tr>
+<tr class="memdesc:fourBandAlbedo_8f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Driver for four band albedo scheme. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:GATPREP_8f"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="GATPREP_8f.html">GATPREP.f</a></td></tr>
 <tr class="memdesc:GATPREP_8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns values to pointer vectors relating the location of elements on the "gathered" variable vectors to elements on the original two-dimensional arrays (latitude circle x mosaic tiles) for land grid cells. <br /></td></tr>
@@ -355,7 +348,7 @@ Files</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:45 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

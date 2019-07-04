@@ -8,6 +8,7 @@ var structclass__statevars_1_1class__moyr__output =
     [ "actlyr_yr", "structclass__statevars_1_1class__moyr__output.html#a2d7c47167c5b88832a74cfd4638633a8", null ],
     [ "aliracc_mo", "structclass__statevars_1_1class__moyr__output.html#a7a3b47580904b57a000dc85ad78e8900", null ],
     [ "aliracc_yr", "structclass__statevars_1_1class__moyr__output.html#ad617a361f22b8f1c794f809336198062", null ],
+    [ "alsnoacc_mo", "structclass__statevars_1_1class__moyr__output.html#ada1dc8ec8e206cdbcfb8917f441cec42", null ],
     [ "altotacc_mo", "structclass__statevars_1_1class__moyr__output.html#a6614841f589b4658192d49676cc092cb", null ],
     [ "altotacc_yr", "structclass__statevars_1_1class__moyr__output.html#addd8904d5436316eb407f18c112ed81c", null ],
     [ "altotcntr_m", "structclass__statevars_1_1class__moyr__output.html#a97179965b945c4e5524fc9e9472cbaaa", null ],

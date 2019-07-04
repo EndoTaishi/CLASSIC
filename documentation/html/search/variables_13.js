@@ -79,7 +79,8 @@ var searchData=
   ['tpndrow',['tpndrow',['../structclass__statevars_1_1class__rotated.html#ab314aecaa5aa06196f9f7e5c9909c6be',1,'class_statevars::class_rotated']]],
   ['tracerco2file',['tracerco2file',['../structctem__statevars_1_1ctem__switches.html#a7fde1fb2110ad04a2aa2c6dc8334cdc9',1,'ctem_statevars::ctem_switches']]],
   ['tracerco2fromfile',['tracerco2fromfile',['../namespacemodel__state__drivers.html#a4b3213973ea8637808d81c82d26d6703',1,'model_state_drivers']]],
-  ['tracerco2rot',['tracerco2rot',['../structctem__statevars_1_1tracerstype.html#ac285b19bbeaff802242f0fd3d35ffe4e',1,'ctem_statevars::tracerstype']]],
+  ['tracerco2gat',['tracerco2gat',['../structctem__statevars_1_1tracerstype.html#ab3d66e3700b234250947aed64a09c9fe',1,'ctem_statevars::tracerstype']]],
+  ['tracerco2rot',['tracerco2rot',['../structctem__statevars_1_1tracerstype.html#a004d8cdd2cb757983c9a0e70e11c8704',1,'ctem_statevars::tracerstype']]],
   ['tracerco2time',['tracerco2time',['../namespacemodel__state__drivers.html#a238008dc89796c5e1e0578eaa37bf250',1,'model_state_drivers']]],
   ['transientch4',['transientch4',['../structctem__statevars_1_1ctem__switches.html#a5f60afade189e33c44a42ee0f9084dc4',1,'ctem_statevars::ctem_switches']]],
   ['transientco2',['transientco2',['../structctem__statevars_1_1ctem__switches.html#a580b5134660a387d93dabc8d8018bdd4',1,'ctem_statevars::ctem_switches']]],
@@ -99,9 +100,8 @@ var searchData=
   ['tsnorow',['tsnorow',['../structclass__statevars_1_1class__rotated.html#a4be4c969808d09a7e803347972d9d684',1,'class_statevars::class_rotated']]],
   ['tspcgat',['tspcgat',['../structclass__statevars_1_1class__gather.html#ab4af0ac3caec9082e6efc7f2887e591f',1,'class_statevars::class_gather']]],
   ['tup',['tup',['../namespaceclassic__params.html#a082361cef486d9822722e0b3c67bc375',1,'classic_params']]],
-  ['turblitter',['turblitter',['../structctem__statevars_1_1veg__gat.html#a1978a0312d2cd5235be0c77c6e13e6de',1,'ctem_statevars::veg_gat']]],
-  ['turbsoilc',['turbsoilc',['../structctem__statevars_1_1veg__gat.html#aec12f4394764c3238f791bc4e9f603a6',1,'ctem_statevars::veg_gat']]],
   ['twarmm',['twarmm',['../structctem__statevars_1_1veg__rot.html#a5eda8ebd5de8360fd83e0f48705b0ac0',1,'ctem_statevars::veg_rot::twarmm()'],['../structctem__statevars_1_1veg__gat.html#a6f21785182abb5694306d94bf0f760d8',1,'ctem_statevars::veg_gat::twarmm()']]],
   ['twarmmax',['twarmmax',['../namespaceclassic__params.html#a8a7bb89b5112208c9cbcee06219419db',1,'classic_params']]],
-  ['tymaxlai',['tymaxlai',['../structctem__statevars_1_1veg__rot.html#a8a63daa0c80d8f2a3304369de75f676d',1,'ctem_statevars::veg_rot::tymaxlai()'],['../structctem__statevars_1_1veg__gat.html#a9e160a0b98c2305233c32ce4c9228393',1,'ctem_statevars::veg_gat::tymaxlai()']]]
+  ['tymaxlai',['tymaxlai',['../structctem__statevars_1_1veg__rot.html#a8a63daa0c80d8f2a3304369de75f676d',1,'ctem_statevars::veg_rot::tymaxlai()'],['../structctem__statevars_1_1veg__gat.html#a9e160a0b98c2305233c32ce4c9228393',1,'ctem_statevars::veg_gat::tymaxlai()']]],
+  ['tzsgat',['tzsgat',['../structclass__statevars_1_1class__gather.html#a6fd24e58cbd7d33604b602cbbc405ee6',1,'class_statevars::class_gather']]]
 ];

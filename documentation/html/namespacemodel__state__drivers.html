@@ -591,7 +591,6 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <p>Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on) </p>
 <dl class="section author"><dt>Author</dt><dd>Joe Melton </dd></dl>
 <p>GCROW, the GCM surface descriptor variable. For land surfaces (including inland water) it has a value of -1.</p>
-<p>depth, ZSNL, is assigned its operational value of 0.10 m.</p>
 <p>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.</p>
 <p>Take the first tile value now and put it over the other tiles</p>
 <p>if this run uses the competition and starts from bare ground, set up the model state here. this overwrites what was read in from the initialization file. </p>
@@ -636,6 +635,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <p>To determine nmos, we use the largest number in the input file variable nmtest for the region we are running.</p>
 <p>Determine the size of ilg which is nlat times nmos</p>
 <p>Lastly, open some files so they are ready</p>
+<p>Add global attribute to restart file, storing the rows overwritten. Could be used in the future to simplify stitching of the restart file when the run is split across multiple nodes.</p>
 <p>Open the meteorological forcing files and find the variable name in the file </p>
 
 </div>
@@ -795,7 +795,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>read</b></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:45 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:56 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

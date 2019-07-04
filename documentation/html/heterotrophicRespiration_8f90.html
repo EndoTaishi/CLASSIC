@@ -80,6 +80,8 @@ $(document).ready(function(){initNavTree('heterotrophicRespiration_8f90.html',''
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions/Subroutines</a>  </div>
   <div class="headertitle">
 <div class="title">heterotrophicRespiration.f90 File Reference</div>  </div>
 </div><!--header-->
@@ -90,14 +92,20 @@ $(document).ready(function(){initNavTree('heterotrophicRespiration_8f90.html',''
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
+<tr class="memitem:aaeee4be9b44a070bb3d926eefed613a4"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heterotrophicRespiration_8f90.html#aaeee4be9b44a070bb3d926eefed613a4">heterotrophic_respiration::hetresg</a> (litrmass, soilcmas, delzw, thpor, il1, il2, ilg, tbar, psisat, b, thliq, zbotw, thice, frac, isand, litres, socres)</td></tr>
+<tr class="memdesc:aaeee4be9b44a070bb3d926eefed613a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heterotrophic respiration subroutine for bare ground fraction.  <a href="heterotrophicRespiration_8f90.html#aaeee4be9b44a070bb3d926eefed613a4">More...</a><br /></td></tr>
+<tr class="separator:aaeee4be9b44a070bb3d926eefed613a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2879eddfbd22c5a65542a8f386a2437"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heterotrophicRespiration_8f90.html#af2879eddfbd22c5a65542a8f386a2437">heterotrophic_respiration::updatepoolshetresp</a> (il1, il2, ilg, fcancmx, ltresveg, scresveg, ipeatland, fg, litresmoss, socres_peat, sort, spinfast, rmrveg, rmr, leapnow, useTracer, ltResTracer, sCResTracer, litResMossTracer, soCResPeatTracer, litrmass, soilcmas, Cmossmas, tracerLitrMass, tracerSoilCMass, tracerMossCMass, hetrsveg, litres, socres, hetrores, humtrsvg, soilresp, humiftrs, hutrstep_g, litrfallmoss, ltrestepmoss, humstepmoss, socrestep)</td></tr>
+<tr class="memdesc:af2879eddfbd22c5a65542a8f386a2437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find vegetation and tile averaged litter and soil C respiration rates using values from canopy over ground and canopy over snow subareas. Also adds the moss and peat soil respiration to the tile level quantities. Next the litter and soil C pools are updated based on litter and soil C respiration rates. The humidified litter is then transferred to the soil C pool. Soil respiration is estimated as the sum of heterotrophic respiration and root maintenance respiration. For peatlands, we additionally add moss values to the grid (litter respiration and moss root respiration).  <a href="heterotrophicRespiration_8f90.html#af2879eddfbd22c5a65542a8f386a2437">More...</a><br /></td></tr>
+<tr class="separator:af2879eddfbd22c5a65542a8f386a2437"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:acda778ec663493c0960bbfb419001741"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heterotrophicRespiration_8f90.html#acda778ec663493c0960bbfb419001741">heterotrophic_respiration::hetresg</a> (litrmass, soilcmas, delzw, thpor, il1, il2, ilg, tbar, psisat, b, thliq, thice, frac, isand, litres, socres)</td></tr>
-<tr class="memdesc:acda778ec663493c0960bbfb419001741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heterotrophic respiration subroutine for bare ground fraction.  <a href="heterotrophicRespiration_8f90.html#acda778ec663493c0960bbfb419001741">More...</a><br /></td></tr>
-<tr class="separator:acda778ec663493c0960bbfb419001741"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a987d033c0fca06ebfd5114004d2febbe"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heterotrophicRespiration_8f90.html#a987d033c0fca06ebfd5114004d2febbe">heterotrophic_respiration::heterotrophicrespiration</a> (il1, il2, ilg, ipeatland, fcancmx, fc, litrmass, soilcmas, delzw, thpor, tbar, psisat, thliq, sort, bi, isand, thice, fg, litrmsmoss, peatdep, wtable, zbotw, roottemp, useTracer, tracerLitrMass, tracerSoilCMass, tracerMossLitrMass, ltresveg, scresveg, litresmoss, socres_peat, resoxic, resanoxic, ltResTracer, sCResTracer, litResMossTracer, soCResPeatTracer)</td></tr>
+<tr class="memdesc:a987d033c0fca06ebfd5114004d2febbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heterotrophic respiration subroutine that calls hetresg and hetresv.  <a href="heterotrophicRespiration_8f90.html#a987d033c0fca06ebfd5114004d2febbe">More...</a><br /></td></tr>
+<tr class="separator:a987d033c0fca06ebfd5114004d2febbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:ad32e36d597aea9e00671448d26095c34"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heterotrophicRespiration_8f90.html#ad32e36d597aea9e00671448d26095c34">heterotrophic_respiration::hetresv</a> (fcan, fct, litrmass, soilcmas, delzw, thpor, il1, il2, ilg, tbar, psisat, thliq, sort, b, isand, thice, ipeatland, ltresveg, scresveg)</td></tr>
-<tr class="memdesc:ad32e36d597aea9e00671448d26095c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heterotrophic Respiration Subroutine For Vegetated Fraction.  <a href="heterotrophicRespiration_8f90.html#ad32e36d597aea9e00671448d26095c34">More...</a><br /></td></tr>
-<tr class="separator:ad32e36d597aea9e00671448d26095c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2982c8ae46d7152eee054cfe29e1d08"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="heterotrophicRespiration_8f90.html#ab2982c8ae46d7152eee054cfe29e1d08">heterotrophic_respiration::hetresv</a> (fcan, fct, litrmass, soilcmas, delzw, thpor, il1, il2, ilg, tbar, psisat, thliq, roottemp, zbotw, sort, b, isand, thice, ipeatland, ltresveg, scresveg)</td></tr>
+<tr class="memdesc:ab2982c8ae46d7152eee054cfe29e1d08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heterotrophic Respiration Subroutine For Vegetated Fraction.  <a href="heterotrophicRespiration_8f90.html#ab2982c8ae46d7152eee054cfe29e1d08">More...</a><br /></td></tr>
+<tr class="separator:ab2982c8ae46d7152eee054cfe29e1d08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Central module for all heterotrophic respiration-related operations. </p>
@@ -105,44 +113,44 @@ Functions/Subroutines</h2></td></tr>
 <p>Central module for all heterotrophic respiration-related operations</p>
 <p>Heterotrophic respiration, <img class="formulaInl" alt="$R_\mathrm{h}$" src="form_765.png"/> ( <img class="formulaInl" alt="$mol\,CO_2\,m^{-2}\,s^{-1}$" src="form_766.png"/>), in CTEM is based on respiration from the litter (which includes contributions from the stem, leaf and root components), <img class="formulaInl" alt="$R_{h,D}$" src="form_767.png"/>, and soil carbon, <img class="formulaInl" alt="$R_{h,H}$" src="form_768.png"/>, pools,</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \hspace{10pt}[Eqn 1] \]" src="form_1673.png"/>
+<img class="formulaDsp" alt="\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \hspace{10pt}[Eqn 1] \]" src="form_1677.png"/>
 </p>
 <p>Heterotrophic respiration is regulated by soil temperature and moisture and is calculated on a daily time step. The original heterotrophic respiration scheme is described in Arora (2003) <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a> while the modified parametrization used in CTEM v. 2.0 is detailed in Melton and Arora (2014) <a class="el" href="citelist.html#CITEREF_Melton2014-xy">[60]</a>. Respiration from the litter and soil carbon pools takes the following basic form</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i f(z), \nonumber \\ i = \mathrm{D}, \mathrm{H}. \hspace{10pt}[Eqn 2] \]" src="form_1674.png"/>
+<img class="formulaDsp" alt="\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i f(z), \nonumber \\ i = \mathrm{D}, \mathrm{H}. \hspace{10pt}[Eqn 2] \]" src="form_1678.png"/>
 </p>
 <p>The soil carbon and litter respiration depends on the amount of carbon in these components ( <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_529.png"/> and <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_528.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_492.png"/>) and on a PFT-dependent respiration rate specified at <img class="formulaInl" alt="$15\,{C}$" src="form_771.png"/> ( <img class="formulaInl" alt="$\varsigma_\mathrm{H}$" src="form_772.png"/> and <img class="formulaInl" alt="$\varsigma_\mathrm{D}$" src="form_773.png"/>; <img class="formulaInl" alt="$kg\,C\,(kg\,C)^{-1}\,yr^{-1}$" src="form_774.png"/>; see also <a class="el" href="classic__params_8f90.html" title="This module holds CLASSIC globally accessible parameters. ">classic_params.f90</a>). The constant <img class="formulaInl" alt="$2.64 \times 10^{-6}$" src="form_775.png"/> converts units from <img class="formulaInl" alt="$kg\,C\,m^{-2}\,yr^{-1}$" src="form_776.png"/> to <img class="formulaInl" alt="$mol\,CO_2\,m^{-2}\,s^{-1}$" src="form_766.png"/>.</p>
 <p>The effect of soil moisture is accounted for via dependence on soil matric potential ( <img class="formulaInl" alt="$f(\Psi)$" src="form_777.png"/>), described later. The temperature dependency of microbial soil respiration rates has been estimated by several different formulations, ranging from simple <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> (exponential) to Arrhenius-type formulations (see review by Lloyd and Taylor (1994) <a class="el" href="citelist.html#CITEREF_Lloyd1994-ct">[56]</a>). In CTEM, soil temperature influences heterotrophic respiration through a temperature-dependent <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> function ( <img class="formulaInl" alt="$f_{15}(Q_{10})$" src="form_779.png"/>). The value of <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> itself is assumed to be a function of temperature following a hyperbolic tan function:</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i = \mathrm{D}, \mathrm{H}, \hspace{10pt}[Eqn 3]\]" src="form_1675.png"/>
+<img class="formulaDsp" alt="\[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i = \mathrm{D}, \mathrm{H}, \hspace{10pt}[Eqn 3]\]" src="form_1679.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$T_{\{D,H\}}$" src="form_781.png"/> is the temperature of either the litter or soil carbon pool ( <img class="formulaInl" alt="$C$" src="form_782.png"/>), respectively. The parametrization is a compromise between the temperature-independent <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> commonly found in many terrestrial ecosystem models (Cox, 2011) <a class="el" href="citelist.html#CITEREF_Cox2001-am">[26]</a> and the temperature-dependent <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> of Kirschbaum (1995) <a class="el" href="citelist.html#CITEREF_Kirschbaum1995-db">[42]</a>. While a constant <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> yields an indefinitely increasing respiration rate with increasing temperature, the formulation of Kirschbaum (1995) <a class="el" href="citelist.html#CITEREF_Kirschbaum1995-db">[42]</a> gives a continuously increasing <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> under decreasing temperature, which leads to unreasonably high soil and litter carbon pools at high latitudes in CTEM. The CTEM parametrization avoids these issues with a <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> value of about 2.0 for temperatures less than <img class="formulaInl" alt="$20\,C$" src="form_783.png"/>, while a decreasing value of <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> at temperatures above <img class="formulaInl" alt="$20\,C$" src="form_783.png"/> ensures that the respiration rate does not increase indefinitely. As the soil temperature decreases below <img class="formulaInl" alt="$ T_{crit} $" src="form_1676.png"/> (typically <img class="formulaInl" alt="$1\,C$" src="form_1677.png"/>) a step function is applied to the <img class="formulaInl" alt="$f_{15}(Q_{10})$" src="form_779.png"/> function to reflect lost mobility of the microbial populations due to less liquid water as: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ f_{15}(Q_{10,(T_i &lt; T_{crit})}) = f_{15}(Q_{10}) * 0.1 \]" src="form_1678.png"/>
+<p>where <img class="formulaInl" alt="$T_{\{D,H\}}$" src="form_781.png"/> is the temperature of either the litter or soil carbon pool ( <img class="formulaInl" alt="$C$" src="form_782.png"/>), respectively. The parametrization is a compromise between the temperature-independent <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> commonly found in many terrestrial ecosystem models (Cox, 2011) <a class="el" href="citelist.html#CITEREF_Cox2001-am">[26]</a> and the temperature-dependent <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> of Kirschbaum (1995) <a class="el" href="citelist.html#CITEREF_Kirschbaum1995-db">[42]</a>. While a constant <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> yields an indefinitely increasing respiration rate with increasing temperature, the formulation of Kirschbaum (1995) <a class="el" href="citelist.html#CITEREF_Kirschbaum1995-db">[42]</a> gives a continuously increasing <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> under decreasing temperature, which leads to unreasonably high soil and litter carbon pools at high latitudes in CTEM. The CTEM parametrization avoids these issues with a <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> value of about 2.0 for temperatures less than <img class="formulaInl" alt="$20\,C$" src="form_783.png"/>, while a decreasing value of <img class="formulaInl" alt="$Q_{10}$" src="form_778.png"/> at temperatures above <img class="formulaInl" alt="$20\,C$" src="form_783.png"/> ensures that the respiration rate does not increase indefinitely. As the soil temperature decreases below <img class="formulaInl" alt="$ T_{crit} $" src="form_1680.png"/> (typically <img class="formulaInl" alt="$1\,C$" src="form_1681.png"/>) a step function is applied to the <img class="formulaInl" alt="$f_{15}(Q_{10})$" src="form_779.png"/> function to reflect lost mobility of the microbial populations due to less liquid water as: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ f_{15}(Q_{10,(T_i &lt; T_{crit})}) = f_{15}(Q_{10}) * 0.1 \]" src="form_1682.png"/>
 </p>
 <div class="image">
 <img src="Q10_response_sm.png" alt="Q10_response_sm.png"/>
 </div>
  <p>The soil detrital pools are explictly tracked per soil layer.</p>
 <p>The response of heterotrophic respiration to soil moisture is formulated through soil matric potential ( <img class="formulaInl" alt="$\Psi$" src="form_48.png"/>; <img class="formulaInl" alt="$MPa$" src="form_787.png"/>). While soil matric potential values are usually negative, the formulation uses absolute values to allow its logarithm to be taken. Absolute values of soil matric potential are high when soil is dry and low when it is wet. The primary premise of soil moisture control on heterotrophic respiration is that heterotrophic respiration is constrained both when the soils are dry (due to reduced microbial activity) and when they are wet (due to impeded oxygen supply to microbes) with optimum conditions in-between. The exception is the respiration from the litter component of the first soil layer, which is assumed to be continually exposed to air, and thus never oxygen deprived, even when soil moisture content is high ( <img class="formulaInl" alt="$0.04 &gt; \vert \Psi \vert \geq \vert \Psi_{sat} \vert$" src="form_788.png"/>, where <img class="formulaInl" alt="$\Psi_{sat}$" src="form_88.png"/> is the soil matric potential at saturation). The soil moisture dependence for each soil layer thus varies between 0 and 1 with matric potential as follows:</p>
-<p>for <img class="formulaInl" alt="$0.04 &gt; \vert\Psi_i\vert \geq \vert\Psi_{sat,i}\vert$" src="form_1679.png"/></p>
+<p>for <img class="formulaInl" alt="$0.04 &gt; \vert\Psi_i\vert \geq \vert\Psi_{sat,i}\vert$" src="form_1683.png"/></p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ f(\Psi_i)_\mathrm{H,(D, i&gt;1)} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi_i\vert} {\log(0.04)-\log\vert\Psi_{sat,i}\vert} \hspace{10pt}[Eqn 4]\]" src="form_1680.png"/>
+<img class="formulaDsp" alt="\[ f(\Psi_i)_\mathrm{H,(D, i&gt;1)} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi_i\vert} {\log(0.04)-\log\vert\Psi_{sat,i}\vert} \hspace{10pt}[Eqn 4]\]" src="form_1684.png"/>
 </p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[f(\Psi_i)_{D,i=1} = 1\nonumber; \hspace{10pt}[Eqn 5]\]" src="form_1681.png"/>
+<img class="formulaDsp" alt="\[f(\Psi_i)_{D,i=1} = 1\nonumber; \hspace{10pt}[Eqn 5]\]" src="form_1685.png"/>
 </p>
-<p>for <img class="formulaInl" alt="$0.06 \geq \vert\Psi_i\vert \geq 0.04$" src="form_1682.png"/> </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ f(\Psi_i)_{D,H} = 1; \hspace{10pt}[Eqn 6]\]" src="form_1683.png"/>
+<p>for <img class="formulaInl" alt="$0.06 \geq \vert\Psi_i\vert \geq 0.04$" src="form_1686.png"/> </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ f(\Psi_i)_{D,H} = 1; \hspace{10pt}[Eqn 6]\]" src="form_1687.png"/>
 </p>
-<p>for <img class="formulaInl" alt="$100.0 \geq \vert\Psi_i\vert &gt; 0.06$" src="form_1684.png"/> </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ f(\Psi_i)_{D,H} = 1 - 0.8\frac{\log\vert\Psi_i\vert-\log(0.06)}{\log(100)-\log(0.06)}; \hspace{10pt}[Eqn 7]\]" src="form_1685.png"/>
+<p>for <img class="formulaInl" alt="$100.0 \geq \vert\Psi_i\vert &gt; 0.06$" src="form_1688.png"/> </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ f(\Psi_i)_{D,H} = 1 - 0.8\frac{\log\vert\Psi_i\vert-\log(0.06)}{\log(100)-\log(0.06)}; \hspace{10pt}[Eqn 7]\]" src="form_1689.png"/>
 </p>
-<p>for <img class="formulaInl" alt="$\vert\Psi_i\vert &gt; 100.0$" src="form_1686.png"/> </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ f(\Psi_i)_{D,H}=0.2. \hspace{10pt}[Eqn 8]\]" src="form_1687.png"/>
+<p>for <img class="formulaInl" alt="$\vert\Psi_i\vert &gt; 100.0$" src="form_1690.png"/> </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ f(\Psi_i)_{D,H}=0.2. \hspace{10pt}[Eqn 8]\]" src="form_1691.png"/>
 </p>
-<p>Respiration also is reduced at depth in soil ( <img class="formulaInl" alt="$f(z)$" src="form_1688.png"/>) following Lawrence et al. (2015) <a class="el" href="citelist.html#CITEREF_Lawrence2015-tj">[51]</a>. This term is meant to represent unresolved depth dependent soil processes (such as oxygen availability, microbial community changes, etc.). The reduction in respiration with depth per soil layer is dependent upon the layer depth and a term, <img class="formulaInl" alt="$z_t$" src="form_1689.png"/>, which is given a value of 10.0 (see ctem_params.f90) as,</p>
+<p>Respiration also is reduced at depth in soil ( <img class="formulaInl" alt="$f(z)$" src="form_1692.png"/>) following Lawrence et al. (2015) <a class="el" href="citelist.html#CITEREF_Lawrence2015-tj">[51]</a>. This term is meant to represent unresolved depth dependent soil processes (such as oxygen availability, microbial community changes, etc.). The reduction in respiration with depth per soil layer is dependent upon the layer depth and a term, <img class="formulaInl" alt="$z_t$" src="form_1693.png"/>, which is given a value of 10.0 (see ctem_params.f90) as,</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ f(z_i) =\exp (-z_i / z_t) \hspace{10pt}[Eqn 9]\]" src="form_1690.png"/>
+<img class="formulaDsp" alt="\[ f(z_i) =\exp (-z_i / z_t) \hspace{10pt}[Eqn 9]\]" src="form_1694.png"/>
 </p>
 <div class="image">
 <img src="decr_resp_wit_depth_sm.png" alt="decr_resp_wit_depth_sm.png"/>
@@ -150,22 +158,58 @@ Functions/Subroutines</h2></td></tr>
  <p>Heterotrophic respiration for bare ground is treated separately in CTEM. The carbon contributions to the bare ground litter and soil carbon pools come via processes such as creation of bare ground due to fire, competition between PFTs and land use change. The heterotrophic respiration is sensitive to temperature and moisture in the same manner as vegetated areas using Eqs. (2)&ndash;(8). The base respiration rates of <img class="formulaInl" alt="$\varsigma_{D,bare}$" src="form_797.png"/> and <img class="formulaInl" alt="$\varsigma_{H,bare}$" src="form_798.png"/> are set to <img class="formulaInl" alt="$0.5605$" src="form_799.png"/> and <img class="formulaInl" alt="$0.02258\,kg\,C\,(kg\,C)^{-1}\,yr^{-1}$" src="form_800.png"/>, respectively.</p>
 <p>The amount of humidified litter, which is transferred from the litter to the soil carbon pool ( <img class="formulaInl" alt="$C_{\mathrm{D} \rightarrow \mathrm{H}}$" src="form_801.png"/>) is modelled as a fraction of litter respiration ( <img class="formulaInl" alt="$R_{h,D}$" src="form_767.png"/>) as</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \hspace{10pt}[Eqn 10] \]" src="form_1691.png"/>
+<img class="formulaDsp" alt="\[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \hspace{10pt}[Eqn 10] \]" src="form_1695.png"/>
 </p>
 <p>where <img class="formulaInl" alt="$\chi$" src="form_29.png"/> (see also ctem_params.f90) is the PFT-dependent humification factor and varies between 0.4 and 0.5. For crops, <img class="formulaInl" alt="$\chi$" src="form_29.png"/> is set to 0.1 to account for reduced transfer of humidified litter to the soil carbon pool which leads to loss in soil carbon when natural vegetation is converted to croplands. Over the bare ground fraction <img class="formulaInl" alt="$\chi$" src="form_29.png"/> is set to 0.45.</p>
 <p>With heterotrophic respiration known, net ecosystem productivity ( <img class="formulaInl" alt="$NEP$" src="form_803.png"/>) is calculated as </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \hspace{10pt}[Eqn 11]\]" src="form_1692.png"/>
+<img class="formulaDsp" alt="\[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \hspace{10pt}[Eqn 11]\]" src="form_1696.png"/>
 </p>
  </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="file_acda778ec663493c0960bbfb419001741"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_acda778ec663493c0960bbfb419001741">&#9670;&nbsp;</a></span>hetresg()</h2>
+<a id="file_a987d033c0fca06ebfd5114004d2febbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_a987d033c0fca06ebfd5114004d2febbe">&#9670;&nbsp;</a></span>heterotrophicrespiration()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">subroutine, public heterotrophic_respiration::hetresg </td>
+          <td class="memname">subroutine, public heterotrophic_respiration::heterotrophicrespiration </td>
           <td>(</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>il1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>ipeatland</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>fcancmx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>fc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
@@ -190,24 +234,6 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>il1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>il2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>ilg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
           <td class="paramname"><em>tbar</em>, </td>
         </tr>
@@ -221,13 +247,25 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
+          <td class="paramname"><em>thliq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>sort</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
-          <td class="paramname"><em>thliq</em>, </td>
+          <td class="paramname"><em>bi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>isand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -239,24 +277,276 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>fg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(inout)&#160;</td>
+          <td class="paramname"><em>litrmsmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(inout)&#160;</td>
+          <td class="paramname"><em>peatdep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>wtable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>zbotw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>roottemp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerSoilCMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(in)&#160;</td>
+          <td class="paramname"><em>tracerMossLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(out)&#160;</td>
+          <td class="paramname"><em>ltresveg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(out)&#160;</td>
+          <td class="paramname"><em>scresveg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>litresmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>socres_peat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>resoxic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>resanoxic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(out)&#160;</td>
+          <td class="paramname"><em>ltResTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(out)&#160;</td>
+          <td class="paramname"><em>sCResTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>litResMossTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>soCResPeatTracer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Heterotrophic respiration subroutine that calls hetresg and hetresv. </p>
+<dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of CTEM's pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">roottemp</td><td>root temperature, k</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">litrmass</td><td>litter mass for each of the ctem pfts + bare + LUC product pools, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">soilcmas</td><td>soil carbon mass for each of the ctem pfts + bare + LUC product pools, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">delzw</td><td>thicknesses of the soil layers</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil total porosity <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_531.png"/> -</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>Soil temperature, K</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>Saturated soil matric potential (m)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thliq</td><td>liquid mois. content of soil layers</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bi</td><td>Brooks and Corey/Clapp and Hornberger b term</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thice</td><td>frozen mois. content of soil layers</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmsmoss</td><td>moss litter C pool (kgC/m2)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">peatdep</td><td>peat depth (m)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">wtable</td><td>water table (m)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">zbotw</td><td>bottom of soil layers</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ltresveg</td><td>fluxes for each pft: litter respiration for each pft + bare fraction</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">scresveg</td><td>soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">litresmoss</td><td>moss litter respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">socres_peat</td><td>heterotrophic repsiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">resoxic</td><td>oxic respiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">resanoxic</td><td>anoxic respiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracersoilcmass</td><td>Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tracermosslitrmass</td><td>Tracer mass in moss litter, <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ltrestracer</td><td>Tracer fluxes for each pft: litter respiration for each pft + bare fraction TODO: Units</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">screstracer</td><td>Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts TODO: Units</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">litresmosstracer</td><td>Tracer moss litter respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>) TODO: Units</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">socrespeattracer</td><td>Tracer heterotrophic repsiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>) TODO: Units </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Find heterotrophic respiration rates for the LUC litter and soilc pools The LUC litter and soil C respiration rates are assumed to be applied over the entire tile but kept in layer 1 </p>
+
+</div>
+</div>
+<a id="file_aaeee4be9b44a070bb3d926eefed613a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_aaeee4be9b44a070bb3d926eefed613a4">&#9670;&nbsp;</a></span>hetresg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine, public heterotrophic_respiration::hetresg </td>
+          <td>(</td>
+          <td class="paramtype">real, dimension(ilg,1)&#160;</td>
+          <td class="paramname"><em>litrmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,1)&#160;</td>
+          <td class="paramname"><em>soilcmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>delzw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>thpor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>il1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>tbar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>psisat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>thliq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>zbotw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>thice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>frac</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramtype">integer, dimension(ilg,ignd)&#160;</td>
           <td class="paramname"><em>isand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(out)&#160;</td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>litres</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(out)&#160;</td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>socres</em>&#160;</td>
         </tr>
         <tr>
@@ -271,31 +561,31 @@ Functions/Subroutines</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Vivek Arora and Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">litrmass</td><td>litter mass for the 8 pfts + bare in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">soilcmas</td><td>soil carbon mass for the 8 pfts + bare in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>soil temperature, k</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thliq</td><td>liquid soil moisture content in 3 soil layers</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">frac</td><td>fraction of bare ground (fg)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>saturation matric potential</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>parameter b of clapp and hornberger</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>porosity</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">litres</td><td>litter respiration over the given unvegetated sub-area in umol co2/m2.s</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">socres</td><td>soil c respiration over the given unvegetated sub-area in umol co2/m2.s </td></tr>
+    <tr><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
+    <tr><td class="paramname">litrmass</td><td>litter mass for bare in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramname">soilcmas</td><td>soil carbon mass for bare in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramname">tbar</td><td>soil temperature, k</td></tr>
+    <tr><td class="paramname">thliq</td><td>liquid soil moisture content in soil layers</td></tr>
+    <tr><td class="paramname">zbotw</td><td>bottom of soil layers</td></tr>
+    <tr><td class="paramname">litres</td><td>litter respiration over the given unvegetated sub-area in umol co2/m2.s</td></tr>
+    <tr><td class="paramname">socres</td><td>soil c respiration over the given unvegetated sub-area in umol co2/m2.s</td></tr>
+    <tr><td class="paramname">frac</td><td>fraction of ground</td></tr>
+    <tr><td class="paramname">psisat</td><td>saturation matric potential</td></tr>
+    <tr><td class="paramname">b</td><td>parameter b of clapp and hornberger</td></tr>
+    <tr><td class="paramname">thpor</td><td>porosity </td></tr>
   </table>
   </dd>
 </dl>
-<p>Find moisture scalar for soil c decomposition this is modelled as function of logarithm of matric potential. we find values for all soil layers, and then find an average value based on fraction of carbon present in each layer.</p>
-<p>Find moisture scalar for litter decomposition for top soil layer The difference between moisture scalar for litter and soil c is that the litter decomposition is not constrained by high soil moisture (assuming that litter is always exposed to air). In addition, we use moisture content of the top soil layer as a surrogate for litter moisture content. So we use only psi(i,1) calculated in loops 260 and 270 above.</p>
-<p>Treat the lower litter layers like the soil C ones:</p>
-<p>Use temperature of the litter and soil c pools, and their soil moisture scalars to find respiration rates from these pools</p>
-<p>Reduce the respiration at depth due to unresolved depth dependent processes including soil microbial population dynamics, pore-scale oxygen availability, mineral sorption, priming effects, and other unrepresented processes. This is following Lawrence et al. Enviro Res Lett 2015 <a class="el" href="citelist.html#CITEREF_Lawrence2015-tj">[51]</a>. We apply this for all soils. </p>
+<p>Estimate temperature of the litter and soil carbon pools. Over the bare fraction there is no live root. So we make the simplest assumption that litter temperature is same as temperature of the top soil layer.</p>
+<p>We estimate the temperature of the soil c pool assuming that soil carbon over the bare fraction is distributed exponentially. note that bare fraction may contain dead roots from different pfts all of which may be distributed differently. For simplicity we do not track each pft's dead root biomass and assume that distribution of soil carbon over the bare fraction can be described by a single parameter.</p>
+<p>find moisture scalar for soil c decomposition this is modelled as function of logarithm of matric potential. we find values for all soil layers, and then find an average value based on fraction of carbon present in each layer.</p>
+<p>find moisture scalar for litter decomposition the difference between moisture scalar for litter and soil c is that the litter decomposition is not constrained by high soil moisture (assuming that litter is always exposed to air). in addition, we use moisture content of the top soil layer as a surrogate for litter moisture content. so we use only psi(i,1) calculated in loops 260 and 270 above. </p>
 
 </div>
 </div>
-<a id="file_ad32e36d597aea9e00671448d26095c34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#file_ad32e36d597aea9e00671448d26095c34">&#9670;&nbsp;</a></span>hetresv()</h2>
+<a id="file_ab2982c8ae46d7152eee054cfe29e1d08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_ab2982c8ae46d7152eee054cfe29e1d08">&#9670;&nbsp;</a></span>hetresv()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -303,42 +593,173 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="memname">subroutine, public heterotrophic_respiration::hetresv </td>
           <td>(</td>
-          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
           <td class="paramname"><em>fcan</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
           <td class="paramname"><em>fct</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc,ignd), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc,ignd), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
           <td class="paramname"><em>delzw</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
           <td class="paramname"><em>thpor</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>il1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>ilg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>tbar</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>psisat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>thliq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramname"><em>roottemp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>zbotw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(icc)&#160;</td>
+          <td class="paramname"><em>sort</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>isand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramname"><em>thice</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>ipeatland</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramname"><em>ltresveg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramname"><em>scresveg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Heterotrophic Respiration Subroutine For Vegetated Fraction. </p>
+<dl class="section author"><dt>Author</dt><dd>Vivek Arora, Joe Melton, Yuanqiao Wu</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
+    <tr><td class="paramname">sort</td><td>index for correspondence between 9 pfts and 12 values in the parameters vectors</td></tr>
+    <tr><td class="paramname">fcan</td><td>fractional coverage of ctem's 9 pfts</td></tr>
+    <tr><td class="paramname">fct</td><td>sum of all fcan, fcan &amp; fct are not used at this time but could be used at some later stage</td></tr>
+    <tr><td class="paramname">litrmass</td><td>litter mass for the 9 pfts in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramname">tbar</td><td>soil temperature, k</td></tr>
+    <tr><td class="paramname">soilcmas</td><td>soil carbon mass for the 9 pfts e in <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramname">thliq</td><td>liquid soil moisture content in 3 soil layers</td></tr>
+    <tr><td class="paramname">roottemp</td><td>root temperature as estimated in mainres subroutine</td></tr>
+    <tr><td class="paramname">zbotw</td><td>bottom of soil layers</td></tr>
+    <tr><td class="paramname">ltresveg</td><td>litter respiration for the given sub-area in umol co2/m2.s, for ctem's 9 pfts</td></tr>
+    <tr><td class="paramname">scresveg</td><td>soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's 9 pfts</td></tr>
+    <tr><td class="paramname">thice</td><td>frozen soil moisture content in the soil layers</td></tr>
+    <tr><td class="paramname">psisat</td><td>saturation matric potential</td></tr>
+    <tr><td class="paramname">b</td><td>parameter b of clapp and hornberger</td></tr>
+    <tr><td class="paramname">thpor</td><td>porosity </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="file_af2879eddfbd22c5a65542a8f386a2437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#file_af2879eddfbd22c5a65542a8f386a2437">&#9670;&nbsp;</a></span>updatepoolshetresp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine, public heterotrophic_respiration::updatepoolshetresp </td>
+          <td>(</td>
           <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il1</em>, </td>
         </tr>
@@ -357,44 +778,20 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>tbar</em>, </td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>fcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>psisat</em>, </td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(in)&#160;</td>
+          <td class="paramname"><em>ltresveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>thliq</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
-          <td class="paramname"><em>sort</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>isand</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
-          <td class="paramname"><em>thice</em>, </td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(in)&#160;</td>
+          <td class="paramname"><em>scresveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -405,14 +802,188 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc,ignd), intent(out)&#160;</td>
-          <td class="paramname"><em>ltresveg</em>, </td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>fg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc,ignd), intent(out)&#160;</td>
-          <td class="paramname"><em>scresveg</em>&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>litresmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>socres_peat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(icc), intent(in)&#160;</td>
+          <td class="paramname"><em>sort</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>spinfast</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
+          <td class="paramname"><em>rmrveg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>rmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
+          <td class="paramname"><em>leapnow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
+          <td class="paramname"><em>useTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>ltResTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>sCResTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>litResMossTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>soCResPeatTracer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension (ilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramname"><em>litrmass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(inout)&#160;</td>
+          <td class="paramname"><em>soilcmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(inout)&#160;</td>
+          <td class="paramname"><em>Cmossmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerLitrMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:,:,:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerSoilCMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(:), intent(inout)&#160;</td>
+          <td class="paramname"><em>tracerMossCMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp1), intent(out)&#160;</td>
+          <td class="paramname"><em>hetrsveg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>litres</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>socres</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>hetrores</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,iccp2), intent(out)&#160;</td>
+          <td class="paramname"><em>humtrsvg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>soilresp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>humiftrs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>hutrstep_g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>litrfallmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>ltrestepmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>humstepmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(out)&#160;</td>
+          <td class="paramname"><em>socrestep</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -422,32 +993,61 @@ Functions/Subroutines</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Heterotrophic Respiration Subroutine For Vegetated Fraction. </p>
-<dl class="section author"><dt>Author</dt><dd>Vivek Arora, Joe Melton, Yuanqiao Wu</dd></dl>
+<p>Find vegetation and tile averaged litter and soil C respiration rates using values from canopy over ground and canopy over snow subareas. Also adds the moss and peat soil respiration to the tile level quantities. Next the litter and soil C pools are updated based on litter and soil C respiration rates. The humidified litter is then transferred to the soil C pool. Soil respiration is estimated as the sum of heterotrophic respiration and root maintenance respiration. For peatlands, we additionally add moss values to the grid (litter respiration and moss root respiration). </p>
+<dl class="section author"><dt>Author</dt><dd>Vivek Arora, Joe Melton</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">ilg</td><td>il1=1</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">litrmass</td><td>litter mass for the 9 pfts + bare [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">soilcmas</td><td>soil carbon mass for the 9 pfts + bare [ <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/> ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil total porosity [ <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_531.png"/> ] - daily average</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>Soil temperature [ K ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>Saturated soil matric potential [ m ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>Clapp and Hornberger empirical “b” parameter [ ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thliq</td><td>liquid soil moisture content in soil layers [ <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_531.png"/> ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thice</td><td>frozen soil moisture content in 3 soil layers in canopy covered subarea [ <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_531.png"/> ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">fct</td><td>Sum of all fcans [ ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">fcan</td><td>fractional coverage of ctem's 9 pfts [ ]</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">isand</td><td>flag for soil/bedrock/ice/glacier</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sort</td><td>index for correspondence between CTEM pfts and all values in the parameters vectors</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">delzw</td><td>thickness of the permeable soil layers [ m ]</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ltresveg</td><td>litter respiration for the given vegetated sub-area [ <img class="formulaInl" alt="$u-mol co2/m2.sec$" src="form_555.png"/> ]</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">scresveg</td><td>soil carbon respiration for the given vegetated sub-area [ <img class="formulaInl" alt="$u-mol co2/m2.sec$" src="form_555.png"/> ] </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg (no. of grid cells in latitude circle)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">spinfast</td><td>spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usetracer</td><td>Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used. useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run. useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme. useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ipeatland</td><td>Peatland flag: 0 = not a peatland, 1= bog, 2 = fen</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of CTEM's pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ltresveg</td><td>fluxes for each pft: litter respiration for each pft + bare fraction</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">scresveg</td><td>soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fg</td><td>Fraction of grid cell that is bare ground.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">litresmoss</td><td>moss litter respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">socres_peat</td><td>heterotrophic repsiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rmrveg</td><td>Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rmr</td><td>Root maintenance respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ltrestracer</td><td>Tracer fluxes for each pft: litter respiration for each pft + bare fraction</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">screstracer</td><td>Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">litresmosstracer</td><td>Tracer moss litter respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>) TODO: Units</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">socrespeattracer</td><td>Tracer heterotrophic repsiration from peat soil ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>Litter mass for each of the CTEM pfts + bare + LUC product pools, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>Soil carbon mass for each of the CTEM pfts + bare + LUC product pools, <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">cmossmas</td><td>Moss biomass C pool (kgC/m2)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracerlitrmass</td><td>Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracersoilcmass</td><td>Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, <img class="formulaInl" alt="$kg c/m^2$" src="form_535.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">tracermosscmass</td><td>Tracer mass in moss biomass, <img class="formulaInl" alt="$kg C/m^2$" src="form_551.png"/></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">hutrstep_g</td><td>Tile sum of humification from vascualr litter (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">litrfallmoss</td><td>moss litter fall (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ltrestepmoss</td><td>litter respiration from moss (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">humstepmoss</td><td>moss humification (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">socrestep</td><td>heterotrophic respiration from soil (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">hetrsveg</td><td>Vegetation averaged litter and soil C respiration rates ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">litres</td><td>Litter respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">socres</td><td>Soil carbon respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">hetrores</td><td>Heterotrophic respiration ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">humtrsvg</td><td>transfer of humidified litter from litter to soil c pool per PFT. ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">soilresp</td><td>Soil respiration. This includes root respiration and respiration from litter and soil carbon pools. Note that soilresp is different from socres, which is respiration from the soil C pool.( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">humiftrs</td><td>Transfer of humidified litter from litter to soil C pool ( <img class="formulaInl" alt="$\mu mol CO_2 m^{-2} s^{-1}$" src="form_1671.png"/>) </td></tr>
   </table>
   </dd>
 </dl>
-<p>Set the lower levels to have the same moisture sensitivity to soil C. </p>
+<p>Find vegetation averaged litter and soil C respiration rates using values from canopy over ground and canopy over snow subareas</p>
+<p>Find litter and soil c respiration rates averaged over the bare fraction of the grid cell using values from ground and snow over ground sub-areas.</p>
+<p>Find grid averaged litter and soil c respiration rates</p>
+<p>Add moss and peat soil respiration to the grid In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to the grid sum but no bareground values as we assume peatlands have no bareground.</p>
+<p>Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.</p>
+<p>Convert u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$(kg C/m^2)$" src="form_1670.png"/> respired over the model time step</p>
+<p>Update litter and soil c pools</p>
+<p>Next we add bareground and LUC pool litter mass and humification for non-peatlands.</p>
+<p>Estimate soil respiration. this is sum of heterotrophic respiration and root maintenance respiration.</p>
+<p>But over the bare fraction and LUC product pool there is no live root.</p>
+<p>Find grid averaged humification and soil respiration rates</p>
+<p>After aggregation of humification and soil respiration rates for non-peatlands to the grid/tile level, the same must be done for bareground (iccp1). For peatlands, we additionally add moss values to the grid (litter respiration and moss root respiration). Note in loop 430 iccp1 is passed for peatlands </p>
 
 </div>
 </div>
@@ -457,7 +1057,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="heterotrophicRespiration_8f90.html">heterotrophicRespiration.f90</a></li>
-    <li class="footer">Generated on Thu Apr 11 2019 11:13:44 for CLASSIC by
+    <li class="footer">Generated on Thu Jul 4 2019 12:03:55 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

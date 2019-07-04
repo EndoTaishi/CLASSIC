@@ -13,11 +13,11 @@ Although pretty clever and powerful, running the mosaic version and interpreting
 
 Some initialization variables that impact upon composite vs. mosaic model runs:
 
-- FAREROT Fractional coverage of mosaic tile on the modelled area
+- **FAREROT** Fractional coverage of mosaic tile on the modelled area
   - If you run with multiple tiles you need to specify what fraction of the grid cell the tile occupies.
-- MIDROT Mosaic tile type identifier (1 for land surface, 0 for inland lake)
+- **MIDROT** Mosaic tile type identifier (1 for land surface, 0 for inland lake)
   - CLASSIC runs in the coupled models with a sub-grid lakes scheme (The Canadian Small Lake Model (CSLM); Verseghy and MacKay, 2017 \cite Verseghy2017-ys). The lakes can then be represented as a tile.
 
 
-\image html "compVsMosaic_MeltonArora_BG_2014.png" "Schematic representation of the composite and mosaic ap- proaches for the coupling of CLASS v 3.6 and CTEM v 1.2 models in a stand-alone mode. (From Melton and Arora, 2014)"
-\image latex "compVsMosaic_MeltonArora_BG_2014.png" "Schematic representation of the composite and mosaic ap- proaches for the coupling of CLASS v 3.6 and CTEM v 1.2 models in a stand-alone mode. (From Melton and Arora, 2014)"
+\image html "compVsMosaic_MeltonArora_BG_2014.png" "Schematic representation of the composite and mosaic approaches for the coupling of CLASS and CTEM models in a stand-alone mode. (From Melton and Arora, 2014)"
+\image latex "compVsMosaic_MeltonArora_BG_2014.png" "Schematic representation of the composite and mosaic approaches for the coupling of CLASS and CTEM models in a stand-alone mode. (From Melton and Arora, 2014)"
