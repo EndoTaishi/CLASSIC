@@ -464,7 +464,7 @@ contains
     
     ! timestart = "days since "//str(refyr)//"-01-01 00:00"
     format_string = "(A11,I4,A12)"
-    write (timestart,format_string) "days since ",refyr," - 01 - 01 00:00"
+    write (timestart,format_string) "days since ",refyr,"-01-01 00:00"
     call ncPutAtt(ncid,varid,'units',charvalues = trim(timestart))
     
     if (leap) then
