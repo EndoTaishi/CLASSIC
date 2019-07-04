@@ -480,7 +480,7 @@ contains
     real :: tracerStemLitr(ilg,icc) !< Tracer stem litter \f$tracer C units/m^2\f$
     real :: tracerRootLitr(ilg,icc) !< Tracer root litter \f$tracer C units/m^2\f$
     real :: tracerReproCost(ilg,icc)  !< Tracer cost of making reproductive tissues, only non-zero when
-    !! NPP is positive (\f$\tracer C units m^{-2} s^{-1}\f$)
+    !! NPP is positive (\f$tracer C units m^{-2} s^{-1}\f$)
     real :: tracerStemMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
     real :: tracerRootMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$
     real :: tracerGLeafMort(ilg,icc) !< Tracer stem litter from mortality \f$tracer C units/m^2\f$

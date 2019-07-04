@@ -1,6 +1,7 @@
 objectFiles/*.o
 objectFiles/*.mod
 objectFiles_*
+documentation/html/*
 or/.project
 tools/metASCIILoader/.settings
 tools/metASCIILoader/.cproject

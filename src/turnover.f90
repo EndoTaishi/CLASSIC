@@ -197,7 +197,7 @@ contains
     integer, intent(in) :: ilg             !< no. of grid cells/tiles in latitude circle
     real, intent(in) :: reprocost(:,:)     !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(in) :: tracerReproCost(:,:)  !< Tracer cost of making reproductive tissues, only non-zero when
-    !! NPP is positive (\f$\tracer C units m^{-2} s^{-1}\f$)
+    !! NPP is positive (\f$tracer C units m^{-2} s^{-1}\f$)
     real, intent(in)    :: rmatctem(:,:,:) !< fraction of roots for each of ctem's 9 pfts in each soil layer
     integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
     !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in

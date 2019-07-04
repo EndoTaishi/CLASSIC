@@ -267,7 +267,7 @@ subroutine waterFlowNonInfiltrate(IVEG,THLIQ,THICE,TBARW,FDT,TFDT,BASFLW,TBASFL,
   !! capacity, the vertical flow out of the bottom of the soil profile
   !! is calculated using a relation derived from Soulis et al. (2010):
   !!
-  !! \f$F(z_b ) = K_{sat} \times min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}\f$
+  !! \f$F(z_b ) = K_{sat} \times min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}}\f$
   !!
   !! This flow rate is multiplied by a drainage parameter XDRAIN,
   !! which is set to 0 if the soil is underlain by an impermeable
