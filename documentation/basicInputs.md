@@ -2,20 +2,47 @@
 
 1. @subpage modelParams
 2. @subpage forcingData
-2. @subpage vegetationData
+3. @subpage vegetationData
   - @subpage vegCLASSonly
   - @subpage vegCTEMtoo
-3. @subpage soilData
-4. @subpage initProgVar
+4. @subpage soilData
+5. @subpage initProgVar
   - @subpage initPhysProgVar
   - @subpage initCTEMProgVar
-5. @subpage exModSets 
+6. @subpage exModSets 
 
 ----
 
 # Model parameters {#modelParams}
 
-Model parameters are read in from an external file. Three options are supplied. configurationFiles
+Model parameters are read in from an external fortran namelist file. Three options are supplied in the configurationFiles folder (PFTs for each are listed in @ref PFTsCLASSIC)
+
+- *template_run_parameters.txt* is the default model setup with 9 PFTs as published in Melton and Arora (2016) \cite Melton2016-zx 
+- *template_run_parameters_peatlands.txt* additionally includes the peatland PFTs as described in Wu et al. (2016) \cite Wu2016-zt. 
+- *template_run_parameters_shrubs.txt* includes shrubs at both the CLASS PFT level and CTEM. (**BETA version**)
+
+In all cases it is important to match up the PFTs in the parameter namelist file with those in the initialization file. E.g. if you want to simulate shrubs you need to ensure you have shrub parameters in your parameter namelist as well as some non-zero fractional cover for shrub PFTs in your initialization file (or LUC file).
+
+The parameter namelist file has two distinct sections. The upper section *&classicPFTbasic* contains the information needed to setup the arrays for variables that vary by PFT and must correspond to the information in the *&classicparams* section of the namelist file (number of PFTs, etc.) 
+
+          &classicPFTbasic
+
+          ! In this header, the basic numbers of PFTs is listed. Below this initial namelist is the parameters for each PFT.
+
+          ! Number of PFTs considered by the physics subroutines. NOTE: The number specified here must match the data in your init netcdf file.
+          ican = 4 ,    
+
+          ! Number of CTEM level PFTs. NOTE: The number specified here must match the data in your init netcdf file.
+          icc = 9 ,           
+
+          ! Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
+          l2max = 3 ,         
+
+          /
+
+Based upon this information, the variables that have CLASS or CTEM number of PFTs (*ican* and *icc*, respectively) are allocated in allocateParamsCLASSIC in classic_params.
+
+The rest of the parameters are then read in and stored in the classic_params module.
 
 # Atmospheric Forcing Data {#forcingData}
 
