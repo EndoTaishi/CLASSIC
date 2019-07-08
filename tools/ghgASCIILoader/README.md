@@ -20,9 +20,9 @@ Where ghg name is either 'CO2' or 'CH4' and the input file is an ASCII text file
 
 The text GHG file is expected to look like this:
 
-`1700  276.59`
-`1701  276.62`
-`1702  276.65`
-`1703  276.67`
-`1704  276.70`
-`[...]`
+          1700  276.59
+          1701  276.62
+          1702  276.65
+          1703  276.67
+          1704  276.70
+          [...]

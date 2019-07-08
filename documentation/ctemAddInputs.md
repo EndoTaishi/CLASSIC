@@ -138,24 +138,12 @@ The PFT competition scheme (@ref competition_scheme) uses bioclimatic variables 
 - *annsrpls* Annual water deficit, i.e. daily values of precipitation that exceed potential evaporation accumulated over a year [mm]
 - *annpcp* Annual precipitation [mm]
 - *aridity* Aridity index, ratio of potential evaporation to precipitation [ ]
-- *defctmon* Number of months in a year with water deficitm, i.e. precipitation less than potential evaporation [months]
+- *defctmon* Number of months in a year with water deficit, i.e. precipitation less than potential evaporation [months]
 - *srplsmon* Number of months in a year with surplus water, i.e. precipitation more than potential evaporation [months]
 - *dry_season_length* Length of consecutive dry season in months, where a dry month is defined as the month in which potential evaporation exceeds precipitation [months]
 - *gdd5* Growing degree days above 5 C [days]
 - *tcoldm* Temperature of the coldest month [deg C]
 - *twarmm* Temperature of the warmest month [deg C]
-
-
-# Rice agriculature {#initRice}
-
-**COMBAK**
-
-float rice(months, lat, lon) ;
-  rice:_FillValue = -999.f ;
-  rice:units = "-" ;
-  rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
-
-
 
 # Orographic information for dynamic wetland scheme {#initWetSlope}
 

@@ -65,11 +65,9 @@ If you have the old format .INI (and CTEM's .CTM) initialization files, there is
 
 If you have a netCDF format initialization/restart file that you wish to edit, you can use the [script created for that purpose](@ref modifyRS). It is located in tools/modifyRestartFile. This is designed for regional/global scale edits. For site-level files (single point) it is likely easier to use a combination of ncdump/ncgen.
 
-An ncdump of a properly formatted, global-scale, initialization file is included below. Note that for a physics-only run (CTEM off), many of the variables will not be read in. See the [manual's mainpage](@ref main) for links to sections describing the variables.
+An ncdump of a properly formatted, global-scale, initialization file is included below. This initialization file is setup for a biogeochemistry (CTEM on) run with peatlands and PFT competition variables included. Note that for a physics-only run (CTEM off), many of the variables will not be read in/required, similarly for a CTEM on run some CLASS-only variables are not required. See the [manual's mainpage](@ref main) for links to sections describing the variables.
 
-**FLAG COMBAK**
-
-            netcdf initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2 {
+          netcdf initFile {
             dimensions:
             	tile = 1 ;
             	lat = 64 ;
@@ -165,10 +163,6 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		ROOT:_FillValue = -999.f ;
             		ROOT:units = "m" ;
             		ROOT:long_name = "Annual maximum rooting depth of vegetation category" ;
-            	float RSMN(tile, ic, lat, lon) ;
-            		RSMN:_FillValue = -999.f ;
-            		RSMN:units = "s/m" ;
-            		RSMN:long_name = "Minimum stomatal resistance of vegetation category" ;
             	float SAND(tile, layer, lat, lon) ;
             		SAND:_FillValue = -999.f ;
             		SAND:units = "%" ;
@@ -215,22 +209,10 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		TSNO:_FillValue = -999.f ;
             		TSNO:units = "C" ;
             		TSNO:long_name = "Snowpack temperature" ;
-            	float ZBLD(lat, lon) ;
-            		ZBLD:_FillValue = -999.f ;
-            		ZBLD:units = "m" ;
-            		ZBLD:long_name = "Atmospheric blending height for surface roughness length averaging" ;
             	float ZPND(tile, lat, lon) ;
             		ZPND:_FillValue = -999.f ;
             		ZPND:units = "m" ;
             		ZPND:long_name = "Depth of ponded water on surface" ;
-            	float ZRFH(lat, lon) ;
-            		ZRFH:_FillValue = -999.f ;
-            		ZRFH:units = "m" ;
-            		ZRFH:long_name = "Reference height associated with forcing air temperature and humidity" ;
-            	float ZRFM(lat, lon) ;
-            		ZRFM:_FillValue = -999.f ;
-            		ZRFM:units = "m" ;
-            		ZRFM:long_name = "Reference height associated with forcing wind speed" ;
             	float anndefct(lat, lon) ;
             		anndefct:_FillValue = -999.f ;
             		anndefct:units = "mm" ;
@@ -297,10 +279,11 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		ipeatland:long_name = "Peatland flag: 0 = not a peatland, 1= bog, 2 = fen" ;
             	double lat(lat) ;
             		lat:_FillValue = NaN ;
-            		lat:units = "degrees_north" ;
-            		lat:long_name = "Latitude" ;
-            		lat:standard_name = "latitude" ;
             		lat:actual_range = "-87.8637987364, -87.8637987364" ;
+            		lat:units = "degrees_north" ;
+            		lat:long_name = "latitude" ;
+            		lat:standard_name = "latitude" ;
+            		lat:axis = "Y" ;
             	double layer(layer) ;
             		layer:_FillValue = NaN ;
             		layer:long_name = "ground column layers" ;
@@ -318,10 +301,11 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		litrmsmoss:long_name = "Moss litter mass" ;
             	double lon(lon) ;
             		lon:_FillValue = NaN ;
-            		lon:units = "degrees_east" ;
-            		lon:long_name = "Longitude" ;
-            		lon:standard_name = "longitude" ;
             		lon:actual_range = "0.0, 0.0" ;
+            		lon:units = "degrees_east" ;
+            		lon:long_name = "longitude" ;
+            		lon:standard_name = "longitude" ;
+            		lon:axis = "X" ;
             	double months(months) ;
             		months:_FillValue = NaN ;
             		months:long_name = "Months" ;
@@ -332,10 +316,6 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		pandays:_FillValue = -999.f ;
             		pandays:units = "-" ;
             		pandays:long_name = "Days with +ve new photosynthesis, see Phenology" ;
-            	float rice(months, lat, lon) ;
-            		rice:_FillValue = -999.f ;
-            		rice:units = "-" ;
-            		rice:long_name = "Monthly irrigated rice ag. gridcell fraction" ;
             	float rootmass(tile, icc, lat, lon) ;
             		rootmass:_FillValue = -999.f ;
             		rootmass:units = "kgC/m2" ;
@@ -362,6 +342,7 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             	double tile(tile) ;
             		tile:_FillValue = NaN ;
             		tile:long_name = "tiles" ;
+            		tile:axis = "Z" ;
             	float twarmm(lat, lon) ;
             		twarmm:_FillValue = -999.f ;
             		twarmm:units = "C" ;
@@ -373,19 +354,20 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             	double iccp2(iccp2) ;
             		iccp2:_FillValue = NaN ;
             		iccp2:long_name = "CTEM PFTs, bareground, LUC product pools" ;
-
-            // global attributes:
-            		:creation_date = "Wed Sep 19 10:22:05 2018" ;
-            		:created_by = "Joe Melton, CCCma" ;
-            }
+            	double maxAnnualActLyr(tile, lat, lon) ;
+            		maxAnnualActLyr:long_name = "!< Active layer thickness maximum over the e-folding period specified by parameter eftime" ;
+            		maxAnnualActLyr:units = "m" ;
+            		maxAnnualActLyr:_FillValue = -999. ;
+            		maxAnnualActLyr:missing_value = -999. ;
+          }
 
 # Greenhouse gas inputs files {#ghgfiles}
 
-A tool has been created to help [create GHG input files](@ref makeGHGfiles)
+If you have existing ACSCII GHG files, see [our tool to create GHG input files](@ref makeGHGfiles) to convert them to the appropriate netCDF format.
 
 # Making input files for other input variables {#makeOther}
 
-Most other CLASSIC input files are not desired or needed for point runs of the model. If you require input files for regional or global simulations we can likely provide you with versions we use in our runs. Please contact joe.melton@canada.ca for access to the files we presently have available. The possible inputs are listed in Additional inputs depending on model configuration. Because these files are not required of most users we have not set up tools to help generate the files.
+Most other CLASSIC input files are not desired or needed for point runs of the model. If you require input files for regional or global simulations we may be able to provide you with versions we use in our runs. The possible inputs are listed in Additional inputs depending on model configuration. Because these files are not required of most users we have not set up tools to help generate the files.
 
 # Some notes on input file format {#inputFileForm}
 

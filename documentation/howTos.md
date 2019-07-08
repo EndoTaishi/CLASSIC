@@ -4,6 +4,9 @@
 2. @ref failStart
 3. @ref makeClean
 4. @ref soilColourIndex
+5. @ref runInWindows
+6. @ref windowsEndings
+
 
 ----
 
@@ -32,8 +35,25 @@ Sometimes you need to run a '`make mode=???? clean`' (where mode is the one you 
 
 Soil colour index is described in @ref soilData and used in soilProperties.f90. A global file of soil colour index produced by Peter Lawrence (NCAR) can be obtained from ftp://ftp.cccma.ec.gc.ca/pub/jmelton/mksrf_soilcol_global_c090324.nc
 
+# Run on a Windows Machine {#runInWindows}
+
+Courtesy of E. Humphreys. 
+
+1. Install Oracle VirtualBox
+2. Install Ubuntu as a virtual machine with ~ 100GB drive space
+3. Install Dropbox on Ubuntu (to share files between machines but there are other ways to do this)
+4. Install Singularity.  
+  1. In Terminal, type: >sudo apt install singularity-container
+5. Download our container into a working directory that is shared via Dropbox with the windows machine, e.g. ~/Dropbox/CLASSIC_working/:
+  1. In Terminal, cd to your working directory and type: >singularity pull shub://jormelton/containerCLASSIC
+6. Shell into the container:  >singularity shell jormelton-containerCLASSIC-master-latest.simg
+7. In this container, get CLASSIC code and folders:  
+
+**Note the text files need to have unix line endings if created in Windows (see @ref windowsEndings), make sure to convert to Unix (LF) from Windows (CR LF).**
+
 # Gotcha for Windows users {#windowsEndings}
 
-Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, while Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html)
+Text files created on DOS/Windows machines have different line endings than files created on Unix/Linux. DOS uses carriage return and line feed ("\r\n") as a line ending, which Unix uses just line feed ("\n"). You need to be careful about transferring files between Windows machines and Unix machines to make sure the line endings are translated properly.(from http://www.cs.toronto.edu/~krueger/csc209h/tut/line-endings.html)
 
 Any CLASSIC tool that reads in ASCII expects the Linux/Unix line endings.
+
