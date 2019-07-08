@@ -440,12 +440,14 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
     if (THLIQG(I,1) < (THLMIN(I,1) + 0.001)) then
       IEVAP(I) = 0
       CEVAP(I) = 0.0
-    else if (THLIQG(I,1) > THFC(I,1)) then
+    !else if (THLIQG(I,1) > THFC(I,1)) then !TEST
+  else if (THLIQG(I,1) > THPOR(I,1)) then
       IEVAP(I) = 1
       CEVAP(I) = 1.0
     else
       IEVAP(I) = 1
-      CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I,1) / THFC(I,1))) ** 2
+      !CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I,1) / THFC(I,1))) ** 2
+      CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I,1) / THPOR(I,1))) ** 2
     end if
   end do ! loop 200
   !
