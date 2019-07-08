@@ -3,7 +3,7 @@
 !! Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
 !! @author D. Verseghy, M. Lazare, V. Fortin, Y. Wu, J. Melton
 !!
-subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
+subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLASSB
                    THLRAT,HCPS,TCS,THFC,THLW,PSIWLT, &
                    DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN, &
                    SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH, &

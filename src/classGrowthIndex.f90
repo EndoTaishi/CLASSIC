@@ -29,7 +29,7 @@
 !! in subroutine calcLandSurfParams; thus its shape as used there is that of a
 !! symmetrical trapezoidal function.
 !!
-subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL)
+subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly CGROW
 
 
   !     * MAR 09/07 - D.VERSEGHY. CHANGE SENESCENCE THRESHOLD FROM

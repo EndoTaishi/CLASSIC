@@ -3,7 +3,7 @@
 !! calculations over ice sheets.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, &
+subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Formerly ICEBAL
                    ALBSNO,HMFG,HTCS,HTC,WTRS,WTRG,GFLUX, &
                    RUNOFF,TRUNOF,OVRFLW,TOVRFL,ZPLIM,GGEO, &
                    FI,EVAP,R,TR,GZERO,G12,G23,HCP,QMELT,WSNOW, &

@@ -2,7 +2,7 @@
 
 # Script to launch CLASSIC model runs on either the supercomputers or the front-end clusters.
 
-# Usage: Modify the "User specified parameter" section as necessary and then just execute this script 
+# Usage: Modify the "User specified parameter" section as necessary and then just execute this script
 #        on the platform chosen to do the run.
 
 # The final output netCDF files will be stored in the directory "netcdf_files" under the user specified
@@ -16,9 +16,9 @@
 # required is automatically computed based on the number of land grid cells in the domain, the
 # estimated time required to run the simulation and the maximum wallclock allowed per node.
 
-# At the end of the run, the files from each node will be stored in separate directories of the form 
-# "netcdf_files_XX", below the user specified output directory. Each directory will correspond to a subset 
-# of the full domain where XX is numbered sequentially from 01, 02, etc. These are stitched together 
+# At the end of the run, the files from each node will be stored in separate directories of the form
+# "netcdf_files_XX", below the user specified output directory. Each directory will correspond to a subset
+# of the full domain where XX is numbered sequentially from 01, 02, etc. These are stitched together
 # to produce the full domain and will be stored in the "netcdf_files" directory.
 
 # Modifications:
@@ -26,8 +26,8 @@
 # Ed Chan, May 2019.
 #   - Added support for the supercomputers.
 #   - Added check of all input files specified in the job options file.
-#   - Revised execution method so that if one node runs out of time, the others 
-#     will still copy completed files to the output directory. 
+#   - Revised execution method so that if one node runs out of time, the others
+#     will still copy completed files to the output directory.
 # Ed Chan, Jan 2019.
 #   - Split latitude bands so that boundaries are half-way between latitudes.
 # Ed Chan, Jan 2019.
@@ -42,23 +42,23 @@
 # Initial implementation: Ed Chan, Oct 2018 (based on Vivek's script for supercomputers)
 
 # ===============================================================================================
-  
+
 # -------------------------
 # User specified parameters
 # -------------------------
 
-# If the job is to be submitted to a different cluster than the one running this script, 
+# If the job is to be submitted to a different cluster than the one running this script,
 # then the next two parameters need to be specified. Otherwise, they can be commented out.
 # HDNODE/RUNPATH are normally set by the CCCma enviroment by default.
 
 #RUNPATH=/space/hall2/sitestore/eccc/crd/ccrn/users/rec001
 #HDNODE=ppp2
 
-# Location of output files. 
+# Location of output files.
 
 output_directory=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/ctem_on
 
-# Location of job options file. 
+# Location of job options file.
 # *** NB: This script checks all input files (as specified in the job options file).
 #         Files that are not needed for the run must either be commented out or specified as an empty string.
 
@@ -70,7 +70,7 @@ cdir=$( pwd )
 
 # For the supercomputer:
 # *** NB: This script runs the model by loading modules consistent with the Cray Development Toolkit (CDT) 18.08.
-#         The executable MUST be compiled with the same modules loaded. 
+#         The executable MUST be compiled with the same modules loaded.
 #         Running the script ~rec001/public/classic/make_classic.sh in the same directory as the Makefile for
 #         CLASSIC will ensure that the same modules are used for compiling/running the model.
 #executable=$HOME/CLASSIC/bin/CLASSIC_supercomputer
@@ -86,18 +86,18 @@ executable=~/tmp/CLASSIC/CLASSIC_ppp
 # Projected grids.
 # This option is used only if the job options file contains the namelist parameter: projectedGrid=.true.
 # Rows range from 1 to nlat and columns 1 to nlon.
-# row1=1 ; row2=160 ; col1=1 ; col2=310 
+# row1=1 ; row2=160 ; col1=1 ; col2=310
 
 # Regular grids.
-# Lons typically range from 0 to 360, but will depend on what is used in the input files. 
+# Lons typically range from 0 to 360, but will depend on what is used in the input files.
 # Lats are typically ordered South to North, but will also depend the order used in the input files.
-lat1=-28 ; lat2=60 ; lon1=120 ; lon2=220 
+lat1=-28 ; lat2=60 ; lon1=120 ; lon2=220
 
 # Email to send job start/end/abort notifications.
 
 email="Matthew.Fortier@canada.ca"
 
-# For the ppp (otherwise ignored), set the size of /tmp to reserve on each node for output files. 
+# For the ppp (otherwise ignored), set the size of /tmp to reserve on each node for output files.
 #
 # Since the domain is split across nodes, each node only has to have enough space to hold all the partial files.
 # The size of /tmp is specified in MB and is taken from the RAM available per node. Note that the more
@@ -107,7 +107,7 @@ email="Matthew.Fortier@canada.ca"
 
 tmpfs=10000
 
-# The default for tmpfs is 5GB on the ppp. On hare/brooks, tmpfs is set to 64GB and is not configurable. 
+# The default for tmpfs is 5GB on the ppp. On hare/brooks, tmpfs is set to 64GB and is not configurable.
 
 # ===============================================================================================
 
@@ -120,12 +120,12 @@ tmpfs=10000
 export PATH=/fs/ssm/hpco/exp/mib002/anaconda/anaconda-4.4.0/anaconda_4.4.0_ubuntu-14.04-amd64-64/envs/cdo-1.9.0/bin:$PATH
 export PATH=/fs/ssm/hpco/exp/mib002/anaconda2/anaconda2-5.0.1-hpcobeta2/anaconda_5.0.1-hpcobeta2_ubuntu-14.04-amd64-64/x/envs/nco-4.7.3/bin:$PATH
 
-# A metric "phi" is used below as an estimate of the model's performance on a given platform for a typical model configuration. 
+# A metric "phi" is used below as an estimate of the model's performance on a given platform for a typical model configuration.
 # *** If jobs time out, it may need to be adjusted (downwards), especially if options such as saving daily output are turned on.
 #
-# The metric is defined as the number of grid cells that can be run over the length of the simulation 
-# (in years) per hour (i.e. gridcells*years/hour) and can be estimated by timing a (short) model run. 
-# It is used to estimate the number of nodes required to run the entire simulation under the constraint 
+# The metric is defined as the number of grid cells that can be run over the length of the simulation
+# (in years) per hour (i.e. gridcells*years/hour) and can be estimated by timing a (short) model run.
+# It is used to estimate the number of nodes required to run the entire simulation under the constraint
 # of the max wallclock time permitted on each node.
 #
 # On ppp1/ppp2, ~1950 grid cells can typically be run for 25 years in ~0.75 hours.
@@ -180,18 +180,18 @@ if [ -n "$list" ] ; then
   echo
 fi
 
-# Set namelist parameters defined in the job options file as local shell variables. 
+# Set namelist parameters defined in the job options file as local shell variables.
 # NB: output_directory is defined in job options file and will override what is specified, so reset it.
 
 new_out=$output_directory
 eval "$(cat $job_options_file | sed -n -e 's/[&!]/#/g; s/,/;/g; s/ *= */=/gp')"
 output_directory=$new_out
 
-# Ensure all input files specified in the job options file are accessible. 
+# Ensure all input files specified in the job options file are accessible.
 # *** NB: If a file is specified, it will be checked, even if it isn't actually used
 #         in the model. In that case, a user can either specify an empty string or just
-#         comment it out in the job options file. While it's possible to check 
-#         switches to see if files are needed, this will be more involved as the 
+#         comment it out in the job options file. While it's possible to check
+#         switches to see if files are needed, this will be more involved as the
 #         current switch definitions don't contain common strings (like [Ff]file)
 #         as for input files.
 
@@ -205,11 +205,11 @@ done
 
 $flag && echo 'Error: Job options file contains paths to inaccessible file(s)' && exit -1
 
-# Ensure model executable is accessible. 
+# Ensure model executable is accessible.
 
 [ -n "$executable" -a ! -f "$executable" ] && echo $executable is not accessible. && exit -2
 
-# Set the location of various files such as standard/error output from execution of the job, 
+# Set the location of various files such as standard/error output from execution of the job,
 # copies of scripts used for the run, etc. Contents may be useful for debugging purposes.
 
 run_files_directory=$output_directory/run_files
@@ -223,7 +223,7 @@ runname=${output_directory##*/}
 
 sed "/output_directory/s|'.*'|'/tmp/$runname'| ; /rs_file_to_overwrite/s|'.*'|'/tmp/$runname/rsFile_modified.nc'|" $job_options_file > job_options_${runname}.txt
 
-job_options_file=$run_files_directory/job_options_${runname}.txt 
+job_options_file=$run_files_directory/job_options_${runname}.txt
 
 # -----------------------------------------------------------------------------------------------
 
@@ -235,8 +235,8 @@ job_options_file=$run_files_directory/job_options_${runname}.txt
 
 cdo -s -selvar,GC $init_file GC.nc 2>/dev/null
 
-# If the namelist parameter "projectedGrid" is set to ".true." in the job options file, 
-# then following computations are based on rows/columns of a projected grid. Otherwise, 
+# If the namelist parameter "projectedGrid" is set to ".true." in the job options file,
+# then following computations are based on rows/columns of a projected grid. Otherwise,
 # they are done based on lats/lons of a regular grid.
 
 [ -n "$projectedGrid" ] && projectedGrid=$(echo $projectedGrid | tr '[:upper:]' '[:lower:]')
@@ -262,7 +262,7 @@ else
   # Set the lat/lon limits and/or defaults.
 
   [ -z "$lat1" ] && lat1=-58 ; [ -z "$lat2" ] && lat2=90 ; [ $lat1 -lt -58 ] && lat1=-58
-  [ -z "$lon1" ] && lon1=0   ; [ -z "$lon2" ] && lon2=360 
+  [ -z "$lon1" ] && lon1=0   ; [ -z "$lon2" ] && lon2=360
 
   # Calculate the number of land grid cells in the domain/sub-domain.
 
@@ -272,7 +272,7 @@ else
   # Get the row numbers (of the full domain) that correspond to the first/last latitudes of the sub-domain.
 
   lats=( $(ncks --cdl -C -v lat GC_subdomain.nc | fgrep 'lat =' | tail -1 | sed -e 's/[;,]//g; s/^ *lat = //') )
-  lat1_subdomain=${lats[0]} 
+  lat1_subdomain=${lats[0]}
 
   lats=( $(ncks --cdl -C -v lat GC.nc | fgrep 'lat =' | tail -1 | sed -e 's/[;,]//g; s/^ *lat = //') )
 
@@ -298,7 +298,7 @@ run_length=$(echo "($readMetEndYear-$readMetStartYear+1)*$metLoop" | bc)
 
 total_time=$(echo "scale=2; $run_length*$total_land_cells/$phi" | bc)
 
-# Estimate the number of nodes required. 
+# Estimate the number of nodes required.
 
 #nodes=$(echo "$total_time/$max_wallclock" + 1 | bc)         # rounded up
 
@@ -306,7 +306,6 @@ nodes='3'
 # Loop to compute job parameters, giving the user an option to choose a different number of nodes.
 
 flag=false
-
 while :
 do
 
@@ -316,14 +315,14 @@ do
 
   grid_cells_per_node=$(echo "$total_land_cells/$nodes" | bc)
   run_time=$(echo "scale=2; $run_length*$grid_cells_per_node/$phi" | bc)
-  
-  # If the estimated run time is within 1/2 hour of the "max_wallclock", then it is safer to 
-  # add an extra node and run fewer grid cells per node. 
-  
+
+  # If the estimated run time is within 1/2 hour of the "max_wallclock", then it is safer to
+  # add an extra node and run fewer grid cells per node.
+
   if (( $(echo "$max_wallclock-$run_time < 0.5" | bc -l) )) ; then
     grid_cells_per_node=$(echo "$total_land_cells/$((nodes+1))" | bc)
   fi
-  
+
   # Get number of land grid cells in each row/lat of the grid. Note: cdo will only compute a zonal sum
   # for regular grids, so impose one on the data for projected grids, just for this computation.
 
@@ -334,13 +333,13 @@ do
   fi
 
   # Get the row indices where the cumulative number of land grid cells between the indices do not exceed the
-  # number of grid cells to be run per node. So, e.g. if the number of land grid cells in rows 1-50 are less 
+  # number of grid cells to be run per node. So, e.g. if the number of land grid cells in rows 1-50 are less
   # than $grid_cells_per_node, then the 1st row index is 50. And if the same is true for rows 51-100, then
-  # the next row index is 100. And if there are only the 2 indices, then rows 101-<last row> contains the 
+  # the next row index is 100. And if there are only the 2 indices, then rows 101-<last row> contains the
   # last set of land grid cells (i.e. the job is split across 3 nodes).
-  
+
   sum=0; row_boundaries=( $((row1-1)) ) ; land_cells_per_node=()
-  
+
   for i in ${!land_cells_per_row[@]}
   do
     sum0=$sum ; sum=$(( sum + land_cells_per_row[$i] ))
@@ -350,27 +349,27 @@ do
       sum=${land_cells_per_row[$i]}
     fi
   done
-  
+
   row_boundaries+=($row2)
   land_cells_per_node+=($sum)
   nodes=${#land_cells_per_node[@]}
-  
+
   # Now that the number of nodes is determined, compute the wallclock time per node for the job.
-  # If the estimated run time is within 1/2 hour of the wallclock time, then it is safer to 
+  # If the estimated run time is within 1/2 hour of the wallclock time, then it is safer to
   # add an extra half-hour as long as the total doesn't exceed the "max_wallclock".
-  
+
   grid_cells_per_node=$(echo "$total_land_cells/$nodes" | bc)
   half_hour_intervals=$(echo "$run_length*$grid_cells_per_node*2/$phi + 1" | bc) # rounded up
-  
+
   if (( $(echo "$half_hour_intervals/2-$run_time < 0.5" | bc -l) && $half_hour_intervals < $max_wallclock*2 )) ; then
     half_hour_intervals=$((half_hour_intervals+1))
   fi
-  
+
   run_time=$(echo "scale=2; $run_length*$grid_cells_per_node/$phi" | bc)
   wallclock=$( printf '%d:%02d:00\n' $(( half_hour_intervals/2 )) $(( (half_hour_intervals*30)%60 )) )
 
   # Output job parameters to the screen and obtain user feedback.
-  
+
   echo "Total number of land grid cells: $total_land_cells"
   echo "Length of run (years): $run_length"
   echo
@@ -379,11 +378,11 @@ do
   echo "Estimated amount of time required per node (hours) = $run_time"
   echo "Amount of time requested per node (H:MM:SS) = $wallclock"
   echo "Maximum wallclock (hours): $max_wallclock"
-#  echo 
+#  echo
 #  read -p 'Choose one of the following options:
 
 #  - Enter/Return to continue with the above job configuration
-#  - Redo configuration by entering a different number of nodes to use (approximate) 
+#  - Redo configuration by entering a different number of nodes to use (approximate)
 #  - Ctrl-C to cancel
 
 #  Input: '
@@ -391,7 +390,7 @@ do
 #  [ -z "$REPLY" ] && break
 
 #  while [[ ! $REPLY =~ ^[0-9]+$ || $REPLY = 0 ]]
-#  do 
+#  do
 #    read -p "Only positive integers are allowed. Try again: "
 #  done
 
@@ -403,7 +402,7 @@ do
 
 done
 
-# Allow user to also set the wallclock time requested per node to the max allowed, 
+# Allow user to also set the wallclock time requested per node to the max allowed,
 # if requesting a different number of nodes.
 
 if $flag ; then
@@ -419,7 +418,7 @@ fi
 # -----------------------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------------------
-# Construct the command lines used to run the model. Also save a table identifying the row/lat 
+# Construct the command lines used to run the model. Also save a table identifying the row/lat
 # boundaries associated with each node. These can be used to reconstruct the full domain.
 # --------------------------------------------------------------------------------------------
 
@@ -454,7 +453,7 @@ else
 
   printf "%-20s %-20s %-20s %-20s\n" 'Node Number' 'First Lat' 'Last Lat' 'Number of Grid Cells' > domain_partitions.txt
 
-  # Compute the boundaries for each latitude band and use these on the command lines. Using boundaries half-way between 
+  # Compute the boundaries for each latitude band and use these on the command lines. Using boundaries half-way between
   # latitudes prevents the possibility of round-off errors causing problems.
 
   boundaries=( $(printf "%.4f" $lat1) )
@@ -505,7 +504,7 @@ cat <<endjob > CLASSIC_${runname}.job
 #PBS -S /bin/bash
 #PBS -N $runname
 #PBS -l walltime=$wallclock
-#PBS -q development 
+#PBS -q development
 #PBS -j oe
 #PBS -o $run_files_directory/${runname}_$(date +%F_%T)_${HDNODE#*-}.out
 $pbs_line
@@ -553,7 +552,7 @@ if [ "\$MPI_RANK" = 0 ] ; then
   cd /tmp/$runname
 fi
 
-# Run the model (all MPI tasks per node). 
+# Run the model (all MPI tasks per node).
 
 $executable $job_options_file \$2/\$3/\$4/\$5
 
@@ -570,7 +569,7 @@ endcat
 
 chmod u+x run_model_script
 
-# Distribute the execution of the model across all nodes. 
+# Distribute the execution of the model across all nodes.
 
 echo 'Executing CLASSIC'
 $command_lines
@@ -578,7 +577,7 @@ wait
 
 # If necessary, stitch row/lat bands split across multiple output directories onto the full domain.
 
-mv /tmp/checksum_testing/* $output_directory 
+mv /tmp/checksum_testing/* $output_directory
 echo 'Executing classic_stitch_netcdf.sh'
 time ~rec001/public/classic/classic_stitch_netcdf.sh  $output_directory 32
 
@@ -591,16 +590,12 @@ rm -f GC.nc GC_subdomain.nc
 # Submit the job.
 
 
-if [ $platform = ppp ] ; then
-  jobsub -c $HDNODE CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
-else
-  qsub CLASSIC_${runname}.job
-fi
-   
+jobsub -c $HDNODE CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
+
 echo
 echo 'Job submission is complete.'
-echo 
-echo 'Check job status with:' 
+echo
+echo 'Check job status with:'
 echo '~rec001/public/classic/jobstat'
 echo
 echo 'Check job output files for model text and error messages in:'

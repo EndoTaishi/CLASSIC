@@ -7,7 +7,7 @@
 !! (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
 !! is performed.
 !!
-subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, &
+subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Formerly APREP
              FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN, &
              SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS, &
              ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC, &

@@ -2,28 +2,28 @@
 !! Driver for four band albedo scheme
 !! @author M. Namazi,  K. V. Salzen, M. Lazare, S. Kharin
 module fourBandAlbedo
-  
+
   implicit none
-  
+
   ! subroutines contained in this module:
-  
+
   public  :: fourBandDriver
   public  :: RDSDRY
   public  :: RDSWET
   public  :: RDSDPS
   public  :: BCCONC
-  
+
 contains
-  
+
   subroutine fourBandDriver(NML,SNOGAT,GCGAT,TSNOGAT, & ! in
                             ZSNOW,TCSNOW,GSNOW,PCSNGAT,WSNOGAT, & ! in
                             ALBSGAT,RHOSGAT, & ! in/out
                             TZSGAT,REFGAT) ! out
-    
+
     use classic_params, only : REFF0_LAND,DELT,ilg,ZSNMAX2,ZSNMIN
-    
+
     implicit none
-    
+
     integer, intent(in) :: nml
     real, intent(in) :: snogat(:)   !< Mass of snow pack [kg m^{-2} ]\f$
     real, intent(in) :: GCGAT(:)    !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
@@ -33,24 +33,24 @@ contains
     real, intent(in) :: PCSNGAT(:)  !< Snow fall flux \f$[kg m^{-2} s^{-1} ]\f$
     real, intent(in) :: TSNOGAT(:)  !< Snowpack temperature [K]
     real, intent(in) :: WSNOGAT(:)  !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
-    
+
     real, intent(inout) :: ALBSGAT(:)  !< Snow albedo [ ]
     real, intent(inout) :: RHOSGAT(:)  !< Density of snow \f$[kg m^{-3} ]\f$
-    
+
     real, intent(out) :: REFGAT(:)  !< Snow grain size (for ISNOALB=1 option)  [m]
     real, intent(out) :: TZSGAT(:)   !< Vertical temperature gradient in a snow pack
-    
+
     real :: GCMIN,GCMAX
-    
+
     ! ----------
-    
+
     ! Ensure consistency between sno and {an,rhon}. Restrict mask to
     ! those points which have valid values (rest may be undefined).
     WHERE (SNOGAT(1:NML) <= 0.)
       ALBSGAT  (1:NML) = 0. ! ANGAT in the CanAM code
       RHOSGAT(1:NML) = 0. ! RHONGAT in the CanAM code
     end WHERE
-    
+
     ! GCGAT(1:NML)=-1.
     ! ZSNOW is ZNGAT in CanAM code
     ! TZSGAT has dimensions ILGM, which is ILG
@@ -62,30 +62,30 @@ contains
       ELSEWHERE
       TZSGAT(1:NML) = 0.0
     end WHERE
-    
+
     GCMIN = - 1.5
     GCMAX = - 0.5
-    
+
     ! Define parameters for "climatological" snow grain size.  Use 2 values,
     ! one for sea-ice (based on discussion with Josh King, ECCC) and one
     ! for all other land types.  Pass them into the snow grain growth routines.
-    
+
     !> Compute snow grain growth of dry snow
     call RDSDRY(SNOGAT,TSNOGAT,ZSNOW,TZSGAT,RHOSGAT,REFGAT, &
-   GCGAT,REFF0_LAND,DELT,ILG,1,NML,GCMIN,GCMAX)
-    
+                GCGAT,REFF0_LAND,DELT,ILG,1,NML,GCMIN,GCMAX)
+
     !> Compute snow grain growth of wet snow
     call RDSWET(SNOGAT,WSNOGAT,REFGAT,GCGAT,REFF0_LAND,DELT,ILG,1,NML)
-    
+
     !> Compute snow grain growth due to deposition
     call RDSDPS(SNOGAT,ZSNOW,PCSNGAT,RHOSGAT,REFGAT,GCGAT, &
-    REFF0_LAND,DELT,ZSNMIN,ZSNMAX2,ILG,1,NML,GCMIN,GCMAX)
-    
+                REFF0_LAND,DELT,ZSNMIN,ZSNMAX2,ILG,1,NML,GCMIN,GCMAX)
+
     ! FLAG: when black carbon gets turned on need to check below.
     ! CALL BCCONC(ZSNOW,GCGAT,BCSNGAT,DEPBGAT,PCSNGAT,ROFNGAT, &
     !          &  RHOSGAT,DELT,ZSNMIN,ZSNMAX1,ILG,1,NML,GCMIN,GCMAX)
     ! End FLAG/
-    
+
   end subroutine fourBandDriver
   !> @}
   ! ====================================================================
@@ -102,25 +102,25 @@ contains
     !     *               CODE REORGANIZING WITH MORE AGGRESSIVE
     !     *               OPTIMIZATION LEVELS.
     !     * AUG 22/2013 - M.NAMAZI, K.VONSALZEN, M.LAZARE.
-    
+
     implicit none
-    
+
     !     * INTEGER CONSTANTS.
     integer :: ILG,IL1,IL2,K,I,L,M
     real :: REFF0
     integer, PARAMETER :: KMAX = 11,LMAX = 31,MMAX = 8
-    
+
     !     * INPUT/OUTPUT ARRAYS.
     real, DIMENSION(ILG) :: REFF
-    
+
     !     * INPUT ARRAYS.
     real, DIMENSION(ILG) :: SNOW,TSNOW,ZSNOW,TZSNOW,RHOSNO,GCROW
-    
+
     real :: DELT,GCMIN,GCMAX
     real * 8 KAPPA,TAU,DRDT,REFDIF,FACT
     !     * DATA ARRAYS.
     real, DIMENSION(KMAX,LMAX,MMAX) :: TAUS,KAPPAS,DRDTS
-    
+
     data KAPPAS(1:11,1:31,1:1) / &
  0.835018E+00,0.816677E+00,0.730343E+00,0.673962E+00,0.608244E+00, &
  0.571059E+00,0.542365E+00,0.514491E+00,0.485387E+00,0.463152E+00, &
@@ -681,7 +681,7 @@ contains
  0.553599E+00,0.796952E+00,0.198699E+01,0.136506E+02,0.870943E+01, &
  0.479233E+01,0.333694E+01,0.266763E+01,0.227315E+01,0.207469E+01, &
  0.190036E+01/
-    
+
     data TAUS (1:11,1:31,1:1) / &
  0.169377E+01,0.178356E+01,0.222377E+01,0.267435E+01,0.334947E+01, &
  0.397009E+01,0.460287E+01,0.533186E+01,0.625429E+01,0.709822E+01, &
@@ -1242,7 +1242,7 @@ contains
  0.307068E+01,0.174040E+01,0.169838E+00,0.605809E-11,0.222852E-06, &
  0.101258E-02,0.262378E-01,0.128951E+00,0.344211E+00,0.588675E+00, &
  0.947723E+00/
-    
+
     data DRDTS(1:11,1:31,1:1) / &
  0.156398E+00,0.278099E+00,0.480206E+00,0.796481E+00,0.126598E+01, &
  0.192419E+01,0.279087E+01,0.385606E+01,0.508619E+01,0.641796E+01, &
@@ -1803,7 +1803,7 @@ contains
  0.156462E+00,0.278429E+00,0.481039E+00,0.797962E+00,0.126931E+01, &
  0.193210E+01,0.280843E+01,0.389545E+01,0.515664E+01,0.652645E+01, &
  0.792231E+01/
-    
+
     do I = IL1,IL2
       if (GCROW(I) > GCMIN .and. GCROW(I) < GCMAX) then
         if (SNOW(I) > 0.) then
@@ -1811,7 +1811,7 @@ contains
           K = MIN(MAX(FLOOR((TSNOW(I) - 220.65)/5.) + 1,1),KMAX)
           L = MIN(MAX(FLOOR((TZSNOW(I) + 5.)/10.) + 1  ,1),LMAX)
           M = MIN(MAX(FLOOR((RHOSNO(I) - 25.)/50.) + 1 ,1),MMAX)
-          
+
           KAPPA = KAPPAS(K,L,M)
           TAU = TAUS(K,L,M) * 1.E-6
           DRDT = DRDTS(K,L,M) * 0.1E-7/36.
@@ -1828,9 +1828,9 @@ contains
         end if
       end if
     end do ! loop 395
-    
+
     return
-    
+
   end
   !> @}
   ! =======================================================================
@@ -1846,19 +1846,19 @@ contains
     !     * FOR THE REST OF REGIONS KEEP THE SAME VALUE,
     !
     implicit none
-    
+
     !     * INTEGER AND REAL CONSTANTS.
     integer :: ILG,IL1,IL2,I
     real :: REFF0
     real, PARAMETER :: PI = 3.1415927,C1 = 4.22E-13
-    
+
     !     * INPUT ARRAYS.
     real, DIMENSION(ILG) :: SNOW, WSNOW,GCROW
     real  :: DELT
-    
+
     !     * INPUT/OUTPUT ARRAYS.
     real, DIMENSION(ILG) :: REFF
-    
+
     !     * INTERNAL WORK ARRAYS.
     real, DIMENSION(ILG) :: FLIQ
     !-----------------------------------
@@ -1872,7 +1872,7 @@ contains
         REFF(I) = REFF(I) * 1.E-6
       end if
     end do ! loop 100
-    
+
     return
   end
   !> @}
@@ -1889,7 +1889,7 @@ contains
     !     * M. Namazi &  K. V. SALZEN,SNOW GRAIN DUE TO DEPOSITION.
     !
     implicit none
-    
+
     real :: REFF0
     integer :: ILG,IL1,IL2,I
     !
@@ -1924,7 +1924,7 @@ contains
         end if
       end if
     end do ! loop 100
-    
+
     return
   end
   !> @}
@@ -1937,7 +1937,7 @@ contains
   !!
   subroutine BCCONC(ZSNOW,GCROW,BCSNO,DEPB,SPCP,ROFN,RHOSNO, &
                          DELT,ZSNMIN,ZSNMAX,ILG,IL1,IL2,GCMIN,GCMAX)
-    
+
     !     * Feb 10/2015 - J.Cole.   New version for gcm18:
     !                               - Truncate BC concentrations to
     !                                 avoid excessively large values
@@ -1956,9 +1956,9 @@ contains
     !     * Aug 06/2013 - M. Namazi &  K. V. SALZEN.
     !     *              BC CONCENTRATION IN SNOW DUE TO DEPOSITION
     !     *              OF BC AND SCAVENGING THROUGH MELTING.
-    
+
     implicit none
-    
+
     integer :: ILG,IL1,IL2,I,J
     real, DIMENSION(ILG) :: BCSNO,GCROW,DEPB,SPCP,RHOSNO,ZSNOW,ROFN
     !
@@ -1988,7 +1988,7 @@ contains
         end if
       end if
     end do ! loop 100
-    
+
     return
   end
   !> @}

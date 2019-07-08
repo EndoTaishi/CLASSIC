@@ -5,7 +5,7 @@
 !! The suffix GAT refers to variables on gathered long vectors.
 !! @author D. Verseghy, M. Lazare
 !!
-subroutine classScatter (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT, &
+subroutine classScatter (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT, & ! Formerly CLASSS
                     ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT, &
                     SNOROT, GTROT,  TCANROT,RCANROT,SCANROT, &
                    GROROT, CMAIROT,TACROT, QACROT, WSNOROT, &

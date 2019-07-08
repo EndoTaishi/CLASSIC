@@ -2,7 +2,7 @@
 !! Calculates visible and near-IR ground albedos.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine groundAlbedo(ALVSG,ALIRG,ALVSGC,ALIRGC, &
+subroutine groundAlbedo(ALVSG,ALIRG,ALVSGC,ALIRGC, & ! Formerly GRALB
                   ALGWV,ALGWN,ALGDV,ALGDN, &
                   THLIQ,FSNOW,ALVSU,ALIRU,FCMXU, &
                   AGVDAT,AGIDAT,FG,ISAND, &

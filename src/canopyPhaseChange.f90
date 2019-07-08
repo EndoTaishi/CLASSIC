@@ -4,7 +4,7 @@
 !! intercepted water stores accordingly.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, &
+subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerly CWCALC
                    HMFC,HTCC,FI,CMASS,ILG,IL1,IL2,JL)
   !
   !

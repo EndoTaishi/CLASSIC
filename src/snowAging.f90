@@ -42,7 +42,7 @@
 !! performed with a call to abort if for unphysical albedo values
 !! are encountered.
 !!
-subroutine snowAging(ALBSNO,RHOSNO,ZSNOW,HCPSNO,TSNOW, &
+subroutine snowAging(ALBSNO,RHOSNO,ZSNOW,HCPSNO,TSNOW, & ! Formerly SNOALBW
                     FI,S,RMELT,WSNOW,RHOMAX,ISAND, &
                     ILG,IG,IL1,IL2,JL)
   !

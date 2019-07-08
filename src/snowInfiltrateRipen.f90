@@ -3,7 +3,7 @@
 !! pack, and snow ripening.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, &
+subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerly SNINFL
                    HTCS,HMFN,PCPG,ROFN,FI,ILG,IL1,IL2,JL)
   !
   !     * DEC 23/09 - D.VERSEGHY. RESET WSNOW TO ZERO WHEN SNOW

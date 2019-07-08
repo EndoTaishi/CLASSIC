@@ -5,7 +5,7 @@
 !! efficiency on vector supercomputers.
 !! @author D. Verseghy, M. Lazare
 
-subroutine classGather(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT, &
+subroutine classGather(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT, & ! Formerly CLASSG
                    TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT, &
                    TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT, &
                    FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT, &

@@ -6,7 +6,7 @@
 !! in the gcm physics.
 !! @author M. Lazare, V. Fortin
 !
-subroutine screenRelativeHumidity(SRH,ST,SQ,PRESSG,FMASK,ILG,IL1,IL2)
+subroutine screenRelativeHumidity(SRH,ST,SQ,PRESSG,FMASK,ILG,IL1,IL2) ! Formerly SCREENRH
   !
   !     * DEC 16, 2014 - V.FORTIN.  REMOVE MERGE IN CALCULATION OF FRACW.
   !     * APR 30, 2009 - M.LAZARE.

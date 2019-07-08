@@ -2,7 +2,7 @@
 !! Addresses freezing of water ponded on ground surface.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, &
+subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! Formerly TFREEZ
                    GZERO,HMFG,HTCS,HTC,WTRS,WTRG,FI,QFREZ, &
                    WSNOW,TA,TBAR,ISAND,IG,ILG,IL1,IL2,JL)
   !

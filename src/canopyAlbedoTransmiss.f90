@@ -3,7 +3,7 @@
 !! stomatal resistances.
 !! @author D. Verseghy, M. Lazare, P. Bartlett, R. Harvey, J. Melton
 !
-subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, &
+subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! Formerly CANALB
                    TRVSCS,TRIRCS,RC,RCS, &
                    ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB, &
                    FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS, &

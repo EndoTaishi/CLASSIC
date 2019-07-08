@@ -10,7 +10,7 @@ module fileIOModule
 #endif
   use netcdf
   implicit none
-  
+
   public  :: ncCreate           !> Creates a new netCDF file and returns the file id.
   public  :: ncOpen             !> Opens an existing netCDF file and returns the file id.
   public  :: ncGetVarId         !> Returns the variable id for a given variable label.
@@ -40,7 +40,7 @@ module fileIOModule
   public  :: estimateOnes       !> Returns an estimate count of how many 1s can be collapsed in the array
   public  :: collapseOnes       !> Returns an array that keeps only the values not equal to one.
   public  :: checkNC            !> Checks for errors in the NetCDF access process
-  
+
 contains
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> \ingroup fileIOMOdule_ncCreate
@@ -53,7 +53,7 @@ contains
 #if PARALLEL
         integer                     :: mode, status, info
 #endif
-    
+
 #if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call MPI_INFO_CREATE(info, status)
@@ -77,7 +77,7 @@ contains
 #if PARALLEL
         integer                     :: mode, status, info
 #endif
-    
+
 #if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call MPI_INFO_CREATE(info, status)
@@ -122,7 +122,7 @@ contains
     integer                     :: varId    !< Variable id
     character(80)               :: ncGetVarName !< variable name
     logical                     :: notit !< true if not the variable we are seeking
-    
+
     ! Cycle through the variables in the file skipping over the lon, lat, lev, and time variables. This assumes
     ! that the input has no other variables than the one of interest. lev is in the LUC file so be careful here if the
     ! name is different.
@@ -138,7 +138,7 @@ contains
         notit = .false.
       end if
     end do
-    
+
   end function ncGetVarName
   !> @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ contains
 #if PARALLEL
         integer                                     :: locaLength
 #endif
-    
+
 #if PARALLEL
         if (label == 'time') then
             ! locaLength = NFMPI_UNLIMITED !< Special case
@@ -240,13 +240,13 @@ contains
     implicit none
     integer, intent(in)     :: fileId   !< File id
     integer, intent(in)     :: varId    !< Variable id
-    
+
     character( * )            :: label
     character( * ), optional  :: charValues
     integer, optional       :: intValues
     real, optional          :: realValues
     integer                 :: counter
-    
+
     counter = 0
     if (present(charValues)) then
       counter = counter + 1
@@ -275,15 +275,15 @@ contains
     integer                                         :: varId, ndims
     character(50)                                   :: string
     real, allocatable                               :: temp1D(:), temp2D(:,:), temp3D(:,:,:), temp4D(:,:,:,:), temp5D(:,:,:,:,:)
-    
+
     varId = ncGetVarId(fileId, label)
     ndims = ncGetVarDimensions(fileId, varId)
-    
+
     write(string,'(5I10)') start
-    
+
     ! Currently makes I/O worse in general, but may be useful in the future (EC, Sep 2018).
     ! call checkNC(nf90_var_par_access(fileId, varId, nf90_collective))
-    
+
     select case (ndims)
     case (1)
       allocate(ncGetVar(count(1)))
@@ -313,7 +313,7 @@ contains
     case default
       stop ("Only up to 5 dimensions have been implemented !")
     end select
-    
+
   end function ncGetVar
   !> @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -330,10 +330,10 @@ contains
     real, allocatable                           :: ncGetDimValues(:)
     integer                                     :: localCount(1) = [1], localStart(1) = [1]
     integer                                     :: localCount2D(2) = [1,1], localStart2D(2) = [1,1]
-    
+
     varId = ncGetVarId(fileId, label)
     ndims = ncGetVarDimensions(fileId, varId)
-    
+
     select case (ndims)
     case (1)
       if (present(start)) localStart = start
@@ -348,7 +348,7 @@ contains
     case default
       stop ("Only up to 2 dimensions have been implemented in ncGetDimValues")
     end select
-    
+
   end function ncGetDimValues
   !> @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -364,7 +364,7 @@ contains
     real, allocatable                           :: ncGet1DVar(:)
     integer, allocatable                        :: localCount(:), localFormat(:)
     integer                                     :: formatSize
-    
+
     if (present(count)) then
       allocate(localCount(size(count)))
       localCount = count
@@ -378,10 +378,10 @@ contains
       allocate(localFormat(1))
       localFormat = [1]
     end if
-    
+
     allocate(ncGet1DVar(localFormat(1)))
     ncGet1DVar = ncGetVar(fileId, label, start, localCount)
-    
+
   end function ncGet1DVar
   !> @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -397,11 +397,11 @@ contains
     real, allocatable                           :: ncGet2DVar(:,:)
     integer, allocatable                        :: localCount(:), localFormat(:)
     integer                                     :: fixedFormat(2), formatSize
-    
+
     if (present(count)) then
       allocate(localCount(size(count)))
       localCount = count
-      
+
       if (present(format)) then
         allocate(localFormat(size(format)))
         localFormat = format
@@ -414,7 +414,7 @@ contains
     else
       allocate(localCount(3))
       localCount = [1, 1, 1]
-      
+
       if (present(format)) then
         allocate(localFormat(size(format)))
         localFormat = format
@@ -423,7 +423,7 @@ contains
         localFormat = [1, 1]
       end if
     end if
-    
+
     fixedFormat = localFormat
     allocate(ncGet2DVar(fixedFormat(1), fixedFormat(2)))
     ncGet2DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
@@ -442,11 +442,11 @@ contains
     real, allocatable                           :: ncGet3DVar(:,:,:)
     integer, allocatable                        :: localCount(:), localFormat(:)
     integer                                     :: fixedFormat(3), formatSize
-    
+
     if (present(count)) then
       allocate(localCount(size(count)))
       localCount = count
-      
+
       if (present(format)) then
         allocate(localFormat(size(format)))
         localFormat = format
@@ -459,7 +459,7 @@ contains
     else
       allocate(localCount(4))
       localCount = [1, 1, 1, 1]
-      
+
       if (present(format)) then
         allocate(localFormat(size(format)))
         localFormat = format
@@ -468,7 +468,7 @@ contains
         localFormat = [1, 1, 1]
       end if
     end if
-    
+
     fixedFormat = localFormat
     allocate(ncGet3DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3)))
     ncGet3DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
@@ -487,11 +487,11 @@ contains
     real, allocatable                           :: ncGet4DVar(:,:,:,:)
     integer, allocatable                        :: localCount(:), localFormat(:)
     integer                                     :: fixedFormat(4), formatSize
-    
+
     if (present(count)) then
       allocate(localCount(size(count)))
       localCount = count
-      
+
       if (present(format)) then
         allocate(localFormat(size(format)))
         localFormat = format
@@ -504,7 +504,7 @@ contains
     else
       allocate(localCount(5))
       localCount = [1, 1, 1, 1, 1]
-      
+
       if (present(format)) then
         allocate(localFormat(size(format)))
         localFormat = format
@@ -513,7 +513,7 @@ contains
         localFormat = [1, 1, 1, 1]
       end if
     end if
-    
+
     fixedFormat = localFormat
     allocate(ncGet4DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3), fixedFormat(4)))
     ncGet4DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
@@ -532,14 +532,14 @@ contains
     integer, intent(in), optional       :: start(1)     !< Start array
     integer, intent(in), optional       :: count(1)     !< Count array
     integer                             :: localStart(1) = [1], localCount(1) = [1], varId, counter
-    
+
     counter = 0
-    
+
     if (present(start)) localStart = start
     if (present(count)) localCount = count
-    
+
     varId = ncGetVarId(fileId, label)
-    
+
     if (present(realValues)) then
       counter = counter + 1
       call checkNC(nf90_put_var(fileId, varId, realValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
@@ -547,9 +547,9 @@ contains
       counter = counter + 1
       call checkNC(nf90_put_var(fileId, varId, intValues, localStart, localCount), tag = 'ncPutDimValues(' // trim(label) // ') ')
     end if
-    
+
     if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues - just one')
-    
+
   end subroutine ncPutDimValues
   !> @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -566,10 +566,10 @@ contains
     integer, intent(in)                                     :: start(:)         !< Start array
     integer, intent(in)                                     :: count(:)         !< Count array
     integer                                                 :: varId, counter
-    
+
     counter = 0
     varId = ncGetVarId(fileId, label)
-    
+
     if (present(realValues)) then
       counter = counter + 1
       call checkNC(nf90_put_var(fileId, varId, realValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
@@ -577,9 +577,9 @@ contains
       counter = counter + 1
       call checkNC(nf90_put_var(fileId, varId, intValues, start, count), tag = 'ncPutVar(' // trim(label) // ') ')
     end if
-    
+
     if (counter /= 1) stop ('In function ncPutVar, please supply either intValues or realValues - just one')
-    
+
   end subroutine ncPutVar
   !> @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -597,7 +597,7 @@ contains
     integer, dimension(3), intent(in)                       :: count    !< Count array
     integer                                                 :: varId, counter
     varId = ncGetVarId(fileId, label)
-    
+
     counter = 0
     if (present(realValues)) then
       counter = counter + 1
@@ -606,7 +606,7 @@ contains
       counter = counter + 1
       call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut2DVar(' // trim(label) // ') ')
     end if
-    
+
     if (counter /= 1) stop ('In function ncPut2DVar, please supply either intValues or realValues - just one')
   end subroutine ncPut2DVar
   !> @}
@@ -625,7 +625,7 @@ contains
     integer, dimension(4), intent(in)                       :: count    !< Count array
     integer                                                 :: varId, counter
     varId = ncGetVarId(fileId, label)
-    
+
     counter = 0
     if (present(realValues)) then
       counter = counter + 1
@@ -645,12 +645,12 @@ contains
     implicit none
     integer, intent(in)             :: values(:)        !< The input values
     integer                         :: i
-    
+
     estimateOnes = 0
     do i = 1, size(values)
       if (values(i) /= 1) estimateOnes = estimateOnes + 1
     end do
-    
+
     if (estimateOnes == 0) then
       ! print*,('The estimateOnes function found no values different than 1 and will default to just one element')
       estimateOnes = 1
@@ -668,7 +668,7 @@ contains
     integer                         :: i, counter, count
     count = estimateOnes(values)
     allocate(collapseOnes(count))
-    
+
     counter = 0
     do i = 1, size(values)
       if (values(i) /= 1) then
@@ -697,7 +697,7 @@ contains
     else
       message = 'Unspecified tag'
     end if
-    
+
     if (ncStatus /= nf90_noerr) then
       print * ,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
 #if PARALLEL

@@ -4,7 +4,7 @@
 !! variables.
 !! @author D. Verseghy, M. Lazare, Y. Delage, R. Harvey, R. Soulis, P. Bartlett
 !
-subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, &
+subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! Formerly WPREP
                   THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS, &
                   GRKSC,  GRKSG,  GRKSCS, GRKSGS, &
                   SPCC,   SPCG,   SPCCS,  SPCGS,  TSPCC,  TSPCG, &

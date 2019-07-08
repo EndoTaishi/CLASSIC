@@ -3,7 +3,7 @@
 !! energy budget calculations.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine soilHeatFluxCleanup(TBARPR,G12,G23,TPOND,GZERO,QFREZG,GCONST, &
+subroutine soilHeatFluxCleanup(TBARPR,G12,G23,TPOND,GZERO,QFREZG,GCONST, & ! Formerly TNPOST
                    GCOEFF,TBAR,TCTOP,TCBOT,HCP,ZPOND,TSURF, &
                    TBASE,TBAR1P,A1,A2,B1,B2,C2,FI,IWATER, &
                    ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)

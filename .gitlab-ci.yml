@@ -28,7 +28,7 @@ compile:
 run:ctem_on:
   stage: run
   script:
-    - tools/regression-testing/job_submit_ctem_on.sh
+    - tools/regression_testing/submission_scripts/job_submit_ctem_on.sh
     - echo "job submitted"
   artifacts:
     paths:
@@ -37,7 +37,7 @@ run:ctem_on:
 run:ctem_off:
   stage: run
   script:
-    - tools/regression-testing/job_submit_ctem_off.sh
+    - tools/regression_testing/submission_scripts/job_submit_ctem_off.sh
     - echo "job submitted"
   artifacts:
     paths:
@@ -46,7 +46,7 @@ run:ctem_off:
 run:ctem_compete:
   stage: run
   script:
-    - tools/regression-testing/job_submit_ctem_compete.sh
+    - tools/regression_testing/submission_scripts/job_submit_ctem_compete.sh
     - echo "job submitted"
   artifacts:
     paths:
@@ -55,10 +55,10 @@ run:ctem_compete:
 regression_test:ctem_on:
   stage: test
   script:
-    - tools/regression-testing/sleepcheck.sh $( cat job_id.txt )
-    - tools/regression-testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_on
+    - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_on
     - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
-    - tools/regression-testing/verification.sh ctem_on
+    - tools/regression_testing/verification.sh ctem_on
     - echo "regression test complete"
   dependencies:
     - run:ctem_on
@@ -66,10 +66,10 @@ regression_test:ctem_on:
 retression_test:ctem_off:
   stage: test
   script:
-    - tools/regression-testing/sleepcheck.sh $( cat job_id.txt )
-    - tools/regression-testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_off
+    - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_off
     - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
-    - tools/regression-testing/verification.sh ctem_off
+    - tools/regression_testing/verification.sh ctem_off
     - echo "regression test complete"
   dependencies:
     - run:ctem_off
@@ -77,10 +77,10 @@ retression_test:ctem_off:
 retression_test:ctem_compete:
   stage: test
   script:
-    - tools/regression-testing/sleepcheck.sh $( cat job_id.txt )
-    - tools/regression-testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_compete
+    - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_compete
     - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
-    - tools/regression-testing/verification.sh ctem_compete
+    - tools/regression_testing/verification.sh ctem_compete
     - echo "regression test complete"
   dependencies:
     - run:ctem_compete

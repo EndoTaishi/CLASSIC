@@ -3,7 +3,7 @@
 !! the vegetation canopy.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine waterUnderCanopy(IWATER,R,TR,S,TS,RHOSNI,EVAPG,QFN,QFG, &
+subroutine waterUnderCanopy(IWATER,R,TR,S,TS,RHOSNI,EVAPG,QFN,QFG, & ! Formerly SUBCAN
                    PCPN,PCPG,FI,ILG,IL1,IL2,JL)
   !
   !     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.

@@ -4,7 +4,7 @@
 !! cells.
 !! @author D. Verseghy, M. Lazare, E. Chan
 !
-subroutine classGatherPrep(ILMOS,JLMOS,IWMOS,JWMOS, &
+subroutine classGatherPrep(ILMOS,JLMOS,IWMOS,JWMOS, & ! Formerly GATPREP
                     NML,NMW,GCROW,FAREA,MOSID, &
                     NL,NM,ILG,IL1,IL2,IM)
   !

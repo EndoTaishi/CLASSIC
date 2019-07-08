@@ -3,7 +3,7 @@
 !! into soil.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, &
+subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
                    GCONST,CPHCHG,IWATER, &
                    TBAR,TCTOP,TCBOT, &
                    FI,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &

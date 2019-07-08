@@ -3,7 +3,7 @@
 !! under conditions of infiltration.
 !! @author D. Verseghy, M. Lazare, Y. Delage, R. Soulis, J. Melton
 !
-subroutine waterFlowInfiltrate(IVEG,THLIQ,THICE,TBARW,BASFLW,TBASFL, &
+subroutine waterFlowInfiltrate(IVEG,THLIQ,THICE,TBARW,BASFLW,TBASFL, & ! Formerly GRINFL
                    RUNOFF,TRUNOF,ZFAV,LZFAV,THLINV,QFG, &
                    WLOST,FI,EVAP,R,TR,TPOND,ZPOND,DT, &
                    ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
@@ -160,7 +160,7 @@ subroutine waterFlowInfiltrate(IVEG,THLIQ,THICE,TBARW,BASFLW,TBASFL, &
   integer, intent(in)    :: ISAND (ILG,IG) !< Sand content flag
   integer, intent(inout) :: IGRN(ILG)    !< Flag to indicate whether calculations in this subroutine are to be done
   integer, intent(in)    :: IGRD  (ILG)    !< Flag to indicate whether calculations in subroutine waterFlowNonInfiltrate are to be done
-  integer, intent(in)    :: IZERO(ILG), IFIND(ILG),   &
+  integer, intent(in)    :: IZERO(ILG), IFIND(ILG), &
                             ITER (ILG), NEND (ILG), ISIMP (ILG)
 
   integer, intent(inout) :: IFILL(ILG), LZF(ILG), NINF(ILG)
@@ -439,31 +439,31 @@ subroutine waterFlowInfiltrate(IVEG,THLIQ,THICE,TBARW,BASFLW,TBASFL, &
   !     * UNSATURATED INFILTRATION.
   !
   call waterInfiltrateUnsat(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR, & ! Formerly WFILL
-  PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
-  DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD, &
-  IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                            PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
+                            DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD, &
+                            IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   !     * CALL "waterInfiltrateSat" TO DO PROCESSING FOR PERIOD OF SATURATED
   !     * INFILTRATION.
   !
   call waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Formerly WFLOW
-  R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
-  DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ, &
-  THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP, &
-  IGRN,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                          R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
+                          DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ, &
+                          THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP, &
+                          IGRN,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   !     * RECALCULATE TEMPERATURES AND LIQUID MOISTURE CONTENTS OF
   !     * SOIL LAYERS FOLLOWING INFILTRATION.
   !
   call waterBaseflow(THLIQX,THICEX,TBARWX,ZPOND,TPOND, & ! Formerly WEND
-  BASFLW,TBASFL,RUNOFF,TRUNOF,FI, &
-  WMOVE,TMOVE,LZF,NINF,TRMDR,THLINF,DELZX, &
-  ZMAT,ZRMDR,FDTBND,WADD,TADD,FDT,TFDT, &
-  THLMAX,THTEST,THLDUM,THIDUM,TDUMW, &
-  TUSED,RDUMMY,ZERO,WEXCES,XDRAIN, &
-  THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
-  THFC,DELZW,ISAND,IGRN,IGRD,IGDR,IZERO, &
-  IVEG,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                     BASFLW,TBASFL,RUNOFF,TRUNOF,FI, &
+                     WMOVE,TMOVE,LZF,NINF,TRMDR,THLINF,DELZX, &
+                     ZMAT,ZRMDR,FDTBND,WADD,TADD,FDT,TFDT, &
+                     THLMAX,THTEST,THLDUM,THIDUM,TDUMW, &
+                     TUSED,RDUMMY,ZERO,WEXCES,XDRAIN, &
+                     THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
+                     THFC,DELZW,ISAND,IGRN,IGRD,IGDR,IZERO, &
+                     IVEG,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   do J = 1,IG ! loop 800
     do I = IL1,IL2
@@ -493,11 +493,11 @@ subroutine waterFlowInfiltrate(IVEG,THLIQ,THICE,TBARW,BASFLW,TBASFL, &
   !     * BETWEEN LAYERS FOR THE REMAINDER OF THE TIME STEP.
   !
   call waterFlowNonInfiltrate(IVEG,THLIQ,THICE,TBARW,FDUMMY,TDUMMY,BASFLW, & ! Formerly GRDRAN
-  TBASFL,RUNOFF,TRUNOF,QFG,WLOST,FI,EVAP,ZERO,ZERO, &
-  TRMDR,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-  BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,IZERO, &
-  IZERO,IGRD,IGDR, &
-  IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                              TBASFL,RUNOFF,TRUNOF,QFG,WLOST,FI,EVAP,ZERO,ZERO, &
+                              TRMDR,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                              BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,IZERO, &
+                              IZERO,IGRD,IGDR, &
+                              IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   return
 end

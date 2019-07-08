@@ -3,7 +3,7 @@
 !! unsaturated conditions.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine waterInfiltrateUnsat(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR, &
+subroutine waterInfiltrateUnsat(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR, & ! Formerly WFILL
                   PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
                   DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD, &
                   IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)

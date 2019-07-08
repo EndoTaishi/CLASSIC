@@ -2,7 +2,7 @@
 !! Solves surface energy balance for vegetated subareas.
 !! @author D. Verseghy, M. Lazare,  A. Wu, P. Bartlett, Y. Delage, V. Arora, E. Chan,  J. Melton, Y. Wu
 !
-subroutine energBalVegSolve(ISNOW,FI, &
+subroutine energBalVegSolve(ISNOW,FI, & ! Formerly TSOLVC
                   QSWNET,QSWNC,QSWNG,QLWOUT,QLWOC,QLWOG,QTRANS, &
                   QSENS,QSENSC,QSENSG,QEVAP,QEVAPC,QEVAPG,EVAPC, &
                   EVAPG,EVAP,TCAN,QCAN,TZERO,QZERO,GZERO,QMELTC, &
@@ -1094,13 +1094,13 @@ subroutine energBalVegSolve(ISNOW,FI, &
     !
     if (ISLFD < 2) then
       call DRCOEF(CDM,CDH,RIB,CFLUX,QAC,QA,ZOSCLM,ZOSCLH, &
-                   CRIB,TVRTAC,TVIRTA,VA,FI,ITER, &
-                   ILG,IL1,IL2)
+                  CRIB,TVRTAC,TVIRTA,VA,FI,ITER, &
+                  ILG,IL1,IL2)
     else
       call FLXSURFZ(CDM,CDH,CFLUX,RIB,FTEMP,FVAP,ILMO, &
-                     UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
-                     TAC,QAC,H,ZOM,ZOH, &
-                     LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
+                    UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
+                    TAC,QAC,H,ZOM,ZOH, &
+                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
     end if
     !
     !     * CALCULATE CANOPY AIR TEMPERATURE AND SPECIFIC HUMIDITY OF
@@ -1489,13 +1489,13 @@ subroutine energBalVegSolve(ISNOW,FI, &
     if (NUMIT > 0) then
       if (ISLFD < 2) then
         call DRCOEF(CDM,CDH,RIB,CFLUX,QA,QA,ZOSCLM,ZOSCLH, &
-                   CRIB,TVIRTC,TVIRTA,VA,FI,IEVAPC, &
-                   ILG,IL1,IL2)
+                    CRIB,TVIRTC,TVIRTA,VA,FI,IEVAPC, &
+                    ILG,IL1,IL2)
       else
         call FLXSURFZ(CDM,CDH,CFLUX,RIB,FTEMP,FVAP,ILMO, &
-                     UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
-                     TCAN,QCAN,H,ZOM,ZOH, &
-                     LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,IEVAPC,JL )
+                      UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
+                      TCAN,QCAN,H,ZOM,ZOH, &
+                      LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,IEVAPC,JL )
       end if
     end if
     !
@@ -1647,13 +1647,13 @@ subroutine energBalVegSolve(ISNOW,FI, &
     !
     if (ISLFD < 2) then
       call DRCOEF(CDM,CDH,RIB,CFLUX,QAC,QA,ZOSCLM,ZOSCLH, &
-                   CRIB,TVRTAC,TVIRTA,VA,FI,ITER, &
-                   ILG,IL1,IL2)
+                  CRIB,TVRTAC,TVIRTA,VA,FI,ITER, &
+                  ILG,IL1,IL2)
     else
       call FLXSURFZ(CDM,CDH,CFLUX,RIB,FTEMP,FVAP,ILMO, &
-                     UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
-                     TAC,QAC,H,ZOM,ZOH, &
-                     LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
+                    UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
+                    TAC,QAC,H,ZOM,ZOH, &
+                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
     end if
   end if
   !

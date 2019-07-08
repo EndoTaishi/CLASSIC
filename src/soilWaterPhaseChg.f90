@@ -3,7 +3,7 @@
 !! layers, and adjust layer temperatures and water stores accordingly.
 !! @author D. Verseghy, M. Lazare, Y. Delage
 !
-subroutine soilWaterPhaseChg(TBAR,THLIQ,THICE,HCP,TBARW,HMFG,HTC, &
+subroutine soilWaterPhaseChg(TBAR,THLIQ,THICE,HCP,TBARW,HMFG,HTC, & ! Formerly TWCALC
                    FI,EVAP,THPOR,THLMIN,HCPS,DELZW, &
                    DELZZ,ISAND,IG,ILG,IL1,IL2,JL)
   !
