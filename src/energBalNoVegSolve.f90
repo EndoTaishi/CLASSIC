@@ -3,7 +3,7 @@
 !! subareas.
 !! @author D. Verseghy, M. Lazare,  A. Wu, P. Bartlett, Y. Delage, J. Cole, R. Brown, J. Melton, Y. Wu
 !
-subroutine energBalNoVegSolve(ISNOW,FI, &
+subroutine energBalNoVegSolve(ISNOW,FI, & ! Formerly TSOLVE
                    QSWNET,QLWOUT,QTRANS,QSENS,QEVAP,EVAP, &
                    TZERO,QZERO,GZERO,QMELT,CDH,CDM,RIB,CFLUX, &
                    FTEMP,FVAP,ILMO,UE,H, &
@@ -385,8 +385,8 @@ subroutine energBalNoVegSolve(ISNOW,FI, &
   !    Do moss photosynthesis:
   !!      moss subroutine finds ground evaporation rate and photosynthesis--\
   call mosspht(il1,il2,iday,qswnv,thliq,co2conc,tstart,zsnow, & ! EC Jan 302017.
-  pressg,Cmossmas,dmoss,anmoss,rmlmoss, &
-  cevapmoss,ievapmoss, ipeatland,daylength,pdd)
+               pressg,Cmossmas,dmoss,anmoss,rmlmoss, &
+               cevapmoss,ievapmoss, ipeatland,daylength,pdd)
 
   !>
   !! The 100 continuation line marks the beginning of the surface
@@ -501,13 +501,13 @@ subroutine energBalNoVegSolve(ISNOW,FI, &
     !
     if (ISLFD < 2) then
       call DRCOEF (CDM,CDH,RIB,CFLUX,QZERO,QA,ZOSCLM,ZOSCLH, &
-                    CRIB,TVIRTS,TVIRTA,VA,FI,ITER, &
-                    ILG,IL1,IL2)
+                   CRIB,TVIRTS,TVIRTA,VA,FI,ITER, &
+                   ILG,IL1,IL2)
     else
       call FLXSURFZ(CDM,CDH,CFLUX,RIB,FTEMP,FVAP,ILMO, &
-                     UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
-                     TZERO,QZERO,H,ZOM,ZOH, &
-                     LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
+                    UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
+                    TZERO,QZERO,H,ZOM,ZOH, &
+                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
     end if
     !
     !     * REMAINING CALCULATIONS.
@@ -766,13 +766,13 @@ subroutine energBalNoVegSolve(ISNOW,FI, &
     if (NUMIT > 0) then
       if (ISLFD < 2) then
         call DRCOEF (CDM,CDH,RIB,CFLUX,QZERO,QA,ZOSCLM,ZOSCLH, &
-                    CRIB,TVIRTS,TVIRTA,VA,FI,JEVAP, &
-                    ILG,IL1,IL2)
+                     CRIB,TVIRTS,TVIRTA,VA,FI,JEVAP, &
+                     ILG,IL1,IL2)
       else
         call FLXSURFZ(CDM,CDH,CFLUX,RIB,FTEMP,FVAP,ILMO, &
-                     UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
-                     TZERO,QZERO,H,ZOM,ZOH, &
-                     LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,JEVAP,JL )
+                      UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
+                      TZERO,QZERO,H,ZOM,ZOH, &
+                      LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,JEVAP,JL )
       end if
     end if
     !
@@ -846,13 +846,13 @@ subroutine energBalNoVegSolve(ISNOW,FI, &
     !
     if (ISLFD < 2) then
       call DRCOEF (CDM,CDH,RIB,CFLUX,QZERO,QA,ZOSCLM,ZOSCLH, &
-                    CRIB,TVIRTS,TVIRTA,VA,FI,ITER, &
-                    ILG,IL1,IL2)
+                   CRIB,TVIRTS,TVIRTA,VA,FI,ITER, &
+                   ILG,IL1,IL2)
     else
       call FLXSURFZ(CDM,CDH,CFLUX,RIB,FTEMP,FVAP,ILMO, &
-                     UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
-                     TZERO,QZERO,H,ZOM,ZOH, &
-                     LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
+                    UE,FCOR,TPOTA,QA,ZRSLFM,ZRSLFH,VA, &
+                    TZERO,QZERO,H,ZOM,ZOH, &
+                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
     end if
   end if
   !>

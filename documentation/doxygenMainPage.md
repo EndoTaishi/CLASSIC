@@ -54,3 +54,4 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
   - @subpage runGrid "Running CLASSIC over a grid (regional,global)"
 10. @subpage benchAmber
 11. @subpage howDoI
+12. @subpage legacyFileNames

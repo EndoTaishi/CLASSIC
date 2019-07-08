@@ -3,7 +3,7 @@
 !! infiltration, and evaluates baseflow.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine waterBaseflow(THLIQX,THICEX,TBARWX,ZPOND,TPOND, &
+subroutine waterBaseflow(THLIQX,THICEX,TBARWX,ZPOND,TPOND, & ! Formerly WEND
                  BASFLW,TBASFL,RUNOFF,TRUNOF,FI, &
                  WMOVE,TMOVE,LZF,NINF,TRMDR,THLINF,DELZX, &
                  ZMAT,ZRMDR,FDTBND,WADD,TADD,FDT,TFDT, &
@@ -182,10 +182,10 @@ subroutine waterBaseflow(THLIQX,THICEX,TBARWX,ZPOND,TPOND, &
   !     * FLOW BETWEEN LAYERS BELOW THE WETTING FRONT.
   !
   call waterFlowNonInfiltrate(IVEG,THLDUM,THIDUM,TDUMW,FDT,TFDT,RDUMMY,RDUMMY, & ! Formerly GRDRAN
-  RDUMMY,RDUMMY,RDUMMY,RDUMMY,FI,ZERO,ZERO,ZERO, &
-  TUSED,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-  BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF, &
-  IZERO,IGRD,IGDR,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                              RDUMMY,RDUMMY,RDUMMY,RDUMMY,FI,ZERO,ZERO,ZERO, &
+                              TUSED,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                              BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF, &
+                              IZERO,IGRD,IGDR,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !>
   !! After waterFlowNonInfiltrate has been called, the maximum value of the water
   !! movement index NINF is set to the number of soil layers plus 1.

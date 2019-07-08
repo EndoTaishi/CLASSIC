@@ -3,7 +3,7 @@
 !! an error condition is encountered.
 !! @author J. D. Henderson, E. Chan
 !
-subroutine errorHandler(NAME,N)
+subroutine errorHandler(NAME,N) ! Formerly XIT
 
   use generalUtils, only : abandonCell
 
@@ -24,7 +24,7 @@ subroutine errorHandler(NAME,N)
   !     * IF N IS LESS THAN -100 THE PROGRAM SIMPLY TERMINATES.
   !     * OTHERWISE IF N IS LESS THAN ZERO THE PROGRAM ABORTS.
   !
-  character * (*), intent(in) :: NAME    !< Name of the subroutine in which the error
+  character * ( * ), intent(in) :: NAME    !< Name of the subroutine in which the error
   !< was found
   !< N: error code
   character * 8  :: NAME8, DASH, STAR

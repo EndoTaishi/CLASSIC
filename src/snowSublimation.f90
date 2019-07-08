@@ -2,7 +2,7 @@
 !> Sublimation calculations for the snow pack on the ground.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, &
+subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Formerly SNOVAP
                    WLOST,TRUNOF,RUNOFF,TOVRFL,OVRFLW, &
                    FI,R,S,RHOSNI,WSNOW,ILG,IL1,IL2,JL)
   !

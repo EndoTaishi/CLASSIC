@@ -4,7 +4,7 @@
 !! result of throughfall and unloading.
 !! @author D. Verseghy, M. Lazare, S. Fassnacht, E. Chan, P. Bartlett
 !
-subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, &
+subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! Formerly CANADD
                    HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF, &
                    CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP, &
                    ILG,IL1,IL2, JL)

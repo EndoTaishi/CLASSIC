@@ -2,7 +2,7 @@
 !! Calculate coefficients for solution of snow pack heat conduction.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, &
+subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
                    FI,ZSNOW,TSNOW,TCSNOW, &
                    ILG,IL1,IL2,JL)
   !

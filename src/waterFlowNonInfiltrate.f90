@@ -4,7 +4,7 @@
 !! tension forces.
 !! @author D. Verseghy, M. Lazare, P. Bartlett, R. Soulis, F. Seglenieks, V. Fortin, Y. Delage, L. Spacek
 !
-subroutine waterFlowNonInfiltrate(IVEG,THLIQ,THICE,TBARW,FDT,TFDT,BASFLW,TBASFL, &
+subroutine waterFlowNonInfiltrate(IVEG,THLIQ,THICE,TBARW,FDT,TFDT,BASFLW,TBASFL, & ! Formerly GRDRAN
                    RUNOFF,TRUNOF,QFG,WLOST,FI,EVAP,R,ZPOND,DT, &
                    WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
                    BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF, &

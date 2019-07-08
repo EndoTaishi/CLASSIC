@@ -2,7 +2,7 @@
 !! Calls subroutines to perform surface water budget calculations
 !! @author D. Verseghy, P. Bartlett, M. Lazare
 !
-subroutine waterBudgetDriver(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN, &
+subroutine waterBudgetDriver(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN, & ! Formerly CLASSW
                    RUNOFF, TRUNOF, SNO,    TSNOW,  RHOSNO, ALBSNO, &
                    WSNOW,  ZPOND,  TPOND,  GROWTH, TBASE,  GFLUX, &
                    PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
@@ -446,240 +446,240 @@ subroutine waterBudgetDriver(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN, &
   !
 
   call waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! Formerly WPREP
-            THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS, &
-            GRKSC,  GRKSG,  GRKSCS, GRKSGS, &
-            SPCC,   SPCG,   SPCCS,  SPCGS,  TSPCC,  TSPCG, &
-            TSPCCS, TSPCGS, RPCC,   RPCG,   RPCCS,  RPCGS, &
-            TRPCC,  TRPCG,  TRPCCS, TRPCGS, EVPIC,  EVPIG, &
-            EVPICS, EVPIGS, ZPONDC, ZPONDG, ZPNDCS, ZPNDGS, &
-            XSNOWC, XSNOWG, XSNOCS, XSNOGS, ZSNOWC, ZSNOWG, &
-            ZSNOCS, ZSNOGS, ALBSC,  ALBSG,  ALBSCS, ALBSGS, &
-            RHOSC,  RHOSG,  HCPSC,  HCPSG,  HCPSCS, HCPSGS, &
-            RUNFC,  RUNFG,  RUNFCS, RUNFGS, &
-            TRUNFC, TRUNFG, TRNFCS, TRNFGS, TBASC,  TBASG, &
-            TBASCS, TBASGS, GFLXC,  GFLXG,  GFLXCS, GFLXGS, &
-            SUBLC,  SUBLCS, WLOSTC, WLOSTG, WLSTCS, WLSTGS, &
-            RAC,    RACS,   SNC,    SNCS,   TSNOWC, TSNOWG, &
-            OVRFLW, SUBFLW, BASFLW, TOVRFL, TSUBFL, TBASFL, &
-            PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
-            QFN,    QFG,    QFC,    HMFG, &
-            ROVG,   ROFC,   ROFN,   TRUNOF, &
-            THLIQX, THICEX, THLDUM, THIDUM, &
-            DT,     RDUMMY, ZERO,   IZERO,  DELZZ, &
-            FC,     FG,     FCS,    FGS, &
-            THLIQC, THLIQG, THICEC, THICEG, HCPC,   HCPG, &
-            TBARC,  TBARG,  TBARCS, TBARGS, TBASE,  TSFSAV, &
-            FSVF,   FSVFS,  RAICAN, SNOCAN, RAICNS, SNOCNS, &
-            EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
-            RPCP,   TRPCP,  SPCP,   TSPCP,  RHOSNI, ZPOND, &
-            ZSNOW,  ALBSNO, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
-            THPOR,  HCPS,   GRKSAT, ISAND,  DELZW,  DELZ, &
-            ILG,    IL1,    IL2,    JL,     IG,     IGP1, &
-            NLANDCS,NLANDGS,NLANDC, NLANDG, RADD,   SADD  )
+                     THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS, &
+                     GRKSC,  GRKSG,  GRKSCS, GRKSGS, &
+                     SPCC,   SPCG,   SPCCS,  SPCGS,  TSPCC,  TSPCG, &
+                     TSPCCS, TSPCGS, RPCC,   RPCG,   RPCCS,  RPCGS, &
+                     TRPCC,  TRPCG,  TRPCCS, TRPCGS, EVPIC,  EVPIG, &
+                     EVPICS, EVPIGS, ZPONDC, ZPONDG, ZPNDCS, ZPNDGS, &
+                     XSNOWC, XSNOWG, XSNOCS, XSNOGS, ZSNOWC, ZSNOWG, &
+                     ZSNOCS, ZSNOGS, ALBSC,  ALBSG,  ALBSCS, ALBSGS, &
+                     RHOSC,  RHOSG,  HCPSC,  HCPSG,  HCPSCS, HCPSGS, &
+                     RUNFC,  RUNFG,  RUNFCS, RUNFGS, &
+                     TRUNFC, TRUNFG, TRNFCS, TRNFGS, TBASC,  TBASG, &
+                     TBASCS, TBASGS, GFLXC,  GFLXG,  GFLXCS, GFLXGS, &
+                     SUBLC,  SUBLCS, WLOSTC, WLOSTG, WLSTCS, WLSTGS, &
+                     RAC,    RACS,   SNC,    SNCS,   TSNOWC, TSNOWG, &
+                     OVRFLW, SUBFLW, BASFLW, TOVRFL, TSUBFL, TBASFL, &
+                     PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
+                     QFN,    QFG,    QFC,    HMFG, &
+                     ROVG,   ROFC,   ROFN,   TRUNOF, &
+                     THLIQX, THICEX, THLDUM, THIDUM, &
+                     DT,     RDUMMY, ZERO,   IZERO,  DELZZ, &
+                     FC,     FG,     FCS,    FGS, &
+                     THLIQC, THLIQG, THICEC, THICEG, HCPC,   HCPG, &
+                     TBARC,  TBARG,  TBARCS, TBARGS, TBASE,  TSFSAV, &
+                     FSVF,   FSVFS,  RAICAN, SNOCAN, RAICNS, SNOCNS, &
+                     EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
+                     RPCP,   TRPCP,  SPCP,   TSPCP,  RHOSNI, ZPOND, &
+                     ZSNOW,  ALBSNO, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
+                     THPOR,  HCPS,   GRKSAT, ISAND,  DELZW,  DELZ, &
+                     ILG,    IL1,    IL2,    JL,     IG,     IGP1, &
+                     NLANDCS,NLANDGS,NLANDC, NLANDG, RADD,   SADD)
   !
   !
   !     * CALCULATIONS FOR CANOPY OVER SNOW.
   !
   if (NLANDCS > 0) then
     call canopyWaterUpdate(EVAPCS,SUBLCS,RAICNS,SNOCNS,TCANS,THLQCS, & ! Formerly CANVAP
-                 TBARCS,ZSNOCS,WLSTCS,CHCAPS,QFCF,QFCL,QFN,QFC, &
-                 HTCC,HTCS,HTC,FCS,CMASCS,TSNOCS,HCPSCS,RHOSCS, &
-                 FROOTS,THPOR,THLMIN,DELZW,EVLOST,RLOST,IROOT, &
-                 IG,ILG,IL1,IL2,JL,N  )
+                           TBARCS,ZSNOCS,WLSTCS,CHCAPS,QFCF,QFCL,QFN,QFC, &
+                           HTCC,HTCS,HTC,FCS,CMASCS,TSNOCS,HCPSCS,RHOSCS, &
+                           FROOTS,THPOR,THLMIN,DELZW,EVLOST,RLOST,IROOT, &
+                           IG,ILG,IL1,IL2,JL,N)
     call canopyInterception(2,RPCCS,TRPCCS,SPCCS,TSPCCS,RAICNS,SNOCNS, & ! Formerly CANADD
-                 TCANS,CHCAPS,HTCC,ROFC,ROVG,PCPN,PCPG, &
-                 FCS,FSVFS,CWLCPS,CWFCPS,CMASCS,RHOSNI, &
-                 TSFSAV(1,1),RADD,SADD,ILG,IL1,IL2,JL)
+                            TCANS,CHCAPS,HTCC,ROFC,ROVG,PCPN,PCPG, &
+                            FCS,FSVFS,CWLCPS,CWFCPS,CMASCS,RHOSNI, &
+                            TSFSAV(1,1),RADD,SADD,ILG,IL1,IL2,JL)
     call canopyPhaseChange(TCANS,RAICNS,SNOCNS,RDUMMY,RDUMMY,CHCAPS, & ! Formerly CWCALC
-                 HMFC,HTCC,FCS,CMASCS,ILG,IL1,IL2,JL)
+                           HMFC,HTCC,FCS,CMASCS,ILG,IL1,IL2,JL)
     call waterUnderCanopy(2,RPCCS,TRPCCS,SPCCS,TSPCCS,RHOSNI,EVPCSG, & ! Formerly SUBCAN
-                 QFN,QFG,PCPN,PCPG,FCS,ILG,IL1,IL2,JL)
+                          QFN,QFG,PCPN,PCPG,FCS,ILG,IL1,IL2,JL)
     call soilWaterPhaseChg(TBARCS,THLQCS,THICCS,HCPCS,TBRWCS,HMFG,HTC, & ! Formerly TWCALC
-                 FCS,ZERO,THPOR,THLMIN,HCPS,DELZW,DELZZ,ISAND, &
-                 IG,ILG,IL1,IL2,JL)
+                           FCS,ZERO,THPOR,THLMIN,HCPS,DELZW,DELZZ,ISAND, &
+                           IG,ILG,IL1,IL2,JL)
     call snowSublimation(RHOSCS,ZSNOCS,HCPSCS,TSNOCS,EVPCSG,QFN,QFG, & ! Formerly SNOVAP
-                 HTCS,WLSTCS,TRNFCS,RUNFCS,TOVRFL,OVRFLW, &
-                 FCS,RPCCS,SPCCS,RHOSNI,WSNOCS,ILG,IL1,IL2,JL)
+                         HTCS,WLSTCS,TRNFCS,RUNFCS,TOVRFL,OVRFLW, &
+                         FCS,RPCCS,SPCCS,RHOSNI,WSNOCS,ILG,IL1,IL2,JL)
     call pondedWaterFreeze(ZPNDCS,TPNDCS,ZSNOCS,TSNOCS,ALBSCS, & ! Formerly TFREEZ
-                 RHOSCS,HCPSCS,GZROCS,HMFG,HTCS,HTC, &
-                 WTRS,WTRG,FCS,ZERO,WSNOCS,TA,TBARCS, &
-                 ISAND,IG,ILG,IL1,IL2,JL)
+                           RHOSCS,HCPSCS,GZROCS,HMFG,HTCS,HTC, &
+                           WTRS,WTRG,FCS,ZERO,WSNOCS,TA,TBARCS, &
+                           ISAND,IG,ILG,IL1,IL2,JL)
     call snowMelt(ZSNOCS,TSNOCS,QMELTC,RPCCS,TRPCCS, & ! Formerly TMELT
-                GZROCS,RALB,HMFN,HTCS,HTC,FCS,HCPSCS, &
-                RHOSCS,WSNOCS,ISAND,IG,ILG,IL1,IL2,JL)
+                  GZROCS,RALB,HMFN,HTCS,HTC,FCS,HCPSCS, &
+                  RHOSCS,WSNOCS,ISAND,IG,ILG,IL1,IL2,JL)
     call snowAddNew(ALBSCS,TSNOCS,RHOSCS,ZSNOCS, & ! Formerly SNOADD
-                 HCPSCS,HTCS,FCS,SPCCS,TSPCCS,RHOSNI,WSNOCS, &
-                 ILG,IL1,IL2,JL)
+                    HCPSCS,HTCS,FCS,SPCCS,TSPCCS,RHOSNI,WSNOCS, &
+                    ILG,IL1,IL2,JL)
     call snowInfiltrateRipen(RPCCS,TRPCCS,ZSNOCS,TSNOCS,RHOSCS,HCPSCS, & ! Formerly SNINFL
-                 WSNOCS,HTCS,HMFN,PCPG,ROFN,FCS,ILG,IL1,IL2,JL)
+                             WSNOCS,HTCS,HMFN,PCPG,ROFN,FCS,ILG,IL1,IL2,JL)
     call waterFlowInfiltrate(1,THLQCS,THICCS,TBRWCS,BASFLW,TBASFL,RUNFCS, & ! Formerly GRINFL
-                 TRNFCS,ZFAV,LZFAV,THLINV,QFG,WLSTCS, &
-                 FCS,EVPCSG,RPCCS,TRPCCS,TPNDCS,ZPNDCS, &
-                 DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
-                 DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
-                 THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
-                 THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
-                 ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
-                 DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
-                 THPOR,THLRET,THLMIN,BI,PSISAT,GRKSCS, &
-                 THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
-                 IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
-                 NEND,ISIMP,IGDR, &
-                 IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                             TRNFCS,ZFAV,LZFAV,THLINV,QFG,WLSTCS, &
+                             FCS,EVPCSG,RPCCS,TRPCCS,TPNDCS,ZPNDCS, &
+                             DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
+                             DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
+                             THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
+                             THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
+                             ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
+                             DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
+                             THPOR,THLRET,THLMIN,BI,PSISAT,GRKSCS, &
+                             THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
+                             IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
+                             NEND,ISIMP,IGDR, &
+                             IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call waterFlowNonInfiltrate(1,THLQCS,THICCS,TBRWCS,FDUMMY,TDUMMY, & ! Formerly GRDRAN
-                 BASFLW,TBASFL,RUNFCS,TRNFCS, &
-                 QFG,WLSTCS,FCS,EVPCSG,RPCCS,ZPNDCS, &
-                 DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-                 BI,PSISAT,GRKSCS,THFC,DELZW,XDRAIN,ISAND, &
-                 IZERO,IGRN,IGRD,IGDR, &
-                 IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                                BASFLW,TBASFL,RUNFCS,TRNFCS, &
+                                QFG,WLSTCS,FCS,EVPCSG,RPCCS,ZPNDCS, &
+                                DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                                BI,PSISAT,GRKSCS,THFC,DELZW,XDRAIN,ISAND, &
+                                IZERO,IGRN,IGRD,IGDR, &
+                                IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call TMCALC(TBARCS,THLQCS,THICCS,HCPCS,TPNDCS,ZPNDCS, &
-                 TSNOCS,ZSNOCS,ALBSCS,RHOSCS,HCPSCS,TBASCS, &
-                 OVRFLW,TOVRFL,RUNFCS,TRNFCS,HMFG,HTC,HTCS, &
-                 WTRS,WTRG,FCS,TBRWCS,GZROCS,G12CS, &
-                 G23CS,GGEO,TA,WSNOCS,TCTOPC,TCBOTC,GFLXCS, &
-                 ZPLMCS,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
-                 ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
+                TSNOCS,ZSNOCS,ALBSCS,RHOSCS,HCPSCS,TBASCS, &
+                OVRFLW,TOVRFL,RUNFCS,TRNFCS,HMFG,HTC,HTCS, &
+                WTRS,WTRG,FCS,TBRWCS,GZROCS,G12CS, &
+                G23CS,GGEO,TA,WSNOCS,TCTOPC,TCBOTC,GFLXCS, &
+                ZPLMCS,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
+                ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
     call checkWaterBudget(1,PCPR,EVPICS,RUNFCS,WLSTCS,RAICNS,SNOCNS, & ! Formerly CHKWAT
-                 RACS,SNCS,ZPNDCS,ZPOND,THLQCS,THICCS, &
-                 THLIQC,THICEC,ZSNOCS,RHOSCS,XSNOCS,SNO, &
-                 WSNOCS,WSNOW,FCS,FGS,FCS,BAL,THPOR,THLMIN, &
-                 DELZW,ISAND,IG,ILG,IL1,IL2,JL,N   )
+                          RACS,SNCS,ZPNDCS,ZPOND,THLQCS,THICCS, &
+                          THLIQC,THICEC,ZSNOCS,RHOSCS,XSNOCS,SNO, &
+                          WSNOCS,WSNOW,FCS,FGS,FCS,BAL,THPOR,THLMIN, &
+                          DELZW,ISAND,IG,ILG,IL1,IL2,JL,N)
     call snowAging(ALBSCS,RHOSCS,ZSNOCS,HCPSCS, & ! Formerly SNOALBW
-                  TSNOCS,FCS,SPCCS,RALB,WSNOCS,RHOMAX, &
-                  ISAND,ILG,IG,IL1,IL2,JL)
+                   TSNOCS,FCS,SPCCS,RALB,WSNOCS,RHOMAX, &
+                   ISAND,ILG,IG,IL1,IL2,JL)
   end if
   !
   !     * CALCULATIONS FOR SNOW-COVERED GROUND.
   !
   if (NLANDGS > 0) then
     call soilWaterPhaseChg(TBARGS,THLQGS,THICGS,HCPGS,TBRWGS,HMFG,HTC, & ! Formerly TWCALC
-                 FGS,ZERO,THPOR,THLMIN,HCPS,DELZW,DELZZ,ISAND, &
-                 IG,ILG,IL1,IL2,JL)
+                           FGS,ZERO,THPOR,THLMIN,HCPS,DELZW,DELZZ,ISAND, &
+                           IG,ILG,IL1,IL2,JL)
     call snowSublimation(RHOSGS,ZSNOGS,HCPSGS,TSNOGS,EVAPGS,QFN,QFG, & ! Formerly SNOVAP
-                 HTCS,WLSTGS,TRNFGS,RUNFGS,TOVRFL,OVRFLW, &
-                 FGS,RPCGS,SPCGS,RHOSNI,WSNOGS,ILG,IL1,IL2,JL)
+                         HTCS,WLSTGS,TRNFGS,RUNFGS,TOVRFL,OVRFLW, &
+                         FGS,RPCGS,SPCGS,RHOSNI,WSNOGS,ILG,IL1,IL2,JL)
     call pondedWaterFreeze(ZPNDGS,TPNDGS,ZSNOGS,TSNOGS,ALBSGS, & ! Formerly TFREEZ
-                 RHOSGS,HCPSGS,GZROGS,HMFG,HTCS,HTC, &
-                 WTRS,WTRG,FGS,ZERO,WSNOGS,TA,TBARGS, &
-                 ISAND,IG,ILG,IL1,IL2,JL)
+                           RHOSGS,HCPSGS,GZROGS,HMFG,HTCS,HTC, &
+                           WTRS,WTRG,FGS,ZERO,WSNOGS,TA,TBARGS, &
+                           ISAND,IG,ILG,IL1,IL2,JL)
     call snowMelt(ZSNOGS,TSNOGS,QMELTG,RPCGS,TRPCGS, & ! Formerly TMELT
-                GZROGS,RALB,HMFN,HTCS,HTC,FGS,HCPSGS, &
-                RHOSGS,WSNOGS,ISAND,IG,ILG,IL1,IL2,JL)
+                  GZROGS,RALB,HMFN,HTCS,HTC,FGS,HCPSGS, &
+                  RHOSGS,WSNOGS,ISAND,IG,ILG,IL1,IL2,JL)
     call snowAddNew(ALBSGS,TSNOGS,RHOSGS,ZSNOGS, & ! Formerly SNOADD
-                 HCPSGS,HTCS,FGS,SPCGS,TSPCGS,RHOSNI,WSNOGS, &
-                 ILG,IL1,IL2,JL)
+                    HCPSGS,HTCS,FGS,SPCGS,TSPCGS,RHOSNI,WSNOGS, &
+                    ILG,IL1,IL2,JL)
     call snowInfiltrateRipen(RPCGS,TRPCGS,ZSNOGS,TSNOGS,RHOSGS,HCPSGS, & ! Formerly SNINFL
-                 WSNOGS,HTCS,HMFN,PCPG,ROFN,FGS,ILG,IL1,IL2,JL)
+                             WSNOGS,HTCS,HMFN,PCPG,ROFN,FGS,ILG,IL1,IL2,JL)
     if (NLANDI /= 0) then
       call iceSheetBalance(TBARGS,TPNDGS,ZPNDGS,TSNOGS,RHOSGS,ZSNOGS, & ! Formerly ICEBAL
-                     HCPSGS,ALBSGS,HMFG,HTCS,HTC,WTRS,WTRG,GFLXGS, &
-                     RUNFGS,TRNFGS,OVRFLW,TOVRFL,ZPLMGS,GGEO, &
-                     FGS,EVAPGS,RPCGS,TRPCGS,GZROGS,G12GS,G23GS, &
-                     HCPGS,QMELTG,WSNOGS,ZMAT,TMOVE,WMOVE,ZRMDR, &
-                     TADD,ZMOVE,TBOT,DELZ,ISAND,ICONT, &
-                     IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
+                           HCPSGS,ALBSGS,HMFG,HTCS,HTC,WTRS,WTRG,GFLXGS, &
+                           RUNFGS,TRNFGS,OVRFLW,TOVRFL,ZPLMGS,GGEO, &
+                           FGS,EVAPGS,RPCGS,TRPCGS,GZROGS,G12GS,G23GS, &
+                           HCPGS,QMELTG,WSNOGS,ZMAT,TMOVE,WMOVE,ZRMDR, &
+                           TADD,ZMOVE,TBOT,DELZ,ISAND,ICONT, &
+                           IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     end if
     call waterFlowInfiltrate(2,THLQGS,THICGS,TBRWGS,BASFLW,TBASFL,RUNFGS, & ! Formerly GRINFL
-    TRNFGS,ZFAV,LZFAV,THLINV,QFG,WLSTGS, &
-    FGS,EVAPGS,RPCGS,TRPCGS,TPNDGS,ZPNDGS, &
-    DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
-    DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
-    THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
-    THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
-    ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
-    DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
-    THPOR,THLRET,THLMIN,BI,PSISAT,GRKSGS, &
-    THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
-    IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
-    NEND,ISIMP,IGDR, &
-    IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                             TRNFGS,ZFAV,LZFAV,THLINV,QFG,WLSTGS, &
+                             FGS,EVAPGS,RPCGS,TRPCGS,TPNDGS,ZPNDGS, &
+                             DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
+                             DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
+                             THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
+                             THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
+                             ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
+                             DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
+                             THPOR,THLRET,THLMIN,BI,PSISAT,GRKSGS, &
+                             THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
+                             IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
+                             NEND,ISIMP,IGDR, &
+                             IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call waterFlowNonInfiltrate(2,THLQGS,THICGS,TBRWGS,FDUMMY,TDUMMY, & ! Formerly GRDRAN
-    BASFLW,TBASFL,RUNFGS,TRNFGS, &
-    QFG,WLSTGS,FGS,EVAPGS,RPCGS,ZPNDGS, &
-    DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-    BI,PSISAT,GRKSGS,THFC,DELZW,XDRAIN,ISAND, &
-    IZERO,IGRN,IGRD,IGDR, &
-    IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                                BASFLW,TBASFL,RUNFGS,TRNFGS, &
+                                QFG,WLSTGS,FGS,EVAPGS,RPCGS,ZPNDGS, &
+                                DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                                BI,PSISAT,GRKSGS,THFC,DELZW,XDRAIN,ISAND, &
+                                IZERO,IGRN,IGRD,IGDR, &
+                                IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call TMCALC(TBARGS,THLQGS,THICGS,HCPGS,TPNDGS,ZPNDGS, &
-    TSNOGS,ZSNOGS,ALBSGS,RHOSGS,HCPSGS,TBASGS, &
-    OVRFLW,TOVRFL,RUNFGS,TRNFGS,HMFG,HTC,HTCS, &
-    WTRS,WTRG,FGS,TBRWGS,GZROGS,G12GS, &
-    G23GS,GGEO,TA,WSNOGS,TCTOPG,TCBOTG,GFLXGS, &
-    ZPLMGS,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
-    ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
+                TSNOGS,ZSNOGS,ALBSGS,RHOSGS,HCPSGS,TBASGS, &
+                OVRFLW,TOVRFL,RUNFGS,TRNFGS,HMFG,HTC,HTCS, &
+                WTRS,WTRG,FGS,TBRWGS,GZROGS,G12GS, &
+                G23GS,GGEO,TA,WSNOGS,TCTOPG,TCBOTG,GFLXGS, &
+                ZPLMGS,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
+                ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
     call checkWaterBudget(2,PCPR,EVPIGS,RUNFGS,WLSTGS,RAICNS,SNOCNS, &
-    RACS,SNCS,ZPNDGS,ZPOND,THLQGS,THICGS, &
-    THLIQG,THICEG,ZSNOGS,RHOSGS,XSNOGS,SNO, &
-    WSNOGS,WSNOW,FCS,FGS,FGS,BAL,THPOR,THLMIN, &
-    DELZW,ISAND,IG,ILG,IL1,IL2,JL,N   )
+                          RACS,SNCS,ZPNDGS,ZPOND,THLQGS,THICGS, &
+                          THLIQG,THICEG,ZSNOGS,RHOSGS,XSNOGS,SNO, &
+                          WSNOGS,WSNOW,FCS,FGS,FGS,BAL,THPOR,THLMIN, &
+                          DELZW,ISAND,IG,ILG,IL1,IL2,JL,N   )
     call snowAging(ALBSGS,RHOSGS,ZSNOGS,HCPSGS, & ! Formerly SNOALBW
-    TSNOGS,FGS,SPCGS,RALB,WSNOGS,RHOMAX, &
-    ISAND,ILG,IG,IL1,IL2,JL)
+                   TSNOGS,FGS,SPCGS,RALB,WSNOGS,RHOMAX, &
+                   ISAND,ILG,IG,IL1,IL2,JL)
   end if
   !
   !     * CALCULATIONS FOR CANOPY OVER BARE GROUND.
   !
   if (NLANDC > 0) then
     call canopyWaterUpdate(EVAPC,SUBLC,RAICAN,SNOCAN,TCANO,THLQCO, & ! Formerly CANVAP
-                 TBARC,ZSNOWC,WLOSTC,CHCAP,QFCF,QFCL,QFN,QFC, &
-                 HTCC,HTCS,HTC,FC,CMASSC,TSNOWC,HCPSC,RHOSC, &
-                 FROOT,THPOR,THLMIN,DELZW,EVLOST,RLOST,IROOT, &
-                 IG,ILG,IL1,IL2,JL,N  )
+                           TBARC,ZSNOWC,WLOSTC,CHCAP,QFCF,QFCL,QFN,QFC, &
+                           HTCC,HTCS,HTC,FC,CMASSC,TSNOWC,HCPSC,RHOSC, &
+                           FROOT,THPOR,THLMIN,DELZW,EVLOST,RLOST,IROOT, &
+                           IG,ILG,IL1,IL2,JL,N)
     call canopyInterception(1,RPCC,TRPCC,SPCC,TSPCC,RAICAN,SNOCAN, & ! Formerly CANADD
-                 TCANO,CHCAP,HTCC,ROFC,ROVG,PCPN,PCPG, &
-                 FC,FSVF,CWLCAP,CWFCAP,CMASSC,RHOSNI, &
-                 TSFSAV(1,3),RADD,SADD,ILG,IL1,IL2,JL)
+                            TCANO,CHCAP,HTCC,ROFC,ROVG,PCPN,PCPG, &
+                            FC,FSVF,CWLCAP,CWFCAP,CMASSC,RHOSNI, &
+                            TSFSAV(1,3),RADD,SADD,ILG,IL1,IL2,JL)
     call canopyPhaseChange(TCANO,RAICAN,SNOCAN,RDUMMY,RDUMMY,CHCAP, & ! Formerly CWCALC
-                 HMFC,HTCC,FC,CMASSC,ILG,IL1,IL2,JL)
+                           HMFC,HTCC,FC,CMASSC,ILG,IL1,IL2,JL)
     call waterUnderCanopy(1,RPCC,TRPCC,SPCC,TSPCC,RHOSNI,EVAPCG, & ! Formerly SUBCAN
-                 QFN,QFG,PCPN,PCPG,FC,ILG,IL1,IL2,JL)
+                          QFN,QFG,PCPN,PCPG,FC,ILG,IL1,IL2,JL)
     call soilWaterPhaseChg(TBARC,THLQCO,THICCO,HCPCO,TBARWC,HMFG,HTC, & ! Formerly TWCALC
-                 FC,EVAPCG,THPOR,THLMIN,HCPS,DELZW,DELZZ, &
-                 ISAND,IG,ILG,IL1,IL2,JL)
+                           FC,EVAPCG,THPOR,THLMIN,HCPS,DELZW,DELZZ, &
+                           ISAND,IG,ILG,IL1,IL2,JL)
     call snowSublimation(RHOSC,ZSNOWC,HCPSC,TSNOWC,EVAPCG,QFN,QFG, & ! Formerly SNOVAP
-                 HTCS,WLOSTC,TRUNFC,RUNFC,TOVRFL,OVRFLW, &
-                 FC,RPCC,SPCC,RHOSNI,ZERO,ILG,IL1,IL2,JL)
+                         HTCS,WLOSTC,TRUNFC,RUNFC,TOVRFL,OVRFLW, &
+                         FC,RPCC,SPCC,RHOSNI,ZERO,ILG,IL1,IL2,JL)
     call pondedWaterFreeze(ZPONDC,TPONDC,ZSNOWC,TSNOWC,ALBSC, & ! Formerly TFREEZ
-                 RHOSC,HCPSC,GZEROC,HMFG,HTCS,HTC, &
-                 WTRS,WTRG,FC,QFREZC,ZERO,TA,TBARC, &
-                 ISAND,IG,ILG,IL1,IL2,JL)
+                           RHOSC,HCPSC,GZEROC,HMFG,HTCS,HTC, &
+                           WTRS,WTRG,FC,QFREZC,ZERO,TA,TBARC, &
+                           ISAND,IG,ILG,IL1,IL2,JL)
     call snowAddNew(ALBSC,TSNOWC,RHOSC,ZSNOWC, & ! Formerly SNOADD
-                 HCPSC,HTCS,FC,SPCC,TSPCC,RHOSNI,ZERO, &
-                 ILG,IL1,IL2,JL)
+                    HCPSC,HTCS,FC,SPCC,TSPCC,RHOSNI,ZERO, &
+                    ILG,IL1,IL2,JL)
     call waterFlowInfiltrate(3,THLQCO,THICCO,TBARWC,BASFLW,TBASFL,RUNFC, & ! Formerly GRINFL
-                 TRUNFC,ZFAV,LZFAV,THLINV,QFG,WLOSTC, &
-                 FC,EVAPCG,RPCC,TRPCC,TPONDC,ZPONDC, &
-                 DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
-                 DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
-                 THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
-                 THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
-                 ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
-                 DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
-                 THPOR,THLRET,THLMIN,BI,PSISAT,GRKSC, &
-                 THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
-                 IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
-                 NEND,ISIMP,IGDR, &
-                 IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                             TRUNFC,ZFAV,LZFAV,THLINV,QFG,WLOSTC, &
+                             FC,EVAPCG,RPCC,TRPCC,TPONDC,ZPONDC, &
+                             DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
+                             DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
+                             THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
+                             THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
+                             ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
+                             DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
+                             THPOR,THLRET,THLMIN,BI,PSISAT,GRKSC, &
+                             THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
+                             IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
+                             NEND,ISIMP,IGDR, &
+                             IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call waterFlowNonInfiltrate(3,THLQCO,THICCO,TBARWC,FDUMMY,TDUMMY, & ! Formerly GRDRAN
-                 BASFLW,TBASFL,RUNFC,TRUNFC, &
-                 QFG,WLOSTC,FC,EVAPCG,RPCC,ZPONDC, &
-                 DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-                 BI,PSISAT,GRKSC,THFC,DELZW,XDRAIN,ISAND, &
-                 IZERO,IGRN,IGRD,IGDR, &
-                 IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                                BASFLW,TBASFL,RUNFC,TRUNFC, &
+                                QFG,WLOSTC,FC,EVAPCG,RPCC,ZPONDC, &
+                                DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                                BI,PSISAT,GRKSC,THFC,DELZW,XDRAIN,ISAND, &
+                                IZERO,IGRN,IGRD,IGDR, &
+                                IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call TMCALC(TBARC,THLQCO,THICCO,HCPCO,TPONDC,ZPONDC, &
-                 TSNOWC,ZSNOWC,ALBSC,RHOSC,HCPSC,TBASC, &
-                 OVRFLW,TOVRFL,RUNFC,TRUNFC,HMFG,HTC,HTCS, &
-                 WTRS,WTRG,FC,TBARWC,GZEROC,G12C, &
-                 G23C,GGEO,TA,ZERO,TCTOPC,TCBOTC,GFLXC, &
-                 ZPLIMC,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
-                 ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
+                TSNOWC,ZSNOWC,ALBSC,RHOSC,HCPSC,TBASC, &
+                OVRFLW,TOVRFL,RUNFC,TRUNFC,HMFG,HTC,HTCS, &
+                WTRS,WTRG,FC,TBARWC,GZEROC,G12C, &
+                G23C,GGEO,TA,ZERO,TCTOPC,TCBOTC,GFLXC, &
+                ZPLIMC,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
+                ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
     call checkWaterBudget(3,PCPR,EVPIC,RUNFC,WLOSTC,RAICAN,SNOCAN, & ! Formerly CHKWAT
-                 RAC,SNC,ZPONDC,ZPOND,THLQCO,THICCO, &
-                 THLIQC,THICEC,ZSNOWC,RHOSC,XSNOWC,SNO, &
-                 ZERO,ZERO,FCS,FGS,FC,BAL,THPOR,THLMIN, &
-                 DELZW,ISAND,IG,ILG,IL1,IL2,JL,N    )
+                          RAC,SNC,ZPONDC,ZPOND,THLQCO,THICCO, &
+                          THLIQC,THICEC,ZSNOWC,RHOSC,XSNOWC,SNO, &
+                          ZERO,ZERO,FCS,FGS,FC,BAL,THPOR,THLMIN, &
+                          DELZW,ISAND,IG,ILG,IL1,IL2,JL,N)
     !
   end if
   !
@@ -687,60 +687,60 @@ subroutine waterBudgetDriver(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN, &
   !
   if (NLANDG > 0) then
     call soilWaterPhaseChg(TBARG,THLQGO,THICGO,HCPGO,TBARWG,HMFG,HTC, & ! Formerly TWCALC
-                 FG,EVAPG,THPOR,THLMIN,HCPS,DELZW,DELZZ, &
-                 ISAND,IG,ILG,IL1,IL2,JL)
+                           FG,EVAPG,THPOR,THLMIN,HCPS,DELZW,DELZZ, &
+                           ISAND,IG,ILG,IL1,IL2,JL)
     call snowSublimation(RHOSG,ZSNOWG,HCPSG,TSNOWG,EVAPG,QFN,QFG, & ! Formerly SNOVAP
-                 HTCS,WLOSTG,TRUNFG,RUNFG,TOVRFL,OVRFLW, &
-                 FG,RPCG,SPCG,RHOSNI,ZERO,ILG,IL1,IL2,JL)
+                         HTCS,WLOSTG,TRUNFG,RUNFG,TOVRFL,OVRFLW, &
+                         FG,RPCG,SPCG,RHOSNI,ZERO,ILG,IL1,IL2,JL)
     call pondedWaterFreeze(ZPONDG,TPONDG,ZSNOWG,TSNOWG,ALBSG, & ! Formerly TFREEZ
-                 RHOSG,HCPSG,GZEROG,HMFG,HTCS,HTC, &
-                 WTRS,WTRG,FG,QFREZG,ZERO,TA,TBARG, &
-                 ISAND,IG,ILG,IL1,IL2,JL)
+                           RHOSG,HCPSG,GZEROG,HMFG,HTCS,HTC, &
+                           WTRS,WTRG,FG,QFREZG,ZERO,TA,TBARG, &
+                           ISAND,IG,ILG,IL1,IL2,JL)
     call snowAddNew(ALBSG,TSNOWG,RHOSG,ZSNOWG, & ! Formerly SNOADD
-                 HCPSG,HTCS,FG,SPCG,TSPCG,RHOSNI,ZERO, &
-                 ILG,IL1,IL2,JL)
+                    HCPSG,HTCS,FG,SPCG,TSPCG,RHOSNI,ZERO, &
+                    ILG,IL1,IL2,JL)
     if (NLANDI /= 0) then
       call iceSheetBalance(TBARG,TPONDG,ZPONDG,TSNOWG,RHOSG,ZSNOWG, & ! Formerly ICEBAL
-                     HCPSG,ALBSG,HMFG,HTCS,HTC,WTRS,WTRG,GFLXG, &
-                     RUNFG,TRUNFG,OVRFLW,TOVRFL,ZPLIMG,GGEO, &
-                     FG,EVAPG,RPCG,TRPCG,GZEROG,G12G,G23G, &
-                     HCPGO,QFREZG,ZERO,ZMAT,TMOVE,WMOVE,ZRMDR, &
-                     TADD,ZMOVE,TBOT,DELZ,ISAND,ICONT, &
-                     IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
+                           HCPSG,ALBSG,HMFG,HTCS,HTC,WTRS,WTRG,GFLXG, &
+                           RUNFG,TRUNFG,OVRFLW,TOVRFL,ZPLIMG,GGEO, &
+                           FG,EVAPG,RPCG,TRPCG,GZEROG,G12G,G23G, &
+                           HCPGO,QFREZG,ZERO,ZMAT,TMOVE,WMOVE,ZRMDR, &
+                           TADD,ZMOVE,TBOT,DELZ,ISAND,ICONT, &
+                           IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
     end if
     call waterFlowInfiltrate(4,THLQGO,THICGO,TBARWG,BASFLW,TBASFL,RUNFG, & ! Formerly GRINFL
-    TRUNFG,ZFAV,LZFAV,THLINV,QFG,WLOSTG, &
-    FG,EVAPG,RPCG,TRPCG,TPONDG,ZPONDG, &
-    DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
-    DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
-    THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
-    THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
-    ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
-    DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
-    THPOR,THLRET,THLMIN,BI,PSISAT,GRKSG, &
-    THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
-    IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
-    NEND,ISIMP,IGDR, &
-    IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                             TRUNFG,ZFAV,LZFAV,THLINV,QFG,WLOSTG, &
+                             FG,EVAPG,RPCG,TRPCG,TPONDG,ZPONDG, &
+                             DT,ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
+                             DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
+                             THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
+                             THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
+                             ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
+                             DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
+                             THPOR,THLRET,THLMIN,BI,PSISAT,GRKSG, &
+                             THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
+                             IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
+                             NEND,ISIMP,IGDR, &
+                             IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call waterFlowNonInfiltrate(4,THLQGO,THICGO,TBARWG,FDUMMY,TDUMMY, & ! Formerly GRDRAN
-    BASFLW,TBASFL,RUNFG,TRUNFG, &
-    QFG,WLOSTG,FG,EVAPG,RPCG,ZPONDG, &
-    DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-    BI,PSISAT,GRKSG,THFC,DELZW,XDRAIN,ISAND, &
-    IZERO,IGRN,IGRD,IGDR, &
-    IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                                BASFLW,TBASFL,RUNFG,TRUNFG, &
+                                QFG,WLOSTG,FG,EVAPG,RPCG,ZPONDG, &
+                                DT,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                                BI,PSISAT,GRKSG,THFC,DELZW,XDRAIN,ISAND, &
+                                IZERO,IGRN,IGRD,IGDR, &
+                                IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
     call TMCALC(TBARG,THLQGO,THICGO,HCPGO,TPONDG,ZPONDG, &
-    TSNOWG,ZSNOWG,ALBSG,RHOSG,HCPSG,TBASG, &
-    OVRFLW,TOVRFL,RUNFG,TRUNFG,HMFG,HTC,HTCS, &
-    WTRS,WTRG,FG,TBARWG,GZEROG,G12G, &
-    G23G,GGEO,TA,ZERO,TCTOPG,TCBOTG,GFLXG, &
-    ZPLIMG,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
-    ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
+                TSNOWG,ZSNOWG,ALBSG,RHOSG,HCPSG,TBASG, &
+                OVRFLW,TOVRFL,RUNFG,TRUNFG,HMFG,HTC,HTCS, &
+                WTRS,WTRG,FG,TBARWG,GZEROG,G12G, &
+                G23G,GGEO,TA,ZERO,TCTOPG,TCBOTG,GFLXG, &
+                ZPLIMG,THPOR,THLMIN,HCPS,DELZW,DELZZ,DELZ, &
+                ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
     call checkWaterBudget(4,PCPR,EVPIG,RUNFG,WLOSTG,RAICAN,SNOCAN, & ! Formerly CHKWAT
-    RAC,SNC,ZPONDG,ZPOND,THLQGO,THICGO, &
-    THLIQG,THICEG,ZSNOWG,RHOSG,XSNOWG,SNO, &
-    ZERO,ZERO,FCS,FGS,FG,BAL,THPOR,THLMIN, &
-    DELZW,ISAND,IG,ILG,IL1,IL2,JL,N   )
+                          RAC,SNC,ZPONDG,ZPOND,THLQGO,THICGO, &
+                          THLIQG,THICEG,ZSNOWG,RHOSG,XSNOWG,SNO, &
+                          ZERO,ZERO,FCS,FGS,FG,BAL,THPOR,THLMIN, &
+                          DELZW,ISAND,IG,ILG,IL1,IL2,JL,N)
     !
   end if
   !>

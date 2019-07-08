@@ -235,7 +235,7 @@
 !!
 !! @author V. Arora, J. Melton, M. Lazare
 !
-subroutine photosynCanopyConduct(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, &
+subroutine photosynCanopyConduct(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & ! Formerly PHTSYN3
                       CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND, &
                          TA,   RMAT,   COSZS, XDIFFUS,  ILG, &
                         IL1,    IL2,   IG,     ICC,   ISNOW, SLAI, &

@@ -3,7 +3,7 @@ import sys
 import os
 import shutil
 
-# USE: regtest.py $RUNPATH
+# USE: regtest.py $RUNPATH test_name
 
 def main():
 
@@ -43,7 +43,7 @@ def main():
     parsedLines = sorted(parsedLines, key=lambda x : x[2])
     parsedLines = sorted(parsedLines, key=lambda x : x[1])
     parsedLines = sorted(parsedLines, key=lambda x : x[0])
-    
+
     # turn the integer values in the line back into string values
     completeLines = []
     for line in parsedLines:
@@ -58,10 +58,6 @@ def main():
     # now write the parsed, sorted lines into the new .csv file
     for line in completeLines:
       f.write(line)
-
-  # delete the original directories of the csv files (for cleanliness)
-  #for netdir in netdirs:
-  #  shutil.rmtree(netdir)
 
 
 if __name__ == '__main__':

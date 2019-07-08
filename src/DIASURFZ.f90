@@ -6,12 +6,12 @@
 !
 subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
                    H,UE,FTEMP,FVAP,ZU,ZT,LAT,F,IL1,IL2,JL)
-  
+
   use classic_params, only : AS,ASX,CI,BETA,FACTN,HMIN,ANGMAX, &
                             GRAV,SPHAIR,VKC
-  
+
   implicit none
-  
+
   integer :: NI,JL
   real :: ZT(NI),ZU(NI)
   real :: UZ(NI),VZ(NI),TZ(NI),QZ(NI),ZA(NI),U(NI),V(NI)
@@ -77,18 +77,18 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
   ! ZT       heights for computation of temperature and moisture
   ! LAT      LATITUDE
   ! F        Fraction of surface type being studied
-  
+
   real :: ANG,ANGI,VITS,LZZ0,LZZ0T
   real :: CT,DANG,CM
   real :: XX,XX0,YY,YY0,fh,fm,hi
   real :: RAC3
   integer :: J,IL1,IL2
-  
+
   RAC3 = SQRT(3.)
-  
+
   do J = IL1,IL2
     if (F(J) > 0.0) then
-      
+
       LZZ0T = LOG((ZT(J) + Z0(J)) / Z0T(J))
       LZZ0 = LOG(ZU(J) / Z0(J) + 1.0)
       if (ILMO(J) <= 0.) then
@@ -119,11 +119,11 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
       ! CM=KARMAN/FM
       CT = VKC / FH
       CM = VKC / FM
-      
+
       TZ(J) = TZ(J) + F(J) * (TG(J) - FTEMP(J) / (CT * UE(J)) - GRAV / SPHAIR * ZT(J))
       QZ(J) = QZ(J) + F(J) * (QG(J) - FVAP(J) / (CT * UE(J)))
       VITS = UE(J) / CM
-      
+
       ! CALCULATE WIND DIRECTION CHANGE FROM TOP OF SURFACE LAYER
       DANG = (ZA(J) - ZU(J)) * HI * ANGMAX * SIN(LAT(J))
       ANGI = ATAN2(V(J),SIGN(ABS(U(J)) + 1.e-05,U(J)))
@@ -132,19 +132,19 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
       else
         ANG = ANGI
       end if
-      
+
       UZ(J) = UZ(J) + F(J) * VITS * COS(ANG)
       VZ(J) = VZ(J) + F(J) * VITS * SIN(ANG)
-      
+
     end if
   end do
-  
+
   return
 contains
-  
+
   !   The following code is taken from the RPN/CMC physics library file
   !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk,v
-  
+
   !   Internal function FMI
   !   Stability function for momentum in the unstable regime (ilmo<0)
   !   Reference: Delage Y. and Girard C. BLM 58 (19-31) Eq. 19

@@ -13,32 +13,32 @@
 !! 10. ctem_tile_yr (ctem_tileavg_annual) - CTEM's variables per tile annual values
 
 module ctem_statevars
-  
+
   ! J. Melton Apr 2015
-  
+
   use classic_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp2,iccp1, &
                     monthend, mmday,modelpft, l2max,deltat, abszero, monthdays,seed, crop, NBS
-  
+
   implicit none
-  
+
   public :: alloc_ctem_vars ! Allocate the biogeochemistry (CTEM) variables in preparation for a simulation
   public :: initrowvars     ! Initializes 'row' variables
   public :: resetmonthend   ! Resets monthly variables at month end in preparation for next month
   public :: resetyearend    ! Resets annual variables in preparation for next year
   public :: resetMosaicAccum ! Resets physics accumulator variables (used as input to CTEM) after CTEM has been called
-  
-  
+
+
   !=================================================================================
   !> Switches for running the model, read from the joboptions file
   type ctem_switches
-    
+
     logical :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
     !! regions referenced by the indexes, not coordinates, when running a sub-region
     logical :: ctem_on          !< True if this run includes the biogeochemistry parameterizations (CTEM)
     integer :: metLoop          !< no. of times the meteorological data is to be looped over. this
     !< option is useful to equilibrate CTEM's C pools
     logical :: leap             !< set to true if the meteorological file includes leap years
-    
+
     integer :: spinfast         !< set this to a number >1 (up to ~10) to spin up soil carbon pool faster, set to 1
     !< for final production simulations
     integer :: useTracer        !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
@@ -50,26 +50,26 @@ module ctem_statevars
     !! and fixedYearCO2 switches to determine how it is read in.
     integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
     integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
-    
+
     logical :: transientCO2     !< use \f$CO_2\f$ time series, if false, fixedYearCO2 is used
     character(350) :: CO2File   !< Location of the netcdf file containing atmospheric \f$CO_2\f$ values
     integer :: fixedYearCO2     !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
-    
+
     logical :: transientCH4     !< use \f$CH_4\f$ time series, if false, fixedYearCH4 is used
     character(350) :: CH4File   !< Location of the netcdf file containing atmospheric \f$CH_4\f$ values
     integer :: fixedYearCH4     !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
-    
+
     logical :: dofire           !< boolean, if true allow fire disturbance, if false no fire occurs.
     logical :: transientPOPD    !< if set true use time series of population density data to calculate
     !< fire extinguishing probability and probability of fire due to human causes, false use
     !< value from single year (fixedYearPOPD)
     character(350) :: POPDFile  !< Location of the netcdf file containing population density values
     integer :: fixedYearPOPD    !< set the year to use for population density values if transientPOPD is false. (\f$people/km^2\f$)
-    
+
     logical :: transientLGHT    !< use lightning strike time series, otherwise use fixedYearLGHT
     character(350) :: LGHTFile  !< Location of the netcdf file containing lightning strike values
     integer :: fixedYearLGHT    !< set the year to use for lightning strikes if transientLGHT is false.
-    
+
     logical :: PFTCompetition   !< logical boolean telling if competition between pfts is on or not
     logical :: start_bare       !< set this to true if competition is on, and if you wish to start from bare ground.
     !< if this is set to false, the init file info will be used to set up the run.
@@ -77,17 +77,17 @@ module ctem_statevars
     logical :: inibioclim       !< switch telling if bioclimatic parameters are being initialized
     !< from scratch (false) or being initialized from some spun up
     !< values(true).
-    
+
     logical :: lnduseon         !< If true then the land cover is read in from LUCFile and changes annually
     character(350) :: LUCFile   !< Location of the netcdf file containing land use change information
     integer :: fixedYearLUC     !< Set the year to use for land cover if lnduseon is false. If set to -9999,
     !< we use the PFT distribution found in the initialization file. Any other year
     !< we search for that year in the LUCFile
-    
+
     logical :: transientOBSWETF    !< use observed wetland fraction time series, otherwise use fixedYearOBSWETF
     character(350) :: OBSWETFFile  !< Location of the netcdf file containing observed wetland fraction
     integer :: fixedYearOBSWETF    !< set the year to use for observed wetland fraction if transientOBSWETF is false.
-    
+
     character(350) :: metFileFss        !< location of the incoming shortwave radiation meteorology file
     character(350) :: metFileFdl        !< location of the incoming longwave radiation meteorology file
     character(350) :: metFilePre        !< location of the precipitation meteorology file
@@ -102,7 +102,7 @@ module ctem_statevars
 
     character(350) :: output_directory  !< Directory where the output netcdfs will be placed
     character(350) :: xmlFile           !< location of the xml file that outlines the possible netcdf output files
-    
+
     logical :: doperpftoutput           !< Switch for making extra output files that are at the per PFT level
     logical :: dopertileoutput          !< Switch for making extra output files that are at the per tile level
     logical :: doChecksums              !< Switch for doing checksum calculations for the run
@@ -123,19 +123,19 @@ module ctem_statevars
     integer :: jhhendd                  !< day of the year to stop writing the half-hourly output
     integer :: jhhsty                   !< simulation year (iyear) to start writing the half-hourly output
     integer :: jhhendy                  !< simulation year (iyear) to stop writing the half-hourly output
-    
+
     ! Physics switches:
-    
+
     integer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
     !< because the atmospheric model considers these to be part
     !< of the "terrain".
     !< if idisp=1, vegetation displacement heights are calculated.
-    
+
     integer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
     !< to lie at the ground surface.
     !< if izref=2, the bottom of the atmospheric model is taken
     !< to lie at the local roughness height.
-    
+
     integer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
     !< and the original gcm set of screen-level diagnostic calculations
     !< is done.
@@ -143,19 +143,19 @@ module ctem_statevars
     !< and sldiag is called for screen-level diagnostic calculations.
     !< if islfd=2, flxsurfz is called for surface stability corrections
     !< and diasurf is called for screen-level diagnostic calculations.
-    
+
     integer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
     !< if ipcp=2, a linear partitioning of precipitation betweeen
     !< rainfall and snowfall is done between 0 c and 2 c.
     !< if ipcp=3, rainfall and snowfall are partitioned according to
     !< a polynomial curve between 0 c and 6 c.
-    
+
     integer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
     !< the ground surface slope is not modelled.
     !< if iwf=n (0<n<4), the watflood calculations of overland flow
     !< and interflow are performed; interflow is drawn from the top
     !< n soil layers.
-    
+
     integer :: ITC !< itc, itcg and itg are switches to choose the iteration scheme to
     !< be used in calculating the canopy or ground surface temperature
     !< respectively.  if the switch is set to 1, a bisection method is
@@ -168,7 +168,7 @@ module ctem_statevars
     !< be used in calculating the canopy or ground surface temperature
     !< respectively.  if the switch is set to 1, a bisection method is
     !< used; if to 2, the newton-raphson method is used.
-    
+
     integer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
     !< plant area index, vegetation height, canopy albedo, snow albedo
     !< and soil albedo respectively calculated by class are used.
@@ -201,15 +201,15 @@ module ctem_statevars
     !< a user-supplied input value.
     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
     !< if it is set to 1, the new four-band routines are used.
-    
+
   end type ctem_switches
-  
+
   type (ctem_switches), save, target :: c_switch
-  
+
   !=================================================================================
   !> CTEM's 'rot' vars
   type veg_rot
-    
+
     logical, allocatable, dimension(:,:,:) :: pftexist  !< logical array indicating pfts exist (t) or not (f)
     integer, allocatable, dimension(:,:,:) :: lfstatus  !< leaf phenology status
     integer, allocatable, dimension(:,:,:) :: pandays   !< days with positive net photosynthesis (an) for use in
@@ -289,8 +289,8 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: nfcancmx     !< next year's fractional coverages of pfts
     real, allocatable, dimension(:,:,:) :: anveg        !< net photosynthesis rate for each pft
     real, allocatable, dimension(:,:,:) :: rmlveg       !< leaf maintenance resp. rate for each pft
-    
-    
+
+
     ! allocated with nlat,nmos:
     real, allocatable, dimension(:,:) :: gavglai               !< grid averaged green leaf area index
     real, allocatable, dimension(:,:) :: co2conc               !< ATMOS. CO2 CONC. IN PPM
@@ -349,7 +349,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: annsrpls              !< annual water surplus (mm)
     real, allocatable, dimension(:,:) :: annpcp                !< annual precipitation (mm)
     real, allocatable, dimension(:,:) :: dry_season_length     !< length of dry season (months)
-    
+
     integer, allocatable, dimension(:,:) :: ipeatland !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     real, allocatable, dimension(:,:) :: litrmsmoss
     real, allocatable, dimension(:,:) :: Cmossmas
@@ -361,7 +361,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: armoss
     real, allocatable, dimension(:,:) :: peatdep
     real, allocatable, dimension(:,:) :: pdd
-    
+
     ! allocated with nlat,nmos,ican:
     real, allocatable, dimension(:,:,:) :: zolnc            !< lumped log of roughness length for class' 4 pfts
     real, allocatable, dimension(:,:,:) :: ailc             !< lumped lai for class' 4 pfts
@@ -374,18 +374,18 @@ module ctem_statevars
     !< so that it doesn't blow up in its stomatal conductance calculations.
     real, allocatable, dimension(:,:,:) :: alirctm          !<
     real, allocatable, dimension(:,:,:) :: csum             !<
-    
+
     ! allocated with nlat,nmos,ican,ignd:
     real, allocatable, dimension(:,:,:,:) :: rmatc       !< fraction of roots for each of class' 4 pfts in each soil layer
-    
+
     ! allocated with nlat,nmos,icc,ignd:
     real, allocatable, dimension(:,:,:,:) :: rmatctem     !< fraction of roots for each of ctem's 9 pfts in each soil layer
-    
+
     ! allocated with nlat,nmos,iccp1:
     real, allocatable, dimension(:,:,:) :: nepveg      !< net ecosystem productity for each pft
     real, allocatable, dimension(:,:,:) :: nbpveg      !< net biome productity for bare fraction OR net biome productity for each pft
     real, allocatable, dimension(:,:,:) :: hetroresveg !<
-    
+
     ! allocated with nlat,nmos,iccp2,ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:,:) :: litrmass    !< litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
@@ -399,28 +399,28 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:,:) :: soilcresveg !<
     ! real, allocatable, dimension(:,:,:,:) :: humiftrsveg !<
     ! COMBAK PERLAY
-    
+
     ! allocated with nlat,nmos,{some number}:
     integer, allocatable, dimension(:,:,:) :: colddays          !< cold days counter for tracking days below a certain
     !< temperature threshold for ndl dcd and crop pfts.
     real, allocatable, dimension(:,:,:)  :: slopefrac          !< prescribed fraction of wetlands based on slope
     !< only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    
+
     ! allocated with nlat:
     real, allocatable, dimension(:)    :: dayl_max        !< maximum daylength for that location (hours)
     real, allocatable, dimension(:)    :: dayl            !< daylength for that location (hours)
-    
+
   end type veg_rot
-  
+
   type (veg_rot), save, target :: vrot
-  
+
   !=================================================================================
   !> CTEM's 'gat' vars
   type veg_gat
-    
+
     ! This is the basic data structure that contains the state variables
     ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1,iccp2}
-    
+
     real, allocatable, dimension(:,:) :: gleafmas   !< Green leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bleafmas   !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: stemmass   !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
@@ -430,20 +430,20 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: fcancmx    !< max. fractional coverage of ctem's 9 pfts, but this can be
     !< modified by land-use change, and competition between pfts
     real, allocatable, dimension(:) :: gavglai        !< grid averaged green leaf area index
-    
+
     real, allocatable, dimension(:) :: lightng        !< total lightning frequency, flashes/km2.year
-    
+
     real, allocatable, dimension(:,:) :: zolnc     !< lumped log of roughness length for class' 4 pfts
     real, allocatable, dimension(:,:) :: ailc      !< lumped lai for class' 4 pfts
-    
+
     real, allocatable, dimension(:,:) :: ailcg      !< green lai for ctem's 9 pfts
     real, allocatable, dimension(:,:) :: ailcgs     !< GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
     real, allocatable, dimension(:,:) :: fcancs     !< FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
     real, allocatable, dimension(:,:) :: fcanc      !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
-    
+
     real, allocatable, dimension(:)     :: co2conc    !< ATMOS. CO2 CONC. IN PPM
     real, allocatable, dimension(:)     :: ch4conc    !<
-    
+
     real, allocatable, dimension(:,:) :: co2i1cg    !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
     real, allocatable, dimension(:,:) :: co2i1cs    !< SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i1cg)
     real, allocatable, dimension(:,:) :: co2i2cg    !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
@@ -456,7 +456,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: ailcb      !< brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
     real, allocatable, dimension(:)   :: canres     !<
     real, allocatable, dimension(:,:) :: flhrloss   !< fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$il1
-    
+
     real, allocatable, dimension(:,:) :: grwtheff   !< growth efficiency. change in biomass per year per unit max.
     !< lai (\f$kg c/m^2\f$)/(m2/m2), for use in mortality subroutine
     real, allocatable, dimension(:,:) :: lystmmas   !< stem mass at the end of last year
@@ -475,7 +475,7 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:) :: soilcmas   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:) :: vgbiomas_veg !< vegetation biomass for each pft
-    
+
     real, allocatable, dimension(:,:) :: emit_co2   !< carbon dioxide (kg <species> $m^{-2}$$s^{-1}$)
     real, allocatable, dimension(:,:) :: emit_co    !< carbon monoxide (kg <species> $m^{-2}$$s^{-1}$)
     real, allocatable, dimension(:,:) :: emit_ch4   !< methane (kg <species> $m^{-2}$$s^{-1}$)
@@ -505,12 +505,12 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: ntchrveg  !< fluxes for each pft: Net change in root biomass,
     !! the net change is the difference between allocation and
     !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
-    
+
     real, allocatable, dimension(:)     :: extnprob   !< fire extingusinging probability
     real, allocatable, dimension(:)     :: prbfrhuc   !< probability of fire due to human causes
     real, allocatable, dimension(:)     :: dayl_max   !< maximum daylength for that location (hours)
     real, allocatable, dimension(:)     :: dayl       !< daylength for that location (hours)
-    
+
     real, allocatable, dimension(:,:) :: bmasveg    !< total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: cmasvegc   !< total canopy mass for each of the 4 class pfts. recall that
     !< class requires canopy mass as an input, and this is now provided by ctem. \f$kg/m^2\f$.
@@ -534,7 +534,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: wtstatus   !< soil water status used for calculating allocation fractions
     real, allocatable, dimension(:,:) :: ltstatus   !< light status used for calculating allocation fractions
     real, allocatable, dimension(:)   :: rmr        !< root maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
-    
+
     real, allocatable, dimension(:,:) :: slopefrac      !< prescribed fraction of wetlands based on slope
     !< only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
     real, allocatable, dimension(:)    :: wetfrac_pres  !< Prescribed fraction of wetlands in a grid cell
@@ -543,11 +543,11 @@ module ctem_statevars
     real, allocatable, dimension(:)    :: ch4WetDyn       !< methane flux from wetlands calculated using hetrores
     !< and wetfdyn,(\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)    :: ch4_soills    !< Methane uptake into the soil column (\f$mg CH_4 m^{-2} s^{-1}\f$)
-    
+
     real, allocatable, dimension(:) :: lucemcom   !< land use change (luc) related combustion emission losses,(\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: lucltrin   !< luc related inputs to litter pool, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: lucsocin   !< luc related inputs to soil c pool, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
-    
+
     real, allocatable, dimension(:) :: npp        !< net primary productivity
     real, allocatable, dimension(:) :: nep        !< net ecosystem productivity
     real, allocatable, dimension(:) :: nbp        !< net biome productivity
@@ -563,12 +563,12 @@ module ctem_statevars
     real, allocatable, dimension(:) :: litrfall   !< total litter fall (from leaves, stem, and root) due to
     !< all causes (mortality, turnover, and disturbance)
     real, allocatable, dimension(:) :: humiftrs   !< transfer of humidified litter from litter to soil c pool
-    
+
     real, allocatable, dimension(:,:) :: gppveg     !< gross primary productity for each pft
     real, allocatable, dimension(:,:) :: nepveg     !< net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
     !< of c related to spatial expansion Not used JM Jun 2014
     !< OR net ecosystem productity for each pft
-    
+
     integer, allocatable, dimension(:) :: ipeatland !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     real, allocatable, dimension(:) :: peatdep      !< Depth of peat column (m)
     real, allocatable, dimension(:) :: anmoss     !< net photosynthetic rate of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
@@ -588,7 +588,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: rmlgsmoss  !< moss maintenance respiration in ground snow subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: rmlcmoss   !< moss maintenance respiration in canopy ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: rmlgmoss   !< moss maintenance respiration in bare ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
-    
+
     real, allocatable, dimension(:,:) :: nbpveg     !< net biome productity for bare fraction OR net biome productity for each pft
     real, allocatable, dimension(:,:) :: nppveg     !< npp for individual pfts, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: hetroresveg !<
@@ -607,7 +607,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: rgveg      !< growth resp. rate for each pft
     real, allocatable, dimension(:,:) :: litrfallveg !< litter fall in \f$kg c/m^2\f$ for each pft
     real, allocatable, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    
+
     real, allocatable, dimension(:,:) :: rothrlos !< root death as crops are harvested, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: pfcancmx !< previous year's fractional coverages of pfts
     real, allocatable, dimension(:,:) :: nfcancmx !< next year's fractional coverages of pfts
@@ -622,7 +622,7 @@ module ctem_statevars
     real, allocatable, dimension(:)   :: dstcemls3 !< carbon emission losses due to disturbance (fire at present) from litter pool
     real, allocatable, dimension(:,:) :: anveg    !< net photosynthesis rate for each pft
     real, allocatable, dimension(:,:) :: rmlveg   !< leaf maintenance resp. rate for each pft
-    
+
     real, allocatable, dimension(:) :: twarmm            !< temperature of the warmest month (c)
     real, allocatable, dimension(:) :: tcoldm            !< temperature of the coldest month (c)
     real, allocatable, dimension(:) :: gdd5              !< growing degree days above 5 c
@@ -633,7 +633,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: annsrpls          !< annual water surplus (mm)
     real, allocatable, dimension(:) :: annpcp            !< annual precipitation (mm)
     real, allocatable, dimension(:) :: dry_season_length !< length of dry season (months)
-    
+
     ! These go into CTEM and are used to keep track of the bioclim limits.
     real, allocatable, dimension(:) :: tcurm     !< temperature of the current month (c)
     real, allocatable, dimension(:) :: srpcuryr  !< water surplus for the current year
@@ -646,13 +646,13 @@ module ctem_statevars
     real, allocatable, dimension(:) :: defmncur  !< number of months with water deficit for current year
     real, allocatable, dimension(:) :: srplscur  !< water surplus for the current month
     real, allocatable, dimension(:) :: defctcur  !< water deficit for the current month
-    
+
     real, allocatable, dimension(:,:) :: geremort !< growth efficiency related mortality (1/day)
     real, allocatable, dimension(:,:) :: intrmort !< intrinsic (age related) mortality (1/day)
     real, allocatable, dimension(:,:) :: lambda   !< Used to determine the colonization rate
     real, allocatable, dimension(:,:) :: cc       !< colonization rate & mortality rate
     real, allocatable, dimension(:,:) :: mm       !< colonization rate & mortality rate
-    
+
     logical, allocatable, dimension(:,:) :: pftexist !< logical array indicating pfts exist (t) or not (f)
     integer, allocatable, dimension(:,:) :: colddays !< cold days counter for tracking days below a certain
     !< temperature threshold for ndl dcd and crop pfts.
@@ -660,7 +660,7 @@ module ctem_statevars
     integer, allocatable, dimension(:,:) :: pandays  !< days with positive net photosynthesis (an) for use in
     !< the phenology subroutine
     real, allocatable, dimension(:) :: grclarea      !< area of the grid cell, \f$km^2\f$
-    
+
     integer, allocatable, dimension(:) :: altotcount_ctm ! nlat  !< Counter used for calculating total albedo
     real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)   !< Max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
     real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)    !<
@@ -677,23 +677,23 @@ module ctem_statevars
     real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)   !<
     real, allocatable, dimension(:)    :: xdiffusgat !(ilg)
     real, allocatable, dimension(:)    :: faregat !(ilg)
-    
+
   end type veg_gat
-  
+
   type (veg_gat), save, target :: vgat
-  
+
   !=================================================================================
   type tracersType
     !   Simple tracer variables. Only written to if useTracer > 0.
-    
+
     ! NOTE: Units may vary depending on the tracer used, see convertTracerUnits in tracer.f90
-    
+
     ! Pools:
     ! allocated with nlat,nmos,...:
     real, allocatable, dimension(:,:) :: mossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:) :: mossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:) :: tracerCO2rot     !< Atmopspheric tracer CO2 concentration (units vary)
-    
+
     ! allocated with nlat,nmos,icc:
     real, allocatable, dimension(:,:,:) :: gLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:,:) :: bLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$
@@ -702,7 +702,7 @@ module ctem_statevars
     ! allocated with nlat,nmos,iccp2,ignd:
     real, allocatable, dimension(:,:,:,:) :: litrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-    
+
     ! allocated with ilg,...:
     real, allocatable, dimension(:) :: mossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:) :: mossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
@@ -715,17 +715,17 @@ module ctem_statevars
     ! allocated with nlat,nmos,iccp2,ignd:
     real, allocatable, dimension(:,:,:) :: litrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: soilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-    
+
   end type tracersType
-  
+
   type (tracersType), save, target :: tracer
-  
+
   !=================================================================================
   !> CTEM's variables per tile
   type ctem_tile_level
-    
+
     !   Tile-level variables (denoted by an ending of "_t")
-    
+
     real, allocatable, dimension(:) :: fsnowacc_t       !<
     real, allocatable, dimension(:) :: tcansacc_t       !<
     real, allocatable, dimension(:) :: tcanoaccgat_t    !<
@@ -735,28 +735,28 @@ module ctem_statevars
     real, allocatable, dimension(:) :: anmossac_t       !< daily averaged moss net photosynthesis accumulated (/f$\mu mol /m^2 /s\f$)
     real, allocatable, dimension(:) :: rmlmossac_t      !< daily averaged moss maintainence respiration (/f$\mu mol /m^2 /s\f$)
     real, allocatable, dimension(:) :: gppmossac_t      !< daily averaged gross primary production (/f$\mu mol /m^2 /s\f$)
-    
+
     ! allocated with ilg,ignd:
     real, allocatable, dimension(:,:) :: tbaraccgat_t !<
     real, allocatable, dimension(:,:) :: thliqacc_t  !<
     real, allocatable, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-    
+
     ! allocated with ilg,icc:
     real, allocatable, dimension(:,:) :: ancgvgac_t  !<
     real, allocatable, dimension(:,:) :: rmlcgvga_t  !<
-    
+
   end type ctem_tile_level
-  
+
   type (ctem_tile_level), save, target :: ctem_tile
-  
+
   !=================================================================================
   !> CTEM's variables monthly averaged (per pft)
   type ctem_monthly
-    
+
     !     Tile-level monthly variables (denoted by name ending in "_mo_t")
-    
+
     ! allocated with nlat,nmos,icc/iccp1/iccp2:
-    
+
     real, allocatable, dimension(:,:,:)   :: laimaxg_mo    !<
     real, allocatable, dimension(:,:,:)   :: stemmass_mo   !<
     real, allocatable, dimension(:,:,:)   :: rootmass_mo   !<
@@ -797,17 +797,17 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:,:) :: litres_mo     !<
     ! real, allocatable, dimension(:,:,:,:) :: soilcres_mo   !<
     ! COMBAK PERLAY
-    
+
   end type ctem_monthly
-  
+
   type (ctem_monthly), save, target :: ctem_mo
-  
+
   !=================================================================================
   !> CTEM's grid average monthly values
   type ctem_gridavg_monthly
-    
+
     !  Grid averaged monthly variables (denoted by name ending in "_mo_g")
-    
+
     ! allocated with nlat:
     real, allocatable, dimension(:) :: laimaxg_mo_g  !<
     real, allocatable, dimension(:) :: stemmass_mo_g !<
@@ -849,7 +849,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: ch4soills_mo_g !<
     real, allocatable, dimension(:) :: cProduct_mo_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, allocatable, dimension(:) :: fProductDecomp_mo_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
-    
+
     ! allocated with nlat,ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:) :: litrmass_mo_g !<
@@ -861,19 +861,19 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:) :: litres_mo_g   !<
     ! real, allocatable, dimension(:,:) :: soilcres_mo_g !<
     ! COMBAK PERLAY
-    
+
   end type ctem_gridavg_monthly
-  
+
   type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
-  
+
   !=================================================================================
   !> CTEM's variables per tile monthly values
   type ctem_tileavg_monthly
-    
+
     !     Tile-level monthly variables (denoted by name ending in "_mo_t")
-    
+
     ! allocated with nlat,nmos:
-    
+
     real, allocatable, dimension(:,:) :: laimaxg_mo_t  !<
     real, allocatable, dimension(:,:) :: stemmass_mo_t !<
     real, allocatable, dimension(:,:) :: rootmass_mo_t !<
@@ -914,7 +914,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: ch4soills_mo_t !<
     real, allocatable, dimension(:,:) :: wind_mo_t     !<
     real, allocatable, dimension(:,:) :: fProductDecomp_mo_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
-    
+
     ! allocated with nlat,nmos,ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:) :: litrmass_mo_t !<
@@ -926,21 +926,21 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:) :: litres_mo_t   !<
     ! real, allocatable, dimension(:,:,:) :: soilcres_mo_t !<
     ! COMBAK PERLAY
-    
+
   end type ctem_tileavg_monthly
-  
+
   type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
-  
-  
+
+
   !=================================================================================
   !> CTEM's average annual values (per PFT)
   type ctem_annual
-    
+
     ! c      Annual output for CTEM mosaic variables:
     ! c      (denoted by name ending in "_yr_m")
     !
     ! allocated with nlat,nmos,icc/iccp1/iccp2:
-    
+
     real, allocatable, dimension(:,:,:) :: laimaxg_yr   !<
     real, allocatable, dimension(:,:,:) :: stemmass_yr  !<
     real, allocatable, dimension(:,:,:) :: rootmass_yr  !<
@@ -969,7 +969,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: burnfrac_yr  !<
     real, allocatable, dimension(:,:,:) :: smfuncveg_yr !<
     real, allocatable, dimension(:,:,:) :: veghght_yr   !<
-    
+
     ! allocated with nlat,nmos,iccp2,ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:,:) :: litrmass_yr !<
@@ -981,18 +981,18 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:,:) :: litres_yr  !<
     ! real, allocatable, dimension(:,:,:,:) :: soilcres_yr !<
     ! COMBAK PERLAY
-    
+
   end type ctem_annual
-  
+
   type (ctem_annual), save, target :: ctem_yr
-  
+
   !=================================================================================
   !> CTEM's grid average annual values
   type ctem_gridavg_annual
-    
+
     ! Annual output for CTEM grid-averaged variables:
     ! (denoted by name ending in "_yr_g")
-    
+
     ! allocated with nlat:
     real, allocatable, dimension(:) :: laimaxg_yr_g  !<
     real, allocatable, dimension(:) :: stemmass_yr_g !<
@@ -1033,7 +1033,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: peatdep_yr_g  !<
     real, allocatable, dimension(:) :: cProduct_yr_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, allocatable, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
-    
+
     ! allocated with nlat,ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:) :: litrmass_yr_g !<
@@ -1045,15 +1045,15 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:) :: litres_yr_g   !<
     ! real, allocatable, dimension(:,:) :: soilcres_yr_g !<
     ! COMBAK PERLAY
-    
+
   end type ctem_gridavg_annual
-  
+
   type (ctem_gridavg_annual), save, target :: ctem_grd_yr
-  
+
   !=================================================================================
   !> CTEM's variables per tile annual values
   type ctem_tileavg_annual
-    
+
     ! c      Annual output for CTEM mosaic variables:
     ! c      (denoted by name ending in "_yr_m")
     !
@@ -1096,7 +1096,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: veghght_yr_t  !<
     real, allocatable, dimension(:,:) :: peatdep_yr_t  !<
     real, allocatable, dimension(:,:) :: fProductDecomp_yr_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
-    
+
     ! allocated with nlat,nmos,ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:) :: litrmass_yr_t !<
@@ -1108,28 +1108,28 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:) :: litres_yr_t   !<
     ! real, allocatable, dimension(:,:,:) :: soilcres_yr_t !<
     ! COMBAK PERLAY
-    
+
   end type ctem_tileavg_annual
-  
+
   type (ctem_tileavg_annual), save, target :: ctem_tile_yr
-  
+
 contains
-  
+
   !=================================================================================
   !> \ingroup ctem_statevars_alloc_ctem_vars
   !! @{
   !> Allocate the biogeochemistry (CTEM) variables in preparation for a simulation
-  
+
   subroutine alloc_ctem_vars()
-    
+
     use classic_params, only : ican, icc,iccp2,iccp1,ilg,nlat,nmos,ignd
-    
+
     implicit none
-    
+
     !-----------
-    
+
     ! allocated with nlat,nmos, icc:
-    
+
     allocate(vrot%pftexist(nlat,nmos,icc), &
          vrot%lfstatus(nlat,nmos,icc), &
          vrot%pandays (nlat,nmos,icc), &
@@ -1327,13 +1327,13 @@ contains
     vrot%dayl_max(nlat), &
          vrot%dayl(nlat), &
          vgat%altotcount_ctm(nlat))
-    
+
     ! Now on to the veg_gat vars
-    
+
     ilg = nlat * nmos
-    
+
     ! allocated with ilg
-    
+
     allocate(vgat%grclarea(ilg), &
          vgat%gavglai (ilg), &
          vgat%lightng (ilg), &
@@ -1869,20 +1869,20 @@ contains
          ctem_tile_yr%veghght_yr_t (nlat,nmos), &
          ctem_tile_yr%peatdep_yr_t (nlat,nmos), &
          ctem_tile_yr%fProductDecomp_yr_t (nlat,nmos))
-    
+
   end subroutine alloc_ctem_vars
   !! @}
-  
+
   ! -----------------------------------------------------
-  
+
   !> \ingroup ctem_statevars_initrowvars
   !! @{
   !> Initializes 'row' variables
-  
+
   subroutine initrowvars()
-    
+
     implicit none
-    
+
     ! nlat,nmos
     vrot%co2conc    = 0.0
     vrot%npp        = 0.0
@@ -1922,7 +1922,7 @@ contains
     vrot%armoss     = 0.0
     vrot%peatdep    = 0.0
     vrot%pdd        = 0.0
-    
+
     vrot%ZOLNC      = 0.0
     vrot%AILC       = 0.0
     vrot%CMASVEGC   = 0.0
@@ -1932,7 +1932,7 @@ contains
     vrot%PAIC       = 0.0
     vrot%SLAIC      = 0.0
     vrot%RMATC      = 0.0
-    
+
     vrot%smfuncveg  = 0.0
     vrot%gleafmas   = 0.
     vrot%bleafmas   = 0.
@@ -2000,7 +2000,7 @@ contains
     vrot%emit_oc     = 0.0
     vrot%emit_bc     = 0.0
     vrot%burnvegf    = 0.0
-    
+
     vrot%rmatctem    = 0.0
     vrot%hetroresveg = 0.0
     vrot%nepveg      = 0.0
@@ -2010,27 +2010,27 @@ contains
     vrot%litresveg   = 0.0
     vrot%soilcresveg = 0.0
     vrot%humiftrsveg = 0.0
-    
+
   end subroutine initrowvars
   !! @}
-  
+
   !==================================================
-  
+
   !> \ingroup ctem_statevars_resetmonthend
   !! @{
   !> Resets monthly variables at month end in preparation for next month
-  
+
   subroutine resetmonthend(nltest,nmtest)
-    
+
     use classic_params, only : iccp2,icc,iccp1,ignd
-    
+
     implicit none
-    
+
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
-    
+
     integer :: i,m,j
-    
+
     ! These are assigned to mid-month, but are not accumulated so can be
     ! zeroed out at the same time as the other month-end vars.
     do i = 1,nltest
@@ -2080,7 +2080,7 @@ contains
         ! COMBAK PERLAY
       end do
     end do
-    
+
     ! Now zero out the month end vars.
     do i = 1,nltest
       ! Grid avg
@@ -2126,7 +2126,7 @@ contains
       ctem_grd_mo%ch4soills_mo_g(i)  = 0.0
       ctem_grd_mo%cProduct_mo_g(i)  = 0.0
       ctem_grd_mo%fProductDecomp_mo_g(i)  = 0.0
-      
+
       do m = 1,nmtest
         ! Tile avg
         ctem_tile_mo%laimaxg_mo_t(i,m) = 0.0
@@ -2171,7 +2171,7 @@ contains
         ctem_tile_mo%ch4soills_mo_t(i,m)  = 0.0
         ctem_tile_mo%wind_mo_t(i,m) = 0.0
         ctem_tile_mo%fProductDecomp_mo_t(i,m) = 0.0
-        
+
         do j = 1,icc
           ! per pft
           ctem_mo%laimaxg_mo(i,m,j) = 0.0
@@ -2206,17 +2206,17 @@ contains
           ctem_mo%mterm_mo(i,m,j) = 0.0
           ctem_mo%smfuncveg_mo(i,m,j) = 0.0
         end do
-        
+
         ctem_mo%nep_mo(i,m,iccp1) = 0.0
         ctem_mo%nbp_mo(i,m,iccp1) = 0.0
         ctem_mo%hetrores_mo(i,m,iccp1) = 0.0
         ctem_mo%humiftrsveg_mo(i,m,iccp1) = 0.0
         ctem_mo%humiftrsveg_mo(i,m,iccp2) = 0.0
-        
+
         ! COMBAK PERLAY
         ctem_mo%litres_mo(i,m,iccp1) = 0.0
         ctem_mo%soilcres_mo(i,m,iccp1) = 0.0
-        
+
         ctem_mo%litres_mo(i,m,iccp2) = 0.0
         ctem_mo%soilcres_mo(i,m,iccp2) = 0.0
         ! ctem_mo%litres_mo(i,m,iccp1,1:ignd)=0.0
@@ -2227,29 +2227,29 @@ contains
         ! ctem_mo%soilcres_mo(i,m,iccp2,1:ignd)=0.0
         ! ctem_mo%humiftrsveg_mo(i,m,iccp2)=0.0
         ! COMBAK PERLAY
-        
+
       end do ! nmtest
     end do ! nltest
-    
+
   end subroutine resetmonthend
   !! @}
   !==================================================
-  
+
   !> \ingroup ctem_statevars_resetyearend
   !! @{
   !> Resets annual variables in preparation for next year
-  
+
   subroutine resetyearend(nltest,nmtest)
-    
+
     use classic_params, only : iccp2,icc,iccp1,ignd
-    
+
     implicit none
-    
+
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
-    
+
     integer :: i,m,j
-    
+
     do i = 1,nltest
       ! Grid avg
       ctem_grd_yr%laimaxg_yr_g(i) = 0.0
@@ -2301,7 +2301,7 @@ contains
       ctem_grd_yr%peatdep_yr_g(i)  = 0.0
       ctem_grd_yr%cProduct_yr_g(i)  = 0.0
       ctem_grd_yr%fProductDecomp_yr_g(i)  = 0.0
-      
+
       do m = 1,nmtest
         ! Tile avg
         ctem_tile_yr%laimaxg_yr_t(i,m) = 0.0
@@ -2352,7 +2352,7 @@ contains
         ctem_tile_yr%ch4soills_yr_t(i,m)  = 0.0
         ctem_tile_yr%peatdep_yr_t(i,m)  = 0.0
         ctem_tile_yr%fProductDecomp_yr_t(i,m) = 0.0
-        
+
         do j = 1,icc
           ! per pft
           ctem_yr%laimaxg_yr(i,m,j) = 0.0
@@ -2394,18 +2394,18 @@ contains
           ctem_yr%burnfrac_yr(i,m,j) = 0.0
           ctem_yr%smfuncveg_yr(i,m,j) = 0.0
         end do
-        
+
         ctem_yr%hetrores_yr(i,m,iccp1) = 0.0
         ctem_yr%nep_yr(i,m,iccp1) = 0.0
         ctem_yr%nbp_yr(i,m,iccp1) = 0.0
         ctem_yr%totcmass_yr(i,m,iccp1) = 0.0
-        
+
         ! COMBAK PERLAY
         ctem_yr%litres_yr(i,m,iccp1) = 0.0
         ctem_yr%soilcres_yr(i,m,iccp1) = 0.0
         ctem_yr%litrmass_yr(i,m,iccp1) = 0.0
         ctem_yr%soilcmas_yr(i,m,iccp1) = 0.0
-        
+
         ctem_yr%litrmass_yr(i,m,iccp2) = 0.0
         ctem_yr%soilcmas_yr(i,m,iccp2) = 0.0
         ctem_yr%litres_yr(i,m,iccp2) = 0.0
@@ -2420,17 +2420,17 @@ contains
         ! ctem_yr%litres_yr(i,m,iccp2,1:ignd)=0.0
         ! ctem_yr%soilcres_yr(i,m,iccp2,1:ignd)=0.0
         ! COMBAK PERLAY
-        
+
       end do ! nmtest
     end do ! nltest
-    
+
   end subroutine resetyearend
   !! @}
   !==================================================
   !> \ingroup ctem_statevars_resetMosaicAccum
   !! @{
   !> Resets physics accumulator variables (used as input to CTEM) after CTEM has been called
-  
+
   subroutine resetMosaicAccum()
 
     implicit none
@@ -2449,16 +2449,16 @@ contains
     ctem_tile%thiceacc_t(:,:) = 0.0
     ctem_tile%ancgvgac_t(:,:) = 0.0
     ctem_tile%rmlcgvga_t(:,:) = 0.0
-    
+
     !-reset peatland accumulators-------------------------------
     ctem_tile%anmossac_t(:)  = 0.0
     ctem_tile%rmlmossac_t(:) = 0.0
     ctem_tile%gppmossac_t(:) = 0.0
-    
+
   end subroutine resetMosaicAccum
   !=================================================================================
   !> @}
-  
+
   !> \file
   !>
   !> Contains the biogeochemistry-related variable type structures.

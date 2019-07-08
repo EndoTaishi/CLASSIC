@@ -3,7 +3,7 @@
 !! conditions.
 !! @author D. Verseghy, M. Lazare, Y. Delage, J. P. Blanchette
 !
-subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, &
+subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Formerly WFLOW
                   R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
                   DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ, &
                   THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP, &

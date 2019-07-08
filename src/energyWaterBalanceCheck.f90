@@ -3,7 +3,7 @@
 !! area.
 !! @author D. Verseghy
 !
-subroutine energyWaterBalanceCheck(ISTEP,  CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, &
+subroutine energyWaterBalanceCheck(ISTEP,  CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, & ! Formerly CLASSZ
                    WTVSTP, WTSSTP, WTGSTP, &
                    FSGV,   FLGV,   HFSC,   HEVC,   HMFC,   HTCC, &
                    FSGS,   FLGS,   HFSS,   HEVS,   HMFN,   HTCS, &

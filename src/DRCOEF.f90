@@ -43,18 +43,18 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
   !     * K. ABDELLA/M. LAZARE. - NOV 30/94.
   !
   use classic_params, only : GRAV,VKC
-  
+
   implicit none
-  
+
   !     * INTEGER CONSTANTS.
   integer :: ILG,IL1,IL2,JL,I
-  
+
   !     * OUTPUT ARRAYS.
   real :: CDM    (ILG) !< STABILITY-DEPENDENT DRAG COEFFICIENT FOR MOMENTUM.
   real :: CDH    (ILG) !< STABILITY-DEPENDENT DRAG COEFFICIENT FOR HEAT.
   real :: RIB    (ILG) !< BULK RICHARDSON NUMBER.
   real :: CFLUX  (ILG) !< CD * MOD(V), BOUNDED BY FREE-CONVECTIVE LIMIT.
-  
+
   !     * INPUT ARRAYS.
   real :: ZOMIN  (ILG) !< ROUGHNESS HEIGHTS FOR MOMENTUM/HEAT NORMALIZED BY REFERENCE HEIGHT.
   real :: ZOHIN  (ILG) !< ROUGHNESS HEIGHTS FOR MOMENTUM/HEAT NORMALIZED BY REFERENCE HEIGHT.
@@ -65,20 +65,20 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
   real :: FI     (ILG) !< FRACTION OF SURFACE TYPE BEING STUDIED.
   real :: QG     (ILG) !< SATURATION SPECIFIC HUMIDITY AT GROUND TEMPERATURE.
   real :: QA     (ILG) !< LOWEST LEVEL SPECIFIC HUMIDITY.
-  
+
   integer :: ITER(ILG) !< INDEX ARRAY INDICATING IF POINT IS UNDERGOING FURTHER ITERATION OR NOT.
-  
+
   !     * WORK ARRAYS.
   !> ZOM/ZOH: WORK ARRAYS USED FOR SCALING ZOMIN/ZOHIN ON STABLE SIDE, AS PART OF CALCULATION.
   real :: ZOM    (ILG)
   real :: ZOH    (ILG)
-  
+
   !     * TEMPORARY VARIABLES.
   real :: AA,AA1,BETA,PR,ZLEV,ZS,ZOLN,ZMLN,CPR,ZI,OLSF,OLFACT, &
       ZL,ZMOL,ZHOL,XM,XH,BH1,BH2,BH,WB,WSTAR,RIB0,WSPEED, &
       AU1,OLS,PSIM1,PSIM0,PSIH1,PSIH0,USTAR,TSTAR,WTS,AS1, &
       AS2,AS3,CLIMIT
-  
+
   !-------------------------------------------------------------
   AA = 9.5285714
   AA1 = 14.285714
@@ -121,7 +121,7 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
         WB = SQRT(GRAV * (TVIRTG(I) - TVIRTA(I)) * ZI / TVIRTG(I))
         WSTAR = BH ** (0.333333) * WB
         RIB0 = RIB(I)
-        
+
         WSPEED = SQRT(VA(I) ** 2 + (BETA * WSTAR) ** 2)
         RIB(I) = RIB0 * VA(I) ** 2 / WSPEED ** 2
         AU1 = 1. + 5.0 * (ZOLN - ZMLN) * RIB(I) * (ZOH(I) / ZOM(I)) ** 0.25
@@ -135,13 +135,13 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
              ATAN((1.00 - 15.0 * OLS * ZOM(I)) ** 0.250) + ATAN(1.00) * 2.0
         PSIH1 = LOG(((1.00 + (1.00 - 9.0 * OLS) ** 0.50) / 2.00) ** 2)
         PSIH0 = LOG(((1.00 + (1.00 - 9.0 * OLS * ZOH(I)) ** 0.50) / 2.00) ** 2)
-        
+
         USTAR = VKC / ( - ZMLN - PSIM1 + PSIM0)
         TSTAR = VKC / ( - ZOLN - PSIH1 + PSIH0)
         CDH(I) = USTAR * TSTAR / PR
         WTS = CDH(I) * WSPEED * (TVIRTG(I) - TVIRTA(I))
         WSTAR = (GRAV * ZI / TVIRTG(I) * WTS) ** (0.333333)
-        
+
         WSPEED = SQRT(VA(I) ** 2 + (BETA * WSTAR) ** 2)
         RIB(I) = RIB0 * VA(I) ** 2 / WSPEED ** 2
         AU1 = 1. + 5.0 * (ZOLN - ZMLN) * RIB(I) * (ZOH(I) / ZOM(I)) ** 0.25
@@ -155,9 +155,9 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
              ATAN((1.00 - 15.0 * OLS * ZOM(I)) ** 0.250) + ATAN(1.00) * 2.0
         PSIH1 = LOG(((1.00 + (1.00 - 9.0 * OLS) ** 0.50) / 2.00) ** 2)
         PSIH0 = LOG(((1.00 + (1.00 - 9.0 * OLS * ZOH(I)) ** 0.50) / 2.00) ** 2)
-        
+
       else
-        
+
         WSPEED = VA(I)
         AS1 = 10.0 * ZMLN * (ZOM(I) - 1.0)
         AS2 = 5.00 / (2.0 - 8.53 * RIB(I) * EXP( - 3.35 * RIB(I)) + 0.05 * RIB(I) ** 2)
@@ -174,12 +174,12 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
              * EXP( - 0.35 * OLS) - AA + 1.0
         PSIH0 = - (1.0 + 2.0 * OLS * ZOH(I) / 3.0) ** 1.5 - 0.667 * (OLS * ZOH(I) - AA1) &
              * EXP( - 0.35 * OLS * ZOH(I)) - AA + 1.0
-        
+
       end if
-      
+
       USTAR = VKC / ( - ZMLN - PSIM1 + PSIM0)
       TSTAR = VKC / ( - ZOLN - PSIH1 + PSIH0)
-      
+
       CDM(I) = USTAR ** 2.0
       CDH(I) = USTAR * TSTAR / PR
       !
@@ -193,6 +193,6 @@ subroutine DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN, &
       CFLUX(I) = MAX(CDH(I) * WSPEED,CLIMIT)
     end if
   end do ! loop 100
-  
+
   return
 end

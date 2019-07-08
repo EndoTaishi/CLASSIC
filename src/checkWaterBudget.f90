@@ -2,7 +2,7 @@
 !! Checks for closure of surface water budget, and for
 !! unphysical values of certain variables.
 !! @author D. Verseghy, M. Lazare, B. Dugas
-subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, &
+subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Formerly CHKWAT
                    RAICNI,SNOCNI,ZPOND,ZPONDI,THLIQ,THICE, &
                    THLIQI,THICEI,ZSNOW,RHOSNO,XSNOW,SNOWI, &
                    WSNOW,WSNOWI,FCS,FGS,FI,BAL,THPOR,THLMIN, &

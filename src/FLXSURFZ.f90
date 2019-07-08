@@ -7,12 +7,12 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
                      UE, FCOR, TA , QA , ZU, ZT, VA, &
                      TG , QG , H , Z0 , Z0T, &
                      LZZ0, LZZ0T, FM, FH,N,IL1,IL2,FI,ITER,JL )
-  
+
   use classic_params, only : AS,CI,BS,BETA,FACTN,HMIN,DELTA,GRAV, &
                             VKC,ASX
-  
+
   implicit none
-  
+
   integer :: N,IL1,IL2,ITER(N),JL
   real :: CDM(N),CDH(N),CTU(N),RIB(N),FCOR(N),ILMO(N)
   real :: FTEMP(N),FVAP(N),TA(N),QA(N),ZU(N),VA(N)
@@ -164,7 +164,7 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
       ILMO(J) = RIB(J) * FM(J) * FM(J) / (ZP * FH(J))
     end if
   end do
-  
+
   ! - - - - - - - - -  BEGINNING OF ITERATION LOOP - - - - - - - - - - -
   do IT = 1,ITMAX ! loop 35
     do J = IL1,IL2
@@ -262,10 +262,10 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   end do ! loop 80
   return
 contains
-  
+
   !   The following code is taken from the RPN/CMC physics library file
   !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk,v
-  
+
   !   Internal function FMI
   !   Stability function for momentum in the unstable regime (ilmo<0)
   !   Reference: Delage Y. and Girard C. BLM 58 (19-31) Eq. 19

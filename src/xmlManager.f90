@@ -15,13 +15,13 @@ module xmlManager
   public :: endfunc
   private :: charToLogical
   private :: charToInt
-  
+
   character(len = 80), dimension(2,10)      :: attribs
   character(len = 400), dimension(100)      :: data
   logical                                 :: error, currentDormant = .true.
   character(len = 80)                       :: currentGroup, currentVariableName, variableSetType, variableSetDate, variableSetVersion
   real                                    :: xmlVersion
-  
+
 contains
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The loadoutputDescriptor function parses the XML file using the startfunc, datafunc and endfunc for starting tags, data tags and end tags, respectively.
@@ -34,16 +34,16 @@ contains
     ! Check if the xmlFile exists:
     ! Now make sure the file was properly created
     fileExists = checkFileExists(xmlFile)
-    
+
     if (.not. fileExists) then
       print * ,'Missing xml file: ',xmlFile
       print * ,'Aborting'
       stop ! can use stop here as not in MPI part of code.
     end if
-    
+
     call xml_process(xmlFile, attribs, data, startfunc, datafunc, endfunc, 0, error)
   end subroutine loadoutputDescriptor
-  
+
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The startfunc function parses opening tags or start tags. It gets triggered for each and every opening tag of the XML document.
   subroutine startfunc(tag, attribs, error)
@@ -54,7 +54,7 @@ contains
     logical                             :: error
     type(outputDescriptor), allocatable :: tempDescriptors(:)
     type(variant), allocatable          :: tempVariants(:)
-    
+
     ! Examine the tag
     select case ( tag )
       ! If the tag is <variableSet>, allocate the variable descriptors and the variants.
@@ -68,7 +68,7 @@ contains
         xmlVersion = charToReal(variableSetVersion)
         if (xmlVersion < 1.2) stop ('Older XML document found, please upgrade to a more recent version')
       end if
-      
+
       variableSetDate = trim(attribs(2,3))
       allocate(outputDescriptors(0))
       allocate(variants(0))
@@ -100,7 +100,7 @@ contains
       variants(variantCount)%shortName = currentVariableName
     end select
   end subroutine
-  
+
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The datafunc function parses the content of a tag.
   subroutine datafunc(tag, data, error)
@@ -108,7 +108,7 @@ contains
     character(len =* )               :: tag, data(:)
     character(len = 400)             :: info
     logical                        :: error
-    
+
     info = trim(data(1))
     ! Examine the tag and store the tag content in the descriptors array.
     if (.not. currentDormant) then
@@ -132,7 +132,7 @@ contains
       end select
     end if
   end subroutine
-  
+
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The endfunc function gets triggered when the closing XML element is encountered. E.g. if we wanted to deallocate at </variableSet>.
   subroutine endfunc(tag, error)
@@ -141,7 +141,7 @@ contains
     logical                        :: error
     ! Place a select case (tag) in here if you need to do anything on a closing tag.
   end subroutine
-  
+
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The charToLogical function returns the logical value of a given char input
   logical function charToLogical(input)
@@ -153,7 +153,7 @@ contains
       charToLogical = .false.
     end if
   end function charToLogical
-  
+
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The charToInt function returns the integer :: value of a given char input
   integer function charToInt(input)
@@ -161,7 +161,7 @@ contains
     character(len =* ), intent(in)    :: input    !< Char input
     read(input, * ) charToInt
   end function charToInt
-  
+
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The charToInt function returns the integer :: value of a given char input
   real function charToReal(input)

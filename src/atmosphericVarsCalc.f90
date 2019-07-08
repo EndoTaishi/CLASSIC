@@ -4,7 +4,7 @@
 !! @author D. Verseghy, M. Lazare, R. Brown, S. Fassnacht, P. Bartlett
 !!
 
-subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, &
+subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
                    RPCP,TRPCP,SPCP,TSPCP, &
                    TA,QA,PCPR,RRATE,SRATE,PRESSG, &
                    IPCP,NL,IL1,IL2)

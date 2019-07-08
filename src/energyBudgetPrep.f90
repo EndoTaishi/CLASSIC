@@ -3,7 +3,7 @@
 !! parameters for surface energy budget calculations.
 !! @author D. Verseghy, M. Lazare, A. Wu, Y. Delage, J. P. Paquin, R. Harvey
 !
-subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, &
+subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! Formerly TPREP
                   TBARCS, TBARGS, HCPC,   HCPG,   TCTOPC, TCBOTC, &
                   TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
                   TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
@@ -808,6 +808,6 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, &
     end if
   end do ! loop 600
   !
-6990 format(I3, F6.2)
+  ! 6990 format(I3, F6.2)
   return
 end

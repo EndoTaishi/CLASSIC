@@ -1,14 +1,14 @@
 !> \file
 !> Parses command line arguments to program and reads in joboptions file.
 module readjobopts
-  
+
   implicit none
-  
+
   public :: read_from_job_options
   public :: parsecoords
-  
+
 contains
-  
+
   ! ---------------------------------------------------
   !> \ingroup readjobopts_read_from_job_options
   !! @{
@@ -16,22 +16,22 @@ contains
   !! of the simulation. All switches are described in the configurationFiles/template_job_options_file.txt file
   !! and also the user manual (housed in type ctem_switches in ctem_statevars.f90.
   !> @author Joe Melton
-  
+
   subroutine read_from_job_options
-    
+
     use outputManager, only : myDomain
     use ctem_statevars,     only : c_switch
     use classic_params, only : runParamsFile,PFTCompetitionSwitch, &
                                    zbldJobOpt,zrfhJobOpt,zrfmJobOpt
-    
+
     implicit none
-    
+
     ! -------------
-    
+
     logical, pointer :: projectedGrid
-    
+
     ! ctem model switches
-    
+
     integer, pointer :: metLoop
     logical, pointer :: ctem_on
     integer, pointer :: readMetStartYear
@@ -74,10 +74,10 @@ contains
     character(:), pointer :: output_directory
     character(:), pointer :: xmlFile
     logical, pointer :: leap
-    
+
     ! -------------
     ! class model switches
-    
+
     integer, pointer :: idisp
     integer, pointer :: izref
     integer, pointer :: islfd
@@ -92,10 +92,10 @@ contains
     integer, pointer :: IALS
     integer, pointer :: IALG
     integer, pointer :: isnoalb
-    
+
     ! -------------
     ! Output switches
-    
+
     integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
     integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
     integer, pointer :: jdstd   !< day of the year to start writing the daily output
@@ -113,14 +113,14 @@ contains
     logical, pointer :: doHhOutput    !< Switch for making half hourly output files
     logical, pointer :: doChecksums
     character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
-    
+
     character(350) :: jobfile
     character(350) :: argbuff
     integer :: argcount, iargc
     real :: ZBLD,ZRFH,ZRFM
-    
+
     ! Order of the namelist and order in the file don't have to match.
-    
+
     namelist /joboptions/ &
         projectedGrid, &
         metLoop, &
@@ -199,7 +199,7 @@ contains
         doAnnualOutput, &
         doChecksums, &
         Comment
-    
+
     ! Point pointers:
     projectedGrid   => c_switch%projectedGrid
     metLoop         => c_switch%metLoop
@@ -275,12 +275,12 @@ contains
     doHhOutput      => c_switch%doHhOutput
     doChecksums     => c_switch%doChecksums
     Comment         => c_switch%Comment
-    
+
     !-------------------------
     ! read the joboptions
-    
+
     argcount = iargc()
-    
+
     if (argcount /= 2) then
       write( * , * )'Usage is as follows'
       write( * , * )' '
@@ -304,49 +304,49 @@ contains
       write( * , * )' '
       stop
     end if
-    
+
     !> Argument 1 is the jobfile, which is openned and the namelist is read
     call getarg(1,jobfile)
-    
+
     open(10,file = jobfile,action = 'read',status = 'old')
-    
+
     read(10,nml = joboptions)
-    
+
     close(10)
-    
+
     !> Parse the 2nd argument to get the domain that the simulation should be run over
     call getarg(2,argbuff)
     call parsecoords(argbuff,myDomain%domainBounds)
-    
+
     ! Assign some vars that are passed out
     runParamsFile = runparams_file
     PFTCompetitionSwitch = PFTCompetition
     zbldJobOpt = ZBLD
     zrfhJobOpt = ZRFH
     zrfmJobOpt = ZRFM
-    
+
   end subroutine read_from_job_options
   !! @}
   ! ----------------------------------------------------------------------------------
-  
+
   !> \ingroup readjobopts_parsecoords
   !! @{
   !> Parses a coordinate string
   !> @author Joe Melton
-  
+
   subroutine parsecoords(coordstring,val)
-    
+
     implicit none
-    
+
     character(45),      intent(in)  :: coordstring
     real, dimension(4), intent(out) :: val
-    
+
     character(10), dimension(4) :: cval = '0'
-    
+
     integer :: i
     integer :: lasti = 1
     integer :: part  = 1
-    
+
     do i = 1,len_trim(coordstring)
       if (coordstring(i:i) == '/') then
         cval(part) = coordstring(lasti:i - 1)
@@ -354,22 +354,22 @@ contains
         part = part + 1
       end if
     end do
-    
+
     cval(part) = coordstring(lasti:i - 1)
-    
+
     read(cval, * )val
-    
+
     if (part < 4) then
       val(3) = val(2)
       val(4) = val(3)
       val(2) = val(1)
     end if
-    
+
   end subroutine parsecoords
   !! @}
-  
+
   !> \namespace readjobopts
   !> Parses command line arguments to program and reads in joboptions file.
-  
+
   !> \file
 end module readjobopts

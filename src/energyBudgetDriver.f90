@@ -3,7 +3,7 @@
 !! @author D. Verseghy, M. Lazare, K. Abdella, P. Bartlett, M. Namazi, M. MacDonald,
 !! E. Chan, J. Melton, A. Wu, JP Paquin, L Duarte, Y. Delage
 !
-subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
+subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, & ! Formerly CLASST
     THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG, &
     GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS, &
     G23C,   G23G,   G23CS,  G23GS,  QFREZC, QFREZG, QMELTC, QMELTG, &
@@ -766,29 +766,29 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
   !     * PREPARATION.
   !
   call  energyBudgetPrep     (THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! Formerly TPREP
-  TBARCS, TBARGS, HCPC,   HCPG,   TCTOPC, TCBOTC, &
-  TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
-  TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
-  TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO, &
-  EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
-  GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
-  QMELTC, QMELTG, EVAP,   GSNOW, &
-  TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
-  QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS, &
-  ILMOX,  UEX,    HBLX, &
-  ILMO,   UE,     HBL, &
-  ST,     SU,     SV,     SQ,     SRH, &
-  CDH,    CDM,    QSENS,  QEVAP,  QLWAVG, &
-  FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG, &
-  HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG, &
-  HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND, &
-  DRAG,   THLIQ,  THICE,  TBAR,   ZPOND,  TPOND, &
-  THPOR,  THLMIN, THLRET, THFC,   HCPS,   TCS, &
-  TA,     RHOSNO, TSNOW,  ZSNOW,  WSNOW,  TCAN, &
-  FC,     FCS,    DELZ,   DELZW,  ZBOTW, &
-  ISAND,  ILG,    IL1,    IL2,    JL,     IG, &
-  FVEG,   TCSATU, TCSATF, FTEMP,  FTEMPX, FVAP, &
-  FVAPX,  RIB,    RIBX)
+                              TBARCS, TBARGS, HCPC,   HCPG,   TCTOPC, TCBOTC, &
+                              TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
+                              TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
+                              TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO, &
+                              EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
+                              GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
+                              QMELTC, QMELTG, EVAP,   GSNOW, &
+                              TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
+                              QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS, &
+                              ILMOX,  UEX,    HBLX, &
+                              ILMO,   UE,     HBL, &
+                              ST,     SU,     SV,     SQ,     SRH, &
+                              CDH,    CDM,    QSENS,  QEVAP,  QLWAVG, &
+                              FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG, &
+                              HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG, &
+                              HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND, &
+                              DRAG,   THLIQ,  THICE,  TBAR,   ZPOND,  TPOND, &
+                              THPOR,  THLMIN, THLRET, THFC,   HCPS,   TCS, &
+                              TA,     RHOSNO, TSNOW,  ZSNOW,  WSNOW,  TCAN, &
+                              FC,     FCS,    DELZ,   DELZW,  ZBOTW, &
+                              ISAND,  ILG,    IL1,    IL2,    JL,     IG, &
+                              FVEG,   TCSATU, TCSATF, FTEMP,  FTEMPX, FVAP, &
+                              FVAPX,  RIB,    RIBX)
   !
   !     * DEFINE NUMBER OF PIXELS OF EACH LAND SURFACE SUBAREA
   !     * (CANOPY-COVERED, CANOPY-AND-SNOW-COVERED, BARE SOIL, AND
@@ -848,53 +848,53 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
     end do ! loop 100
     !
     call canopyPhaseChange(TCANS,RAICNS,SNOCNS,FRAICS,FSNOCS,CHCAPS, & ! Formerly CWCALC
-    HMFC,HTCC,FCS,CMASCS,ILG,IL1,IL2,JL)
+                           HMFC,HTCC,FCS,CMASCS,ILG,IL1,IL2,JL)
     call soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
-    GCONST,CPHCHG,IWATER, &
-    TBAR,TCTOPC,TCBOTC, &
-    FCS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
-    ISAND,ILG,IL1,IL2,JL,IG)
+                          GCONST,CPHCHG,IWATER, &
+                          TBAR,TCTOPC,TCBOTC, &
+                          FCS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
+                          ISAND,ILG,IL1,IL2,JL,IG)
     call snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
-    FCS,ZSNOW,TSNOW,TCSNOW, &
-    ILG,IL1,IL2,JL)
+                      FCS,ZSNOW,TSNOW,TCSNOW, &
+                      ILG,IL1,IL2,JL)
     ISNOW = 1
     call energBalVegSolve(ISNOW,FCS, & ! Formerly TSOLVC
-    QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS, &
-    QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPCS, &
-    EVPCSG,EVAP,TCANS,QCANX,TSURX,QSURX,GSNOWC,QPHCHC, &
-    QMELTC,RAICNS,SNOCNS,CDHX,CDMX,RIBX,TACCS,QACCS, &
-    CFLUX,FTEMPX,FVAPX,ILMOX,UEX,HBLX,QFCF,QFCL,HTCC, &
-    QSWINV,QSWINI,QLWIN,TPOTA,TA,QA,VA,VAC,PADRY, &
-    RHOAIR,ALVSCS,ALIRCS,ALVSSC,ALIRSC,TRVSCS,TRIRCS, &
-    FSVFS,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RCS, &
-    RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM, &
-    FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOWC,FSNOCS, &
-    FRAICS,CHCAPS,CMASCS,PCPR,FROOTS,THLMIN,DELZW, &
-    RHOSCS,ZSNOW,IWATER,IEVAP,ITERCT, &
-    ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N, &
-    TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT, &
-    RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG, &
-    RESID,TCANP, &
-    WZERO,XEVAPM,DCFLXM,WC,DRAGIN,CFLUXM,CFLX,IEVAPC, &
-    TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,AC,BC, &
-    LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2, &
-    AILCGS,FCANCS,CO2CONC,RMATCTEM, &
-    THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG, &
-    XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS, &
-    ctem_on,SLAI,FCANCMX,L2MAX, &
-    NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG, &
-    DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss, &
-    ancsmoss,rmlcsmoss,iday,pdd)
+                          QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS, &
+                          QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPCS, &
+                          EVPCSG,EVAP,TCANS,QCANX,TSURX,QSURX,GSNOWC,QPHCHC, &
+                          QMELTC,RAICNS,SNOCNS,CDHX,CDMX,RIBX,TACCS,QACCS, &
+                          CFLUX,FTEMPX,FVAPX,ILMOX,UEX,HBLX,QFCF,QFCL,HTCC, &
+                          QSWINV,QSWINI,QLWIN,TPOTA,TA,QA,VA,VAC,PADRY, &
+                          RHOAIR,ALVSCS,ALIRCS,ALVSSC,ALIRSC,TRVSCS,TRIRCS, &
+                          FSVFS,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RCS, &
+                          RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM, &
+                          FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOWC,FSNOCS, &
+                          FRAICS,CHCAPS,CMASCS,PCPR,FROOTS,THLMIN,DELZW, &
+                          RHOSCS,ZSNOW,IWATER,IEVAP,ITERCT, &
+                          ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N, &
+                          TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT, &
+                          RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG, &
+                          RESID,TCANP, &
+                          WZERO,XEVAPM,DCFLXM,WC,DRAGIN,CFLUXM,CFLX,IEVAPC, &
+                          TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,AC,BC, &
+                          LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2, &
+                          AILCGS,FCANCS,CO2CONC,RMATCTEM, &
+                          THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG, &
+                          XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS, &
+                          ctem_on,SLAI,FCANCMX,L2MAX, &
+                          NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG, &
+                          DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss, &
+                          ancsmoss,rmlcsmoss,iday,pdd)
 
     call snowTempUpdate(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC, & ! Formerly TSPOST
-    GZROCS,TSNBOT,HTCS,HMFN, &
-    GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR, &
-    TSURX,ZSNOW,TCSNOW,HCPSCS,QTRANS, &
-    FCS,DELZ,ILG,IL1,IL2,JL,IG)
+                        GZROCS,TSNBOT,HTCS,HMFN, &
+                        GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR, &
+                        TSURX,ZSNOW,TCSNOW,HCPSCS,QTRANS, &
+                        FCS,DELZ,ILG,IL1,IL2,JL,IG)
     call soilHeatFluxCleanup(TBARCS,G12CS,G23CS,TPNDCS,GZROCS,ZERO,GCONST, & ! Formerly TNPOST
-    GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSNBOT, &
-    TBASE,TBAR1P,A1,A2,B1,B2,C2,FCS,IWATER, &
-    ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
+                             GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSNBOT, &
+                             TBASE,TBAR1P,A1,A2,B1,B2,C2,FCS,IWATER, &
+                             ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
     !
     !     * DIAGNOSTICS.
     !
@@ -932,9 +932,9 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       !
     else if (ISLFD == 1) then
       call SLDIAG(SUT,SVT,STT,SQT, &
-                     CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
-                     TACCS,QACCS,ZOM,ZOH,FCS,ZRSLDM, &
-                     ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+                  CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
+                  TACCS,QACCS,ZOM,ZOH,FCS,ZRSLDM, &
+                  ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
       !
       call screenRelativeHumidity(SHT,STT,SQT,PRESSG,FCS,ILG,IL1,IL2) ! Formerly SCREENRH
       !
@@ -949,8 +949,8 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       end do
     else if (ISLFD == 2) then
       call DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TACCS,QACCS, &
-                     ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
-                     ZDSLM,ZDSLH,RADJ,FCS,IL1,IL2,JL)
+                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
+                    ZDSLM,ZDSLH,RADJ,FCS,IL1,IL2,JL)
     end if
     !
     do I = IL1,IL2 ! loop 175
@@ -1042,41 +1042,41 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
     end do ! loop 200
     !
     call soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
-    GCONST,CPHCHG,IWATER, &
-    TBAR,TCTOPG,TCBOTG, &
-    FGS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
-    ISAND,ILG,IL1,IL2,JL,IG)
+                          GCONST,CPHCHG,IWATER, &
+                          TBAR,TCTOPG,TCBOTG, &
+                          FGS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
+                          ISAND,ILG,IL1,IL2,JL,IG)
     call snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
-    FGS,ZSNOW,TSNOW,TCSNOW, &
-    ILG,IL1,IL2,JL)
+                      FGS,ZSNOW,TSNOW,TCSNOW, &
+                      ILG,IL1,IL2,JL)
     ISNOW = 1
     call energBalNoVegSolve(ISNOW,FGS, & ! Formerly TSOLVE
-    QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPGS, &
-    TSURX,QSURX,GSNOWG,QMELTG,CDHX,CDMX,RIBX,CFLUX, &
-    FTEMPX,FVAPX,ILMOX,UEX,HBLX, &
-    QLWIN,TPOTA,QA,VA,PADRY,RHOAIR, &
-    ALVSSN,ALIRSN,CRIB,CPHCHG,CEVAP,TVIRTA, &
-    ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR, &
-    GCONSTS,GCOEFFS,TSFSAV(1,2),PCPR, &
-    TRSNOWG,FSSB,ALSNO, &
-    THLIQG,THLMIN,DELZW,RHOSGS,ZSNOW,ZPOND, &
-    IWATER,IEVAP,ITERCT,ISAND, &
-    ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB, &
-    TSTEP,TVIRTS,EVBETA,Q0SAT,RESID, &
-    DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC, &
-    LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF, &
-    ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss, &
-    angsmoss,rmlgsmoss, iday, DAYL,pdd)
+                            QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPGS, &
+                            TSURX,QSURX,GSNOWG,QMELTG,CDHX,CDMX,RIBX,CFLUX, &
+                            FTEMPX,FVAPX,ILMOX,UEX,HBLX, &
+                            QLWIN,TPOTA,QA,VA,PADRY,RHOAIR, &
+                            ALVSSN,ALIRSN,CRIB,CPHCHG,CEVAP,TVIRTA, &
+                            ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR, &
+                            GCONSTS,GCOEFFS,TSFSAV(1,2),PCPR, &
+                            TRSNOWG,FSSB,ALSNO, &
+                            THLIQG,THLMIN,DELZW,RHOSGS,ZSNOW,ZPOND, &
+                            IWATER,IEVAP,ITERCT,ISAND, &
+                            ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB, &
+                            TSTEP,TVIRTS,EVBETA,Q0SAT,RESID, &
+                            DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC, &
+                            LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF, &
+                            ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss, &
+                            angsmoss,rmlgsmoss, iday, DAYL,pdd)
     !
     call snowTempUpdate(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG, & ! Formerly TSPOST
-    GZROGS,TSNBOT,HTCS,HMFN, &
-    GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR, &
-    TSURX,ZSNOW,TCSNOW,HCPSGS,QTRANS, &
-    FGS,DELZ,ILG,IL1,IL2,JL,IG)
+                        GZROGS,TSNBOT,HTCS,HMFN, &
+                        GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR, &
+                        TSURX,ZSNOW,TCSNOW,HCPSGS,QTRANS, &
+                        FGS,DELZ,ILG,IL1,IL2,JL,IG)
     call soilHeatFluxCleanup(TBARGS,G12GS,G23GS,TPNDGS,GZROGS,ZERO,GCONST, & ! Formerly TNPOST
-    GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSNBOT, &
-    TBASE,TBAR1P,A1,A2,B1,B2,C2,FGS,IWATER, &
-    ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
+                             GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSNBOT, &
+                             TBASE,TBAR1P,A1,A2,B1,B2,C2,FGS,IWATER, &
+                             ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
     !
     !     * DIAGNOSTICS.
     !
@@ -1114,9 +1114,9 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       !
     else if (ISLFD == 1) then
       call SLDIAG(SUT,SVT,STT,SQT, &
-                     CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
-                     TSURX,QSURX,ZOM,ZOH,FGS,ZRSLDM, &
-                     ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+                  CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
+                  TSURX,QSURX,ZOM,ZOH,FGS,ZRSLDM, &
+                  ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
       !
       call screenRelativeHumidity(SHT,STT,SQT,PRESSG,FGS,ILG,IL1,IL2) ! Formerly SCREENRH
       !
@@ -1131,8 +1131,8 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       end do
     else if (ISLFD == 2) then
       call DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TSURX,QSURX, &
-                     ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
-                     ZDSLM,ZDSLH,RADJ,FGS,IL1,IL2,JL)
+                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
+                    ZDSLM,ZDSLH,RADJ,FGS,IL1,IL2,JL)
     end if
     !
     do I = IL1,IL2 ! loop 275
@@ -1207,47 +1207,47 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
     end do ! loop 300
     !
     call canopyPhaseChange(TCANO,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerly CWCALC
-    HMFC,HTCC,FC,CMASSC,ILG,IL1,IL2,JL)
+                           HMFC,HTCC,FC,CMASSC,ILG,IL1,IL2,JL)
     call soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
-    GCONST,CPHCHG,IWATER, &
-    TBAR,TCTOPC,TCBOTC, &
-    FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
-    ISAND,ILG,IL1,IL2,JL,IG                      )
+                          GCONST,CPHCHG,IWATER, &
+                          TBAR,TCTOPC,TCBOTC, &
+                          FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
+                          ISAND,ILG,IL1,IL2,JL,IG)
     ISNOW = 0
 
     call energBalVegSolve(ISNOW,FC, & ! Formerly TSOLVC
-    QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS, &
-    QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC, &
-    EVAPCG,EVAP,TCANO,QCANX,TSURX,QSURX,GZEROC,QPHCHC, &
-    QFREZC,RAICAN,SNOCAN,CDHX,CDMX,RIBX,TACCO,QACCO, &
-    CFLUX,FTEMPX,FVAPX,ILMOX,UEX,HBLX,QFCF,QFCL,HTCC, &
-    QSWINV,QSWINI,QLWIN,TPOTA,TA,QA,VA,VAC,PADRY, &
-    RHOAIR,ALVSCN,ALIRCN,ALVSGC,ALIRGC,TRVSCN,TRIRCN, &
-    FSVF,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RC, &
-    RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM, &
-    FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOWC,FSNOWC, &
-    FRAINC,CHCAP,CMASSC,PCPR,FROOT,THLMIN,DELZW, &
-    ZERO,ZERO,IWATER,IEVAP,ITERCT, &
-    ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N, &
-    TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT, &
-    RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG, &
-    RESID,TCANP, &
-    WZERO,XEVAPM,DCFLXM,WC,DRAGIN,CFLUXM,CFLX,IEVAPC, &
-    TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,AC,BC, &
-    LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2, &
-    AILCG,FCANC,CO2CONC,RMATCTEM, &
-    THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG, &
-    XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG, &
-    ctem_on,SLAI,FCANCMX,L2MAX, &
-    NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG, &
-    DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss, &
-    ancmoss,rmlcmoss, iday, pdd)
+                          QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS, &
+                          QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC, &
+                          EVAPCG,EVAP,TCANO,QCANX,TSURX,QSURX,GZEROC,QPHCHC, &
+                          QFREZC,RAICAN,SNOCAN,CDHX,CDMX,RIBX,TACCO,QACCO, &
+                          CFLUX,FTEMPX,FVAPX,ILMOX,UEX,HBLX,QFCF,QFCL,HTCC, &
+                          QSWINV,QSWINI,QLWIN,TPOTA,TA,QA,VA,VAC,PADRY, &
+                          RHOAIR,ALVSCN,ALIRCN,ALVSGC,ALIRGC,TRVSCN,TRIRCN, &
+                          FSVF,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RC, &
+                          RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM, &
+                          FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOWC,FSNOWC, &
+                          FRAINC,CHCAP,CMASSC,PCPR,FROOT,THLMIN,DELZW, &
+                          ZERO,ZERO,IWATER,IEVAP,ITERCT, &
+                          ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N, &
+                          TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT, &
+                          RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG, &
+                          RESID,TCANP, &
+                          WZERO,XEVAPM,DCFLXM,WC,DRAGIN,CFLUXM,CFLX,IEVAPC, &
+                          TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,AC,BC, &
+                          LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2, &
+                          AILCG,FCANC,CO2CONC,RMATCTEM, &
+                          THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG, &
+                          XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG, &
+                          ctem_on,SLAI,FCANCMX,L2MAX, &
+                          NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG, &
+                          DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss, &
+                          ancmoss,rmlcmoss, iday, pdd)
 
 
     call soilHeatFluxCleanup(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST, & ! Formerly TNPOST
-    GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX, &
-    TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER, &
-    ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG       )
+                             GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX, &
+                             TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER, &
+                             ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
     !
     !     * DIAGNOSTICS.
     !
@@ -1284,9 +1284,9 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       end do
     else if (ISLFD == 1) then
       call SLDIAG(SUT,SVT,STT,SQT, &
-                     CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
-                     TACCO,QACCO,ZOM,ZOH,FC,ZRSLDM, &
-                     ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+                  CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
+                  TACCO,QACCO,ZOM,ZOH,FC,ZRSLDM, &
+                  ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
       !
       call screenRelativeHumidity(SHT,STT,SQT,PRESSG,FC,ILG,IL1,IL2) ! Formerly SCREENRH
       !
@@ -1301,8 +1301,8 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       end do
     else if (ISLFD == 2) then
       call DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TACCO,QACCO, &
-                     ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
-                     ZDSLM,ZDSLH,RADJ,FC,IL1,IL2,JL)
+                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
+                    ZDSLM,ZDSLH,RADJ,FC,IL1,IL2,JL)
     end if
     !
     do I = IL1,IL2 ! loop 375
@@ -1389,33 +1389,33 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
     end do ! loop 400
     !
     call soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
-    GCONST,CPHCHG,IWATER, &
-    TBAR,TCTOPG,TCBOTG, &
-    FG,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
-    ISAND,ILG,IL1,IL2,JL,IG)
+                          GCONST,CPHCHG,IWATER, &
+                          TBAR,TCTOPG,TCBOTG, &
+                          FG,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
+                          ISAND,ILG,IL1,IL2,JL,IG)
     ISNOW = 0
     call energBalNoVegSolve(ISNOW,FG, & ! Formerly TSOLVE
-    QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPG, &
-    TSURX,QSURX,GZEROG,QFREZG,CDHX,CDMX,RIBX,CFLUX, &
-    FTEMPX,FVAPX,ILMOX,UEX,HBLX, &
-    QLWIN,TPOTA,QA,VA,PADRY,RHOAIR, &
-    ALVSG,ALIRG,CRIB,CPHCHG,CEVAP,TVIRTA, &
-    ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR, &
-    GCONST,GCOEFF,TSFSAV(1,4),PCPR, &
-    TRSNOWG,FSSB,ALSNO, &
-    THLIQG,THLMIN,DELZW,ZERO,ZERO,ZPOND, &
-    IWATER,IEVAP,ITERCT,ISAND, &
-    ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB, &
-    TSTEP,TVIRTS,EVBETA,Q0SAT,RESID, &
-    DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC, &
-    LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF, &
-    ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss, &
-    angmoss,rmlgmoss, iday,DAYL,pdd)
+                            QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPG, &
+                            TSURX,QSURX,GZEROG,QFREZG,CDHX,CDMX,RIBX,CFLUX, &
+                            FTEMPX,FVAPX,ILMOX,UEX,HBLX, &
+                            QLWIN,TPOTA,QA,VA,PADRY,RHOAIR, &
+                            ALVSG,ALIRG,CRIB,CPHCHG,CEVAP,TVIRTA, &
+                            ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR, &
+                            GCONST,GCOEFF,TSFSAV(1,4),PCPR, &
+                            TRSNOWG,FSSB,ALSNO, &
+                            THLIQG,THLMIN,DELZW,ZERO,ZERO,ZPOND, &
+                            IWATER,IEVAP,ITERCT,ISAND, &
+                            ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB, &
+                            TSTEP,TVIRTS,EVBETA,Q0SAT,RESID, &
+                            DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC, &
+                            LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF, &
+                            ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss, &
+                            angmoss,rmlgmoss, iday,DAYL,pdd)
     !
     call soilHeatFluxCleanup(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST, & ! Formerly TNPOST
-    GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX, &
-    TBASE,TBAR1P,A1,A2,B1,B2,C2,FG,IWATER, &
-    ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG      )
+                             GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX, &
+                             TBASE,TBAR1P,A1,A2,B1,B2,C2,FG,IWATER, &
+                             ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
     !
     !     * DIAGNOSTICS.
     !
@@ -1455,9 +1455,9 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       end do
     else if (ISLFD == 1) then
       call SLDIAG(SUT,SVT,STT,SQT, &
-                     CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
-                     TSURX,QSURX,ZOM,ZOH,FG,ZRSLDM, &
-                     ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+                  CDMX,CDHX,UWIND,VWIND,TPOTA,QA, &
+                  TSURX,QSURX,ZOM,ZOH,FG,ZRSLDM, &
+                  ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
       !
       call screenRelativeHumidity(SHT,STT,SQT,PRESSG,FG,ILG,IL1,IL2) ! Formerly SCREENRH
       !
@@ -1475,8 +1475,8 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
       end do
     else if (ISLFD == 2) then
       call DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TSURX,QSURX, &
-                     ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
-                     ZDSLM,ZDSLH,RADJ,FG,IL1,IL2,JL)
+                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX, &
+                    ZDSLM,ZDSLH,RADJ,FG,IL1,IL2,JL)
     end if
     !
     do I = IL1,IL2 ! loop 475

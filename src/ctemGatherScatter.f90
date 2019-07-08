@@ -188,7 +188,7 @@ contains
       end do
     end do ! loop 250
 
-    do l = 1,icc! loop 280
+    do l = 1,icc ! loop 280
       do m = 1,ignd
         do k = 1,nml
           rmatctemgat(k,l,m) = rmatctemrow(ilmos(k),jlmos(k),l,m)

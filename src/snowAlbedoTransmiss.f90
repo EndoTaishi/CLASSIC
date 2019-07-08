@@ -4,7 +4,7 @@
 !! transmissivity for shortwave radiation.
 !! @author D. Verseghy, J. Cole, M. Lazare
 !
-subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, &
+subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly SNOWALBA
                     TRSNOWC, ALSNO, TRSNOWG, FSDB, FSFB, RHOSNO, &
                     REFSN,BCSN,SNO,CSZ,ZSNOW,FSNOW,ASVDAT,ASIDAT, &
                     ALVSG, ALIRG, &
@@ -90,8 +90,8 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, &
   !
   !     * LOCAL ARRAYS
   !
-  real    :: SALBG(ILG,NBS), ALDIR(ILG,NBS), ALDIF(ILG,NBS), &
-             TRDIR(ILG,NBS), TRDIF(ILG,NBS), REFSNO(ILG), BCSNO(ILG)
+  real    :: SALBG(ILG,NBS), ALDIR(ILG,NBS), ALDIF (ILG,NBS), &
+             TRDIR(ILG,NBS), TRDIF (ILG,NBS), REFSNO(ILG), BCSNO(ILG)
   integer :: C_FLAG(ILG)
   !
   !     * CONSTANTS.
@@ -242,30 +242,30 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, &
         end do ! I
 
         call SNOW_ALBVAL(ALDIF, & ! OUTPUT
-        ALDIR, &
-        CSZ, & ! INPUT
-        SALBG, &
-        BCSNO, &
-        REFSNO, &
-        SNO, &
-        C_FLAG, &
-        IL1, &
-        IL2, &
-        ILG, &
-        NBS)
+                         ALDIR, &
+                         CSZ, & ! INPUT
+                         SALBG, &
+                         BCSNO, &
+                         REFSNO, &
+                         SNO, &
+                         C_FLAG, &
+                         IL1, &
+                         IL2, &
+                         ILG, &
+                         NBS)
 
         call SNOW_TRANVAL(TRDIF, & ! OUTPUT
-        TRDIR, &
-        CSZ, &  ! INPUT
-        SALBG, &
-        BCSNO, &
-        REFSNO, &
-        SNO, &
-        C_FLAG, &
-        IL1, &
-        IL2, &
-        ILG, &
-        NBS)
+                          TRDIR, &
+                          CSZ, &  ! INPUT
+                          SALBG, &
+                          BCSNO, &
+                          REFSNO, &
+                          SNO, &
+                          C_FLAG, &
+                          IL1, &
+                          IL2, &
+                          ILG, &
+                          NBS)
 
         do IB = 1, NBS
           do I = IL1, IL2

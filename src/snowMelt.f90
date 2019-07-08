@@ -2,7 +2,7 @@
 !! Addresses melting of the snow pack.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowMelt(ZSNOW,TSNOW,QMELT,R,TR,GZERO,RALB, &
+subroutine snowMelt(ZSNOW,TSNOW,QMELT,R,TR,GZERO,RALB, & ! Formrly TMELT
                   HMFN,HTCS,HTC,FI,HCPSNO,RHOSNO,WSNOW, &
                   ISAND,IG,ILG,IL1,IL2,JL)
   !

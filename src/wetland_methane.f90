@@ -5,7 +5,7 @@
 subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
                             thliqg, currlat, sand, slopefrac, ta, &   ! inputs
                             ch4WetSpec, wetfdyn, ch4WetDyn)           ! outputs
-  
+
   !     20  Feb   2019 - Update code to allow namelist of params. Remove no CH4 flux if soils are
   !     J. Melton        frozen condition.
   !     31  Aug   2016 - Change how we find wetlands from discrete limits to
@@ -16,13 +16,13 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   !
   !      9  June. 2010 - this subroutine calculates methane flux
   !     Brian Amiro      from wetlands of a grid cell (i.e. land only)
-  
+
   use classic_params,        only : wtdryres, ratioch4,lat_thrshld1, &
                                lat_thrshld2, soilw_thrshN, soilw_thrshE, &
                                soilw_thrshS, ignd
-  
+
   implicit none
-  
+
   integer, intent(in) :: ilg                      !<
   integer, intent(in) :: il1                      !< il1=1
   integer, intent(in) :: il2                      !< il2=ilg
@@ -36,14 +36,14 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   real, dimension(ilg), intent(out) :: ch4WetSpec    !< methane flux from wetlands calculated using hetrores in umol ch4/m2.s
   real, dimension(ilg), intent(out) :: wetfdyn    !< dynamic gridcell wetland fraction determined using  slope and soil moisture
   real, dimension(ilg), intent(out) :: ch4WetDyn    !< methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s
-  
+
   ! local variables
   real, dimension(ilg) :: wetresp !< heterotrophic wetland respiration
   real :: upvslow    ! ratio of wetland to upland respiration for this location
   real :: porosity
   real :: soil_wetness
   integer :: i
-  
+
   real, parameter :: alpha = 0.45  ! Determines shape of curve.
   real :: low_mois_lim
   real :: mid_mois_lim
@@ -54,7 +54,7 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   real :: y2
   real :: slope
   real :: intercept
-  
+
   !>
   !> ---------------------------------------------------------------
   !> Constants and parameters are located in classic_params.f90
@@ -70,7 +70,7 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   !> --------------------------------------------------
   !>
   !> Estimate the methane flux from wetlands for each grid cell scaling by the wetland fraction in a grid cell
-  
+
   ! Set up the latitude bounds based on the paramters read in from the namelist file.
   ! If soil wetness meets a latitude specific threshold then the slope based wetland
   ! fraction is wet and is an actual wetland, else not. As well the ratio of upland to
@@ -80,9 +80,9 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   ! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
   ! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
   ! they are simply multiplicative.
-  
+
   do i = il1, il2
-    
+
     if (currlat(i) >= lat_thrshld1) then ! Northern high lats, all area north of lat_thrshld1
       low_mois_lim = soilw_thrshN(1)
       mid_mois_lim = soilw_thrshN(2)
@@ -99,39 +99,39 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
       ! upp_mois_lim = soilw_thrshS(3)
       upvslow = wtdryres(3)
     end if
-    
+
     !> First calculate for the specified wetland fractions read in from OBSWETFFile
-    
+
     wetresp(i) = hetrores(i) * upvslow * wetfrac(i)
     ch4WetSpec(i) = ratioch4 * wetresp(i)
-    
+
     !>
     !> Next dynamically find the wetland locations and determine their methane emissions
     !>
-    
+
     porosity = ( - 0.126 * sand(i,1) + 48.9) / 100.0 ! top soil layer porosity
     soil_wetness = (thliqg(i,1) / porosity)
     soil_wetness = max(0.0, min(soil_wetness, 1.0))
-    
-    
+
+
     !    implement Vivek's new way of modelling WETFDYN
-    
+
     x1 = low_mois_lim * (1. - alpha) + mid_mois_lim * alpha
     x2 = 1.
     y1 = 0.
     y2 = slopefrac(i,5)
     slope = (y2 - y1) / (x2 - x1)
     intercept = slope * x1 * ( - 1)
-    
+
     wetfdyn(i) = min(1.0, max(0.0, slope * soil_wetness + intercept))
-    
+
     !    new dynamic calculation
     !    same as ch4WetSpec & 2, but wetfrac replaced by wetfdyn
-    
+
     wetresp(i) = hetrores(i) * upvslow * wetfdyn(i)
     ch4WetDyn(i) = ratioch4 * wetresp(i)
-    
+
   end do
-  
+
   return
 end

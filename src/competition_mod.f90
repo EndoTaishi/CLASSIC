@@ -676,10 +676,10 @@ contains
     if (dofire) then
 
       call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms, & ! In
-                    burnvegf, pstemmass, pgleafmass, useTracer, & ! In
-                    fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
-                    litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
-                    tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out
+                      burnvegf, pstemmass, pgleafmass, useTracer, & ! In
+                      fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
+                      litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
+                      tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out
 
       !> Since the biomass pools could have changed, update bmasveg.
       do i = il1, il2

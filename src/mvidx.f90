@@ -27,12 +27,12 @@
 integer function MVIDX(V,N,X)
   !-----------------------------------------------------------------------
   implicit none
-  
+
   real :: X,V(N)
   integer :: N
   integer :: JL,JM,JU
   !-----------------------------------------------------------------------
-  
+
   if (X == V(1)) then
     MVIDX = 1
     return

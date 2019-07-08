@@ -2,7 +2,7 @@
 !! Adds snow incident on the ground surface to the snow pack.
 !! @author D. Verseghy, M. Lazare, R. Harvey
 !
-subroutine snowAddNew(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS, &
+subroutine snowAddNew(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS, & ! Formerly SNOADD
                    FI,S,TS,RHOSNI,WSNOW,ILG,IL1,IL2,JL)
   !
   !     * NOV 17/11 - M.LAZARE.   CHANGE SNOW ALBEDO REFRESHMENT

@@ -3,7 +3,7 @@
 !! energy budget calculations.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, &
+subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
                    GZERO,TSNBOT,HTCS,HMFN, &
                    GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR, &
                    TSURF,ZSNOW,TCSNOW,HCPSNO,QTRANS, &

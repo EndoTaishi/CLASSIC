@@ -4,7 +4,7 @@
 !! rates.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, &
+subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! Formerly CANVAP
                    WLOST,CHCAP,QFCF,QFCL,QFN,QFC,HTCC,HTCS,HTC, &
                    FI,CMASS,TSNOW,HCPSNO,RHOSNO,FROOT,THPOR, &
                    THLMIN,DELZW,EVLOST,RLOST,IROOT, &

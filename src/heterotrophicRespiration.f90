@@ -1,22 +1,22 @@
 !> \file
 !> Central module for all heterotrophic respiration-related operations
 module heterotrophic_respiration
-  
+
   implicit none
-  
+
   ! Subroutines contained in this module:
   public  :: heterotrophicRespiration
   public  :: hetresg
   public  :: hetresv
   public  :: updatePoolsHetResp
-  
+
 contains
-  
+
   !> \ingroup heterotrophic_respiration_heterotrophicRespiration
   !! @{
   !> Heterotrophic respiration subroutine that calls hetresg and hetresv.
   !> @author Vivek Arora and Joe Melton
-  
+
   subroutine heterotrophicRespiration(il1, il2, ilg, ipeatland, fcancmx, fc, & ! In
                                       litrmass, soilcmas, delzw, thpor, tbar, & ! In
                                       psisat, thliq, sort, bi, isand , thice, & ! In
@@ -25,12 +25,12 @@ contains
                                       ltresveg, scresveg, litresmoss, socres_peat, & ! Out
                                       resoxic, resanoxic, & ! Out
                                       ltResTracer, sCResTracer, litResMossTracer, soCResPeatTracer ) ! Out
-    
+
     use classic_params,        only : iccp2,ignd,icc,iccp1
     use peatlands_mod, only : hetres_peat
-    
+
     implicit none
-    
+
     integer, intent(in) :: il1
     integer, intent(in) :: il2
     integer, intent(in) :: ilg
@@ -64,7 +64,7 @@ contains
     real, intent(inout) :: peatdep(:)      !< peat depth (m)
     real, intent(in) :: wtable(:)          !< water table (m)
     real, intent(in) :: zbotw(:,:)         !< bottom of soil layers
-    
+
     ! COMBAK PERLAY
     real, intent(out) :: ltresveg(ilg,iccp2)     !< fluxes for each pft: litter respiration for each pft + bare fraction
     real, intent(out) :: scresveg(ilg,iccp2)     !< soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
@@ -75,26 +75,26 @@ contains
     real, intent(out) :: socres_peat(ilg)   !< heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: resoxic(ilg)       !< oxic respiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: resanoxic(ilg)     !< anoxic respiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    
+
     real, intent(in) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(in) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(in) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-    
-    
+
+
     real :: ltResTracer(ilg,iccp2,ignd)  !< Tracer fluxes for each pft: litter respiration for each pft + bare fraction TODO: Units (intent(out))
     real :: sCResTracer(ilg,iccp2,ignd)  !< Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts TODO: Units (intent(out))
     real, intent(out) :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) TODO: Units
     real, intent(out) :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) TODO: Units
-    
+
     ! ------
-    
+
     ! COMBAK PERLAY
     call    hetresv ( fcancmx, fc, litrmass(:,1:icc), soilcmas(:,1:icc), & ! In
-                  delzw, thpor, il1, il2, & ! In
-                  ilg,   tbar, psisat, thliq, & ! In
-                  roottemp,    zbotw, sort,bi, & ! In
-                  isand, thice, ipeatland, & ! In
-                  ltresveg, scresveg) ! Out
+                     delzw, thpor, il1, il2, & ! In
+                     ilg,   tbar, psisat, thliq, & ! In
+                     roottemp,    zbotw, sort,bi, & ! In
+                     isand, thice, ipeatland, & ! In
+                     ltresveg, scresveg) ! Out
     ! call    hetresv ( fcancmx, fc, litrmass(:,1:icc,:), soilcmas(:,1:icc,:), & ! In
     ! delzw, thpor, il1, il2, & ! In
     ! ilg,   tbar, psisat, thliq, & ! In
@@ -103,14 +103,14 @@ contains
     ! ltresveg(:,1:icc,:), scresveg(:,1:icc,:), & ! Out
     ! ltResTracer(:,1:icc,:), sCResTracer(:,1:icc,:)) ! Out
     ! COMBAK PERLAY
-    
+
     !! Find heterotrophic respiration rates from bare ground subarea
     ! COMBAK PERLAY
     call  hetresg  (litrmass(:,iccp1),soilcmas(:,iccp1), delzw,thpor, & ! In
                     il1,       il2,       ilg,   tbar, & ! In
-                 psisat,        bi,    thliq,   zbotw, & ! In
-                 thice,        fg,     isand, & ! In
-                 ltresveg(:,iccp1),  scresveg(:,iccp1)) ! Out
+                    psisat,        bi,    thliq,   zbotw, & ! In
+                    thice,        fg,     isand, & ! In
+                    ltresveg(:,iccp1),  scresveg(:,iccp1)) ! Out
     ! call  hetresg  (litrmass(:,iccp1,:),soilcmas(:,iccp1,:), delzw,thpor, & ! In
     !    il1,       il2,       ilg,   tbar,    & ! In
     ! psisat,        bi,    thliq,      & ! In
@@ -119,16 +119,16 @@ contains
     ! ltresveg(:,iccp1,:),  scresveg(:,iccp1,:), & ! Out
     ! ltResTracer(:,iccp1,:), sCResTracer(:,iccp1,:)) ! Out
     ! COMBAK PERLAY
-    
+
     !>  Find heterotrophic respiration rates for the LUC litter and soilc pools
     !!  The LUC litter and soil C respiration rates are assumed to
     !!  be applied over the entire tile but kept in layer 1
     ! COMBAK PERLAY
     call  hetresg  (litrmass(:,iccp2),soilcmas(:,iccp2), delzw,thpor, & ! In
-                      il1,       il2,       ilg,   tbar, & ! In
-                   psisat,        bi,    thliq,   zbotw, & ! In
-                   thice,        fg,     isand, & ! In
-                   ltresveg(:,iccp2),  scresveg(:,iccp2)) ! Out
+                    il1,       il2,       ilg,   tbar, & ! In
+                    psisat,        bi,    thliq,   zbotw, & ! In
+                    thice,        fg,     isand, & ! In
+                    ltresveg(:,iccp2),  scresveg(:,iccp2)) ! Out
     ! call  hetresg  (litrmass(:,iccp2,:),soilcmas(:,iccp2,:), delzw,thpor, & ! In
     !    il1,       il2,       ilg,   tbar,    & ! In
     ! psisat,        bi,    thliq,   & ! In
@@ -137,20 +137,20 @@ contains
     ! ltresveg(:,iccp2,:),  scresveg(:,iccp2,:), & ! Out
     ! ltResTracer(:,iccp2,:), sCResTracer(:,iccp2,:)) ! Out
     ! COMBAK PERLAY
-    
+
     !! When peatlands are simulated find the peat heterotrophic respiration.
     ! Called regardless to set outputs to 0.
     call hetres_peat       (    il1,          il2,          ilg,   ipeatland, & ! In
-                           isand,   litrmsmoss,      peatdep,      wtable, & ! In
-                           tbar,        thliq,        thice,       thpor, & ! In
-                           bi,        zbotw,        delzw,      psisat, & ! In
-                           useTracer, tracerMossLitrMass, & ! In
-                           litresmoss,  socres_peat,      resoxic,   resanoxic, & ! Out
-                           litResMossTracer, soCResPeatTracer ) ! Out
-    
-    
+                            isand,   litrmsmoss,      peatdep,      wtable, & ! In
+                            tbar,        thliq,        thice,       thpor, & ! In
+                            bi,        zbotw,        delzw,      psisat, & ! In
+                            useTracer, tracerMossLitrMass, & ! In
+                            litresmoss,  socres_peat,      resoxic,   resanoxic, & ! Out
+                            litResMossTracer, soCResPeatTracer ) ! Out
+
+
   end subroutine heterotrophicRespiration
-  
+
   !> \ingroup heterotrophic_respiration_hetresg
   !! @{
   !> Heterotrophic respiration subroutine for bare ground fraction
@@ -169,7 +169,7 @@ contains
     !                        litres,   socres, & ! Out
     !                        ltResTracer, sCResTracer) ! Out
     ! COMBAK PERLAY
-    
+
     !               Canadian Terrestrial Ecosystem Model (CTEM)
     !           Heterotrophic Respiration Subroutine For Bare Fraction
     !
@@ -178,7 +178,7 @@ contains
     !                     and snow over ground subareas).
     !
     !     change history:
-    
+
     !      7  Jun 2016  - Bring in step function for reduction in resp when soil freezes.
     !     J. Melton
     !
@@ -209,7 +209,7 @@ contains
     !     J. Melton 23 Aug 2012 - bring in isand, converting sand to
     !                             int was missing some gridcells assigned
     !                             to bedrock in classb
-    
+
     ! COMBAK PERLAY
     use classic_params,        only : icc, ignd, zero, tanhq10, a_hetr, &
                                      bsratelt_g, bsratesc_g
@@ -302,7 +302,7 @@ contains
           psi (i,j) = 10000.0 ! set to large number so that
           ! ltrmoscl becomes 0.2
         else ! i.e., sand/=-3 or -4
-          
+
           ! We don't place a lower limit on psi as it is only used here and the
           ! value of psi <= psisat is just used to select a scomotrm value.
           if (thice(i,j) <= thpor(i,j)) then ! flag new limits
@@ -377,7 +377,7 @@ contains
         ! to u-mol co2/kg c.s
       end if
     end do ! loop 330
-    
+
     !   use classic_params,        only : icc, ignd, zero, tanhq10, a_hetr, &
     !                                     bsratelt_g, bsratesc_g, r_depthredu, &
     !                                     tcrit,frozered
@@ -554,13 +554,13 @@ contains
     ! 340  continue
     ! 330 continue
     ! COMBAK PERLAY  !
-    
+
     return
-    
+
   end subroutine hetresg
   !> @}
   ! ------------------------------------------------------------------------------------
-  
+
   !> \ingroup heterotrophic_respiration_hetresv
   !! @{
   !> Heterotrophic Respiration Subroutine For Vegetated Fraction
@@ -581,13 +581,13 @@ contains
     ! COMBAK PERLAY
     !               Canadian Terrestrial Ecosystem Model (CTEM)
     !           Heterotrophic Respiration Subtoutine For Vegetated Fraction
-    
+
     !     16  oct. 2001 - this subroutine calculates heterotrophic respiration
     !     V. Arora        for a given sub-area, from litter and soil carbon
     !                     pools.
-    
+
     !     change history:
-    
+
     !
     !      7  Jun 2016  - Bring in step function for reduction in resp when soil freezes.
     !     J. Melton
@@ -600,7 +600,7 @@ contains
     !
     !     14  Jan 2016  - Converted to F90 and made it so it can handle > 3 soil layers
     !     J. Melton
-    
+
     !     10  April 2015 -Bring in peatland scheme
     !     Y. Wu
     !
@@ -609,17 +609,17 @@ contains
     !                     was leaving the soil. This is now fixed.
     !     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
     !     J. Melton
-    
+
     !     22  Jul 2013  - Add in module for parameters
     !     J. Melton
-    
+
     !     J. Melton and V.Arora - changed tanhq10 parameters, they were switched
     !               25 sep 2012
     !     J. Melton 23 aug 2012 - bring in isand, converting sand to
     !                             int was missing some gridcells assigned
     !                             to bedrock in classb
     !     ------
-    
+
     ! COMBAK PERLAY
     use classic_params,        only : icc, ignd, kk, zero, bsratelt, &
                                bsratesc, abar, tanhq10, &
@@ -854,7 +854,7 @@ contains
         end if
       end do ! loop 330
     end do ! loop 320
-    
+
     !   use classic_params,        only : icc, ignd, kk, zero, bsratelt, &
     !                            bsratesc, abar, tanhq10, &
     !                            alpha_hetres, r_depthredu,tcrit,frozered
@@ -1074,14 +1074,14 @@ contains
     ! 330 continue
     ! 320 continue
     ! COMBAK PERLAY
-    
+
     return
-    
+
   end subroutine hetresv
   !! @}
-  
+
   ! ---------------------------------------------------------------
-  
+
   !> \ingroup heterotrophic_respiration_updatePoolsHetResp
   !! @{ Find vegetation and tile averaged litter and soil C respiration rates
   !! using values from canopy over ground and canopy over snow subareas.
@@ -1101,12 +1101,12 @@ contains
                               hetrsveg, litres, socres, hetrores, humtrsvg, soilresp, & ! Out
                               humiftrs, hutrstep_g, litrfallmoss, ltrestepmoss, &
                               humstepmoss, socrestep ) ! Out
-    
+
     use classic_params, only : icc, iccp1, iccp2,ignd,zero, humicfac, humicfac_bg, &
                               deltat, humicfacmoss, rmortmoss
-    
+
     implicit none
-    
+
     ! Inputs
     integer, intent(in) :: il1             !< il1=1
     integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
@@ -1139,7 +1139,7 @@ contains
     real, intent(in) :: sCResTracer(ilg,iccp2,ignd)  !< Tracer soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's pfts
     real, intent(in) :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) TODO: Units
     real, intent(in) :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    
+
     ! Updates
     ! COMBAK PERLAY
     real, intent(inout) :: litrmass (ilg,iccp2)  !< Litter mass for each of the CTEM pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
@@ -1148,11 +1148,11 @@ contains
     ! real, intent(inout) :: soilcmas(ilg,iccp2,ignd)   !< Soil carbon mass for each of the CTEM pfts + bare + LUC product pools, \f$(kg C/m^2)\f$
     ! COMBAK PERLAY
     real, intent(inout) :: Cmossmas(ilg)         !< Moss biomass C pool (kgC/m2)
-    
+
     real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(inout) :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
-    
+
     ! Outputs
     real, intent(out) :: hutrstep_g(ilg)    !< Tile sum of humification from vascualr litter (kgC/m2/timestep)
     real, intent(out) :: litrfallmoss(ilg)  !< moss litter fall (kgC/m2/timestep)
@@ -1171,7 +1171,7 @@ contains
     !! litter and soil carbon pools. Note that soilresp is different from
     !! socres, which is respiration from the soil C pool.(\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: humiftrs(ilg)    !< Transfer of humidified litter from litter to soil C pool (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    
+
     ! Local
     integer :: k,j,i
     real :: ltrestep !<
@@ -1182,9 +1182,9 @@ contains
     ! COMBAK PERLAY
     real :: tracerhutrstep !<
     real :: soilrsvg(ilg,iccp2) !<
-    
+
     ! -----------
-    
+
     !> Find vegetation averaged litter and soil C respiration rates
     !! using values from canopy over ground and canopy over snow subareas
     hetrsveg(:,:) = 0.0
@@ -1201,7 +1201,7 @@ contains
         end if
       end do ! loop 350
     end do ! loop 340
-    
+
     !> Find litter and soil c respiration rates averaged over the bare
     !! fraction of the grid cell using values from ground and snow over ground sub-areas.
     do i = il1, il2
@@ -1216,7 +1216,7 @@ contains
         ! nepveg(i,iccp1)=0.-hetrsveg(i,iccp1)
       end if
     end do ! loop 355
-    
+
     !> Find grid averaged litter and soil c respiration rates
     litres(:) = 0.
     socres(:) = 0.
@@ -1232,7 +1232,7 @@ contains
         ! COMBAK PERLAY
       end do ! loop 370
     end do ! loop 360
-    
+
     !> Add moss and peat soil respiration to the grid
     !! In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
     !! bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland.
@@ -1259,13 +1259,13 @@ contains
         ! consistent. Of course, overwriting variables is not advised because it makes things confusing.
         !
         socres(i) = socres_peat(i) ! since this is only peatland on this tile, use just the peat value.
-        
+
       end if
-      
+
       hetrores(i) = litres(i) + socres(i)
-      
+
     end do ! loop 380
-    
+
     !> Update the litter and soil c pools based on litter and soil c respiration rates
     !! found above. also transfer humidified litter to the soil c pool.
     do j = 1, iccp2
@@ -1274,7 +1274,7 @@ contains
         !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
         ltrestep = ltresveg(i,j) * deltat / 963.62
         screstep = scresveg(i,j) * deltat / 963.62
-        
+
         !> Update litter and soil c pools
         if (j < iccp1) then
           litrmass(i,j) = litrmass(i,j) - (ltrestep * (1.0 + humicfac(sort(j))))
@@ -1288,14 +1288,14 @@ contains
             ! In peatlands there is no bareground litter mass since it is the moss layer.
           end if
         end if
-        
+
         humtrsvg(i,j) = hutrstep(i,j) * (963.62 / deltat) ! u-mol co2/m2.sec
-        
+
         soilcmas(i,j) = soilcmas(i,j) + real(spinfast) * (hutrstep(i,j) -  screstep)
-        
+
         if (litrmass(i,j) < zero) litrmass(i,j) = 0.0
         if (soilcmas(i,j) < zero) soilcmas(i,j) = 0.0
-        
+
         !       do k = 1, ignd
         !
         !         !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
@@ -1348,7 +1348,7 @@ contains
         ! COMBAK PERLAY
       end do ! loop 430
     end do ! loop 420
-    
+
     !> Estimate soil respiration. this is sum of heterotrophic respiration and root maintenance respiration.
     soilrsvg(:,:) = 0.
     do j = 1, icc
@@ -1363,9 +1363,9 @@ contains
         soilrsvg(i,j) = soilrsvg(i,j) + rmrveg(i,j)
       end do ! loop 445
     end do ! loop 440
-    
+
     !> But over the bare fraction and LUC product pool there is no live root.
-    
+
     do i = il1, il2
       ! COMBAK PERLAY
       soilrsvg(i,iccp1) = soilrsvg(i,iccp1) + ltresveg(i,iccp1) + scresveg(i,iccp1)
@@ -1374,7 +1374,7 @@ contains
       ! 465 continue
       ! COMBAK PERLAY
     end do ! loop 460
-    
+
     !> Find grid averaged humification and soil respiration rates
     soilresp(:) = 0.0
     humiftrs(:) = 0.0
@@ -1391,14 +1391,14 @@ contains
         ! end do
         ! COMBAK PERLAY
       end do ! loop 480
-      
+
       !> After aggregation of humification and soil respiration rates for non-peatlands
       !! to the grid/tile level, the same must be done for bareground (iccp1).
       !! For peatlands, we additionally add moss values to the grid (litter respiration
       !! and moss root respiration). Note in loop 430 iccp1 is passed for peatlands
-      
+
       if (ipeatland(i) == 0 ) then ! non peatland
-        
+
         soilresp(i) = soilresp(i) + fg(i) * soilrsvg(i,iccp1)
         ! COMBAK PERLAY
         humiftrs(i) = humiftrs(i) + fg(i) * humtrsvg(i,iccp1)
@@ -1406,22 +1406,22 @@ contains
         !   humiftrs(i) = humiftrs(i) + fg(i) * humtrsvg(i,iccp1,k)
         ! end do
         ! COMBAK PERLAY
-        
+
         ! Set all peatland vars to 0.
         litrfallmoss(i) = 0.
         ltrestepmoss(i) = 0.
         humstepmoss(i) = 0.
         socrestep(i) = 0.
-        
+
       else ! peatland
-        
+
         ! CAUTION says Vivek
         ! Here again soilresp(i) is overwritten with socres(i)=socres_peat(i) as calculated
         ! above in loop 380. This makes soilresp(i) inconsistent with soilrsvg(i,j) for
         ! peatland gridcells/tile.
-        
+
         soilresp(i) = socres(i) + litres(i) + rmr(i) ! moss root and litter respiration. No bareground !
-        
+
         ! Calculate moss time step C fluxes, '/365*deltat' convert year-1
         ! to time step-1, 'deltat/963.62' convert umol CO2/m2/s to kgC/m2/deltat.
         ! note that hutrstep_g aggregation for icc was done in loop 480
@@ -1437,13 +1437,13 @@ contains
         humstepmoss(i) = humicfacmoss * ltrestepmoss(i)        ! kgC/m2/dt
         hutrstep_g(i) = hutrstep_g(i) + humstepmoss(i)     ! kgC/m2/dt
         humiftrs(i)  = humiftrs(i) + humstepmoss(i) * (963.62 / deltat)! umol/m2/s
-        
+
       end if
     end do ! loop 470
-    
+
   end subroutine updatePoolsHetResp
   !! @}
-  
+
   !> \defgroup hetresg Heterotrophic Respiration Bare Ground
   !! Heterotrophic Respiration Subroutine For Bare Fraction
   !!
@@ -1577,6 +1577,6 @@ contains
   !! calculated as
   !! \f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \hspace{10pt}[Eqn 11]\f]
   !!
-  
+
   !> \file
 end module heterotrophic_respiration
