@@ -15,5 +15,5 @@ The script uses python with the xarray library (http://xarray.pydata.org/en/stab
 
 # Execute
 
-To run the program, edit the paths to the original half-hourly output file (hhoriginal), the CLASSIC land mask (landmask; this could removed from the script if you don't have a landmask, it just speeds the script up), and the output file (outfile)
+To run the program, edit the paths to the original half-hourly output file (hhoriginal), the CLASSIC land mask (landmask; this could removed from the script if you don't have a landmask, it just speeds the script up), the variable name (variableName) and the output file (outfile)
 

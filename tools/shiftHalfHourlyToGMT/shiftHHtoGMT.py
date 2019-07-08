@@ -5,7 +5,8 @@ import numpy as np
 #print("xarray version : ", xr.__version__)
 
 # Open the CLASSIC output file that needs to be transformed to be on GMT:
-hhoriginal = '/raid/ra40/data/rjm/backend_results/gpp_halfhourly.nc'
+hhoriginal = 'rmLeaf.nc'
+variableName = 'rmLeaf'
 
 # Open up a land mask.
 landmask = '/raid/rd40/data/CTEM/OBSERVATION_DATASETS/CTEM_t63_landmask_trimmed.nc'
@@ -44,8 +45,8 @@ for lon in lons.data:
           if (maskval.data.flatten()[0] == 1):             
 
               # Now that we know how many timesteps we need to shift, we can apply the roll.
-              newvals = hhdataorig['gpp'].sel(lon=lon, lat=lat).roll(time=timeZone, roll_coords=False)
+              newvals = hhdataorig[variableName].sel(lon=lon, lat=lat).roll(time=timeZone, roll_coords=False)
               # Replace the old values with the rolled values
-              hhdataorig['gpp'].loc[{'lon':lon, 'lat':lat}] = newvals
+              hhdataorig[variableName].loc[{'lon':lon, 'lat':lat}] = newvals
 
 hhdataorig.to_netcdf(outfile)
