@@ -163,6 +163,10 @@
     
     doAnnualOutput = .true. ,   ! Switch for making annual output files 
 
+    doChecksums = .false.,      ! checksums can be generated if you wish to ensure you are making no
+                                ! functional changes to the model results. See the CLASSIC documentation and
+                                ! the regression_testing tool.
+    
     Comment = ' test '          ! Comment about the run that will be written to the output netcdfs
 
  /
