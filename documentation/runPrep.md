@@ -340,6 +340,12 @@ Model outputs are in netcdf format. The outputs metadata is read in from an xmlF
             
             doAnnualOutput = .true. ,   ! Switch for making annual output files 
 
+CLASSIC has the capability to produce checksums to ensure model outputs haven't changed. The checksum module takes the model restart variables and calculates a sum based upon the binary representation of the variables' values. This 'checksum' can then be compared to previous runs to see if the checksum values have changed. While this test is not infalliable, the probability of a false positive decreases exponentially with the number of outputs being tested. For further info see https://en.wikipedia.org/wiki/Checksum. See @ref regTest for framework and checksum.f90 for specifics.
+
+            doChecksums = .false.,      ! checksums can be generated if you wish to ensure you are making no
+                                        ! functional changes to the model results. See the CLASSIC documentation and
+                                        ! the regression_testing tool.
+
 Comments can be added to output files using the Comment field below. Also comments can be left in the joboptions file after the backslash.
 
             Comment = ' test '          !< Comment about the run that will be written to the output netcdfs
