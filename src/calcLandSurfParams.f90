@@ -1,7 +1,6 @@
 !> \file
 !! Calculates various land surface parameters.
 !! @author D. Verseghy, M. Lazare, V. Fortin, V. Arora, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
-
 !>
 !! This subroutine is adaptable to any number of vegetation categories recognized by CLASS
 !! (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
@@ -660,7 +659,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! are assigned.
   !!
 
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 175
     do J = 1, IC
       FCAN(I,J) = FCANMX(I,J) * (1.0 - FSNOW(I))
       if (FCAN(I,J) < 1.0E-5) FCAN(I,J) = 0.0
