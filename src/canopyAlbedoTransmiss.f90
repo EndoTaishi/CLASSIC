@@ -4,13 +4,13 @@
 !! @author D. Verseghy, M. Lazare, P. Bartlett, R. Harvey, J. Melton
 !
 subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! Formerly CANALB
-                   TRVSCS,TRIRCS,RC,RCS, &
-                   ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB, &
-                   FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS, &
-                   AIL,PSIGND,FCLOUD,COSZS,QSWINV,VPD,TA, &
-                   ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC, &
-                   ILG,IL1,IL2,JL,IC,ICP1,IG,IALC, &
-                   CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC)
+                                 TRVSCS,TRIRCS,RC,RCS, &
+                                 ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB, &
+                                 FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS, &
+                                 AIL,PSIGND,FCLOUD,COSZS,QSWINV,VPD,TA, &
+                                 ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC, &
+                                 ILG,IL1,IL2,JL,IC,ICP1,IG,IALC, &
+                                 CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC)
 
   !     * Mar 28/17 - S.SUN Expand PFTs from 4 to 5 in CLASS
   !     *
@@ -128,7 +128,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   real, intent(in) :: ACIDAT(ILG,IC)   !< Optional user-specified value of canopy
   !! near-infrared albedo to override CLASS-
   !! calculated value [ ]
-  real :: AIL   (ILG,IC)   !< Leaf area index of vegetation category over
+  real, intent(in) :: AIL   (ILG,IC)   !< Leaf area index of vegetation category over
   !! bare ground \f$[ ] (\Lambda)\f$
   !
   !     * 1-D INPUT ARRAYS.

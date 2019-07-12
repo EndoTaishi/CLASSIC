@@ -14,7 +14,8 @@ module ctemDriver
   public  :: calcNBP
 
 contains
-
+  !> \ingroup ctem_ctem
+  !! @{
   subroutine ctem(   fsnow,     sand,      clay, & ! In
                  ilg,   il1,      il2,     iday,      radj, & ! In
                   ta,     delzw, ancgveg,   rmlcgveg, & ! In

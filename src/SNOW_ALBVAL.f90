@@ -17,38 +17,25 @@ subroutine SNOW_ALBVAL(albdif, albdir, & ! OUTPUT
   !                    - COMPUTES THE DIRECT AND DIFFUSE SNOW ALBEDO
   !                      USING LOOKUP TABLE AND CURRENT SNOW CONDITIONS.
   !
-
   implicit none
-
-  !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ! INPUTS
-  !! @var SMU:       COSINE OF THE SOLAR ZENITH ANGLE [UNITLESS]
-  !! @var SALB :     ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]
-  !! @param BC_CONC:   CONCENTRATION OF BLACK CARBON IN THE SNOW PACK [NG (BC)/KG (SNOW)]
-  !! @param SNOW_REFF: EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]
-  !! @param SWE:       SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]
-  !! @param C_IND:     INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT 1-YES, 0-NO                                                          SNOW_ALBVAL.37
-  !! @param IL1:       STARTING POINT FOR ALBEDO CALCULATIONS
-  !! @param IL2:       ENDING POINT FOR ALBEDO CALCULATIONS
-  !! @param ILG:      NUMBER OF POINTS FOR WHICH TO COMPUTE ALBEDOS
-  !! @param NBND:      NUMBER OF WAVELENGTH INTERVALS FOR WHICH TO COMPUTE THE ALBEDOS
-  !
-  ! OUTPUTS
-  !! @param ALBDIF: DIFFUSE SNOW ALBEDO (AKA WHITE SKY ALBEDO)
-  !! @param ALBDIR: DIRECT BEAM SNOW ALBEDO (AKA BLACK SKY ALBEDO)
-  !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
   !
   ! INPUT
   !
-  real, intent(in), DIMENSION(ILG)      :: smu, bc_conc, snow_reff, swe
-  real, intent(in), DIMENSION(ILG,NBND) :: salb
-  integer, intent(in), DIMENSION(ILG)   :: c_ind
-  integer, intent(in)                   :: il1, il2, ilg, nbnd
+  real, intent(in)    :: smu(ILG) !< COSINE OF THE SOLAR ZENITH ANGLE [UNITLESS]
+  real, intent(in)    :: bc_conc(ILG) !< CONCENTRATION OF BLACK CARBON IN THE SNOW PACK [NG (BC)/KG (SNOW)]
+  real, intent(in)    :: snow_reff(ILG) !< EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]
+  real, intent(in)    :: swe(ILG) !< SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]
+  real, intent(in)    :: salb(ILG,NBND) !< ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]
+  integer, intent(in) :: c_ind(ILG) !< INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT 1-YES, 0-NO
+  integer, intent(in) :: il1 !< STARTING POINT FOR ALBEDO CALCULATIONS
+  integer, intent(in) :: il2 !< ENDING POINT FOR ALBEDO CALCULATIONS
+  integer, intent(in) :: ilg !< NUMBER OF POINTS FOR WHICH TO COMPUTE ALBEDOS
+  integer, intent(in) :: nbnd !< NUMBER OF WAVELENGTH INTERVALS FOR WHICH TO COMPUTE THE ALBEDOS
   !
   ! OUTPUT
   !
-  real, intent(out), DIMENSION(ILG,NBND) :: albdif, albdir
+  real, intent(out) :: albdif(ilg,nbnd) !< DIFFUSE SNOW ALBEDO (AKA WHITE SKY ALBEDO)
+  real, intent(out) :: albdir(ilg,nbnd) !< DIRECT BEAM SNOW ALBEDO (AKA BLACK SKY ALBEDO)
   !
   ! LOCAL
   !
@@ -233,5 +220,4 @@ subroutine SNOW_ALBVAL(albdif, albdir, & ! OUTPUT
   end do ! ib
 
   return
-  !> \file
 end

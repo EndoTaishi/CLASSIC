@@ -1,4 +1,6 @@
-
+!> \file
+!> Runs checksum calculations across several model variables
+!!
 module checksum
 
   implicit none
@@ -7,7 +9,7 @@ module checksum
   public :: bitcount, bitcount_int
 
 contains
-  !> \ingroup generalUtils_checksumCalc
+  !> \ingroup checksum_checksumCalc
   !! @{
   !! This subroutine takes the lonIndex and latIndex of a cell, accesses many
   !! attributes of the cell after the run, and creates a checksum from those attributes.
@@ -24,8 +26,8 @@ contains
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonIndex,  latIndex        !< The location of this cell
-
+    integer, intent(in) :: lonIndex       !< Index of the longitude of this cell
+    integer, intent(in) :: latIndex       !< Index of the latitude of this cell
     ! pointers:
     real, pointer, dimension(:,:,:) :: FCANROT
     real, pointer, dimension(:,:)   :: FAREROT
@@ -51,9 +53,9 @@ contains
     real, pointer, dimension(:,:,:) :: bleafmasrow
     real, pointer, dimension(:,:,:) :: stemmassrow
     real, pointer, dimension(:,:,:) :: rootmassrow
-    real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
-    real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
-    real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
+    real, pointer, dimension(:,:) :: twarmm
+    real, pointer, dimension(:,:) :: tcoldm
+    real, pointer, dimension(:,:) :: gdd5
     real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
     real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
     real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
@@ -120,9 +122,9 @@ contains
     GROROT            => class_rot%GROROT
 
 
-    write(lonchar, '(I4)')lonIndex        !< transfer to a string variable
-    write(latchar, '(I4)')latIndex        !< transfer to a string variable
-    !> generate the proper, formatted filename
+    write(lonchar, '(I4)')lonIndex
+    write(latchar, '(I4)')latIndex
+    ! generate the proper, formatted filename
     !ignoreLint(3) (it messes with the file path)
     write(filename, "(A,A,A,'_',A,A)") TRIM(adjustl(c_switch%output_directory)), '/checksums/', &
                                        TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), '.csv'
@@ -264,4 +266,44 @@ contains
 
   end function bitcount_int
   !! @}
+  ! -----------------------------------------------------------------------------------------------
+  !> \namespace checksum
+
+  !>
+  !! @author M. Fortier
+  !!
+  !! This module computes content-based checksums of several groups of variables after
+  !! a run has completed. These checksums are used when making non-logical changes to
+  !! the code-base. This is accomplished by comparing the computed checksums, to the
+  !! checksums of an identical run (same parameters, met files, etc.) before the changes
+  !! were made. This is a modified form of regression testing specific to non-logical
+  !! software changes.
+  !!
+  !! Checksums are not an infallible means of ensuring no logical changes, as two numbers
+  !! may have different binary representations with the same number of flipped bits. However,
+  !! with the number of variables we are checking, it is extremely unlikely to render a false-
+  !! positive. If we take a data item of bit-length \f$n\f$, having \f$b\f$ flipped bits in
+  !! its representation, the number of same-length data items with the same checksum can
+  !! be expressed through the binary coefficient
+  !!
+  !! \f[ {n\choose b} \f]
+  !!
+  !! If we assume the worst case where \f$b=\frac{n}{2}\f$, then we are left with
+  !!
+  !! \f[ {n\choose n/2} \f]
+  !!
+  !! Dividing by the total number of possible values for an n-digit binary number,
+  !! we find the probability of a false positive checksum to be, in the worst case:
+  !!
+  !! \f[ \large \frac{{n\choose n/2}}{2^n} \f]
+  !!
+  !! Due to the cascading effects of any logical changes to the model, all 7 groups
+  !! of variables (6 if peatlands is diabled) will be affected. The smallest of these
+  !! groups consists of 3 arrays of numbers for which checksums are computed. With the
+  !! conservative assumption that each array contains only a single 32-bit number, the
+  !! probability of a false positive (in the absolute worst case) becomes:
+  !!
+  !! \f[ \large \left({\frac{96\choose 48}{2^{96}}}\right)^{6} ~= 2.87105123*10^{-7}       \f]
+  !!
+  !> \file
 end module checksum

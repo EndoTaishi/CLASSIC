@@ -1,6 +1,5 @@
 !> \file
 !! Performs allocation of carbon gained by photosynthesis into plant structural pools
-!! @author Vivek Arora, Joe Melton
 !!
 module allocateCarbon
 
@@ -48,47 +47,46 @@ contains
     !     V. Arora        for leaf, stem, and root components for ctem's pfts
 
     use classic_params,   only : eta, kappa, kn, abszero, icc, &
-                                    ignd, ican, omega, epsilonl, &
-                                    epsilons, epsilonr, caleaf, castem, &
-                                    caroot, consallo, rtsrmin,aldrlfon, &
-                                    classpfts, nol2pfts, reindexPFTs
+                                 ignd, ican, omega, epsilonl, &
+                                 epsilons, epsilonr, caleaf, castem, &
+                                 caroot, consallo, rtsrmin,aldrlfon, &
+                                 classpfts, nol2pfts, reindexPFTs
 
     implicit none
 
-    integer :: ilg !<
-    integer :: il1 !< input: il1=1
-    integer :: il2 !< input: il2=ilg
-    integer :: i, j, k
-    integer :: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
+    integer, intent(in) :: ilg !<
+    integer, intent(in) :: il1 !< input: il1=1
+    integer, intent(in) :: il2 !< input: il2=ilg
+    integer :: i, j, k, m, n
+    integer, intent(in):: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
     !< in "max. growth", "normal growth", "fall/harvest",
     !< or "no leaves" mode. see phenolgy subroutine for more details.
-    integer :: n, m
     !
-    integer :: sort(icc) !< input: index for correspondence between 9 pfts and the
+    integer, intent(in) :: sort(icc) !< input: index for correspondence between 9 pfts and the
     !< 12 values in parameters vectors
-    integer :: isand(ilg,ignd)
+    integer, intent(in) :: isand(ilg,ignd)
     !
-    real   :: ailcg(ilg,icc) !< input: green or live leaf area index
-    real   :: ailcb(ilg,icc) !< input: brown or dead leaf area index
-    real   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
-    real   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
-    real   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
-    real   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts, kg c/m2
-    real   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
-    real   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
-    real   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
-    real   :: sand(ilg,ignd) !< input: percentage sand
-    real   :: clay(ilg,ignd) !< input: percentage clay
+    real, intent(in)   :: ailcg(ilg,icc) !< input: green or live leaf area index
+    real, intent(in)   :: ailcb(ilg,icc) !< input: brown or dead leaf area index
+    real, intent(in)   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
+    real, intent(in)   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
+    real, intent(in)   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
+    real, intent(in)   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts, kg c/m2
+    real, intent(in)   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
+    real, intent(in)   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in)   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
+    real, intent(in)   :: sand(ilg,ignd) !< input: percentage sand
+    real, intent(in)   :: clay(ilg,ignd) !< input: percentage clay
     !
-    real   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
-    real   :: afrstem(ilg,icc) !< output: allocation fraction for stem
-    real   :: afrroot(ilg,icc) !< output: allocation fraction for root
-    real   :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts, but this can be
+    real, intent(inout)   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
+    real, intent(inout)   :: afrstem(ilg,icc) !< output: allocation fraction for stem
+    real, intent(inout)   :: afrroot(ilg,icc) !< output: allocation fraction for root
+    real, intent(inout)  :: wtstatus(ilg,icc) !< output: soil water status (0 dry -> 1 wet)
+    real, intent(inout)  :: ltstatus(ilg,icc) !< output: light status
+    real, intent(in)      :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts, but this can be
     !< modified by land-use change, and competition between pfts
     !
     real  :: avTHLW(ilg,icc),  aTHFC(ilg,icc),    avthliq(ilg,icc)
-    real  :: wtstatus(ilg,icc) !< output: soil water status (0 dry -> 1 wet)
-    real  :: ltstatus(ilg,icc) !< output: light status
     real  :: nstatus(ilg,icc)
     real  :: wnstatus(ilg,icc),              denom,   mnstrtms(ilg,icc), &
                         diff,              term1,               term2, &
@@ -684,6 +682,10 @@ contains
   ! ---------------------------------------------------------------------------------------------------
 
   !> \namespace allocateCarbon
+
+  !>
+  !! @author V. Arora, J. Melton
+  !!
   !! Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
   !! biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a
   !! component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to

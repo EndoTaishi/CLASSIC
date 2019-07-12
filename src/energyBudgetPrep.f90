@@ -4,29 +4,29 @@
 !! @author D. Verseghy, M. Lazare, A. Wu, Y. Delage, J. P. Paquin, R. Harvey
 !
 subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! Formerly TPREP
-                  TBARCS, TBARGS, HCPC,   HCPG,   TCTOPC, TCBOTC, &
-                  TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
-                  TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
-                  TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO, &
-                  EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
-                  GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
-                  QMELTC, QMELTG, EVAP,   GSNOW, &
-                  TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
-                  QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS, &
-                  ILMOX,  UEX,    HBLX, &
-                  ILMO,   UE,     HBL, &
-                  ST,     SU,     SV,     SQ,     SRH, &
-                  CDH,    CDM,    QSENS,  QEVAP,  QLWAVG, &
-                  FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG, &
-                  HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG, &
-                  HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND, &
-                  DRAG,   THLIQ,  THICE,  TBAR,   ZPOND,  TPOND, &
-                  THPOR,  THLMIN, THLRET, THFC,   HCPS,   TCS, &
-                  TA,     RHOSNO, TSNOW,  ZSNOW,  WSNOW,  TCAN, &
-                  FC,     FCS,    DELZ,   DELZW,  ZBOTW, &
-                  ISAND,  ILG,    IL1,    IL2,    JL,     IG, &
-                  FVEG,   TCSATU, TCSATF, FTEMP,  FTEMPX, FVAP, &
-                  FVAPX,  RIB,    RIBX  )
+                            TBARCS, TBARGS, HCPC,   HCPG,   TCTOPC, TCBOTC, &
+                            TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
+                            TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
+                            TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO, &
+                            EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
+                            GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
+                            QMELTC, QMELTG, EVAP,   GSNOW, &
+                            TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
+                            QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS, &
+                            ILMOX,  UEX,    HBLX, &
+                            ILMO,   UE,     HBL, &
+                            ST,     SU,     SV,     SQ,     SRH, &
+                            CDH,    CDM,    QSENS,  QEVAP,  QLWAVG, &
+                            FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG, &
+                            HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG, &
+                            HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND, &
+                            DRAG,   THLIQ,  THICE,  TBAR,   ZPOND,  TPOND, &
+                            THPOR,  THLMIN, THLRET, THFC,   HCPS,   TCS, &
+                            TA,     RHOSNO, TSNOW,  ZSNOW,  WSNOW,  TCAN, &
+                            FC,     FCS,    DELZ,   DELZW,  ZBOTW, &
+                            ISAND,  ILG,    IL1,    IL2,    JL,     IG, &
+                            FVEG,   TCSATU, TCSATF, FTEMP,  FTEMPX, FVAP, &
+                            FVAPX,  RIB,    RIBX)
   !
   !     * JUN 21/13 - M.LAZARE.   PASS IN AND INITIALIZE TO ZERO "GSNOW".
   !     * NOV 24/11 - R.HARVEY.   NEW SNOW THERMAL CONDUCTIVITY FROM
@@ -494,8 +494,9 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !! snow density using an empirical relationship derived by Sturm et
   !! al. (1997):
   !!
-  !! \f$\lambda_s = 3.233 x 10^{-6} \rho_s^2 – 1.01 x 10^{-3} \rho_s + 0.138      \rho_s \geq 156.0
-  !! \f$\lambda_s = 0.234 x 10^{-3} \rho_s + 0.023                                \rho_s < 156.0
+  !! \f$\lambda_s = 3.233 x 10^{-6} \rho_s^2 – 1.01 x 10^{-3} \rho_s + 0.138      \rho_s \geq 156.0 \f$
+  !!
+  !! \f$\lambda_s = 0.234 x 10^{-3} \rho_s + 0.023                                \rho_s < 156.0 \f$
   !!
   do I = IL1,IL2 ! loop 400
     if (ZSNOW(I) > 0.) then

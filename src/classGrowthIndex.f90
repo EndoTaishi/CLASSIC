@@ -90,5 +90,4 @@ subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly 
   end do ! loop 100
   !
   return
-  !> \file
 end

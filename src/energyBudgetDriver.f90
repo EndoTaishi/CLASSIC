@@ -630,19 +630,19 @@ subroutine energyBudgetDriver (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
   !! components of the subarea in question. The calls are summarized in the table below.
   !!
   !! \f[
-  !! \begin{tabular} { | l | l | c | c | c | c | }
+  !! \begin{array} { | l | l | c | c | c | c | }
   !! \hline
-  !! & & CS & GS & C & G \\
+  !! & & \text{CS} & \text{GS} & \text{C} & \text{G} \\
   !! \hline
-  !! canopyPhaseChange & Freezing/thawing of liquid/frozen water on canopy & YES & & YES & \\ \hline
-  !! soilHeatFluxPrep & Set coefficients for temperature calculations in soil & YES & YES & YES & YES \\ \hline
-  !! snowHeatCond & Set coefficients for temperature calculations of snow & YES & YES & & \\ \hline
-  !! energBalVegSolve & Calculate components of canopy energy balance & YES & & YES & \\ \hline
-  !! energBalNoVegSolve & Calculate components of ground or snow energy balance & & YES & & YES \\ \hline
-  !! snowTempUpdate & Heat conduction in snow pack & YES & YES & & \\ \hline
-  !! soilHeatFluxCleanup & Heat conduction in soil & YES & YES & YES & YES \\ \hline
+  !! \text{canopyPhaseChange} & \text{Freezing/thawing of liquid/frozen water on canopy} & \text{YES} & & \text{YES} & \\ \hline
+  !! \text{soilHeatFluxPrep} & \text{Set coefficients for temperature calculations in soil} & \text{YES} & \text{YES} & \text{YES} & \text{YES} \\ \hline
+  !! \text{snowHeatCond} & \text{Set coefficients for temperature calculations of snow} & \text{YES} & \text{YES} & & \\ \hline
+  !! \text{energBalVegSolve} & \text{Calculate components of canopy energy balance} & \text{YES} & & \text{YES} & \\ \hline
+  !! \text{energBalNoVegSolve} & \text{Calculate components of ground or snow energy balance} & & \text{YES} & & \text{YES} \\ \hline
+  !! \text{snowTempUpdate} & \text{Heat conduction in snow pack} & \text{YES} & \text{YES} & & \\ \hline
+  !! \text{soilHeatFluxCleanup} & \text{Heat conduction in soil} & \text{YES} & \text{YES} & \text{YES} & \text{YES} \\ \hline
   !!
-  !! \end{tabular}
+  !! \end{array}
   !! \f]
   !!
   !! After these calls, various diagnostic calculations are performed. First the screen-level temperature and

@@ -80,7 +80,7 @@ contains
     fcancmxrow        => vrot%fcancmx
 
     !> -------------------------
-    !> Some initilizations
+    ! Some initilizations
     FCANROT = 0.0
     barfm = 1.0
     pftarrays = 0.0
@@ -171,14 +171,13 @@ contains
   !! related carbon emissions. set of rules are followed to determine the fate of carbon that
   !! results from deforestation or replacement of grasslands by crops.
   !> @author Vivek Arora
-  subroutine luc (il1, il2, nilg, PFTCompetition, leapnow, useTracer, & ! In
-                grclarea, iday, todfrac, yesfrac, interpol, & ! In
-                pfcancmx, nfcancmx, & ! In/ Out
-                      gleafmas,    bleafmas, stemmass,       rootmass, & ! In / Out
-                      litrmass,    soilcmas, vgbiomas,       gavgltms, & ! In / Out
-                gavgscms, fcancmx, fcanmx, tracerLitrMass, tracerSoilCMass, & ! In/Out
-                tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In / Out
-                      lucemcom,    lucltrin, lucsocin)                ! Out
+  subroutine luc (il1, il2, nilg,     PFTCompetition, leapnow, useTracer, & ! In
+                  grclarea, iday,     todfrac,   yesfrac, interpol, & ! In
+                  pfcancmx, nfcancmx, gleafmas,  bleafmas, stemmass, rootmass, & ! In / Out
+                  litrmass, soilcmas, vgbiomas,  gavgltms, & ! In / Out
+                  gavgscms, fcancmx,  fcanmx,    tracerLitrMass, tracerSoilCMass, & ! In/Out
+                  tracerGLeafMass,    tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In / Out
+                  lucemcom, lucltrin, lucsocin)                ! Out
     !
     !     ----------------------------------------------------------------
     !
@@ -321,7 +320,7 @@ contains
 
     !> Find/use provided current and previous day's fractional coverage
     !! if competition is on, we will adjust these later.
-    if (interpol) then !> perform interpolation
+    if (interpol) then ! perform interpolation
       do j = 1, icc
         do i = il1, il2
           if (PFTCompetition .and. .not. crop(j)) then
@@ -358,7 +357,7 @@ contains
 
         end do ! loop 111
       end do ! loop 110
-    else !> use provided values but still check they are not negative
+    else ! use provided values but still check they are not negative
       do j = 1, icc
         do i = il1, il2
           fcancmx(i,j) = todfrac(i,j)
@@ -1083,8 +1082,8 @@ contains
   !> Adjusts the amount of each pft to ensure that the fraction of
   !> gridcell bare ground is >0.
   !> @author Joe Melton
-  subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
-                          bare_ground_frac, PFTCompetition)
+  subroutine adjust_luc_fracs(i, onetile_perPFT, nfcancmxrow, &
+                              bare_ground_frac,  PFTCompetition)
 
     use classic_params,        only : nlat,nmos,icc,seed
 
@@ -1151,7 +1150,7 @@ contains
   !> @}
   !=======================================================================
   !> \ingroup landuse_change_adjust_fracs_comp
-  !> @{
+  !! @{
   !> Used when PFTCompetition = true. It adjusts the amount of each pft
   !> to allow expansion of cropland.
   !> @author Joe Melton
@@ -1251,7 +1250,7 @@ contains
     end do
 
   end subroutine adjust_fracs_comp
-  !> @}
+  !! @}
 
   !> \namespace landuse_change
   !> Central module for all land use change operations

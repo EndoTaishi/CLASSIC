@@ -1,3 +1,4 @@
+!> \file
 !> Main model driver for CLASSIC in stand-alone mode using specified boundary
 !! conditions and atmospheric forcing.
 !! @author D. Verseghy, V. Arora, J. Melton, E. Chan

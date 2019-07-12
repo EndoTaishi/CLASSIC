@@ -1,3 +1,4 @@
+!> \file
 !> Central driver to read in, and write out all model state variables (replacing INI and CTM files)
 !! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 

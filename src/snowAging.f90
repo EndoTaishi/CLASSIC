@@ -1,50 +1,9 @@
 !> \file
 !! Calculate decrease in snow albedo and increase in density due to aging.
-!! @author D. Verseghy, M. Lazare, R. Brown, F. Seglenieks, Y. Delange, R. Harvey
-!>
-!! The albedo and density of snow are modelled using empirical
-!! exponential decay functions. In the absence
-!! of snowfall exceeding the snow albedo refreshment threshold (set to 0.0001 m
-!! here and in snowAddNew),  the snow albedo \f$\alpha_s\f$ is assumed to decrease
-!! exponentially with time from a fresh
-!! snow value of 0.84 to a background old snow value \f$\alpha_{s,old}\f$ using an
-!! expression based on data given in
-!! Aguado (1985) \cite Aguado1985-fv, Robinson and Kukla (1984) and Dirmhirn and Eaton
-!! (1975) \cite Dirmhirn1975-vx :
-!!
-!! \f$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}\f$
-!!
-!! where \f$\Delta t\f$ is the length of the time step. If the melt rate RMELT
-!! at the top of the snow pack is non-
-!! negligible or if the temperature of the snow is close to 0 C,
-!! \f$\alpha_{s,old}\f$ is assigned a value of 0.50; otherwise \f$\alpha_{s,old}\f$
-!! is assigned a value of 0.70.
-!!
-!! The maximum snow density \f$\rho_{s,max}\f$ is estimated as a function of
-!! snow depth \f$z_s\f$, after Tabler et al. (1990):
-!!
-!! \f$\rho_{s,max} = A_s - [204.70/ z_s] [1.0 - exp(-z_s /0.673)]\f$
-!!
-!! The empirical constant \f$A_s\f$ is assigned a value of 450.0 for cold
-!! snow packs, and 700.0 for snow packs near
-!! the melting point, following Brown et al. (2006) \cite Brown2006-ec.
-!!
-!! The density of snow \f$\rho_s\f$ increases exponentially with time from its
-!! fresh snow value to the background old
-!! snow density calculated above, according to an expression
-!! analogous to that for albedo, derived from the
-!! field measurements of Longley (1960) and Gold (1958) \cite Gold1958-ng:
-!!
-!! \f$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}\f$
-!!
-!! The snow depth and heat capacity are adjusted (see notes on
-!! src/snowSublimation.f90), and a check is
-!! performed with a call to abort if for unphysical albedo values
-!! are encountered.
-!!
+!
 subroutine snowAging(ALBSNO,RHOSNO,ZSNOW,HCPSNO,TSNOW, & ! Formerly SNOALBW
-                    FI,S,RMELT,WSNOW,RHOMAX,ISAND, &
-                    ILG,IG,IL1,IL2,JL)
+                     FI,S,RMELT,WSNOW,RHOMAX,ISAND, &
+                     ILG,IG,IL1,IL2,JL)
   !
   !     * APR 17/14 - D.VERSEGHY. MAKE SNOW ALBEDO REFRESHMENT VALUE
   !     *                         CONSISTENT WITH snowAddNew.
@@ -164,5 +123,48 @@ subroutine snowAging(ALBSNO,RHOSNO,ZSNOW,HCPSNO,TSNOW, & ! Formerly SNOALBW
   end if
   !
   return
-  !> \file
 end
+!> \file
+!!
+!! @author D. Verseghy, M. Lazare, R. Brown, F. Seglenieks, Y. Delange, R. Harvey
+!!
+!! The albedo and density of snow are modelled using empirical
+!! exponential decay functions. In the absence
+!! of snowfall exceeding the snow albedo refreshment threshold (set to 0.0001 m
+!! here and in snowAddNew),  the snow albedo \f$\alpha_s\f$ is assumed to decrease
+!! exponentially with time from a fresh
+!! snow value of 0.84 to a background old snow value \f$\alpha_{s,old}\f$ using an
+!! expression based on data given in
+!! Aguado (1985) \cite Aguado1985-fv, Robinson and Kukla (1984) and Dirmhirn and Eaton
+!! (1975) \cite Dirmhirn1975-vx :
+!!
+!! \f$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}\f$
+!!
+!! where \f$\Delta t\f$ is the length of the time step. If the melt rate RMELT
+!! at the top of the snow pack is non-
+!! negligible or if the temperature of the snow is close to 0 C,
+!! \f$\alpha_{s,old}\f$ is assigned a value of 0.50; otherwise \f$\alpha_{s,old}\f$
+!! is assigned a value of 0.70.
+!!
+!! The maximum snow density \f$\rho_{s,max}\f$ is estimated as a function of
+!! snow depth \f$z_s\f$, after Tabler et al. (1990):
+!!
+!! \f$\rho_{s,max} = A_s - [204.70/ z_s] [1.0 - exp(-z_s /0.673)]\f$
+!!
+!! The empirical constant \f$A_s\f$ is assigned a value of 450.0 for cold
+!! snow packs, and 700.0 for snow packs near
+!! the melting point, following Brown et al. (2006) \cite Brown2006-ec.
+!!
+!! The density of snow \f$\rho_s\f$ increases exponentially with time from its
+!! fresh snow value to the background old
+!! snow density calculated above, according to an expression
+!! analogous to that for albedo, derived from the
+!! field measurements of Longley (1960) and Gold (1958) \cite Gold1958-ng:
+!!
+!! \f$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}\f$
+!!
+!! The snow depth and heat capacity are adjusted (see notes on
+!! src/snowSublimation.f90), and a check is
+!! performed with a call to abort if for unphysical albedo values
+!! are encountered.
+!!

@@ -17,21 +17,20 @@ contains
   !> @author Vivek Arora and Joe Melton
 
   subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer, & ! In
-                    vwind,  lightng,  fcancmx, isand, & ! In
-                 rmatctem,      ilg,   il1,      il2,   sort, & ! In
-                 grclarea,    thice,   popdin, lucemcom, & ! In
-                 dofire,  currlat,     iday,  fsnow, & ! In
-                 stemmass, rootmass, gleafmas, bleafmas,  litrmass, & ! In/out
-                 tracerStemMass, tracerRootMass, tracerGLeafMass,tracerBLeafMass, tracerLitrMass, & ! In/Ou
-                 stemltdt,   rootltdt,   glfltrdt,    blfltrdt, & ! Out (Primary)
-                 glcaemls,   rtcaemls,   stcaemls, &! Out (Primary)
-                 blcaemls,   ltrcemls,   burnfrac, &! Out (Primary)
-                pstemmass, pgleafmass,  emit_co2,     emit_ch4, &! Out (Primary)
-                  emit_co,  emit_nmhc,  emit_h2,  emit_nox, & ! Out (Secondary)
-                  emit_n2o, emit_pm25, emit_tpm, emit_tc, & ! Out (Secondary)
-                  emit_oc,  emit_bc, burnvegf, bterm_veg, & ! Out (Secondary)
-                  mterm_veg,  lterm, smfunc_veg ) ! Out (Secondary)
-
+                      vwind,  lightng,  fcancmx, isand, & ! In
+                      rmatctem,      ilg,   il1,      il2,   sort, & ! In
+                      grclarea,    thice,   popdin, lucemcom, & ! In
+                      dofire,  currlat,     iday,  fsnow, & ! In
+                      stemmass, rootmass, gleafmas, bleafmas,  litrmass, & ! In/out
+                      tracerStemMass, tracerRootMass, tracerGLeafMass,tracerBLeafMass, tracerLitrMass, & ! In/Ou
+                      stemltdt,   rootltdt,   glfltrdt,    blfltrdt, & ! Out (Primary)
+                      glcaemls,   rtcaemls,   stcaemls, &! Out (Primary)
+                      blcaemls,   ltrcemls,   burnfrac, &! Out (Primary)
+                      pstemmass, pgleafmass,  emit_co2,     emit_ch4, &! Out (Primary)
+                      emit_co,  emit_nmhc,  emit_h2,  emit_nox, & ! Out (Secondary)
+                      emit_n2o, emit_pm25, emit_tpm, emit_tc, & ! Out (Secondary)
+                      emit_oc,  emit_bc, burnvegf, bterm_veg, & ! Out (Secondary)
+                      mterm_veg,  lterm, smfunc_veg ) ! Out (Secondary)
 
     !
     !     20  Nov 2018  - Remove extnprob from going in. It's redundant now because
@@ -302,7 +301,7 @@ contains
     !> Find the probability of fire as a product of three functions
     !> with dependence on total biomass, soil moisture, and lightning
 
-    !> 1. Dependence on total biomass
+    !> ### 1 Dependence on total biomass
 
     do j = 1, icc
       do i = il1, il2
@@ -338,7 +337,7 @@ contains
       end do ! loop 252
     end do ! loop 251
 
-    !> 2. Dependence on soil moisture
+    !> ### 2 Dependence on soil moisture
 
     !> This is calculated in a way such that the more dry the root zone
     !> of a pft type is, and more fractional area is covered with that
@@ -423,7 +422,7 @@ contains
       end do ! loop 382
     end do ! loop 381
 
-    !> 3. dependence on lightning
+    !> ### 3 dependence on lightning
     !!
     !! Dependence on lightning is modelled in a simple way which implies that
     !! a large no. of lightning flashes are more likely to cause fire than
@@ -727,6 +726,7 @@ contains
         tot_emit_dom = tot_emit / c2dom
 
         !> Convert the dom to emissions/aerosols using emissions factors units: \f$g species / m^2 /d\f$
+        !!
         !! Also convert units to \f$kg species / m^2 / s^{-1}\f$
         ! g {species} / m2/d * d/86400s * 1kg/1000g = kg {species} / m2 / s
 
@@ -1267,14 +1267,14 @@ contains
   !! \f]
   !!
   !! which yields a value of \f$q\f$ that varies from 0.5 to 0.95 as population density,
-  !! \f$p_\mathrm{d}\f$ (\f$number of people\,km^{-2}\f$), increases from zero to
+  !! \f$p_\mathrm{d}\f$ (\f$\frac{\text{number of people}}{km^{2}}\f$), increases from zero to
   !! infinity. Higher population density thus implies a higher probability of fire
   !! being extinguished. \f$q\f$ represents the probability that a fire will be
   !! extinguished on the same day it initiated and the probability that it will
   !! continue to the next day is (\f$1-q\f$). Assuming individual days are independent,
   !! the probability that the fire will still be burning on day \f$\tau\f$ is
-  !! \f$(1-q)^\tau\f$. The probability that a fire will last exactly $\tau$ days,
-  !! $P(\tau)$, is the product of the probability that the fire still exists at day
+  !! \f$(1-q)^\tau\f$. The probability that a fire will last exactly \f$\tau\f$ days,
+  !! \f$P(\tau)\f$, is the product of the probability that the fire still exists at day
   !! \f$\tau\f$ and the probability it will be extinguished on that day hence
   !! \f$P(\tau) = q(1-q)^\tau\f$. This yields an exponential distribution of fire
   !! duration whose expected value is

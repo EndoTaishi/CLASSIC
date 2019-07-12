@@ -21,7 +21,8 @@ module tracerModule
 contains
 
   !> \ingroup tracer_prepTracer
-  !! @{Tracks C flow through the system.
+  !! @{
+  !> Tracks C flow through the system.
   !! No fractionation effects are applied in this subroutine.
   !! The tracer's value depends on how
   !! the model is initialized and the input file used.
@@ -146,7 +147,8 @@ contains
   !! @}
   ! -------------------------------------------------------
   !> \ingroup tracer_decay14C
-  !! @{Calculates the decay of \f$^{14}C\f$ in the tracer pools.
+  !! @{
+  !> Calculates the decay of \f$^{14}C\f$ in the tracer pools.
   !!
   !! Once a year we calculate the decay of \f$^{14}C\f$ in the tracer pools.
   !! This calculation is only called if useTracer == 2.
@@ -157,7 +159,7 @@ contains
   !! will be too young by the same factor. Following Koven et al .2013
   !! \cite Koven2013-dd we adjust for that faster equilbration by
   !! increasing the decay in the soil C tracer pool by spinfast.
-  !! @author Joe Melton
+  !> @author Joe Melton
   subroutine decay14C(il1,il2)
 
     use ctem_statevars, only : c_switch,iccp2,icc,tracer,ignd
@@ -231,7 +233,8 @@ contains
   !! @}
   ! -------------------------------------------------------
   !> \ingroup tracer_convertTracerUnits
-  !! @{Converts the units of the tracers, depending on the tracer
+  !! @{
+  !> Converts the units of the tracers, depending on the tracer
   !! being simulated.
   !!
   !! If the tracer is a simple tracer, no conversion of units is needed.
@@ -305,7 +308,8 @@ contains
   !! @}
   ! -------------------------------------------------------
   !> \ingroup tracer_checkTracerBalance
-  !! Checks for balance between the tracer pools and the
+  !! @{
+  !> Checks for balance between the tracer pools and the
   !! model normal C pools. The subroutine is called when
   !! the doTracerBalance logical is set to true in updateSimpleTracer
   !! and the model initFile is set up as described in the
@@ -432,9 +436,9 @@ contains
   end subroutine checkTracerBalance
   !! @}
   ! -------------------------------------------------------
-
   !> \namespace tracer
   !!
+  !! Contains all relevant subroutines for the model tracer.
   !!
   !> \file
 end module tracerModule

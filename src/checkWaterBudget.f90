@@ -2,11 +2,12 @@
 !! Checks for closure of surface water budget, and for
 !! unphysical values of certain variables.
 !! @author D. Verseghy, M. Lazare, B. Dugas
+!
 subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Formerly CHKWAT
                    RAICNI,SNOCNI,ZPOND,ZPONDI,THLIQ,THICE, &
                    THLIQI,THICEI,ZSNOW,RHOSNO,XSNOW,SNOWI, &
                    WSNOW,WSNOWI,FCS,FGS,FI,BAL,THPOR,THLMIN, &
-                   DELZW,ISAND,IG,ILG,IL1,IL2,JL,N   )
+                   DELZW,ISAND,IG,ILG,IL1,IL2,JL,N)
 
   !     * APR 28/10 - B.DUGAS.    INTRODUCE SEPARATE ACCURACY LIMITS
   !     *                         FOR BAL AND FOR THE OTHER CHECKS.
@@ -131,8 +132,8 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
   real, intent(in) :: DELZW (ILG,IG)   !< Permeable depth of soil layer [m]
   !
   integer, intent(in) :: ISAND (ILG,IG)
-  ! C
-  ! C      ACCLMT=3.0*DELT/3.1536E7
+  !
+  !      ACCLMT=3.0*DELT/3.1536E7
   ACCLMT = 1.0E-3
   BALLMT = 1.0E-1
   !-----------------------------------------------------------------------
@@ -368,5 +369,4 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
   end if
 
   return
-  !> \file
 end

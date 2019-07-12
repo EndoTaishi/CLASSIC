@@ -21,8 +21,8 @@ contains
   !> Moss photosynthesis subroutine (equations are in module-level description)
   !> @author Yuanqiao Wu
   subroutine mosspht(il1,il2,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
-       pres,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss, &
-       ievapmoss,ipeatland,daylength,pdd)
+                     pres,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss,  &
+                     ievapmoss,ipeatland,daylength,pdd)
 
     ! History
 
@@ -32,7 +32,7 @@ contains
     ! ----------
 
     use classic_params, only : rmlmoss25, tau25m,ektau,gasc,kc25,ko25,ec,ej,eo,evc,sj, &
-                        hj,alpha_moss,thpmoss,thmmoss,ilg,ignd,TFREZ,RHOW
+                               hj,alpha_moss,thpmoss,thmmoss,ilg,ignd,TFREZ,RHOW
 
     implicit none
 
@@ -137,7 +137,7 @@ contains
     ! real, parameter :: BETA1 = 0.950
     ! real, parameter :: BETA2 = 0.990
 
-    !!    find the light level (parm) at the ground surface for moss photosynthesis,
+    !>    Find the light level (parm) at the ground surface for moss photosynthesis,
     !!    and a scaling factor degree of saturation of the moss layer phenology
     !!    parm is in umol/m2/s and converted from qswnv in W/m2
 
@@ -169,7 +169,7 @@ contains
           pheno(i) = 1
         end if
 
-        !!    ** water content used for the living moss (depth dmoss)
+        !>    ** water content used for the living moss (depth dmoss)
         !!    dmoss is an input and site specific. Preferably make dmoss a function
         !!    of Cmoss and ipeatland (different species in fens and bogs)
         !!    observed range of wmoss: 5 to 40 in Robrek (2007, 2009), 5 to 25
@@ -183,7 +183,7 @@ contains
         wmoss(i) = min(wmosmax(i),max(wmosmin(i),wmoss(i)))
         fwmoss(i) = wmoss(i) + 1.     ! g fresh weight /g dry weight
 
-        !!    ** moss conductance g_moss umol CO2/m2/s
+        !>    ** moss conductance g_moss umol CO2/m2/s
         !!   (Williams and Flanagan, 1998 for Sphagnum). follow MWM, fwmoss is
         !!    the mosswat_fd in MWM. Empirical equation is only valid up to
         !!   fwmoss=13, above 13 apply a linear extension to the equation.
@@ -199,7 +199,7 @@ contains
         g_moss (i) = g_moss(i) * 1000000.0
         g_moss(i) = max(0.0, g_moss(i))
 
-        !!    ** moss surface evaporation coefficient
+        !>    ** moss surface evaporation coefficient
         !!    controled by the degree of saturation in moss, pass to energBalVegSolve and energBalNoVegSolve
         !!    apply a similar equation of soil surface cevap in energyBudgetPrep
         !!   CEVAP = 0.25*[1 – cos(THLIQ*pi/THFC)]^2
@@ -217,7 +217,7 @@ contains
         end if
 
 
-        !!    ** moss water content effect on dark respiration
+        !>    ** moss water content effect on dark respiration
         !!   in MWM and PDM an optimal wmoss is at 5.8 gw/gdw(fig. 2e, Frolking et al.,1996)
         !!   Recent studies show weak but significant increases of sphagnum dark respiration
         !!   with moss water content above 5.8 gw/gdw (Adkinson and Humphreys, 2011 and ref.)
@@ -231,13 +231,13 @@ contains
           mwce(i) = 0.01 * wmoss(i) + 0.942
         end if
 
-        !!    ** moss dark respiration
+        !>    ** moss dark respiration
         !!    observed range of rmlmoss 0.60 to 1.60 umol/m2/s (e.g. Adkinson 2006)
 
         q10rmlmos(i) = (3.22 - (0.046 * tmoss(i))) ** ((tmoss(i) - 25.0)/10.0)
         rmlmoss(i) = rmlmoss25 * mwce(i) * q10rmlmos(i)
 
-        !!   ** moss photosynthesis
+        !>   ** moss photosynthesis
         !!   calculate bc (coefficient used for Wc, limited by Rubisco)
 
         tau(i) = tau25m * exp((tmossk(i) - tref) * ektau/(tref * gasc * tmossk(i)))
@@ -265,7 +265,7 @@ contains
 
         vcmax(i) = vcmax25(i) * exp((tmossk(i) - tref) * evc/(tref * gasc * tmossk(i)))
 
-        !!     calculate ws (phototysnthesis rate limited by transport capacity)
+        !>     calculate ws (phototysnthesis rate limited by transport capacity)
         !!    = js in photosynCanopyConduct
 
         ! if (coszs(i)>0.0)     THEN
@@ -274,7 +274,7 @@ contains
         end if
 
 
-        !!    calculate the maximum electron transport rate Jmax (umol/m2/s)
+        !>    calculate the maximum electron transport rate Jmax (umol/m2/s)
         !!   1.67 = vcmax25m/jmax25m ratio
 
         jmax25(i) = 1.67 * vcmax25(i)
@@ -288,15 +288,15 @@ contains
           photon(i) = 0.0     ! electron trasport rate in mosses
         end if
 
-        !!    calculate Wj, Wc (Farquhar and Caemmerer 1982)
+        !>    calculate Wj, Wc (Farquhar and Caemmerer 1982)
         !!   wj = light limited, = je in PHTSYN
 
         wj(i) = photon(i) * (co2a(i) - gamma(i))/(4. * co2a(i) + (8. * gamma(i)))
 
-        !!    carboxylase(rubisco) limitation = jc in PHTSYN
+        !>    carboxylase(rubisco) limitation = jc in PHTSYN
         wc(i) = vcmax(i) * (co2a(i) - gamma(i))/(co2a(i) + bc(i))
 
-        !!    Choose the minimum of Wj and Wj both having the form:
+        !>    Choose the minimum of Wj and Wj both having the form:
         !!   W = (a Ci - ad) / (e Ci + b)
         !!   Then set a, b, d and e for the quadratic solution for net photosynthesis.
 
@@ -310,7 +310,7 @@ contains
           psne(i) = 1.0
         end if
 
-        !!    Calculate net and gross photosynthesis by solve the quadratic equation
+        !>    Calculate net and gross photosynthesis by solve the quadratic equation
         !!   first root of solution is net photosynthesis An= min(Wj,Wc) - Rd
         !!   gross photosynthesis GPP = min(Wc,Wj) = An + Rd
 
@@ -382,26 +382,26 @@ contains
     real, dimension(ilg,ignd), intent(in) :: tbar       !< soil temperature (K)
     real, intent(in) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
 
-    real, dimension(ilg), intent(out) :: litresms        !< moss litter respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
-    real, dimension(ilg), intent(out) :: socresp         !< soil C respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
-    real, dimension(ilg), intent(out) :: resoxic         !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
-    real, dimension(ilg), intent(out) :: resanoxic       !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
+    real, dimension(ilg), intent(out) :: litresms        !< moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, dimension(ilg), intent(out) :: socresp         !< soil C respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, dimension(ilg), intent(out) :: resoxic         !< respiration rate of the oxic compartment (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, dimension(ilg), intent(out) :: resanoxic       !< respiration rate of the oxic compartment (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: litResMossTracer(ilg)    !< Tracer moss litter respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: soCResPeatTracer(ilg)    !< Tracer heterotrophic repsiration from peat soil (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
     !     internal variables
     integer :: i,j
-    real :: Cso (ilg)            !< carbon mass in the oxic compartment ($kg C m^{-2}$)
-    real :: Csa (ilg)            !< carbon mass in the anxic compartment ($kg C m^{-2}$)
-    ! real :: tracerCso (ilg)      !< Tracer carbon mass in the oxic compartment ($kg C m^{-2}$)
-    ! real :: tracerCsa (ilg)      !< Tracer carbon mass in the anxic compartment ($kg C m^{-2}$)
+    real :: Cso (ilg)            !< carbon mass in the oxic compartment (\f$kg C m^{-2}\f$)
+    real :: Csa (ilg)            !< carbon mass in the anxic compartment (\f$kg C m^{-2}\f$)
+    ! real :: tracerCso (ilg)      !< Tracer carbon mass in the oxic compartment (\f$kg C m^{-2}\f$)
+    ! real :: tracerCsa (ilg)      !< Tracer carbon mass in the anxic compartment (\f$kg C m^{-2}\f$)
     real :: fto(ilg)             !< temperature factor of the oxic soil respiration
     real :: fta(ilg)             !< temperature factor of the anoxic soil respiration
     real :: tsoilo(ilg)          !< average temperature in the oxic compartment(C)
     real :: tsoila(ilg)          !< average temperature of the anoxic compartment (C)
     real :: ewtable(ilg)         !< effective water table depth (m)
-    real :: ratescpo(ilg)        !< oxic respiration rate constant($\mu mol CO_2 [kg C]^{-2} s^{-1}$)
-    real :: ratescpa(ilg)        !< anoxic respiration rate constant($\mu mol CO_2 [kg C]^{-2} s^{-1}$)
+    real :: ratescpo(ilg)        !< oxic respiration rate constant(\f$\mu mol CO_2 [kg C]^{-2} s^{-1}\f$)
+    real :: ratescpa(ilg)        !< anoxic respiration rate constant(\f$\mu mol CO_2 [kg C]^{-2} s^{-1}\f$)
     real :: psi(ilg,ignd)        !< matrix potential of soil layers (Pa)
     real :: q10funcms(ilg)       !< q10 fuction for moss litter respiration
     real :: ltrmosclms(ilg)      !< moisture scale for litter respiration
@@ -577,7 +577,7 @@ contains
           end if
         end do ! loop 60
 
-        !! Litter in peatlands can be saturated so we limit the rate by high
+        !> Litter in peatlands can be saturated so we limit the rate by high
         !! moisuture level similar to soil in CTEM, but less effectively (the
         !! min moisture factor is at 0.5 for moss litter but at 0.2 for soil).
 
@@ -598,12 +598,12 @@ contains
 
         ltrmosclms(i) = max(0.0, min(ltrmosclms(i), 1.0))
 
-        !! Find the temperature factor for moss litter respiration
+        !> Find the temperature factor for moss litter respiration
         litrtempms(i) = tbar(i,1) - tfrez
         litrq10ms(i) = tanhq10(1) + tanhq10(2) * (tanh(tanhq10(3) * (tanhq10(4) - litrtempms(i))))
         q10funcms(i) = litrq10ms(i) ** (0.1 * (litrtempms(i) - 15.0))
 
-        !! Calculate the litter respiration rate in mosses and converts it
+        !> Calculate the litter respiration rate in mosses and converts it
         !! from kg c/kg c.year to u-mol co2/kg c.s using 2.64
         litresms(i) = ltrmosclms(i) * litrmsmoss(i) * bsrateltms * 2.64 * q10funcms(i)
 
@@ -702,6 +702,7 @@ contains
   ! ---------------------------------------------------------------------------------------------------
 
   !> \namespace peatlands_mod
+  !! @author Y. Wu, J. Melton
   !!
   !! The peatland module is published in Geoscientific Model Development (Wu et al. 2016) \cite Wu2016-zt.
   !! A copy of the paper is in the Documentation folder of this git repository.
@@ -902,7 +903,7 @@ contains
   !! \f$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} \f$
   !!
   !! where o and a denote the oxic and anoxic portions of the soil C pool respectively. The respiration rate \f$R\f$ (unit:
-  !! \f$\mu mol C m\f$^{-2}\f$/s) is obtained from the respiration rate
+  !! \f$\mu mol C m^{-2}\f$/s) is obtained from the respiration rate
   !! coefficient \f$k\f$ (\f$\mu\f$ mol C / kg C / s), the temperature
   !! functions \f$f_T\f$, the soil C mass \f$C_{SOM}\f$ (kg), and a scaling factor
   !! \f$f_{anoxic}\f$ after Frolking et al.~(2010, 2001), which represents the
@@ -916,7 +917,7 @@ contains
   !! zones of the soil are indicated as \f$Q_{10,a}\f$ and \f$Q_{10,o}\f$.
   !! The values of \f$k\f$, \f$f_T\f$, and \f$C_{SOM}\f$ are updated along with the
   !! water table depth (\f$z_{wt}\f$, unit: m, positive downward) and the peat
-  !! depth (\f$z_p\f$, unit: m) at each CTEM time step. The equations for $\fk\f$
+  !! depth (\f$z_p\f$, unit: m) at each CTEM time step. The equations for \f$k\f$
   !! and \f$C_{SOM}\f$ are derived from Fig. 2 in Frolking et al. (2001), and
   !! parameterized differently for fens and bogs :
   !!

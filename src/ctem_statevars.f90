@@ -1,6 +1,7 @@
 !> Contains the biogeochemistry-related variable type structures.
 !! @author J. Melton
 !! Variable types herein:
+!!
 !! 1. c_switch (ctem_switches) - Switches for running the model, read from the joboptions file
 !! 2. vrot (veg_rot) - CTEM's 'rot' vars
 !! 3. vgat (veg_gat) - CTEM's 'gat' vars
@@ -732,9 +733,9 @@ module ctem_statevars
     real, allocatable, dimension(:) :: taaccgat_t       !<
     real, allocatable, dimension(:) :: uvaccgat_t       !<
     real, allocatable, dimension(:) :: vvaccgat_t       !<
-    real, allocatable, dimension(:) :: anmossac_t       !< daily averaged moss net photosynthesis accumulated (/f$\mu mol /m^2 /s\f$)
-    real, allocatable, dimension(:) :: rmlmossac_t      !< daily averaged moss maintainence respiration (/f$\mu mol /m^2 /s\f$)
-    real, allocatable, dimension(:) :: gppmossac_t      !< daily averaged gross primary production (/f$\mu mol /m^2 /s\f$)
+    real, allocatable, dimension(:) :: anmossac_t       !< daily averaged moss net photosynthesis accumulated (\f$\mu mol /m^2 /s\f$)
+    real, allocatable, dimension(:) :: rmlmossac_t      !< daily averaged moss maintainence respiration (\f$\mu mol /m^2 /s\f$)
+    real, allocatable, dimension(:) :: gppmossac_t      !< daily averaged gross primary production (\f$\mu mol /m^2 /s\f$)
 
     ! allocated with ilg,ignd:
     real, allocatable, dimension(:,:) :: tbaraccgat_t !<

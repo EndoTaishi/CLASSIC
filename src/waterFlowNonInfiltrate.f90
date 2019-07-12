@@ -5,10 +5,10 @@
 !! @author D. Verseghy, M. Lazare, P. Bartlett, R. Soulis, F. Seglenieks, V. Fortin, Y. Delage, L. Spacek
 !
 subroutine waterFlowNonInfiltrate(IVEG,THLIQ,THICE,TBARW,FDT,TFDT,BASFLW,TBASFL, & ! Formerly GRDRAN
-                   RUNOFF,TRUNOF,QFG,WLOST,FI,EVAP,R,ZPOND,DT, &
-                   WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
-                   BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF, &
-                   IGRN,IGRD,IGDR,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                                  RUNOFF,TRUNOF,QFG,WLOST,FI,EVAP,R,ZPOND,DT, &
+                                  WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN, &
+                                  BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF, &
+                                  IGRN,IGRD,IGDR,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
 
   !     * OCT 18/11 - M.LAZARE.   PASS IN "IGDR" AS AN INPUT FIELD
@@ -257,6 +257,7 @@ subroutine waterFlowNonInfiltrate(IVEG,THLIQ,THICE,TBARW,FDT,TFDT,BASFLW,TBASFL,
   !! calculated following Clapp and Hornberger as
   !!
   !! \f$K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}\f$
+  !!
   !! \f$\Psi(z) = \Psi_{sat} (\theta_l/\theta_p)^{(-b )}\f$
   !!
   !! where \f$K_{sat}\f$ and \f$\Psi_{sat}\f$ are the values of \f$K\f$ and \f$\Psi\f$ respectively

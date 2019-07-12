@@ -1,8 +1,6 @@
+!> \file
+!> Central module for all soil C processes involving movement of soil C up or down in soil column
 module soilC_processes
-
-  ! Central module for all soil C processes involving movement of soil C up or down in soil column
-
-  ! Detailed model description is found at the bottom of the file.
 
   ! J. Melton. May 30 2016
 
@@ -16,7 +14,7 @@ contains
 
   !=============================================================================================================
 
-  !> \ingroup turbation
+  !> \ingroup soilC_processes_turbation
   !> @author Joe Melton
   !! @{
 
@@ -237,9 +235,8 @@ contains
     end do ! i
 
   end subroutine turbation
-  !> @}
-  !=============================================================================================================
-  !> \ingroup tridiag
+  !! @}
+  !> \ingroup soilC_processes_tridiag
   !> @author Joe Melton
   subroutine tridiag(a,b,c,r,u)
 
@@ -293,16 +290,14 @@ contains
     end do
 
   end subroutine tridiag
-
-  !=============================================================================================================
-  !> @}
+  !! @}
 
   !> \defgroup turbation Turbation
   !! @{
   !! Simulation of soil C movement due to turbation processes (presently only cryo).
   !!
   !! Modelled simply as a diffusion process.
-  !> @}
+  !! @}
   !> \defgroup tridiag Tridiagonal_solver
   !! @{
   !! Subroutine to solve triadiagonal system of equations
@@ -311,8 +306,10 @@ contains
   !! Numerical recipes in Fortran 90 (\cite Press2007-bp) using a serial algorithm. Input vectors b (diagonal elements)
   !! and r (right-hand side) have size N, while a and c (off-diagonal elements) are not defined
   !! in the first and last elements, respectively.
-  !> @}
-  !> \file
+  !! @}
+  !> \namespace soilC_processes
   !! Central module for all soil C processes involving movement of soil C up or down in soil column.
   !!
+
 end module soilC_processes
+!> \file

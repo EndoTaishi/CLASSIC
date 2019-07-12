@@ -55,7 +55,7 @@ At each physics time step, for each grid cell or modelled area, the following at
 - *PRES* Surface air pressure [\f$P_a\f$ ]
 - *QA* Specific humidity at reference height [\f$kg kg^{-1}\f$ ]
 - *TA* Air temperature at reference height [degree C]
-  - For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure, Pa. 
+  - For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure, Pa.
   - For field data, the actual measured air temperature at the reference height should be used, since in this case the adiabatic extrapolation is performed within CLASS.
   - **Note: In CLASSIC, *TA* is in Kelvin, however the driver expects the air temperature in units of degrees Celsius.**
 - *VMOD* Wind speed at reference height [\f$m s^-1\f$ ]
@@ -78,7 +78,7 @@ At each physics time step, for each grid cell or modelled area, the following at
   - If the surface being modelled is a very heterogeneous one, care must be taken to ensure that the reference heights are greater than the “blending height”, the distance above the surface at which the atmospheric variables are not dominated by any one surface type. In principle this height depends on the length scale of the roughness elements; it may be as large as 50-100 m. In CLASSIC the blending height is used in averaging the roughness lengths over the modelled area, and is read in separately from *ZRFM* and *ZRFH* as *ZBLD*.
 - *ZRFH* Reference height associated with forcing air temperature and humidity [m]
 - *ZRFM* Reference height associated with forcing wind speed [m]
-  - In atmospheric models the forcing wind speed, air temperature and specific humidity are obtained from the lowest modelled atmospheric layer, and thus the reference height will be the height above the “surface” (i.e. the location where the wind speed is zero and the pressure is equal to the surface pressure, Pa) corresponding to that lowest layer. Some atmospheric models use a vertical co-ordinate system in which the momentum and thermodynamic levels are staggered, and if so, *ZFRM* and *ZRFH* will have different values. If that is the case, the switch *ISLFD* in the job options file should be set to 2, so that the subroutines @ref FLXSURFZ.f and @ref DIASURFZ.f are called, since the other options do not support different reference heights. 
+  - In atmospheric models the forcing wind speed, air temperature and specific humidity are obtained from the lowest modelled atmospheric layer, and thus the reference height will be the height above the “surface” (i.e. the location where the wind speed is zero and the pressure is equal to the surface pressure, Pa) corresponding to that lowest layer. Some atmospheric models use a vertical co-ordinate system in which the momentum and thermodynamic levels are staggered, and if so, *ZFRM* and *ZRFH* will have different values. If that is the case, the switch *ISLFD* in the job options file should be set to 2, so that the subroutines @ref FLXSURFZ.f and @ref DIASURFZ.f are called, since the other options do not support different reference heights.
   - In the case of field data, the reference height is the height above the ground surface at which the variables are measured. If the measurement height for wind speed is different from that for the air temperature and specific humidity, again the *ISLFD* switch in the job options file should be set to 2.
   - **Note** neither *ZRFH* nor *ZRFM* may be smaller than the vegetation canopy height, as this will cause the model run to crash.
 - *GC* GCM surface descriptor
@@ -109,7 +109,7 @@ For each of the CLASS PFTs the following data are required for each mosaic tile 
  6. **PAMN** Annual minimum plant area index of vegetation category [ ]
  7. **PAMX** Annual maximum plant area index of vegetation category [ ]
  8. **ROOT** Annual maximum rooting depth of vegetation category [m]
- 
+
 
 ### Variables not presently read in
 
@@ -122,7 +122,7 @@ These variables are not presently read-in by CLASSIC but could be if desired.
 13. *VPDA* Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]
 14. *VPDB* Vapour pressure deficit coefficient (used in stomatal resistance calculation) [ ]
 
- 
+
 In **physics only runs (CLASS only)**, the vegetation is prescribed as follows (For full details of these calculations, see the documentation for subroutine @ref calcLandSurfParams.f90):
 
 - CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by *PAMX* and *PAMN*.
@@ -137,20 +137,20 @@ Ideally the vegetation parameters should be measured at the modelled location. O
 For the non-required stomatal resistance parameters, typical values for the four principal vegetation types are given below:
 
 \f[
-\begin{tabular}{ | l | c | c | c | c | c | c | }
- & RSMN & QA50 & VPDA & VPDB & PSGA & PSGB \\
-Needleleaf trees & 200.0 & 30.0 & 0.65 & 1.05 & 100.0 & 5.0 \\
-Broadleaf trees & 125.0 & 40.0 & 0.50 & 0.60 & 100.0 & 5.0 \\
-Crops & 85.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
-Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
-\end{tabular}
+\begin{array}{ | l | c | c | c | c | c | c | }
+ & \text{RSMN} & \text{QA50} & \text{VPDA} & \text{VPDB} & \text{PSGA} & \text{PSGB} \\
+\text{Needleleaf trees} & 200.0 & 30.0 & 0.65 & 1.05 & 100.0 & 5.0 \\
+\text{Broadleaf trees} & 125.0 & 40.0 & 0.50 & 0.60 & 100.0 & 5.0 \\
+\text{Crops} & 85.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
+\text{Grass} & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
+\end{array}
 \f]
 
 ## Required vegetation data for a biogeochemical simulation (CLASS+CTEM) {#vegCTEMtoo}
 
 In addition to the CLASS variables described above, CTEM requires the following further information about the vegetation:
 
-- *fcancmx* Fractional coverage of CTEM PFTs per grid cell [ ] 
+- *fcancmx* Fractional coverage of CTEM PFTs per grid cell [ ]
 
 If land use is being simulated this value will come from a land use change file (see @ref inputLUC) otherwise it is taken from the model initialization file and kept constant thoughout a run (provided competition between PFTs is not turned on).
 
@@ -178,13 +178,13 @@ For each of the modelled soil layers on each of the mosaic tiles, the following 
   - If the tile is being treated as a peatland then the first soil layer is considered moss following Wu et al. (2016) \cite Wu2016-zt. The lower soil layers are treated such that the lower layers are assigned fibric, hemic or sapric characteristics (see run parameters namelist file)
 
   \f[
-  \begin{tabular}{ | l | c | c | c |  }
-   Soil layer type & SAND & CLAY & ORGM  \\
-   Mineral & $>=$ 0 & $>=$ 0 & $>=$ 0 \\
-   Peat    &           -2 & ignored & ignored \\
-   Bedrock & -3 & ignored & ignored  \\
-   Ice sheet & -4 & ignored & ignored  \\
-  \end{tabular}
+  \begin{array}{ | l | c | c | c |  }
+   \text{Soil layer type}  & \text{SAND} & \text{CLAY} & \text{ORGM}  \\
+   \text{Mineral}   & >= 0 & >= 0           & >= 0 \\
+   \text{Peat}      & -2   & \text{ignored} & \text{ignored} \\
+   \text{Bedrock}   & -3   & \text{ignored} & \text{ignored}  \\
+   \text{Ice sheet} & -4   & \text{ignored} & \text{ignored}  \\
+  \end{array}
   \f]
 
 
@@ -271,23 +271,23 @@ CTEM's initialization variables are generally PFT dependent. Several model optio
   - Grasses and crops have no stem mass so are given values of zero.
 - *soilcmas* Soil C mass per soil layer [\f$kg C m^{-2} \f$]
 - *litrmass* Litter mass per soil layer [\f$kg C m^{-2} \f$]
-  - Both *litrmass* and *soilcmas* are per PFT but also the arrays contain two additional values: 
+  - Both *litrmass* and *soilcmas* are per PFT but also the arrays contain two additional values:
   - **bareground (icc + 1)**, where icc is the number of CTEM PFTs, and the **land use change (LUC) product pool (icc + 2)**. Soil C can be within the bare ground when land use change, competition or fire create bare ground that used to have vegetation. That C then continues to respire even though the vegetation have left that area. The LUC product pool represent the C that is converted into LUC products (soil C is 'furniture'- effectively a long lived C storage pool for the C removed from the landscape due to LUC whereas litter is 'paper', a short lived pool). The LUC C respires in response to environmental cues similar to litter and soil C in a manner similar to that material being in a landfill, for e.g.
 
 Specify initialization amounts for green leaf, brown leaf, root and stem biomass, litter and soil carbon mass for each CTEM PFT. When growing vegetation from bare ground set these to zero or if no values are known.
 
-- *lfstatus* Leaf pheological state [ ] 
+- *lfstatus* Leaf pheological state [ ]
   - The phenology subroutine of CTEM tracks leaf status according to four plants states, 1) leaf onset or maximum growth, 2) normal growth, 3) leaf fall, and 4) no leaves state. When leaf status is set to 4 the model thinks there are no leaves. When initializing from bare ground with no vegetation set this to 4.
 - *pandays* Days with positive net photosynthesis [Days]
   - The phenology subroutine of CTEM tracks days with positive net photosynthesis to initiate leaf onset. When net photosynthesis is positive for seven days, favourable weather is assumed to arrive and, leaf onset begins. If this variable is set to 7 then the model will think that favourable weather has arrived. When initializing from bare ground with no vegetation set this variable to 0.
 
 # Example model setups {#exModSets}
 
-  Here are a few example situations for physics only runs (CLASS alone). 
+  Here are a few example situations for physics only runs (CLASS alone).
 
   1. sum(*FCAN*) = 1 and *FARE* > 0 - Simulate all vegetated ground with no bare ground. If *FCAN(ican+1)* > 0 this includes some urban area.
   2. sum(*FCAN*) < 1 and *FARE* > 0  - Simulate vegetated ground and some bare ground (1 - sum(*FCAN*)). If *FCAN(ican+1)* > 0 this includes some urban area.
-  3. sum(*FCAN*) = 0  and *FARE* > 0 - Only simulate bare ground. 
+  3. sum(*FCAN*) = 0  and *FARE* > 0 - Only simulate bare ground.
   4. sum(*FCAN*) = 0  and *FARE* = 0 - Don't simulate this cell, it is a lake or something.
 
 If biogeochemistry is turned on (CTEM on) then we have a subtle difference in that *fcancmx* is used and determines the *fcan(1:ican)* values. Assumedly if you have some vegetation then at least one ground layer should be soil (*SAND* > 0).

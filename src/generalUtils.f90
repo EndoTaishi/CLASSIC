@@ -1,4 +1,6 @@
-! Central module for all general utilities
+!> \file
+!> Central module for all general utilities
+!!
 module generalUtils
 
   implicit none

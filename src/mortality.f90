@@ -2,8 +2,6 @@
 !> Calculates the litter generated from leaves, stem, and root components after
 !! vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality).
 !! Also updates the vegetation pools for changes due to the mortality calculations.
-!! @author Vivek Arora, Joe Melton
-!!
 module mortality
 
   implicit none
@@ -17,13 +15,13 @@ contains
   !! @{
   !> Calculates maintenance respiration for roots and stems
   !> @author Vivek Arora and Joe Melton
-  subroutine mortalty (stemmass,   rootmass,    ailcg,  gleafmas, & ! In
-                          bleafmas,        il1,      il2,       ilg, & ! In
-                          leapnow,       iday,     sort,   fcancmx, & ! In
-                          useTracer, tracerStemMass, tracerRootMass, tracerGLeafMass, & ! In
-                          lystmmas,   lyrotmas, tymaxlai,  grwtheff, & ! In/Out
-                          stemltrm,  rootltrm,  glealtrm,  geremort, & ! Out
-                           intrmort, tracerStemMort, tracerRootMort, tracerGLeafMort) ! Out
+  subroutine mortalty (stemmass,  rootmass, ailcg,    gleafmas, & ! In
+                       bleafmas,  il1,      il2,      ilg, & ! In
+                       leapnow,   iday,     sort,     fcancmx, & ! In
+                       useTracer, tracerStemMass,     tracerRootMass, tracerGLeafMass, & ! In
+                       lystmmas,  lyrotmas, tymaxlai, grwtheff, & ! In/Out
+                       stemltrm,  rootltrm, glealtrm, geremort, & ! Out
+                       intrmort,  tracerStemMort,     tracerRootMort, tracerGLeafMort) ! Out
     !
     !     07  Dec 2018  - Pass ilg back in as an argument
     !     V. Arora
@@ -95,7 +93,7 @@ contains
 
     ! ------------------------------------------------------------------
 
-    !! At the end of every year, i.e. when iday equals 365/366, we calculate
+    !> At the end of every year, i.e. when iday equals 365/366, we calculate
     !! growth related mortality. rather than using this number to kill
     !! plants at the end of every year, this mortality rate is applied
     !! gradually over the next year.
@@ -298,9 +296,9 @@ contains
 
   end subroutine updatePoolsMortality
   !! @}
-  ! ---------------------------------------------------------------------------------------------------
   !> \namespace mortality
 
+  !> @author Vivek Arora, Joe Melton
   !! The PFT-dependent mortality rate (\f$day^{-1}\f$),
   !!
   !! \f[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha},\qquad (Eqn 1) \f]

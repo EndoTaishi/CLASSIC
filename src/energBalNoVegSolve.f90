@@ -293,7 +293,7 @@ subroutine energBalNoVegSolve(ISNOW,FI, & ! Formerly TSOLVE
   !! obtained from the sum of the net values in each wavelength band,
   !! corrected for the respective loss by transmission into the surface.
 
-  !! In the 50 loop, the initial value of the surface temperature TZERO
+  !> In the 50 loop, the initial value of the surface temperature TZERO
   !! is set to TSTART, which contains the value of TZERO from the previous
   !! time step, and the first step in the iteration sequence, TSTEP, is
   !! set to 1.0 K.  The flag ITER is set to 1 for each element of the set

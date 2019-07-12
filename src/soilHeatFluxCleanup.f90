@@ -4,9 +4,9 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine soilHeatFluxCleanup(TBARPR,G12,G23,TPOND,GZERO,QFREZG,GCONST, & ! Formerly TNPOST
-                   GCOEFF,TBAR,TCTOP,TCBOT,HCP,ZPOND,TSURF, &
-                   TBASE,TBAR1P,A1,A2,B1,B2,C2,FI,IWATER, &
-                   ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
+                               GCOEFF,TBAR,TCTOP,TCBOT,HCP,ZPOND,TSURF, &
+                               TBASE,TBAR1P,A1,A2,B1,B2,C2,FI,IWATER, &
+                               ISAND,DELZ,DELZW,ILG,IL1,IL2,JL,IG)
   !
   !     * NOV 01/06 - D.VERSEGHY. ALLOW PONDING ON ICE SHEETS.
   !     * OCT 04/05 - D.VERSEGHY. MODIFY 300 LOOP FOR CASES WHERE IG>3.

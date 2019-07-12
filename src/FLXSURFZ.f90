@@ -13,13 +13,6 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
 
   implicit none
 
-  integer :: N,IL1,IL2,ITER(N),JL
-  real :: CDM(N),CDH(N),CTU(N),RIB(N),FCOR(N),ILMO(N)
-  real :: FTEMP(N),FVAP(N),TA(N),QA(N),ZU(N),VA(N)
-  real :: TG(N),QG(N),H(N),Z0(N),UE(N),ZT(N)
-  real :: Z0T(N),LZZ0(N),LZZ0T(N)
-  real :: fm(N),fh(N)
-  real :: FI(N)
   !
   ! Author
   !          Y.Delage (Jul 1990)
@@ -72,30 +65,30 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   ! Arguments
   !
   !          - Output -
-  ! CDM      transfer coefficient of momentum squared
-  ! CTU      transfer coefficient of temperature times UE
-  ! RIB      bulk Richardson number
-  ! FTEMP    temperature flux
-  ! FVAP     vapor flux
-  ! ILMO     (1/length of Monin-Obukov)
-  ! UE       friction velocity
-  ! H        height of the boundary layer
-  ! FM       momentum stability function
-  ! FH       heat stability function
-  ! LZZ0     log ((zu+z0)/z0)
-  ! LZZ0T    log ((zt+z0)/z0t)
+  real, intent(out) :: CDM(N) !< transfer coefficient of momentum squared
+  real, intent(inout) :: CTU(N) !< transfer coefficient of temperature times UE
+  real, intent(inout) :: RIB(N) !< bulk Richardson number
+  real, intent(out) :: FTEMP(N) !< temperature flux
+  real, intent(out) :: FVAP(N) !< vapor flux
+  real, intent(inout) :: ILMO(N) !< (1/length of Monin-Obukov)
+  real, intent(inout) :: UE(N) !< friction velocity
+  real, intent(inout) :: H(N) !< height of the boundary layer
+  real, intent(inout) :: FM(N) !< momentum stability function
+  real, intent(inout) :: FH(N) !< heat stability function
+  real, intent(inout) :: LZZ0(N) !< log ((zu+z0)/z0)
+  real, intent(inout) :: LZZ0T(N) !< log ((zt+z0)/z0t)
   !          - Input -
-  ! FCOR     Coriolis factor
-  ! ZU       height of wind input
-  ! ZT       height of temperature and humidity input
-  ! TA       potential temperature at first predictive level above surface
-  ! QA       specific humidity     "    "      "        "      "     "
-  ! VA       wind speed            "    "      "        "      "     "
-  ! TG       surface temperature
-  ! QG       specific humidity at the surface
-  ! Z0       roughness length for momentum      flux calculations
-  ! Z0T      roughness length for heat/moisture flux calculations
-  ! N        horizontal dimension
+  real, intent(in) :: FCOR(N) !< Coriolis factor
+  real, intent(in) :: ZU(N) !< height of wind input
+  real, intent(in) :: ZT(N) !< height of temperature and humidity input
+  real, intent(in) :: TA(N) !< potential temperature at first predictive level above surface
+  real, intent(in) :: QA(N) !< specific humidity     "    "      "        "      "     "
+  real, intent(in) :: VA(N) !< wind speed            "    "      "        "      "     "
+  real, intent(in) :: TG(N) !< surface temperature
+  real, intent(in) :: QG(N) !< specific humidity at the surface
+  real, intent(in) :: Z0(N) !< roughness length for momentum      flux calculations
+  real, intent(in) :: Z0T(N) !< roughness length for heat/moisture flux calculations
+  integer, intent(in) :: N !< horizontal dimension
   !
   ! Notes
   !          SEE DELAGE AND GIRARD BLM 58 (19-31)
@@ -103,13 +96,18 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   !
   !     DIVERSES CONSTANTES PHYSIQUES
   !
+  integer, intent(in) :: IL1,IL2,ITER(N),JL
+  real, intent(out) :: CDH(N)
+  real, intent(in) :: FI(N)
+
+
   integer :: J
   integer :: IT,ITMAX
   real :: HMAX,CORMIN,EPSLN
   real :: RAC3,CM,CT,ZP
   real :: F,G,DG
   real :: HI,HE,HS,unsl
-  real * 8 DTHV,TVA,TVS
+  real * 8 :: DTHV,TVA,TVS
   real :: HL,U
   real :: CS,XX,XX0,YY,YY0
   real :: ZB,DD,ILMOX

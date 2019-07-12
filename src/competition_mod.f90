@@ -1056,7 +1056,7 @@ contains
     ! ---> from here on we get back to our usual icc pfts <----
 
     ! get bare fraction
-    do j = 1, icc
+    do j = 1, icc ! loop 600
       do i = il1, il2
         barefrac(i) = barefrac(i) - fcancmx(i,j)
         pbarefra(i) = pbarefra(i) - pfcancmx(i,j)
@@ -1064,7 +1064,7 @@ contains
     end do ! loop 600
 
     !> Check if a pft's fractional cover is increasing or decreasing
-    do j = 1, icc
+    do j = 1, icc ! loop 620
       do i = il1, il2
         if ((fcancmx(i,j) > pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
           fraciord(i,j) = 1
@@ -1075,7 +1075,7 @@ contains
     end do ! loop 620
 
     !> Check if bare fraction increases or decreases
-    do i = il1, il2
+    do i = il1, il2 ! loop 640
       if ((barefrac(i) > pbarefra(i)) .and. (abs(pbarefra(i) - barefrac(i)) > zero)) then
         bareiord(i) = 1  ! increase in bare area
       else if ((barefrac(i) < pbarefra(i)) .and. (abs(pbarefra(i) - barefrac(i)) > zero)) then
@@ -1105,7 +1105,7 @@ contains
     !! 3. fraciord = -1, which means all of the npp is to be used for
     !! litter generation but in addition some more litter will be
     !! generated from mortality of the standing biomass.
-    do j = 1, icc
+    do j = 1, icc ! loop 660
       if (.not. crop(j)) then  ! do not run for crops
         do i = il1, il2
           if (fraciord(i,j) == 1) then ! Expand
@@ -1219,7 +1219,7 @@ contains
     !! for spreading over the whole grid cell. If bare fraction increases
     !! then spread its litter and soil c uniformly over the increased fraction.
     ! COMBAK PERLAY
-    do i = il1, il2
+    do i = il1, il2 ! loop 680
       if (bareiord(i) == - 1) then ! decrease in bare area
         incrlitr(i,iccp1) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1)
         grsumlit(i) = grsumlit(i) + incrlitr(i,iccp1)
@@ -1261,7 +1261,7 @@ contains
     !> If a pft is not supposed to exist as indicated by pftexist and its
     !! fractional coverage is really small then get rid of the pft all
     !! together and spread its live and dead biomass over the grid cell.
-    do j = 1, icc
+    do j = 1, icc ! loop 690
       do i = il1, il2
         if (.not. pftexist(i,j) .and. fcancmx(i,j) < 1.0e-05) then
 
@@ -1330,7 +1330,7 @@ contains
     end do ! loop 690
 
     !> Spread litter and soil c over all pfts and the barefrac
-    do j = 1, icc
+    do j = 1, icc ! loop 700
       do i = il1, il2
         if (fcancmx(i,j) > zero) then
           ! COMBAK PERLAY
@@ -1366,7 +1366,7 @@ contains
       end do ! loop 701
     end do ! loop 700
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 720
       if (barefrac(i) > zero) then
         ! COMBAK PERLAY
         litrmass(i,iccp1) = litrmass(i,iccp1) + grsumlit(i)
@@ -1439,7 +1439,7 @@ contains
     !! so for each pft the total C mass in vegetation and litter pools
     !! must all add up to the same value as before competition.
     !!
-    do j = 1, icc
+    do j = 1, icc ! loop 830
       if (.not. crop(j)) then
         do i = il1, il2
 
@@ -1760,7 +1760,7 @@ contains
   !! only the bare fraction. The equilibrium solutions for $f_1$ and $f_2$ in this case are
   !!
   !! \f[
-  !! f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}\qquad (Eqn 7)
+  !! f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right] \qquad (Eqn 7)
   !! \f]
   !!
   !! \f[
@@ -1783,11 +1783,11 @@ contains
   !! and the corresponding equilibrium fractions are
   !!
   !! \f[
-  !! \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}\qquad (Eqn 10)
+  !! \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1} \qquad (Eqn 10)
   !! \f]
   !!
   !! \f[
-  !! \label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.\qquad (Eqn 11)
+  !! \label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)} \qquad (Eqn 11)
   !! \f]
   !!
   !! In Eqs. 10 and 11, as long as
@@ -1855,7 +1855,7 @@ contains
   !! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\,leaf\,(m^{2}\,ground)^{-1}\f$) of a PFT
   !!
   !! \f[
-  !! \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}\qquad (Eqn 14)
+  !! \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})) \qquad (Eqn 14)
   !! \f]
   !!
   !! \f[
@@ -1863,7 +1863,7 @@ contains
   !! if   LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad  \lambda_{1,\alpha}
   !! =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max}
   !! \nonumber \\ if   LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha}
-  !! =\lambda_{max} \label{lam1} \vspace*{-4mm}\qquad (Eqn 15)
+  !! =\lambda_{max} \label{lam1} \qquad (Eqn 15)
   !! \f]
   !!
   !! \f[

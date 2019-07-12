@@ -1,11 +1,10 @@
 !> \file
 !! Calculates various land surface parameters.
 !! @author D. Verseghy, M. Lazare, V. Fortin, V. Arora, E. Chan, P. Bartlett, Y. Wu, J. Melton, A. Wu, Y. Delage
-!>
+!!
 !! This subroutine is adaptable to any number of vegetation categories recognized by CLASS
 !! (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
 !! is performed.
-!!
 subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Formerly APREP
              FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN, &
              SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS, &
@@ -302,28 +301,29 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !
   !     * CTEM-RELATED FIELDS.
   !
-  real  :: AILC (ILG,IC)
-  real  :: PAIC   (ILG,IC)
-  real  :: AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
-  real  :: AILCGS (ILG,ICTEM) !< GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
-  real  :: RMATC(ILG,IC,IG)
-  real  :: FCANCMX(ILG,ICTEM)
-  real  :: FCANC(ILG,ICTEM)   !< FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
-  real  :: FCANCS (ILG,ICTEM) !< FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
-  real  :: ZOLNC(ILG,IC)
-  real  :: CMASVEGC(ILG,IC)
-  real  :: SLAIC(ILG,IC)
+  real, intent(in)  :: AILC (ILG,IC)   !<
+  real, intent(in)  :: PAIC   (ILG,IC)   !<
+  real, intent(in)  :: AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
+  real, intent(out)  :: AILCGS (ILG,ICTEM) !< GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
+  real, intent(in)  :: RMATC(ILG,IC,IG)   !<
+  real, intent(in)  :: FCANCMX(ILG,ICTEM)   !<
+  real, intent(out)  :: FCANC(ILG,ICTEM)   !< FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
+  real, intent(out)  :: FCANCS (ILG,ICTEM) !< FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
+  real, intent(in)  :: ZOLNC(ILG,IC)   !<
+  real, intent(in)  :: CMASVEGC(ILG,IC)   !<
+  real, intent(in)  :: SLAIC(ILG,IC)   !<
   !
   !     * NOL2PFTS - NUMBER OF LEVEL 2 CTEM PFTs
   !     * SEE BIO2STR SUBROUTINE FOR EXPLANATION OF OTHER CTEM VARIABLES
 
   !     * INTERNAL WORK FIELD.
   !
+  integer, intent(in) :: ICTEM, L2MAX, NOL2PFTS(IC)   !<
   real  :: SFCANCMX(ILG,IC)
   !
-  logical ctem_on
+  logical, intent(in) :: ctem_on
 
-  integer :: ICTEM, M, N, K1, K2, L2MAX, NOL2PFTS(IC)
+  integer :: M, N, K1, K2
   !
   !-----------------------------------------------------------------------
   !
@@ -1246,7 +1246,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         CMASSC(I) = CMASSC(I) / FC(I)
       end if ! CTEM on/off
 
-      !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
+      !> if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
       if (IDISP == 0) then
         temp1 = 0.0
         do J = 1,IC
@@ -1255,8 +1255,8 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         CMASSC(I) = CMASSC(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & ! BDCS P?
         temp1 / FC(I)
       end if
-      !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
-      !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
+      !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+      !> if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
       if (IZREF == 2) then
         temp1 = 0.0
         do J = 1,IC
@@ -1308,7 +1308,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         CMASCS(I) = CMASCS(I) / FCS(I)
       end if   ! CTEM on/off
       !
-      !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
+      !> if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
       if (IDISP == 0) then
         temp1 = 0.0
         do J = 1,IC
@@ -1318,8 +1318,8 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         temp1 / FCS(I)
       end if
 
-      !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
-      !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
+      !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+      !> if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
       if (IZREF == 2) then
         temp1 = 0.0
         do J = 1,IC

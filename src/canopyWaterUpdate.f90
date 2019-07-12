@@ -247,7 +247,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
       end if
     end if
   end do ! loop 300
-  !!
+  !>
   !! The next loop is performed if IROOT=1, i.e. if transpiration is
   !! possible. For each soil layer, the volumetric water content that
   !! is removed by transpiration, THTRAN, is calculated from RLOST
@@ -289,7 +289,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
       end if
     end do
   end do ! loop 400
-  !!
+  !>
   !! In the final cleanup, the canopy heat capacity is recalculated,
   !! the contents of EVLOST are added to WLOST, and the remaining
   !! internal energy calculations are completed.

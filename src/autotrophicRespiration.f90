@@ -68,25 +68,25 @@ contains
     real, intent(in) :: rootmass(ilg,icc) !< root biomass for the 9 pfts in \f$kg c/m^2\f$
     real, intent(in) :: rmatctem(ilg,icc,ignd) !< fraction of roots in each layer for each pft
 
-    real, intent(out) :: roottemp(ilg,icc) !< root temperature (k)
-    real, intent(out) :: rmsveg(ilg,icc)   !< Maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    real, intent(out) :: rmrveg(ilg,icc)   !< Maintenance respiration for root for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(inout) :: roottemp(ilg,icc) !< root temperature (k)
+    real, intent(inout) :: rmsveg(ilg,icc)   !< Maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(inout) :: rmrveg(ilg,icc)   !< Maintenance respiration for root for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
     real, intent(in) :: tracerStemMass(:,:) !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(in) :: tracerRootMass(:,:)!< Tracer mass in the root for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(out) :: rmsTracer(ilg,icc)   !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: rmrTracer(ilg,icc)   !< Tracer maintenance respiration for root for the CTEM pfts both (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
-    real :: tempq10r(ilg,icc) !<
-    real :: tempq10s(ilg)     !<
+    real :: tempq10r(ilg,icc)
+    real :: tempq10s(ilg)
     integer :: i, j, k
     integer :: n, m
-    real :: q10               !<
-    real :: q10funcStem, q10funcRoot    !<
-    real :: livstmfr(ilg,icc) !<
-    real :: livrotfr(ilg,icc) !<
-    real :: tot_rmat(ilg,icc) !<
-    logical consq10 !<
+    real :: q10
+    real :: q10funcStem, q10funcRoot
+    real :: livstmfr(ilg,icc)
+    real :: livrotfr(ilg,icc)
+    real :: tot_rmat(ilg,icc)
+    logical consq10
 
     !---------------------------------------------------
 
