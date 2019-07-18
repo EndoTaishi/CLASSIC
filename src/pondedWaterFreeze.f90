@@ -91,7 +91,7 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
   !! beginning and end of the subroutine:
   !!
   !! \f$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t\f$
-  !! 
+  !!
   !! \f$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t\f$
   !!
   !! where the C terms represent volumetric heat capacities, the T

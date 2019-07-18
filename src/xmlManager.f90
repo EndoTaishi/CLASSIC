@@ -155,7 +155,7 @@ contains
   end function charToLogical
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> The charToInt function returns the integer value of a given char input
+  !> The charToInt function returns the integer :: value of a given char input
   integer function charToInt(input)
     implicit none
     character(len =* ), intent(in)    :: input    !< Char input
@@ -163,7 +163,7 @@ contains
   end function charToInt
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> The charToInt function returns the integer value of a given char input
+  !> The charToInt function returns the integer :: value of a given char input
   real function charToReal(input)
     implicit none
     character(len =* ), intent(in)    :: input    !< Char input

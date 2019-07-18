@@ -58,7 +58,7 @@ contains
     integer, intent(in) :: il1 !< input: il1=1
     integer, intent(in) :: il2 !< input: il2=ilg
     integer :: i, j, k, m, n
-    integer, intent(in):: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
+    integer, intent(in) :: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
     !< in "max. growth", "normal growth", "fall/harvest",
     !< or "no leaves" mode. see phenolgy subroutine for more details.
     !

@@ -16,9 +16,9 @@
 !!     *
 !!     * input:
 !!     *
-!!     *   real    v(n) ...monitonic vector (increasing or decreasing)
-!!     *   integer n    ...size of v
-!!     *   real    x    ...single real value
+!!     *   real    :: v(n) ...monitonic vector (increasing or decreasing)
+!!     *   integer :: n    ...size of v
+!!     *   real    :: x    ...single real :: value
 !!     *
 !!     * output:
 !!     *

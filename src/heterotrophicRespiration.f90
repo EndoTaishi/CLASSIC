@@ -157,9 +157,9 @@ contains
   !> @author Vivek Arora and Joe Melton
   ! COMBAK PERLAY
   subroutine hetresg (litrmass, soilcmas, delzw,    thpor, &! In
-                      il1,      il2,      ilg,     tbar,   &! In
+                      il1,      il2,      ilg,     tbar, &! In
                       psisat,   b,        thliq,    zbotw, &! In
-                      thice,    frac,     isand,           &! In
+                      thice,    frac,     isand, &! In
                       litres,   socres)! Out
     ! subroutine hetresg (litrmass,  soilcmas,   delzw,    thpor,    & ! In
     !                          il1,       il2,     ilg,     tbar,    & ! In
@@ -567,10 +567,10 @@ contains
   !> @author Vivek Arora, Joe Melton, Yuanqiao Wu
   ! COMBAK PERLAY
   subroutine hetresv (fcan,     fct,   litrmass,  soilcmas, &! In
-                      delzw,    thpor, il1,       il2,      &! In
-                      ilg,      tbar,  psisat,    thliq,    &! In
-                      roottemp, zbotw, sort,      b,        &! In
-                      isand,    thice, ipeatland,           &! In
+                      delzw,    thpor, il1,       il2, &! In
+                      ilg,      tbar,  psisat,    thliq, &! In
+                      roottemp, zbotw, sort,      b, &! In
+                      isand,    thice, ipeatland, &! In
                       ltresveg, scresveg) ! Out
     ! subroutine hetresv ( fcan,      fct,   litrmass, soilcmas,  & ! In
     !                     delzw,    thpor,        il1,      il2,  & ! In
