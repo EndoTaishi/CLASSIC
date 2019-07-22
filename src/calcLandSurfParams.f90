@@ -838,8 +838,11 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! evaluated as an average value over the canopy-covered area only, rather than over the whole modelled
   !! area. Then the intercepted liquid water amounts on vegetation over snow-free (RAICAN) and snow-
   !! covered areas (RAICNS) are calculated by making use of the relations
+  !!
   !! \f$W_{L,0} / \Lambda_{p,0} = W_{L,s} / \Lambda_{p,s}\f$ and
+  !!
   !! \f$W_l (X_0 + X_s) = W_{l,0} X_0 + W_{l,s} X_s\f$
+  !!
   !! where \f$W_l\f$ is the liquid water on the canopy, \f$X\f$ is the fractional area, and the subscripts \f$0\f$ and \f$s\f$ refer to
   !! snow-free and snow-covered areas respectively.
   !!

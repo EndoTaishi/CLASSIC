@@ -22,3 +22,4 @@ inputFiles/*
 src/backups/
 bib*
 cite*
+documentation/latex/*

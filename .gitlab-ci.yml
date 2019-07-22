@@ -5,8 +5,7 @@ stages:
  - build
  - run
  - test
-
-after_script:
+ - documentation
 
 prepare_binary_folder:
   stage: setup
@@ -17,6 +16,8 @@ prepare_binary_folder:
     -   mkdir -p ~/tmp/CLASSIC
     - fi
     - echo "setup complete"
+  except:
+    - documentation
 
 compile:
   stage: build
@@ -24,6 +25,8 @@ compile:
     - /usr/bin/make mode=ppp
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
+  except:
+    - documentation
 
 run:ctem_on:
   stage: run
@@ -33,6 +36,8 @@ run:ctem_on:
   artifacts:
     paths:
       - job_id.txt
+  except:
+    - documentation
 
 run:ctem_off:
   stage: run
@@ -42,6 +47,8 @@ run:ctem_off:
   artifacts:
     paths:
       - job_id.txt
+  except:
+    - documentation
 
 run:ctem_compete:
   stage: run
@@ -51,6 +58,8 @@ run:ctem_compete:
   artifacts:
     paths:
       - job_id.txt
+  except:
+    - documentation
 
 regression_test:ctem_on:
   stage: test
@@ -62,6 +71,8 @@ regression_test:ctem_on:
     - echo "regression test complete"
   dependencies:
     - run:ctem_on
+  except:
+    - documentation
 
 retression_test:ctem_off:
   stage: test
@@ -73,6 +84,8 @@ retression_test:ctem_off:
     - echo "regression test complete"
   dependencies:
     - run:ctem_off
+  except:
+    - documentation
 
 retression_test:ctem_compete:
   stage: test
@@ -84,3 +97,22 @@ retression_test:ctem_compete:
     - echo "regression test complete"
   dependencies:
     - run:ctem_compete
+  except:
+    - documentation
+
+pages:
+  stage: documentation
+  image: alpine
+  script:
+  - apk update
+  - apk add doxygen
+  - doxygen Doxyfile
+  - mv documentation/html/ public/
+  - rm -r -f documentation/html
+  - rm -f bib*
+  - rm -f citelist*
+  artifacts:
+    paths:
+    - public
+  only:
+  - documentation
