@@ -5,8 +5,8 @@
 !! @author D. Verseghy, M. Lazare, E. Chan
 !
 subroutine classGatherPrep(ILMOS,JLMOS,IWMOS,JWMOS, & ! Formerly GATPREP
-                    NML,NMW,GCROW,FAREA,MOSID, &
-                    NL,NM,ILG,IL1,IL2,IM)
+                           NML,NMW,GCROW,FAREA,MOSID, &
+                           NL,NM,ILG,IL1,IL2,IM)
   !
   !     * JAN 12/17 - D.VERSEGHY. NOTE: THIS VERSION OF classGatherPrep
   !     *                         IS DESIGNED SPECIFICALLY FOR LAND.

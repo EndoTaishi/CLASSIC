@@ -19,22 +19,20 @@ contains
 
   !> \ingroup balanceCarbon_balcar
   !! @{
-  subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas, &
-                      litrmass, soilcmas, ntchlveg, ntchsveg, &
-                      ntchrveg, tltrleaf, tltrstem, tltrroot, &
-                      glcaemls, blcaemls, stcaemls, rtcaemls, &
-                      ltrcemls, ltresveg, scresveg, humtrsvg, &
-                      pglfmass, pblfmass, pstemass, protmass, &
-                      plitmass, psocmass, vgbiomas, repro_cost, &
-                      pvgbioms, gavgltms, pgavltms, gavgscms, &
-                      pgavscms, galtcels, repro_cost_g, &
-                      autores , hetrores,      gpp, &
-                        litres,   socres, dstcemls, &
-                      litrfall, humiftrs, &
-                          il1,      il2,          ilg, &
-                           ipeatland, Cmossmas, pCmossmas, &
-                   nppmosstep, litrfallmoss,    litrmsmoss, &
-                  plitrmsmoss, ltrestepmoss,  humicmosstep)
+  subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,    &
+                      litrmass, soilcmas, ntchlveg, ntchsveg,    &
+                      ntchrveg, tltrleaf, tltrstem, tltrroot,    &
+                      glcaemls, blcaemls, stcaemls, rtcaemls,    &
+                      ltrcemls, ltresveg, scresveg, humtrsvg,    &
+                      pglfmass, pblfmass, pstemass, protmass,    &
+                      plitmass, psocmass, vgbiomas, repro_cost,  &
+                      pvgbioms, gavgltms, pgavltms, gavgscms,    &
+                      pgavscms, galtcels, repro_cost_g, autores, &
+                      hetrores, gpp, litres, socres, dstcemls,   &
+                      litrfall, humiftrs, il1, il2, ilg,         &
+                      ipeatland, Cmossmas, pCmossmas,            &
+                      nppmosstep, litrfallmoss, litrmsmoss,      &
+                      plitrmsmoss, ltrestepmoss, humicmosstep)
 
     !     -----------------------------------------------------------------
     !
@@ -138,8 +136,8 @@ contains
     !!
     !! Green and brown leaves
     !!
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 100
+      do i = il1, il2 ! loop 110
         diff1 = (gleafmas(i,j) + bleafmas(i,j) - pglfmass(i,j) - &
       pblfmass(i,j))
         diff2 = (ntchlveg(i,j) - tltrleaf(i,j) - glcaemls(i,j) - &
@@ -156,8 +154,8 @@ contains
     !
     ! Stem
     !
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 150
+      do i = il1, il2 ! loop 160
         diff1 = stemmass(i,j) - pstemass(i,j)
         diff2 = (ntchsveg(i,j) - tltrstem(i,j) - &
       stcaemls(i,j)) * (deltat/963.62)
@@ -173,8 +171,8 @@ contains
     !
     ! Root
     !
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 200
+      do i = il1, il2 ! loop 210
         diff1 = rootmass(i,j) - protmass(i,j)
         diff2 = (ntchrveg(i,j) - tltrroot(i,j) - &
       rtcaemls(i,j)) * (deltat/963.62)
@@ -190,8 +188,8 @@ contains
     !
     ! Litter over all pfts
     !
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 250
+      do i = il1, il2 ! loop 260
         littempor = 0.
         litrestemp = 0.
         humtrstemp = 0.
@@ -220,7 +218,7 @@ contains
     !
     ! Litter over the bare fraction
     !
-    do i = il1, il2
+    do i = il1, il2 ! loop 280
       if (ipeatland(i) == 0) then ! Over the non-peatland areas.
         littempor = 0.
         litrestemp = 0.
@@ -247,7 +245,7 @@ contains
     !
     ! Litter over the LUC pool
     !
-    do i = il1, il2
+    do i = il1, il2 ! loop 290
       littempor = 0.
       litrestemp = 0.
       humtrstemp = 0.
@@ -273,8 +271,8 @@ contains
     !
     ! Soil carbon for the vegetated areas
     !
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 300
+      do i = il1, il2 ! loop 310
         if (ipeatland(i) == 0) then ! Over the non-peatland regions
           soiltempor = 0.
           scresveg_temp = 0.
@@ -308,8 +306,8 @@ contains
     !
     ! Soil carbon over the bare area and LUC product pool
     !
-    do j = iccp1, iccp2
-      do i = il1, il2
+    do j = iccp1, iccp2 ! loop 320
+      do i = il1, il2 ! loop 330
         soiltempor = 0.
         scresveg_temp = 0.
         humtrstemp = 0.
@@ -337,7 +335,7 @@ contains
     !
     ! Moss C balance
     !
-    do i = il1, il2
+    do i = il1, il2 ! loop 400
       if (ipeatland(i) > 0) then ! Peatlands only
         diff1 = Cmossmas(i) - pCmossmas(i)
         diff2 = nppmosstep(i) - litrfallmoss(i)
@@ -374,7 +372,7 @@ contains
     !
     ! Vegetation biomass
     !
-    do i = il1, il2
+    do i = il1, il2 ! loop 350
       diff1 = vgbiomas(i) - pvgbioms(i)
       diff2 = (gpp(i) - autores(i) - litrfall(i) - &
     dstcemls(i) - repro_cost_g(i)) * (deltat/963.62)
@@ -398,7 +396,7 @@ contains
     !
     ! Litter
     !
-    do i = il1, il2
+    do i = il1, il2 ! loop 380
       diff1 = gavgltms(i) - pgavltms(i)
       diff2 = (litrfall(i) - litres(i) - humiftrs(i) - galtcels(i) &
     + repro_cost_g(i)) * &
@@ -421,7 +419,7 @@ contains
     !
     ! Soil carbon
     !
-    do i = il1, il2
+    do i = il1, il2 ! loop 390
       diff1 = gavgscms(i) - pgavscms(i)
       diff2 = (humiftrs(i) - socres(i)) * (deltat/963.62)
       if ((abs(diff1 - diff2)) > tolrance) then
@@ -451,16 +449,15 @@ contains
   !! by humification and respiration from the previous stored value
   !! @author J. Melton
   !!
-  subroutine prepBalanceC(il1, il2, ilg, fcancmx, glealtrm, glfltrdt, &  ! In
-                         blfltrdt, stemltrm, stemltdt, rootltrm, rootltdt, &
-                         ipeatland, nppmosstep, pgavscms, humstepmoss, &
-                         ltrestepmoss, stemlitr, rootlitr, rootmass, &
-                         litrmass, soilCmas, hutrstep_g, stemmass, bleafmas, &
-                         gleafmas, socrestep, fg, litrfallmoss, &
-                         leaflitr, Cmossmas, litrmsmoss, & ! In/Out
-                         tltrleaf, tltrstem, tltrroot, & ! Out
-                         vgbiomas, litrfall, gavgltms, litrfallveg, &
-                         gavgscms, vgbiomas_veg)
+  subroutine prepBalanceC(il1, il2, ilg, fcancmx, glealtrm, glfltrdt,        & ! In
+                         blfltrdt, stemltrm, stemltdt, rootltrm, rootltdt,   & ! In
+                         ipeatland, nppmosstep, pgavscms, humstepmoss,       & ! In
+                         ltrestepmoss, stemlitr, rootlitr, rootmass,         & ! In
+                         litrmass, soilCmas, hutrstep_g, stemmass, bleafmas, & ! In
+                         gleafmas, socrestep, fg, litrfallmoss,              & ! In
+                         leaflitr, Cmossmas, litrmsmoss,                     & ! In/Out
+                         tltrleaf, tltrstem, tltrroot, vgbiomas, litrfall,   & ! Out
+                         gavgltms, litrfallveg, gavgscms, vgbiomas_veg)        ! Out
 
     use classic_params,        only : icc, deltat, iccp1, ignd
 
@@ -520,8 +517,8 @@ contains
     !!  from all causes (normal turnover, drought and cold stress for leaves, mortality,
     !! and disturbance) for use in balcar subroutine
     !!
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 1050
+      do i = il1, il2 ! loop 1060
 
         ! units here are \f$kg c/m^2 .day\f$
         tltrleaf(i,j) = leaflitr(i,j) + glealtrm(i,j) + glfltrdt(i,j) &
@@ -543,8 +540,8 @@ contains
     vgbiomas(:) = 0.0
     gavgltms(:) = 0.0
     gavgscms(:) = 0.0
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 1100
+      do i = il1, il2 ! loop 1110
 
         vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) &
                    + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j))
@@ -582,7 +579,7 @@ contains
     !! Note: peatland soil C is not aggregated from plants but updated
     !! by humification and respiration from the previous stored value
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 1020
       if (ipeatland(i) == 0) then
         ! COMBAK PERLAY
         ! Add the bare fraction dead C

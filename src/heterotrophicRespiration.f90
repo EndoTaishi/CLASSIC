@@ -150,7 +150,8 @@ contains
 
 
   end subroutine heterotrophicRespiration
-
+  !! @}
+  !!
   !> \ingroup heterotrophic_respiration_hetresg
   !! @{
   !> Heterotrophic respiration subroutine for bare ground fraction
@@ -263,14 +264,14 @@ contains
     !>     Estimate temperature of the litter and soil carbon pools.
     !!     Over the bare fraction there is no live root. So we make the
     !!     simplest assumption that litter temperature is same as temperature of the top soil layer.
-    do i = il1, il2
+    do i = il1, il2 ! loop 210
       litrtemp(i) = tbar(i,1)
     end do ! loop 210
     !>     We estimate the temperature of the soil c pool assuming that soil carbon over the bare fraction is distributed exponentially. note
     !!     that bare fraction may contain dead roots from different pfts all of which may be distributed differently. For simplicity we do not
     !!     track each pft's dead root biomass and assume that distribution of soil carbon over the bare fraction can be described by a single
     !!     parameter.
-    do i = il1, il2
+    do i = il1, il2 ! loop 245
       zcarbon = 3.0 / a_hetr
       zcarb_g = 0.0
       do j = 1,ignd
@@ -295,8 +296,8 @@ contains
     !!     this is modelled as function of logarithm of matric potential.
     !!     we find values for all soil layers, and then find an average value
     !!     based on fraction of carbon present in each layer.
-    do j = 1, ignd
-      do i = il1, il2
+    do j = 1, ignd ! loop 260
+      do i = il1, il2 ! loop 270
         if (isand(i,j) == - 3 .or. isand(i,j) == - 4) then
           scmotrm (i,j) = 0.2
           psi (i,j) = 10000.0 ! set to large number so that
@@ -326,7 +327,7 @@ contains
         scmotrm(i,j) = max(0.0,min(scmotrm(i,j),1.0))
       end do ! loop 270
     end do ! loop 260
-    do i = il1, il2
+    do i = il1, il2 ! loop 290
       socmoscl(i) = sum(scmotrm(i,:) * fracarb(i,:)) / sum(fracarb(i,:))
       !         socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2) +scmotrm(i,3)*fracarb(i,3)
       !         socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
@@ -348,7 +349,7 @@ contains
     !!     in addition, we use moisture content of the top soil layer
     !!     as a surrogate for litter moisture content. so we use only
     !!     psi(i,1) calculated in loops 260 and 270 above.
-    do i = il1, il2
+    do i = il1, il2 ! loop 300
       if (psi(i,1) > 10000.0) then
         ltrmoscl(i) = 0.2
       else if ( psi(i,1) <= 10000.0 .and.  psi(i,1) > 6.0 ) then
@@ -360,7 +361,7 @@ contains
     end do ! loop 300
     !!     use temperature of the litter and soil c pools, and their soil
     !!     moisture scalars to find respiration rates from these pools
-    do i = il1, il2
+    do i = il1, il2 ! loop 330
       if (frac(i) > zero) then
         !       first find the q10 response function to scale base respiration
         !       rate from 15 c to current temperature, we do litter first
@@ -667,8 +668,8 @@ contains
     !!     Constants and parameters are located in classic_params.f90
     !     ---------------------------------------------------------------
     !     initialize required arrays to zero
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 100
+      do i = il1, il2 ! loop 110
         litrtemp(i,j) = 0.0       ! litter temperature
         tempq10l(i,j) = 0.0
         solctemp(i,j) = 0.0       ! soil carbon pool temperature
@@ -676,7 +677,7 @@ contains
         socmoscl(i,j) = 0.0       ! soil moisture scalar for soil carbon decomposition
         ltresveg(i,j) = 0.0       ! litter resp. rate for each pft
         scresveg(i,j) = 0.0       ! soil c resp. rate for each pft
-        do k = 1, ignd
+        do k = 1, ignd ! loop 120
           scmotrm(i,k) = 0.0        ! soil carbon moisture term
           fracarb(i,j,k) = 0.0    ! fraction of carbon in each soil layer for each vegetation
         end do ! loop 120
@@ -691,8 +692,8 @@ contains
     !! temperature is weighted average of temperatue of top soil layer
     !! (where the stem and leaf litter sits) and root temperature, because
     !! litter pool is made of leaf, stem, and root litter.
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 200
+      do i = il1, il2 ! loop 210
         if (fcan(i,j) > 0.) then
           litrtemp(i,j) = alpha_hetres * tbar(i,1) + roottemp(i,j) * (1.0 - alpha_hetres)
         end if
@@ -706,8 +707,8 @@ contains
     !! exponentially distributed, just like roots. but rather than using
     !! the parameter of this exponential profile from our variable root
     !! distribution we use fixed vegetation-dependent parameters.
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 230
+      do i = il1, il2 ! loop 240
         if (fcan(i,j) > 0.) then
           zcarbon = 3.0 / abar(sort(j))
           zcarb_g = 0.0
@@ -737,8 +738,8 @@ contains
     !! we find values for all soil layers, and then find an average value
     !! based on fraction of carbon present in each layer. this makes
     !! moisture scalar a function of vegetation type.
-    do j = 1, ignd
-      do i = il1, il2
+    do j = 1, ignd ! loop 260
+      do i = il1, il2 ! loop 270
         if (isand(i,j) == - 3 .or. isand(i,j) == - 4) then
           scmotrm (i,j) = 0.2
           psi (i,j) = 10000.0 ! set to large number so that
@@ -780,7 +781,7 @@ contains
         end if ! sand==-3 or -4
       end do ! loop 270
     end do ! loop 260
-    do j = 1, icc
+    do j = 1, icc ! loop 280
       do i = il1, il2
         if (fcan(i,j) > 0.) then
           socmoscl(i,j) = sum(scmotrm(i,:) * fracarb(i,j,:)) / sum(fracarb(i,j,:))
@@ -795,7 +796,7 @@ contains
     !! in addition, we use moisture content of the top soil layer
     !! as a surrogate for litter moisture content. so we use only
     !! psi(i,1) calculated in loops 260 and 270 above.
-    do i = il1, il2
+    do i = il1, il2 ! loop 300
       if (ipeatland(i) == 0) then   ! not peatland
         if (psi(i,1) > 10000.0) then
           ltrmoscl(i) = 0.2
@@ -835,7 +836,7 @@ contains
     end do ! loop 300
     !!    use temperature of the litter and soil c pools, and their soil
     !!     moisture scalars to find respiration rates from these pools
-    do j = 1, icc
+    do j = 1, icc ! loop 320
       do i = il1, il2
         if (fcan(i,j) > 0.) then
           !         first find the q10 response function to scale base respiration
@@ -1188,7 +1189,7 @@ contains
     !> Find vegetation averaged litter and soil C respiration rates
     !! using values from canopy over ground and canopy over snow subareas
     hetrsveg(:,:) = 0.0
-    do j = 1, icc
+    do j = 1, icc ! loop 340
       do i = il1, il2
         if (fcancmx(i,j) > zero) then
           ! COMBAK PERLAY
@@ -1204,7 +1205,7 @@ contains
 
     !> Find litter and soil c respiration rates averaged over the bare
     !! fraction of the grid cell using values from ground and snow over ground sub-areas.
-    do i = il1, il2
+    do i = il1, il2 ! loop 355
       if (fg(i) > zero) then
         ! COMBAK PERLAY
         hetrsveg(i,iccp1) = hetrsveg(i,iccp1) + ltresveg(i,iccp1) + scresveg(i,iccp1)
@@ -1220,7 +1221,7 @@ contains
     !> Find grid averaged litter and soil c respiration rates
     litres(:) = 0.
     socres(:) = 0.
-    do j = 1,icc
+    do j = 1,icc ! loop 360
       do i = il1, il2
         ! COMBAK PERLAY
         litres(i) = litres(i) + fcancmx(i,j) * ltresveg(i,j)
@@ -1238,7 +1239,7 @@ contains
     !! bareground (iccp1) and LUC pool (iccp2) values to the grid sum if it's not peatland.
     !! If it is a peatland, we add litresmoss to
     !! the grid sum but no bareground values as we assume peatlands have no bareground.
-    do i = il1, il2
+    do i = il1, il2 ! loop 380
       if (ipeatland(i) == 0) then
         ! COMBAK PERLAY
         litres(i) = litres(i) + fg(i) * ltresveg(i,iccp1)
@@ -1268,7 +1269,7 @@ contains
 
     !> Update the litter and soil c pools based on litter and soil c respiration rates
     !! found above. also transfer humidified litter to the soil c pool.
-    do j = 1, iccp2
+    do j = 1, iccp2 ! loop 420
       do i = il1, il2
         ! COMBAK PERLAY
         !> Convert u mol co2/m2.sec -> \f$(kg C/m^2)\f$ respired over the model time step
@@ -1351,7 +1352,7 @@ contains
 
     !> Estimate soil respiration. this is sum of heterotrophic respiration and root maintenance respiration.
     soilrsvg(:,:) = 0.
-    do j = 1, icc
+    do j = 1, icc ! loop 440
       do i = il1, il2
         ! COMBAK PERLAY
         soilrsvg(i,j) = soilrsvg(i,j) + ltresveg(i,j) + scresveg(i,j)
@@ -1366,7 +1367,7 @@ contains
 
     !> But over the bare fraction and LUC product pool there is no live root.
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 460
       ! COMBAK PERLAY
       soilrsvg(i,iccp1) = soilrsvg(i,iccp1) + ltresveg(i,iccp1) + scresveg(i,iccp1)
       !     do k = 1, ignd
@@ -1379,7 +1380,7 @@ contains
     soilresp(:) = 0.0
     humiftrs(:) = 0.0
     hutrstep_g(:) = 0.0
-    do i = il1, il2
+    do i = il1, il2 ! loop 470
       do j = 1, icc
         soilresp(i) = soilresp(i) + fcancmx(i,j) * soilrsvg(i,j)
         ! COMBAK PERLAY
@@ -1443,14 +1444,8 @@ contains
 
   end subroutine updatePoolsHetResp
   !! @}
-
-  !> \defgroup hetresg Heterotrophic Respiration Bare Ground
-  !! Heterotrophic Respiration Subroutine For Bare Fraction
-  !!
-  !> \defgroup hetresv Heterotrophic Respiration Vegetated
-  !! Heterotrophic Respiration Subroutine For Vegetated Fraction
-  !!
-  !> \file
+  ! ------------------------------------------------------------------------------
+  !> \namespace heterotrophicRespiration
   !! Heterotrophic Respiration Module (Vegetated and Bare Ground)
   !!
   !! Central module for all heterotrophic respiration-related operations

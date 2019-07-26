@@ -5,10 +5,10 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! Formerly CANVAP
-                   WLOST,CHCAP,QFCF,QFCL,QFN,QFC,HTCC,HTCS,HTC, &
-                   FI,CMASS,TSNOW,HCPSNO,RHOSNO,FROOT,THPOR, &
-                   THLMIN,DELZW,EVLOST,RLOST,IROOT, &
-                   IG,ILG,IL1,IL2,JL,N)
+                             WLOST,CHCAP,QFCF,QFCL,QFN,QFC,HTCC,HTCS,HTC, &
+                             FI,CMASS,TSNOW,HCPSNO,RHOSNO,FROOT,THPOR, &
+                             THLMIN,DELZW,EVLOST,RLOST,IROOT, &
+                             IG,ILG,IL1,IL2,JL,N)
 
   !     * SEP 15/05 - D.VERSEGHY. REMOVE HARD CODING OF IG=3.
   !     * SEP 13/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -183,7 +183,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !     * DEMAND, RESIDUAL IS TAKEN FIRST FROM SNOW UNDERLYING CANOPY AND
   !     * THEN FROM LIQUID WATER ON CANOPY.
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 200
     if (FI(I) > 0. .and. SUBL(I) > 0.) then
       SLOST = SUBL(I) * DELT * RHOW
       if (SLOST <= SNOCAN(I)) then
@@ -231,7 +231,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !     * EVAPORATION.  IF WATER ON CANOPY IS INSUFFICIENT TO SUPPLY
   !     * DEMAND, ASSIGN RESIDUAL TO TRANSPIRATION.
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 300
     if (FI(I) > 0. .and. EVAP(I) > 0.) then
       RLOST(I) = EVAP(I) * RHOW * DELT
       if (RLOST(I) <= RAICAN(I)) then
@@ -263,7 +263,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !
   !     * TRANSPIRATION.
   !
-  do J = 1,IG
+  do J = 1,IG ! loop 400
     do I = IL1,IL2
       if (FI(I) > 0. .and. IROOT(I) > 0) then
         if (DELZW(I,J) > 0.0) then
@@ -296,7 +296,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !
   !     * CLEANUP.
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 500
     if (FI(I) > 0.) then
       CHCAP(I) = RAICAN(I) * SPHW + SNOCAN(I) * SPHICE + CMASS(I) * SPHVEG
       WLOST(I) = WLOST(I) + EVLOST(I)
@@ -306,7 +306,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
     end if
   end do ! loop 500
   !
-  do J = 1,IG
+  do J = 1,IG ! loop 550
     do I = IL1,IL2
       if (FI(I) > 0.) then
         HTC (I,J) = HTC(I,J) + FI(I) * (TBAR(I,J) + TFREZ) * THLIQ(I,J) * &

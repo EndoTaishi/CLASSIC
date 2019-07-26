@@ -5,7 +5,7 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerly CWCALC
-                   HMFC,HTCC,FI,CMASS,ILG,IL1,IL2,JL)
+                             HMFC,HTCC,FI,CMASS,ILG,IL1,IL2,JL)
   !
   !
   !     * MAR 25/08 - D.VERSEGHY. UPDATE FRAINC AND FSNOWC.

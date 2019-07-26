@@ -7,6 +7,13 @@ stages:
  - test
  - documentation
 
+check_location:
+  stage: setup
+  script:
+    - echo "HELLO FROM MASTER!"
+  only:
+    - master@CLASSIC_development/CLASSIC
+
 prepare_binary_folder:
   stage: setup
   script:
@@ -17,7 +24,7 @@ prepare_binary_folder:
     - fi
     - echo "setup complete"
   except:
-    - documentation
+    - master
 
 compile:
   stage: build
@@ -26,7 +33,7 @@ compile:
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
   except:
-    - documentation
+    - master
 
 run:ctem_on:
   stage: run
@@ -37,7 +44,7 @@ run:ctem_on:
     paths:
       - job_id.txt
   except:
-    - documentation
+    - master
 
 run:ctem_off:
   stage: run
@@ -48,7 +55,7 @@ run:ctem_off:
     paths:
       - job_id.txt
   except:
-    - documentation
+    - master
 
 run:ctem_compete:
   stage: run
@@ -59,7 +66,7 @@ run:ctem_compete:
     paths:
       - job_id.txt
   except:
-    - documentation
+    - master
 
 regression_test:ctem_on:
   stage: test
@@ -72,7 +79,7 @@ regression_test:ctem_on:
   dependencies:
     - run:ctem_on
   except:
-    - documentation
+    - master
 
 retression_test:ctem_off:
   stage: test
@@ -85,7 +92,7 @@ retression_test:ctem_off:
   dependencies:
     - run:ctem_off
   except:
-    - documentation
+    - master
 
 retression_test:ctem_compete:
   stage: test
@@ -98,10 +105,10 @@ retression_test:ctem_compete:
   dependencies:
     - run:ctem_compete
   except:
-    - documentation
+    - master
 
 pages:
-  stage: documentation
+  stage: build
   image: alpine
   script:
   - apk update
@@ -115,4 +122,4 @@ pages:
     paths:
     - public
   only:
-  - documentation
+  - master@mfortier/classctem

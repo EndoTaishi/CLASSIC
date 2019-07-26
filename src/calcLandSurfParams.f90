@@ -5,27 +5,24 @@
 !! This subroutine is adaptable to any number of vegetation categories recognized by CLASS
 !! (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
 !! is performed.
-subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Formerly APREP
-             FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN, &
-             SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS, &
-             ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC, &
-             CMASCS,CWLCAP,CWFCAP,CWLCPS,CWFCPS,RBCOEF, &
-             ZPLIMC,ZPLIMG,ZPLMCS,ZPLMGS,HTCC,HTCS,HTC, &
-             FROOT,FROOTS, &
-             WTRC,WTRS,WTRG,CMAI,PAI,PAIS,AIL,FCAN,FCANS,PSIGND, &
-             FCANMX,ZOLN,PAIMAX,PAIMIN,CWGTMX,ZRTMAX, &
-             PAIDAT,HGTDAT,THLIQ,THICE,TBAR,RCAN,SNCAN, &
-             TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO, &
-             ZBLEND,ZPLMG0,ZPLMS0, &
-             TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW, &
-             THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND, &
-             ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF, &
-             IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB, &
-             RRESID,SRESID,FRTOT,FRTOTS, &
-             FCANCMX,ICTEM,ctem_on,RMATC, &
-             AILC,PAIC,AILCG,L2MAX,NOL2PFTS, &
-             AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC, &
-             ipeatland)
+subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS,           & ! Formerly APREP
+                              FRAINC, FSNOWC, FRAICS, FSNOCS, RAICAN, RAICNS, SNOCAN,  &
+                              SNOCNS, DISP, DISPS, ZOMLNC, ZOMLCS, ZOELNC, ZOELCS,     &
+                              ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, CHCAP, CHCAPS, CMASSC,   &
+                              CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, ZPLIMC,  &
+                              ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, FROOT, FROOTS,  &
+                              WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS,     &
+                              PSIGND, FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX,    &
+                              PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN,   &
+                              GROWTH, ZSNOW, TSNOW, FSNOW, RHOSNO, SNO, Z0ORO, ZBLEND, &
+                              TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ, ZPLMG0, ZPLMS0,    &
+                              DELZW, ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS,   &
+                              ISAND, ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP,     &
+                              IZREF, IWF, IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA,      &
+                              GROWN, GROWB, RRESID, SRESID, FRTOT, FRTOTS, FCANCMX,    &
+                              ICTEM, ctem_on, RMATC, AILC, PAIC, AILCG, L2MAX,         &
+                              NOL2PFTS, AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC,        &
+                              SLAIC, ipeatland)
 
   !     * JAN 2019 - J. Melton    Remove common block parameters, use classic_params instead.
   !     * Nov 2018 - J. Melton/S.Sun  Allow >4 original PFTs. Revert change of JAN 05/16 as the XLEAF
@@ -329,10 +326,10 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !
   !     * INITIALIZE DIAGNOSTIC AND OTHER ARRAYS.
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 100
     HTCC(I) = 0.0
     HTCS(I) = 0.0
-    do J = 1,IG
+    do J = 1,IG ! loop 50
       HTC(I,J) = 0.0
     end do ! loop 50
     WTRC(I) = 0.0
@@ -383,7 +380,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     !! end to ensure that GROWA is not less than 0 or greater than 1. If the calculated value of GROWA is
     !! vanishingly small, it is set to zero.
     !!
-    do I = IL1,IL2
+    do I = IL1,IL2 ! loop 120
       IN = INT( (RADJ(I) + PI / 2.0) * 18.0 / PI ) + 1
       if (DLON(I) > 190. .and. DLON(I) < 330.) then
         NL = 2
@@ -440,7 +437,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! of double the value of GROWTH, with upper and lower limits of 1 and 0. Finally, the growth index of
   !! grasses is set to 1 all year round.
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 150
 
     GROWN(I) = ABS(GROWTH(I))
     if (GROWTH(I) > 0.0) then
@@ -881,7 +878,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! recalculated, the diagnosed change in internal energy HTC is updated, and RRESID and SRESID are
   !! added to WTRG, the diagnosed residual water transferred into or out of the soil, and are then set to zero.
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 200
     PAICAN(I) = 0.
     if (FC(I) > 0.) then
       do J = 1,IC
@@ -1051,7 +1048,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       SRESID(I) = 0.0
     end if
     !
-    do J = 1,IG
+    do J = 1,IG ! loop 190
       if (DELZW(I,J) > 0.0 .and. (RRESID(I) > 0.0 &
       .or. SRESID(I) > 0.0)) then
         THSUM = THLIQ(I,J) + THICE(I,J) + &
@@ -1130,7 +1127,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     end do
   end do ! loop 250
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 275
     if (FC(I) > 0.) then
       if (IDISP == 1)   DISP(I) = EXP(DISP(I) / FC(I))
       ZOMLNC(I) = ZBLEND(I) / EXP(SQRT(1.0 / (ZOMLNC(I) / FC(I))))
@@ -1160,7 +1157,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! In the same loop the roughness length for peatlands is also calculated assuming
   !! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in classic_params.f90)
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 300
     if (FG(I) > 0.) then
       if (ISAND(I,1) /= - 4) then
         ZOMLNG(I) = ((FG(I) - FCANMX(I,ICP1) * (1.0 - FSNOW(I))) * ZOLNG + &
@@ -1192,7 +1189,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of
   !! the subareas, these are reset to LZ0ORO.
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 325
     if (Z0ORO(I) > 1.0E-4) then
       LZ0ORO = LOG(Z0ORO(I))
     else
@@ -1223,7 +1220,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! CMAI is recalculated, and is used to determine the change in internal energy of the canopy, HTCC, owing
   !! to growth or disappearance of the vegetation.
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 350
     if (FC(I) > 0.) then ! For non-snow covered ground
       if (ctem_on) then
         CMASSC(I) = 0.0
@@ -1391,11 +1388,11 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         ZROOT = ZRTMAX(I,J)
         if (J == 3) ZROOT = ZRTMAX(I,J) * GROWA(I)
         ZROOTG = 0.0
-        do K = 1,IG
+        do K = 1,IG ! loop 375
           ZROOTG = ZROOTG + DELZW(I,K)
         end do ! loop 375
         ZROOT = MIN(ZROOT,ZROOTG)
-        do K = 1,IG
+        do K = 1,IG ! loop 400
           if (ZROOT <= (ZBOTW(I,K) - DELZW(I,K) + 0.0001)) then
             RMAT(I,J,K) = 0.0
           else if (ZROOT <= ZBOTW(I,K)) then
@@ -1449,7 +1446,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! weighted averages over the four vegetation categories.
   !!
 
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 600
     FSVF (I) = 0.0
     if (FC(I) > 0.) then
       do J = 1,IC
@@ -1523,7 +1520,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! is being run coupled with CTEM, a set of CTEM-related calculations is performed.
   !!
 
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 800
     PAICAN(I) = 0.0
     if (FC(I) > 0.) then
       do J = 1,IC

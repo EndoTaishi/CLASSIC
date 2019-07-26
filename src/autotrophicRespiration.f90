@@ -15,12 +15,10 @@ contains
   !> Calculates maintenance respiration for roots and stems
   !> @author Vivek Arora and Joe Melton
 
-  subroutine mainres (  fcan,      fct,     stemmass,   rootmass, & ! In
-                      il1,      il2,         ilg,    leapnow, & ! In
-                      ta,     tbar,    rmatctem, sort,  isand, & ! In
-                      useTracer, tracerStemMass, tracerRootMass, & ! In
-                      rmsveg, rmrveg, roottemp, & ! Out
-                      rmsTracer, rmrTracer) ! Out
+  subroutine mainres (fcan, fct, stemmass, rootmass, il1, il2, ilg, & ! In
+                      leapnow, ta, tbar, rmatctem, sort, isand,     & ! In
+                      useTracer, tracerStemMass, tracerRootMass,    & ! In
+                      rmsveg, rmrveg, roottemp, rmsTracer, rmrTracer) ! Out
     !
     !     20  sep. 2001 - this subroutine calculates maintenance respiration,
     !     V. Arora        over a given sub-area, for stem and root components.
@@ -114,9 +112,9 @@ contains
 
     !> Based on root and stem biomass, find fraction which is live.
     !! for stem this would be the sapwood to total wood ratio.
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 120
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 125
+        do i = il1, il2 ! loop 130
           select case (classpfts(j))
           case ('Crops', 'Grass') ! crops and grass
             livstmfr(i,m) = 1.0
@@ -154,7 +152,7 @@ contains
 
     !> We assume that stem temperature is same as air temperature, ta.
     !! using stem and root temperatures we can find their maintenance respirations rates
-    do i = il1, il2
+    do i = il1, il2 ! loop 200
 
       !> first find the q10 response function to scale base respiration
       !! rate from 15 c to current temperature, we do the stem first.
@@ -169,7 +167,7 @@ contains
 
       q10funcStem = q10 ** (0.1 * (ta(i) - 288.16))
 
-      do j = 1, icc
+      do j = 1, icc ! loop 210
         if (fcan(i,j) > 0.) then
 
           !> This q10 value is then used with the base rate of respiration

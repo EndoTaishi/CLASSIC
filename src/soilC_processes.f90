@@ -15,6 +15,10 @@ contains
   !=============================================================================================================
 
   !> \ingroup soilC_processes_turbation
+  !! Simulation of soil C movement due to turbation processes (presently only cryo).
+  !!
+  !! Modelled simply as a diffusion process.
+  !!
   !> @author Joe Melton
   !! @{
 
@@ -237,7 +241,14 @@ contains
   end subroutine turbation
   !! @}
   !> \ingroup soilC_processes_tridiag
-  !> @author Joe Melton
+  !! Subroutine to solve triadiagonal system of equations
+  !!
+  !! Solves for a vector u of size N the tridiagonal linear set using given by equation 2.4.1 in
+  !! Numerical recipes in Fortran 90 (\cite Press2007-bp) using a serial algorithm. Input vectors b (diagonal elements)
+  !! and r (right-hand side) have size N, while a and c (off-diagonal elements) are not defined
+  !! in the first and last elements, respectively.
+  !!
+  !! @author Joe Melton
   subroutine tridiag(a,b,c,r,u)
 
     ! Subroutine to solve triadiagonal system of equations
@@ -290,22 +301,6 @@ contains
     end do
 
   end subroutine tridiag
-  !! @}
-
-  !> \defgroup turbation Turbation
-  !! @{
-  !! Simulation of soil C movement due to turbation processes (presently only cryo).
-  !!
-  !! Modelled simply as a diffusion process.
-  !! @}
-  !> \defgroup tridiag Tridiagonal_solver
-  !! @{
-  !! Subroutine to solve triadiagonal system of equations
-  !!
-  !! Solves for a vector u of size N the tridiagonal linear set using given by equation 2.4.1 in
-  !! Numerical recipes in Fortran 90 (\cite Press2007-bp) using a serial algorithm. Input vectors b (diagonal elements)
-  !! and r (right-hand side) have size N, while a and c (off-diagonal elements) are not defined
-  !! in the first and last elements, respectively.
   !! @}
   !> \namespace soilC_processes
   !! Central module for all soil C processes involving movement of soil C up or down in soil column.
