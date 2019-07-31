@@ -16,7 +16,7 @@ module ctemDriver
 contains
   !> \ingroup ctem_ctem
   !! @{
-  subroutine ctem(   fsnow,     sand,      clay, & ! In
+  subroutine ctem(   fsnow,     sand,  & ! In
                  ilg,   il1,      il2,     iday,      radj, & ! In
                   ta,     delzw, ancgveg,   rmlcgveg, & ! In
                       zbotw, & ! In
@@ -185,7 +185,6 @@ contains
     integer, dimension(ilg), intent(in) :: ipeatland        !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     real, dimension(ilg), intent(in) :: fsnow               !< fraction of snow simulated by class
     real, dimension(ilg,ignd), intent(in) :: sand           !< percentage sand
-    real, dimension(ilg,ignd), intent(in) :: clay           !< percentage clay
     real, dimension(ilg), intent(in) :: radj                !< latitude in radians
     real, dimension(ilg,ignd), intent(in) ::  tbar          !< Soil temperature, K
     real, dimension(ilg,ignd), intent(in) :: psisat         !< Saturated soil matric potential (m)
@@ -995,9 +994,9 @@ contains
                         ch4soills) ! Out
 
     !> Estimate allocation fractions for leaf, stem, and root components.
-    call allocate (lfstatus,   thliq,    ailcg,     ailcb, & ! In
-                   il1,        il2,       ilg,       sand, & ! In
-                   clay,   rmatctem,  gleafmas,   stemmass, & ! In
+    call allocate (lfstatus,   thliq,    ailcg,  & ! In
+                   il1,        il2,       ilg,    & ! In
+                   rmatctem,  gleafmas,   stemmass, & ! In
                    rootmass,       sort,    fcancmx, & ! In
                    isand,       THFC,       THLW, & ! In
                    afrleaf,  afrstem,  afrroot, & ! Out
@@ -1304,7 +1303,7 @@ contains
     !>
     call allometry( gleafmas, bleafmas, stemmass, rootmass, & ! In
     il1,        il2,        ilg,      zbotw, & ! In
-    delzw,   soildpth,    fcancmx, & ! In
+    soildpth,    fcancmx, & ! In
     ipeatland,  maxAnnualActLyr, & ! In
     ailcg,    ailcb,     ailc,    zolnc, & ! Out
     rmatc, rmatctem,     slai,  bmasveg, & ! Out

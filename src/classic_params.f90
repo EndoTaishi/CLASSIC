@@ -1183,10 +1183,12 @@ contains
   !! \f[
   !! \begin{array} { | l | c | c | c | c | c | }
   !! \hline
+  !! \text{CLASS PFTs} &  \text{CTEM PFTs} &     \text{---} &      \text{---}  \\ \hline
+  !! \hline
   !! \text{needle leaf} &  \text{evg} &      \text{dcd} &      \text{---} & \text{---} & \text{---}  \\ \hline
-  !! \text{broad leaf}  &  \text{evg} &  \text{dcd-cld} &  \text{dcd-dry} &  \text{EVG-shrubs} & \text{DCD-shrubs}\\ \hline
-  !! \text{crops}       &   \text{c3} &       \text{c4} &      \text{---}  & \text{---} & \text{---}\\ \hline
-  !! \text{grasses}     &   \text{c3} &       \text{c4} &      \text{sedges} & \text{---} & \text{---}\\ \hline
+  !! \text{broad leaf}  &  \text{evg} &  \text{dcd-cld} &  \text{dcd-dry} &  \text{evg-shrubs} & \text{dcd-shrubs}\\ \hline
+  !! \text{crops}       &   \text{C3} &       \text{C4} &      \text{---}  & \text{---} & \text{---}\\ \hline
+  !! \text{grasses}     &   \text{C3} &       \text{C4} &      \text{sedges} & \text{---} & \text{---}\\ \hline
   !! \end{array}
   !! \f]
   !! Shrubs have now been implimented in the physic subroutines now as a fifth CLASS
@@ -1195,11 +1197,13 @@ contains
   !! \f[
   !! \begin{array} { | l | c | c | c | c | c | }
   !! \hline
+  !! \text{CLASS PFTs} &  \text{CTEM PFTs} &     \text{---} &      \text{---}  \\ \hline
+  !! \hline
   !! \text{needle leaf} &  \text{evg} &      \text{dcd} &      \text{---}  \\ \hline
   !! \text{broad leaf}  &  \text{evg} &  \text{dcd-cld} &  \text{dcd-dry} \\ \hline
-  !! \text{crops}       &   \text{c3} &       \text{c4} &      \text{---}  \\ \hline
-  !! \text{grasses}     &   \text{c3} &       \text{c4} &      \text{sedges} \\ \hline
-  !! \text{broad leaf shrubs} & \text{EVG-shrubs} & \text{DCD-shrubs} &      \text{---}  \\ \hline
+  !! \text{crops}       &   \text{C3} &       \text{C4} &      \text{---}  \\ \hline
+  !! \text{grasses}     &   \text{C3} &       \text{C4} &      \text{sedges} \\ \hline
+  !! \text{broad leaf shrubs} & \text{evg-shrubs} & \text{dcd-shrubs} &      \text{---}  \\ \hline
   !! \end{array}
   !! \f]
   !!

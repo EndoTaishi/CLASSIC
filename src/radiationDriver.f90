@@ -30,7 +30,7 @@ subroutine radiationDriver(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN, & ! F
                            ZBOTW,  THPOR,  THLMIN, PSISAT, BI,     PSIWLT, &
                            HCPS,   ISAND, &
                            FCANCMX,ICTEM,  ctem_on, RMATC, ZOLNC,CMASVEGC, &
-                           AILC,   PAIC,   L2MAX,  NOL2PFTS, SLAIC, &
+                           AILC,   PAIC,   NOL2PFTS, SLAIC, &
                            AILCG,  AILCGS, FCANC,  FCANCS, &
                            IDAY,   ILG,    IL1,    IL2, NBS, &
                            JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF, &
@@ -367,7 +367,7 @@ subroutine radiationDriver(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN, & ! F
        SLAIC(ILG,IC),       ALVSCTM(ILG,IC), &
        ALIRCTM(ILG,IC)
 
-  integer, intent(in) :: ICTEM, L2MAX, NOL2PFTS(IC)
+  integer, intent(in) :: ICTEM, NOL2PFTS(IC)
 
   logical, intent(in) :: ctem_on
   integer, intent(in)  :: ipeatland(ilg) !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
@@ -485,7 +485,7 @@ subroutine radiationDriver(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN, & ! F
                            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB, &
                            RRESID,SRESID,FRTOT,FRTOTS, &
                            FCANCMX,ICTEM,ctem_on,RMATC, &
-                           AILC,PAIC,AILCG,L2MAX,NOL2PFTS, &
+                           AILC,PAIC,AILCG,NOL2PFTS, &
                            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC, &
                            ipeatland)
   !

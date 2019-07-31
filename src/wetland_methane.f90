@@ -71,15 +71,15 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   !>
   !> Estimate the methane flux from wetlands for each grid cell scaling by the wetland fraction in a grid cell
 
-  ! Set up the latitude bounds based on the paramters read in from the namelist file.
-  ! If soil wetness meets a latitude specific threshold then the slope based wetland
-  ! fraction is wet and is an actual wetland, else not. As well the ratio of upland to
-  ! wetland respiration is assumed to be latitidionally varying. This is intended to
-  ! reflect the differnt wetland types in the tropics (floodplain types) vs. those in
-  ! higher latitudes (peatlands). This is a very coarse approximation and should be
-  ! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
-  ! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
-  ! they are simply multiplicative.
+  !> Set up the latitude bounds based on the parameters read in from the namelist file.
+  !! If soil wetness meets a latitude specific threshold then the slope based wetland
+  !! fraction is wet and is an actual wetland, else not. As well the ratio of upland to
+  !! wetland respiration is assumed to be latitidionally varying. This is intended to
+  !! reflect the differnt wetland types in the tropics (floodplain types) vs. those in
+  !! higher latitudes (peatlands). This is a very coarse approximation and should be
+  !! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
+  !! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
+  !! they are simply multiplicative.
 
   do i = il1, il2
 

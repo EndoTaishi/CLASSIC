@@ -1679,7 +1679,7 @@ contains
   !! The CC interactions are represented symbolically by the \f$g(f_\alpha, f_B)\f$ function.
   !! Mortality is assumed to be proportional to the number density of plants and represented
   !! by the mortality term, \f$m_{\alpha} f_\alpha\f$. The PFT-dependent mortality rate
-  !! (\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in mortality.f) produces bare
+  !! (\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in mortality.f90) produces bare
   !! ground via a number of processes, and that bare ground is subsequently available for colonization.
   !! We consider the fractional coverage for \f$N\f$ PFTs plus bare ground (\f$f_{N+1}\f$ =
   !! \f$f_{bare}\f$) where \f$\sum_{j=1}^{N+1} f_{j}=1\f$. For competition between unequal
@@ -1724,7 +1724,7 @@ contains
   !! = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.\qquad (Eqn 4)
   !! \f]
   !!
-  !! A PFT invading bare ground has an unimpeded \f$\textit{invasion}\f$ rate, \f$c_\alpha\f$.
+  !! A PFT invading bare ground has an unimpeded invasion rate, \f$c_\alpha\f$.
   !! The ratio of the invasion rate by PFT \f$\alpha\f$ into area covered by another PFT
   !! \f$\beta\f$ and its unimpeded invasion rate (\f$\frac{c_{\alpha,\beta}}{c_\alpha}\f$)
   !! gives the relative efficiency of colonization, termed \f$\delta_{\alpha,\beta}\f$,
@@ -1757,7 +1757,7 @@ contains
   !! \f]
   !!
   !! where the dominant PFT 1 invades PFT 2 and the bare fraction, and PFT 2 invades
-  !! only the bare fraction. The equilibrium solutions for $f_1$ and $f_2$ in this case are
+  !! only the bare fraction. The equilibrium solutions for \f$f_1\f$ and \f$f_2\f$ in this case are
   !!
   !! \f[
   !! f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right] \qquad (Eqn 7)
@@ -1809,8 +1809,8 @@ contains
   !! invade PFT \f$\beta\f$, respectively, as mentioned earlier. This interaction
   !! through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq. 6
   !! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. 9 (for \f$b=0\f$).
-  !! The magnitude of this interaction thus depends on the value of parameter $b$.
-  !! When $b=1$ the interaction is proportional to the product of the fractional
+  !! The magnitude of this interaction thus depends on the value of parameter \f$b\f$.
+  !! When \f$b=1\f$ the interaction is proportional to the product of the fractional
   !! coverage of the two PFTs (\f$f_1 f_2\f$). When \f$b=0\f$, the interaction is
   !! proportional to the fractional coverage of the PFT being invaded (\f$f_2\f$).
   !! The use of \f$b=0\f$ thus reduces the product term \f$f_{\alpha}^b f_{\beta}\f$

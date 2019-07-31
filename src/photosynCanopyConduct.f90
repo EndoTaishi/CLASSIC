@@ -1382,12 +1382,9 @@ end
 !! on \f$G_\mathrm{o}\f$ by the amount of available light is calculated as (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$)
 !!
 !! \f[
-!! J_\mathrm{e} = \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants \qquad (Eqn 1)
+!!  J_\mathrm{e} = \left\{\begin{array}{l l}\varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right],\qquad C_3 plants\\
+!! J_\mathrm{e} = \varepsilon\,(1-{\nu})I,\qquad C_4 plants \end{array} \right. \qquad (Eqn 1)
 !! \f]
-!! \f[
-!! J_\mathrm{e} = \varepsilon\,(1-{\nu})I,\quad C_4 plants,\qquad (Eqn 1)
-!! \f]
-!!
 !! where \f$I\f$ is the incident photosynthetically active radiation (\f$PAR\f$;\f$mol\,photons\,m^{-2}\,s^{-1}\f$), \f${\nu}\f$
 !! is the leaf scattering coefficient, with values of 0.15 and 0.17 for \f$C_3\f$ and \f$C_4\f$ plants, respectively,
 !! and \f$\varepsilon\f$ is the quantum efficiency (\f$mol\,{CO_2}\,(mol\,photons)^{-1}\f$; values of 0.08 and 0.04 are
@@ -1396,12 +1393,9 @@ end
 !!
 !! The Rubisco enzyme limited photosynthesis rate, \f$J_\mathrm{c}\f$, is given by
 !! \f[
-!! \label{J_c} J_\mathrm{c} = V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1
-!! + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\qquad (Eqn 2)
-!! \f]
-!! \f[
-!! J_\mathrm{c} = V_\mathrm{m}, C_4 plants,
-!! \qquad (Eqn 2)
+!! J_\mathrm{c} = \left\{\begin{array}{l l} V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1
+!! + O_\mathrm{a}/K_\mathrm{o})}\right],\qquad C_3 plants\\
+!! J_\mathrm{c} = V_\mathrm{m}, \qquad C_4 plants \end{array} \right. \qquad(Eqn 2)
 !! \f]
 !!
 !! where \f$V_\mathrm{m}\f$ is the maximum catalytic capacity of Rubisco (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), adjusted
@@ -1411,7 +1405,7 @@ end
 !! The transport capacity (\f$J_\mathrm{s}\f$) limitation determines the maximum capacity to transport the
 !! products of photosynthesis for \f$C_3\f$ plants, while for \f$C_4\f$ plants it represents \f$CO_2\f$ limitation
 !! \f[
-!! \label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m},\qquad C_3 plants\\ 2
+!! J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m},\qquad C_3 plants\\ 2
 !! \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p},\qquad C_4 plants \end{array} \right.
 !! \qquad (Eqn 3)\f]
 !!
@@ -1419,7 +1413,7 @@ end
 !!
 !! \f$V_\mathrm{m}\f$ is calculated as
 !! \f[
-!! V_\mathrm{m} = \nonumber \\    \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}}
+!! V_\mathrm{m} = \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}}
 !! {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m}
 !! \qquad (Eqn 4)\f]
 !!
@@ -1432,8 +1426,7 @@ end
 !!
 !! The influence of soil moisture stress is simulated via \f$S_{root}(\theta)\f$, which represents a soil moisture stress term formulated as
 !! \f[
-!! S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \vspace*{-4mm}
-!! \qquad (Eqn 5)\f]
+!! S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \qquad (Eqn 5)\f]
 !!
 !! \f[
 !! \label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho,
@@ -1484,7 +1477,7 @@ end
 !! (Eq. 4) includes the effect of soil moisture stress through the \f$S(\theta)\f$ term and this reduces the
 !! leaf-level gross photosynthesis rate.
 !!
-!! The current version of CTEM does not include nutrient constraints on photosynthesis and, as a result,
+!! The current version of CLASSIC does not include nutrient constraints on photosynthesis and, as a result,
 !! increasing atmospheric \f$CO_2\f$ concentration leads to unconstrained increase in photosynthesis.
 !! In natural ecosystems, however, down regulation of photosynthesis occurs due to constraints imposed
 !! by availability of nitrogen, as well as phosphorus. To capture this effect,
@@ -1494,7 +1487,7 @@ end
 !! The leaf-level gross photosynthetic rate is scaled by the down-regulation term, \f$\Xi_\mathrm{N}\f$,
 !! to yield the nutrient limited leaf level gross photosynthetic rate as
 !! \f[
-!! \label{G_nitro} G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \label{Nthrottle} \Xi_\mathrm{N}
+!! G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \Xi_\mathrm{N}
 !! = \frac{1 + \gamma_{gd} \ln(c_\mathrm{a}/c_{0})}{1 + \gamma_g \ln(c_\mathrm{a}/c_{0})},
 !! \qquad (Eqn 11)\f]
 !!
@@ -1507,7 +1500,7 @@ end
 !! Finally, the leaf-level gross photosynthesis rate, \f$G_{\mathrm{o},N-limited}\f$ is scaled up to the
 !! canopy-level, \f$G_{canopy}\f$, by considering the exponential vertical profile of radiation along the depth of the canopy as
 !! \f[
-!! \label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}),\qquad (Eqn 12)
+!! G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}),\qquad (Eqn 12)
 !! \f]
 !! which yields the gross primary productivity (\f$G_{canopy}\f$, GPP). \f$k_\mathrm{n}\f$ is the extinction
 !! coefficient that describes the nitrogen and time-mean photosynthetically absorbed radiation (\f$PAR\f$)
@@ -1554,36 +1547,3 @@ end
 !! \f]
 !!
 !! where \f$p_0\f$ is the standard atmospheric pressure (\f$101\,325\,Pa\f$) and \f$T_\mathrm{f}\f$ is freezing temperature (\f$273.16\,K\f$).
-!!
-!!
-!!
-!!     1.  SINGLE-LEAF & TWO-LEAF COMBINED VERSION, CAN USE EITHER APPROACH
-!!     2.  CAN USE EITHER BWB OR LEUNING TYPE STOMATAL CONDUCTANCE FORMULATION
-!!     3.  ALSO, CAN USE SMOOTHED AVERAGE OF THE 3 LIMITING RATES, MIN. OF
-!!         THE 3 LIMITING RATES, OR MIN. OF LIGHT AND RUBSICO RATES.
-!!
-!!     CLASS' 4 MAJOR VEGETATION TYPES ARE
-!!
-!!     1. NEEDLE LEAF OR TALL CONIFEROUS (C3, DECIDUOUS AND EVERGREEN)
-!!     2. BROAD LEAF (C3, DECD. AND EVRG.)
-!!     3. ARABLE & CROPS - (BOTH C3 AND C4)
-!!     4. GRASSES, TUNDRA, ETC. (BOTH C3 AND C4)
-!!
-!!     BUT FOR PHOTOSYNTHESIS WE NEED TO MAKE DISTINCTION BETWEEN C3 AND
-!!     C4, AND DECIDUOUS AND EVERGREEN. SO THESE 4 VEGETATION TYPES GET
-!!     CONVERTED INTO THE FOLLOWING 9
-!!
-!!     1. NEEDLE LEAF EVERGREEN, C3
-!!     2. NEEDLE LEAF DECIDUOUS, C3
-!!     3. BROAD LEAF EVERGREEN, C3
-!!     4. BROAD LEAF COLD DECIDUOUS, C3
-!!     5. BROAD LEAF DRY DECIDUOUS, C3
-!!     6. C3 CROP
-!!     7. C4 CROP
-!!     8. C3 GREEN GRASS
-!!     9. C4 GREEN GRASS
-!!
-!!     INPUTS
-!!
-!!     NOL2MAX   - NUMBER OF LEVEL 2 CTEM PFTs
-!!

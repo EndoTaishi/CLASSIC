@@ -2815,7 +2815,7 @@ contains
                                ZBTWGAT,THPGAT, THMGAT, PSISGAT,BIGAT,  PSIWGAT, &
                                HCPSGAT,ISNDGAT, &
                                FCANCMXGAT,ICC,ctem_on,RMATCGAT,ZOLNCGAT, &
-                               CMASVEGCGAT,AILCGAT,PAICGAT,L2MAX, NOL2PFTS, &
+                               CMASVEGCGAT,AILCGAT,PAICGAT,NOL2PFTS, &
                                SLAICGAT,AILCGGAT,AILCGSGAT,FCANCGAT,FCANCSGAT, &
                                IDAY,   ILG,    1,      NML,  NBS, &
                                JLAT,N, ICAN,   ICAN + 1, IGND,   IDISP,  IZREF, &
@@ -2932,7 +2932,7 @@ contains
 
           ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
           ! and uses daily accumulated values of variables simulated by CLASS.
-          call ctem (     fsnowacc_t,    sandgat,    claygat, & ! In
+          call ctem (     fsnowacc_t,    sandgat,   & ! In
                      ilg,      1,        nml,        iday,    radjgat, &! In
                      taaccgat_t,    dlzwgat, ancgvgac_t,   rmlcgvga_t, & ! In
                      zbtwgat, & ! In

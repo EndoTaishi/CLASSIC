@@ -31,7 +31,7 @@ contains
   !> @author V. Arora, J. Melton, Y. Peng, S. Sun
   subroutine allometry(gleafmas, bleafmas, stemmass, rootmass, & ! In
                        il1,      il2,      ilg,    zbotw, & ! In
-                       delzw, soildpth, fcancmx, & ! In
+                       soildpth, fcancmx, & ! In
                        ipeatland,maxAnnualActLyr, & ! In
                        ailcg,    ailcb,     ailc,    zolnc, & ! Out
                        rmatc, rmatctem,     slai,  bmasveg, & ! Out
@@ -87,53 +87,51 @@ contains
 
     logical :: deeproots
 
+    real, intent(in) :: fcancmx(ilg,icc)      !< input: max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
+                                              !< (which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
+                                              !< land use change or dynamic vegetation.
     real, intent(in) :: gleafmas(ilg,icc)     !< input: green or live leaf mass in kg c/m2, for the 9 pfts
     real, intent(in) :: bleafmas(ilg,icc)     !< input: brown or dead leaf mass in kg c/m2, for the 9 pfts
     real, intent(in) :: stemmass(ilg,icc)     !< input: stem biomass in kg c/m2, for the 9 pfts
     real, intent(in) :: rootmass(ilg,icc)     !< input: root biomass in kg c/m2, for the 9 pfts
+    real, intent(in) :: soildpth(ilg)         !< input: soil depth (m)    
+    real, intent(in) :: zbotw(ilg,ignd)       !< input: bottom of soil layers
+    real, intent(in) :: maxAnnualActLyr(ilg)   !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).    
+    integer, intent(in) :: ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
+    real, intent(inout) :: rmatctem(ilg,icc,ignd)!< output: fraction of live roots in each soil layer for each of ctem's 9 pfts
+    real, intent(inout) :: slai(ilg,icc)         !< output: storage or imaginary lai for phenology purposes
+    real, intent(inout) :: cmasvegc(ilg,ican)    !< output: total canopy mass for each of the 4 class pfts. recall that class requires canopy
+                                                  !< mass as an input, and this is now provided by ctem. kg/m2.
     real, intent(inout) :: ailcg(ilg,icc)        !< output: green lai for ctem's 9 pfts
     real, intent(inout) :: ailcb(ilg,icc)        !< output: brown lai for ctem's 9 pfts. for now we assume only grasses can have brown leaves.
     real, intent(inout) :: ailc(ilg,ican)        !< output: lai to be used by class
-    real, intent(out) :: zolnc(ilg,ican)       !< output: log of roughness length to be used by class
     real, intent(inout) :: paic(ilg, ican)       !< output: plant area index for class' 4 pfts. this is the sum of leaf area index and stem area index.
     real, intent(inout) :: rmatc(ilg,ican,ignd)  !< output: fraction of live roots in each soil layer for each of the class' 4 pfts
-    real, intent(in) :: fcancmx(ilg,icc)      !< input: max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
-    !< (which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
-    !< land use change or dynamic vegetation.
-    real, intent(in) :: delzw(ilg,ignd)       !< input: thicknesses of the 3 soil layers
-    real, intent(in) :: zbotw(ilg,ignd)       !< input: bottom of soil layers
-    real, intent(inout) :: rmatctem(ilg,icc,ignd)!< output: fraction of live roots in each soil layer for each of ctem's 9 pfts
-    real, intent(inout) :: slai(ilg,icc)         !< output: storage or imaginary lai for phenology purposes
-    real, intent(out) :: bmasveg(ilg,icc)      !< output: total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-    real, intent(inout) :: cmasvegc(ilg,ican)    !< output: total canopy mass for each of the 4 class pfts. recall that class requires canopy
-    !< mass as an input, and this is now provided by ctem. kg/m2.
+    real, intent(inout) :: alvisc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, visible
+    real, intent(inout) :: alnirc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, near ir
+    real, intent(inout) :: slaic(ilg,ican)       !< output: storage lai. this will be used as min. lai that class sees
+                                                 !< so that it doesn't blow up in its stomatal conductance calculations.
+    real, intent(inout) :: veghght(ilg,icc)      !< output: vegetation height (meters)
+    real, intent(inout) :: rootdpth(ilg,icc)     !< output: 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
+                                                 !< to see how vegetation grows above and below ground, respectively.
+    real, intent(out) :: bmasveg(ilg,icc)      !< output: total (gleaf + stem + root) biomass for each ctem pft, kg c/m2    
+    real, intent(out) :: zolnc(ilg,ican)       !< output: log of roughness length to be used by class
+        
     real :: sai(ilg,icc)          !<
     real :: saic(ilg,ican)        !<
     real :: sfcancmx(ilg,ican)    !< sum of fcancmxs
-    real, intent(inout) :: alvisc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, visible
-    real, intent(inout) :: alnirc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, near ir
     real :: pai(ilg,icc)          !<
-    real, intent(inout) :: slaic(ilg,ican)       !< output: storage lai. this will be used as min. lai that class sees
-    !< so that it doesn't blow up in its stomatal conductance calculations.
     real :: sla(icc)              !<
-    real, intent(inout) :: veghght(ilg,icc)      !< output: vegetation height (meters)
-    real :: fcoeff                !<
     real :: lnrghlth(ilg,icc)     !<
     real :: averough(ilg,ican)    !<
     real :: b(icc)                !<
-    real, intent(inout) :: rootdpth(ilg,icc)     !< output: 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
-    !< to see how vegetation grows above and below ground, respectively.
     real :: usealpha(ilg,icc)     !<
     real :: a(ilg,icc)            !<
     real :: useb(ilg,icc)         !<
     real :: zroot                 !<
-    real, intent(in) :: soildpth(ilg)         !< input: soil depth (m)
-    real, dimension(ilg), intent(in) :: maxAnnualActLyr   !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     real :: etmp(ilg,icc,ignd)    !<
     real :: totala(ilg,icc)       !<
     real :: rmat_sum              !<
-
-    integer, intent(in) :: ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
 
     !> CLASS' original root parameterization has deeper roots than CTEM's
     !! default values based on literature. in the coupled model this leads

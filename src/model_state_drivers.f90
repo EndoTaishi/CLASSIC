@@ -2109,8 +2109,8 @@ contains
     ! To prevent a divide by zero in atmosphericVarsCalc, we set this lower limit on the specific humidity.
     if (QAROW(i) == 0.) then
       QAROW(i) = 1.E-6
-      print * ,'Warning, specific humidity of 0 in your input file. metTimeindex = ',metTimeIndex
-      print * ,'setting to 1.E-6 g/kg and moving on (updateMet)'
+      !print * ,'Warning, specific humidity of 0 in your input file. metTimeindex = ',metTimeIndex
+      !print * ,'setting to 1.E-6 g/kg and moving on (updateMet)'
     end if
 
     UVROW(i)    = metUv(metTimeIndex)

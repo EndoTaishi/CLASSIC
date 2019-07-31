@@ -351,7 +351,7 @@ contains
   !! C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales
   !! (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classic_params.f90) as
   !!
-  !! \f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad
+  !! \f[ D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad
   !! i = S, R.\f]
   !!
   !! Litter contributions are either put in the first soil layer (leaf and stem litter) whereas

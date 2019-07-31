@@ -23,7 +23,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
              IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB, &
              RRESID,SRESID,FRTOT,FRTOTS, &
              FCANCMX,ICTEM,ctem_on,RMATC, &
-             AILC,PAIC,AILCG,L2MAX,NOL2PFTS, &
+             AILC,PAIC,AILCG,NOL2PFTS, &
              AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC, &
              ipeatland)
 
@@ -318,7 +318,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
 
   !     * INTERNAL WORK FIELD.
   !
-  integer, intent(in) :: ICTEM, L2MAX, NOL2PFTS(IC)   !<
+  integer, intent(in) :: ICTEM, NOL2PFTS(IC)   !<
   real  :: SFCANCMX(ILG,IC)
   !
   logical, intent(in) :: ctem_on

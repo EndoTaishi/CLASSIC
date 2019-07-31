@@ -14,9 +14,9 @@ contains
   !! @{
   !> Performs allocation of carbon gained by photosynthesis into plant structural pools
   !> @author Vivek Arora and Joe Melton
-  subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb, & ! In
-                      il1,      il2,      ilg,      sand, & ! In
-                      clay,  rmatctem, gleafmas, stemmass, & ! In
+  subroutine allocate(lfstatus,    thliq,    ailcg,     & ! In
+                      il1,      il2,      ilg,    & ! In
+                      rmatctem, gleafmas, stemmass, & ! In
                       rootmass,      sort,  fcancmx, & ! In
                       isand,      THFC,     THLW, & ! In
                       afrleaf,  afrstem,  afrroot, & ! Out
@@ -67,7 +67,6 @@ contains
     integer, intent(in) :: isand(ilg,ignd)
     !
     real, intent(in)   :: ailcg(ilg,icc) !< input: green or live leaf area index
-    real, intent(in)   :: ailcb(ilg,icc) !< input: brown or dead leaf area index
     real, intent(in)   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
     real, intent(in)   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
     real, intent(in)   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
@@ -75,8 +74,6 @@ contains
     real, intent(in)   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
     real, intent(in)   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
     real, intent(in)   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
-    real, intent(in)   :: sand(ilg,ignd) !< input: percentage sand
-    real, intent(in)   :: clay(ilg,ignd) !< input: percentage clay
     !
     real, intent(inout)   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
     real, intent(inout)   :: afrstem(ilg,icc) !< output: allocation fraction for stem
