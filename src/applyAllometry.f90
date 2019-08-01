@@ -13,7 +13,7 @@ contains
 
   !> \ingroup allometry_bio2str
   !! @{
-  !> Applies allometric relationships to converts biomass to
+  !! Applies allometric relationships to converts biomass to
   !! structural attributes. This subroutine converts leaf, stem, and root biomass
   !! into LAI, vegetation height, and fraction of roots
   !! in each soil layer. Storage lai is also calculated.
@@ -27,17 +27,13 @@ contains
   !! the log of roughness length over the bare fraction
   !! of the grid cell. only roughness lengths over the
   !! vegetated fraction are updated
+  !!
+  !! @author V. Arora, J. Melton, Y. Peng, S. Sun
+  subroutine allometry(gleafmas, bleafmas, stemmass, rootmass, il1, il2, ilg,      & ! In
+                       zbotw, delzw, soildpth, fcancmx, ipeatland,maxAnnualActLyr, & ! In
+                       ailcg, ailcb, ailc, zolnc, rmatc, rmatctem, slai, bmasveg,  & ! Out
+                       cmasvegc, veghght, rootdpth, alvisc, alnirc, paic, slaic)     ! Out
 
-  !> @author V. Arora, J. Melton, Y. Peng, S. Sun
-  subroutine allometry(gleafmas, bleafmas, stemmass, rootmass, & ! In
-                       il1,      il2,      ilg,    zbotw, & ! In
-                       soildpth, fcancmx, & ! In
-                       ipeatland,maxAnnualActLyr, & ! In
-                       ailcg,    ailcb,     ailc,    zolnc, & ! Out
-                       rmatc, rmatctem,     slai,  bmasveg, & ! Out
-                       cmasvegc,  veghght, rootdpth,   alvisc, & ! Out
-                       alnirc,     paic,    slaic) ! Out
-    !
     !     ----------------------------------------------------------------
     !     16  Aug 2017  - Add BLD COLD-Deciduous shrub
     !     J. Melton/S. Sun
@@ -176,8 +172,8 @@ contains
     !>  values in the parameter vectors
     sort = genSortIndex()
 
-    do j = 1,icc
-      do i =  il1, il2
+    do j = 1,icc ! loop 80
+      do i =  il1, il2 ! loop 90
         usealpha(i,j) = alpha(sort(j))
       end do ! loop 90
     end do ! loop 80
@@ -200,8 +196,8 @@ contains
     !!
     !! also find stem area index as a function of stem biomass
     !!
-    do j = 1,icc
-      do i = il1,il2
+    do j = 1,icc ! loop 150
+      do i = il1,il2 ! loop 160
         if (fcancmx(i,j) > 0.0) then
           ailcg(i,j) = sla(j) * gleafmas(i,j)
           ailcb(i,j) = sla(j) * bleafmas(i,j) * fracbofg
@@ -232,9 +228,9 @@ contains
     !! water and light, only the green portion photosynthesizes.
     !! also lump stem and plant area indices for class' 4 pfts
     !!
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 200
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 210
+        do i = il1, il2 ! loop 220
           sfcancmx(i,j) = sfcancmx(i,j) + fcancmx(i,m)
           ailc(i,j) = ailc(i,j) + (fcancmx(i,m) * (ailcg(i,m) + ailcb(i,m)))
           saic(i,j) = saic(i,j) + (fcancmx(i,m) * sai(i,m))
@@ -244,8 +240,8 @@ contains
       end do ! loop 210
     end do ! loop 200
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 230
+      do i = il1, il2 ! loop 240
         if (sfcancmx(i,j) > abszero) then
           ailc(i,j) = ailc(i,j) / sfcancmx(i,j)
           saic(i,j) = saic(i,j) / sfcancmx(i,j)
@@ -297,9 +293,9 @@ contains
     !! forb is all non-graminoids herbaceous plants
     !! shrubs dwarf <0.1m, low (0.1 to 0.5), medium 0.5 to 1.5, tall >1.5
     !! trees > 5 m
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 250
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 260
+        do i = il1, il2 ! loop 270
           select case (classpfts(j))
           case ('NdlTr','BdlTr') ! Trees
             if (ipeatland(i) == 0) then ! For uplands:
@@ -333,8 +329,8 @@ contains
       end do ! loop 260
     end do ! loop 250
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 330
+      do i = il1, il2 ! loop 340
         if (sfcancmx(i,j) > abszero) then
           averough(i,j) = averough(i,j) / sfcancmx(i,j)
         else
@@ -360,9 +356,9 @@ contains
 
     !> Use b to estimate 99% rooting depth
     !!
-    do j = 1,ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1,ican ! loop 370
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 380
+        do i = il1, il2 ! loop 390
 
           useb(i,m) = b(m)
           usealpha(i,m) = alpha(sort(m))
@@ -399,8 +395,8 @@ contains
       end do ! loop 380
     end do ! loop 370
 
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 400
+      do i = il1, il2 ! loop 410
 
         kend = 9999  ! initialize with a dummy value
 
@@ -463,8 +459,8 @@ contains
     rmatctem = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
 
     !> Make sure all fractions (of roots in each layer) add to one.
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 411
+      do i = il1, il2 ! loop 412
         if (fcancmx(i,j) > 0.0) then
           rmat_sum = 0.0
           do k = 1, ignd
@@ -491,8 +487,8 @@ contains
       end do
     end do
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 450
+      do i = il1, il2 ! loop 460
         if (sfcancmx(i,j) > abszero) then
           do k = 1, ignd
             rmatc(i,j,k) = rmatc(i,j,k) / sfcancmx(i,j)
@@ -507,8 +503,8 @@ contains
     end do ! loop 450
 
     !> -------------------  4. calculate storage lai  --------------------
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 500
+      do i = il1, il2 ! loop 510
         if (fcancmx(i,j) > 0.0) then
           slai(i,j) = ((stemmass(i,j) + rootmass(i,j)) &
                     / eta(sort(j))) ** (1. / kappa(sort(j)))
@@ -522,8 +518,8 @@ contains
 
     !> --- 5. calculate total vegetation biomass for each ctem pft, and --
     !! ---------------- canopy mass for each class pft ------------------
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 550
+      do i = il1, il2 ! loop 560
         if (fcancmx(i,j) > 0.0) then
           bmasveg(i,j) = gleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
         end if
@@ -533,17 +529,17 @@ contains
     !! Since class uses canopy mass and not total vegetation biomass as an
     !! input, we find canopy mass as a sum of stem and leaf mass, for each
     !! class pft, i.e. only above ground biomass.
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 600
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 610
+        do i = il1, il2 ! loop 620
           cmasvegc(i,j) = cmasvegc(i,j) + (fcancmx(i,m) &
                        * (bleafmas(i,m) + gleafmas(i,m) + stemmass(i,m)))
         end do ! loop 620
       end do ! loop 610
     end do ! loop 600
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 630
+      do i = il1, il2 ! loop 640
         if (sfcancmx(i,j) > abszero) then
           cmasvegc(i,j) = cmasvegc(i,j) / sfcancmx(i,j)
           cmasvegc(i,j) = cmasvegc(i,j) * (1.0 / 0.50) ! assuming biomass is 50% C
@@ -563,17 +559,17 @@ contains
     !> --- 6. calculate albedo for class' 4 pfts based on specified ----
     !!
     !> ------ albedos of ctem 9 pfts and their fractional coveraes -----
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 700
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 710
+        do i = il1, il2 ! loop 720
           alvisc(i,j) = alvisc(i,j) + (fcancmx(i,m) * albvis(sort(m)))
           alnirc(i,j) = alnirc(i,j) + (fcancmx(i,m) * albnir(sort(m)))
         end do ! loop 720
       end do ! loop 710
     end do ! loop 700
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 730
+      do i = il1, il2 ! loop 740
         if (sfcancmx(i,j) > abszero) then
           alvisc(i,j) = (alvisc(i,j) / sfcancmx(i,j)) / 100.0
           alnirc(i,j) = (alnirc(i,j) / sfcancmx(i,j)) / 100.0
@@ -592,11 +588,11 @@ contains
 
   !> \ingroup allometry_unfrozenRoots
   !! @{
-  !> We only allow roots in non-perennially frozen soil layers so first check which layers are
+  !! We only allow roots in non-perennially frozen soil layers so first check which layers are
   !! unfrozen and then correct the root distribution appropriately. For defining which
   !! layers are frozen, we use the active layer depth.
-  !> @author J. Melton
-  function unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
+  !! @author J. Melton
+  function unfrozenRoots(il1, il2, ilg, maxAnnualActLyr, zbotw, rmatctem)
 
     use classic_params, only : ignd,icc
 
@@ -646,8 +642,7 @@ contains
   !! @}
   ! -----------------------------------------------------------------------------------------------
   !> \namespace allometry
-
-  !> Converts biomass to structural attributes
+  !! Converts biomass to structural attributes
   !! @author V. Arora, J. Melton, Y. Peng
   !!
   !! The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root

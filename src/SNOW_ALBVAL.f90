@@ -34,7 +34,7 @@ subroutine SNOW_ALBVAL(albdif, albdir, & ! OUTPUT
   !
   ! OUTPUT
   !
-  real, intent(out) :: albdif(ilg,nbnd) !< DIFFUSE SNOW ALBEDO (AKA WHITE SKY ALBEDO)
+  real, intent(out) :: albdif (ilg,nbnd) !< DIFFUSE SNOW ALBEDO (AKA WHITE SKY ALBEDO)
   real, intent(out) :: albdir(ilg,nbnd) !< DIRECT BEAM SNOW ALBEDO (AKA BLACK SKY ALBEDO)
   !
   ! LOCAL

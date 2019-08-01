@@ -6,52 +6,52 @@
 !! @author D. Verseghy, M. Lazare
 
 subroutine classGather(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT, & ! Formerly CLASSG
-                   TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT, &
-                   TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT, &
-                   FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT, &
-                   PAMNGAT,CMASGAT,ROOTGAT,RSMNGAT,QA50GAT, &
-                   VPDAGAT,VPDBGAT,PSGAGAT,PSGBGAT,PAIDGAT, &
-                   HGTDGAT,ACVDGAT,ACIDGAT,TSFSGAT,WSNOGAT, &
-                   THPGAT, THRGAT, THMGAT, BIGAT,  PSISGAT, &
-                   GRKSGAT,THRAGAT,HCPSGAT,TCSGAT, IGDRGAT, &
-                    THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT, &
-                    VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT, &
-                    QACGAT, DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT, &
-                    WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT, &
-                    ALGDNGAT,ASVDGAT,ASIDGAT,AGVDGAT, &
-                    AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT, &
-                    ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT, &
-                    FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT, &
-                    FSGGAT, FLGGAT, FDLGAT, ULGAT,  VLGAT, &
-                    TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT, &
-                    VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT, &
-                    SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT, &
-                    GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT, &
-                    DLATGAT,maxAnnualActLyrGAT,ILMOS,JLMOS, &
-                    NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS, &
-                    TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT, &
-                    TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT, &
-                    TCANROT,RCANROT,SCANROT,GROROT, CMAIROT, &
-                    FCANROT,LNZ0ROT,ALVCROT,ALICROT,PAMXROT, &
-                    PAMNROT,CMASROT,ROOTROT,RSMNROT,QA50ROT, &
-                    VPDAROT,VPDBROT,PSGAROT,PSGBROT,PAIDROT, &
-                    HGTDROT,ACVDROT,ACIDROT,TSFSROT,WSNOROT, &
-                    THPROT, THRROT, THMROT, BIROT,  PSISROT, &
-                    GRKSROT,THRAROT,HCPSROT,TCSROT, IGDRROT, &
-                    THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT, &
-                    VMODL,  ZSNLROT,ZPLGROT,ZPLSROT,TACROT, &
-                    QACROT, DRNROT, XSLPROT,GRKFROT,WFSFROT, &
-                    WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT, &
-                    ALGDNROT,ASVDROT,ASIDROT,AGVDROT, &
-                    AGIDROT,ISNDROT,RADJ   ,ZBLDROW,Z0ORROW, &
-                   ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW, &
-                    FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW, &
-                    FSGROL, FLGROL, FDLROL, ULROW,  VLROW, &
-                   TAROW,  QAROW,  PRESROW,PREROW, PADRROW, &
-                   VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW, &
-                   SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW, &
-                   GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW, &
-                   DLATROW,maxAnnualActLyrROT)
+                       TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT, &
+                       TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT, &
+                       FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT, &
+                       PAMNGAT,CMASGAT,ROOTGAT,RSMNGAT,QA50GAT, &
+                       VPDAGAT,VPDBGAT,PSGAGAT,PSGBGAT,PAIDGAT, &
+                       HGTDGAT,ACVDGAT,ACIDGAT,TSFSGAT,WSNOGAT, &
+                       THPGAT, THRGAT, THMGAT, BIGAT,  PSISGAT, &
+                       GRKSGAT,THRAGAT,HCPSGAT,TCSGAT, IGDRGAT, &
+                       THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT, &
+                       VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT, &
+                       QACGAT, DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT, &
+                       WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT, &
+                       ALGDNGAT,ASVDGAT,ASIDGAT,AGVDGAT, &
+                       AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT, &
+                       ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT, &
+                       FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT, &
+                       FSGGAT, FLGGAT, FDLGAT, ULGAT,  VLGAT, &
+                       TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT, &
+                       VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT, &
+                       SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT, &
+                       GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT, &
+                       DLATGAT,maxAnnualActLyrGAT,ILMOS,JLMOS, &
+                       NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS, &
+                       TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT, &
+                       TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT, &
+                       TCANROT,RCANROT,SCANROT,GROROT, CMAIROT, &
+                       FCANROT,LNZ0ROT,ALVCROT,ALICROT,PAMXROT, &
+                       PAMNROT,CMASROT,ROOTROT,RSMNROT,QA50ROT, &
+                       VPDAROT,VPDBROT,PSGAROT,PSGBROT,PAIDROT, &
+                       HGTDROT,ACVDROT,ACIDROT,TSFSROT,WSNOROT, &
+                       THPROT, THRROT, THMROT, BIROT,  PSISROT, &
+                       GRKSROT,THRAROT,HCPSROT,TCSROT, IGDRROT, &
+                       THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT, &
+                       VMODL,  ZSNLROT,ZPLGROT,ZPLSROT,TACROT, &
+                       QACROT, DRNROT, XSLPROT,GRKFROT,WFSFROT, &
+                       WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT, &
+                       ALGDNROT,ASVDROT,ASIDROT,AGVDROT, &
+                       AGIDROT,ISNDROT,RADJ   ,ZBLDROW,Z0ORROW, &
+                       ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW, &
+                       FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW, &
+                       FSGROL, FLGROL, FDLROL, ULROW,  VLROW, &
+                       TAROW,  QAROW,  PRESROW,PREROW, PADRROW, &
+                       VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW, &
+                       SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW, &
+                       GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW, &
+                       DLATROW,maxAnnualActLyrROT)
 
   !
   !     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT,ASVDROT,
@@ -358,7 +358,7 @@ subroutine classGather(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT, & ! Formerly CLA
   ! one, but retaining the soil level and canopy category dimensions)
   ! using the pointer vectors generated in classGatherPrep.
   !
-  do K = 1,NML
+  do K = 1,NML ! loop 100
     TPNDGAT(K) = TPNDROT(ILMOS(K),JLMOS(K))
     ZPNDGAT(K) = ZPNDROT(ILMOS(K),JLMOS(K))
     TBASGAT(K) = TBASROT(ILMOS(K),JLMOS(K))
@@ -431,8 +431,8 @@ subroutine classGather(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT, & ! Formerly CLA
     DEPBGAT(K) = DEPBROW(ILMOS(K))
   end do ! loop 100
   !
-  do L = 1,IG
-    do K = 1,NML
+  do L = 1,IG ! loop 250
+    do K = 1,NML ! loop 200
       TBARGAT(K,L) = TBARROT(ILMOS(K),JLMOS(K),L)
       THLQGAT(K,L) = THLQROT(ILMOS(K),JLMOS(K),L)
       THICGAT(K,L) = THICROT(ILMOS(K),JLMOS(K),L)

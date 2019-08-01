@@ -5,9 +5,9 @@
 !! @author D. Verseghy, M. Lazare, S. Fassnacht, E. Chan, P. Bartlett
 !
 subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! Formerly CANADD
-                   HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF, &
-                   CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP, &
-                   ILG,IL1,IL2, JL)
+                              HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF, &
+                              CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP, &
+                              ILG,IL1,IL2, JL)
 
   !     * NOV 22/06 - E.CHAN/D.VERSEGHY. UNCONDITIONALLY SET TR AND TS.
   !     * JAN 05/05 - P.BARTLETT. CORRECT/REFINE SNOW INTERCEPTION
@@ -100,7 +100,7 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
   !> the canopy temperature TCAN, and SINT at the snowfall temperature
   !> TS.
   !>
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 100
     RDRIP(I) = 0.0
     SDRIP(I) = 0.0
     if (FI(I) > 0. .and. (R(I) > 0. .or. S(I) > 0. .or. &

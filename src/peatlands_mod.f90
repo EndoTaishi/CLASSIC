@@ -21,7 +21,7 @@ contains
   !> Moss photosynthesis subroutine (equations are in module-level description)
   !> @author Yuanqiao Wu
   subroutine mosspht(il1,il2,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
-                     pres,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss,  &
+                     pres,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss, &
                      ievapmoss,ipeatland,daylength,pdd)
 
     ! History

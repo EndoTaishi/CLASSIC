@@ -12,7 +12,7 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
 
   implicit none
 
-  integer, intent(in):: NI,JL
+  integer, intent(in) :: NI,JL
   real, intent(in) :: ZT(NI),ZU(NI)
   real, intent(inout) :: UZ(NI),VZ(NI),TZ(NI),QZ(NI)
   real, intent(in) :: ZA(NI),U(NI),V(NI)

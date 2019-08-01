@@ -1076,9 +1076,9 @@ contains
                          ! COMBAK PERLAY
                          litresveggat(ilg,iccp2), &
                          soilcresveggat(ilg,iccp2)
-                         !        litresveggat(ilg,iccp2,ignd), &
-                         ! &      soilcresveggat(ilg,iccp2,ignd)
-                         ! COMBAK PERLAY
+    !        litresveggat(ilg,iccp2,ignd), &
+    ! &      soilcresveggat(ilg,iccp2,ignd)
+    ! COMBAK PERLAY
     !
     real, intent(in) :: fcancmxrow(nlat,nmos,icc),   rmatcrow(nlat,nmos,ican,ignd), &
                         zolncrow(nlat,nmos,ican),    paicrow(nlat,nmos,ican), &
@@ -1111,9 +1111,9 @@ contains
                         ! COMBAK PERLAY
                         soilcmasrow(nlat,nmos,iccp2), &
                         litrmassrow(nlat,nmos,iccp2)
-                        ! &      soilcmasrow(nlat,nmos,iccp2,ignd), &
-                        ! &      litrmassrow(nlat,nmos,iccp2,ignd)
-                        ! COMBAK PERLAY
+    ! &      soilcmasrow(nlat,nmos,iccp2,ignd), &
+    ! &      litrmassrow(nlat,nmos,iccp2,ignd)
+    ! COMBAK PERLAY
     !
     integer, intent(in) :: pandaysrow(nlat,nmos,icc),  lfstatusrow(nlat,nmos,icc), &
                            colddaysrow(nlat,nmos,2)
@@ -1174,9 +1174,9 @@ contains
                         ! COMBAK PERLAY
                         litresvegrow(nlat,nmos,iccp2), &
                         soilcresvegrow(nlat,nmos,iccp2)
-                        ! &      litresvegrow(nlat,nmos,iccp2,ignd), &
-                        ! &      soilcresvegrow(nlat,nmos,iccp2,ignd)
-                        ! COMBAK PERLAY
+    ! &      litresvegrow(nlat,nmos,iccp2,ignd), &
+    ! &      soilcresvegrow(nlat,nmos,iccp2,ignd)
+    ! COMBAK PERLAY
 
     !   Methane related variables
     real, intent(in)  :: slopefracrow(nlat,nmos,8), ch4WetSpecrow(nlat,nmos), wetfdynrow(nlat,nmos), &
@@ -1185,14 +1185,14 @@ contains
     real, intent(out) :: slopefracgat(ilg,8), ch4WetSpecgat(ilg), wetfdyngat(ilg), &
                          ch4WetDyngat(ilg),   ch4soillsgat(ilg)
 
-    real, intent(in)  :: twarmmrow(nlat,nmos),   tcoldmrow(nlat,nmos),   gdd5row(nlat,nmos),     &
+    real, intent(in)  :: twarmmrow(nlat,nmos),   tcoldmrow(nlat,nmos),   gdd5row(nlat,nmos), &
                          aridityrow(nlat,nmos),  srplsmonrow(nlat,nmos), defctmonrow(nlat,nmos), &
-                         anndefctrow(nlat,nmos), annsrplsrow(nlat,nmos), annpcprow(nlat,nmos),   &
+                         anndefctrow(nlat,nmos), annsrplsrow(nlat,nmos), annpcprow(nlat,nmos), &
                          dry_season_lengthrow(nlat,nmos)
 
-    real, intent(out) :: twarmmgat(ilg),   tcoldmgat(ilg),   gdd5gat(ilg),     &
+    real, intent(out) :: twarmmgat(ilg),   tcoldmgat(ilg),   gdd5gat(ilg), &
                          ariditygat(ilg),  srplsmongat(ilg), defctmongat(ilg), &
-                         anndefctgat(ilg), annsrplsgat(ilg), annpcpgat(ilg),   &
+                         anndefctgat(ilg), annsrplsgat(ilg), annpcpgat(ilg), &
                          dry_season_lengthgat(ilg)
 
     !    --peatland variables

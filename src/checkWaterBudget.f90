@@ -4,10 +4,10 @@
 !! @author D. Verseghy, M. Lazare, B. Dugas
 !
 subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Formerly CHKWAT
-                   RAICNI,SNOCNI,ZPOND,ZPONDI,THLIQ,THICE, &
-                   THLIQI,THICEI,ZSNOW,RHOSNO,XSNOW,SNOWI, &
-                   WSNOW,WSNOWI,FCS,FGS,FI,BAL,THPOR,THLMIN, &
-                   DELZW,ISAND,IG,ILG,IL1,IL2,JL,N)
+                            RAICNI,SNOCNI,ZPOND,ZPONDI,THLIQ,THICE, &
+                            THLIQI,THICEI,ZSNOW,RHOSNO,XSNOW,SNOWI, &
+                            WSNOW,WSNOWI,FCS,FGS,FI,BAL,THPOR,THLMIN, &
+                            DELZW,ISAND,IG,ILG,IL1,IL2,JL,N)
 
   !     * APR 28/10 - B.DUGAS.    INTRODUCE SEPARATE ACCURACY LIMITS
   !     *                         FOR BAL AND FOR THE OTHER CHECKS.
@@ -163,7 +163,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
   !! negative, they are vanishingly small. A similar check is done for
   !! the runoff.
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0. .and. ISAND(I,1) > - 4) then
       if (ISFC == 1 .or. ISFC == 3) then
         if (RAICAN(I) < ( - 1.0 * ACCLMT)) IPTBAD = I
@@ -209,7 +209,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
   !! than the pore volume (except for rock layers). It is also checked
   !! to ensure that if it is negative, it is vanishingly small.
   !!
-  do J = 1,IG
+  do J = 1,IG ! loop 150
     do I = IL1,IL2
       if (FI(I) > 0. .and. ISAND(I,1) > - 4) then
         if ((THLIQ(I,J) - THPOR(I,J)) > ACCLMT) then
@@ -217,7 +217,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
                          THICE(I,J),THLIQI(I,J),THICEI(I,J), &
                          ZPOND(I),ZPONDI(I),ISAND(I,J)
 6009      format(2X,3I6,8F16.8,I6)
-          do K = 1,IG
+          do K = 1,IG ! loop 145
             write(6,6008) K,THLIQ(I,K),THLIQI(I,K),THICE(I,K), &
                           THICEI(I,K),DELZW(I,K),THPOR(I,K),ISAND(I,K)
 6008        format(2X,I6,6F14.8,I6)
@@ -274,7 +274,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
          WSNOWI(KPTBDI) - WSNOW(KPTBDI)
     write(6,6460) ZSNOW(KPTBDI),RHOSNO(KPTBDI),SNOFAC, &
          SNOWI(KPTBDI)
-    do J = 1,IG
+    do J = 1,IG ! loop 250
       write(6,6460) &
          THLIQ(KPTBDI,J),THLIQI(KPTBDI,J), &
          THICE(KPTBDI,J),THICEI(KPTBDI,J), &
@@ -310,7 +310,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
   !! than BALLMT, a flag is set, all of the terms entering BAL are
   !! printed out, and a call to errorHandler is performed.
   !!
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 300
     if (FI(I) > 0. .and. ZSNOW(I) > 0.) XSNOW(I) = 1.0
     if (FI(I) > 0. .and. ISAND(I,1) > - 4) then
       if (ISFC == 1 .or. ISFC == 2) then
@@ -326,7 +326,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
       ZSNOW(I) * RHOSNO(I) + SNOFAC * SNOWI(I) - & ! snow
       WSNOW(I) + WSNOWI(I)
 
-      do J = 1,IG
+      do J = 1,IG ! loop 275
         BAL(I) = BAL(I) - &
                   (THLIQ(I,J) - THLIQI(I,J)) * RHOW * DELZW(I,J) - &   ! change in soil liquid content
         (THICE(I,J) - THICEI(I,J)) * RHOICE * DELZW(I,J)   ! change in soil ice content
@@ -352,7 +352,7 @@ subroutine checkWaterBudget(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN, & ! Forme
          WSNOWI(IPTBAD) - WSNOW(IPTBAD)
     write(6,6460) ZSNOW(IPTBAD),RHOSNO(IPTBAD),SNOFAC, &
          SNOWI(IPTBAD)
-    do J = 1,IG
+    do J = 1,IG ! loop 350
       write(6,6460) &
          THLIQ(IPTBAD,J),THLIQI(IPTBAD,J), &
          THICE(IPTBAD,J),THICEI(IPTBAD,J), &

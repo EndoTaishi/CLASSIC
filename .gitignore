@@ -22,3 +22,5 @@ inputFiles/*
 src/backups/
 bib*
 cite*
+documentation/latex/*
+*_pycache_*

@@ -34,7 +34,7 @@ subroutine SNOW_TRANVAL(trandif, trandir, & ! OUTPUT
   !
   ! OUTPUT
   !
-  real, intent(out) :: trandif(ilg,nbnd) !< DIFFUSE SNOW TRANSMISSION (AKA WHITE SKY TRANSMISSION)
+  real, intent(out) :: trandif (ilg,nbnd) !< DIFFUSE SNOW TRANSMISSION (AKA WHITE SKY TRANSMISSION)
   real, intent(out) :: trandir(ilg,nbnd) !< DIRECT BEAM SNOW TRANSMISSION (AKA BLACK SKY TRANSMISSION)
   !
   ! LOCAL
