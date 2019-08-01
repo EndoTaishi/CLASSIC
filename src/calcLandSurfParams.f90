@@ -5,11 +5,11 @@
 !! This subroutine is adaptable to any number of vegetation categories recognized by CLASS
 !! (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
 !! is performed.
-==== BASE ====
+
 subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Formerly APREP
-             FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN, &
-             SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS, &
-             ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC, &
+                             FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN, &
+                             SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS, &
+                             ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC, &
                               CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, ZPLIMC,  &
                               ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, FROOT, FROOTS,  &
                               WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS,     &

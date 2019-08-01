@@ -2476,7 +2476,7 @@ contains
 
       call allometry( gleafmasgat,   bleafmasgat,  stemmassgat,  rootmassgat, & ! In
                      1,           nml,          ilg,      zbtwgat, & ! In
-                     dlzwgat,       sdepgat,   fcancmxgat, & ! In
+                     sdepgat,   fcancmxgat, & ! In
                      ipeatlandgat,maxAnnualActLyrGAT, & ! In
                      ailcggat,      ailcbgat,      ailcgat,     zolncgat, & ! Out
                      rmatcgat,   rmatctemgat,      slaigat,   bmasveggat, & ! Out

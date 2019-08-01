@@ -1302,15 +1302,13 @@ contains
     !! to the land surface scheme using leaf, stem, and root biomass.
     !>
     call allometry( gleafmas, bleafmas, stemmass, rootmass, & ! In
-==== BASE ====
     il1,        il2,        ilg,      zbotw, & ! In
-    delzw,   soildpth,    fcancmx, & ! In
+    soildpth,    fcancmx, & ! In
     ipeatland,  maxAnnualActLyr, & ! In
     ailcg,    ailcb,     ailc,    zolnc, & ! Out
     rmatc, rmatctem,     slai,  bmasveg, & ! Out
     cmasvegc,  veghght, rootdpth,   alvisc, & ! Out
     alnirc,    paicgat,   slaicgat) ! Out
-==== BASE ====
 
     !> Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by allometry
     gavglai (:) = 0.0

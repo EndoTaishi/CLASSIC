@@ -30,7 +30,7 @@ contains
   !!
   !! @author V. Arora, J. Melton, Y. Peng, S. Sun
   subroutine allometry(gleafmas, bleafmas, stemmass, rootmass, il1, il2, ilg,      & ! In
-                       zbotw, delzw, soildpth, fcancmx, ipeatland,maxAnnualActLyr, & ! In
+                       zbotw, soildpth, fcancmx, ipeatland,maxAnnualActLyr,        & ! In
                        ailcg, ailcb, ailc, zolnc, rmatc, rmatctem, slai, bmasveg,  & ! Out
                        cmasvegc, veghght, rootdpth, alvisc, alnirc, paic, slaic)     ! Out
 
