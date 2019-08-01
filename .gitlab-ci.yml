@@ -5,8 +5,14 @@ stages:
  - build
  - run
  - test
+ - documentation
 
-after_script:
+check_location:
+  stage: setup
+  script:
+    - echo "HELLO FROM MASTER!"
+  only:
+    - master@CLASSIC_development/CLASSIC
 
 prepare_binary_folder:
   stage: setup
@@ -17,6 +23,8 @@ prepare_binary_folder:
     -   mkdir -p ~/tmp/CLASSIC
     - fi
     - echo "setup complete"
+  except:
+    - master
 
 compile:
   stage: build
@@ -24,6 +32,8 @@ compile:
     - /usr/bin/make mode=ppp
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
+  except:
+    - master
 
 run:ctem_on:
   stage: run
@@ -33,6 +43,8 @@ run:ctem_on:
   artifacts:
     paths:
       - job_id.txt
+  except:
+    - master
 
 run:ctem_off:
   stage: run
@@ -42,6 +54,8 @@ run:ctem_off:
   artifacts:
     paths:
       - job_id.txt
+  except:
+    - master
 
 run:ctem_compete:
   stage: run
@@ -51,6 +65,8 @@ run:ctem_compete:
   artifacts:
     paths:
       - job_id.txt
+  except:
+    - master
 
 regression_test:ctem_on:
   stage: test
@@ -62,6 +78,8 @@ regression_test:ctem_on:
     - echo "regression test complete"
   dependencies:
     - run:ctem_on
+  except:
+    - master
 
 retression_test:ctem_off:
   stage: test
@@ -73,6 +91,8 @@ retression_test:ctem_off:
     - echo "regression test complete"
   dependencies:
     - run:ctem_off
+  except:
+    - master
 
 retression_test:ctem_compete:
   stage: test
@@ -84,3 +104,22 @@ retression_test:ctem_compete:
     - echo "regression test complete"
   dependencies:
     - run:ctem_compete
+  except:
+    - master
+
+pages:
+  stage: build
+  image: alpine
+  script:
+  - apk update
+  - apk add doxygen
+  - doxygen Doxyfile
+  - mv documentation/html/ public/
+  - rm -r -f documentation/html
+  - rm -f bib*
+  - rm -f citelist*
+  artifacts:
+    paths:
+    - public
+  only:
+  - master@mfortier/classctem

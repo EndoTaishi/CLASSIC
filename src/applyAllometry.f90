@@ -1,7 +1,6 @@
 !> \file
 !> Applies allometric relationships to converts biomass to
 !! structural attributes
-!! @author Vivek Arora, Joe Melton
 !!
 module applyAllometry
 
@@ -14,7 +13,7 @@ contains
 
   !> \ingroup allometry_bio2str
   !! @{
-  !> Applies allometric relationships to converts biomass to
+  !! Applies allometric relationships to converts biomass to
   !! structural attributes. This subroutine converts leaf, stem, and root biomass
   !! into LAI, vegetation height, and fraction of roots
   !! in each soil layer. Storage lai is also calculated.
@@ -28,17 +27,13 @@ contains
   !! the log of roughness length over the bare fraction
   !! of the grid cell. only roughness lengths over the
   !! vegetated fraction are updated
+  !!
+  !! @author V. Arora, J. Melton, Y. Peng, S. Sun
+  subroutine allometry(gleafmas, bleafmas, stemmass, rootmass, il1, il2, ilg,      & ! In
+                       zbotw, delzw, soildpth, fcancmx, ipeatland,maxAnnualActLyr, & ! In
+                       ailcg, ailcb, ailc, zolnc, rmatc, rmatctem, slai, bmasveg,  & ! Out
+                       cmasvegc, veghght, rootdpth, alvisc, alnirc, paic, slaic)     ! Out
 
-  !> @author V. Arora, J. Melton, Y. Peng, S. Sun
-  subroutine    allometry( gleafmas, bleafmas, stemmass, rootmass, & ! In
-                             il1,      il2,      ilg,    zbotw, & ! In
-                          delzw, soildpth, fcancmx, & ! In
-                      ipeatland,maxAnnualActLyr, & ! In
-                          ailcg,    ailcb,     ailc,    zolnc, & ! Out
-                          rmatc, rmatctem,     slai,  bmasveg, & ! Out
-                       cmasvegc,  veghght, rootdpth,   alvisc, & ! Out
-                         alnirc,     paic,    slaic) ! Out
-    !
     !     ----------------------------------------------------------------
     !     16  Aug 2017  - Add BLD COLD-Deciduous shrub
     !     J. Melton/S. Sun
@@ -70,73 +65,71 @@ contains
     !                     in each soil layer. storage lai is also calculated.
 
     use classic_params,        only : ignd, icc, ican, abszero, &
-                                l2max,kk, eta, kappa, kn, lfespany, &
-                                fracbofg, specsla, abar, avertmas, &
-                                alpha, prcnslai, minslai, mxrtdpth, &
-                                albvis, albnir,classpfts, nol2pfts, &
-                                reindexPFTs
+                                      l2max,kk, eta, kappa, kn, lfespany, &
+                                      fracbofg, specsla, abar, avertmas, &
+                                      alpha, prcnslai, minslai, mxrtdpth, &
+                                      albvis, albnir,classpfts, nol2pfts, &
+                                      reindexPFTs
     use ctemUtilities, only : genSortIndex !, unfrozenRoots
 
     implicit none
 
-    integer :: ilg !<
-    integer :: il1 !< input: il1=1
-    integer :: il2 !< input: il2=ilg
+    integer, intent(in) :: ilg !<
+    integer, intent(in) :: il1 !< input: il1=1
+    integer, intent(in) :: il2 !< input: il2=ilg
     integer :: i, j, k, m, n
     integer :: sort(icc)
     integer :: kend
 
-    logical deeproots
+    logical :: deeproots
 
-    real :: gleafmas(ilg,icc)     !< input: green or live leaf mass in kg c/m2, for the 9 pfts
-    real :: bleafmas(ilg,icc)     !< input: brown or dead leaf mass in kg c/m2, for the 9 pfts
-    real :: stemmass(ilg,icc)     !< input: stem biomass in kg c/m2, for the 9 pfts
-    real :: rootmass(ilg,icc)     !< input: root biomass in kg c/m2, for the 9 pfts
-    real :: ailcg(ilg,icc)        !< output: green lai for ctem's 9 pfts
-    real :: ailcb(ilg,icc)        !< output: brown lai for ctem's 9 pfts. for now we assume only grasses can have brown leaves.
-    real :: ailc(ilg,ican)        !< output: lai to be used by class
-    real :: zolnc(ilg,ican)       !< output: log of roughness length to be used by class
-    real :: paic(ilg, ican)       !< output: plant area index for class' 4 pfts. this is the sum of leaf area index and stem area index.
-    real :: rmatc(ilg,ican,ignd)  !< output: fraction of live roots in each soil layer for each of the class' 4 pfts
-    real :: fcancmx(ilg,icc)      !< input: max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
-    !< (which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
-    !< land use change or dynamic vegetation.
-    real :: delzw(ilg,ignd)       !< input: thicknesses of the 3 soil layers
-    real :: zbotw(ilg,ignd)       !< input: bottom of soil layers
-    real :: rmatctem(ilg,icc,ignd)!< output: fraction of live roots in each soil layer for each of ctem's 9 pfts
-    real :: slai(ilg,icc)         !< output: storage or imaginary lai for phenology purposes
-    real :: bmasveg(ilg,icc)      !< output: total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-    real :: cmasvegc(ilg,ican)    !< output: total canopy mass for each of the 4 class pfts. recall that class requires canopy
-    !< mass as an input, and this is now provided by ctem. kg/m2.
+    real, intent(in) :: fcancmx(ilg,icc)      !< input: max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
+                                              !< (which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
+                                              !< land use change or dynamic vegetation.
+    real, intent(in) :: gleafmas(ilg,icc)     !< input: green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in) :: bleafmas(ilg,icc)     !< input: brown or dead leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in) :: stemmass(ilg,icc)     !< input: stem biomass in kg c/m2, for the 9 pfts
+    real, intent(in) :: rootmass(ilg,icc)     !< input: root biomass in kg c/m2, for the 9 pfts
+    real, intent(in) :: soildpth(ilg)         !< input: soil depth (m)    
+    real, intent(in) :: zbotw(ilg,ignd)       !< input: bottom of soil layers
+    real, intent(in) :: maxAnnualActLyr(ilg)   !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).    
+    integer, intent(in) :: ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
+    real, intent(inout) :: rmatctem(ilg,icc,ignd)!< output: fraction of live roots in each soil layer for each of ctem's 9 pfts
+    real, intent(inout) :: slai(ilg,icc)         !< output: storage or imaginary lai for phenology purposes
+    real, intent(inout) :: cmasvegc(ilg,ican)    !< output: total canopy mass for each of the 4 class pfts. recall that class requires canopy
+                                                  !< mass as an input, and this is now provided by ctem. kg/m2.
+    real, intent(inout) :: ailcg(ilg,icc)        !< output: green lai for ctem's 9 pfts
+    real, intent(inout) :: ailcb(ilg,icc)        !< output: brown lai for ctem's 9 pfts. for now we assume only grasses can have brown leaves.
+    real, intent(inout) :: ailc(ilg,ican)        !< output: lai to be used by class
+    real, intent(inout) :: paic(ilg, ican)       !< output: plant area index for class' 4 pfts. this is the sum of leaf area index and stem area index.
+    real, intent(inout) :: rmatc(ilg,ican,ignd)  !< output: fraction of live roots in each soil layer for each of the class' 4 pfts
+    real, intent(inout) :: alvisc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, visible
+    real, intent(inout) :: alnirc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, near ir
+    real, intent(inout) :: slaic(ilg,ican)       !< output: storage lai. this will be used as min. lai that class sees
+                                                 !< so that it doesn't blow up in its stomatal conductance calculations.
+    real, intent(inout) :: veghght(ilg,icc)      !< output: vegetation height (meters)
+    real, intent(inout) :: rootdpth(ilg,icc)     !< output: 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
+                                                 !< to see how vegetation grows above and below ground, respectively.
+    real, intent(out) :: bmasveg(ilg,icc)      !< output: total (gleaf + stem + root) biomass for each ctem pft, kg c/m2    
+    real, intent(out) :: zolnc(ilg,ican)       !< output: log of roughness length to be used by class
+        
     real :: sai(ilg,icc)          !<
     real :: saic(ilg,ican)        !<
     real :: sfcancmx(ilg,ican)    !< sum of fcancmxs
-    real :: alvisc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, visible
-    real :: alnirc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, near ir
     real :: pai(ilg,icc)          !<
-    real :: slaic(ilg,ican)       !< output: storage lai. this will be used as min. lai that class sees
-    !< so that it doesn't blow up in its stomatal conductance calculations.
     real :: sla(icc)              !<
-    real :: veghght(ilg,icc)      !< output: vegetation height (meters)
-    real :: fcoeff                !<
     real :: lnrghlth(ilg,icc)     !<
     real :: averough(ilg,ican)    !<
     real :: b(icc)                !<
-    real :: rootdpth(ilg,icc)     !< output: 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
-    !< to see how vegetation grows above and below ground, respectively.
     real :: usealpha(ilg,icc)     !<
     real :: a(ilg,icc)            !<
     real :: useb(ilg,icc)         !<
     real :: zroot                 !<
-    real :: soildpth(ilg)         !< input: soil depth (m)
-    real, dimension(ilg), intent(in) :: maxAnnualActLyr   !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     real :: etmp(ilg,icc,ignd)    !<
     real :: totala(ilg,icc)       !<
     real :: rmat_sum              !<
 
-    integer :: ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
-
-    !! CLASS' original root parameterization has deeper roots than CTEM's
+    !> CLASS' original root parameterization has deeper roots than CTEM's
     !! default values based on literature. in the coupled model this leads
     !! to lower evapotranspiration (et) values. an option is provided here to
     !! deepen roots, but this will also increase photosynthesis and vegetation
@@ -179,8 +172,8 @@ contains
     !>  values in the parameter vectors
     sort = genSortIndex()
 
-    do j = 1,icc
-      do i =  il1, il2
+    do j = 1,icc ! loop 80
+      do i =  il1, il2 ! loop 90
         usealpha(i,j) = alpha(sort(j))
       end do ! loop 90
     end do ! loop 80
@@ -203,8 +196,8 @@ contains
     !!
     !! also find stem area index as a function of stem biomass
     !!
-    do j = 1,icc
-      do i = il1,il2
+    do j = 1,icc ! loop 150
+      do i = il1,il2 ! loop 160
         if (fcancmx(i,j) > 0.0) then
           ailcg(i,j) = sla(j) * gleafmas(i,j)
           ailcb(i,j) = sla(j) * bleafmas(i,j) * fracbofg
@@ -235,9 +228,9 @@ contains
     !! water and light, only the green portion photosynthesizes.
     !! also lump stem and plant area indices for class' 4 pfts
     !!
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 200
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 210
+        do i = il1, il2 ! loop 220
           sfcancmx(i,j) = sfcancmx(i,j) + fcancmx(i,m)
           ailc(i,j) = ailc(i,j) + (fcancmx(i,m) * (ailcg(i,m) + ailcb(i,m)))
           saic(i,j) = saic(i,j) + (fcancmx(i,m) * sai(i,m))
@@ -247,8 +240,8 @@ contains
       end do ! loop 210
     end do ! loop 200
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 230
+      do i = il1, il2 ! loop 240
         if (sfcancmx(i,j) > abszero) then
           ailc(i,j) = ailc(i,j) / sfcancmx(i,j)
           saic(i,j) = saic(i,j) / sfcancmx(i,j)
@@ -300,9 +293,9 @@ contains
     !! forb is all non-graminoids herbaceous plants
     !! shrubs dwarf <0.1m, low (0.1 to 0.5), medium 0.5 to 1.5, tall >1.5
     !! trees > 5 m
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 250
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 260
+        do i = il1, il2 ! loop 270
           select case (classpfts(j))
           case ('NdlTr','BdlTr') ! Trees
             if (ipeatland(i) == 0) then ! For uplands:
@@ -336,8 +329,8 @@ contains
       end do ! loop 260
     end do ! loop 250
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 330
+      do i = il1, il2 ! loop 340
         if (sfcancmx(i,j) > abszero) then
           averough(i,j) = averough(i,j) / sfcancmx(i,j)
         else
@@ -348,7 +341,8 @@ contains
     end do ! loop 330
 
     !> ------ 3. estimating fraction of roots in each soil layer for -----
-    !! ------      ctem's each vegetation type, using root biomass   -----
+    !!
+    !> ------      ctem's each vegetation type, using root biomass   -----
     !!
     !! Estimate parameter b of variable root profile parameterization
     !!
@@ -362,9 +356,9 @@ contains
 
     !> Use b to estimate 99% rooting depth
     !!
-    do j = 1,ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1,ican ! loop 370
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 380
+        do i = il1, il2 ! loop 390
 
           useb(i,m) = b(m)
           usealpha(i,m) = alpha(sort(m))
@@ -401,8 +395,8 @@ contains
       end do ! loop 380
     end do ! loop 370
 
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 400
+      do i = il1, il2 ! loop 410
 
         kend = 9999  ! initialize with a dummy value
 
@@ -465,8 +459,8 @@ contains
     rmatctem = unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
 
     !> Make sure all fractions (of roots in each layer) add to one.
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 411
+      do i = il1, il2 ! loop 412
         if (fcancmx(i,j) > 0.0) then
           rmat_sum = 0.0
           do k = 1, ignd
@@ -493,8 +487,8 @@ contains
       end do
     end do
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 450
+      do i = il1, il2 ! loop 460
         if (sfcancmx(i,j) > abszero) then
           do k = 1, ignd
             rmatc(i,j,k) = rmatc(i,j,k) / sfcancmx(i,j)
@@ -509,8 +503,8 @@ contains
     end do ! loop 450
 
     !> -------------------  4. calculate storage lai  --------------------
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 500
+      do i = il1, il2 ! loop 510
         if (fcancmx(i,j) > 0.0) then
           slai(i,j) = ((stemmass(i,j) + rootmass(i,j)) &
                     / eta(sort(j))) ** (1. / kappa(sort(j)))
@@ -524,8 +518,8 @@ contains
 
     !> --- 5. calculate total vegetation biomass for each ctem pft, and --
     !! ---------------- canopy mass for each class pft ------------------
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 550
+      do i = il1, il2 ! loop 560
         if (fcancmx(i,j) > 0.0) then
           bmasveg(i,j) = gleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
         end if
@@ -535,17 +529,17 @@ contains
     !! Since class uses canopy mass and not total vegetation biomass as an
     !! input, we find canopy mass as a sum of stem and leaf mass, for each
     !! class pft, i.e. only above ground biomass.
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 600
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 610
+        do i = il1, il2 ! loop 620
           cmasvegc(i,j) = cmasvegc(i,j) + (fcancmx(i,m) &
                        * (bleafmas(i,m) + gleafmas(i,m) + stemmass(i,m)))
         end do ! loop 620
       end do ! loop 610
     end do ! loop 600
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 630
+      do i = il1, il2 ! loop 640
         if (sfcancmx(i,j) > abszero) then
           cmasvegc(i,j) = cmasvegc(i,j) / sfcancmx(i,j)
           cmasvegc(i,j) = cmasvegc(i,j) * (1.0 / 0.50) ! assuming biomass is 50% C
@@ -563,18 +557,19 @@ contains
     end do ! loop 630
 
     !> --- 6. calculate albedo for class' 4 pfts based on specified ----
-    !! ------ albedos of ctem 9 pfts and their fractional coveraes -----
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    !!
+    !> ------ albedos of ctem 9 pfts and their fractional coveraes -----
+    do j = 1, ican ! loop 700
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 710
+        do i = il1, il2 ! loop 720
           alvisc(i,j) = alvisc(i,j) + (fcancmx(i,m) * albvis(sort(m)))
           alnirc(i,j) = alnirc(i,j) + (fcancmx(i,m) * albnir(sort(m)))
         end do ! loop 720
       end do ! loop 710
     end do ! loop 700
 
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 730
+      do i = il1, il2 ! loop 740
         if (sfcancmx(i,j) > abszero) then
           alvisc(i,j) = (alvisc(i,j) / sfcancmx(i,j)) / 100.0
           alnirc(i,j) = (alnirc(i,j) / sfcancmx(i,j)) / 100.0
@@ -592,11 +587,12 @@ contains
   ! ---------------------------------------------------------------------------------------------------
 
   !> \ingroup allometry_unfrozenRoots
-  !! @{ We only allow roots in non-perennially frozen soil layers so first check which layers are
+  !! @{
+  !! We only allow roots in non-perennially frozen soil layers so first check which layers are
   !! unfrozen and then correct the root distribution appropriately. For defining which
   !! layers are frozen, we use the active layer depth.
   !! @author J. Melton
-  function unfrozenRoots(il1,il2,ilg,maxAnnualActLyr,zbotw,rmatctem)
+  function unfrozenRoots(il1, il2, ilg, maxAnnualActLyr, zbotw, rmatctem)
 
     use classic_params, only : ignd,icc
 
@@ -608,14 +604,14 @@ contains
     real, intent(in)    :: maxAnnualActLyr(:)!< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     real, intent(in)    :: zbotw(:,:)      !< Bottom of soil layers (m)
     real, intent(in)    :: rmatctem(:,:,:) !< fraction of roots for each of ctem's pfts in each soil layer
-
-    real :: unfrozenRoots(ilg,icc,ignd)             !< root distribution only over unfrozen layers
-
     integer :: botlyr                       !< bottom layer of the unfrozen soil column
     real :: frznrtlit                       !< fraction of root distribution in frozen layers
     integer :: k,j,i
 
-    !! We only add to non-perennially frozen soil layers so first check which layers are
+    real :: unfrozenRoots(ilg,icc,ignd)             !< root distribution only over unfrozen layers
+
+
+    !> We only add to non-perennially frozen soil layers so first check which layers are
     !! unfrozen and then do the allotment appropriately. For defining which
     !! layers are frozen, we use the active layer depth.
     unfrozenRoots = 0.
@@ -642,11 +638,10 @@ contains
     end do
 
   end function unfrozenRoots
-  !> @}
+
+  !! @}
   ! -----------------------------------------------------------------------------------------------
   !> \namespace allometry
-  !!
-
   !! Converts biomass to structural attributes
   !! @author V. Arora, J. Melton, Y. Peng
   !!

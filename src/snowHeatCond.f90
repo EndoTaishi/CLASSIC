@@ -1,10 +1,9 @@
 !> \file
 !! Calculate coefficients for solution of snow pack heat conduction.
-!! @author D. Verseghy, M. Lazare
 !
 subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
-                   FI,ZSNOW,TSNOW,TCSNOW, &
-                   ILG,IL1,IL2,JL)
+                        FI,ZSNOW,TSNOW,TCSNOW, &
+                        ILG,IL1,IL2,JL)
   !
   !     * AUG 16/06 - D.VERSEGHY. MAJOR REVISION TO IMPLEMENT THERMAL
   !     *                         SEPARATION OF SNOW AND SOIL.
@@ -69,47 +68,9 @@ subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
   real, intent(in) :: TCSNOW(ILG)  !< Thermal conductivity of snow \f$[W m^{-1} K^{-1}]\f$
   !
   !-----------------------------------------------------------------------
-  !>
-  !!   In this subroutine, coefficients are derived for an equation
-  !!   relating the heat flux at the snow surface to the snow surface
-  !!   temperature. It is assumed that the variation of temperature T with
-  !!   depth z in the snow pack can be modelled by using a quadratic
-  !!   equation:
-  !!
-  !!   \f$T(z) = (1/2) a z^2 + b z + c\f$
-  !!
-  !!   By substituting 0 for z in the above equation and in the expressions
-  !!   for its first and second derivatives, it can be shown that a =
-  !!   T"(0), b = T'(0), and c = T(0). The term T"(0) can be evaluated from
-  !!   the expression for the first derivative evaluated at the bottom of
-  !!   the snow pack, \f$T(\Delta z_s)\f$:
-  !!
-  !!   \f$T"(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s\f$
-  !!
-  !!   The temperature gradient T'(0) at the snow surface is related to the
-  !!   surface heat flux G(0) by the snow
-  !!   thermal conductivity \f$\lambda_s\f$:
-  !!
-  !!   \f$G(0) = -\lambda_s T'(0)\f$
-  !!
-  !!   The average snow temperature, \f$T_s(\Delta z_s)\f$, can be obtained by integrating
-  !!   the resulting equation for T(z) between 0 and \f$\Delta z_s\f$. Making use of
-  !!   all of the above expressions, and assuming as a first approximation
-  !!   that the heat flux at the bottom of the snow pack is zero, a linear
-  !!   equation can be derived relating G(0) to T(0):
-  !!
-  !!   \f$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]\f$
-  !!
-  !!   Just four calculations are performed in this subroutine. The slope
-  !!   and intercept of the G(0) vs. T(0) relation, GCOEFF and GCONST, are
-  !!   evaluated as \f$3 \lambda_s / \Delta z_s\f$ and \f$-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s\f$
-  !!   respectively; the flag IWATER is set to 2, indicating a snow
-  !!   surface; and the latent heat of vaporization at the surface,
-  !!   CPHCHG, is set to the value for sublimation (by adding the latent
-  !!   heat of melting to the latent heat of vaporization).
-  !!
-  !!     * CALCULATE COEFFICIENTS.
-  !!
+  !
+  !     * CALCULATE COEFFICIENTS.
+  !
   do I = IL1,IL2 ! loop 100
     if (FI(I) > 0.) then
       GCOEFFS(I) = 3.0 * TCSNOW(I) / ZSNOW(I)
@@ -121,3 +82,44 @@ subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
   !
   return
 end
+!> \file
+!!
+!! @author D. Verseghy, M. Lazare
+!!
+!!   In this subroutine, coefficients are derived for an equation
+!!   relating the heat flux at the snow surface to the snow surface
+!!   temperature. It is assumed that the variation of temperature T with
+!!   depth z in the snow pack can be modelled by using a quadratic
+!!   equation:
+!!
+!!   \f$T(z) = (1/2) a z^2 + b z + c\f$
+!!
+!!   By substituting 0 for z in the above equation and in the expressions
+!!   for its first and second derivatives, it can be shown that a =
+!!   T"(0), b = T'(0), and c = T(0). The term T"(0) can be evaluated from
+!!   the expression for the first derivative evaluated at the bottom of
+!!   the snow pack, \f$T(\Delta z_s)\f$:
+!!
+!!   \f$T"(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s\f$
+!!
+!!   The temperature gradient T'(0) at the snow surface is related to the
+!!   surface heat flux G(0) by the snow
+!!   thermal conductivity \f$\lambda_s\f$:
+!!
+!!   \f$G(0) = -\lambda_s T'(0)\f$
+!!
+!!   The average snow temperature, \f$T_s(\Delta z_s)\f$, can be obtained by integrating
+!!   the resulting equation for T(z) between 0 and \f$\Delta z_s\f$. Making use of
+!!   all of the above expressions, and assuming as a first approximation
+!!   that the heat flux at the bottom of the snow pack is zero, a linear
+!!   equation can be derived relating G(0) to T(0):
+!!
+!!   \f$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]\f$
+!!
+!!   Just four calculations are performed in this subroutine. The slope
+!!   and intercept of the G(0) vs. T(0) relation, GCOEFF and GCONST, are
+!!   evaluated as \f$3 \lambda_s / \Delta z_s\f$ and \f$-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s\f$
+!!   respectively; the flag IWATER is set to 2, indicating a snow
+!!   surface; and the latent heat of vaporization at the surface,
+!!   CPHCHG, is set to the value for sublimation (by adding the latent
+!!   heat of melting to the latent heat of vaporization).

@@ -17,10 +17,10 @@ contains
   !> Calculates the litter generated from stem and root turnover
   !> @author Vivek Arora and Joe Melton
   subroutine turnoverStemRoot (stemmass, rootmass,  lfstatus,    ailcg, & ! in
-                           il1,      il2,       ilg,  leapnow, useTracer, & ! In
-                          sort,  fcancmx, tracerStemMass, tracerRootMass, & ! In
-                          stmhrlos, rothrlos, & ! In / Out
-                          stemlitr, rootlitr, tracerStemLitr, tracerRootLitr) ! Out
+                               il1,      il2,       ilg,  leapnow, useTracer, & ! In
+                               sort,  fcancmx, tracerStemMass, tracerRootMass, & ! In
+                               stmhrlos, rothrlos, & ! In / Out
+                               stemlitr, rootlitr, tracerStemLitr, tracerRootLitr) ! Out
     !
     !     06  Dec 2018  - Pass ilg back in as an argument
     !     V. Arora
@@ -72,8 +72,8 @@ contains
     real, intent(out) :: tracerRootLitr(ilg,icc) !< Tracer root litter \f$tracer C units/m^2\f$
 
     integer :: i, j, k, n, m
-    real :: nrmlsmlr(ilg,icc) !< stem litter from normal turnover
-    real :: nrmlrtlr(ilg,icc) !< root litter from normal turnover
+    real :: nrmlsmlr(ilg,icc) ! stem litter from normal turnover
+    real :: nrmlrtlr(ilg,icc) ! root litter from normal turnover
     real :: frac !< temp. var.
 
     ! Initialize required arrays to zero
@@ -350,8 +350,10 @@ contains
   !! amount of biomass in the respective components (\f$C_\mathrm{S},
   !! C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales
   !! (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classic_params.f90) as
-  !! \f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad
+  !!
+  !! \f[ D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad
   !! i = S, R.\f]
+  !!
   !! Litter contributions are either put in the first soil layer (leaf and stem litter) whereas
   !! root litter is added in proportion to the root distribution to non-perennially frozen soil layers.
   !! For defining which layers are frozen, we use the active layer depth.

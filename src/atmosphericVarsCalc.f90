@@ -4,11 +4,10 @@
 !! @author D. Verseghy, M. Lazare, R. Brown, S. Fassnacht, P. Bartlett
 !!
 
-subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
-                   RPCP,TRPCP,SPCP,TSPCP, &
-                   TA,QA,PCPR,RRATE,SRATE,PRESSG, &
-                   IPCP,NL,IL1,IL2)
-  !
+subroutine atmosphericVarsCalc(VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, & ! Formerly CLASSI
+                               SPCP, TSPCP, TA, QA, PCPR, RRATE, SRATE, &
+                               PRESSG, IPCP, NL, IL1, IL2)
+
   !     * NOV 17/11 - M.LAZARE.   REMOVE CALCULATION OF PCPR
   !     *                         FOR IPCP=4 (REDUNDANT SINCE
   !     *                         PCPR MUST BE PASSED IN FOR

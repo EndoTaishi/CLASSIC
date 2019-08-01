@@ -6,17 +6,17 @@
 !! @author D. Verseghy, M. Lazare
 !!
 subroutine classScatter (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT, & ! Formerly CLASSS
-                    ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT, &
-                    SNOROT, GTROT,  TCANROT,RCANROT,SCANROT, &
-                   GROROT, CMAIROT,TACROT, QACROT, WSNOROT, &
-                    REFROT, BCSNROT,EMISROT,SALBROT,CSALROT, &
-                    ILMOS,JLMOS, &
-                    NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS, &
-                    TBARGAT,THLQGAT,THICGAT,TSFSGAT,TPNDGAT, &
-                    ZPNDGAT,TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT, &
-                    SNOGAT, GTGAT,  TCANGAT,RCANGAT,SCANGAT, &
-                    GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT, &
-                    REFGAT, BCSNGAT,EMISGAT,SALBGAT,CSALGAT)
+                         ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT, &
+                         SNOROT, GTROT,  TCANROT,RCANROT,SCANROT, &
+                         GROROT, CMAIROT,TACROT, QACROT, WSNOROT, &
+                         REFROT, BCSNROT,EMISROT,SALBROT,CSALROT, &
+                         ILMOS,JLMOS, &
+                         NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS, &
+                         TBARGAT,THLQGAT,THICGAT,TSFSGAT,TPNDGAT, &
+                         ZPNDGAT,TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT, &
+                         SNOGAT, GTGAT,  TCANGAT,RCANGAT,SCANGAT, &
+                         GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT, &
+                         REFGAT, BCSNGAT,EMISGAT,SALBGAT,CSALGAT)
   !
   !     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT TO
   !     *                        NLAT,NMOS (FOR LAKE MODEL)

@@ -3,7 +3,7 @@
 !! @author Y. Delage, D. Verseghy, M. Lazare, J. Melton
 !
 subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
-                   Z0M,Z0E,F,ZA,ZU,ZT,ILG,IL1,IL2,JL)
+                  Z0M,Z0E,F,ZA,ZU,ZT,ILG,IL1,IL2,JL)
 
   !     * JUN 23/14 - M.LAZARE.   New version for gcm18+:
   !     *                         - Bugfix to calculation of
@@ -29,32 +29,33 @@ subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
   !
   !     * INTEGER CONSTANTS
   !
-  integer :: ILG   !< NUMBER OF POINTS TO BE TREATED
-  integer :: IL1,IL2,JL,I
-  !
-  !     * INPUT FIELDS
-  !
-  real :: SUT(ILG)  !< U COMPONENT OF THE WIND AT ZU
-  real :: SVT(ILG)  !< V COMPONENT OF THE WIND AT ZU
-  real :: STT(ILG)  !< TEMPERATURE AT ZT
-  real :: SQT(ILG)  !< SPECIFIC HUMIDITY AT ZT
+  integer, intent(in) :: ILG   !< NUMBER OF POINTS TO BE TREATED
+  integer, intent(in) :: IL1,IL2,JL
+  integer :: I
   !
   !     * OUTPUT FIELDS
   !
-  real :: CDM(ILG) !< DRAG COEFFICIENT
-  real :: CDH(ILG) !< TRASFER COEFFICIENT FOR HEAT AND MOISTURE
-  real :: UA(ILG)  !< U COMPONENT OF THE WIND AT ZA
-  real :: VA(ILG)  !< V COMPONENT OF THE WIND AT ZA
-  real :: TA(ILG)  !< POTENTIAL TEMPERATURE AT ZA
-  real :: QA(ILG)  !< SPECIFIC HUMIDITY AT REFERENCE HEIGHT
-  real :: Z0M(ILG) !< ROUGHNESS LENGTH FOR MOMENTUM
-  real :: Z0E(ILG) !< ROUGHNESS LENGTH FOR HEAT AND MOISTURE
-  real :: F(ILG)   !< FRACTION OF GRID POINT AFFECTED BY PROCESS
-  real :: T0(ILG)  !< TEMPERATURE AT BOTTOM OF SURFACE LAYER
-  real :: Q0(ILG)  !< SPECIFIC HUMIDITY AT BOTTOM OF SURFACE LAYER
-  real :: ZA(ILG)  !< TOP OF SURFACE LAYER
-  real :: ZU(ILG)  !< HEIGHT OF OUTPUT WIND
-  real :: ZT(ILG)  !< HEIGHT OF OUTPUT TEMPERATURE AND HUMIDITY
+  real, intent(out) :: SUT(ILG)  !< U COMPONENT OF THE WIND AT ZU
+  real, intent(out) :: SVT(ILG)  !< V COMPONENT OF THE WIND AT ZU
+  real, intent(out) :: STT(ILG)  !< TEMPERATURE AT ZT
+  real, intent(out) :: SQT(ILG)  !< SPECIFIC HUMIDITY AT ZT
+  !
+  !     * INPUT FIELDS
+  !
+  real, intent(in) :: CDM(ILG) !< DRAG COEFFICIENT
+  real, intent(in) :: CDH(ILG) !< TRASFER COEFFICIENT FOR HEAT AND MOISTURE
+  real, intent(in) :: UA(ILG)  !< U COMPONENT OF THE WIND AT ZA
+  real, intent(in) :: VA(ILG)  !< V COMPONENT OF THE WIND AT ZA
+  real, intent(in) :: TA(ILG)  !< POTENTIAL TEMPERATURE AT ZA
+  real, intent(in) :: QA(ILG)  !< SPECIFIC HUMIDITY AT REFERENCE HEIGHT
+  real, intent(in) :: Z0M(ILG) !< ROUGHNESS LENGTH FOR MOMENTUM
+  real, intent(in) :: Z0E(ILG) !< ROUGHNESS LENGTH FOR HEAT AND MOISTURE
+  real, intent(in) :: F(ILG)   !< FRACTION OF GRID POINT AFFECTED BY PROCESS
+  real, intent(in) :: T0(ILG)  !< TEMPERATURE AT BOTTOM OF SURFACE LAYER
+  real, intent(in) :: Q0(ILG)  !< SPECIFIC HUMIDITY AT BOTTOM OF SURFACE LAYER
+  real, intent(in) :: ZA(ILG)  !< TOP OF SURFACE LAYER
+  real, intent(in) :: ZU(ILG)  !< HEIGHT OF OUTPUT WIND
+  real, intent(in) :: ZT(ILG)  !< HEIGHT OF OUTPUT TEMPERATURE AND HUMIDITY
   !
   !     TEMPORARY VARIABLES
   !

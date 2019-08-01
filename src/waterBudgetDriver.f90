@@ -3,34 +3,34 @@
 !! @author D. Verseghy, P. Bartlett, M. Lazare
 !
 subroutine waterBudgetDriver(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN, & ! Formerly CLASSW
-                   RUNOFF, TRUNOF, SNO,    TSNOW,  RHOSNO, ALBSNO, &
-                   WSNOW,  ZPOND,  TPOND,  GROWTH, TBASE,  GFLUX, &
-                   PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
-                   QFN,    QFG,    QFC,    HMFC,   HMFG,   HMFN, &
-                   HTCC,   HTCS,   HTC,    ROFC,   ROFN,   ROVG, &
-                   WTRS,   WTRG,   OVRFLW, SUBFLW, BASFLW, &
-                   TOVRFL, TSUBFL, TBASFL, EVAP,   QFLUX,  RHOAIR, &
-                   TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
-                   THICEC, THICEG, HCPC,   HCPG,   RPCP,   TRPCP, &
-                   SPCP,   TSPCP,  PCPR,   TA,     RHOSNI, GGEO, &
-                   FC,     FG,     FCS,    FGS,    TPONDC, TPONDG, &
-                   TPNDCS, TPNDGS, EVAPC,  EVAPCG, EVAPG,  EVAPCS, &
-                   EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG, &
-                   RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF,   FSVFS, &
-                   CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO, &
-                   TCANS,  CHCAP,  CHCAPS, CMASSC, CMASCS, ZSNOW, &
-                   GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G, &
-                   G12CS,  G12GS,  G23C,   G23G,   G23CS,  G23GS, &
-                   TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
-                   ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSAV, &
-                   TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT,  FROOTS, &
-                   THPOR,  THLRET, THLMIN, BI,     PSISAT, GRKSAT, &
-                   THLRAT, THFC,   XDRAIN, HCPS, DELZ, &
-                   DELZW,  ZBOTW,  XSLOPE, GRKFAC, WFSURF, WFCINT, &
-                   ISAND,  IGDR, &
-                   IWF,    ILG,    IL1,    IL2,    N, &
-                   JL,     IC,     IG,     IGP1,   IGP2, &
-                   NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
+                             RUNOFF, TRUNOF, SNO,    TSNOW,  RHOSNO, ALBSNO, &
+                             WSNOW,  ZPOND,  TPOND,  GROWTH, TBASE,  GFLUX, &
+                             PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
+                             QFN,    QFG,    QFC,    HMFC,   HMFG,   HMFN, &
+                             HTCC,   HTCS,   HTC,    ROFC,   ROFN,   ROVG, &
+                             WTRS,   WTRG,   OVRFLW, SUBFLW, BASFLW, &
+                             TOVRFL, TSUBFL, TBASFL, EVAP,   QFLUX,  RHOAIR, &
+                             TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, &
+                             THICEC, THICEG, HCPC,   HCPG,   RPCP,   TRPCP, &
+                             SPCP,   TSPCP,  PCPR,   TA,     RHOSNI, GGEO, &
+                             FC,     FG,     FCS,    FGS,    TPONDC, TPONDG, &
+                             TPNDCS, TPNDGS, EVAPC,  EVAPCG, EVAPG,  EVAPCS, &
+                             EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG, &
+                             RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF,   FSVFS, &
+                             CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO, &
+                             TCANS,  CHCAP,  CHCAPS, CMASSC, CMASCS, ZSNOW, &
+                             GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G, &
+                             G12CS,  G12GS,  G23C,   G23G,   G23CS,  G23GS, &
+                             TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
+                             ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSAV, &
+                             TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT,  FROOTS, &
+                             THPOR,  THLRET, THLMIN, BI,     PSISAT, GRKSAT, &
+                             THLRAT, THFC,   XDRAIN, HCPS, DELZ, &
+                             DELZW,  ZBOTW,  XSLOPE, GRKFAC, WFSURF, WFCINT, &
+                             ISAND,  IGDR, &
+                             IWF,    ILG,    IL1,    IL2,    N, &
+                             JL,     IC,     IG,     IGP1,   IGP2, &
+                             NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI)
   !
   !     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
   !     *                         AREAS WITH AND WITHOUT SNOW.
@@ -422,25 +422,25 @@ subroutine waterBudgetDriver(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN, & ! 
   !! each subarea are listed in the table below.
   !!
   !! \f[
-  !! \begin{tabular} { | l | l | c | }
+  !! \begin{array} { | l | l | c | }
   !! \hline
-  !! canopyWaterUpdate  & Evaporation/sublimation of water from vegetation canopy        &   CS,C    \\ \hline
-  !! canopyInterception  & Addition of rainfall/snowfall to canopy; throughfall and drip  &   CS,C    \\ \hline
-  !! canopyPhaseChange  & Freezing/thawing of liquid/frozen water on canopy              &   CS,C    \\ \hline
-  !! waterUnderCanopy  & Precipitaiton and condensation under canopy                    &   CS,C    \\ \hline
-  !! soilWaterPhaseChg  & Freezing/thawing of liquid/frozen water in soil                & CS,GS,C,G \\ \hline
-  !! snowSublimation  & Sublimaiton from snow pack                                     & CS,GS,C,G \\ \hline
-  !! pondedWaterFreeze  & Freezing of ponded water on soil                               & CS,GS,C,G \\ \hline
-  !! snowMelt   & Melting of snow pack                                           &   CS,GS   \\ \hline
-  !! snowAddNew  & Accumulation of snow on ground                                 & CS,GS,C,G \\ \hline
-  !! snowInfiltrateRipen  & Infiltration of rain into snow pack                            &   CS,GS   \\ \hline
-  !! iceSheetBalance  & Energy and water budget of ice sheets                          &   GS,G    \\ \hline
-  !! waterFlowInfiltrate  & Infiltraiton of water into soil                                & CS,GS,C,G \\ \hline
-  !! waterFlowNonInfiltrate  & Soil water movement in response to gravity and suction forces  & CS,GS,C,G \\ \hline
-  !! TMCALC  & Step ahead soil layer temperatures, check for freezing/thawing & CS,GS,C,G \\ \hline
-  !! checkWaterBudget  & Check subarea moisture balances for closure                    & CS,GS,C,G \\ \hline
-  !! snowAging & Temporal variation of snow albedo and density                  &   CS,GS   \\ \hline
-  !! \end{tabular}
+  !! \text{canopyWaterUpdate}  & \text{Evaporation/sublimation of water from vegetation canopy}        &   \text{CS,C}    \\ \hline
+  !! \text{canopyInterception}  & \text{Addition of rainfall/snowfall to canopy; throughfall and drip}  &   \text{CS,C}    \\ \hline
+  !! \text{canopyPhaseChange}  & \text{Freezing/thawing of liquid/frozen water on canopy}              &   \text{CS,C}    \\ \hline
+  !! \text{waterUnderCanopy}  & \text{Precipitaiton and condensation under canopy}                    &   \text{CS,C}    \\ \hline
+  !! \text{soilWaterPhaseChg}  & \text{Freezing/thawing of liquid/frozen water in soil}                & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowSublimation}  & \text{Sublimaiton from snow pack}                                     & \text{CS,GS,C,G} \\ \hline
+  !! \text{pondedWaterFreeze}  & \text{Freezing of ponded water on soil}                               & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowMelt}   & \text{Melting of snow pack}                                           &   \text{CS,GS}   \\ \hline
+  !! \text{snowAddNew}  & \text{Accumulation of snow on ground}                                 & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowInfiltrateRipen}  & \text{Infiltration of rain into snow pack}                            &   \text{CS,GS}   \\ \hline
+  !! \text{iceSheetBalance}  & \text{Energy and water budget of ice sheets}                          &   \text{GS,G}    \\ \hline
+  !! \text{waterFlowInfiltrate}  & \text{Infiltraiton of water into soil}                                & \text{CS,GS,C,G} \\ \hline
+  !! \text{waterFlowNonInfiltrate}  & \text{Soil water movement in response to gravity and suction forces}  & \text{CS,GS,C,G} \\ \hline
+  !! \text{TMCALC}  & \text{Step ahead soil layer temperatures, check for freezing/thawing} & \text{CS,GS,C,G} \\ \hline
+  !! \text{checkWaterBudget}  & \text{Check subarea moisture balances for closure}                    & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowAging} & \text{Temporal variation of snow albedo and density}                  &   \text{CS,GS}   \\ \hline
+  !! \end{array}
   !! \f]
   !     * PREPARATION.
   !

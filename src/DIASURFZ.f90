@@ -12,11 +12,12 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
 
   implicit none
 
-  integer :: NI,JL
-  real :: ZT(NI),ZU(NI)
-  real :: UZ(NI),VZ(NI),TZ(NI),QZ(NI),ZA(NI),U(NI),V(NI)
-  real :: TG(NI),QG(NI),UE(NI),FTEMP(NI),FVAP(NI)
-  real :: ILMO(NI),Z0T(NI),Z0(NI),H(NI),F(NI)
+  integer, intent(in) :: NI,JL
+  real, intent(in) :: ZT(NI),ZU(NI)
+  real, intent(inout) :: UZ(NI),VZ(NI),TZ(NI),QZ(NI)
+  real, intent(in) :: ZA(NI),U(NI),V(NI)
+  real, intent(in) :: TG(NI),QG(NI),UE(NI),FTEMP(NI),FVAP(NI)
+  real, intent(in) :: ILMO(NI),Z0T(NI),Z0(NI),H(NI),F(NI)
   real :: LAT(NI)
   ! Author
   !          Yves Delage  (Aug1990)

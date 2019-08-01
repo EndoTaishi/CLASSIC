@@ -1885,7 +1885,7 @@ contains
     emit_co2row       => vrot%emit_co2
 
     !> Some unit conversions:
-
+    !!
     !! We want to go from umol CO2/m2/s to kg C/m2/s so:
     !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
     !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
@@ -4505,6 +4505,10 @@ contains
       ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[bulkSoilCarbon])
       ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
       ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[bulkSoilResp])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[litrmass_yr_g])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[soilcmas_yr_g])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g])
+      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g])
       ! deallocate(bulkLitterCarbon)
       ! deallocate(bulkSoilCarbon)
       ! deallocate(bulkLitterResp)

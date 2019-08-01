@@ -6,14 +6,14 @@ Version 1 of the CTEM is the terrestrial carbon cycle component of the second ge
 \begin{table}[]
 \caption{CTEM and peatland PFTs and their mapping to the CLASS PFTs}
 \label{my-label}
-\begin{tabular}{|l|l|l|l|l|l|}
+\begin{array}{|l|l|l|l|l|l|}
 \hline
 \multicolumn{1}{|c|}{CLASS PFTs} & \multicolumn{3}{c|}{CTEM PFTs}                    & \multicolumn{2}{c|}{Peatland PFTs}  \\ \hline
 Needleleaf tree                  & Evergreen & Deciduous      &                      &                  &                  \\ \hline
 Broadleaf tree                   & Evergreen & Cold Deciduous & Drought/Dry Decidous & Evergreen Shrubs & Deciduous Shrubs \\ \hline
 Crop                             & C$_3$     & C$_4$          &                      &                  &                  \\ \hline
 Grass                            & C$_3$     & C$_4$          &                      & Sedges           &                  \\ \hline
-\end{tabular}
+\end{array}
 \end{table}
 \f] -->
 
@@ -30,7 +30,7 @@ The original PFT scheme of CLASSIC is as follows (parameters for this configurat
 | CLASS PFTs | CTEM PFTs --- | ---| ---|
 |:---------------:|:---------:|----------------|------------|
 | Needleleaf tree (NdlTr) | Evergreen ('NdlEvgTr') | Deciduous ('NdlDcdTr') |  |
-| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') | 
+| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') |
 | Crop (Crops) | \f$C_3\f$ ('CropC3  ') | \f$C_4\f$ ('CropC4  ')|  |
 | Grass (Grass) | \f$C_3\f$ ('GrassC3 ') | \f$C_4\f$ ('GrassC4 ')|  |
 
@@ -49,7 +49,7 @@ Shrubs have also been implemented as a fifth CLASS PFT allowing for the model ph
 | CLASS PFTs | CTEM PFTs --- | ---| ---|
 |:---------------:|:---------:|----------------|------------|
 | Needleleaf tree (NdlTr) | Evergreen ('NdlEvgTr') | Deciduous ('NdlDcdTr') |  |
-| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') | 
+| Broadleaf tree (BdlTr) | Evergreen ('BdlEvgTr') | Cold Deciduous ('BdlDCoTr') | Drought/Dry Decidous ('BdlDDrTr') |
 | Crop (Crops) | \f$C_3\f$ ('CropC3  ') | \f$C_4\f$ ('CropC4  ')|  |
 | Grass (Grass) | \f$C_3\f$ ('GrassC3 ') | \f$C_4\f$ ('GrassC4 ')| Sedges ('Sedge   ')  |
 | Broadleaf shrub (BdlSh) | Evergreen Shrubs ('BdlEvgSh') | Deciduous Shrubs ('BdlDCoSh')|  |
@@ -69,7 +69,7 @@ When the daily NPP (\f$ G_{canopy} - R_\mathrm{m} - R_\mathrm{g}\f$) is positive
    \f]
    <!-- {#rate_change_eqns_live_pools} -->
 
-where \f$a_{fi}\f$ is the corresponding allocation fractions for each pool (stem, root and leaves) and \f$D_i\f$ is the litter produced from these components as explained in @ref phenolgy.f90. \f$H_i\f$ is the loss associated with fire that releases \f\chem{CO_2}\f and other trace gases to the atmosphere and \f$M_i\f$ is the mortality associated with fire that contributes to the litter pool as explained in @ref disturb.f90.
+where \f$a_{fi}\f$ is the corresponding allocation fractions for each pool (stem, root and leaves) and \f$D_i\f$ is the litter produced from these components as explained in @ref phenolgy.f90. \f$H_i\f$ is the loss associated with fire that releases \f$CO_2\f$ and other trace gases to the atmosphere and \f$M_i\f$ is the mortality associated with fire that contributes to the litter pool as explained in @ref disturb.f90.
 
 If the daily NPP is negative (\f$G_{canopy} < R_\mathrm{m}\f$, \f$R_\mathrm{g} = 0\f$), the rate of change is given by
 

@@ -4,17 +4,17 @@
 !! @author D. Verseghy
 !
 subroutine energyWaterBalanceCheck(ISTEP,  CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, & ! Formerly CLASSZ
-                   WTVSTP, WTSSTP, WTGSTP, &
-                   FSGV,   FLGV,   HFSC,   HEVC,   HMFC,   HTCC, &
-                   FSGS,   FLGS,   HFSS,   HEVS,   HMFN,   HTCS, &
-                   FSGG,   FLGG,   HFSG,   HEVG,   HMFG,   HTC, &
-                   PCFC,   PCLC,   QFCF,   QFCL,   ROFC,   WTRC, &
-                   PCPN,   QFN,    ROFN,   WTRS,   PCPG,   QFG, &
-                   QFC,    ROF,    WTRG,   CMAI,   RCAN,   SCAN, &
-                   TCAN,   SNO,    WSNOW,  TSNOW,  THLIQ,  THICE, &
-                   HCPS,   THPOR,  DELZW,  TBAR,   ZPOND,  TPOND, &
-                   DELZ,   FCS,    FGS,    FC,     FG, &
-                   IL1,    IL2,    ILG,    IG,     N)
+                                   WTVSTP, WTSSTP, WTGSTP, &
+                                   FSGV,   FLGV,   HFSC,   HEVC,   HMFC,   HTCC, &
+                                   FSGS,   FLGS,   HFSS,   HEVS,   HMFN,   HTCS, &
+                                   FSGG,   FLGG,   HFSG,   HEVG,   HMFG,   HTC, &
+                                   PCFC,   PCLC,   QFCF,   QFCL,   ROFC,   WTRC, &
+                                   PCPN,   QFN,    ROFN,   WTRS,   PCPG,   QFG, &
+                                   QFC,    ROF,    WTRG,   CMAI,   RCAN,   SCAN, &
+                                   TCAN,   SNO,    WSNOW,  TSNOW,  THLIQ,  THICE, &
+                                   HCPS,   THPOR,  DELZW,  TBAR,   ZPOND,  TPOND, &
+                                   DELZ,   FCS,    FGS,    FC,     FG, &
+                                   IL1,    IL2,    ILG,    IG,     N)
   !
   !     * JAN 06/09 - D.VERSEGHY. MORE VARIABLES IN PRINT STATEMENTS
   !     *                         SLIGHTLY INCREASED ACCURACY LIMITS.

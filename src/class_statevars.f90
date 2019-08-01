@@ -1,5 +1,7 @@
-!> Contains the physics variable type structures.
+!> \file
+!! Contains the physics variable type structures.
 !! @author J. Melton
+!!
 !! 1. class_rot - CLASS's 'rot' and 'row' vars
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs
@@ -1716,7 +1718,7 @@ contains
     !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF classGather
     !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
 
-    do K = 1,ILG
+    do K = 1,ILG ! loop 330
       class_gat%CDHGAT (K) = 0.0
       class_gat%CDMGAT (K) = 0.0
       class_gat%HFSGAT (K) = 0.0
@@ -1777,8 +1779,8 @@ contains
       class_gat%DRGAT  (K) = 0.0
     end do ! loop 330
 
-    do L = 1,IGND
-      do K = 1,ILG
+    do L = 1,IGND ! loop 334
+      do K = 1,ILG ! loop 332
         class_gat%HMFGGAT(K,L) = 0.0
         class_gat%HTCGAT (K,L) = 0.0
         class_gat%QFCGAT (K,L) = 0.0
@@ -1786,9 +1788,9 @@ contains
       end do ! loop 332
     end do ! loop 334
 
-    do M = 1,50
-      do L = 1,6
-        do K = 1,NML
+    do M = 1,50 ! loop 340
+      do L = 1,6 ! loop 338
+        do K = 1,NML ! loop 336
           class_gat%ITCTGAT(K,L,M) = 0
         end do ! loop 336
       end do ! loop 338
@@ -1811,7 +1813,7 @@ contains
 
     integer :: j,i
 
-    do I = 1,nml
+    do I = 1,nml ! loop 525
       class_rot%CDHROW(I) = 0.
       class_rot%CDMROW(I) = 0.
       class_rot%HFSROW(I) = 0.
@@ -1885,7 +1887,7 @@ contains
 
       ! G12GRD(I)= 0.       ! YW March 27, 2015
       ! G23GRD(I)= 0.       ! YW March 27, 2015
-      do J = 1,IGND
+      do J = 1,IGND ! loop 500
         class_rot%HMFGROW(I,J) = 0.
         class_rot%HTCROW(I,J) = 0.
         class_rot%QFCROW(I,J) = 0.

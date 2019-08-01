@@ -4,8 +4,8 @@
 !! @author D. Verseghy, M. Lazare, Y. Delage
 !
 subroutine soilWaterPhaseChg(TBAR,THLIQ,THICE,HCP,TBARW,HMFG,HTC, & ! Formerly TWCALC
-                   FI,EVAP,THPOR,THLMIN,HCPS,DELZW, &
-                   DELZZ,ISAND,IG,ILG,IL1,IL2,JL)
+                             FI,EVAP,THPOR,THLMIN,HCPS,DELZW, &
+                             DELZZ,ISAND,IG,ILG,IL1,IL2,JL)
   !
   !     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * MAY 16/03 - Y.DELAGE/D.VERSEGHY. BUGFIX IN FREEZING/
@@ -37,7 +37,7 @@ subroutine soilWaterPhaseChg(TBAR,THLIQ,THICE,HCP,TBARW,HMFG,HTC, & ! Formerly T
   !     *                         FOR FREEZING/THAWING.
   !
   use classic_params,        only : DELT,TFREZ,HCPW,HCPICE,HCPSND, &
-                                   RHOW,RHOICE,CLHMLT
+                                    RHOW,RHOICE,CLHMLT
 
   implicit none
   !

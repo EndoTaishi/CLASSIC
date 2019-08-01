@@ -3,10 +3,10 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine groundAlbedo(ALVSG,ALIRG,ALVSGC,ALIRGC, & ! Formerly GRALB
-                  ALGWV,ALGWN,ALGDV,ALGDN, &
-                  THLIQ,FSNOW,ALVSU,ALIRU,FCMXU, &
-                  AGVDAT,AGIDAT,FG,ISAND, &
-                  ILG,IG,IL1,IL2,JL,IALG)
+                        ALGWV,ALGWN,ALGDV,ALGDN, &
+                        THLIQ,FSNOW,ALVSU,ALIRU,FCMXU, &
+                        AGVDAT,AGIDAT,FG,ISAND, &
+                        ILG,IG,IL1,IL2,JL,IALG)
   !
   !     * DEC 15/16 - D.VERSEGHY. ASSIGN ROCK ALBEDO USING SOIL COLOUR
   !     *                         INDEX INSTEAD OF VIA LOOKUP TABLE.

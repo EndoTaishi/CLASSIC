@@ -69,7 +69,7 @@ module outputManager
   type netcdfVar
     integer         :: ncid
     character(30)   :: key
-    character(350)   :: filename
+    character(350)  :: filename
   end type
 
   integer, parameter  :: maxncVariableNumber = 300        !< Maximum number of netcdf output files to make (can be adjusted)

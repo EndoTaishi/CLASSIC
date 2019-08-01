@@ -14,65 +14,66 @@ module ctemDriver
   public  :: calcNBP
 
 contains
-
-  subroutine ctem(   fsnow,     sand,      clay, & ! In
+  !> \ingroup ctem_ctem
+  !! @{
+  subroutine ctem(fsnow,     sand,  & ! In
                  ilg,   il1,      il2,     iday,      radj, & ! In
                   ta,     delzw, ancgveg,   rmlcgveg, & ! In
-                      zbotw, & ! In
-                      uwind,    vwind,  lightng,      tbar, & ! In
-                   soildpth, spinfast,   todfrac, & ! In
-                     netrad,   precip,    psisat, & ! In
-                   grclarea,   popdin,    isand, & ! In
-                   wetfrac, slopefrac,       bi, & ! In
-                     thpor,   currlat,  ch4conc, & ! In
-                      THFC,      THLW,     thliq,  thice, & ! In
-                 ipeatland,    anmoss,   rmlmoss,  gppmoss, & ! In
+                  zbotw, & ! In
+                  uwind,    vwind,  lightng,      tbar, & ! In
+                  soildpth, spinfast,   todfrac, & ! In
+                  netrad,   precip,    psisat, & ! In
+                  grclarea,   popdin,    isand, & ! In
+                  wetfrac, slopefrac,       bi, & ! In
+                  thpor,   currlat,  ch4conc, & ! In
+                  THFC,      THLW,     thliq,  thice, & ! In
+                  ipeatland,    anmoss,   rmlmoss,  gppmoss, & ! In
                   wtable,   maxAnnualActLyr, & ! In
                   PFTCompetition,  dofire,  lnduseon,  inibioclim, & ! In
-                     leapnow, useTracer,  tracerCO2, & ! In
-                    pfcancmx, nfcancmx, & ! In/Out
-                   stemmass, rootmass, litrmass,  gleafmas, & ! In/ Out
-                   bleafmas, soilcmas,    ailcg,      ailc, & ! In/ Out
-                      zolnc, rmatctem,    rmatc,     ailcb, & ! In/ Out
-                   flhrloss,  pandays, lfstatus,  grwtheff, & ! In/ Out
-                   lystmmas, lyrotmas, tymaxlai,  vgbiomas, & ! In/ Out
-                   gavgltms, gavgscms, stmhrlos,      slai, & ! In/ Out
-                    bmasveg, cmasvegc, colddays,  rothrlos, & ! In/ Out
-                     fcanmx,   alvisc,   alnirc,   gavglai, & ! In/ Out
-                   Cmossmas, litrmsmoss,     peatdep,  fcancmx, &! In/ Out
-                   geremort,   intrmort,   pstemmass,    pgleafmass, &! In/ Out
-                      tcurm,   srpcuryr,    dftcuryr,      lambda, &! In/ Out
-                     tmonth, anpcpcur,  anpecur,   gdd5cur, &! In/ Out
-                   surmncur, defmncur, srplscur,  defctcur, &! In/ Out
-                    aridity, srplsmon, defctmon,  anndefct, &! In/ Out
-                   annsrpls,  annpcp,dry_season_length, &! In/ Out
-                   pftexist,   twarmm,       tcoldm,         gdd5, &! In/ Out
-                   tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass, & ! In/Out
-                   tracerSoilCMass, tracerLitrMass, tracerMossCMass, tracerMossLitrMass, & ! In/Out
-                       npp,       nep, hetrores,   autores, & ! Out (Primary)
+                  leapnow, useTracer,  tracerCO2, & ! In
+                  pfcancmx, nfcancmx, & ! In/Out
+                  stemmass, rootmass, litrmass,  gleafmas, & ! In/ Out
+                  bleafmas, soilcmas,    ailcg,      ailc, & ! In/ Out
+                  zolnc, rmatctem,    rmatc,     ailcb, & ! In/ Out
+                  flhrloss,  pandays, lfstatus,  grwtheff, & ! In/ Out
+                  lystmmas, lyrotmas, tymaxlai,  vgbiomas, & ! In/ Out
+                  gavgltms, gavgscms, stmhrlos,      slai, & ! In/ Out
+                  bmasveg, cmasvegc, colddays,  rothrlos, & ! In/ Out
+                  fcanmx,   alvisc,   alnirc,   gavglai, & ! In/ Out
+                  Cmossmas, litrmsmoss,     peatdep,  fcancmx, &! In/ Out
+                  geremort,   intrmort,   pstemmass,    pgleafmass, &! In/ Out
+                  tcurm,   srpcuryr,    dftcuryr,      lambda, &! In/ Out
+                  tmonth, anpcpcur,  anpecur,   gdd5cur, &! In/ Out
+                  surmncur, defmncur, srplscur,  defctcur, &! In/ Out
+                  aridity, srplsmon, defctmon,  anndefct, &! In/ Out
+                  annsrpls,  annpcp,dry_season_length, &! In/ Out
+                  pftexist,   twarmm,       tcoldm,         gdd5, &! In/ Out
+                  tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass, & ! In/Out
+                  tracerSoilCMass, tracerLitrMass, tracerMossCMass, tracerMossLitrMass, & ! In/Out
+                  npp,       nep, hetrores,   autores, & ! Out (Primary)
                   soilresp,        rm,       rg,       nbp, & ! Out (Primary)
-                    litres,    socres,      gpp, dstcemls1, & ! Out (Primary)
+                  litres,    socres,      gpp, dstcemls1, & ! Out (Primary)
                   litrfall,  humiftrs,  veghght,  rootdpth, & ! Out (Primary)
-                       rml,       rms,      rmr,  tltrleaf, & ! Out (Primary)
+                  rml,       rms,      rmr,  tltrleaf, & ! Out (Primary)
                   tltrstem,  tltrroot, leaflitr,  roottemp, & ! Out (Primary)
                   burnfrac,                 lucemcom,    lucltrin, & ! Out (Primary)
-               lucsocin,   dstcemls3, & ! Out (Primary)
-                ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills, & ! Out (Primary)
-                                paicgat,    slaicgat, & ! Out (Primary)
-                 emit_co2,   emit_ch4, reprocost, blfltrdt, glfltrdt, &  ! Out (Primary)
-                 glcaemls, blcaemls, rtcaemls, stcaemls,  ltrcemls, &  ! Out (Primary)
-                 ntchlveg, ntchsveg, ntchrveg, &  ! Out (Primary)
+                  lucsocin,   dstcemls3, & ! Out (Primary)
+                  ch4WetSpec,  ch4WetDyn,      wetfdyn,   ch4soills, & ! Out (Primary)
+                  paicgat,    slaicgat, & ! Out (Primary)
+                  emit_co2,   emit_ch4, reprocost, blfltrdt, glfltrdt, &  ! Out (Primary)
+                  glcaemls, blcaemls, rtcaemls, stcaemls,  ltrcemls, &  ! Out (Primary)
+                  ntchlveg, ntchsveg, ntchrveg, &  ! Out (Primary)
                   emit_co,   emit_nmhc,  smfunc_veg, & ! Out (Secondary)
-                   emit_h2,  emit_nox, emit_n2o, emit_pm25, & ! Out (Secondary)
-                   emit_tpm, emit_tc,  emit_oc,    emit_bc, & ! Out (Secondary)
-                 bterm_veg,      lterm,    mterm_veg,  burnvegf, & ! Out (Secondary)
-               litrfallveg,    humtrsvg,    ltstatus,      nppveg, & ! Out (Secondary)
-                   afrleaf,     afrstem,     afrroot,    wtstatus, & ! Out (Secondary)
-                     rmlveg,  rmsveg,   rmrveg,    rgveg, & ! Out (Secondary)
-               vgbiomas_veg,  gppveg,   nepveg,   nbpveg, & ! Out (Secondary)
-                 hetrsveg,autoresveg, ltresveg, scresveg, & ! Out (Secondary)
-                   nppmoss,     armoss, & ! Out (Secondary)
-                        colrate,         mortrate) ! Out (Secondary)
+                  emit_h2,  emit_nox, emit_n2o, emit_pm25, & ! Out (Secondary)
+                  emit_tpm, emit_tc,  emit_oc,    emit_bc, & ! Out (Secondary)
+                  bterm_veg,      lterm,    mterm_veg,  burnvegf, & ! Out (Secondary)
+                  litrfallveg,    humtrsvg,    ltstatus,      nppveg, & ! Out (Secondary)
+                  afrleaf,     afrstem,     afrroot,    wtstatus, & ! Out (Secondary)
+                  rmlveg,  rmsveg,   rmrveg,    rgveg, & ! Out (Secondary)
+                  vgbiomas_veg,  gppveg,   nepveg,   nbpveg, & ! Out (Secondary)
+                  hetrsveg,autoresveg, ltresveg, scresveg, & ! Out (Secondary)
+                  nppmoss,     armoss, & ! Out (Secondary)
+                  colrate,         mortrate) ! Out (Secondary)
     !
     !             Canadian Terrestrial Ecosystem Model (CTEM)
     !             Main Ctem Subroutine Compatible With CLASS
@@ -184,7 +185,6 @@ contains
     integer, dimension(ilg), intent(in) :: ipeatland        !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     real, dimension(ilg), intent(in) :: fsnow               !< fraction of snow simulated by class
     real, dimension(ilg,ignd), intent(in) :: sand           !< percentage sand
-    real, dimension(ilg,ignd), intent(in) :: clay           !< percentage clay
     real, dimension(ilg), intent(in) :: radj                !< latitude in radians
     real, dimension(ilg,ignd), intent(in) ::  tbar          !< Soil temperature, K
     real, dimension(ilg,ignd), intent(in) :: psisat         !< Saturated soil matric potential (m)
@@ -994,9 +994,9 @@ contains
                         ch4soills) ! Out
 
     !> Estimate allocation fractions for leaf, stem, and root components.
-    call allocate (lfstatus,   thliq,    ailcg,     ailcb, & ! In
-                   il1,        il2,       ilg,       sand, & ! In
-                   clay,   rmatctem,  gleafmas,   stemmass, & ! In
+    call allocate (lfstatus,   thliq,    ailcg,  & ! In
+                   il1,        il2,       ilg,    & ! In
+                   rmatctem,  gleafmas,   stemmass, & ! In
                    rootmass,       sort,    fcancmx, & ! In
                    isand,       THFC,       THLW, & ! In
                    afrleaf,  afrstem,  afrroot, & ! Out
@@ -1302,6 +1302,7 @@ contains
     !! to the land surface scheme using leaf, stem, and root biomass.
     !>
     call allometry( gleafmas, bleafmas, stemmass, rootmass, & ! In
+==== BASE ====
     il1,        il2,        ilg,      zbotw, & ! In
     delzw,   soildpth,    fcancmx, & ! In
     ipeatland,  maxAnnualActLyr, & ! In
@@ -1309,6 +1310,7 @@ contains
     rmatc, rmatctem,     slai,  bmasveg, & ! Out
     cmasvegc,  veghght, rootdpth,   alvisc, & ! Out
     alnirc,    paicgat,   slaicgat) ! Out
+==== BASE ====
 
     !> Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by allometry
     gavglai (:) = 0.0

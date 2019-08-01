@@ -4,19 +4,19 @@
 !! @author D. Verseghy, M. Lazare, Y. Delage, R. Soulis, J. Melton
 !
 subroutine waterFlowInfiltrate(IVEG,THLIQ,THICE,TBARW,BASFLW,TBASFL, & ! Formerly GRINFL
-                   RUNOFF,TRUNOF,ZFAV,LZFAV,THLINV,QFG, &
-                   WLOST,FI,EVAP,R,TR,TPOND,ZPOND,DT, &
-                   ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
-                   DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
-                   THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
-                   THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
-                   ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
-                   DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
-                   THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
-                   THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
-                   IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
-                   NEND,ISIMP,IGDR, &
-                   IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                               RUNOFF,TRUNOF,ZFAV,LZFAV,THLINV,QFG, &
+                               WLOST,FI,EVAP,R,TR,TPOND,ZPOND,DT, &
+                               ZMAT,WMOVE,TMOVE,THLIQX,THICEX,TBARWX, &
+                               DELZX,ZBOTX,FDT,TFDT,PSIF,THLINF,GRKINF, &
+                               THLMAX,THTEST,ZRMDR,FDUMMY,TDUMMY,THLDUM, &
+                               THIDUM,TDUMW,TRMDR,ZF,FMAX,TUSED,RDUMMY, &
+                               ZERO,WEXCES,FDTBND,WADD,TADD,WADJ,TIMPND, &
+                               DZF,DTFLOW,THLNLZ,THLQLZ,DZDISP,WDISP,WABS, &
+                               THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
+                               THLRAT,THFC,DELZW,ZBOTW,XDRAIN,DELZ,ISAND, &
+                               IGRN,IGRD,IFILL,IZERO,LZF,NINF,IFIND,ITER, &
+                               NEND,ISIMP,IGDR, &
+                               IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   !     * JAN 10/17 - J. Melton   Fix below no longer needed. Removed.
   !     * JUL 06/12 - D.VERSEGHY. FIX FOR EVAPORATION OVER ROCK.

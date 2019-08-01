@@ -18,66 +18,56 @@ subroutine SNOW_TRANVAL(trandif, trandir, & ! OUTPUT
   !                      USING LOOKUP TABLE AND CURRENT SNOW CONDITIONS.
   !
   implicit none
-  !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  !
-  ! INPUTS
-  ! SMU:       COSINE OF THE SOLAR ZENITH ANGLE [UNITLESS]
-  ! SALB :     ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]
-  ! BC_CONC:   CONCENTRATION OF BLACK CARBON IN THE SNOW PACK [NG (BC)/KG (SNOW)]
-  ! SNOW_REFF: EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]
-  ! SWE:       SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]
-  ! C_IND:     INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT
-  !            1-YES, 0-NO
-  ! IL1:       STARTING POINT FOR TRANSMISSION CALCULATIONS
-  ! IL2:       ENDING POINT FOR TRANSMISSION CALCULATIONS
-  ! ILG:       NUMBER OF POINTS FOR WHICH TO COMPUTE TRANSMISSIONS
-  ! NBND:      NUMBER OF WAVELENGTH INTERVALS FOR WHICH TO COMPUTE THE TRANSMISSIONS
-  !
-  ! OUTPUTS
-  ! TRANDIF: DIFFUSE SNOW TRANSMISSION (AKA WHITE SKY TRANSMISSION)
-  ! TRANDIR: DIRECT BEAM SNOW TRANSMISSION (AKA BLACK SKY TRANSMISSION)
-  !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   !
   ! INPUT
   !
-  real, intent(in), DIMENSION(ILG) :: smu, bc_conc, snow_reff, swe
-  real, intent(in), DIMENSION(ILG,NBND) :: salb
-  integer, intent(in), DIMENSION(ILG) :: c_ind
-  integer, intent(in) :: il1, il2, ilg, nbnd
+  real, intent(in)    :: smu(ILG) !< COSINE OF THE SOLAR ZENITH ANGLE [UNITLESS]
+  real, intent(in)    :: bc_conc(ILG) !< CONCENTRATION OF BLACK CARBON IN THE SNOW PACK [NG (BC)/KG (SNOW)]
+  real, intent(in)    :: snow_reff(ILG) !< EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]
+  real, intent(in)    :: swe(ILG) !< SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]
+  real, intent(in)    :: salb(ILG,NBND) !< ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]
+  integer, intent(in) :: c_ind(ILG) !< INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT
+  integer, intent(in) :: il1 !< STARTING POINT FOR TRANSMISSION CALCULATIONS
+  integer, intent(in) :: il2 !< ENDING POINT FOR TRANSMISSION CALCULATIONS
+  integer, intent(in) :: ilg !< NUMBER OF POINTS FOR WHICH TO COMPUTE TRANSMISSIONS
+  integer, intent(in) :: nbnd !< NUMBER OF WAVELENGTH INTERVALS FOR WHICH TO COMPUTE THE TRANSMISSIONS
   !
   ! OUTPUT
   !
-  real, intent(out), DIMENSION(ILG,NBND) :: trandif, trandir
+  real, intent(out) :: trandif (ilg,nbnd) !< DIFFUSE SNOW TRANSMISSION (AKA WHITE SKY TRANSMISSION)
+  real, intent(out) :: trandir(ilg,nbnd) !< DIRECT BEAM SNOW TRANSMISSION (AKA BLACK SKY TRANSMISSION)
   !
   ! LOCAL
   !
-  real, DIMENSION(ILG,2) :: wsmu, wbc, wreff, wswe
-  real :: wsalb(2), wtt
+  real, DIMENSION(ILG,2)  :: wsmu, wbc, wreff, wswe
+  real                    :: wsalb(2), wtt
   integer, DIMENSION(ILG) :: ismu, ibc, ireff, iswe
-  integer :: ib, i, isalb, iismu, iisalb, iibc, iireff, iiswe, mvidx
+  integer                 :: ib, i, isalb, iismu, iisalb, iibc, iireff, iiswe, mvidx
   !
   ! CONSTANTS
   !
   integer, PARAMETER :: &
- nsmu     = 10, &
- nsalb    = 11, &
- nbc      = 20, &
- nreff    = 10, &
- nswe     = 11, &
- nbnd_lut = 4
+  nsmu     = 10, &
+  nsalb    = 11, &
+  nbc      = 20, &
+  nreff    = 10, &
+  nswe     = 11, &
+  nbnd_lut = 4
+
   real, PARAMETER :: & ! STATE VALUES FOR LUT
-  LSALB(NSALB)    = (/0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0/), &
- LSMU(NSMU)        = (/0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0/), &
- LSNOW_REFF(NREFF) = (/50.0,75.0,100.0,150.0,200.0,275.0,375.0,500.0,700.0,1000.0/), &
- LSWE(NSWE)        = (/0.1,0.25,0.65,1.7,4.4,12.0,30.0,75.0,200.0,500.0,5000.0/), &
- LBC_CONC(NBC)     = (/0.0,1.0, &
-                       5.0,10.0, &
-                       50.0,100.0, &
-                       500.0,1000.0, &
-                       5000.0,10000.0, &
-                       50000.0,100000.0, &
-                       250000.0,500000.0,750000.0,1000000.0, &
-                       2500000.0,5000000.0,7500000.0,10000000.0/)
+  LSALB(NSALB)      = (/0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0/), &
+  LSMU(NSMU)        = (/0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0/), &
+  LSNOW_REFF(NREFF) = (/50.0,75.0,100.0,150.0,200.0,275.0,375.0,500.0,700.0,1000.0/), &
+  LSWE(NSWE)        = (/0.1,0.25,0.65,1.7,4.4,12.0,30.0,75.0,200.0,500.0,5000.0/), &
+  LBC_CONC(NBC)     = (/0.0,1.0, &
+                        5.0,10.0, &
+                        50.0,100.0, &
+                        500.0,1000.0, &
+                        5000.0,10000.0, &
+                        50000.0,100000.0, &
+                        250000.0,500000.0,750000.0,1000000.0, &
+                        2500000.0,5000000.0,7500000.0,10000000.0/)
+
   real, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: trandif_lut, trandir_lut
   integer :: snow_tran_lut_init
 
@@ -208,5 +198,5 @@ subroutine SNOW_TRANVAL(trandif, trandir, & ! OUTPUT
     end do                 ! i
   end do                    ! ib
   return
-  !> \file
+
 end

@@ -177,74 +177,74 @@ If, for example, we wanted to run CLASSIC at a site with observed meteorology, w
         &joboptions
 
         ! Meteorological options:
-            readMetStartYear = 1991  !< First year of meteorological forcing to read in from the met file
-            readMetEndYear = 2017    !< Last year of meteorological forcing to read in from the met file
-            metLoop = 1 ,            !< no. of times to cycle over the read-in meteorology
-            leap = .true. ,         !< True if your meteorological forcing includes leap years
+            readMetStartYear = 1991  ! First year of meteorological forcing to read in from the met file
+            readMetEndYear = 2017    ! Last year of meteorological forcing to read in from the met file
+            metLoop = 1 ,            ! no. of times to cycle over the read-in meteorology
+            leap = .true. ,         ! True if your meteorological forcing includes leap years
 
 If we are interested in spinning up the C pools, we could set metLoop to run the model over the readMetStartYear to readMetEndYear a metLoop number of times. We should also point to our meteorological forcing files like,
 
         ! Meteorological forcing files:
-            metFileFss = pathToFile/dswrf.nc',        !< location of the incoming shortwave radiation meteorology file
-            metFileFdl = 'pathToFile/dlwrf.nc',        !< location of the incoming longwave radiation meteorology file
-            metFilePre = 'pathToFile/pre.nc',        !< location of the precipitation meteorology file
-            metFileTa = 'pathToFile/tmp.nc',         !< location of the air temperature meteorology file
-            metFileQa = 'pathToFile/spfh.nc',         !< location of the specific humidity meteorology file
-            metFileUv = 'pathToFile/wind.nc',         !< location of the wind speed meteorology file
-            metFilePres = 'pathToFile/pres.nc',       !< location of the atmospheric pressure meteorology file
+            metFileFss = pathToFile/dswrf.nc',        ! location of the incoming shortwave radiation meteorology file
+            metFileFdl = 'pathToFile/dlwrf.nc',        ! location of the incoming longwave radiation meteorology file
+            metFilePre = 'pathToFile/pre.nc',        ! location of the precipitation meteorology file
+            metFileTa = 'pathToFile/tmp.nc',         ! location of the air temperature meteorology file
+            metFileQa = 'pathToFile/spfh.nc',         ! location of the specific humidity meteorology file
+            metFileUv = 'pathToFile/wind.nc',         ! location of the wind speed meteorology file
+            metFilePres = 'pathToFile/pres.nc',       ! location of the atmospheric pressure meteorology file
 
 The model initialization and restart files need to be pointed to. Note the rs_file_to_overwrite is **overwritten**. The simplest thing to do at a start of a run is to make a copy of the init_file to be the rs_file_to_overwrite. CLASSIC only overwrites the prognostic variables leaving any others unchanged (see model_state_drivers.write_restart). The model parameters file also needs to be pointed to.
 
         ! Initialization and restart files
-            init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     !< location of the model initialization file
-            rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be **overwritten** for the restart file
+            init_file = 'inputFiles/CLASSCTEM_initialization_bulkdetrital_nosnow.nc' ,     ! location of the model initialization file
+            rs_file_to_overwrite = 'rsFile.nc' ,       ! location of the existing netcdf file that will be **overwritten** for the restart file
                                                        !! typically here you will just copy the init_file and rename it so it can be overwritten.
         ! Namelist of model parameters
-            runparams_file = 'configurationFiles/template_run_parameters.txt' ,    !< location of the namelist file containing the model parameters
+            runparams_file = 'configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
 
 The next series of switches relate to CTEM. If you wish to run a physics only run with prescribed vegetation parameters, ctem_on is set to .false. and the remainder of this section is ignored. The physics switches are farther down.
 
         ! CTEM (biogeochemistry) switches:
-         ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
-                                !< lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
-            spinfast = 3 ,      !< Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
+         ctem_on = .true. ,     ! set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
+                                ! lai and canopy mass are used. with this switch on, all the main ctem subroutines are run.
+            spinfast = 3 ,      ! Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
 
 The CO2 and CH4 switches behave similarly. If a constant [CO2] is desired, transientCO2 is set to .false. and the year of observed CO2 is specified in fixedYearCO2. The [CO2] of the corresponding year is selected from the CO2File and used for the run. Simlarly for CH4. If are **not** interested in simulating methane related variables then simply copy your CO2File to be your CH4file (e.g. 'cp CO2file.nc fakeCH4file.nc', and then specify the fakeCH4file.nc for the CH4File since the model expects a file there). If for some reason you wish to run with non-historical [CO2], you could edit your CO2File (using a combination of the NCO tools ncdump and ncgen, for example) to include a future year with associated CO2 value (like 2050 and 500ppm for example)
 
         !CO2 switches:
-            transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
+            transientCO2 = .true. , ! Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
             CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
-            fixedYearCO2 = 1850 ,   !< If transientCO2 = .true., this is ignored.
+            fixedYearCO2 = 1850 ,   ! If transientCO2 = .true., this is ignored.
 
         !CH4 switches:
             ! If you don't care about running with methane, you can just copy your CO2 file (cp CO2file.nc fakeCH4file.nc) and point to it here.
             ! It won't affect the rest of your run. However you do need to have a file specified if CTEM is on.
-            transientCH4 = .true. , !< Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
+            transientCH4 = .true. , ! Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
             CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
             fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
 Disturbance in the form of fire is optional in CLASSIC. If fire is turned on then the model requires a population density input file (see @ref initPopd) which is used in a manner similar to CO2 and CH4, i.e. it can use a fixed or transient value. Lightning strikes (see @ref initLightFire) are also required and can be specified similarly to population density.
 
         !Fire switches
-            dofire = .true. ,               !< If true the fire disturbance parameterization is turned on.
+            dofire = .true. ,               ! If true the fire disturbance parameterization is turned on.
 
-                transientPOPD = .true. ,    !< Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
+                transientPOPD = .true. ,    ! Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
                 POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017_chunked.nc' ,
-                fixedYearPOPD = 1850 ,      !< If transientPOPD = .true., this is ignored.
+                fixedYearPOPD = 1850 ,      ! If transientPOPD = .true., this is ignored.
 
-                transientLGHT= .true.      !< use lightning strike time series, otherwise use fixedYearLGHT
-                LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , !< Location of the netcdf file containing lightning strike values
-                fixedYearLGHT = 1850 ,    !< set the year to use for lightning strikes if transientLGHT is false.
+                transientLGHT= .true.      ! use lightning strike time series, otherwise use fixedYearLGHT
+                LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , ! Location of the netcdf file containing lightning strike values
+                fixedYearLGHT = 1850 ,    ! set the year to use for lightning strikes if transientLGHT is false.
 
 Competition for space between plant functional types is parameterized in CLASSIC. If PFTCompetition is set to false, the PFT fractional coverage follows rules as will be outlined next. If PFTCompetition is true then CLASSIC has two more switches of interest. Competition uses bioclimatic indices to determine whether PFTs should be allowed to compete within a gridcell (see competition_scheme.existence and @ref initClimComp). The bioclimatic indices are either read-in from the init_file or are calculated anew for the run underway. If the values are in the init_file from a spinup run then set inibioclim to true, otherwise set inibioclim to false. It is also possible to start the model from bare ground (rather than the PFT configuration found in your init_file) by setting start_bare to true.
 
         ! Competition switches:
-            PFTCompetition = .false. ,      !< If true, competition between PFTs for space on a grid cell is implimented
-                inibioclim = .false. ,      !< set this to true if competition between pfts is to be implimented and you have the mean climate values
-                                            !< in the init netcdf file.
-                start_bare = .false.,       !< Set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the
-                                            !< init netcdf file info will be used to set up the run. NOTE: This still keeps the crop fractions
-                                            !< (while setting all pools to zero)
+            PFTCompetition = .false. ,      ! If true, competition between PFTs for space on a grid cell is implimented
+                inibioclim = .false. ,      ! set this to true if competition between pfts is to be implimented and you have the mean climate values
+                                            ! in the init netcdf file.
+                start_bare = .false.,       ! Set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the
+                                            ! init netcdf file info will be used to set up the run. NOTE: This still keeps the crop fractions
+                                            ! (while setting all pools to zero)
 
 Land use change is possible via a LUCFile (see @ref inputLUC) that has the fractional coverage for each PFT annually. This switch has an additional option as described in the comment below. Pay attention here.
 
@@ -267,82 +267,115 @@ CLASSIC can determine dynamics wetland locations for wetland methane emissions. 
             ! to some valid year. If you wish to use only dynamically determined wetland fractions set transientOBSWETF
             ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
             ! dynamically determine wetland extent.
-            transientOBSWETF = .false. ,  !< use observed wetland fraction time series, otherwise use fixedYearOBSWETF
-            OBSWETFFile = '',             !< Location of the netcdf file containing observed wetland fraction
-            fixedYearOBSWETF = -9999 ,    !< set the year to use for observed wetland fraction if transientOBSWETF is false.
+            transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
+            OBSWETFFile = '',             ! Location of the netcdf file containing observed wetland fraction
+            fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
 CLASS switches determine the configuration of the physics only as well as CLASS+CTEM (physics and biogeochemistry) runs.
 
         ! Physics switches:
 
-            IDISP = 0 ,    !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
-                            !< of the "terrain". if idisp=1, vegetation displacement heights are calculated.
-            IZREF = 2 ,    !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
-                            !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
-            ISLFD = 0 ,    !< if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-level diagnostic calculations
-                            !< is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-level diagnostic calculations.
-                            !< if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-level diagnostic calculations.
+            IDISP = 0 ,    !  This switch controls the calculation of the vegetation displacement height. In most
+                          !atmospheric models a “terrain-following” coordinate system is used, in which the vegetation
+                          !displacement height is considered to be part of the “terrain”, and is therefore neglected. 
+                          ! For such applications IDISP is set to 0. For studies making use of field data, it should !be set to 1.
+            IZREF = 2 ,    !This switch indicates where the bottom of the atmosphere is conceptually located. In
+                          !most atmospheric models the bottom is assumed to lie at the local surface roughness length, ! i.e. where the horizontal wind speed is zero; for such simulations IZREF is set to 2. For ! all other cases it should be set to 1.
+            ZRFH = 40.0,  ! The reference heights at which the energy variables (air temperature and specific humidity) are provided. When 
+                          ! using field data this is the measurement height. 
+            ZRFM = 40.0,  ! The reference heights at which the momentum variables (wind speed) are provided. When using field data this is the measurement height. 
+            ZBLD = 50.0,  ! The atmospheric blending height.  Technically this variable depends on the length scale of the
+                          ! patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
+                            
+            ISLFD = 0 ,   ! This switch indicates which surface layer flux stability
+                          ! correction and screen-level diagnostic subroutines are to be
+                          ! used. If ISLFD=0, the CCCma stability correction subroutine
+                          ! DRCOEF is used with simple similarity-based screen-level
+                          ! diagnostic calculations. If ISLFD=1, DRCOEF is used for the
+                          ! stability corrections and the RPN subroutine SLDIAG is used
+                          ! for the screen level diagnostic calculations. If ISLFD=2, the
+                          ! RPN stability correction subroutine FLXSURFZ is used with the
+                          ! companion RPN subroutine DIASURFZ for the screen level
+                          ! diagnostics. (When running CLASS coupled to an atmospheric 
+                          ! model with staggered vertical thermodynamic and momentum
+                          ! levels, ISLFD must be set to 2, since FLXSURFZ allows inputs
+                          ! on staggered levels and DRCOEF does not.)
 
-! The implications of the ISLFD switch is discussed more in CLASST.f
+! The implications of the ISLFD switch are discussed more in CLASST.f
 
-            IPCP = 1 ,     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
-                            !< rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
-                            !< a polynomial curve between 0 C and 6 C.
-            IWF = 0 ,      !< if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4) ,
-                           !< the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
-            isnoalb = 0 ,  !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
+            IPCP = 1 ,     ! if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
+                            ! rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
+                            ! a polynomial curve between 0 C and 6 C.
+                            
+This switch is used to specify which approach is to be used in subroutine atmosphericVarsCalc.f90 for the
+partitioning of precipitation between rainfall and snowfall. If IPCP=1, precipitation is assumed to be all rainfall at air temperatures above 0 C and all snowfall at air temperatures ≤ 0 C. If IPCP=2,the partitioning between rainfall and snowfall varies linearly between all rainfall at temperatures above 2 C, and all snowfall at temperatures below 0 C. If IPCP=3, rainfall and snowfall are partitioned according to a polynomial curve, from all rainfall at temperatures above 6 C to all snowfall at temperatures below 0 C. If IPCP=4, the rainfall and snowfall rates, *RPRE* and *SPRE*, are read in directly at each time step, and the total precipitation is calculated as their sum. (Note that if the latter option is used, the model will need to be adapted to read the extra variables in)
+                            
+            IWF = 0 ,      ! if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4) ,
+                           ! the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
+                           
+**Note** the interflow and streamflow parts of the code are still under development, so unless the user is engaged in this development, this switch should be set to 0.
+                           
+            isnoalb = 0 ,  ! if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
+            
+**Note** the four-band albedo, while implemented within the code, is still being tested. Users are advised to use isnoalb = 0.
 
-The iteration scheme for canopy or ground surface temperatures can be either a bisection or Newton-Raphson method. This is usually set to bisection
+The iteration scheme for canopy or ground surface temperatures can be either a bisection or Newton-Raphson method. **Note:** Recently problems have been discovered with the Newton-Raphson scheme, involving instabilities and occasional failure to converge, so currently users are advised not to select this option.
 
          ! Iteration scheme
-            !< ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
-            !< respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used.
-            ITC = 1 ,   !< Canopy
-            ITCG = 1 ,  !< Ground under canopy
-            ITG = 1 ,   !< Ground
+            ! ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
+            ! respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used.
+            ITC = 1 ,   ! Canopy
+            ITCG = 1 ,  ! Ground under canopy
+            ITG = 1 ,   ! Ground
 
 User supplied values can be used for plant area index, vegetation height, and canopy, soil, or snow albedos. If any of these inputs are supplied the model_state_drivers.f90 needs to be adapted to read-in the user-supplied values.
 
          ! User-supplied values:
-            !< if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo
-            !< and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the
-            !< corresponding parameter calculated by class is overridden by a user-supplied input value.
-            IPAI = 0 ,  !< Plant area index
-            IHGT = 0 ,  !< Vegetation height
-            IALC = 0 ,  !< Canopy albedo
-            IALS = 0 ,  !< Snow albedo
-            IALG = 0 ,  !< Soil albedo
+            ! if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo
+            ! and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the
+            ! corresponding parameter calculated by class is overridden by a user-supplied input value.
+            IPAI = 0 ,  ! Plant area index
+            IHGT = 0 ,  ! Vegetation height
+            IALC = 0 ,  ! Canopy albedo
+            IALS = 0 ,  ! Snow albedo
+            IALG = 0 ,  ! Soil albedo
 
 Model outputs are in netcdf format. The outputs metadata is read in from an xmlFile (see @ref xmlSystem). Outputs can be grid-cell average (default), per PFT, or per tile. In all cases the output has to be specified in the xmlFile and also properly handled in prepareOutputs.f90. Temporal resolution of output files are half-hourly (for physics variables as well as photosynthesis and canopy conductance only), daily, monthly and annually. For half-hourly and daily outputs the start and end days as well as start and end years can be specified. Monthly file can specify the year to start writing the outputs.
 
         ! Output options:
 
-            output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
-            xmlFile = 'configurationFiles/outputVariableDescriptors_v1.2.xml' ,  !< location of the xml file that outlines the possible netcdf output files
+            output_directory = 'outputFiles' ,        ! Directory where the output netcdfs will be placed
+            xmlFile = 'configurationFiles/outputVariableDescriptors_v1.2.xml' ,  ! location of the xml file that outlines the possible netcdf output files
 
-            doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
-            dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
+            doperpftoutput = .true. ,   ! Switch for making extra output files that are at the per PFT level
+            dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level
 
-            dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
-            JHHSTD = 166 ,                !< day of the year to start writing the half-hourly output
-            JHHENDD = 185 ,             !< day of the year to stop writing the half-hourly output
-            JHHSTY = 1901 ,             !< simulation year (iyear) to start writing the half-hourly output
-            JHHENDY = 1901 ,            !< simulation year (iyear) to stop writing the half-hourly output
+            dohhoutput = .false. ,      ! Switch for making half hourly output files (annual are always outputted)
+            JHHSTD = 166 ,                ! day of the year to start writing the half-hourly output
+            JHHENDD = 185 ,             ! day of the year to stop writing the half-hourly output
+            JHHSTY = 1901 ,             ! simulation year (iyear) to start writing the half-hourly output
+            JHHENDY = 1901 ,            ! simulation year (iyear) to stop writing the half-hourly output
 
-            dodayoutput = .false. ,     !< Switch for making daily output files (annual are always outputted)
-            JDSTD = 20 ,                 !< day of the year to start writing the daily output
-            JDENDD = 30 ,              !< day of the year to stop writing the daily output
-            JDSTY = 1902 ,              !< simulation year (iyear) to start writing the daily output
-            JDENDY = 1903 ,             !< simulation year (iyear) to stop writing the daily output
+            dodayoutput = .false. ,     ! Switch for making daily output files (annual are always outputted)
+            JDSTD = 20 ,                 ! day of the year to start writing the daily output
+            JDENDD = 30 ,              ! day of the year to stop writing the daily output
+            JDSTY = 1902 ,              ! simulation year (iyear) to start writing the daily output
+            JDENDY = 1903 ,             ! simulation year (iyear) to stop writing the daily output
 
-            domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
-            JMOSTY = 1901 ,             !< Year to start writing out the monthly output files.
+            domonthoutput = .true. ,    ! Switch for making monthly output files (annual are always outputted)
+            JMOSTY = 1901 ,             ! Year to start writing out the monthly output files.
             
             doAnnualOutput = .true. ,   ! Switch for making annual output files 
 
+CLASSIC has the capability to produce checksums to ensure model outputs haven't changed. The checksum module takes the model restart variables and calculates a sum based upon the binary representation of the variables' values. This 'checksum' can then be compared to previous runs to see if the checksum values have changed. While this test is not infalliable, the probability of a false positive decreases exponentially with the number of outputs being tested. For further info see https://en.wikipedia.org/wiki/Checksum. See @ref regTest for framework and checksum.f90 for specifics.
+
+            doChecksums = .false.,      ! checksums can be generated if you wish to ensure you are making no
+                                        ! functional changes to the model results. See the CLASSIC documentation and
+                                        ! the regression_testing tool.
+
 Comments can be added to output files using the Comment field below. Also comments can be left in the joboptions file after the backslash.
 
-            Comment = ' test '          !< Comment about the run that will be written to the output netcdfs
+            Comment = ' test '          ! Comment about the run that will be written to the output netcdfs
 
          /
 

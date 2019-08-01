@@ -4,13 +4,13 @@
 !! @author D. Verseghy, M. Lazare, P. Bartlett, R. Harvey, J. Melton
 !
 subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! Formerly CANALB
-                   TRVSCS,TRIRCS,RC,RCS, &
-                   ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB, &
-                   FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS, &
-                   AIL,PSIGND,FCLOUD,COSZS,QSWINV,VPD,TA, &
-                   ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC, &
-                   ILG,IL1,IL2,JL,IC,ICP1,IG,IALC, &
-                   CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC)
+                                 TRVSCS,TRIRCS,RC,RCS, &
+                                 ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB, &
+                                 FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS, &
+                                 AIL,PSIGND,FCLOUD,COSZS,QSWINV,VPD,TA, &
+                                 ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC, &
+                                 ILG,IL1,IL2,JL,IC,ICP1,IG,IALC, &
+                                 CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC)
 
   !     * Mar 28/17 - S.SUN Expand PFTs from 4 to 5 in CLASS
   !     *
@@ -128,7 +128,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   real, intent(in) :: ACIDAT(ILG,IC)   !< Optional user-specified value of canopy
   !! near-infrared albedo to override CLASS-
   !! calculated value [ ]
-  real :: AIL   (ILG,IC)   !< Leaf area index of vegetation category over
+  real, intent(in) :: AIL   (ILG,IC)   !< Leaf area index of vegetation category over
   !! bare ground \f$[ ] (\Lambda)\f$
   !
   !     * 1-D INPUT ARRAYS.
@@ -347,7 +347,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   do J = 1, IC
     select case (classpfts(J))
     case ('NdlTr') !-------------------------------------------------------
-      do I = IL1,IL2
+      do I = IL1,IL2 ! loop 150
         if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
           TRCLRV = EXP( - 0.4 * PAI(I,J) / COSZS(I))
           !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  ! JM EDIT
@@ -388,7 +388,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
       end do ! loop 150
       !
     case ('BdlTr','BdlSh') !-------------------------------------------------------
-      do I = IL1,IL2
+      do I = IL1,IL2 ! loop 250
         if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
           TRCLRV = MIN(EXP( - 0.7 * PAI(I,J)),EXP( - 0.4 / COSZS(I)))
           TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX1) &            ! BDCS P?
@@ -427,7 +427,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
       end do ! loop 250
       !
     case ('Crops', 'Grass') ! CROPS AND GRASS
-      do I = IL1,IL2
+      do I = IL1,IL2 ! loop 350
         if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
           TRCLRV = EXP( - 0.5 * PAI(I,J) / COSZS(I))
           !              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  ! JM EDIT
@@ -476,7 +476,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     * TOTAL ALBEDOS.
   !
   IPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 450
     if (FC(I) > 0. .and. COSZS(I) > 0.) then
       ALVSCN(I) = ALVSCN(I) / FC(I)
       ALIRCN(I) = ALIRCN(I) / FC(I)
@@ -494,7 +494,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     * TOTAL TRANSMISSIVITIES.
   !
   IPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 475
     if (FC(I) > 0. .and. COSZS(I) > 0.) then
       TRVSCN(I) = TRVSCN(I) / FC(I)
       TRIRCN(I) = TRIRCN(I) / FC(I)
@@ -515,7 +515,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   do J = 1,IC
     select case (classpfts(J))
     case ('NdlTr') !-------------------------------------------------------
-      do I = IL1,IL2
+      do I = IL1,IL2 ! loop 500
         if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
           TRCLRV = EXP( - 0.4 * PAIS(I,J) / COSZS(I))   ! BDCS P?
           !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  ! JM EDIT
@@ -554,7 +554,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
       end do ! loop 500
       !
     case ('BdlTr','BdlSh') !-------------------------------------------------------
-      do I = IL1,IL2
+      do I = IL1,IL2 ! loop 600
         if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
           TRCLRV = MIN(EXP( - 0.7 * PAIS(I,J)),EXP( - 0.4 / COSZS(I)))
           TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAIS(I,J)),EXPMAX1) &
@@ -591,7 +591,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
       end do ! loop 600
       !
     case ('Crops', 'Grass')  ! CROPS AND GRASS.
-      do I = IL1,IL2
+      do I = IL1,IL2 ! loop 700
         if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
           TRCLRV = EXP( - 0.5 * PAIS(I,J) / COSZS(I))
           !              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  ! JM EDIT
@@ -638,7 +638,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     * TOTAL ALBEDOS AND CONSISTENCY CHECKS.
   !
   IPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 775
     if (FCS(I) > 0. .and. COSZS(I) > 0.) then
       ALVSCS(I) = ALVSCS(I) / FCS(I)
       ALIRCS(I) = ALIRCS(I) / FCS(I)
@@ -651,7 +651,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !
   IPTBAD = 0
   JPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 800
     if (FCS(I) > 0. .and. COSZS(I) > 0.) then
       TRVSCS(I) = TRVSCS(I) / FCS(I)
       TRIRCS(I) = TRIRCS(I) / FCS(I)
@@ -786,7 +786,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
     end if
   end do ! loop 850
   !
-  do J = 1,IC
+  do J = 1,IC ! loop 900
     do I = IL1,IL2
       if (FCAN(I,J) > 0.) then
         if (VPD(I) > 0. .and. VPDA(I,J) > 0.0) then
@@ -819,7 +819,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
     end do
   end do ! loop 900
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 950
     if ((FCS(I) + FC(I)) > 0.) then
       if (QSWINV(I) < 2.0) then
         RCS(I) = 5000.0

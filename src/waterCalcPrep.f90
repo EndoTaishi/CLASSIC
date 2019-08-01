@@ -5,36 +5,36 @@
 !! @author D. Verseghy, M. Lazare, Y. Delage, R. Harvey, R. Soulis, P. Bartlett
 !
 subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! Formerly WPREP
-                  THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS, &
-                  GRKSC,  GRKSG,  GRKSCS, GRKSGS, &
-                  SPCC,   SPCG,   SPCCS,  SPCGS,  TSPCC,  TSPCG, &
-                  TSPCCS, TSPCGS, RPCC,   RPCG,   RPCCS,  RPCGS, &
-                  TRPCC,  TRPCG,  TRPCCS, TRPCGS, EVPIC,  EVPIG, &
-                  EVPICS, EVPIGS, ZPONDC, ZPONDG, ZPNDCS, ZPNDGS, &
-                  XSNOWC, XSNOWG, XSNOCS, XSNOGS, ZSNOWC, ZSNOWG, &
-                  ZSNOCS, ZSNOGS, ALBSC,  ALBSG,  ALBSCS, ALBSGS, &
-                  RHOSC,  RHOSG,  HCPSC,  HCPSG,  HCPSCS, HCPSGS, &
-                  RUNFC,  RUNFG,  RUNFCS, RUNFGS, &
-                  TRUNFC, TRUNFG, TRNFCS, TRNFGS, TBASC,  TBASG, &
-                  TBASCS, TBASGS, GFLXC,  GFLXG,  GFLXCS, GFLXGS, &
-                  SUBLC,  SUBLCS, WLOSTC, WLOSTG, WLSTCS, WLSTGS, &
-                  RAC,    RACS,   SNC,    SNCS,   TSNOWC, TSNOWG, &
-                  OVRFLW, SUBFLW, BASFLW, TOVRFL, TSUBFL, TBASFL, &
-                  PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
-                  QFN,    QFG,    QFC,    HMFG, &
-                  ROVG,   ROFC,   ROFN,   TRUNOF, &
-                  THLIQX, THICEX, THLDUM, THIDUM, &
-                  DT,     RDUMMY, ZERO,   IZERO,  DELZZ, &
-                  FC,     FG,     FCS,    FGS, &
-                  THLIQC, THLIQG, THICEC, THICEG, HCPC,   HCPG, &
-                  TBARC,  TBARG,  TBARCS, TBARGS, TBASE,  TSURX, &
-                  FSVF,   FSVFS,  RAICAN, SNOCAN, RAICNS, SNOCNS, &
-                  EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
-                  RPCP,   TRPCP,  SPCP,   TSPCP,  RHOSNI, ZPOND, &
-                  ZSNOW,  ALBSNO, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
-                  THPOR,  HCPS,   GRKSAT, ISAND,  DELZW,  DELZ, &
-                  ILG,    IL1,    IL2,    JL,     IG,     IGP1, &
-                  NLANDCS,NLANDGS,NLANDC, NLANDG, RADD,   SADD )
+                         THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS, &
+                         GRKSC,  GRKSG,  GRKSCS, GRKSGS, &
+                         SPCC,   SPCG,   SPCCS,  SPCGS,  TSPCC,  TSPCG, &
+                         TSPCCS, TSPCGS, RPCC,   RPCG,   RPCCS,  RPCGS, &
+                         TRPCC,  TRPCG,  TRPCCS, TRPCGS, EVPIC,  EVPIG, &
+                         EVPICS, EVPIGS, ZPONDC, ZPONDG, ZPNDCS, ZPNDGS, &
+                         XSNOWC, XSNOWG, XSNOCS, XSNOGS, ZSNOWC, ZSNOWG, &
+                         ZSNOCS, ZSNOGS, ALBSC,  ALBSG,  ALBSCS, ALBSGS, &
+                         RHOSC,  RHOSG,  HCPSC,  HCPSG,  HCPSCS, HCPSGS, &
+                         RUNFC,  RUNFG,  RUNFCS, RUNFGS, &
+                         TRUNFC, TRUNFG, TRNFCS, TRNFGS, TBASC,  TBASG, &
+                         TBASCS, TBASGS, GFLXC,  GFLXG,  GFLXCS, GFLXGS, &
+                         SUBLC,  SUBLCS, WLOSTC, WLOSTG, WLSTCS, WLSTGS, &
+                         RAC,    RACS,   SNC,    SNCS,   TSNOWC, TSNOWG, &
+                         OVRFLW, SUBFLW, BASFLW, TOVRFL, TSUBFL, TBASFL, &
+                         PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
+                         QFN,    QFG,    QFC,    HMFG, &
+                         ROVG,   ROFC,   ROFN,   TRUNOF, &
+                         THLIQX, THICEX, THLDUM, THIDUM, &
+                         DT,     RDUMMY, ZERO,   IZERO,  DELZZ, &
+                         FC,     FG,     FCS,    FGS, &
+                         THLIQC, THLIQG, THICEC, THICEG, HCPC,   HCPG, &
+                         TBARC,  TBARG,  TBARCS, TBARGS, TBASE,  TSURX, &
+                         FSVF,   FSVFS,  RAICAN, SNOCAN, RAICNS, SNOCNS, &
+                         EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
+                         RPCP,   TRPCP,  SPCP,   TSPCP,  RHOSNI, ZPOND, &
+                         ZSNOW,  ALBSNO, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
+                         THPOR,  HCPS,   GRKSAT, ISAND,  DELZW,  DELZ, &
+                         ILG,    IL1,    IL2,    JL,     IG,     IGP1, &
+                         NLANDCS,NLANDGS,NLANDC, NLANDG, RADD,   SADD )
   !
   !     * AUG 25/11 - D.VERSEGHY. REFINE CALCULATION OF TEMPERATURE OF
   !     *                         LUMPED PRECIPITATION.

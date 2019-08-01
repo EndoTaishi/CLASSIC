@@ -48,10 +48,10 @@ contains
   !> The startfunc function parses opening tags or start tags. It gets triggered for each and every opening tag of the XML document.
   subroutine startfunc(tag, attribs, error)
     implicit none
-    character(len =* )                    :: tag, attribs(:,:)
-    character(len = 40)                   :: attribute, dormant
+    character(len =* ), intent(in)      :: tag, attribs(:,:)
+    character(len = 40)                 :: attribute, dormant
     integer                             :: id
-    logical                             :: error
+    logical, intent(in)                 :: error
     type(outputDescriptor), allocatable :: tempDescriptors(:)
     type(variant), allocatable          :: tempVariants(:)
 
@@ -105,9 +105,9 @@ contains
   !> The datafunc function parses the content of a tag.
   subroutine datafunc(tag, data, error)
     implicit none
-    character(len =* )               :: tag, data(:)
-    character(len = 400)             :: info
-    logical                        :: error
+    character(len =* ), intent(in) :: tag, data(:)
+    character(len = 400)           :: info
+    logical, intent(in)            :: error
 
     info = trim(data(1))
     ! Examine the tag and store the tag content in the descriptors array.
@@ -137,8 +137,8 @@ contains
   !> The endfunc function gets triggered when the closing XML element is encountered. E.g. if we wanted to deallocate at </variableSet>.
   subroutine endfunc(tag, error)
     implicit none
-    character(len =* )               :: tag
-    logical                        :: error
+    character(len =* ), intent(in)   :: tag
+    logical, intent(in)              :: error
     ! Place a select case (tag) in here if you need to do anything on a closing tag.
   end subroutine
 

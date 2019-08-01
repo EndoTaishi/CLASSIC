@@ -19,14 +19,14 @@ contains
   !> Calculates bioclimatic parameters required to determine existance of PFTs
   !! @author V. Arora, J. Melton, R. Shrestha
 
-  subroutine  bioclim (  iday,        ta,       precip,     netrad, &
-                        il1,       il2,         nilg,    leapnow, &
-                      tcurm,  srpcuryr,     dftcuryr, inibioclim, &
-                     tmonth,  anpcpcur,      anpecur,    gdd5cur, &
-                   surmncur,  defmncur,     srplscur,   defctcur, &
-                     twarmm,    tcoldm,         gdd5,    aridity, &
-                   srplsmon,  defctmon,     anndefct,   annsrpls, &
-                     annpcp,       dry_season_length)
+  subroutine  bioclim (iday,     ta,       precip,   netrad,     &
+                       il1,      il2,      nilg,     leapnow,    &
+                       tcurm,    srpcuryr, dftcuryr, inibioclim, &
+                       tmonth,   anpcpcur, anpecur,  gdd5cur,    &
+                       surmncur, defmncur, srplscur, defctcur,   &
+                       twarmm,   tcoldm,   gdd5,     aridity,    &
+                       srplsmon, defctmon, anndefct, annsrpls,   &
+                       annpcp,   dry_season_length)
 
     !
     !     10  Jun 2014  - Add in new dry_season_length variable
@@ -314,11 +314,11 @@ contains
   !> Determines if a PFT can exist in a grid cell based on climatic conditions
   !! @author V. Arora, J. Melton
 
-  subroutine  existence(  iday,       il1,      il2,      nilg, &
-                        sort,   twarmm,    tcoldm, &
-                        gdd5,  aridity,  srplsmon,  defctmon, &
-                    anndefct, annsrpls,    annpcp,  pftexist, &
-                    dry_season_length)
+  subroutine existence(iday,     il1,       il2,      nilg,     &
+                       sort,     twarmm,    tcoldm,   gdd5,     &
+                       aridity,  srplsmon,  defctmon, anndefct, &
+                       annsrpls, annpcp,    pftexist,           &
+                       dry_season_length)
 
     !     17  Aug 2017  - Add shrub into existence code
     !     J. Melton/S. Sun
@@ -470,14 +470,14 @@ contains
   !! @author V. Arora, J. Melton, Y. Peng
 
   subroutine competition(iday, il1, il2, nilg, nppveg, dofire, leapnow, useTracer, &! In
-                     pftexist, geremort, intrmort, pgleafmass, rmatctem, &! In
-                     grclarea, lambda, burnvegf, sort, pstemmass, &! In
-                     gleafmas, bleafmas, stemmass, rootmass, &! In/Out
-                     litrmass, soilcmas, fcancmx, fcanmx, & ! In/Out
-                     tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In/Out
-                     tracerLitrMass, tracerSoilCMass, & ! In/Out
-                     vgbiomas, gavgltms, gavgscms, bmasveg, & ! In / Out
-                     add2allo, colrate,   mortrate) ! Out
+                         pftexist, geremort, intrmort, pgleafmass, rmatctem, &! In
+                         grclarea, lambda, burnvegf, sort, pstemmass, &! In
+                         gleafmas, bleafmas, stemmass, rootmass, &! In/Out
+                         litrmass, soilcmas, fcancmx, fcanmx, & ! In/Out
+                         tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In/Out
+                         tracerLitrMass, tracerSoilCMass, & ! In/Out
+                         vgbiomas, gavgltms, gavgscms, bmasveg, & ! In / Out
+                         add2allo, colrate,   mortrate) ! Out
 
     !      9  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
     !     J. Melton       carbon pools
@@ -682,8 +682,8 @@ contains
                       tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out
 
       !> Since the biomass pools could have changed, update bmasveg.
-      do i = il1, il2
-        do j = 1, icc
+      do i = il1, il2 ! loop 190
+        do j = 1, icc ! loop 195
           if (fcancmx(i,j) > 0.0) then
             bmasveg(i,j) = gleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
           end if
@@ -805,7 +805,7 @@ contains
     !! the first icc-4 are tree pfts and the last two are the c3 and c4 grasses.
     do j = 1, icc - numcrops
       inirank(j) = j
-      do i = il1, il2
+      do i = il1, il2 ! loop 180
         rank(i,j) = inirank(j)
       end do ! loop 180
     end do
@@ -870,9 +870,9 @@ contains
     !> Bubble sort according to colonization rates WARNING - this only works if no tree species are
     !! indexed at positions > numtreepfts, i.e. the trees must be a contiguous
     !! unit at the start of the indexes.
-    do j = 1, numtreepfts
-      do n = 1, numtreepfts
-        do i = il1, il2
+    do j = 1, numtreepfts ! loop 270
+      do n = 1, numtreepfts ! loop 280
+        do i = il1, il2 ! loop 290
           if (usenppvg(i,n) < usenppvg(i,j)) then
             temp(i) = usenppvg(i,n)
             usenppvg(i,n) = usenppvg(i,j)
@@ -898,9 +898,9 @@ contains
 
     ! Also now bubble sort the grass. WARNING:Again this assumes, like the trees, that all grass are
     ! contiguous in the arrays. Additionally it assumes that crops are specified before grass !
-    do j = k, k + numgrass - 1
-      do n = k, k + numgrass - 1
-        do i = il1, il2
+    do j = k, k + numgrass - 1 ! loop 300
+      do n = k, k + numgrass - 1 ! loop 305
+        do i = il1, il2 ! loop 310
           if (usenppvg(i,n) < usenppvg(i,j)) then
             temp(i) = usenppvg(i,n)
             usenppvg(i,n) = usenppvg(i,j)
@@ -916,7 +916,7 @@ contains
     !> With the ranks of all pfts in all grid cells we can now simulate
     !! competition between them. For Lotka-Volterra eqns we need a
     !! minimum seeding fraction otherwise the pfts will not expand.
-    do j = 1, icc - numcrops   ! j now goes from 1 to icc-numcrops
+    do j = 1, icc - numcrops ! loop 330 - j now goes from 1 to icc-numcrops
       if (j <= numtreepfts) then
         n = j
       else
@@ -936,8 +936,8 @@ contains
     end do ! loop 330
 
     !> Arrange colonization and mortality rates, and fractions, according to superiority ranks
-    do n = 1, icc - numcrops   ! n now goes from 1 to icc-numcrops
-      do i = il1, il2
+    do n = 1, icc - numcrops ! loop 350 - n now goes from 1 to icc-numcrops
+      do i = il1, il2 ! loop 360
         usefrac(i,n) = frac(i,rank(i,n))
         usec(i,n) = c1(i,rank(i,n))
         usem(i,n) = m1(i,rank(i,n))
@@ -946,11 +946,11 @@ contains
     end do ! loop 350
 
     do n = 1, icc - numcrops   ! loop 400 - n now goes from 1 to icc-numcrops
-      do i = il1, il2
+      do i = il1, il2 ! loop 410
 
         colterm(i,n) = usec(i,n) * (usefrac(i,n) ** a) ! colonization term
 
-        sum1 = cropfrac(i) + seed ! minbare
+        sum1 = cropfrac(i) + seed ! loop 420 -  minbare
         do k = 1, n - 1, 1
           sum1 = sum1 + usefrac(i,k)
         end do ! loop 420
@@ -959,15 +959,15 @@ contains
         term3(i,n) = usem(i,n) * usefrac(i,n) ! mortality term
 
         sum2 = 0.0
-        do j = 1, n - 1, 1
+        do j = 1, n - 1, 1 ! loop 430
           sum3 = cropfrac(i)
           do k = 1, j - 1, 1 ! loop 440
             sum3 = sum3 + usefrac(i,k)
-          end do
+          end do ! loop 440
           sum4 = cropfrac(i)
           do k = 1, j, 1 ! loop 450
             sum4 = sum4 + usefrac(i,k)
-          end do
+          end do ! loop 450
           sum2 = sum2 + ((((1. - sum3) ** g) * usec(i,j) * (usefrac(i,j) ** a) * usefrac(i,n)) &
                           / ((1. - sum4) ** g))
         end do ! loop 430
@@ -980,7 +980,7 @@ contains
 
     !> Update fractions and check if all fractions are positive
     do n = 1, icc - numcrops ! loop 500
-      do i = il1, il2
+      do i = il1, il2 ! loop 510
         usefrac(i,n) = usefrac(i,n) + delfrac(i,n)
         if (usefrac(i,n) < 0.0) then
           write(6, * )'fractional coverage - ve for cell ',i,' and pft',n
@@ -995,13 +995,13 @@ contains
     !! prevent this we need to adjust fractional coverage of all non-crop
     !! pfts that do not have the minimum fraction.
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 530
       vegfrac(i) = cropfrac(i)   ! total vegetation fraction
       mincfrac(i) = cropfrac(i)  ! sum of mininum prescribed & crop fractions
     end do ! loop 530
 
-    do n = 1, icc - numcrops
-      do i = il1, il2
+    do n = 1, icc - numcrops ! loop 540
+      do i = il1, il2 ! loop 541
         vegfrac(i) = vegfrac(i) + usefrac(i,n)
         if (abs(usefrac(i,n) - seed) <= zero) then
           mincfrac(i) = mincfrac(i) + usefrac(i,n)
@@ -1009,8 +1009,8 @@ contains
       end do ! loop 541
     end do ! loop 540
 
-    do n = 1, icc - numcrops
-      do i = il1, il2
+    do n = 1, icc - numcrops ! loop 550
+      do i = il1, il2 ! loop 551
         if (vegfrac(i) > 1.0 .and. abs(usefrac(i,n) - seed) > zero) then
           term = (1. - mincfrac(i)) / (vegfrac(i) - mincfrac(i))
           usefrac(i,n) = usefrac(i,n) * term
@@ -1019,17 +1019,17 @@ contains
     end do ! loop 550
 
     !> Check again that total veg frac doesn't exceed 1.
-    do i = il1, il2
+    do i = il1, il2 ! loop 560
       vegfrac(i) = cropfrac(i) ! total vegetation fraction
     end do ! loop 560
 
-    do n = 1, icc - numcrops
-      do i = il1, il2
+    do n = 1, icc - numcrops ! loop 570
+      do i = il1, il2 ! loop 571
         vegfrac(i) = vegfrac(i) + usefrac(i,n)
       end do ! loop 571
     end do ! loop 570
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 580
       if (vegfrac(i) > 1.0 + 1.e-5) then
         write(6, * )'vegetation fraction in cell ',i,' greater than'
         write(6, * )'1.0 and equal to ',vegfrac(i)
@@ -1040,7 +1040,7 @@ contains
     !> Map delfrac to chngfrac so that we get change in fraction
     !! corresponding to the actual number of pfts
     do j = 1, icc - numcrops   ! loop 590 - j now goes from 1 to icc-numcrops
-      do i = il1, il2
+      do i = il1, il2 ! loop 591
         if (rank(i,j) <= numtreepfts) then
           k = rank(i,j)
         else
@@ -1056,16 +1056,16 @@ contains
     ! ---> from here on we get back to our usual icc pfts <----
 
     ! get bare fraction
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 600
+      do i = il1, il2 ! loop 601
         barefrac(i) = barefrac(i) - fcancmx(i,j)
         pbarefra(i) = pbarefra(i) - pfcancmx(i,j)
       end do ! loop 601
     end do ! loop 600
 
     !> Check if a pft's fractional cover is increasing or decreasing
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 620
+      do i = il1, il2 ! loop 621
         if ((fcancmx(i,j) > pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
           fraciord(i,j) = 1
         else if ((fcancmx(i,j) < pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
@@ -1075,7 +1075,7 @@ contains
     end do ! loop 620
 
     !> Check if bare fraction increases or decreases
-    do i = il1, il2
+    do i = il1, il2 ! loop 640
       if ((barefrac(i) > pbarefra(i)) .and. (abs(pbarefra(i) - barefrac(i)) > zero)) then
         bareiord(i) = 1  ! increase in bare area
       else if ((barefrac(i) < pbarefra(i)) .and. (abs(pbarefra(i) - barefrac(i)) > zero)) then
@@ -1105,9 +1105,9 @@ contains
     !! 3. fraciord = -1, which means all of the npp is to be used for
     !! litter generation but in addition some more litter will be
     !! generated from mortality of the standing biomass.
-    do j = 1, icc
+    do j = 1, icc ! loop 660
       if (.not. crop(j)) then  ! do not run for crops
-        do i = il1, il2
+        do i = il1, il2 ! loop 661
           if (fraciord(i,j) == 1) then ! Expand
 
             ! Reduce biomass density by spreading over larger fraction
@@ -1219,7 +1219,7 @@ contains
     !! for spreading over the whole grid cell. If bare fraction increases
     !! then spread its litter and soil c uniformly over the increased fraction.
     ! COMBAK PERLAY
-    do i = il1, il2
+    do i = il1, il2 ! loop 680
       if (bareiord(i) == - 1) then ! decrease in bare area
         incrlitr(i,iccp1) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1)
         grsumlit(i) = grsumlit(i) + incrlitr(i,iccp1)
@@ -1261,8 +1261,8 @@ contains
     !> If a pft is not supposed to exist as indicated by pftexist and its
     !! fractional coverage is really small then get rid of the pft all
     !! together and spread its live and dead biomass over the grid cell.
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 690
+      do i = il1, il2 ! loop 691
         if (.not. pftexist(i,j) .and. fcancmx(i,j) < 1.0e-05) then
 
           barefrac(i) = barefrac(i) + fcancmx(i,j)
@@ -1330,8 +1330,8 @@ contains
     end do ! loop 690
 
     !> Spread litter and soil c over all pfts and the barefrac
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 700
+      do i = il1, il2 ! loop 701
         if (fcancmx(i,j) > zero) then
           ! COMBAK PERLAY
           litrmass(i,j) = litrmass(i,j) + grsumlit(i)
@@ -1366,7 +1366,7 @@ contains
       end do ! loop 701
     end do ! loop 700
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 720
       if (barefrac(i) > zero) then
         ! COMBAK PERLAY
         litrmass(i,iccp1) = litrmass(i,iccp1) + grsumlit(i)
@@ -1392,23 +1392,23 @@ contains
     end do ! loop 720
 
     ! Get fcanmxs for use by CLASS based on the new fcancmxs
-    do j = 1, ican
-      do i = il1, il2
+    do j = 1, ican ! loop 740
+      do i = il1, il2 ! loop 741
         fcanmx(i,j) = 0.0 ! fractional coverage of class' pfts
       end do ! loop 741
     end do ! loop 740
 
-    do j = 1, ican
-      do l = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 750
+      do l = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 751
+        do i = il1, il2 ! loop 752
           fcanmx(i,j) = fcanmx(i,j) + fcancmx(i,l)
         end do ! loop 752
       end do ! loop 751
     end do ! loop 750
 
     !> Update grid averaged vegetation biomass, and litter and soil c densities
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 800
+      do i = il1, il2 ! loop 801
         vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
                                                + stemmass(i,j) + rootmass(i,j))
         ! COMBAK PERLAY
@@ -1422,7 +1422,7 @@ contains
       end do ! loop 801
     end do ! loop 800
 
-    do i = il1, il2
+    do i = il1, il2 ! loop 810
       ! COMBAK PERLAY
       gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1)
       gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1)
@@ -1439,9 +1439,9 @@ contains
     !! so for each pft the total C mass in vegetation and litter pools
     !! must all add up to the same value as before competition.
     !!
-    do j = 1, icc
+    do j = 1, icc ! loop 830
       if (.not. crop(j)) then
-        do i = il1, il2
+        do i = il1, il2 ! loop 831
 
           biomasvg(i,j) = fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
                                         + stemmass(i,j) + rootmass(i,j))
@@ -1679,7 +1679,7 @@ contains
   !! The CC interactions are represented symbolically by the \f$g(f_\alpha, f_B)\f$ function.
   !! Mortality is assumed to be proportional to the number density of plants and represented
   !! by the mortality term, \f$m_{\alpha} f_\alpha\f$. The PFT-dependent mortality rate
-  !! (\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in mortality.f) produces bare
+  !! (\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in mortality.f90) produces bare
   !! ground via a number of processes, and that bare ground is subsequently available for colonization.
   !! We consider the fractional coverage for \f$N\f$ PFTs plus bare ground (\f$f_{N+1}\f$ =
   !! \f$f_{bare}\f$) where \f$\sum_{j=1}^{N+1} f_{j}=1\f$. For competition between unequal
@@ -1724,7 +1724,7 @@ contains
   !! = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.\qquad (Eqn 4)
   !! \f]
   !!
-  !! A PFT invading bare ground has an unimpeded \f$\textit{invasion}\f$ rate, \f$c_\alpha\f$.
+  !! A PFT invading bare ground has an unimpeded invasion rate, \f$c_\alpha\f$.
   !! The ratio of the invasion rate by PFT \f$\alpha\f$ into area covered by another PFT
   !! \f$\beta\f$ and its unimpeded invasion rate (\f$\frac{c_{\alpha,\beta}}{c_\alpha}\f$)
   !! gives the relative efficiency of colonization, termed \f$\delta_{\alpha,\beta}\f$,
@@ -1757,10 +1757,10 @@ contains
   !! \f]
   !!
   !! where the dominant PFT 1 invades PFT 2 and the bare fraction, and PFT 2 invades
-  !! only the bare fraction. The equilibrium solutions for $f_1$ and $f_2$ in this case are
+  !! only the bare fraction. The equilibrium solutions for \f$f_1\f$ and \f$f_2\f$ in this case are
   !!
   !! \f[
-  !! f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}\qquad (Eqn 7)
+  !! f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right] \qquad (Eqn 7)
   !! \f]
   !!
   !! \f[
@@ -1783,11 +1783,11 @@ contains
   !! and the corresponding equilibrium fractions are
   !!
   !! \f[
-  !! \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}\qquad (Eqn 10)
+  !! \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1} \qquad (Eqn 10)
   !! \f]
   !!
   !! \f[
-  !! \label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.\qquad (Eqn 11)
+  !! \label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)} \qquad (Eqn 11)
   !! \f]
   !!
   !! In Eqs. 10 and 11, as long as
@@ -1809,8 +1809,8 @@ contains
   !! invade PFT \f$\beta\f$, respectively, as mentioned earlier. This interaction
   !! through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq. 6
   !! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. 9 (for \f$b=0\f$).
-  !! The magnitude of this interaction thus depends on the value of parameter $b$.
-  !! When $b=1$ the interaction is proportional to the product of the fractional
+  !! The magnitude of this interaction thus depends on the value of parameter \f$b\f$.
+  !! When \f$b=1\f$ the interaction is proportional to the product of the fractional
   !! coverage of the two PFTs (\f$f_1 f_2\f$). When \f$b=0\f$, the interaction is
   !! proportional to the fractional coverage of the PFT being invaded (\f$f_2\f$).
   !! The use of \f$b=0\f$ thus reduces the product term \f$f_{\alpha}^b f_{\beta}\f$
@@ -1855,7 +1855,7 @@ contains
   !! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\,leaf\,(m^{2}\,ground)^{-1}\f$) of a PFT
   !!
   !! \f[
-  !! \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}\qquad (Eqn 14)
+  !! \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})) \qquad (Eqn 14)
   !! \f]
   !!
   !! \f[
@@ -1863,7 +1863,7 @@ contains
   !! if   LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad  \lambda_{1,\alpha}
   !! =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max}
   !! \nonumber \\ if   LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha}
-  !! =\lambda_{max} \label{lam1} \vspace*{-4mm}\qquad (Eqn 15)
+  !! =\lambda_{max} \label{lam1} \qquad (Eqn 15)
   !! \f]
   !!
   !! \f[

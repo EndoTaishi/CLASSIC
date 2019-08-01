@@ -14,7 +14,8 @@ module fourBandAlbedo
   public  :: BCCONC
 
 contains
-
+  !> \ingroup fourBandAlbedo_fourBandDriver
+  !! @{
   subroutine fourBandDriver(NML,SNOGAT,GCGAT,TSNOGAT, & ! in
                             ZSNOW,TCSNOW,GSNOW,PCSNGAT,WSNOGAT, & ! in
                             ALBSGAT,RHOSGAT, & ! in/out
@@ -25,7 +26,7 @@ contains
     implicit none
 
     integer, intent(in) :: nml
-    real, intent(in) :: snogat(:)   !< Mass of snow pack [kg m^{-2} ]\f$
+    real, intent(in) :: snogat(:)   !< Mass of snow pack \f$[kg m^{-2} ]\f$
     real, intent(in) :: GCGAT(:)    !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
     real, intent(in) :: TCSNOW(:)   !< Thermal conductivity of snow \f$[W m^{-1} K^{-1}]\f$
     real, intent(in) :: GSNOW(:)    !< Diagnostic heat flux at snow surface for use in CCCma black carbon deposition scheme \f$[W m^{-2}]\f$
@@ -34,10 +35,10 @@ contains
     real, intent(in) :: TSNOGAT(:)  !< Snowpack temperature [K]
     real, intent(in) :: WSNOGAT(:)  !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
 
-    real, intent(inout) :: ALBSGAT(:)  !< Snow albedo [ ]
+    real, intent(inout) :: ALBSGAT(:)  !< Snow albedo \f$[ ]\f$
     real, intent(inout) :: RHOSGAT(:)  !< Density of snow \f$[kg m^{-3} ]\f$
 
-    real, intent(out) :: REFGAT(:)  !< Snow grain size (for ISNOALB=1 option)  [m]
+    real, intent(out) :: REFGAT(:)  !< Snow grain size (for ISNOALB=1 option)  \f$[m]\f$
     real, intent(out) :: TZSGAT(:)   !< Vertical temperature gradient in a snow pack
 
     real :: GCMIN,GCMAX
@@ -95,7 +96,7 @@ contains
   !! @author M. Namazi,  K. V. Salzen, M. Lazare, S. Kharin
   !!
   subroutine RDSDRY(SNOW,TSNOW,ZSNOW,TZSNOW,RHOSNO,REFF, &
-                         GCROW,REFF0,DELT,ILG,IL1,IL2,GCMIN,GCMAX)
+                    GCROW,REFF0,DELT,ILG,IL1,IL2,GCMIN,GCMAX)
     !
     !     * FEB 22/2017 - S.KHARIN, M.LAZARE. MODIFIED TO ELIMINATE
     !     *               POSSIBILITY OF NAN'S DEVELOPING DUE TO
@@ -106,17 +107,18 @@ contains
     implicit none
 
     !     * INTEGER CONSTANTS.
-    integer :: ILG,IL1,IL2,K,I,L,M
-    real :: REFF0
+    integer :: K,I,L,M
+    integer, intent(in) :: ILG,IL1,IL2
+    real, intent(in) :: REFF0
     integer, PARAMETER :: KMAX = 11,LMAX = 31,MMAX = 8
 
     !     * INPUT/OUTPUT ARRAYS.
-    real, DIMENSION(ILG) :: REFF
+    real, DIMENSION(ILG), intent(inout) :: REFF
 
     !     * INPUT ARRAYS.
-    real, DIMENSION(ILG) :: SNOW,TSNOW,ZSNOW,TZSNOW,RHOSNO,GCROW
+    real, DIMENSION(ILG), intent(in) :: SNOW,TSNOW,ZSNOW,TZSNOW,RHOSNO,GCROW
 
-    real :: DELT,GCMIN,GCMAX
+    real, intent(in) :: DELT,GCMIN,GCMAX
     real * 8 KAPPA,TAU,DRDT,REFDIF,FACT
     !     * DATA ARRAYS.
     real, DIMENSION(KMAX,LMAX,MMAX) :: TAUS,KAPPAS,DRDTS
@@ -1848,16 +1850,17 @@ contains
     implicit none
 
     !     * INTEGER AND REAL CONSTANTS.
-    integer :: ILG,IL1,IL2,I
-    real :: REFF0
+    integer :: I
+    integer, intent(in) :: ILG,IL1,IL2
+    real, intent(in) :: REFF0
     real, PARAMETER :: PI = 3.1415927,C1 = 4.22E-13
 
     !     * INPUT ARRAYS.
-    real, DIMENSION(ILG) :: SNOW, WSNOW,GCROW
-    real  :: DELT
+    real, DIMENSION(ILG), intent(in) :: SNOW, WSNOW,GCROW
+    real, intent(in)  :: DELT
 
     !     * INPUT/OUTPUT ARRAYS.
-    real, DIMENSION(ILG) :: REFF
+    real, DIMENSION(ILG), intent(inout) :: REFF
 
     !     * INTERNAL WORK ARRAYS.
     real, DIMENSION(ILG) :: FLIQ
@@ -1890,15 +1893,18 @@ contains
     !
     implicit none
 
-    real :: REFF0
-    integer :: ILG,IL1,IL2,I
+    real, intent(in) :: REFF0
+    integer, intent(in) :: ILG,IL1,IL2
+    integer :: I
     !
     !     * INPUT/OUTPUT ARRAYS.
     !
-    real, DIMENSION(ILG) :: SNOW,ZSNOW,SPCP,RHOSNO,REFF,GCROW,TAUD
+    real, DIMENSION(ILG) :: TAUD
+    real, DIMENSION(ILG), intent(inout) :: REFF
+    real, DIMENSION(ILG), intent(in) :: SNOW,ZSNOW,SPCP,RHOSNO,GCROW
     real, PARAMETER :: SPCMIN = 1.157407407E-8, &
                            TAUINF = 1.E+20
-    real  :: DELT,ZSNMIN,ZSNMAX,GCMIN,GCMAX
+    real, intent(in) :: DELT,ZSNMIN,ZSNMAX,GCMIN,GCMAX
     !---------------------------------------------
     do I = IL1,IL2
       if (GCROW(I) > GCMIN .and. GCROW(I) < GCMAX) then
@@ -1936,7 +1942,7 @@ contains
   !! @author M. Namazi &  K. V. Salzen
   !!
   subroutine BCCONC(ZSNOW,GCROW,BCSNO,DEPB,SPCP,ROFN,RHOSNO, &
-                         DELT,ZSNMIN,ZSNMAX,ILG,IL1,IL2,GCMIN,GCMAX)
+                    DELT,ZSNMIN,ZSNMAX,ILG,IL1,IL2,GCMIN,GCMAX)
 
     !     * Feb 10/2015 - J.Cole.   New version for gcm18:
     !                               - Truncate BC concentrations to
@@ -1958,11 +1964,13 @@ contains
     !     *              OF BC AND SCAVENGING THROUGH MELTING.
 
     implicit none
-
-    integer :: ILG,IL1,IL2,I,J
-    real, DIMENSION(ILG) :: BCSNO,GCROW,DEPB,SPCP,RHOSNO,ZSNOW,ROFN
+    integer :: I,J
+    integer, intent(in) :: ILG,IL1,IL2
+    real, DIMENSION(ILG), intent(in) :: GCROW,DEPB,SPCP,RHOSNO,ZSNOW,ROFN
+    real, DIMENSION(ILG), intent(inout) :: BCSNO
     !
-    real  :: DELT,COEFF1,COEFF2,ZSNMIN,ZSNMAX,GCMIN,GCMAX,ZSN
+    real, intent(in)  :: DELT,ZSNMIN,ZSNMAX,GCMIN,GCMAX
+    real :: COEFF1,COEFF2,ZSN
     !
     real, PARAMETER :: K = 1.E-1, EPS1 = 1.E-5, DELM = 1.
     !---------------------------------------

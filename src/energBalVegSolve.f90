@@ -404,7 +404,7 @@ subroutine energBalVegSolve(ISNOW,FI, & ! Formerly TSOLVC
   !! for the vegetation canopy, QSWNC, is calculated as the sum of the net visible and net near-infrared
   !! shortwave radiation. Each of these is determined as:
   !! \f$K_{*c} = K \downarrow [1 - \alpha_c ] - K_{*g}\f$
-  !! where \f$K_{*c} is the net radiation on the canopy and \f$\alpha_c\f$ is the canopy albedo. If the canopy temperature is
+  !! where \f$K_{*c}\f$ is the net radiation on the canopy and \f$\alpha_c\f$ is the canopy albedo. If the canopy temperature is
   !! essentially 0 K, indicating that a canopy was not present in the previous time step but has now appeared,
   !! the canopy temperature is initialized to the potential temperature of the air, TPOTA. The outgoing
   !! longwave radiation emitted upward \f$(L \uparrow_c )\f$ or downward \f$(L \downarrow_c )\f$ from the canopy is calculated using the
@@ -670,11 +670,14 @@ subroutine energBalVegSolve(ISNOW,FI, & ! Formerly TSOLVC
   !! second term on the right-hand side corresponds to TSTEP; the numerator is equal to RESID and the
   !! denominator to the first derivative of the energy balance equation evaluated at TZERO, which in turn is
   !! equal to the sum of the derivatives of the individual terms:
-  !! f[
-  !! d(L \uparrow_g )/dT = -4 \sigma T(0)^3 f]f[
-  !! d(Q_{H,g} )/dT = \rho_a c_p {1/r_{a,,g} + [T(0)_{pot} - T_{ac} ] d(1/r_{a,,g} )/dT} f]f[
+  !! \f[
+  !! d(L \uparrow_g )/dT = -4 \sigma T(0)^3 \f]
+  !! \f[
+  !! d(Q_{H,g} )/dT = \rho_a c_p {1/r_{a,,g} + [T(0)_{pot} - T_{ac} ] d(1/r_{a,,g} )/dT}
+  !! \f]
+  !! \f[
   !! d(Q_{E,g} )/dT = L_v \rho_a {1/r_{a,,g} dq(0)/dT+ [q(0) - q_{ac} ] d(1/r_{a,,g} )/dT}
-  !! f]
+  !! \f]
   !! and dG(0)/dT is equal to the coefficient multiplying TZERO in the equation for G(0). (\f$L_v\f$ is the latent
   !! heat of vaporization at the surface.) At the end of the calculations the iteration counter NITER and the
   !! flag NUMIT are each incremented by one, and upon exiting the loop, if NUMIT > 0, the iteration cycle is

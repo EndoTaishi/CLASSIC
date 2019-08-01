@@ -4,10 +4,10 @@
 !! @author D. Verseghy, M. Lazare, V. Fortin, Y. Wu, J. Melton
 !!
 subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLASSB
-                   THLRAT,HCPS,TCS,THFC,THLW,PSIWLT, &
-                   DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN, &
-                   SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH, &
-                   ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)
+                          THLRAT,HCPS,TCS,THFC,THLW,PSIWLT, &
+                          DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN, &
+                          SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH, &
+                          ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)
   !
   !     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY,
   !                               Change to TCCLAY for consistency with rest of model.
@@ -80,10 +80,10 @@ subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLA
   !     *                         CONTENT.
   !
   use classic_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss, &
-                        grksmoss,hcpmoss,THPORG,THRORG,THMORG,BORG, &
-                        PSISORG,GRKSORG,TCICE,TCSAND,TCCLAY,TCOM, &
-                        RHOSOL,RHOOM,HCPICE,HCPOM,HCPSND,HCPCLY, &
-                        ALWV,ALWN,ALDV,ALDN
+                             grksmoss,hcpmoss,THPORG,THRORG,THMORG,BORG, &
+                             PSISORG,GRKSORG,TCICE,TCSAND,TCCLAY,TCOM, &
+                             RHOSOL,RHOOM,HCPICE,HCPOM,HCPSND,HCPCLY, &
+                             ALWV,ALWN,ALDV,ALDN
 
 
   implicit none
@@ -212,8 +212,11 @@ subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLA
   !! content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc
   !!
   !! \f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
+  !!
   !! \f$b = 0.159 X_{clay} + 2.91\f$
+  !!
   !! \f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
+  !!
   !! \f$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)\f$
   !!
   !! The fractional saturation of the soil at half the saturated hydraulic conductivity, \f$f_{inf}\f$ , is calculated by

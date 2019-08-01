@@ -1,13 +1,12 @@
 !> \file
 !! Calculate coefficients for solution of heat conduction
 !! into soil.
-!! @author D. Verseghy, M. Lazare
 !
 subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
-                   GCONST,CPHCHG,IWATER, &
-                   TBAR,TCTOP,TCBOT, &
-                   FI,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
-                   ISAND,ILG,IL1,IL2,JL,IG)
+                            GCONST,CPHCHG,IWATER, &
+                            TBAR,TCTOP,TCBOT, &
+                            FI,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
+                            ISAND,ILG,IL1,IL2,JL,IG)
   !
   !     * MAR 03/08 - D.VERSEGHY. ASSIGN TCTOP3 AND TCBOT3 ON THE BASIS
   !     *                         OF SUBAREA VALUES FROM energyBudgetPrep; REPLACE
@@ -102,63 +101,7 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   !-----------------------------------------------------------------------
   !     * INITIALIZATION OF ARRAYS.
   !
-  !>
-  !! In this subroutine, coefficients are derived for an equation
-  !! relating the heat flux at the ground surface to the ground
-  !! surface temperature, using the average temperatures and the
-  !! thermal conductivities of the underlying first three soil layers.
-  !! It is assumed that the variation of temperature T with depth z
-  !! within each soil layer can be modelled by using a quadratic
-  !! equation:
-  !!
-  !! \f$T(z) = (1/2) a z^2 + b z + c\f$
-  !!
-  !! By substituting 0 for z in the above equation and in the
-  !! expressions for its first and second derivatives, it can be shown
-  !! that \f$a = T''(0)\f$, \f$b = T'(0)\f$, and \f$c = T(0)\f$. The term \f$T''(0)\f$ can be
-  !! evaluated from the expression for the first derivative evaluated
-  !! at the bottom of the soil layer, \f$T(\Delta z)\f$:
-  !!
-  !! \f$T''(0) = [T'(\Delta z) - T'(0)]/ \Delta z\f$
-  !!
-  !! The temperature gradient \f$T'(0)\f$ at the top of each layer is
-  !! related to the heat flux G(0) through the thermal conductivity
-  !! \f$\lambda_t\f$; and the temperature gradient and heat flux at the bottom
-  !! of the layer, \f$G(\Delta z)\f$ and \f$T(\Delta z)\f$, are similarly related through
-  !! the bottom thermal conductivity \f$\lambda_b\f$:
-  !!
-  !! \f$G(0) = - \lambda_t T'(0)\f$
-  !! \f$G(\Delta z) = - \lambda_b T'(\Delta z)\f$
-  !!
-  !! The average soil layer temperature, \f$T_{av}(\Delta z)\f$, can be obtained by
-  !! integrating the resulting equation for T(z) between 0 and \f$\Delta z\f$.
-  !! Making use of all of the above expressions, recognizing that the
-  !! heat fluxes and temperatures at the bottoms of layers 1 and 2
-  !! must equal the heat fluxes and temperatures at the tops of layers
-  !! 2 and 3 respectively, and neglecting as a first approximation the
-  !! heat flux at the bottom of the third layer, a linear equation can
-  !! be derived relating G(0) to T(0) at the soil surface, where the
-  !! slope and intercept of the equation are functions only of the
-  !! average temperatures, thicknesses, and top and bottom thermal
-  !! conductivities of the three soil layers.
-  !!
-  !! In the subroutine loop, first the depth corresponding to TBAR1P
-  !! (the lumped temperature of the first soil layer and the ponded
-  !! water) is calculated, as the sum of the first soil layer
-  !! thickness and the ponded water depth. If the ponded water depth
-  !! is not vanishingly small, the surface water flag IWATER is set to
-  !! 1; otherwise it is set to 0 for soils and 2 for ice sheets
-  !! (indicated by ISAND = -4). If IWATER = 2, indicating a frozen
-  !! water surface, the latent heat of vaporization, CPHCHG, is set to
-  !! the value for sublimation (by adding the latent heat of melting
-  !! to the latent heat of vaporization). If there is a snow pack
-  !! present, the thermal conductivity at the top of the ground
-  !! surface is calculated as the harmonic mean of the thermal
-  !! conductivity at the top of the first soil layer and that of the
-  !! snow pack. Finally, a series of work arrays is evaluated and is
-  !! used to calculate the slope and intercept, GCOEFF and GCONST, of
-  !! the equation relating G(0) to T(0) at the ground surface.
-  !!
+
   do I = IL1,IL2 ! loop 100
     if (FI(I) > 0.) then
       DELZ1 = DELZ(1) + ZPOND(I)
@@ -202,3 +145,64 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   !
   return
 end
+!> \file
+!!
+!! @author D. Verseghy, M. Lazare
+!!
+!! In this subroutine, coefficients are derived for an equation
+!! relating the heat flux at the ground surface to the ground
+!! surface temperature, using the average temperatures and the
+!! thermal conductivities of the underlying first three soil layers.
+!! It is assumed that the variation of temperature T with depth z
+!! within each soil layer can be modelled by using a quadratic
+!! equation:
+!!
+!! \f$T(z) = (1/2) a z^2 + b z + c\f$
+!!
+!! By substituting 0 for z in the above equation and in the
+!! expressions for its first and second derivatives, it can be shown
+!! that \f$a = T''(0)\f$, \f$b = T'(0)\f$, and \f$c = T(0)\f$. The term \f$T''(0)\f$ can be
+!! evaluated from the expression for the first derivative evaluated
+!! at the bottom of the soil layer, \f$T(\Delta z)\f$:
+!!
+!! \f$T''(0) = [T'(\Delta z) - T'(0)]/ \Delta z\f$
+!!
+!! The temperature gradient \f$T'(0)\f$ at the top of each layer is
+!! related to the heat flux G(0) through the thermal conductivity
+!! \f$\lambda_t\f$; and the temperature gradient and heat flux at the bottom
+!! of the layer, \f$G(\Delta z)\f$ and \f$T(\Delta z)\f$, are similarly related through
+!! the bottom thermal conductivity \f$\lambda_b\f$:
+!!
+!! \f$G(0) = - \lambda_t T'(0)\f$
+!!
+!! \f$G(\Delta z) = - \lambda_b T'(\Delta z)\f$
+!!
+!! The average soil layer temperature, \f$T_{av}(\Delta z)\f$, can be obtained by
+!! integrating the resulting equation for T(z) between 0 and \f$\Delta z\f$.
+!! Making use of all of the above expressions, recognizing that the
+!! heat fluxes and temperatures at the bottoms of layers 1 and 2
+!! must equal the heat fluxes and temperatures at the tops of layers
+!! 2 and 3 respectively, and neglecting as a first approximation the
+!! heat flux at the bottom of the third layer, a linear equation can
+!! be derived relating G(0) to T(0) at the soil surface, where the
+!! slope and intercept of the equation are functions only of the
+!! average temperatures, thicknesses, and top and bottom thermal
+!! conductivities of the three soil layers.
+!!
+!! In the subroutine loop, first the depth corresponding to TBAR1P
+!! (the lumped temperature of the first soil layer and the ponded
+!! water) is calculated, as the sum of the first soil layer
+!! thickness and the ponded water depth. If the ponded water depth
+!! is not vanishingly small, the surface water flag IWATER is set to
+!! 1; otherwise it is set to 0 for soils and 2 for ice sheets
+!! (indicated by ISAND = -4). If IWATER = 2, indicating a frozen
+!! water surface, the latent heat of vaporization, CPHCHG, is set to
+!! the value for sublimation (by adding the latent heat of melting
+!! to the latent heat of vaporization). If there is a snow pack
+!! present, the thermal conductivity at the top of the ground
+!! surface is calculated as the harmonic mean of the thermal
+!! conductivity at the top of the first soil layer and that of the
+!! snow pack. Finally, a series of work arrays is evaluated and is
+!! used to calculate the slope and intercept, GCOEFF and GCONST, of
+!! the equation relating G(0) to T(0) at the ground surface.
+!!

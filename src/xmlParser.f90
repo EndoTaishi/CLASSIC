@@ -1,5 +1,4 @@
 !> \file
-!> FIXME
 !> @author
 !> Ed Wisernig ???
 !ignoreLint(1050) ! do not lint this file; too many string literals that can be damaged
@@ -921,10 +920,10 @@ contains
 
   integer function xml_find_attrib( attribs, no_attribs, name, value )
     implicit none
-    character(len=*), dimension(:,:)  :: attribs
-    integer                           :: no_attribs
-    character(len=*)                  :: name
-    character(len=*)                  :: value
+    character(len=*), dimension(:,:), intent(in)  :: attribs
+    integer, intent(in)                           :: no_attribs
+    character(len=*), intent(in)                  :: name
+    character(len=*), intent(out)                  :: value
 
     integer :: i
 
@@ -966,24 +965,24 @@ contains
 
     interface
       recursive subroutine startfunc( tag, attribs, error )
-        character(len=*)                  :: tag
-        character(len=*), dimension(:,:)  :: attribs
-        logical                           :: error
+        character(len=*), intent(in)                 :: tag
+        character(len=*), dimension(:,:), intent(in) :: attribs
+        logical, intent(in)                          :: error
       end subroutine
     end interface
 
     interface
       recursive subroutine datafunc( tag, data, error )
-        character(len=*)                  :: tag
-        character(len=*), dimension(:)    :: data
-        logical                           :: error
+        character(len=*), intent(in)               :: tag
+        character(len=*), dimension(:), intent(in) :: data
+        logical, intent(in)                        :: error
       end subroutine
     end interface
 
     interface
       recursive subroutine endfunc( tag, error )
-        character(len=*)                  :: tag
-        logical                           :: error
+        character(len=*), intent(in) :: tag
+        logical, intent(in)          :: error
       end subroutine
     end interface
 

@@ -1,6 +1,5 @@
 !> \file
 !! Performs allocation of carbon gained by photosynthesis into plant structural pools
-!! @author Vivek Arora, Joe Melton
 !!
 module allocateCarbon
 
@@ -15,13 +14,11 @@ contains
   !! @{
   !> Performs allocation of carbon gained by photosynthesis into plant structural pools
   !> @author Vivek Arora and Joe Melton
-  subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb, & ! In
-                      il1,      il2,      ilg,      sand, & ! In
-                      clay,  rmatctem, gleafmas, stemmass, & ! In
-                      rootmass,      sort,  fcancmx, & ! In
-                      isand,      THFC,     THLW, & ! In
-                      afrleaf,  afrstem,  afrroot, & ! Out
-                      wtstatus, ltstatus) ! Out
+  subroutine allocate(lfstatus, thliq, ailcg, il1, il2, ilg, & ! In
+                      rmatctem, gleafmas, stemmass,     & ! In
+                      rootmass, sort, fcancmx, isand, THFC, THLW,   & ! In
+                      afrleaf, afrstem, afrroot, wtstatus, ltstatus)  ! Out
+
 
     !     06  Dec 2018  - Pass ilg back in as an argument + minor reorganization
     !     V. Arora        of arguments
@@ -48,47 +45,43 @@ contains
     !     V. Arora        for leaf, stem, and root components for ctem's pfts
 
     use classic_params,   only : eta, kappa, kn, abszero, icc, &
-                                    ignd, ican, omega, epsilonl, &
-                                    epsilons, epsilonr, caleaf, castem, &
-                                    caroot, consallo, rtsrmin,aldrlfon, &
-                                    classpfts, nol2pfts, reindexPFTs
+                                 ignd, ican, omega, epsilonl, &
+                                 epsilons, epsilonr, caleaf, castem, &
+                                 caroot, consallo, rtsrmin,aldrlfon, &
+                                 classpfts, nol2pfts, reindexPFTs
 
     implicit none
 
-    integer :: ilg !<
-    integer :: il1 !< input: il1=1
-    integer :: il2 !< input: il2=ilg
-    integer :: i, j, k
-    integer :: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
+    integer, intent(in) :: ilg !<
+    integer, intent(in) :: il1 !< input: il1=1
+    integer, intent(in) :: il2 !< input: il2=ilg
+    integer :: i, j, k, m, n
+    integer, intent(in) :: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
     !< in "max. growth", "normal growth", "fall/harvest",
     !< or "no leaves" mode. see phenolgy subroutine for more details.
-    integer :: n, m
     !
-    integer :: sort(icc) !< input: index for correspondence between 9 pfts and the
+    integer, intent(in) :: sort(icc) !< input: index for correspondence between 9 pfts and the
     !< 12 values in parameters vectors
-    integer :: isand(ilg,ignd)
+    integer, intent(in) :: isand(ilg,ignd)
     !
-    real   :: ailcg(ilg,icc) !< input: green or live leaf area index
-    real   :: ailcb(ilg,icc) !< input: brown or dead leaf area index
-    real   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
-    real   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
-    real   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
-    real   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts, kg c/m2
-    real   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
-    real   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
-    real   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
-    real   :: sand(ilg,ignd) !< input: percentage sand
-    real   :: clay(ilg,ignd) !< input: percentage clay
+    real, intent(in)   :: ailcg(ilg,icc) !< input: green or live leaf area index
+    real, intent(in)   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
+    real, intent(in)   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
+    real, intent(in)   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
+    real, intent(in)   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts, kg c/m2
+    real, intent(in)   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
+    real, intent(in)   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in)   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
     !
-    real   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
-    real   :: afrstem(ilg,icc) !< output: allocation fraction for stem
-    real   :: afrroot(ilg,icc) !< output: allocation fraction for root
-    real   :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts, but this can be
+    real, intent(inout)   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
+    real, intent(inout)   :: afrstem(ilg,icc) !< output: allocation fraction for stem
+    real, intent(inout)   :: afrroot(ilg,icc) !< output: allocation fraction for root
+    real, intent(inout)  :: wtstatus(ilg,icc) !< output: soil water status (0 dry -> 1 wet)
+    real, intent(inout)  :: ltstatus(ilg,icc) !< output: light status
+    real, intent(in)      :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts, but this can be
     !< modified by land-use change, and competition between pfts
     !
     real  :: avTHLW(ilg,icc),  aTHFC(ilg,icc),    avthliq(ilg,icc)
-    real  :: wtstatus(ilg,icc) !< output: soil water status (0 dry -> 1 wet)
-    real  :: ltstatus(ilg,icc) !< output: light status
     real  :: nstatus(ilg,icc)
     real  :: wnstatus(ilg,icc),              denom,   mnstrtms(ilg,icc), &
                         diff,              term1,               term2, &
@@ -97,8 +90,8 @@ contains
 
     ! --------------
     ! initialize required arrays to 0
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 140
+      do i = il1, il2 ! loop 150
         afrleaf(i,j) = 0.0    !< allocation fraction for leaves
         afrstem(i,j) = 0.0    !< allocation fraction for stem
         afrroot(i,j) = 0.0    !< allocation fraction for root
@@ -127,10 +120,10 @@ contains
     !! the soil moisture content is same under the entire gcm grid cell,
     !! soil moisture averaged over the rooting depth is different for each
     !! pft because of different fraction of roots present in each soil layer.
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 200
+      do i = il1, il2 ! loop 210
         if (fcancmx(i,j) > 0.0) then
-          do n = 1, ignd
+          do n = 1, ignd ! loop 215
             if (isand(i,n) /= - 3) then ! Only for non-bedrock
               avTHLW(i,j) = avTHLW(i,j) + THLW(i,n) * rmatctem(i,j,n)
               aTHFC(i,j) = aTHFC(i,j) + THFC(i,n) * rmatctem(i,j,n)
@@ -148,8 +141,8 @@ contains
     !> Using liquid soil moisture content together with wilting and field
     !! capacity soil moisture contents averaged over the root zone, find
     !! soil water status.
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 230
+      do i = il1, il2 ! loop 240
         if (fcancmx(i,j) > 0.0) then
           if (avthliq(i,j) <= avTHLW(i,j)) then
             wtstatus(i,j) = 0.0
@@ -167,9 +160,9 @@ contains
     !> Calculate light status as a function of lai and light extinction
     !! parameter. for now set nitrogen status equal to 1, which means
     !! nitrogen is non-limiting.
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 250
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 255
+        do i = il1, il2 ! loop 260
           select case (classpfts(j))
           case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
             ltstatus(i,m) = exp( - kn(sort(m)) * ailcg(i,m))
@@ -186,8 +179,8 @@ contains
 
     !> allocation to roots is determined by min. of water and nitrogen
     !! status
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 380
+      do i = il1, il2 ! loop 390
         if (fcancmx(i,j) > 0.0) then
           wnstatus(i,j) = min(nstatus(i,j), wtstatus(i,j))
         end if
@@ -198,9 +191,9 @@ contains
     !! allocation fractions for leaves, stem, and root components. note
     !! that allocation formulae for grasses are different from those
     !! for trees and crops, since there is no stem component in grasses.
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 400
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 405
+        do i = il1, il2 ! loop 410
           n = sort(m)
           select case (classpfts(j))
           case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
@@ -228,8 +221,8 @@ contains
     !! calculated allocation fractions.
     !!
     if (consallo) then
-      do j = 1, icc
-        do i = il1, il2
+      do j = 1, icc ! loop 420
+        do i = il1, il2 ! loop 421
           if (fcancmx(i,j) > 0.0) then
             afrleaf(i,j) = caleaf(sort(j))
             afrstem(i,j) = castem(sort(j))
@@ -243,8 +236,8 @@ contains
     !!
 
 
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 430
+      do i = il1, il2 ! loop 440
         if (fcancmx(i,j) > 0.0) then
           if (abs(afrstem(i,j) + afrroot(i,j) + afrleaf(i,j) - 1.0) > abszero) &
           then
@@ -265,9 +258,9 @@ contains
     !! that they can grow asap. in addition when leaf status is
     !! "fall/harvest" then nothing is allocated to leaves.
     !!
-    do j = 1, ican
-      do m = reindexPFTs(j,1), reindexPFTs(j,2)
-        do i = il1, il2
+    do j = 1, ican ! loop 500
+      do m = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 505
+        do i = il1, il2 ! loop 510
           if (fcancmx(i,m) > 0.0) then
             if (lfstatus(i,m) == 1) then
               aleaf(i,m) = aldrlfon(sort(m))
@@ -328,9 +321,9 @@ contains
     !! the root:shoot ratio, meaning that the model grasses can't have
     !! lots of leaves without having a reasonable amount of roots.
     !!
-    do j = 1, icc
+    do j = 1, icc ! loop 530
       n = sort(j)
-      do i = il1, il2
+      do i = il1, il2 ! loop 540
         if (fcancmx(i,j) > 0.0) then
           !         find min. stem+root biomass needed to support the green leaf
           !         biomass.
@@ -362,9 +355,9 @@ contains
     !! make sure that root:shoot ratio is at least equal to rtsrmin. if not
     !! allocate more to root and decrease allocation to stem.
     !!
-    do j = 1, icc
+    do j = 1, icc ! loop 541
       n = sort(j)
-      do i = il1, il2
+      do i = il1, il2 ! loop 542
         if (fcancmx(i,j) > 0.0) then
           if ((stemmass(i,j) + gleafmas(i,j)) > 0.05) then
             if ((rootmass(i,j) / (stemmass(i,j) + gleafmas(i,j))) < rtsrmin(n)) then
@@ -381,8 +374,8 @@ contains
     !! finally check if all allocation fractions are positive and check
     !! again they all add to one.
     !!
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 550
+      do i = il1, il2 ! loop 560
         if (fcancmx(i,j) > 0.0) then
           if ( (afrleaf(i,j) < 0.0) .or. (afrstem(i,j) < 0.0) .or. &
           (afrroot(i,j) < 0.0)) then
@@ -397,8 +390,8 @@ contains
       end do ! loop 560
     end do ! loop 550
     !
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 580
+      do i = il1, il2 ! loop 590
         if (fcancmx(i,j) > 0.0) then
           if (abs(afrstem(i,j) + afrroot(i,j) + afrleaf(i,j) - 1.0) > abszero) &
           then
@@ -420,14 +413,14 @@ contains
   !! @{
   !> Performs allocation of carbon gained by photosynthesis into plant structural pools
   !> @author Vivek Arora and Joe Melton
-  subroutine updatePoolsAllocateRepro(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,PFTCompetition, & ! In
-                                    pftexist,gppveg,rmsveg,rmrveg,rmlveg,fcancmx, &! In
-                                    useTracer, tracerNPP, rmsTracer, rmrTracer, tracerRML,tracerGPP, & ! In
-                                    lambda, afrleaf, afrstem,afrroot, gleafmas,stemmass, & ! In/Out
-                                    rootmass,bleafmas,tracerGLeafMass,tracerStemMass, & ! In/Out
-                                    tracerRootMass, tracerBLeafMass, & ! In/Out
-                                    reprocost, ntchlveg, ntchsveg, ntchrveg, & ! Out
-                                    repro_cost_g, tracerReproCost) ! Out
+  subroutine updatePoolsAllocateRepro(il1, il2, ilg, sort, ailcg, lfstatus, nppveg, PFTCompetition, & ! In
+                                      pftexist, gppveg, rmsveg, rmrveg, rmlveg, fcancmx, useTracer, & ! In
+                                      tracerNPP, rmsTracer, rmrTracer, tracerRML, tracerGPP,        & ! In
+                                      lambda, afrleaf, afrstem, afrroot, gleafmas, stemmass, & ! In/Out
+                                      rootmass, bleafmas, tracerGLeafMass, tracerStemMass,   & ! In/Out
+                                      tracerRootMass, tracerBLeafMass,                       & ! In/Out
+                                      reprocost, ntchlveg, ntchsveg, ntchrveg, & ! Out
+                                      repro_cost_g, tracerReproCost)             ! Out
 
     use classic_params,        only : icc, deltat, repro_fraction, zero
     use competition_scheme, only : expansion
@@ -517,8 +510,8 @@ contains
     !! when NPP for a given pft is negative then maintenance respiration
     !! loss is explicitly deducted from each component.
 
-    do j = 1, icc
-      do i = il1, il2
+    do j = 1, icc ! loop 600
+      do i = il1, il2 ! loop 610
 
         !! Convert NPP and maintenance respiration from different components
         !! from units of u mol co2/m2.sec -> \f$(kg C/m^2)\f$ sequestered
@@ -672,8 +665,8 @@ contains
     !> Calculate grid averaged value of C related to spatial expansion
 
     repro_cost_g(:) = 0.0    !< amount of C for production of reproductive tissues
-    do j = 1,icc
-      do i = il1, il2
+    do j = 1,icc ! loop 620
+      do i = il1, il2 ! loop 621
         repro_cost_g(i) = repro_cost_g(i) + fcancmx(i,j) * reprocost(i,j)
       end do ! loop 621
     end do ! loop 620
@@ -684,6 +677,10 @@ contains
   ! ---------------------------------------------------------------------------------------------------
 
   !> \namespace allocateCarbon
+  !!
+  !!
+  !! @author V. Arora, J. Melton
+  !!
   !! Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
   !! biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a
   !! component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to

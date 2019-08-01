@@ -4,9 +4,9 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine waterInfiltrateUnsat(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR, & ! Formerly WFILL
-                  PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
-                  DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD, &
-                  IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                                PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
+                                DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD, &
+                                IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   !     * JAN 06/09 - D.VERSEGHY. CORRECT LZF AND ZF ASSIGNMENTS IN LOOP
   !     *                         100; ADDITIONAL DZF CHECK IN LOOP 400.

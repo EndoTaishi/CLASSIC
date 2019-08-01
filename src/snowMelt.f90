@@ -3,8 +3,8 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine snowMelt(ZSNOW,TSNOW,QMELT,R,TR,GZERO,RALB, & ! Formrly TMELT
-                  HMFN,HTCS,HTC,FI,HCPSNO,RHOSNO,WSNOW, &
-                  ISAND,IG,ILG,IL1,IL2,JL)
+                    HMFN,HTCS,HTC,FI,HCPSNO,RHOSNO,WSNOW, &
+                    ISAND,IG,ILG,IL1,IL2,JL)
   !
   !     * APR 22/16 - D.VERSEGHY. BUG FIX IN CALCULATION OF HTCS.
   !     * JAN 06/09 - D.VERSEGHY/M.LAZARE. SPLIT 100 LOOP INTO TWO.

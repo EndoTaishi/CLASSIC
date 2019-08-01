@@ -1,4 +1,4 @@
-!
+!> \file
 !> Performs disaggregation of input meteorological forcing arrays to the model physics timestep
 !! @author V. Arora, J. Melton
 module metDisaggModule
@@ -39,8 +39,8 @@ contains
 
     implicit none
 
-    real, intent(in)    :: longitude, latitude  ! in degrees
-    integer             :: vcount,vcountPlus
+    real, intent(in) :: longitude, latitude  ! in degrees
+    integer          :: vcount,vcountPlus
 
     !> First check that we should be doing the disaggregation. If we are already
     !! at the needed timestep (delt) then we can return to the main.
@@ -123,7 +123,7 @@ contains
     !! The shortwave and precipitation arrays don't require the extra two
     !! padding days.
     allocate(metFss(vcountPlus),metFdl(vcountPlus),metPre(vcountPlus),metTa(vcountPlus), &
-                 metQa(vcountPlus),metUv(vcountPlus),metPres(vcountPlus),metTime(vcount))
+             metQa(vcountPlus),metUv(vcountPlus),metPres(vcountPlus),metTime(vcount))
 
     ! initialize to zero so they are not filled in with random value by the compiler
     metFdl = 0. ; metFss = 0. ; metPre = 0. ; metTa = 0. ; metQa = 0. ; metUv = 0. ; metPres = 0.

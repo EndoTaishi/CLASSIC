@@ -70,7 +70,7 @@ subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly 
   !! snow pack on modelled area [ ]
   !-----------------------------------------------------------------------
 
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 100
     if ((FC(I) + FCS(I)) > 0.0) then
       if (GROWTH(I) < 0.0) then
         GROWTH(I) = MIN(0.0,(GROWTH(I) + DELT / 5.184E6))
@@ -90,5 +90,4 @@ subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly 
   end do ! loop 100
   !
   return
-  !> \file
 end

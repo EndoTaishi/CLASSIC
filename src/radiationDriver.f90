@@ -4,38 +4,38 @@
 !! @author D. Verseghy, M. Lazare, J. Cole, Y. Wu, J. Melton
 !!
 subroutine radiationDriver(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN, & ! Formerly CLASSA
-                   ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN, &
-                   ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN, &
-                   TRVSCS, TRIRCS, FSVF,   FSVFS, &
-                   RAICAN, RAICNS, SNOCAN, SNOCNS, FRAINC, FSNOWC, &
-                   FRAICS, FSNOCS, DISP,   DISPS,  ZOMLNC, ZOMLCS, &
-                   ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, &
-                   CHCAP,  CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP, &
-                   CWLCPS, CWFCPS, RC,     RCS,    RBCOEF, FROOT, &
-                   FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW, &
-                   WSNOW,  ALVS,   ALIR,   HTCC,   HTCS,   HTC, &
-                   ALTG,   ALSNO,  TRSNOWC,TRSNOWG, &
-                   WTRC,   WTRS,   WTRG,   CMAI,   FSNOW, &
-                   FCANMX, ZOLN,   ALVSC,  ALIRC,  PAIMAX, PAIMIN, &
-                   CWGTMX, ZRTMAX, RSMIN,  QA50,   VPDA,   VPDB, &
-                   PSIGA,  PSIGB,  PAIDAT, HGTDAT, ACVDAT, ACIDAT, &
-                   ASVDAT, ASIDAT, AGVDAT, AGIDAT, &
-                   ALGWV,  ALGWN,  ALGDV,  ALGDN, &
-                   THLIQ,  THICE,  TBAR,   RCAN,   SNCAN,  TCAN, &
-                   GROWTH, SNO,    TSNOW,  RHOSNO, ALBSNO, ZBLEND, &
-                   Z0ORO,  SNOLIM, ZPLMG0, ZPLMS0, &
-                   FCLOUD, TA,     VPD,    RHOAIR, COSZS, &
-                   FSDB, FSFB, REFSNO, BCSNO, &
-                   QSWINV, RADJ,   DLON,   RHOSNI, DELZ,   DELZW, &
-                   ZBOTW,  THPOR,  THLMIN, PSISAT, BI,     PSIWLT, &
-                   HCPS,   ISAND, &
-                   FCANCMX,ICTEM,  ctem_on, RMATC, ZOLNC,CMASVEGC, &
-                   AILC,   PAIC,   L2MAX,  NOL2PFTS, SLAIC, &
-                   AILCG,  AILCGS, FCANC,  FCANCS, &
-                   IDAY,   ILG,    IL1,    IL2, NBS, &
-                   JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF, &
-                   IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG, &
-                   ISNOALB,ALVSCTM, ALIRCTM , ipeatland)
+                           ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN, &
+                           ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN, &
+                           TRVSCS, TRIRCS, FSVF,   FSVFS, &
+                           RAICAN, RAICNS, SNOCAN, SNOCNS, FRAINC, FSNOWC, &
+                           FRAICS, FSNOCS, DISP,   DISPS,  ZOMLNC, ZOMLCS, &
+                           ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, &
+                           CHCAP,  CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP, &
+                           CWLCPS, CWFCPS, RC,     RCS,    RBCOEF, FROOT, &
+                           FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW, &
+                           WSNOW,  ALVS,   ALIR,   HTCC,   HTCS,   HTC, &
+                           ALTG,   ALSNO,  TRSNOWC,TRSNOWG, &
+                           WTRC,   WTRS,   WTRG,   CMAI,   FSNOW, &
+                           FCANMX, ZOLN,   ALVSC,  ALIRC,  PAIMAX, PAIMIN, &
+                           CWGTMX, ZRTMAX, RSMIN,  QA50,   VPDA,   VPDB, &
+                           PSIGA,  PSIGB,  PAIDAT, HGTDAT, ACVDAT, ACIDAT, &
+                           ASVDAT, ASIDAT, AGVDAT, AGIDAT, &
+                           ALGWV,  ALGWN,  ALGDV,  ALGDN, &
+                           THLIQ,  THICE,  TBAR,   RCAN,   SNCAN,  TCAN, &
+                           GROWTH, SNO,    TSNOW,  RHOSNO, ALBSNO, ZBLEND, &
+                           Z0ORO,  SNOLIM, ZPLMG0, ZPLMS0, &
+                           FCLOUD, TA,     VPD,    RHOAIR, COSZS, &
+                           FSDB, FSFB, REFSNO, BCSNO, &
+                           QSWINV, RADJ,   DLON,   RHOSNI, DELZ,   DELZW, &
+                           ZBOTW,  THPOR,  THLMIN, PSISAT, BI,     PSIWLT, &
+                           HCPS,   ISAND, &
+                           FCANCMX,ICTEM,  ctem_on, RMATC, ZOLNC,CMASVEGC, &
+                           AILC,   PAIC,   NOL2PFTS, SLAIC, &
+                           AILCG,  AILCGS, FCANC,  FCANCS, &
+                           IDAY,   ILG,    IL1,    IL2, NBS, &
+                           JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF, &
+                           IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG, &
+                           ISNOALB,ALVSCTM, ALIRCTM , ipeatland)
 
   !     * OCT  3/16 - J.Melton    Implementing Yuanqiao Wu's peatland code, added
   !                               ipeatland
@@ -367,7 +367,7 @@ subroutine radiationDriver(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN, & ! F
        SLAIC(ILG,IC),       ALVSCTM(ILG,IC), &
        ALIRCTM(ILG,IC)
 
-  integer, intent(in) :: ICTEM, L2MAX, NOL2PFTS(IC)
+  integer, intent(in) :: ICTEM, NOL2PFTS(IC)
 
   logical, intent(in) :: ctem_on
   integer, intent(in)  :: ipeatland(ilg) !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
@@ -485,7 +485,7 @@ subroutine radiationDriver(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN, & ! F
                            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB, &
                            RRESID,SRESID,FRTOT,FRTOTS, &
                            FCANCMX,ICTEM,ctem_on,RMATC, &
-                           AILC,PAIC,AILCG,L2MAX,NOL2PFTS, &
+                           AILC,PAIC,AILCG,NOL2PFTS, &
                            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC, &
                            ipeatland)
   !

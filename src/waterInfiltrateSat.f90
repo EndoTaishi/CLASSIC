@@ -4,10 +4,10 @@
 !! @author D. Verseghy, M. Lazare, Y. Delage, J. P. Blanchette
 !
 subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Formerly WFLOW
-                  R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
-                  DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ, &
-                  THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP, &
-                  IGRN,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                              R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
+                              DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ, &
+                              THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP, &
+                              IGRN,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
 
   !     * FEB 09/09 - J.P.BLANCHETTE. INCREASE LIMITING VALUE OF NEND.
   !     * JAN 06/09 - D.VERSEGHY. CHECKS ON WETTING FRONT LOCATION

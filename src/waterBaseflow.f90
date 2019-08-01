@@ -4,14 +4,14 @@
 !! @author D. Verseghy, M. Lazare
 !
 subroutine waterBaseflow(THLIQX,THICEX,TBARWX,ZPOND,TPOND, & ! Formerly WEND
-                 BASFLW,TBASFL,RUNOFF,TRUNOF,FI, &
-                 WMOVE,TMOVE,LZF,NINF,TRMDR,THLINF,DELZX, &
-                 ZMAT,ZRMDR,FDTBND,WADD,TADD,FDT,TFDT, &
-                 THLMAX,THTEST,THLDUM,THIDUM,TDUMW, &
-                 TUSED,RDUMMY,ZERO,WEXCES,XDRAIN, &
-                 THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
-                 THFC,DELZW,ISAND,IGRN,IGRD,IGDR,IZERO, &
-                 IVEG,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+                         BASFLW,TBASFL,RUNOFF,TRUNOF,FI, &
+                         WMOVE,TMOVE,LZF,NINF,TRMDR,THLINF,DELZX, &
+                         ZMAT,ZRMDR,FDTBND,WADD,TADD,FDT,TFDT, &
+                         THLMAX,THTEST,THLDUM,THIDUM,TDUMW, &
+                         TUSED,RDUMMY,ZERO,WEXCES,XDRAIN, &
+                         THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, &
+                         THFC,DELZW,ISAND,IGRN,IGRD,IGDR,IZERO, &
+                         IVEG,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
   !
   !     * OCT 18/11 - M.LAZARE.   PASS IN "IGDR" AS AN INPUT FIELD
   !     *                         (ORIGINATING IN soilProperties) RATHER
@@ -204,7 +204,7 @@ subroutine waterBaseflow(THLIQX,THICEX,TBARWX,ZPOND,TPOND, & ! Formerly WEND
   !     * CALCULATED IN waterFlowNonInfiltrate ABOVE WETTING FRONT; CONSISTENCY CHECK
   !     * FOR WATER FLOWS INTO LAYER CONTAINING WETTING FRONT.
   !
-  do I = IL1,IL2
+  do I = IL1,IL2 ! loop 150
     if (IGRN(I) > 0) then
       NINF(I) = MIN(NINF(I),IGP1)
     end if

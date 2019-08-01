@@ -100,18 +100,30 @@
 
 ! Physics switches:
 
-    IDISP = 0 ,   ! if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
-                  ! of the "terrain". if idisp=1, vegetation displacement heights are calculated.
-    IZREF = 2 ,   ! if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
-                  ! if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
+    IDISP = 0 ,   !  This switch controls the calculation of the vegetation displacement height. In most
+                  !atmospheric models a “terrain-following” coordinate system is used, in which the vegetation
+                  !displacement height is considered to be part of the “terrain”, and is therefore neglected. 
+                  ! For such applications IDISP is set to 0. For studies making use of field data, it should be set to 1.
+    IZREF = 2 ,   !This switch indicates where the bottom of the atmosphere is conceptually located. In
+                  !most atmospheric models the bottom is assumed to lie at the local surface roughness length, ! i.e. where the horizontal wind speed is zero; for such simulations IZREF is set to 2. For ! all other cases it should be set to 1.
     ZRFH = 40.0,  ! The reference heights at which the energy variables (air temperature and specific humidity) are provided. When 
-                  ! using field data this is the measurment height. 
-    ZRFM = 40.0,  ! The reference heights at which the momentum variables (wind speed) are provided. When using field data this is the measurment height. 
+                  ! using field data this is the measurement height. 
+    ZRFM = 40.0,  ! The reference heights at which the momentum variables (wind speed) are provided. When using field data this is the measurement height. 
     ZBLD = 50.0,  ! The atmospheric blending height.  Technically this variable depends on the length scale of the
                   ! patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
-    ISLFD = 0 ,   ! if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-level diagnostic calculations
-                  ! is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-level diagnostic calculations.
-                  ! if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-level diagnostic calculations.
+    ISLFD = 0 ,   ! This switch indicates which surface layer flux stability
+                  ! correction and screen-level diagnostic subroutines are to be
+                  ! used. If ISLFD=0, the CCCma stability correction subroutine
+                  ! DRCOEF is used with simple similarity-based screen-level
+                  ! diagnostic calculations. If ISLFD=1, DRCOEF is used for the
+                  ! stability corrections and the RPN subroutine SLDIAG is used
+                  ! for the screen level diagnostic calculations. If ISLFD=2, the
+                  ! RPN stability correction subroutine FLXSURFZ is used with the
+                  ! companion RPN subroutine DIASURFZ for the screen level
+                  ! diagnostics. (When running CLASS coupled to an atmospheric 
+                  ! model with staggered vertical thermodynamic and momentum
+                  ! levels, ISLFD must be set to 2, since FLXSURFZ allows inputs
+                  ! on staggered levels and DRCOEF does not.)
     IPCP = 1 ,    ! if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
                   ! rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
                   ! a polynomial curve between 0 C and 6 C.
@@ -123,7 +135,10 @@
 
  ! Iteration scheme
     ! ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
-    ! respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used.
+    ! respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used. (Note: Recently
+    ! problems have been discovered with the Newton-Raphson scheme, involving instabilities and occasional failure to converge, so 
+    ! currently users are advised not to select this option.)
+
     ITC = 1 ,   ! Canopy
     ITCG = 1 ,  ! Ground under canopy
     ITG = 1 ,   ! Ground
@@ -163,6 +178,10 @@
     
     doAnnualOutput = .true. ,   ! Switch for making annual output files 
 
+    doChecksums = .false.,      ! checksums can be generated if you wish to ensure you are making no
+                                ! functional changes to the model results. See the CLASSIC documentation and
+                                ! the regression_testing tool.
+    
     Comment = ' test '          ! Comment about the run that will be written to the output netcdfs
 
  /
