@@ -16,7 +16,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
                               PSIGND, FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX,    &
                               PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN,   &
                               GROWTH, ZSNOW, TSNOW, FSNOW, RHOSNO, SNO, Z0ORO, ZBLEND, &
-                              TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ, ZPLMG0, ZPLMS0,    &
+                              ZPLMG0, ZPLMS0, TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ,    &
                               DELZW, ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS,   &
                               ISAND, ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP,     &
                               IZREF, IWF, IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA,      &
