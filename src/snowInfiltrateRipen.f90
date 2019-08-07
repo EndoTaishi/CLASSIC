@@ -78,7 +78,7 @@ subroutine snowInfiltrateRipen(R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! F
   !!
   do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. R(I) > 0. .and. ZSNOW(I) > 0.) &
-    then
+        then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
                 ZSNOW(I) / DELT
       RAIN = R(I) * DELT

@@ -87,9 +87,9 @@ contains
     cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells
 
     if (rank < remainder) print * ,'final in process',cell, myDomain%lonLandCell(cell), myDomain%latLandCell(cell), &
-    myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell)
+        myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell)
     if (rank < remainder) call main_driver(myDomain%lonLandCell(cell), myDomain%latLandCell(cell), &
-    myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell))
+        myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell))
 
   end subroutine processLandCells
   !! @}

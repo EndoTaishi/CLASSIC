@@ -160,7 +160,7 @@ subroutine TMCALC(TBAR, THLIQ, THICE, HCP, TPOND, ZPOND, TSNOW, ZSNOW, &
 
   do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. IWF == 0 .and. &
-    (ZPOND(I) - ZPLIM(I)) > 1.0E-8) then
+        (ZPOND(I) - ZPLIM(I)) > 1.0E-8) then
       TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TPOND(I) + TFREZ) * &
                   (ZPOND(I) - ZPLIM(I))) / (RUNOFF(I) + &
                   (ZPOND(I) - ZPLIM(I)))
@@ -192,7 +192,7 @@ subroutine TMCALC(TBAR, THLIQ, THICE, HCP, TPOND, ZPOND, TSNOW, ZSNOW, &
   do J = 1, IG ! loop 200
     do I = IL1, IL2
       if (FI(I) > 0. .and. DELZW(I, J) > 0. .and. ISAND(I, 1) > - 4) &
-      then
+          then
         HTC(I, J) = HTC(I, J) + FI(I) * ((TBARW(I, J) + TFREZ) * &
                     HCPW * THLIQ(I, J) + (TBAR(I, J) + TFREZ) * &
                     HCPICE * THICE(I, J)) * DELZW(I, J) / DELT
@@ -226,7 +226,7 @@ subroutine TMCALC(TBAR, THLIQ, THICE, HCP, TPOND, ZPOND, TSNOW, ZSNOW, &
   !!
   do I = IL1, IL2 ! loop 300
     if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. ZPOND(I) > 0.0) &
-    then
+        then
       HTC(I, 1) = HTC(I, 1) + FI(I) * HCPW * (TPOND(I) + TFREZ) * &
                   ZPOND(I) / DELT
       GP1 = ZPOND(I) * (G12(I) - GZERO(I)) / (ZPOND(I) + DELZZ(I, 1)) + &
@@ -270,8 +270,8 @@ subroutine TMCALC(TBAR, THLIQ, THICE, HCP, TPOND, ZPOND, TSNOW, ZSNOW, &
   !!
   do I = IL1, IL2 ! loop 400
     if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. ZPOND(I) > 0. &
-    .and. TPOND(I) < 0.) &
-    then
+        .and. TPOND(I) < 0.) &
+        then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
                 ZSNOW(I) / DELT
       ZFREZ = 0.0
@@ -495,12 +495,12 @@ subroutine TMCALC(TBAR, THLIQ, THICE, HCP, TPOND, ZPOND, TSNOW, ZSNOW, &
   do J = 1, IG ! loop 700
     do I = IL1, IL2
       if (FI(I) > 0. .and. DELZW(I, J) > 0. .and. ISAND(I, 1) > - 4) &
-      then
+          then
         HTC(I, J) = HTC(I, J) - FI(I) * (TBAR(I, J) + TFREZ) * (HCP(I, J) * &
                     DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
                     DELZW(I, J))) / DELT
         if (TBAR(I, J) < 0. .and. THLIQ(I, J) > THLMIN(I, J)) &
-        then
+            then
           THFREZ = - (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
                    DELZW(I, J))) * TBAR(I, J) / (CLHMLT * RHOW * &
                    DELZW(I, J))

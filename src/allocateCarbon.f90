@@ -240,7 +240,7 @@ contains
       do i = il1, il2 ! loop 440
         if (fcancmx(i, j) > 0.0) then
           if (abs(afrstem(i, j) + afrroot(i, j) + afrleaf(i, j) - 1.0) > abszero) &
-          then
+              then
             write(6, 2000) i, j,(afrstem(i, j) + afrroot(i, j) + afrleaf(i, j))
 2000        format(' at (i) = (',i3,'), pft = ',i2,'  allocation fractions &
  not adding to one. sum  = ',e12.7)
@@ -378,7 +378,7 @@ contains
       do i = il1, il2 ! loop 560
         if (fcancmx(i, j) > 0.0) then
           if ( (afrleaf(i, j) < 0.0) .or. (afrstem(i, j) < 0.0) .or. &
-          (afrroot(i, j) < 0.0)) then
+              (afrroot(i, j) < 0.0)) then
             write(6, 2200) i, j
 2200        format(' at (i) = (',i3,'), pft = ',i2,'  allocation fractions &
  negative')
@@ -394,7 +394,7 @@ contains
       do i = il1, il2 ! loop 590
         if (fcancmx(i, j) > 0.0) then
           if (abs(afrstem(i, j) + afrroot(i, j) + afrleaf(i, j) - 1.0) > abszero) &
-          then
+              then
             write(6, 2300) i, j,(afrstem(i, j) + afrroot(i, j) + afrleaf(i, j))
 2300        format(' at (i) = (',i3,'), pft = ',i2,'  allocation fractions &
  not adding to one. sum  = ',f12.7)

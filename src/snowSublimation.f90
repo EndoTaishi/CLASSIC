@@ -75,7 +75,7 @@ subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, &
   !-----------------------------------------------------------------------
   do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. (S(I) < 1.0E-11 .or. R(I) < 1.0E-11) &
-    .and. ZSNOW(I) > 0.) then
+        .and. ZSNOW(I) > 0.) then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
                 ZSNOW(I) / DELT
       if (EVAP(I) < 0.) then
@@ -100,13 +100,13 @@ subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, &
           EVAP(I) = ZREM * (CLHMLT + CLHVAP) / (CLHVAP * DELT)
           WLOST(I) = WLOST(I) - ZREM * RHOW * CLHMLT / CLHVAP
           if (RUNOFF(I) > 0. .or. WSNOW(I) > 0.) &
-          TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TSNOW(I) + TFREZ) * &
-          WSNOW(I) / RHOW) / (RUNOFF(I) + WSNOW(I) / RHOW)
+              TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TSNOW(I) + TFREZ) * &
+              WSNOW(I) / RHOW) / (RUNOFF(I) + WSNOW(I) / RHOW)
           RUNOFF(I) = RUNOFF(I) + WSNOW(I) / RHOW
           if (OVRFLW(I) > 0. .or. WSNOW(I) > 0.) &
-          TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + (TSNOW(I) + TFREZ) * &
-          FI(I) * WSNOW(I) / RHOW) / (OVRFLW(I) + FI(I) * &
-          WSNOW(I) / RHOW)
+              TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + (TSNOW(I) + TFREZ) * &
+              FI(I) * WSNOW(I) / RHOW) / (OVRFLW(I) + FI(I) * &
+              WSNOW(I) / RHOW)
           OVRFLW(I) = OVRFLW(I) + FI(I) * WSNOW(I) / RHOW
           TSNOW(I) = 0.0
           WSNOW(I) = 0.0
@@ -115,7 +115,7 @@ subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, &
         end if
       end if
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-      ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
     end if
   end do ! loop 100
   return

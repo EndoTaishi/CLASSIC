@@ -393,7 +393,7 @@ subroutine waterBaseflow(THLIQX, THICEX, TBARWX, ZPOND, TPOND, & ! Formerly WEND
     do I = IL1, IL2
       if (IGRN(I) > 0) then
         if (LZF(I) == IGP1 .and. K <= NINF(I) .and. &
-        THLINF(I, IGP1) * ZMAT(I, K, IGP1) > 0.0) then
+            THLINF(I, IGP1) * ZMAT(I, K, IGP1) > 0.0) then
           TBASFL(I) = (TBASFL(I) * BASFLW(I) + FI(I) * (TMOVE(I, K) + &
                       TFREZ) * THLINF(I, IGP1) * ZMAT(I, K, IGP1)) / (BASFLW(I) + &
                       FI(I) * THLINF(I, IGP1) * ZMAT(I, K, IGP1))

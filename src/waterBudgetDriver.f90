@@ -796,16 +796,16 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
     RUNOFF(I) = FCS(I) * RUNFCS(I) + FGS(I) * RUNFGS(I) + &
                 FC (I) * RUNFC (I) + FG (I) * RUNFG (I)
     if (RUNOFF(I) > 0.0) &
-    TRUNOF(I) = (FCS(I) * RUNFCS(I) * TRNFCS(I) + &
-    FGS(I) * RUNFGS(I) * TRNFGS(I) + &
-    FC (I) * RUNFC (I) * TRUNFC(I) + &
-    FG (I) * RUNFG (I) * TRUNFG(I)) / RUNOFF(I)
+        TRUNOF(I) = (FCS(I) * RUNFCS(I) * TRNFCS(I) + &
+        FGS(I) * RUNFGS(I) * TRNFGS(I) + &
+        FC (I) * RUNFC (I) * TRUNFC(I) + &
+        FG (I) * RUNFG (I) * TRUNFG(I)) / RUNOFF(I)
     RUNOFF(I) = RUNOFF(I) * RHOW / DELT
     OVRFLW(I) = OVRFLW(I) * RHOW / DELT
     SUBFLW(I) = SUBFLW(I) * RHOW / DELT
     BASFLW(I) = BASFLW(I) * RHOW / DELT
     EVAP  (I) = EVAP(I) - (FCS(I) * WLSTCS(I) + FGS(I) * WLSTGS(I) + &
-    FC(I) * WLOSTC(I) + FG(I) * WLOSTG(I)) / DELT
+                FC(I) * WLOSTC(I) + FG(I) * WLOSTG(I)) / DELT
     QFLUX(I) = - EVAP(I) / RHOAIR(I)
     if ((FC(I) + FCS(I)) > 0.) then
       TCAN(I) = (FCS(I) * TCANS(I) * CHCAPS(I) + FC(I) * TCANO(I) * &
@@ -845,7 +845,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
       TCAN(I) = 0.0
     end if
     if (ZPNDCS(I) > 0. .or. ZPNDGS(I) > 0. .or. &
-    ZPONDC(I) > 0. .or. ZPONDG(I) > 0.) then
+        ZPONDC(I) > 0. .or. ZPONDG(I) > 0.) then
       ZPOND(I) = (FCS(I) * ZPNDCS(I) + FGS(I) * ZPNDGS(I) + &
                  FC (I) * ZPONDC(I) + FG (I) * ZPONDG(I))
       TPOND(I) = (FCS(I) * (TPNDCS(I) + TFREZ) * ZPNDCS(I) + &
@@ -908,7 +908,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !!
   do I = IL1, IL2
     if (ZSNOCS(I) > 0. .or. ZSNOGS(I) > 0. .or. &
-    ZSNOWC(I) > 0. .or. ZSNOWG(I) > 0.) then
+        ZSNOWC(I) > 0. .or. ZSNOWG(I) > 0.) then
       if (ZSNOCS(I) > 0. .or. ZSNOGS(I) > 0.) then
         ALBSNO(I) = (FCS(I) * ALBSCS(I) * XSNOCS(I) + &
                     FGS(I) * ALBSGS(I) * XSNOGS(I)) / &

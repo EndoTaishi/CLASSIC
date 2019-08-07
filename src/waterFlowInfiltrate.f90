@@ -182,8 +182,8 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !!
   do I = IL1, IL2 ! loop 75
     if (FI(I) > 0. .and. &
-    ISAND(I, 1) > - 4 .and. DT(I) > 0. .and. &
-    (R(I) > 0. .or. ZPOND(I) > 0.)) then
+        ISAND(I, 1) > - 4 .and. DT(I) > 0. .and. &
+        (R(I) > 0. .or. ZPOND(I) > 0.)) then
       IGRN(I) = 1
       RDUMMY(I) = 0.
     else
@@ -400,7 +400,7 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
       end if
       do J = 1, IG ! loop 350
         if (THLIQ(I, J) >= (THLINF(I, J) - 1.0E-6) .and. &
-        THLIQ(I, J) > 0.0001 .and. LZF(I) == J) then
+            THLIQ(I, J) > 0.0001 .and. LZF(I) == J) then
           ZF(I) = ZBOTW(I, J)
           LZF(I) = J + 1
           NINF(I) = J + 2

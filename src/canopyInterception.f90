@@ -104,7 +104,7 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
     RDRIP(I) = 0.0
     SDRIP(I) = 0.0
     if (FI(I) > 0. .and. (R(I) > 0. .or. S(I) > 0. .or. &
-    RAICAN(I) > 0. .or. SNOCAN(I) > 0.)) then
+        RAICAN(I) > 0. .or. SNOCAN(I) > 0.)) then
       RTHRU = R(I) * FSVF(I)
       RINT = (R(I) - RTHRU) * DELT * RHOW
       STHRU = S(I) * FSVF(I)

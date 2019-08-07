@@ -2391,9 +2391,9 @@ contains
         if (dofire) call getInput('POPD',longitude, latitude, projLonInd = lonIndex, projLatInd = latIndex) ! Population density
         if (dofire) call getInput('LGHT',longitude, latitude, projLonInd = lonIndex, projLatInd = latIndex) ! Cloud-to-ground lightning frequency
         if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) &
-        call getInput('OBSWETF',longitude, latitude, projLonInd = lonIndex, projLatInd = latIndex) ! Observed wetland distribution
+            call getInput('OBSWETF',longitude, latitude, projLonInd = lonIndex, projLatInd = latIndex) ! Observed wetland distribution
         if (lnduseon .or. (fixedYearLUC /= - 9999)) &
-        call getInput('LUC',longitude, latitude, projLonInd = lonIndex, projLatInd = latIndex) ! Land use change
+            call getInput('LUC',longitude, latitude, projLonInd = lonIndex, projLatInd = latIndex) ! Land use change
       end if
       !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
       !! and assign the CLASS PFTs as they are not read in when ctem_on.
@@ -3003,7 +3003,7 @@ contains
 
           ! Once a year, calculate the 14C lost to decay if using the 14C tracer.
           if (useTracer == 2 .and. &
-          iday == lastdoy .and. ncount == nday) call decay14C(1, nml)
+              iday == lastdoy .and. ncount == nday) call decay14C(1, nml)
 
         end if  ! if (ncount==nday)
       end if  ! if (ctem_on)
@@ -3233,19 +3233,19 @@ contains
 
       ! Half-hourly physics outputs
       if  (doHhOutput .and. &
-      (runyr >= jhhsty) .and. &
-      (runyr <= jhhendy) .and. &
-      (iday >= jhhstd) .and. &
-      (iday <= jhhendd) ) call class_hh_w(lonLocalIndex, latLocalIndex, nltest, &
-      nmtest, ncount, nday, iday, runyr)
+          (runyr >= jhhsty) .and. &
+          (runyr <= jhhendy) .and. &
+          (iday >= jhhstd) .and. &
+          (iday <= jhhendd) ) call class_hh_w(lonLocalIndex, latLocalIndex, nltest, &
+          nmtest, ncount, nday, iday, runyr)
 
       ! Daily physics outputs
       if (doDayOutput .and. &
-      (runyr >= jdsty) .and. &
-      (runyr <= jdendy) .and. &
-      (iday  >= jdstd) .and. &
-      (iday  <= jdendd))  call class_daily_aw(lonLocalIndex, latLocalIndex, iday, nltest, nmtest, &
-      ncount, nday, lastDOY, runyr)
+          (runyr >= jdsty) .and. &
+          (runyr <= jdendy) .and. &
+          (iday  >= jdstd) .and. &
+          (iday  <= jdendd))  call class_daily_aw(lonLocalIndex, latLocalIndex, iday, nltest, nmtest, &
+          ncount, nday, lastDOY, runyr)
 
       do NT = 1, NMON
         if ((IDAY == monthend(NT + 1)) .and. (NCOUNT == NDAY)) then
@@ -3256,12 +3256,12 @@ contains
 
       ! Monthly physics outputs
       if (doMonthOutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex, &
-      latLocalIndex, IDAY, runyr, NCOUNT, &
-      NDAY, nltest, nmtest, lastDOY)
+          latLocalIndex, IDAY, runyr, NCOUNT, &
+          NDAY, nltest, nmtest, lastDOY)
 
       ! Annual physics outputs
       if (doAnnualOutput) call class_annual_aw(lonLocalIndex, latLocalIndex, IDAY, runyr, NCOUNT, NDAY, &
-      nltest, nmtest, lastDOY)
+          nltest, nmtest, lastDOY)
 
       if (ctem_on .and. (ncount == nday)) then
 
@@ -3270,17 +3270,17 @@ contains
 
         ! Daily outputs from biogeochem (CTEM)
         if (doDayOutput .and. &
-        (runyr >= jdsty) .and. &
-        (runyr <= jdendy) .and. &
-        (iday   >= jdstd) .and. &
-        (iday   <= jdendd)) call ctem_daily_aw(lonLocalIndex, latLocalIndex, nltest, &
-        nmtest, iday, ncount, nday, &
-        runyr, grclarea, ipeatlandrow)
+            (runyr >= jdsty) .and. &
+            (runyr <= jdendy) .and. &
+            (iday   >= jdstd) .and. &
+            (iday   <= jdendd)) call ctem_daily_aw(lonLocalIndex, latLocalIndex, nltest, &
+            nmtest, iday, ncount, nday, &
+            runyr, grclarea, ipeatlandrow)
 
         ! Monthly biogeochem outputs
         if (doMonthOutput .and. &
-        (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex, latLocalIndex, nltest, &
-        nmtest, iday, runyr, nday, lastDOY)
+            (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex, latLocalIndex, nltest, &
+            nmtest, iday, runyr, nday, lastDOY)
 
         ! Annual biogeochem outputs
         if (doAnnualOutput) call ctem_annual_aw(lonLocalIndex, latLocalIndex, iday, runyr, nltest, nmtest, lastDOY)

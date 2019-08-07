@@ -721,7 +721,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         WTRG(I) = WTRG(I) - (RHOW * THLIQ(I, J) + RHOICE * THICE(I, J)) * &
                   DELZW(I, J) / DELT
         if (THLIQ(I, J) < THLMIN(I, J)) &
-        THLIQ(I, J) = THLMIN(I, J)
+            THLIQ(I, J) = THLMIN(I, J)
         if (THICE(I, J) < 0.0) THICE(I, J) = 0.0
         THTOT = THLIQ(I, J) + THICE(I, J) * RHOICE / RHOW
         if (THTOT > THPOR(I, J)) then

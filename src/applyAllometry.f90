@@ -374,7 +374,7 @@ contains
           !! the "a" which depends on time varying root biomass
           !!
           if (rootdpth(i, m) > min(soildpth(i), maxAnnualActLyr(i), &
-          zbotw(i, ignd), mxrtdpth(sort(m)))) then
+              zbotw(i, ignd), mxrtdpth(sort(m)))) then
 
             rootdpth(i, m) = min(soildpth(i), maxAnnualActLyr(i), &
                              zbotw(i, ignd), mxrtdpth(sort(m)))

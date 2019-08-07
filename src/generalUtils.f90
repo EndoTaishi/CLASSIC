@@ -307,7 +307,7 @@ contains
         ! to ensure roots are not placed into frozen soil layers.
 
         if ((dlatrow(i) > 0. .and. iday == 355) & ! Boreal :: winter solstice.
-        .or. (dlatrow(i) < 0. .and. iday == 172)) then  ! Austral winter solstice.
+            .or. (dlatrow(i) < 0. .and. iday == 172)) then  ! Austral winter solstice.
           maxAnnualActLyr(i, m) = maxAnnualActLyr(i, m) * efoldfact &
                                   + actLyrThisYr(i, m) * (1.0 - efoldfact)
           actLyrThisYr(i, m) = 0.0

@@ -759,7 +759,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
           end if
         else
           if ((RESID(I) > 0. .and. TSTEP(I) < 0.) .or. &
-          (RESID(I) < 0. .and. TSTEP(I) > 0.)) then
+              (RESID(I) < 0. .and. TSTEP(I) > 0.)) then
             TSTEP(I) = - TSTEP(I) / 2.0
           end if
           TZERO(I) = TZERO(I) + TSTEP(I)
@@ -892,7 +892,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
   do I = IL1, IL2
     if (FI(I) > 0.) then
       if ((IWATER(I) == 1 .and. TZERO(I) < TFREZ) .or. &
-      (IWATER(I) == 2 .and. TZERO(I) > TFREZ)) then
+          (IWATER(I) == 2 .and. TZERO(I) > TFREZ)) then
         TZERO(I) = TFREZ
         WZERO(I) = 0.622 * 611.0 / PADRY(I)
         QZERO(I) = WZERO(I) / (1.0 + WZERO(I))
@@ -973,7 +973,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
       if (FI(I) > 0.) then
         WAVAIL(I, J) = RHOW * (THLIQ(I, J) - THLMIN(I, J)) * DELZW(I, J)
         if (J == 1 .and. EVAPG(I) > 0.0) &
-        WAVAIL(I, J) = WAVAIL(I, J) - EVAPG(I) * DELT
+            WAVAIL(I, J) = WAVAIL(I, J) - EVAPG(I) * DELT
         WAVAIL(I, J) = MAX(WAVAIL(I, J), 0.)
         WROOT(I, J) = 0.0
       end if
@@ -1299,7 +1299,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
         QLWOC(I) = SBC * TCAN(I) * TCAN(I) * TCAN(I) * TCAN(I)
         QSENSC(I) = RHOAIR(I) * SPHAIR * CFSENS(I) * (TCAN(I) - TAC(I))
         if (FRAINC(I) > 0. .or. FSNOWC(I) > 0. .or. &
-        RC(I) <= 5000. .or. QAC(I) > QCAN(I)) then
+            RC(I) <= 5000. .or. QAC(I) > QCAN(I)) then
           EVAPC(I) = RHOAIR(I) * CFEVAP(I) * (QCAN(I) - QAC(I))
           IEVAPC(I) = 1
         else
@@ -1351,7 +1351,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
             end if
           else
             if ((RESID(I) > 0. .and. TSTEP(I) < 0.) .or. &
-            (RESID(I) < 0. .and. TSTEP(I) > 0.)) then
+                (RESID(I) < 0. .and. TSTEP(I) > 0.)) then
               TSTEP(I) = - TSTEP(I) / 2.0
             end if
             TCAN(I) = TCAN(I) + TSTEP(I)
@@ -1372,9 +1372,9 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
             DCFLUX = (CFLX(I) - CFLUXM(I)) / &
                      SIGN(MAX(.001, ABS(TSTEP(I))), TSTEP(I))
             if (ABS(TVIRTA(I) - TVIRTC(I)) < 0.4) &
-            DCFLUX = MAX(DCFLUX, 0.8 * DCFLXM(I))
+                DCFLUX = MAX(DCFLUX, 0.8 * DCFLXM(I))
             DXEVAP = (XEVAP(I) - XEVAPM(I)) / &
-            SIGN(MAX(.001, ABS(TSTEP(I))), TSTEP(I))
+                     SIGN(MAX(.001, ABS(TSTEP(I))), TSTEP(I))
           else
             DCFLUX = 0.
             DXEVAP = 0.
@@ -1512,7 +1512,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
     ! 6350         FORMAT('0CANOPY ITERATION LIMIT',3X, 3I3, 3(F8.2, E12.4))
     !         END IF
     if (FI(I) > 0. .and. (TCAN(I) < 173.16 .or. &
-    TCAN(I) > 373.16)) then
+        TCAN(I) > 373.16)) then
       IBAD = I
     end if
   end do ! loop 625
@@ -1745,7 +1745,7 @@ subroutine energBalVegSolve(ISNOW, FI, & ! Formerly TSOLVC
       QLWOC(I) = SBC * TCAN(I) * TCAN(I) * TCAN(I) * TCAN(I)
       QSENSC(I) = RHOAIR(I) * SPHAIR * CFSENS(I) * (TCAN(I) - TAC(I))
       if (FRAINC(I) > 0. .or. FSNOWC(I) > 0. .or. &
-      RC(I) <= 5000. .or. QAC(I) > QCAN(I)) then
+          RC(I) <= 5000. .or. QAC(I) > QCAN(I)) then
         EVAPC(I) = RHOAIR(I) * CFEVAP(I) * (QCAN(I) - QAC(I))
       else
         EVAPC(I) = 0.0

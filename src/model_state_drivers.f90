@@ -221,7 +221,7 @@ contains
       !> Since the domainBounds are coordinates, need to find the indices corresponding to the domain bounds.
 
       if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
-      myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+          myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
         ! Special case, if the domainBounds are 0/0/0/0 then take whole domain.
         print * , ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
         xpos(1) = 1
@@ -254,10 +254,10 @@ contains
       !! In this case, the closest grid point to the specified coordinates is used and the check should not be done.
 
       if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and. &
-      myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
+          myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
 
       if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and. &
-      myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
+          myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
 
       !> Compute the size of the coordinate vectors.
 
@@ -267,10 +267,10 @@ contains
       !> Ensure that the last index of each vector is within the domain bounds.
 
       if (myDomain%allLonValues(maxval(xpos)) > myDomain%domainBounds(2) .and. &
-      myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%cntx = myDomain%cntx - 1
+          myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%cntx = myDomain%cntx - 1
 
       if (myDomain%allLatValues(maxval(ypos)) > myDomain%domainBounds(4) .and. &
-      myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%cnty = myDomain%cnty - 1
+          myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%cnty = myDomain%cnty - 1
 
     else ! projected grid
 
@@ -299,7 +299,7 @@ contains
 
       !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
       if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
-      myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+          myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
         print * , ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
         xpos(1) = 1
         xpos(2) = totlon

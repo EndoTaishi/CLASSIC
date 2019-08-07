@@ -178,14 +178,14 @@ subroutine SNOW_TRANVAL(trandif, trandir, & ! OUTPUT
           end do        ! iismu
         end do           ! iisalb
         if (trandif (i, ib) > 1.3 .or. &
-        trandif (i, ib) < 0.0) then
+            trandif (i, ib) < 0.0) then
           write(6, * ) 'Bad trandif ',i, ib, smu(i), bc_conc(i), &
                         snow_reff(i), swe(i), salb(i, ib), trandif (i, ib)
           write(6, * ) i, ib, ismu(i), ibc(i), ireff(i), iswe(i), isalb
           call errorHandler('SNOW_TRANVAL', - 3)
         end if
         if (trandir(i, ib) > 1.3 .or. &
-        trandir(i, ib) < 0.0) then
+            trandir(i, ib) < 0.0) then
           write(6, * ) 'Bad trandir ',i, ib, smu(i), bc_conc(i), &
                         snow_reff(i), swe(i), salb(i, ib), trandir(i, ib)
           write(6, * ) i, ib, ismu(i), ibc(i), ireff(i), iswe(i), isalb

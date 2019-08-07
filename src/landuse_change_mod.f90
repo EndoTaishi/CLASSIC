@@ -659,7 +659,7 @@ contains
 
         do j = 1, icc
           if ( (fcancmx(i, j) > fcancmy(i, j)) .and. &
-          (abs(fcancmy(i, j) - fcancmx(i, j)) > zero) ) then
+              (abs(fcancmy(i, j) - fcancmx(i, j)) > zero) ) then
             fraciord(i, j) = 1  ! increasing
           else if ( (fcancmx(i, j) < fcancmy(i, j)) .and. &
                   (abs(fcancmy(i, j) - fcancmx(i, j)) > zero) ) then
@@ -670,7 +670,7 @@ contains
         !> check if bare fraction increases of decreases
 
         if ( (barefrac(i) > pbarefra(i)) .and. &
-        (abs(pbarefra(i) - barefrac(i)) > zero) ) then
+            (abs(pbarefra(i) - barefrac(i)) > zero) ) then
           bareiord(i) = 1  ! increasing
         else if ( (barefrac(i) < pbarefra(i)) .and. &
                  (abs(pbarefra(i) - barefrac(i)) > zero) ) then
@@ -828,7 +828,7 @@ contains
         !> calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) & grsumfur(i)
 
         if (abs(chopedbm(i) - grsumcom(i) - grsumpap(i) - grsumfur(i)) > &
-        tolrnce1) then
+            tolrnce1) then
           write(6, * )'at grid cell = ',i
           write(6, * )'chopped biomass does not equals sum of total'
           write(6, * )'luc related emissions'
@@ -1031,10 +1031,10 @@ contains
         !>
         ! COMBAK PERLAY
         if (abs(pvgbioms(i) + pgavltms(i) + pgavscms(i) &
-        + pluclitpool(i) + plucscpool(i) &
-        - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
-        - litrmass(i, iccp2) - soilcmas(i, iccp2) &
-        - grdencom(i)) > tolrance) then
+            + pluclitpool(i) + plucscpool(i) &
+            - vgbiomas(i) - gavgltms(i) - gavgscms(i) &
+            - litrmass(i, iccp2) - soilcmas(i, iccp2) &
+            - grdencom(i)) > tolrance) then
           ! if ( abs(pvgbioms(i) + pgavltms(i) + pgavscms(i) &
           !        + pluclitpool(i) + plucscpool(i) &
           !        - vgbiomas(i) - gavgltms(i) - gavgscms(i) &

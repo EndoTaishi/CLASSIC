@@ -130,7 +130,7 @@ subroutine waterInfiltrateUnsat(WMOVE, TMOVE, LZF, NINF, ZF, TRMDR, R, TR, & ! F
     do I = IL1, IL2
       if (ifILL(I) > 0 .and. ifIND(I) == 0) then
         if (GRKINF(I, J) > 1.0E-12 .and. &
-        GRKINF(I, J) < (R(I) - 1.0E-8)) then
+            GRKINF(I, J) < (R(I) - 1.0E-8)) then
           ZF(I) = PSIF (I, J) / (R(I) / GRKINF(I, J) - 1.0)
           if (ZF(I) < (ZBOTX(I, J) - DELZX(I, J))) then
             ZF(I) = MAX(ZBOTX(I, J) - DELZX(I, J), 0.0)

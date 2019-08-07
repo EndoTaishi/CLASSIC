@@ -178,7 +178,7 @@ subroutine waterInfiltrateSat(WMOVE, TMOVE, LZF, NINF, TRMDR, TPOND, ZPOND, & ! 
       THLNLZ(I) = THLINF(I, LZF(I))
       THLQLZ(I) = THLIQX(I, LZF(I))
       if (THLQLZ(I) > (THLNLZ(I) - 1.0E-6) .and. LZF(I) < IGP1 &
-      .and. THLQLZ(I) > 0.0001) then
+          .and. THLQLZ(I) > 0.0001) then
         ZF(I) = ZBOTX(I, LZF(I))
         WMOVE(I, NINF(I)) = THLQLZ(I) * DELZX(I, LZF(I))
         TMOVE(I, NINF(I)) = TBARWX(I, LZF(I))
@@ -329,7 +329,7 @@ subroutine waterInfiltrateSat(WMOVE, TMOVE, LZF, NINF, TRMDR, TPOND, ZPOND, & ! 
   !
   do I = IL1, IL2 ! loop 450
     if (ITER(I) == 1 .and. ISIMP(I) == - 2 .and. &
-    LZF(I) < IGP1) then
+        LZF(I) < IGP1) then
       WMOVE(I, NINF(I)) = WMOVE(I, NINF(I)) + WDISP(I) + WABS(I)
       ZF(I) = ZF(I) + DZF(I) + DZDISP(I)
     end if
@@ -349,8 +349,8 @@ subroutine waterInfiltrateSat(WMOVE, TMOVE, LZF, NINF, TRMDR, TPOND, ZPOND, & ! 
     if (ITER(I) == 1 .and. ISIMP(I) /= 1) then
       TRMDR(I) = TRMDR(I) - DTFLOW(I)
       if (ABS(ZF(I) - ZBOTX(I, LZF(I))) < 1.0E-6 .and. &
-      TRMDR(I) > 0. .and. LZF(I) < IGP1 .and. &
-      THLQLZ(I) > 0.0001) then
+          TRMDR(I) > 0. .and. LZF(I) < IGP1 .and. &
+          THLQLZ(I) > 0.0001) then
         FINF = GRKINF(I, LZF(I)) * (ZBOTX(I, LZF(I)) + ZPOND(I) + &
                PSIF (I, LZF(I))) / ZBOTX(I, LZF(I))
         FMAX(I) = MIN(FMAX(I), FINF)
@@ -378,8 +378,8 @@ subroutine waterInfiltrateSat(WMOVE, TMOVE, LZF, NINF, TRMDR, TPOND, ZPOND, & ! 
   do I = IL1, IL2 ! loop 600
     if (IGRN(I) > 0) then
       if (NIT <= NEND(I) .and. ITER(I) == 1 .and. &
-      (ZPOND(I) > 1.0E-8 .or. R(I) > 0.)  .and. &
-      TRMDR(I) > 0.) then
+          (ZPOND(I) > 1.0E-8 .or. R(I) > 0.)  .and. &
+          TRMDR(I) > 0.) then
         NPNTS = NPNTS + 1
       else
         ITER(I) = 0

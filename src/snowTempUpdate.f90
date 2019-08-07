@@ -193,7 +193,7 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
   !!
   do I = IL1, IL2 ! loop 200
     if (FI(I) > 0. .and. TSNOW(I) < 0. .and. WSNOW(I) > 0.) &
-    then
+        then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
                 DELT
       HADD = - TSNOW(I) * HCPSNO(I) * ZSNOW(I)

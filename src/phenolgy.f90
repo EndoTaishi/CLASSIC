@@ -266,14 +266,14 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('BdlDCoTr') ! Broadleaf deciduous cold tree
 
             if (roottemp(i, j) < (roothrsh + 273.16) .or. &
-            (daylngth(i) < 11.0 .and. &
-            roottemp(i, j) < (11.15 + 273.16))) lfstatus(i, j) = 4
+                (daylngth(i) < 11.0 .and. &
+                roottemp(i, j) < (11.15 + 273.16))) lfstatus(i, j) = 4
 
           case ('BdlDDrTr') ! Broadleaf deciduous drought dry tree
 
             if (roottemp(i, j) < (roothrsh + 273.16) .or. &
-            (daylngth(i) < 11.0 .and. &
-            roottemp(i, j) < (11.15 + 273.16))) lfstatus(i, j) = 4
+                (daylngth(i) < 11.0 .and. &
+                roottemp(i, j) < (11.15 + 273.16))) lfstatus(i, j) = 4
 
           case ('CropC3  ')
 
@@ -343,7 +343,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('NdlDcdTr')
 
             if (ailcg(i, j) < lfthrs(i, j) .and. colddays(i, 1) >= coldlmt(1) .and. &
-            ailcg(i, j) > zero) then
+                ailcg(i, j) > zero) then
               lfstatus(i, j) = 3
               chkmode(i, j) = 1
             end if
@@ -351,7 +351,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('BdlDCoTr')
 
             if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) & ! FLAG put 11.15 in param !
-            .or. roottemp(i, j) < (roothrsh + 273.16))) then
+                .or. roottemp(i, j) < (roothrsh + 273.16))) then
               lfstatus(i, j) = 3
               chkmode(i, j) = 1
               flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(2))
@@ -362,7 +362,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('BdlDDrTr')
 
             if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) &
-            .or. roottemp(i, j) < (roothrsh + 273.16))) then
+                .or. roottemp(i, j) < (roothrsh + 273.16))) then
               lfstatus(i, j) = 3        ! go into "leaf fall" mode
               chkmode(i, j) = 1
             end if
@@ -370,7 +370,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('BdlDCoSh') ! Shrub
 
             if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) & ! FLAG param to move out.
-            .or. roottemp(i, j) < (roothrsh + 273.16))) then
+                .or. roottemp(i, j) < (roothrsh + 273.16))) then
               lfstatus(i, j) = 3        ! go into "leaf fall" mode
               chkmode(i, j) = 1
               flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(2))
@@ -420,7 +420,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('NdlDcdTr') ! Needle leaf deciduous tree
 
             if (ailcg(i, j) < lfthrs(i, j) .and. colddays(i, 1) > coldlmt(1) &
-            .and. ailcg(i, j) > zero) then
+                .and. ailcg(i, j) > zero) then
               lfstatus(i, j) = 3         ! go into "leaf fall" mode
               chkmode(i, j) = 1
             else if (ailcg(i, j) <= zero) then
@@ -450,8 +450,8 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
 
             ! we use daylength and roottemp to initiate leaf offset
             if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. &
-            roottemp(i, j) < (11.15 + 273.16)) .or. &
-            roottemp(i, 4) < (roothrsh + 273.16))) then
+                roottemp(i, j) < (11.15 + 273.16)) .or. &
+                roottemp(i, 4) < (roothrsh + 273.16))) then
               lfstatus(i, j) = 3         ! go into "leaf fall" mode
               chkmode(i, j) = 1
               flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(2))
@@ -478,8 +478,8 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
             !! away from the equator then we can imagine. other wise leaf
             !! loss will occur due to drought anyway.
             if (ailcg(i, j) > zero .and. &
-            ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) .or. &
-            roottemp(i, j) < (roothrsh + 273.16))) then
+                ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) .or. &
+                roottemp(i, j) < (roothrsh + 273.16))) then
               lfstatus(i, j) = 3         ! go into "leaf fall" mode
               chkmode(i, j) =  1
             else if (ailcg(i, j) > zero .and. ailcg(i, j) < lfthrs(i, j)) then
@@ -557,7 +557,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           case ('BdlDCoSh') ! DCD-SHRUB     treated the same as needle leaf dcd
 
             if (ailcg(i, j) < lfthrs(i, j) .and. colddays(i, 1) >= coldlmt(1) .and. &
-            ailcg(i, j) > zero) then
+                ailcg(i, j) > zero) then
               lfstatus(i, j) = 3         ! go into "leaf fall" mode
               chkmode(i, j) = 1
             else if (ailcg(i, j) <= zero) then
@@ -638,7 +638,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
               end if
             else if (pftkind == 'BdlDCoTr' .or. pftkind == 'BdlDDrTr') then
               if ((pandays(i, j) >= dayschk(j)) .and. ((roottemp(i, 4) > (roothrsh + 273.16)) .and. &
-              (daylngth(i) > 11.0))) then
+                  (daylngth(i) > 11.0))) then
                 if (ailcg(i, j) < lfthrs(i, j)) then
                   lfstatus(i, j) = 1      ! go into "max. growth" mode
                   chkmode(i, j) = 1
@@ -793,7 +793,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           gleafmas(i, j) = gleafmas(i, j) - nrmlloss(i, j) - drgtloss(i, j) - coldloss(i, j)
 
           if (useTracer > 0) tracerGLeafMass(i, j) = tracerGLeafMass(i, j) - tracerNrmlLoss(i, j) &
-          - tracerDrgtLoss(i, j) - tracerColdLoss(i, j)
+              - tracerDrgtLoss(i, j) - tracerColdLoss(i, j)
 
           if (gleafmas(i, j) < 0.0) then
 
@@ -810,7 +810,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           else
             bleafmas(i, j) = bleafmas(i, j) + nrmlloss(i, j) + drgtloss(i, j) + coldloss(i, j)
             if (useTracer > 0) tracerBLeafMass(i, j) = tracerBLeafMass(i, j) + tracerNrmlLoss(i, j) &
-            + tracerDrgtLoss(i, j) + tracerColdLoss(i, j)
+                + tracerDrgtLoss(i, j) + tracerColdLoss(i, j)
           end if
 
           nrmlloss(i, j) = 0.0
@@ -857,7 +857,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
         leaflitr(i, j) = nrmlloss(i, j) + drgtloss(i, j) &
                          + coldloss(i, j) + flhrloss(i, j)
         if (useTracer > 0) tracerLeafLitr(i, j) = tracerNrmlLoss(i, j) &
-        + tracerDrgtLoss(i, j) + tracerColdLoss(i, j) + tracerFlHrLoss(i, j)
+            + tracerDrgtLoss(i, j) + tracerColdLoss(i, j) + tracerFlHrLoss(i, j)
 
       end if
     end do ! loop 660

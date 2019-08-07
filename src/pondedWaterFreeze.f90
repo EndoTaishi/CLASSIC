@@ -103,7 +103,7 @@ subroutine pondedWaterFreeze(ZPOND, TPOND, ZSNOW, TSNOW, ALBSNO, RHOSNO, HCPSNO,
   !!
   do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. ZPOND(I) > 0. .and. (TPOND(I) < 0. &
-    .or. QFREZ(I) < 0.)) then
+        .or. QFREZ(I) < 0.)) then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
                 DELT
       ZFREZ = 0.0

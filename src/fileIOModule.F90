@@ -132,7 +132,7 @@ contains
       call checkNC(nf90_inquire_variable(fileId, varId, name = ncGetVarName), tag = 'ncGetVarName() ')
       varId = varId + 1
       if (trim(ncGetVarName) == 'lat' .or. trim(ncGetVarName) == 'lon' .or. &
-      trim(ncGetVarName) == 'time' .or. trim(ncGetVarName) == 'lev') then
+          trim(ncGetVarName) == 'time' .or. trim(ncGetVarName) == 'lev') then
         notit = .true.
       else
         notit = .false.

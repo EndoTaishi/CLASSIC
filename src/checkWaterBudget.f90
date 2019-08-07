@@ -226,12 +226,12 @@ subroutine checkWaterBudget(ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & !
           IPTBDJ = J
         end if
         if (THLIQ(I, J) < (THLMIN(I, J) - ACCLMT) .and. &
-        ISAND(I, J) /= - 3) then
+            ISAND(I, J) /= - 3) then
           JPTBDI = I
           JPTBDJ = J
         end if
         if ((THICE(I, J) * RHOICE / RHOW - THPOR(I, J) + THLMIN(I, J)) &
-        > ACCLMT .and. ISAND(I, J) /= - 3) then
+            > ACCLMT .and. ISAND(I, J) /= - 3) then
           KPTBDI = I
           KPTBDJ = J
         end if

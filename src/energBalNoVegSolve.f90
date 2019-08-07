@@ -644,7 +644,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
             end if
           else
             if ((RESID(I) > 0. .and. TSTEP(I) < 0.) .or. &
-            (RESID(I) < 0. .and. TSTEP(I) > 0.)) then
+                (RESID(I) < 0. .and. TSTEP(I) > 0.)) then
               TSTEP(I) = - TSTEP(I) / 2.0
             end if
             TZERO(I) = TZERO(I) + TSTEP(I)
@@ -678,7 +678,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
             DCFLUX = (CFLUX(I) - CFLUXM(I)) / &
                      SIGN(MAX(.001, ABS(TSTEP(I))), TSTEP(I))
             if (ABS(TVIRTA(I) - TVIRTS(I)) < 0.4) &
-            DCFLUX = MAX(DCFLUX, 0.8 * DCFLXM(I))
+                DCFLUX = MAX(DCFLUX, 0.8 * DCFLXM(I))
             DCFLXM(I) = DCFLUX
           else
             DCFLUX = 0.
@@ -789,7 +789,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   IBAD = 0
   do I = IL1, IL2
     if (FI(I) > 0. .and. (TZERO(I) < 123.16 .or. &
-    TZERO(I) > 373.16)) then
+        TZERO(I) > 373.16)) then
       IBAD = I
     end if
   end do ! loop 200
@@ -825,8 +825,8 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   do I = IL1, IL2
     if (FI(I) > 0.) then
       if (((IWATER(I) == 1 .and. TZERO(I) < TFREZ) .or. &
-      (IWATER(I) == 2 .and. TZERO(I) > TFREZ)) .or. &
-      (ISAND(I, 1) == - 4 .and. TZERO(I) > TFREZ)) then
+          (IWATER(I) == 2 .and. TZERO(I) > TFREZ)) .or. &
+          (ISAND(I, 1) == - 4 .and. TZERO(I) > TFREZ)) then
         TZERO(I) = TFREZ
         WZERO(I) = 0.622 * 611.0 / PADRY(I)
         QZERO(I) = WZERO(I) / (1.0 + WZERO(I))
@@ -903,7 +903,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
         QEVAP(I) = 0.0
       end if
       if ((ISNOW == 1 .and. QMELT(I) < 0.0) .or. &
-      (ISNOW == 0 .and. QMELT(I) > 0.0)) then
+          (ISNOW == 0 .and. QMELT(I) > 0.0)) then
         GZERO(I) = GZERO(I) + QMELT(I)
         QMELT(I) = 0.0
       end if

@@ -81,9 +81,9 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
   IPTBAD = 0
   do I = IL1, IL2 ! loop 100
     if (ZSNOW(I) > 0. .and. &
-    FI  (I) > 0. .and. S(I) * DELT < 1.0E-4) then
+        FI  (I) > 0. .and. S(I) * DELT < 1.0E-4) then
       if (ALBSNO(I) > 0.5001 .and. (RMELT(I) > 1.0E-7 .or. &
-      TSNOW(I) >= - 0.01)) then
+          TSNOW(I) >= - 0.01)) then
         ALBSNO(I) = (ALBSNO(I) - 0.50) * EXP( - 0.01 * DELT / 3600.0) + &
                     0.50
       else if (ALBSNO(I) > 0.7001 .and. RMELT(I) <= 1.0E-7) &
@@ -104,7 +104,7 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
     end if
     !
     if (FI(I) > 0. .and. ZSNOW(I) > 0.0001 .and. &
-    RHOSNO(I) < (RHOMAX(I) - 0.01)) then
+        RHOSNO(I) < (RHOMAX(I) - 0.01)) then
       RHOOLD = RHOSNO(I)
       RHOSNO(I) = (RHOSNO(I) - RHOMAX(I)) * EXP( - 0.01 * DELT / 3600.0) + &
                   RHOMAX(I)
@@ -113,7 +113,7 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
                   (RHOW * ZSNOW(I))
     end if
     if ((ALBSNO(I) < 0.49 .or. ALBSNO(I) > 1.0) .and. &
-    ZSNOW (I) > 0. .and. FI(I) > 0.)               IPTBAD = I
+        ZSNOW (I) > 0. .and. FI(I) > 0.)               IPTBAD = I
   end do ! loop 100
   !
   if (IPTBAD /= 0) then

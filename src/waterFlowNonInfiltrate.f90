@@ -183,8 +183,8 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
   !!
   do I = IL1, IL2
     if (FI (I) > 0. .and. &
-    ISAND(I, 1) > - 4 .and. DT(I) > 0. .and. IGRN(I) == 0 .and. &
-    (R(I) < 1.0E-12 .and. ZPOND(I) < 1.0E-12)) then
+        ISAND(I, 1) > - 4 .and. DT(I) > 0. .and. IGRN(I) == 0 .and. &
+        (R(I) < 1.0E-12 .and. ZPOND(I) < 1.0E-12)) then
       IGRD(I) = 1
     else
       IGRD(I) = 0
@@ -343,7 +343,7 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
       if (IGRD(I) > 0) then
         if (J < IGDR(I)) then
           if (THPOR(I, J) > 0.0 .and. THPOR(I, J + 1) > 0.0 .and. &
-          ISAND(I, J + 1) > - 3) then
+              ISAND(I, J + 1) > - 3) then
             if (DELZW(I, J + 1) > DELZW(I, J)) then
               THPBND = (THPORF(I, J) + THPORF(I, J + 1)) / 2.0
               THLBND = (THLIQ(I, J) + THLIQ(I, J + 1)) / 2.0
@@ -375,10 +375,10 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
             FDT(I, J + 1) = 0.0
           end if
           if (ABS(THLIQ(I, J) - THLIQ(I, J + 1)) < 0.05 .and. &
-          FDT(I, J) < 0.0) FDT(I, J + 1) = 0.0
+              FDT(I, J) < 0.0) FDT(I, J + 1) = 0.0
           if (LZF(I) > 0 .and. J < LZF(I)) FDT(I, J + 1) = 0.0
           if (LZF(I) > 0 .and. J == LZF(I) .and. FDT(I, J + 1) &
-          < 0.0) FDT(I, J + 1) = 0.0
+              < 0.0) FDT(I, J + 1) = 0.0
         end if
       end if
     end do
@@ -423,7 +423,7 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
   do J = 1, IG ! loop 250
     do I = IL1, IL2
       if (IGRD(I) > 0 .and. J == 1 .and. FDT(I, J) < 0. .and. &
-      DELZW(I, J) > 0.0) then
+          DELZW(I, J) > 0.0) then
         THTEST(I, J) = THLIQ(I, J) + FDT(I, J) / DELZW(I, J)
         if (THTEST(I, J) < THLMIN(I, J)) then
           FDT(I, J) = FDT(I, J) + (THLIQ(I, J) - THLMIN(I, J)) * &
@@ -455,7 +455,7 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
       !
       if (IGRD(I) > 0) then
         if (THLIQ(I, J) <= (THLMIN(I, J) + 0.001) &
-        .and. J <= IGDR(I)) then
+            .and. J <= IGDR(I)) then
           if (FDT(I, J) <= 0. .and. FDT(I, J + 1) >= 0.) then
             FDT(I, J) = 0.0
             FDT(I, J + 1) = 0.0
@@ -467,7 +467,7 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
         end if
       end if
       if (IGRD(I) > 0 .and. ISAND(I, J) == - 2 .and. &
-      THLIQ(I, J) <= THLRET(I, J)) then
+          THLIQ(I, J) <= THLRET(I, J)) then
         if (FDT(I, J + 1) > 0.0) FDT(I, J + 1) = 0.0
       end if
     end do
@@ -494,7 +494,7 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
     do I = IL1, IL2
       if (IGRD(I) > 0) then
         if (THLIQ(I, J) >= (THLMAX(I, J) - 0.001) &
-        .and. J <= IGDR(I)) then
+            .and. J <= IGDR(I)) then
           if (FDT(I, J) >= 0. .and. FDT(I, J + 1) <= 0.) then
             FDT(I, J) = 0.0
             FDT(I, J + 1) = 0.0
@@ -550,11 +550,11 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
             THTEST(I, J) = THLTHR
             if (J < IGDR(I)) then
               if (DELZW(I, J + 1) > 0.0) THTEST(I, J + 1) = THLIQ(I, J + 1) &
-              + (FDT(I, J + 1) - FDT(I, J + 2)) / DELZW(I, J + 1)
+                  + (FDT(I, J + 1) - FDT(I, J + 2)) / DELZW(I, J + 1)
             end if
             if (J > 1) then
               if (DELZW(I, J - 1) > 0.0) THTEST(I, J - 1) = THLIQ(I, J - 1) &
-              + (FDT(I, J - 1) - FDT(I, J)) / DELZW(I, J - 1)
+                  + (FDT(I, J - 1) - FDT(I, J)) / DELZW(I, J - 1)
             end if
           end if
         else
@@ -674,14 +674,14 @@ subroutine waterFlowNonInfiltrate(IVEG, THLIQ, THICE, TBARW, FDT, TFDT, BASFLW, 
       TFDT(I, IGDR(I) + 1) = TBARW(I, IGDR(I))
       if (FDT(I, IGDR(I) + 1) > 0.0) then
         if ((BASFLW(I) + FI(I) * FDT(I, IGDR(I) + 1)) > 0.0) &
-        TBASFL(I) = (TBASFL(I) * BASFLW(I) + (TFDT(I, IGDR(I) + 1) + &
-        TFREZ) * FI(I) * FDT(I, IGDR(I) + 1)) / (BASFLW(I) + FI(I) * &
-        FDT(I, IGDR(I) + 1))
+            TBASFL(I) = (TBASFL(I) * BASFLW(I) + (TFDT(I, IGDR(I) + 1) + &
+            TFREZ) * FI(I) * FDT(I, IGDR(I) + 1)) / (BASFLW(I) + FI(I) * &
+            FDT(I, IGDR(I) + 1))
         BASFLW(I) = BASFLW(I) + FI(I) * FDT(I, IGDR(I) + 1)
         if ((RUNOFF(I) + FDT(I, IGDR(I) + 1)) > 0.0) &
-        TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TFDT(I, IGDR(I) + 1) + &
-        TFREZ) * FDT(I, IGDR(I) + 1)) / (RUNOFF(I) + &
-        FDT(I, IGDR(I) + 1))
+            TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TFDT(I, IGDR(I) + 1) + &
+            TFREZ) * FDT(I, IGDR(I) + 1)) / (RUNOFF(I) + &
+            FDT(I, IGDR(I) + 1))
         RUNOFF(I) = RUNOFF(I) + FDT(I, IGDR(I) + 1)
       end if
     end if

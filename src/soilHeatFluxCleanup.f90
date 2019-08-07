@@ -173,8 +173,8 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
       end if
       !
       if ((IWATER(I) == 1 .and. QFREZG(I) > 0.) .or. &
-      (IWATER(I) == 2 .and. QFREZG(I) < 0.) .or. &
-      IWATER(I) == 0) then
+          (IWATER(I) == 2 .and. QFREZG(I) < 0.) .or. &
+          IWATER(I) == 0) then
         GZERO(I) = GZERO(I) + QFREZG(I)
         QFREZG(I) = 0.
       end if
@@ -198,7 +198,7 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
     if (FI(I) > 0.) then
       TBARPR(I, 2) = TBAR(I, 2) - TFREZ
       if (DELZW(I, 3) > 0.0 .and. DELZW(I, 3) < DELZ(3) &
-      .and. IG == 3) then
+          .and. IG == 3) then
         TBARPR(I, 3) = (TBAR(I, 3) * (HCP(I, 3) * DELZW(I, 3) + &
                        HCPSND * (DELZ(3) - DELZW(I, 3))) - TBASE(I) * &
                        HCPSND * (DELZ(3) - DELZW(I, 3))) / (HCP(I, 3) * &

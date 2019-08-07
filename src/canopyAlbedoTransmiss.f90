@@ -805,7 +805,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN,
           RCG(I, J) = 1.0
         end if
         if (QSWINV(I) > 0.01 .and. COSZS(I) > 0. .and. &
-        CXTEFF(I, J) > 1.0E-5 .and. RCG(I, J) < 1.0E5) then
+            CXTEFF(I, J) > 1.0E-5 .and. RCG(I, J) < 1.0E5) then
           RCACC(I, J) = MIN(CXTEFF(I, J) * RSMIN(I, J) / LOG((QSWINV(I) + &
                         QA50(I, J) / CXTEFF(I, J)) / (QSWINV(I) * EXP( - CXTEFF(I, J) * &
                         PAI(I, J)) + QA50(I, J) / CXTEFF(I, J))) * RCV(I, J) * RCG(I, J) * &

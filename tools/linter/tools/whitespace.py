@@ -79,7 +79,6 @@ class WhitespaceChecker(object):
                 if not parsed_line:
                     self.fixedlines.append(line)
                     continue
-
                 self.analyzeLine1(parsed_line.group(4))
 
                 # if we have a labelled line, we must account for that in the whitespace
@@ -91,6 +90,8 @@ class WhitespaceChecker(object):
                 num_spaces = max(0, 2*self.levelNumber - len(newline))
                 for x in range(num_spaces):
                     newline += " "
+                if self.continuedIf:
+                    newline += "    "
                 # 'contains' should be shifted back by 2 spaces
                 if re.match(r'\bcontains\b', parsed_line.group(4), re.IGNORECASE):
                     newline = newline[:-2]
@@ -153,12 +154,13 @@ class WhitespaceChecker(object):
         elif re.match(r'^[^\n!\'"]*\b(module(?! procedure )|interface|function|program|type |do|subroutine|case|select|else|forall|where)\b', line, re.IGNORECASE) \
         and not re.match(r'^[^\n!]*\bend\b', line, re.IGNORECASE):
             self.levelNumber += 1
-            self.continuedIf = False
         elif re.match(r'^[^!\n\'"]*\bif\b[^!\n]*\bthen\b', line, re.IGNORECASE):
             self.levelNumber += 1
-            self.continuedIf = False
         elif re.match(r'^[^!\n\'"]*(?<!end )\bif\b[^!\n]*&', line, re.IGNORECASE):
             self.continuedIf = True
+            return
         elif self.continuedIf and re.match(r'^[^!\n]*\bthen\b', line, re.IGNORECASE):
-            self.continuedIf = False
             self.levelNumber += 1
+        if self.continuedIf == True and re.match(r'^[^!\n]*&', line, re.IGNORECASE):
+            return
+        self.continuedIf = False

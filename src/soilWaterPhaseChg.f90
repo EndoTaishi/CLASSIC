@@ -95,7 +95,7 @@ subroutine soilWaterPhaseChg(TBAR, THLIQ, THICE, HCP, TBARW, HMFG, HTC, & ! Form
   do J = 1, IG ! loop 100
     do I = IL1, IL2
       if (FI(I) > 0. .and. DELZW(I, J) > 0. .and. ISAND(I, 1) > - 4) &
-      then
+          then
         !>
         !! The heat capacity \f$C_g\f$ of the permeable part \f$\Delta z_{g, w}\f$ of the soil
         !! layer under consideration is calculated here and in various

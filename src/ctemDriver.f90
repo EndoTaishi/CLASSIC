@@ -497,7 +497,7 @@ contains
 
     !> Set up the tracer for today
     if (useTracer > 0) call prepTracer(il1, il2, ilg, tracerCO2, & ! In
-    tracerValue) ! Out
+        tracerValue) ! Out
 
     if (PFTCompetition) then
 

@@ -435,7 +435,7 @@ subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & !
   do J = 1, IG ! loop 400
     do I = IL1, IL2
       if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
-      (QMELT(I) > 0. .or. EVAP(I) > 0.)) then
+          (QMELT(I) > 0. .or. EVAP(I) > 0.)) then
         TBAR(I, J) = (TBAR(I, J) * (DELZ(J) - ZMOVE(I)) + TMOVE(I, J) * &
                      ZMOVE(I)) / DELZ(J)
       end if
@@ -504,7 +504,7 @@ subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & !
       HTCS(I) = HTCS(I) + FI(I) * (TSNOW(I) + TFREZ) * HCPSNO(I) * &
                 ZSNOW(I) / DELT
       if (SNOCONV > 0.) TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + &
-      TBAR(I, IG) * SNOCONV / RHOW) / (RUNOFF(I) + SNOCONV / RHOW)
+          TBAR(I, IG) * SNOCONV / RHOW) / (RUNOFF(I) + SNOCONV / RHOW)
       RUNOFF(I) = RUNOFF(I) + SNOCONV / RHOW
     end if
   end do ! loop 500
@@ -539,7 +539,7 @@ subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & !
     do K = 1, IG + 1
       do I = IL1, IL2
         if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
-        ICONT(I) == 1) then
+            ICONT(I) == 1) then
           ZMAT(I, K, J) = 0.0
         end if
       end do
@@ -549,7 +549,7 @@ subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & !
   do J = 2, IG + 1 ! loop 650
     do I = IL1, IL2
       if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
-      ICONT(I) == 1) then
+          ICONT(I) == 1) then
         WMOVE(I, J) = DELZ(J - 1)
         TMOVE(I, J) = TBAR(I, J - 1)
       end if
@@ -560,7 +560,7 @@ subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & !
     do J = 1, IG
       do I = IL1, IL2
         if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
-        ICONT(I) == 1) then
+            ICONT(I) == 1) then
           if (ZRMDR(I, J) > 0. .and. WMOVE(I, K) > 0.) then
             ZMAT(I, K, J) = WMOVE(I, K)
             if (ZMAT(I, K, J) >= ZRMDR(I, J)) then
@@ -587,7 +587,7 @@ subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & !
     do K = 1, IG + 1 ! loop 800
       do I = IL1, IL2
         if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
-        ICONT(I) == 1) then
+            ICONT(I) == 1) then
           TADD(I) = TADD(I) + TMOVE(I, K) * ZMAT(I, K, J)
         end if
       end do

@@ -76,7 +76,7 @@ subroutine classGrowthIndex(GROWTH, TBAR, TA, FC, FCS, ILG, IG, IL1, IL2, JL) ! 
         GROWTH(I) = MIN(0.0,(GROWTH(I) + DELT / 5.184E6))
       else
         if (TA(I) > (TFREZ + 2.0) .and. TBAR(I, 1) > (TFREZ + 2.0)) &
-        then
+            then
           GROWTH(I) = MIN(1.0,(GROWTH(I) + DELT / 5.184E6))
         else
           if (GROWTH(I) > 0.90) then

@@ -220,7 +220,7 @@ contains
       end if
 
       if ((.not. leapnow .and. iday == 365) .or. &
-      (leapnow .and. iday == 366)) then
+          (leapnow .and. iday == 366)) then
         twcuryr(i) = - 9000.0
         tccuryr(i) = 9000.0
         if (anpcpcur(i) > zero) then
@@ -259,7 +259,7 @@ contains
     !! and the coldest month
 
     if ((.not. leapnow .and. iday == 365) .or. &
-    (leapnow .and. iday == 366)) then
+        (leapnow .and. iday == 366)) then
 
       do i = il1, il2 ! loop 270
         twcuryr(i) = maxval(tmonth(:,i))
@@ -401,26 +401,26 @@ contains
         select case (ctempfts(j))
         case ('NdlEvgTr') !> needleleaf evergreen
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j)) ) pftexist(i, j) = .true.
+              gdd5(i) >= gdd5lmt(sort(j)) ) pftexist(i, j) = .true.
 
         case ('NdlDcdTr') !> needleleaf deciduous
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
-          twarmm(i) <= twarmmax(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j))) pftexist(i, j) = .true.
+              twarmm(i) <= twarmmax(sort(j)) .and. &
+              gdd5(i) >= gdd5lmt(sort(j))) pftexist(i, j) = .true.
 
         case ('BdlEvgTr') !> broadleaf evergreen
           if (tcoldm(i) >= tcoldmin(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j))) pftexist(i, j) = .true.
+              gdd5(i) >= gdd5lmt(sort(j))) pftexist(i, j) = .true.
 
         case ('BdlDCoTr') !> broadleaf deciduous cold  (see note below 'BdlDDrTr' too)
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j)) .and. &
-          tcoldm(i) >= tcoldmin (sort(j))) pftexist(i, j) = .true.
+              gdd5(i) >= gdd5lmt(sort(j)) .and. &
+              tcoldm(i) >= tcoldmin (sort(j))) pftexist(i, j) = .true.
 
         case ('BdlDDrTr') !> broadleaf deciduous dry
           if (tcoldm(i) >= tcoldmin(sort(j)) .and. &
-          aridity(i) >= aridlmt(sort(j)) .and. &
-          dry_season_length(i) >= dryseasonlmt(sort(j))) then
+              aridity(i) >= aridlmt(sort(j)) .and. &
+              dry_season_length(i) >= dryseasonlmt(sort(j))) then
             pftexist(i, j) = .true.
 
             if (k == 0) then
@@ -448,8 +448,8 @@ contains
 
         case ('BdlDCoSh')
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j)) .and. &
-          tcoldm(i) >= tcoldmin(sort(j))) pftexist(i, j) = .true.
+              gdd5(i) >= gdd5lmt(sort(j)) .and. &
+              tcoldm(i) >= tcoldmin(sort(j))) pftexist(i, j) = .true.
 
         case default
           print * ,'Unknown CTEM PFT in competition:existence ',ctempfts(j)

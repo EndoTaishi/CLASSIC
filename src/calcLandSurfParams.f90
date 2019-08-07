@@ -393,21 +393,21 @@ subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & !
       else
         if (IN > 9) then
           if (DAY >= GROWYR(IN, 2, NL) .and. DAY < GROWYR(IN, 3, NL)) &
-          GROWA(I) = 1.0
+              GROWA(I) = 1.0
           if (DAY >= GROWYR(IN, 4, NL) .or. DAY < GROWYR(IN, 1, NL)) &
-          GROWA(I) = 0.0
+              GROWA(I) = 0.0
         else
           if (DAY >= GROWYR(IN, 2, NL) .or. DAY < GROWYR(IN, 3, NL)) &
-          GROWA(I) = 1.0
+              GROWA(I) = 1.0
           if (DAY >= GROWYR(IN, 4, NL) .and. DAY < GROWYR(IN, 1, NL)) &
-          GROWA(I) = 0.0
+              GROWA(I) = 0.0
         end if
         if (DAY >= GROWYR(IN, 1, NL) .and. DAY < GROWYR(IN, 2, NL)) &
-        GROWA(I) = (DAY - GROWYR(IN, 1, NL)) / (GROWYR(IN, 2, NL) - &
-        GROWYR(IN, 1, NL))
+            GROWA(I) = (DAY - GROWYR(IN, 1, NL)) / (GROWYR(IN, 2, NL) - &
+            GROWYR(IN, 1, NL))
         if (DAY >= GROWYR(IN, 3, NL) .and. DAY < GROWYR(IN, 4, NL)) &
-        GROWA(I) = (GROWYR(IN, 4, NL) - DAY) / (GROWYR(IN, 4, NL) - &
-        GROWYR(IN, 3, NL))
+            GROWA(I) = (GROWYR(IN, 4, NL) - DAY) / (GROWYR(IN, 4, NL) - &
+            GROWYR(IN, 3, NL))
         GROWA(I) = MAX(0.0, MIN(GROWA(I), 1.0))
         if (GROWA(I) < 1.0E-5) GROWA(I) = 0.0
       end if
@@ -733,7 +733,7 @@ subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & !
     FGS(I) = FGS(I) / FSUM
 
     if (ABS(1.0 - FCS(I) - FGS(I) - FC(I) - FG(I)) > 1.0E-5) &
-    call errorHandler('calcLandSurfParams',1)
+        call errorHandler('calcLandSurfParams',1)
     !
     if (IWF == 0) then
       if (ISAND(I, 1) == - 4) then
@@ -1051,7 +1051,7 @@ subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & !
     !
     do J = 1, IG ! loop 190
       if (DELZW(I, J) > 0.0 .and. (RRESID(I) > 0.0 &
-      .or. SRESID(I) > 0.0)) then
+          .or. SRESID(I) > 0.0)) then
         THSUM = THLIQ(I, J) + THICE(I, J) + &
                 (RRESID(I) + SRESID(I)) / (RHOW * DELZW(I, J))
         if (THSUM < THPOR(I, J)) then
@@ -1111,19 +1111,19 @@ subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & !
     do I = IL1, IL2
       if (FC(I) > 0. .and. H(I, J) > 0.) then
         if (IDISP == 1)   DISP(I) = DISP(I) + FCAN (I, J) * &
-        LOG(0.7 * H(I, J))   ! BDCS P?
+            LOG(0.7 * H(I, J))   ! BDCS P?
         ZOMLNC(I) = ZOMLNC(I) + FCAN (I, J) / &
-        ((LOG(ZBLEND(I) / (0.1 * H(I, J)))) ** 2)   ! BDCS P?
+                    ((LOG(ZBLEND(I) / (0.1 * H(I, J)))) ** 2)   ! BDCS P?
         ZOELNC(I) = ZOELNC(I) * &
-        (0.01 * H(I, J) * H(I, J) / ZORAT(IC)) ** FCAN(I, J)
+                    (0.01 * H(I, J) * H(I, J) / ZORAT(IC)) ** FCAN(I, J)
       end if
       if (FCS(I) > 0. .and. HS(I, J) > 0.) then
         if (IDISP == 1)   DISPS(I) = DISPS (I) + FCANS(I, J) * &
-        LOG(0.7 * HS(I, J))
+            LOG(0.7 * HS(I, J))
         ZOMLCS(I) = ZOMLCS(I) + FCANS(I, J) / &
-        ((LOG(ZBLEND(I) / (0.1 * HS(I, J)))) ** 2)
+                    ((LOG(ZBLEND(I) / (0.1 * HS(I, J)))) ** 2)
         ZOELCS(I) = ZOELCS(I) * &
-        (0.01 * HS(I, J) * HS(I, J) / ZORAT(IC)) ** FCANS(I, J)
+                    (0.01 * HS(I, J) * HS(I, J) / ZORAT(IC)) ** FCANS(I, J)
       end if
     end do
   end do ! loop 250
@@ -1338,10 +1338,10 @@ subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & !
     if (ctem_on) then
       CMAI  (I) = FC(I) * CMASSC(I) + FCS(I) * CMASCS(I)
       if (CMAI(I) < 1.0E-5 .and. (CMASSC(I) > 0.0 .or. &
-      CMASCS(I) > 0.0)) TCAN(I) = TA(I)
+          CMASCS(I) > 0.0)) TCAN(I) = TA(I)
     else ! CLASS (physics) only
       if (CMAI(I) < 1.0E-5 .and. (CMASSC(I) > 0.0 .or. &
-      CMASCS(I) > 0.0)) TCAN(I) = TA(I)
+          CMASCS(I) > 0.0)) TCAN(I) = TA(I)
       CMAI  (I) = FC(I) * CMASSC(I) + FCS(I) * CMASCS(I)
     end if
 
