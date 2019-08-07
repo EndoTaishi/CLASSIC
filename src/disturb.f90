@@ -16,21 +16,21 @@ contains
   !> Calculates whether fire occurs, burned area, amount of C emitted and litter generated
   !> @author Vivek Arora and Joe Melton
 
-  subroutine disturb (thliq,   THLW,       THFC,    uwind,   useTracer, & ! In
-                      vwind,  lightng,  fcancmx, isand, & ! In
-                      rmatctem,      ilg,   il1,      il2,   sort, & ! In
-                      grclarea,    thice,   popdin, lucemcom, & ! In
-                      dofire,  currlat,     iday,  fsnow, & ! In
-                      stemmass, rootmass, gleafmas, bleafmas,  litrmass, & ! In/out
-                      tracerStemMass, tracerRootMass, tracerGLeafMass,tracerBLeafMass, tracerLitrMass, & ! In/Ou
-                      stemltdt,   rootltdt,   glfltrdt,    blfltrdt, & ! Out (Primary)
-                      glcaemls,   rtcaemls,   stcaemls, &! Out (Primary)
-                      blcaemls,   ltrcemls,   burnfrac, &! Out (Primary)
-                      pstemmass, pgleafmass,  emit_co2,     emit_ch4, &! Out (Primary)
-                      emit_co,  emit_nmhc,  emit_h2,  emit_nox, & ! Out (Secondary)
+  subroutine disturb (thliq, THLW, THFC, uwind, useTracer, & ! In
+                      vwind, lightng, fcancmx, isand, & ! In
+                      rmatctem, ilg, il1, il2, sort, & ! In
+                      grclarea, thice, popdin, lucemcom, & ! In
+                      dofire, currlat, iday, fsnow, & ! In
+                      stemmass, rootmass, gleafmas, bleafmas, litrmass, & ! In/out
+                      tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass, tracerLitrMass, & ! In/Ou
+                      stemltdt, rootltdt, glfltrdt, blfltrdt, & ! Out (Primary)
+                      glcaemls, rtcaemls, stcaemls, &! Out (Primary)
+                      blcaemls, ltrcemls, burnfrac, &! Out (Primary)
+                      pstemmass, pgleafmass, emit_co2, emit_ch4, &! Out (Primary)
+                      emit_co, emit_nmhc, emit_h2, emit_nox, & ! Out (Secondary)
                       emit_n2o, emit_pm25, emit_tpm, emit_tc, & ! Out (Secondary)
-                      emit_oc,  emit_bc, burnvegf, bterm_veg, & ! Out (Secondary)
-                      mterm_veg,  lterm, smfunc_veg ) ! Out (Secondary)
+                      emit_oc, emit_bc, burnvegf, bterm_veg, & ! Out (Secondary)
+                      mterm_veg, lterm, smfunc_veg) ! Out (Secondary)
 
     !
     !     20  Nov 2018  - Remove extnprob from going in. It's redundant now because
@@ -71,7 +71,7 @@ contains
     !                     form of disturbance is modelled.
 
 
-    use classic_params, only : ignd, icc, ican, zero,kk, pi, c2dom, crop, &
+    use classic_params, only : ignd, icc, ican, zero, kk, pi, c2dom, crop, &
                           iccp2, standreplace, tolrance, bmasthrs_fire, &
                           lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, &
                           f0, maxsprd, frco2glf, frco2blf, &
@@ -85,7 +85,7 @@ contains
     integer, intent(in) :: ilg !<
     integer, intent(in) :: il1 !< il1=1
     integer, intent(in) :: il2 !< il2=ilg
-    integer, intent(in) :: isand(ilg,ignd) !<
+    integer, intent(in) :: isand(ilg, ignd) !<
     integer, intent(in) :: sort(icc) !< index for correspondence between 9 pfts and size 12 of parameters vectors
     integer, intent(in) :: iday
     logical, intent(in) :: dofire !< boolean, if true allow fire, if false no fire
@@ -95,28 +95,28 @@ contains
     !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
 
-    real, intent(in) :: thliq(ilg,ignd)    !< liquid soil moisture content
-    real, intent(in) :: THLW(ilg,ignd)   !< wilting point soil moisture content
-    real, intent(in) :: THFC(ilg,ignd)  !< field capacity soil moisture content
+    real, intent(in) :: thliq(ilg, ignd)    !< liquid soil moisture content
+    real, intent(in) :: THLW(ilg, ignd)   !< wilting point soil moisture content
+    real, intent(in) :: THFC(ilg, ignd)  !< field capacity soil moisture content
     real, intent(in) :: uwind(ilg)         !< wind speed, \f$m/s\f$
     real, intent(in) :: vwind(ilg)         !< wind speed, \f$m/s\f$
-    real, intent(in) :: fcancmx(ilg,icc)   !< fractional coverages of ctem's 9 pfts
+    real, intent(in) :: fcancmx(ilg, icc)   !< fractional coverages of ctem's 9 pfts
     real, intent(in) :: lightng(ilg)       !< total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
     !< to ground lightning is some fixed fraction of total lightning.
-    real, intent(in) :: rmatctem(ilg,icc,ignd) !< fraction of roots in each soil layer for each pft
-    real, intent(in) :: thice(ilg,ignd)   !< frozen soil moisture content over canopy fraction
+    real, intent(in) :: rmatctem(ilg, icc, ignd) !< fraction of roots in each soil layer for each pft
+    real, intent(in) :: thice(ilg, ignd)   !< frozen soil moisture content over canopy fraction
     real, intent(in) :: popdin(ilg)       !< population density \f$(people / km^2)\f$
     real, intent(in) :: lucemcom(ilg)     !< land use change (luc) related combustion emission losses, \f$u-mol co2/m2.sec\f$
     real, intent(in) :: currlat(ilg)      !<
     real, intent(in) :: fsnow(ilg)        !< fraction of snow simulated by class
 
-    real, intent(inout) :: stemmass(ilg,icc)  !< stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, intent(inout) :: rootmass(ilg,icc)  !< root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, intent(inout) :: gleafmas(ilg,icc)  !< green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, intent(inout) :: bleafmas(ilg,icc)  !< brown leaf mass
+    real, intent(inout) :: stemmass(ilg, icc)  !< stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, intent(inout) :: rootmass(ilg, icc)  !< root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, intent(inout) :: gleafmas(ilg, icc)  !< green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, intent(inout) :: bleafmas(ilg, icc)  !< brown leaf mass
 
     ! COMBAK PERLAY
-    real, intent(inout) :: litrmass(ilg,iccp2)!< litter mass for each of the CTEM pfts
+    real, intent(inout) :: litrmass(ilg, iccp2)!< litter mass for each of the CTEM pfts
     ! real, intent(inout) :: litrmass(:,:,:)!< litter mass for each of the CTEM pfts
     ! COMBAK PERLAY
 
@@ -126,49 +126,49 @@ contains
     real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
 
-    real, intent(out) :: stemltdt(ilg,icc) !< stem litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, intent(out) :: rootltdt(ilg,icc) !< root litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, intent(out) :: glfltrdt(ilg,icc) !< green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, intent(out) :: pstemmass(ilg,icc)
-    real, intent(out) :: pgleafmass(ilg,icc)
-    real, intent(out) :: burnvegf(ilg,icc)    !< per PFT fraction burned of that PFTs area
-    real, intent(out) :: bterm_veg(ilg,icc)    !< biomass fire probability term, Vivek
-    real, intent(out) :: mterm_veg(ilg,icc)    !< moisture fire probability term, Vivek
+    real, intent(out) :: stemltdt(ilg, icc) !< stem litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(out) :: rootltdt(ilg, icc) !< root litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(out) :: glfltrdt(ilg, icc) !< green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(out) :: pstemmass(ilg, icc)
+    real, intent(out) :: pgleafmass(ilg, icc)
+    real, intent(out) :: burnvegf(ilg, icc)    !< per PFT fraction burned of that PFTs area
+    real, intent(out) :: bterm_veg(ilg, icc)    !< biomass fire probability term, Vivek
+    real, intent(out) :: mterm_veg(ilg, icc)    !< moisture fire probability term, Vivek
     real, intent(out) :: lterm(ilg)           !< lightning fire probability term
-    real, intent(out) :: smfunc_veg(ilg,icc)   !< soil moisture dependence on fire spread rate, Vivek
+    real, intent(out) :: smfunc_veg(ilg, icc)   !< soil moisture dependence on fire spread rate, Vivek
 
     !     note the following c burned will be converted to a trace gas
     !     emission or aerosol on the basis of emission factors.
-    real, intent(out) :: glcaemls(ilg,icc) !< green leaf carbon emission losses, \f$kg c/m^2\f$
-    real, intent(out) :: rtcaemls(ilg,icc) !< root carbon emission losses, \f$kg c/m^2\f$
-    real, intent(out) :: stcaemls(ilg,icc) !< stem carbon emission losses, \f$kg c/m^2\f$
-    real, intent(out) :: ltrcemls(ilg,icc) !< litter carbon emission losses, \f$kg c/m^2\f$
-    real, intent(out) :: blfltrdt(ilg,icc) !< brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, intent(out) :: blcaemls(ilg,icc) !< brown leaf carbon emission losses, \f$kg c/m^2\f$
+    real, intent(out) :: glcaemls(ilg, icc) !< green leaf carbon emission losses, \f$kg c/m^2\f$
+    real, intent(out) :: rtcaemls(ilg, icc) !< root carbon emission losses, \f$kg c/m^2\f$
+    real, intent(out) :: stcaemls(ilg, icc) !< stem carbon emission losses, \f$kg c/m^2\f$
+    real, intent(out) :: ltrcemls(ilg, icc) !< litter carbon emission losses, \f$kg c/m^2\f$
+    real, intent(out) :: blfltrdt(ilg, icc) !< brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(out) :: blcaemls(ilg, icc) !< brown leaf carbon emission losses, \f$kg c/m^2\f$
     real, intent(out) :: burnfrac(ilg)     !< total areal :: fraction burned, (%)
 
     !     emitted compounds from biomass burning (kg {species} / m2 / s)
-    real, intent(out) :: emit_co2(ilg,icc) !< carbon dioxide
-    real, intent(out) :: emit_co(ilg,icc)  !< carbon monoxide
-    real, intent(out) :: emit_ch4(ilg,icc) !< methane
-    real, intent(out) :: emit_nmhc(ilg,icc)!< non-methane hydrocarbons
-    real, intent(out) :: emit_h2(ilg,icc)  !< hydrogen gas
-    real, intent(out) :: emit_nox(ilg,icc) !< nitrogen oxides
-    real, intent(out) :: emit_n2o(ilg,icc) !< nitrous oxide
-    real, intent(out) :: emit_pm25(ilg,icc)!< particulate matter less than 2.5 um in diameter
-    real, intent(out) :: emit_tpm(ilg,icc) !< total particulate matter
-    real, intent(out) :: emit_tc(ilg,icc)  !< total carbon
-    real, intent(out) :: emit_oc(ilg,icc)  !< organic carbon
-    real, intent(out) :: emit_bc(ilg,icc)  !< black carbon
+    real, intent(out) :: emit_co2(ilg, icc) !< carbon dioxide
+    real, intent(out) :: emit_co(ilg, icc)  !< carbon monoxide
+    real, intent(out) :: emit_ch4(ilg, icc) !< methane
+    real, intent(out) :: emit_nmhc(ilg, icc)!< non-methane hydrocarbons
+    real, intent(out) :: emit_h2(ilg, icc)  !< hydrogen gas
+    real, intent(out) :: emit_nox(ilg, icc) !< nitrogen oxides
+    real, intent(out) :: emit_n2o(ilg, icc) !< nitrous oxide
+    real, intent(out) :: emit_pm25(ilg, icc)!< particulate matter less than 2.5 um in diameter
+    real, intent(out) :: emit_tpm(ilg, icc) !< total particulate matter
+    real, intent(out) :: emit_tc(ilg, icc)  !< total carbon
+    real, intent(out) :: emit_oc(ilg, icc)  !< organic carbon
+    real, intent(out) :: emit_bc(ilg, icc)  !< black carbon
 
     ! Local
-    integer :: i,j,k,m,k1,k2,n
+    integer :: i, j, k, m, k1, k2, n
     real :: prbfrhuc(ilg)      !< probability of fire due to human causes
     real :: extnprob(ilg)      !< fire extinguishing probability
     real :: burnarea(ilg)     !< total area burned, \f$km^2\f$
-    real :: biomass(ilg,icc)  !< total biomass for fire purposes
-    real :: drgtstrs(ilg,icc) !< soil dryness factor for pfts
-    real :: betadrgt(ilg,ignd)!< dryness term for soil layers
+    real :: biomass(ilg, icc)  !< total biomass for fire purposes
+    real :: drgtstrs(ilg, icc) !< soil dryness factor for pfts
+    real :: betadrgt(ilg, ignd)!< dryness term for soil layers
     real :: avgdryns(ilg)     !< avg. dryness over the vegetated fraction
     real :: fcsum(ilg)        !< total vegetated fraction
     real :: avgbmass(ilg)     !< avg. veg. biomass over the veg. fraction of grid cell
@@ -196,67 +196,67 @@ contains
     real :: hb_interm    !< interm calculation
     real :: hbratio(ilg) !< head to back ratio of ellipse
     real :: surface_duff_f(ilg)  !< fraction of biomass that is in the surface duff (grass brown leaves + litter)
-    real :: pftareab(ilg,icc)    !< areas of different pfts in a grid cell, before fire, \f$km^2\f$
+    real :: pftareab(ilg, icc)    !< areas of different pfts in a grid cell, before fire, \f$km^2\f$
     !< pft area before fire \f$(km^2)\f$
     real :: ymin, ymax, slope
     real :: soilterm  !< temporary variable
     real :: duffterm  !< temporary variable
     real :: extn_par1 !< parameter used in calculation of fire extinguishing probability
-    real :: duff_frac_veg(ilg,icc)!< duff fraction for each PFT, Vivek
-    real :: probfire_veg(ilg,icc) !< PFT fire probability term, Vivek
-    real :: sprdrate_veg(ilg,icc) !< per PFT fire spread rate
-    real :: arbn1day_veg(ilg,icc) !< per PFT area burned in 1 day
-    real :: burnarea_veg(ilg,icc) !< per PFT area burned over fire duration
-    logical :: fire_veg(ilg,icc)  !< fire occuring logical, Vivek
+    real :: duff_frac_veg(ilg, icc)!< duff fraction for each PFT, Vivek
+    real :: probfire_veg(ilg, icc) !< PFT fire probability term, Vivek
+    real :: sprdrate_veg(ilg, icc) !< per PFT fire spread rate
+    real :: arbn1day_veg(ilg, icc) !< per PFT area burned in 1 day
+    real :: burnarea_veg(ilg, icc) !< per PFT area burned over fire duration
+    logical :: fire_veg(ilg, icc)  !< fire occuring logical, Vivek
     real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary variables
     real :: tracerLitTemp, tracerEmitTemp ! temp tracer variables
     real :: fractionPFTburned  !< temp variable.
 
     !> initialize required arrays to zero, or assign value
 
-    do j = 1,icc
+    do j = 1, icc
       do i = il1, il2
-        stemltdt(i,j) = 0.0
-        rootltdt(i,j) = 0.0
-        glfltrdt(i,j) = 0.0
-        blfltrdt(i,j) = 0.0
-        biomass(i,j) = 0.0
-        drgtstrs(i,j) = 0.0
-        glcaemls(i,j) = 0.0
-        blcaemls(i,j) = 0.0
-        stcaemls(i,j) = 0.0
-        rtcaemls(i,j) = 0.0
-        ltrcemls(i,j) = 0.0
+        stemltdt(i, j) = 0.0
+        rootltdt(i, j) = 0.0
+        glfltrdt(i, j) = 0.0
+        blfltrdt(i, j) = 0.0
+        biomass(i, j) = 0.0
+        drgtstrs(i, j) = 0.0
+        glcaemls(i, j) = 0.0
+        blcaemls(i, j) = 0.0
+        stcaemls(i, j) = 0.0
+        rtcaemls(i, j) = 0.0
+        ltrcemls(i, j) = 0.0
 
-        emit_co2(i,j) = 0.0
-        emit_co(i,j) = 0.0
-        emit_ch4(i,j) = 0.0
-        emit_nmhc(i,j) = 0.0
-        emit_h2(i,j) = 0.0
-        emit_nox(i,j) = 0.0
-        emit_n2o(i,j) = 0.0
-        emit_pm25(i,j) = 0.0
-        emit_tpm(i,j) = 0.0
-        emit_tc(i,j) = 0.0
-        emit_oc(i,j) = 0.0
-        emit_bc(i,j) = 0.0
-        burnvegf(i,j) = 0.0
+        emit_co2(i, j) = 0.0
+        emit_co(i, j) = 0.0
+        emit_ch4(i, j) = 0.0
+        emit_nmhc(i, j) = 0.0
+        emit_h2(i, j) = 0.0
+        emit_nox(i, j) = 0.0
+        emit_n2o(i, j) = 0.0
+        emit_pm25(i, j) = 0.0
+        emit_tpm(i, j) = 0.0
+        emit_tc(i, j) = 0.0
+        emit_oc(i, j) = 0.0
+        emit_bc(i, j) = 0.0
+        burnvegf(i, j) = 0.0
 
-        bterm_veg(i,j) = 0.0
-        mterm_veg(i,j) = 0.0
-        probfire_veg(i,j) = 0.0
-        fire_veg(i,j) = .false.
-        duff_frac_veg(i,j) = 0.0
-        smfunc_veg(i,j) = 0.0
-        sprdrate_veg(i,j) = 0.0
-        arbn1day_veg(i,j) = 0.0
-        burnarea_veg(i,j) = 0.0
+        bterm_veg(i, j) = 0.0
+        mterm_veg(i, j) = 0.0
+        probfire_veg(i, j) = 0.0
+        fire_veg(i, j) = .false.
+        duff_frac_veg(i, j) = 0.0
+        smfunc_veg(i, j) = 0.0
+        sprdrate_veg(i, j) = 0.0
+        arbn1day_veg(i, j) = 0.0
+        burnarea_veg(i, j) = 0.0
       end do ! loop 150
     end do ! loop 140
 
-    do k = 1,ignd
+    do k = 1, ignd
       do i = il1, il2
-        betadrgt(i,k) = 1.0
+        betadrgt(i, k) = 1.0
       end do ! loop 170
     end do ! loop 160
 
@@ -292,7 +292,7 @@ contains
     !> Find pft areas before
     do j = 1, icc
       do i = il1, il2
-        pftareab(i,j) = fcancmx(i,j) * grclarea(i)  !> area in \f$km^2\f$
+        pftareab(i, j) = fcancmx(i, j) * grclarea(i)  !> area in \f$km^2\f$
       end do ! loop 83
     end do ! loop 82
 
@@ -313,17 +313,17 @@ contains
           !> Here we ignore the LUC litrmass on iccp2 and the litter on the bare ground
           !> (iccp1). We only consider the litrmass on layer 1 as the rest are buried.
           ! COMBAK PERLAY
-          biomass(i,j) = gleafmas(i,j) + bleafmas(i,j) + stemmass(i,j) &
-                     + litrmass(i,j)
-          ! biomass(i,j) = gleafmas(i,j) + bleafmas(i,j) + stemmass(i,j) &
-          !              + litrmass(i,j,1)
+          biomass(i, j) = gleafmas(i, j) + bleafmas(i, j) + stemmass(i, j) &
+                          + litrmass(i, j)
+          ! biomass(i, j) = gleafmas(i, j) + bleafmas(i, j) + stemmass(i, j) &
+          !              + litrmass(i, j, 1)
           ! COMBAK PERLAY
 
           !> Find average biomass over the vegetated fraction
-          avgbmass(i) = avgbmass(i) + biomass(i,j) * fcancmx(i,j)
+          avgbmass(i) = avgbmass(i) + biomass(i, j) * fcancmx(i, j)
 
           !> Sum up the vegetated area
-          fcsum(i) = fcsum(i) + fcancmx(i,j)
+          fcsum(i) = fcsum(i) + fcancmx(i, j)
 
         end if
       end do ! loop 210
@@ -333,7 +333,7 @@ contains
 
     do j = 1, icc
       do i = il1, il2
-        bterm_veg(i,j) = min(1.0,max(0.0,(biomass(i,j) - bmasthrs_fire(1))/(bmasthrs_fire(2) - bmasthrs_fire(1))))
+        bterm_veg(i, j) = min(1.0, max(0.0,(biomass(i, j) - bmasthrs_fire(1))/(bmasthrs_fire(2) - bmasthrs_fire(1))))
       end do ! loop 252
     end do ! loop 251
 
@@ -356,10 +356,10 @@ contains
     do i = il1, il2
       if (fsnow(i) == 0.) then
         do j = 1, ignd
-          if (isand(i,j) > - 2) then
-            betadrgt(i,j) = min(1.0,max(0.0,(thliq(i,j) + thice(i,j) - THLW(i,j))/(THFC(i,j) - THLW(i,j))))
+          if (isand(i, j) > - 2) then
+            betadrgt(i, j) = min(1.0, max(0.0,(thliq(i, j) + thice(i, j) - THLW(i, j))/(THFC(i, j) - THLW(i, j))))
           else
-            betadrgt(i,j) = 1.0
+            betadrgt(i, j) = 1.0
           end if
         end do
       end if
@@ -371,21 +371,21 @@ contains
       do i = il1, il2
         if (.not. crop(j)) then
 
-          drgtstrs(i,j) =  sum((betadrgt(i,:)) * rmatctem(i,j,:))
-          drgtstrs(i,j) = min(1.0,max(0.0,drgtstrs(i,j)/sum(rmatctem(i,j,:))))
+          drgtstrs(i, j) =  sum((betadrgt(i,:)) * rmatctem(i, j,:))
+          drgtstrs(i, j) = min(1.0, max(0.0, drgtstrs(i, j)/sum(rmatctem(i, j,:))))
 
           !> Next find this dryness factor averaged over the vegetated fraction
-          !! \f$avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)\f$
+          !! \f$avgdryns(i) = avgdryns(i) + drgtstrs(i, j)*fcancmx(i, j)\f$
           !!
           !! The litter and brown leaves are not affected by the soil water potential
           !! therefore they will react only to the moisture conditions (our proxy here
           !! is the upper soil moisture). If it is dry they increase the probability of
           !! fire corresponding to the proportion of total C they contribute. Only allow
           !! if there is no snow.
-          !           if (biomass(i,j) > 0. .and. fsnow(i) == 0.) then
+          !           if (biomass(i, j) > 0. .and. fsnow(i) == 0.) then
           !             ! The surface duff calculation ignores the litter on the bare fraction.
-          !             surface_duff_f(i) = surface_duff_f(i) + (bleafmas(i,j)+litrmass(i,j)) &
-          !                                                      /biomass(i,j) * fcancmx(i,j)
+          !             surface_duff_f(i) = surface_duff_f(i) + (bleafmas(i, j)+litrmass(i, j)) &
+          !                                                      /biomass(i, j) * fcancmx(i, j)
           !
           !           end if
 
@@ -402,21 +402,21 @@ contains
       do i = il1, il2
         !> duff fraction for each PFT, Vivek
         !> We only consider the first layer litter
-        if (biomass(i,j) > 0. .and. fsnow(i) == 0.) then
+        if (biomass(i, j) > 0. .and. fsnow(i) == 0.) then
           ! COMBAK PERLAY
-          duff_frac_veg(i,j) = (bleafmas(i,j) + litrmass(i,j)) / biomass(i,j)
-          ! duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j,1)) / biomass(i,j)
+          duff_frac_veg(i, j) = (bleafmas(i, j) + litrmass(i, j)) / biomass(i, j)
+          ! duff_frac_veg(i, j) = (bleafmas(i, j)+litrmass(i, j, 1)) / biomass(i, j)
           ! COMBAK PERLAY
         end if
 
-        !> \f$drgtstrs(i,j)\f$ is \f$\phi_{root}\f$ in Melton and Arora GMDD (2015) paper
-        soilterm_veg = 1.0 - tanh((1.75 * drgtstrs(i,j)/extnmois_veg) ** 2)
-        duffterm_veg = 1.0 - tanh((1.75 * betadrgt(i,1)/extnmois_duff) ** 2)
+        !> \f$drgtstrs(i, j)\f$ is \f$\phi_{root}\f$ in Melton and Arora GMDD (2015) paper
+        soilterm_veg = 1.0 - tanh((1.75 * drgtstrs(i, j)/extnmois_veg) ** 2)
+        duffterm_veg = 1.0 - tanh((1.75 * betadrgt(i, 1)/extnmois_duff) ** 2)
 
-        if (fcancmx(i,j) > zero) then
-          mterm_veg(i,j) = soilterm_veg * (1. - duff_frac_veg(i,j)) + duffterm_veg * duff_frac_veg(i,j)
+        if (fcancmx(i, j) > zero) then
+          mterm_veg(i, j) = soilterm_veg * (1. - duff_frac_veg(i, j)) + duffterm_veg * duff_frac_veg(i, j)
         else
-          mterm_veg(i,j) = 0.0   !> no fire likelihood due to moisture if no vegetation
+          mterm_veg(i, j) = 0.0   !> no fire likelihood due to moisture if no vegetation
         end if
 
       end do ! loop 382
@@ -435,7 +435,7 @@ contains
       ! c2glgtng(i)=lightng(i) ! FLAG FireMIP lightning is already C2G ! If using 'normal' lightning climatology use line below.
       c2glgtng(i) = 0.219913 * exp(0.0058899 * abs(currlat(i))) * lightng(i)
 
-      betalght(i) = min(1.0,max(0.0,(c2glgtng(i) - lwrlthrs)/(hgrlthrs - lwrlthrs)))
+      betalght(i) = min(1.0, max(0.0,(c2glgtng(i) - lwrlthrs)/(hgrlthrs - lwrlthrs)))
       y(i) = 1.0/( 1.0 + exp((parmlght - betalght(i))/parblght) )
 
       ! No need to calculate each time, once settled on parameters, precalc and moved into a parameter. JM. Feb 19 2014.
@@ -481,8 +481,8 @@ contains
 
     do j = 1, icc
       do i = il1, il2
-        probfire_veg(i,j) = bterm_veg(i,j) * mterm_veg(i,j) * lterm(i)
-        if (probfire_veg(i,j) > zero) fire_veg(i,j) = .true.
+        probfire_veg(i, j) = bterm_veg(i, j) * mterm_veg(i, j) * lterm(i)
+        if (probfire_veg(i, j) > zero) fire_veg(i, j) = .true.
 
         !> ----------------------- Number of fire calculations ----------------------\\
         !!
@@ -491,13 +491,13 @@ contains
         !! calculate total number of ignitions based natural and anthorpogenic ignitions
         !! for the whole grid cell
 
-        ! num_ignitions(i,j) = ( natural_ignitions(i) + anthro_ignitions(i) ) * fcancmx(i,j)*grclarea(i)
+        ! num_ignitions(i, j) = ( natural_ignitions(i) + anthro_ignitions(i) ) * fcancmx(i, j)*grclarea(i)
 
         !> finally calculate number of fire, noting that not all ignitions turn into fire
         !! because moisture and biomass may now allow that to happen, and some of those
         !! will be suppressed due to fire fighting efforts
 
-        ! num_fires(i,j) = num_ignitions(i,j)*(1-fire_supp(i))*bterm_veg(i,j)*mterm_veg(i,j)
+        ! num_fires(i, j) = num_ignitions(i, j)*(1-fire_supp(i))*bterm_veg(i, j)*mterm_veg(i, j)
         !>
         !> ----------------------- Number of fire calculations ----------------------//
 
@@ -509,12 +509,12 @@ contains
 
     do j = 1, icc
       do i = il1, il2
-        if (fire_veg(i,j) ) then
+        if (fire_veg(i, j) ) then
 
           !> soil moisture dependence on fire spread rate
-          betmsprd_veg = (1. - min(1., (drgtstrs(i,j)/extnmois_veg) )) ** 2
-          betmsprd_duff = (1. - min(1., (betadrgt(i,1)/extnmois_duff) )) ** 2
-          smfunc_veg(i,j) = betmsprd_veg * (1 - duff_frac_veg(i,j)) + betmsprd_duff * duff_frac_veg(i,j)
+          betmsprd_veg = (1. - min(1., (drgtstrs(i, j)/extnmois_veg) )) ** 2
+          betmsprd_duff = (1. - min(1., (betadrgt(i, 1)/extnmois_duff) )) ** 2
+          smfunc_veg(i, j) = betmsprd_veg * (1 - duff_frac_veg(i, j)) + betmsprd_duff * duff_frac_veg(i, j)
 
           !> wind speed, which is gridcell specific
           wind(i) = sqrt(uwind(i) ** 2.0 + vwind(i) ** 2.0)
@@ -532,10 +532,10 @@ contains
 
           !> fire spread rate per PFT
           n = sort(j)
-          sprdrate_veg(i,j) = maxsprd(n) * smfunc_veg(i,j) * wndfunc(i)
+          sprdrate_veg(i, j) = maxsprd(n) * smfunc_veg(i, j) * wndfunc(i)
 
           !> area burned in 1 day for that PFT
-          arbn1day_veg(i,j) = (pi * 24.0 * 24.0 * sprdrate_veg(i,j) ** 2)/(4.0 * lbratio(i)) * (1.0 + 1.0 / hbratio(i)) ** 2
+          arbn1day_veg(i, j) = (pi * 24.0 * 24.0 * sprdrate_veg(i, j) ** 2)/(4.0 * lbratio(i)) * (1.0 + 1.0 / hbratio(i)) ** 2
 
           !> fire extinguishing probability as a function of grid-cell averaged population density
 
@@ -551,7 +551,7 @@ contains
           areamult(i) = ((1.0 - extnprob(i)) * (2.0 - extnprob(i)))/ extnprob(i) ** 2
 
           !> per PFT area burned, \f$km^2\f$
-          burnarea_veg(i,j) = arbn1day_veg(i,j) * areamult(i) * (grclarea(i) * fcancmx(i,j) * probfire_veg(i,j))/reparea
+          burnarea_veg(i, j) = arbn1day_veg(i, j) * areamult(i) * (grclarea(i) * fcancmx(i, j) * probfire_veg(i, j))/reparea
 
 
           !          ------- Area burned based on number of fire calculations ----------------------\\
@@ -564,14 +564,14 @@ contains
           !         we just use a multiplier of 4, since doubling fire spread rates means 4 times the
           !         area burned
           !
-          !          burnarea_veg(i,j)=arbn1day_veg(i,j)*num_fires(i,j)*2.0  ! flag test was 4 !
+          !          burnarea_veg(i, j)=arbn1day_veg(i, j)*num_fires(i, j)*2.0  ! flag test was 4 !
           !
           !          ------- Area burned based on number of fire calculations ----------------------//
 
           !         if area burned greater than area of PFT, set it to area of PFT
 
-          if ( burnarea_veg(i,j) > grclarea(i) * fcancmx(i,j) ) then
-            burnarea_veg(i,j) = grclarea(i) * fcancmx(i,j)
+          if (burnarea_veg(i, j) > grclarea(i) * fcancmx(i, j) ) then
+            burnarea_veg(i, j) = grclarea(i) * fcancmx(i, j)
           end if
         end if
       end do ! loop 501
@@ -581,7 +581,7 @@ contains
 
     do j = 1, icc
       do i = il1, il2
-        burnarea(i) = burnarea(i) + burnarea_veg(i,j)
+        burnarea(i) = burnarea(i) + burnarea_veg(i, j)
       end do ! loop 511
     end do ! loop 510
 
@@ -596,47 +596,47 @@ contains
     do j = 1, icc
       n = sort(j)
       do i = il1, il2
-        if (pftareab(i,j) > zero) then
+        if (pftareab(i, j) > zero) then
 
           !> Set aside these pre-disturbance stem and root masses for use
           !> in burntobare subroutine.
-          pstemmass(i,j) = stemmass(i,j)
-          pgleafmass(i,j) = gleafmas(i,j)
+          pstemmass(i, j) = stemmass(i, j)
+          pgleafmass(i, j) = gleafmas(i, j)
 
-          fractionPFTburned = burnarea_veg(i,j) / pftareab(i,j)
+          fractionPFTburned = burnarea_veg(i, j) / pftareab(i, j)
 
-          glfltrdt(i,j) = frltrglf(n) * gleafmas(i,j) * fractionPFTburned
-          blfltrdt(i,j) = frltrblf(n) * bleafmas(i,j) * fractionPFTburned
-          stemltdt(i,j) = frltrstm(n) * stemmass(i,j) * fractionPFTburned
-          rootltdt(i,j) = frltrrt(n)  * rootmass(i,j) * fractionPFTburned
-          glcaemls(i,j) = frco2glf(n) * gleafmas(i,j) * fractionPFTburned
-          blcaemls(i,j) = frco2blf(n) * bleafmas(i,j) * fractionPFTburned
-          stcaemls(i,j) = frco2stm(n) * stemmass(i,j) * fractionPFTburned
-          rtcaemls(i,j) = frco2rt(n)  * rootmass(i,j) * fractionPFTburned
+          glfltrdt(i, j) = frltrglf(n) * gleafmas(i, j) * fractionPFTburned
+          blfltrdt(i, j) = frltrblf(n) * bleafmas(i, j) * fractionPFTburned
+          stemltdt(i, j) = frltrstm(n) * stemmass(i, j) * fractionPFTburned
+          rootltdt(i, j) = frltrrt(n)  * rootmass(i, j) * fractionPFTburned
+          glcaemls(i, j) = frco2glf(n) * gleafmas(i, j) * fractionPFTburned
+          blcaemls(i, j) = frco2blf(n) * bleafmas(i, j) * fractionPFTburned
+          stcaemls(i, j) = frco2stm(n) * stemmass(i, j) * fractionPFTburned
+          rtcaemls(i, j) = frco2rt(n)  * rootmass(i, j) * fractionPFTburned
 
           ! The burned litter comes from the first layer
           ! COMBAK PERLAY
-          ltrcemls(i,j) = frltrbrn(n) * litrmass(i,j) * fractionPFTburned
-          ! ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j,1) * fractionPFTburned
+          ltrcemls(i, j) = frltrbrn(n) * litrmass(i, j) * fractionPFTburned
+          ! ltrcemls(i, j)= frltrbrn(n) *litrmass(i, j, 1) * fractionPFTburned
           ! COMBAK PERLAY
 
           !> Update the pools:
-          gleafmas(i,j) = gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)
-          bleafmas(i,j) = bleafmas(i,j) - blfltrdt(i,j) - blcaemls(i,j)
-          stemmass(i,j) = stemmass(i,j) - stemltdt(i,j) - stcaemls(i,j)
-          rootmass(i,j) = rootmass(i,j) - rootltdt(i,j) - rtcaemls(i,j)
+          gleafmas(i, j) = gleafmas(i, j) - glfltrdt(i, j) - glcaemls(i, j)
+          bleafmas(i, j) = bleafmas(i, j) - blfltrdt(i, j) - blcaemls(i, j)
+          stemmass(i, j) = stemmass(i, j) - stemltdt(i, j) - stcaemls(i, j)
+          rootmass(i, j) = rootmass(i, j) - rootltdt(i, j) - rtcaemls(i, j)
 
           ! The burned litter is placed on the top litter layer except for the root litter which
           ! goes into litter layers according to the root distribution.
           ! COMBAK PERLAY
-          litrmass(i,j) = litrmass(i,j) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
-                        + rootltdt(i,j) - ltrcemls(i,j)
+          litrmass(i, j) = litrmass(i, j) + glfltrdt(i, j) + blfltrdt(i, j) + stemltdt(i, j) &
+                           + rootltdt(i, j) - ltrcemls(i, j)
           !
-          ! litrmass(i,j,1) = litrmass(i,j,1) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) &
-          !                 + rootltdt(i,j) * rmatctem(i,j,1) - ltrcemls(i,j)
+          ! litrmass(i, j, 1) = litrmass(i, j, 1) + glfltrdt(i, j) + blfltrdt(i, j) + stemltdt(i, j) &
+          !                 + rootltdt(i, j) * rmatctem(i, j, 1) - ltrcemls(i, j)
           !
           ! do k = 2, ignd
-          !   litrmass(i,j,k) = litrmass(i,j,k) + rootltdt(i,j) * rmatctem(i,j,k)
+          !   litrmass(i, j, k) = litrmass(i, j, k) + rootltdt(i, j) * rmatctem(i, j, k)
           ! end do
           ! COMBAK PERLAY
           ! tmpzzz=0.
@@ -645,39 +645,39 @@ contains
             ! The burned litter comes out of the first litter layer. Update it first here
             ! as later we change the tracerLitrMass value so doing it later would change
             ! the result.
-            tracerLitTemp = frltrbrn(n) * tracerLitrMass(i,j,1) * fractionPFTburned
-            tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) - tracerLitTemp
+            tracerLitTemp = frltrbrn(n) * tracerLitrMass(i, j, 1) * fractionPFTburned
+            tracerLitrMass(i, j, 1) = tracerLitrMass(i, j, 1) - tracerLitTemp
 
             ! Update the tracer pools for fire losses. Need to calculte the litter and emissions
             ! terms since they are dependent upon pool size.
-            tracerLitTemp = frltrglf(n) * tracerGLeafMass(i,j) * fractionPFTburned
-            tracerEmitTemp = frco2glf(n) * tracerGLeafMass(i,j) * fractionPFTburned
-            tracerGLeafMass(i,j) = tracerGLeafMass(i,j) - tracerLitTemp - tracerEmitTemp
+            tracerLitTemp = frltrglf(n) * tracerGLeafMass(i, j) * fractionPFTburned
+            tracerEmitTemp = frco2glf(n) * tracerGLeafMass(i, j) * fractionPFTburned
+            tracerGLeafMass(i, j) = tracerGLeafMass(i, j) - tracerLitTemp - tracerEmitTemp
 
             ! Add the green leaf litter to top litter layer
-            tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
+            tracerLitrMass(i, j, 1) = tracerLitrMass(i, j, 1) + tracerLitTemp
 
-            tracerLitTemp = frltrblf(n) * tracerBLeafMass(i,j) * fractionPFTburned
-            tracerEmitTemp = frco2blf(n) * tracerBLeafMass(i,j) * fractionPFTburned
-            tracerBLeafMass(i,j) = tracerBLeafMass(i,j) - tracerLitTemp - tracerEmitTemp
+            tracerLitTemp = frltrblf(n) * tracerBLeafMass(i, j) * fractionPFTburned
+            tracerEmitTemp = frco2blf(n) * tracerBLeafMass(i, j) * fractionPFTburned
+            tracerBLeafMass(i, j) = tracerBLeafMass(i, j) - tracerLitTemp - tracerEmitTemp
 
             ! Add the brown leaf litter to top litter layer
-            tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
+            tracerLitrMass(i, j, 1) = tracerLitrMass(i, j, 1) + tracerLitTemp
 
-            tracerLitTemp = frltrstm(n) * tracerStemMass(i,j) * fractionPFTburned
-            tracerEmitTemp = frco2stm(n) * tracerStemMass(i,j) * fractionPFTburned
-            tracerStemMass(i,j) = tracerStemMass(i,j) - tracerLitTemp - tracerEmitTemp
+            tracerLitTemp = frltrstm(n) * tracerStemMass(i, j) * fractionPFTburned
+            tracerEmitTemp = frco2stm(n) * tracerStemMass(i, j) * fractionPFTburned
+            tracerStemMass(i, j) = tracerStemMass(i, j) - tracerLitTemp - tracerEmitTemp
 
             ! Add the stem litter to top litter layer
-            tracerLitrMass(i,j,1) = tracerLitrMass(i,j,1) + tracerLitTemp
+            tracerLitrMass(i, j, 1) = tracerLitrMass(i, j, 1) + tracerLitTemp
 
-            tracerLitTemp = frltrrt(n) * tracerRootMass(i,j) * fractionPFTburned
-            tracerEmitTemp = frco2rt(n) * tracerRootMass(i,j) * fractionPFTburned
-            tracerRootMass(i,j) = tracerRootMass(i,j) - tracerLitTemp - tracerEmitTemp
+            tracerLitTemp = frltrrt(n) * tracerRootMass(i, j) * fractionPFTburned
+            tracerEmitTemp = frco2rt(n) * tracerRootMass(i, j) * fractionPFTburned
+            tracerRootMass(i, j) = tracerRootMass(i, j) - tracerLitTemp - tracerEmitTemp
 
             ! Add the root litter, which goes into litter layers according to the root distribution.
             do k = 1, ignd
-              tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLitTemp * rmatctem(i,j,k)
+              tracerLitrMass(i, j, k) = tracerLitrMass(i, j, k) + tracerLitTemp * rmatctem(i, j, k)
             end do
 
           end if
@@ -686,7 +686,7 @@ contains
           !> if a PFT has 50% gridcell cover and 50% of that burns it will have a burnvegf of 0.5 (which
           !> then translates into a gridcell fraction of 0.25). This units is for consistency
           !! outside of this subroutine.
-          burnvegf(i,j) = burnarea_veg(i,j) /  pftareab(i,j)
+          burnvegf(i, j) = burnarea_veg(i, j) /  pftareab(i, j)
 
         end if
       end do ! loop 530
@@ -711,7 +711,7 @@ contains
         !> Calculate the emissions of trace gases and aerosols based upon how much plant matter was burnt
 
         !> Sum all pools that will be converted to emissions/aerosols \f$(g c/m^2 /day)\f$
-        tot_emit = (glcaemls(i,j) + blcaemls(i,j) + rtcaemls(i,j) + stcaemls(i,j) + ltrcemls(i,j)) * 1000.0
+        tot_emit = (glcaemls(i, j) + blcaemls(i, j) + rtcaemls(i, j) + stcaemls(i, j) + ltrcemls(i, j)) * 1000.0
 
         !> Add in the emissions due to luc fires (deforestation)
         !! the luc emissions are converted from \f$umol co_2 m-2 s-1 to
@@ -730,18 +730,18 @@ contains
         !! Also convert units to \f$kg species / m^2 / s^{-1}\f$
         ! g {species} / m2/d * d/86400s * 1kg/1000g = kg {species} / m2 / s
 
-        emit_co2(i,j)  = emif_co2(n) * tot_emit_dom * 1.1574e-8
-        emit_co(i,j)   = emif_co(n)  * tot_emit_dom * 1.1574e-8
-        emit_ch4(i,j)  = emif_ch4(n) * tot_emit_dom * 1.1574e-8
-        emit_nmhc(i,j) = emif_nmhc(n) * tot_emit_dom * 1.1574e-8
-        emit_h2(i,j)   = emif_h2(n) * tot_emit_dom * 1.1574e-8
-        emit_nox(i,j)  = emif_nox(n) * tot_emit_dom * 1.1574e-8
-        emit_n2o(i,j)  = emif_n2o(n) * tot_emit_dom * 1.1574e-8
-        emit_pm25(i,j) = emif_pm25(n) * tot_emit_dom * 1.1574e-8
-        emit_tpm(i,j)  = emif_tpm(n) * tot_emit_dom * 1.1574e-8
-        emit_tc(i,j)   = emif_tc(n) * tot_emit_dom * 1.1574e-8
-        emit_oc(i,j)   = emif_oc(n) * tot_emit_dom * 1.1574e-8
-        emit_bc(i,j)   = emif_bc(n) * tot_emit_dom * 1.1574e-8
+        emit_co2(i, j)  = emif_co2(n) * tot_emit_dom * 1.1574e-8
+        emit_co(i, j)   = emif_co(n)  * tot_emit_dom * 1.1574e-8
+        emit_ch4(i, j)  = emif_ch4(n) * tot_emit_dom * 1.1574e-8
+        emit_nmhc(i, j) = emif_nmhc(n) * tot_emit_dom * 1.1574e-8
+        emit_h2(i, j)   = emif_h2(n) * tot_emit_dom * 1.1574e-8
+        emit_nox(i, j)  = emif_nox(n) * tot_emit_dom * 1.1574e-8
+        emit_n2o(i, j)  = emif_n2o(n) * tot_emit_dom * 1.1574e-8
+        emit_pm25(i, j) = emif_pm25(n) * tot_emit_dom * 1.1574e-8
+        emit_tpm(i, j)  = emif_tpm(n) * tot_emit_dom * 1.1574e-8
+        emit_tc(i, j)   = emif_tc(n) * tot_emit_dom * 1.1574e-8
+        emit_oc(i, j)   = emif_oc(n) * tot_emit_dom * 1.1574e-8
+        emit_bc(i, j)   = emif_bc(n) * tot_emit_dom * 1.1574e-8
 
       end do ! loop 630
     end do ! loop 620
@@ -764,15 +764,15 @@ contains
   !> @author Joe Melton
 
   subroutine burntobare(il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, & ! In
-                      burnvegf, pstemmass, pgleafmass, useTracer, & ! In
-                      fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
-                      litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
-                      tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out
+                        burnvegf, pstemmass, pgleafmass, useTracer, & ! In
+                        fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
+                        litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
+                        tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass) ! In/Out
 
 
 
     use classic_params, only : crop, icc, seed, standreplace, grass, zero, &
-                          iccp1, tolrance, numcrops,iccp2,ignd
+                          iccp1, tolrance, numcrops, iccp2, ignd
 
     implicit none
 
@@ -789,21 +789,21 @@ contains
     real, dimension(nilg), intent(in) :: pvgbioms           !< initial veg biomass
     real, dimension(nilg), intent(in) :: pgavltms           !< initial litter mass
     real, dimension(nilg), intent(in) :: pgavscms           !< initial soil c mass
-    real, dimension(nilg,icc), intent(in) :: burnvegf       !< per PFT fraction burned of that PFTs area
-    real, dimension(nilg,icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
-    real, dimension(nilg,icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
+    real, dimension(nilg, icc), intent(in) :: burnvegf       !< per PFT fraction burned of that PFTs area
+    real, dimension(nilg, icc), intent(in)    :: pstemmass   !< grid averaged stemmass prior to disturbance, \f$kg c/m^2\f$
+    real, dimension(nilg, icc), intent(in)    :: pgleafmass  !< grid averaged rootmass prior to disturbance, \f$kg c/m^2\f$
 
-    real, dimension(nilg,icc), intent(inout) :: fcancmx     !< initial fractions of the ctem pfts
-    real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nilg,icc), intent(inout) :: rootmass    !< roots carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for individual pfts,  \f$u-mol co_2/m^2.sec\f$
+    real, dimension(nilg, icc), intent(inout) :: fcancmx     !< initial fractions of the ctem pfts
+    real, dimension(nilg, icc), intent(inout) :: gleafmas    !< green leaf carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, dimension(nilg, icc), intent(inout) :: bleafmas    !< brown leaf carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, dimension(nilg, icc), intent(inout) :: stemmass    !< stem carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, dimension(nilg, icc), intent(inout) :: rootmass    !< roots carbon mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, dimension(nilg, icc), intent(inout) :: nppveg      !< npp for individual pfts,  \f$u-mol co_2/m^2.sec\f$
     ! COMBAK PERLAY
-    real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, dimension(nilg, iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, dimension(nilg, iccp2), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    ! real, dimension(nilg, iccp2, ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    ! real, dimension(nilg, iccp2, ignd), intent(inout) :: litrmass  !< litter carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     ! COMBAK PERLAY
     real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
@@ -821,16 +821,16 @@ contains
     ! COMBAK PERLAY
     real, dimension(nilg) :: litr_lost            !< litter that is transferred to bare
     real, dimension(nilg) :: soilc_lost           !< soilc that is transferred to bare
-    ! real, dimension(nilg,ignd) :: litr_lost            !< litter that is transferred to bare
-    ! real, dimension(nilg,ignd) :: soilc_lost           !< soilc that is transferred to bare
+    ! real, dimension(nilg, ignd) :: litr_lost            !< litter that is transferred to bare
+    ! real, dimension(nilg, ignd) :: soilc_lost           !< soilc that is transferred to bare
     ! COMBAK PERLAY
-    real :: tracerLitrLost(nilg,ignd)       !< tracer litter that is transferred to bare
-    real :: tracerSoilCLost(nilg,ignd)      !< tracer soilc that is transferred to bare
+    real :: tracerLitrLost(nilg, ignd)       !< tracer litter that is transferred to bare
+    real :: tracerSoilCLost(nilg, ignd)      !< tracer soilc that is transferred to bare
     real, dimension(nilg) :: vgbiomas_temp        !< grid averaged vegetation biomass for internal checks, \f$kg c/m^2\f$
     real, dimension(nilg) :: gavgltms_temp        !< grid averaged litter mass for internal checks, \f$kg c/m^2\f$
     real, dimension(nilg) :: gavgscms_temp        !< grid averaged soil c mass for internal checks, \f$kg c/m^2\f$
-    real, dimension(nilg,icc) :: pftfracb         !< pft fractions before accounting for creation of bare ground
-    real, dimension(nilg,icc) :: pftfraca         !< pft fractions after accounting for creation of bare ground
+    real, dimension(nilg, icc) :: pftfracb         !< pft fractions before accounting for creation of bare ground
+    real, dimension(nilg, icc) :: pftfraca         !< pft fractions after accounting for creation of bare ground
     real :: frac_chang                            !< pftfracb - pftfraca
 
     ! -----------------------------------------
@@ -863,19 +863,19 @@ contains
 
           n = sort(j)
 
-          pbarefra(i) = pbarefra(i) - fcancmx(i,j)
-          pftfracb(i,j) = fcancmx(i,j)
+          pbarefra(i) = pbarefra(i) - fcancmx(i, j)
+          pftfracb(i, j) = fcancmx(i, j)
 
-          pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(n))
+          pftfraca(i, j) = max(seed, fcancmx(i, j) - burnvegf(i, j) * standreplace(n))
 
-          fcancmx(i,j) = pftfraca(i,j)
+          fcancmx(i, j) = pftfraca(i, j)
 
-          barefrac(i) = barefrac(i) - fcancmx(i,j)
+          barefrac(i) = barefrac(i) - fcancmx(i, j)
 
         else  ! crops
 
-          pbarefra(i) = pbarefra(i) - fcancmx(i,j)
-          barefrac(i) = barefrac(i) - fcancmx(i,j)
+          pbarefra(i) = pbarefra(i) - fcancmx(i, j)
+          barefrac(i) = barefrac(i) - fcancmx(i, j)
 
         end if
 
@@ -888,49 +888,49 @@ contains
 
           !> Test the pftfraca to ensure it does not cause densification of the exisiting biomass
           !> Trees compare the stemmass while grass compares the root mass.
-          if (pftfraca(i,j) /= pftfracb(i,j)) then
+          if (pftfraca(i, j) /= pftfracb(i, j)) then
 
             shifts_occur(i) = .true.
 
-            term = pftfracb(i,j)/pftfraca(i,j)
+            term = pftfracb(i, j)/pftfraca(i, j)
 
             if (.not. grass(j)) then
-              if (stemmass(i,j) * term > pstemmass(i,j) .and. pstemmass(i,j) > 0.) then
+              if (stemmass(i, j) * term > pstemmass(i, j) .and. pstemmass(i, j) > 0.) then
                 !> the pstemmass is from before the fire occurred, i.e. no thinning !
-                pftfraca_old = pftfraca(i,j)
-                pftfraca(i,j) = max(seed,stemmass(i,j) * pftfracb(i,j) / pstemmass(i,j))
-                fcancmx(i,j) = pftfraca(i,j)
+                pftfraca_old = pftfraca(i, j)
+                pftfraca(i, j) = max(seed, stemmass(i, j) * pftfracb(i, j) / pstemmass(i, j))
+                fcancmx(i, j) = pftfraca(i, j)
 
                 !> adjust the bare frac to accomodate for the changes
-                barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
+                barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i, j)
 
               end if
             else ! grasses
 
-              if (gleafmas(i,j) * term > pgleafmass(i,j) .and. pgleafmass(i,j) > 0.) then
+              if (gleafmas(i, j) * term > pgleafmass(i, j) .and. pgleafmass(i, j) > 0.) then
                 !> the pgleafmass is from before the fire occurred, i.e. no thinning !
-                pftfraca_old = pftfraca(i,j)
-                pftfraca(i,j) = max(seed,gleafmas(i,j) * pftfracb(i,j) / pgleafmass(i,j))
-                fcancmx(i,j) = pftfraca(i,j)
+                pftfraca_old = pftfraca(i, j)
+                pftfraca(i, j) = max(seed, gleafmas(i, j) * pftfracb(i, j) / pgleafmass(i, j))
+                fcancmx(i, j) = pftfraca(i, j)
 
                 !> adjust the bare frac to accomodate for the changes
-                barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
+                barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i, j)
 
               end if
             end if
 
-            term = pftfracb(i,j)/pftfraca(i,j)
-            gleafmas(i,j) = gleafmas(i,j) * term
-            bleafmas(i,j) = bleafmas(i,j) * term
-            stemmass(i,j) = stemmass(i,j) * term
-            rootmass(i,j) = rootmass(i,j) * term
-            nppveg(i,j)  = nppveg(i,j) * term
+            term = pftfracb(i, j)/pftfraca(i, j)
+            gleafmas(i, j) = gleafmas(i, j) * term
+            bleafmas(i, j) = bleafmas(i, j) * term
+            stemmass(i, j) = stemmass(i, j) * term
+            rootmass(i, j) = rootmass(i, j) * term
+            nppveg(i, j)  = nppveg(i, j) * term
 
             if (useTracer > 0) then ! Now same operation for tracer
-              tracerGLeafMass(i,j) = tracerGLeafMass(i,j) * term
-              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) * term
-              tracerStemMass(i,j) = tracerStemMass(i,j) * term
-              tracerRootMass(i,j) = tracerRootMass(i,j) * term
+              tracerGLeafMass(i, j) = tracerGLeafMass(i, j) * term
+              tracerBLeafMass(i, j) = tracerBLeafMass(i, j) * term
+              tracerStemMass(i, j) = tracerStemMass(i, j) * term
+              tracerRootMass(i, j) = tracerRootMass(i, j) * term
             end if
 
             !>
@@ -939,16 +939,16 @@ contains
             !> In doing so we do not adjust the litter or soilc density on the
             !> remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
             !> our carbon balance works out.
-            frac_chang = pftfracb(i,j) - pftfraca(i,j)
+            frac_chang = pftfracb(i, j) - pftfraca(i, j)
             ! COMBAK PERLAY
-            litr_lost(i) = litr_lost(i) + litrmass(i,j) * frac_chang
-            soilc_lost(i) = soilc_lost(i) + soilcmas(i,j) * frac_chang
+            litr_lost(i) = litr_lost(i) + litrmass(i, j) * frac_chang
+            soilc_lost(i) = soilc_lost(i) + soilcmas(i, j) * frac_chang
             do k = 1, ignd
-              !  litr_lost(i,k)= litr_lost(i,k) + litrmass(i,j,k) * frac_chang
-              !  soilc_lost(i,k)= soilc_lost(i,k) + soilcmas(i,j,k) * frac_chang
+              !  litr_lost(i, k)= litr_lost(i, k) + litrmass(i, j, k) * frac_chang
+              !  soilc_lost(i, k)= soilc_lost(i, k) + soilcmas(i, j, k) * frac_chang
               if (useTracer > 0) then ! Now same operation for tracer
-                tracerLitrLost(i,k) = tracerLitrLost(i,k) + tracerLitrMass(i,j,k) * frac_chang
-                tracerSoilCLost(i,k) = tracerSoilCLost(i,k) + tracerSoilCMass(i,j,k) * frac_chang
+                tracerLitrLost(i, k) = tracerLitrLost(i, k) + tracerLitrMass(i, j, k) * frac_chang
+                tracerSoilCLost(i, k) = tracerSoilCLost(i, k) + tracerSoilCMass(i, j, k) * frac_chang
               end if
             end do
             ! COMBAK PERLAY
@@ -964,16 +964,16 @@ contains
 
         if (barefrac(i) >= zero .and. barefrac(i) > pbarefra(i)) then
           ! COMBAK PERLAY
-          litrmass(i,iccp1) = (litrmass(i,iccp1) * pbarefra(i) + litr_lost(i)) / barefrac(i)
-          soilcmas(i,iccp1) = (soilcmas(i,iccp1) * pbarefra(i) + soilc_lost(i)) / barefrac(i)
+          litrmass(i, iccp1) = (litrmass(i, iccp1) * pbarefra(i) + litr_lost(i)) / barefrac(i)
+          soilcmas(i, iccp1) = (soilcmas(i, iccp1) * pbarefra(i) + soilc_lost(i)) / barefrac(i)
           do k = 1, ignd
-            !  litrmass(i,iccp1,k) = (litrmass(i,iccp1,k)*pbarefra(i) + litr_lost(i,k)) / barefrac(i)
-            !  soilcmas(i,iccp1,k) = (soilcmas(i,iccp1,k)*pbarefra(i) + soilc_lost(i,k)) / barefrac(i)
+            !  litrmass(i, iccp1, k) = (litrmass(i, iccp1, k)*pbarefra(i) + litr_lost(i, k)) / barefrac(i)
+            !  soilcmas(i, iccp1, k) = (soilcmas(i, iccp1, k)*pbarefra(i) + soilc_lost(i, k)) / barefrac(i)
             if (useTracer > 0) then ! Now same operation for tracer
-              tracerLitrMass(i,iccp1,k) = (tracerLitrMass(i,iccp1,k) * pbarefra(i) &
-                                         + tracerLitrLost(i,k)) / barefrac(i)
-              tracerSoilCMass(i,iccp1,k) = (tracerSoilCMass(i,iccp1,k) * pbarefra(i) &
-                                          + tracerSoilCLost(i,k)) / barefrac(i)
+              tracerLitrMass(i, iccp1, k) = (tracerLitrMass(i, iccp1, k) * pbarefra(i) &
+                                            + tracerLitrLost(i, k)) / barefrac(i)
+              tracerSoilCMass(i, iccp1, k) = (tracerSoilCMass(i, iccp1, k) * pbarefra(i) &
+                                             + tracerSoilCLost(i, k)) / barefrac(i)
             end if
           end do
           ! COMBAK PERLAY
@@ -992,14 +992,14 @@ contains
 
         do j = 1, icc ! loop 250
 
-          vgbiomas_temp(i) = vgbiomas_temp(i) + fcancmx(i,j) * (gleafmas(i,j) + &
-        bleafmas(i,j) + stemmass(i,j) + rootmass(i,j))
+          vgbiomas_temp(i) = vgbiomas_temp(i) + fcancmx(i, j) * (gleafmas(i, j) + &
+                             bleafmas(i, j) + stemmass(i, j) + rootmass(i, j))
           ! COMBAK PERLAY
-          gavgltms_temp(i) = gavgltms_temp(i) + fcancmx(i,j) * litrmass(i,j)
-          gavgscms_temp(i) = gavgscms_temp(i) + fcancmx(i,j) * soilcmas(i,j)
+          gavgltms_temp(i) = gavgltms_temp(i) + fcancmx(i, j) * litrmass(i, j)
+          gavgscms_temp(i) = gavgscms_temp(i) + fcancmx(i, j) * soilcmas(i, j)
           ! do k = 1, ignd
-          !   gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j,k)
-          !   gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j,k)
+          !   gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i, j)*litrmass(i, j, k)
+          !   gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i, j)*soilcmas(i, j, k)
           ! end do
           ! COMBAK PERLAY
 
@@ -1007,11 +1007,11 @@ contains
 
         ! then add the bare ground in.
         ! COMBAK PERLAY
-        gavgltms_temp(i) = gavgltms_temp(i) + barefrac(i) * litrmass(i,iccp1)
-        gavgscms_temp(i) = gavgscms_temp(i) + barefrac(i) * soilcmas(i,iccp1)
+        gavgltms_temp(i) = gavgltms_temp(i) + barefrac(i) * litrmass(i, iccp1)
+        gavgscms_temp(i) = gavgscms_temp(i) + barefrac(i) * soilcmas(i, iccp1)
         ! do k = 1, ignd  ! FLAG I think we can keep this as per grid like this. JM Feb 8 2016.
-        !   gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1,k)
-        !   gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1,k)
+        !   gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i, iccp1, k)
+        !   gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i, iccp1, k)
         ! end do
         ! COMBAK PERLAY
 
@@ -1122,22 +1122,22 @@ contains
   !! where \f$\Phi\f$ is the grid cell latitude in degrees and \f$F_{tot}\f$ is the
   !! total number of lightning \f$flashes\,km^{-2}\,month^{-1}\f$ (both cloud-to-cloud
   !! and cloud-to-ground). The probability of fire due to natural ignition,
-  !! \f$P_i,n\f$, depends on the lightning scalar, \f$\vartheta_F\f$, as
+  !! \f$P_i, n\f$, depends on the lightning scalar, \f$\vartheta_F\f$, as
   !!
-  !! \f[ P_i,n = y(\vartheta_F) - y(0)(1 -  \vartheta_F) + \vartheta_F[1-y(1)]
+  !! \f[ P_i, n = y(\vartheta_F) - y(0)(1 -  \vartheta_F) + \vartheta_F[1-y(1)]
   !! \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \qquad (Eqn 5)\f]
   !!
-  !! Fire probability due to ignition caused by humans, \f$P_i,h\f$, is parametrized
+  !! Fire probability due to ignition caused by humans, \f$P_i, h\f$, is parametrized
   !! following Kloster et al. (2010) \cite Kloster2010-633 with a dependence on population density,
   !! \f$p_\mathrm{d}\f$ (\f$number of people\,km^{-2}\f$)
   !!
-  !! \f[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \qquad (Eqn 6)\f]
+  !! \f[ \label{eqn:Ph} P_i, h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \qquad (Eqn 6)\f]
   !!
-  !! where \f$p_{thres}\f$ is a population threshold (\f$300\,people\,km^{-2}\f$) above which \f$P_{i,h}\f$
+  !! where \f$p_{thres}\f$ is a population threshold (\f$300\,people\,km^{-2}\f$) above which \f$P_{i, h}\f$
   !! is 1. The probability of fire conditioned on ignition, \f$P_\mathrm{i}\f$, is then
   !! the total contribution from both natural and human ignition sources
   !!
-  !! \f[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}].\qquad (Eqn 7) \f]
+  !! \f[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i, n} + (1 - P_{i, n})P_{i, h}\}].\qquad (Eqn 7) \f]
   !!
   !! The population data used to calculate probability of fire ignition caused by humans
   !! and anthropogenic fire suppression (discussed further down in this section) is
@@ -1149,30 +1149,30 @@ contains
   !! is used as a surrogate for the vegetation moisture content and the soil wetness
   !! of the top soil layer as a surrogate for the litter moisture content. If a grid
   !! cell is covered by snow, \f$P_\mathrm{m}\f$ is set to zero. The probability of
-  !! fire conditioned on soil wetness in vegetation's rooting zone, \f$P_{m,V}\f$,
+  !! fire conditioned on soil wetness in vegetation's rooting zone, \f$P_{m, V}\f$,
   !! is then
   !!
-  !! \f[ P_{m,V} = 1-\tanh
-  !! \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\qquad (Eqn 8)\f]
+  !! \f[ P_{m, V} = 1-\tanh
+  !! \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right)^2\right],\qquad (Eqn 8)\f]
   !!
-  !! where \f$E_\mathrm{V}\f$ is the extinction soil wetness above which \f$P_{f,V}\f$
+  !! where \f$E_\mathrm{V}\f$ is the extinction soil wetness above which \f$P_{f, V}\f$
   !! is reduced to near zero and is set to 0.30.
   !!
   !! The probability of fire based on the moisture content in the \f$\textit{duff}\f$
-  !! layer, \f$P_{m,D}\f$, which includes the brown leaf mass (grasses only) and
-  !! litter mass (\f$B_{duff} = C_{L,b} + C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$), is
+  !! layer, \f$P_{m, D}\f$, which includes the brown leaf mass (grasses only) and
+  !! litter mass (\f$B_{duff} = C_{L, b} + C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$), is
   !! calculated in a similar way but uses the soil wetness of the first soil layer,
   !! (\f$\phi_1\f$, photosynCanopyConduct.f90 Eqn. 7), as a surrogate for the moisture in the duff
   !! layer itself as
   !!
-  !! \f[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \qquad (Eqn 9)\f]
+  !! \f[ P_{m, D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \qquad (Eqn 9)\f]
   !!
   !! where the extinction soil wetness for the litter layer, \f$E_{\mathrm{D}}\f$,
   !! is set to 0.50, which yields a higher probability of fire for the litter layer
   !! than for the vegetation for the same soil wetness. \f$P_\mathrm{m}\f$ is then
-  !! the weighted average of \f$P_{m,V}\f$ and \f$P_{m,D}\f$ given by
+  !! the weighted average of \f$P_{m, V}\f$ and \f$P_{m, D}\f$ given by
   !!
-  !! \f[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff}
+  !! \f[ \label{eqn:Pf} P_\mathrm{m} = P_{m, V} (1-f_{duff}) + P_{m, D} f_{duff}
   !! \nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\qquad (Eqn 10)\f]
   !!
   !! where \f$f_{duff}\f$ is the duff fraction of aboveground combustible biomass.
@@ -1192,9 +1192,9 @@ contains
   !! The fire spread rate in the downwind direction (\f$v_\mathrm{d}\f$) is represented
   !! as
   !!
-  !! \f[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\qquad (Eqn 12)\f]
+  !! \f[ \label{firespreadrate} v_\mathrm{d} = v_{d, max}\,g(u)\,h(\phi_{r, d})\qquad (Eqn 12)\f]
   !!
-  !! where \f$v_{d,max}\f$ (\f$km\,h^{-1}\f$) is the PFT-specific maximum fire spread
+  !! where \f$v_{d, max}\f$ (\f$km\,h^{-1}\f$) is the PFT-specific maximum fire spread
   !! rate from Li et al. (2012)\cite Li20121c2, which is set to zero for crop PFTs (see also
   !! classic_params.f90). The functions \f$g(u)\f$ accounts for the effect of wind
   !! speed and \f$ h(\phi_{r, d})\f$ accounts for the effect of rooting zone and
@@ -1263,7 +1263,7 @@ contains
   !! area burned over the duration of the fire, \f${a_{\tau d}}\f$. \f$q\f$ is
   !! represented following Kloster et al. (2010) \cite Kloster2010-633 as
   !!
-  !! \f[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},\qquad (Eqn 18)
+  !! \f[ q = 0.5 + \frac{\max\left[0, 0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2},\qquad (Eqn 18)
   !! \f]
   !!
   !! which yields a value of \f$q\f$ that varies from 0.5 to 0.95 as population density,
@@ -1311,7 +1311,7 @@ contains
   !! Fire emits \f$CO_2\f$, other trace gases, and aerosols as biomass is burned while
   !! plant mortality and damage due to fire contribute to the litter pool. The
   !! emissions of a trace gas/aerosol species \f$j\f$ from PFT \f$\alpha\f$,
-  !! \f$E_{\alpha,j}\f$ (\f$g species (m^{-2} grid cell area) day^{-1}\f$) are
+  !! \f$E_{\alpha, j}\f$ (\f$g species (m^{-2} grid cell area) day^{-1}\f$) are
   !! obtained from a vector of carbon densities \f$\vec{C}_{\alpha} = (C_\mathrm{L},
   !! C_\mathrm{S}, C_\mathrm{R}, C_\mathrm{D})_\alpha\f$ (\f$kg\,C\,m^{-2}\f$) for
   !! its leaf, stem, root and litter components, multiplied by a vector of combustion
@@ -1326,7 +1326,7 @@ contains
   !! \f$ thus yields emissions per unit grid cell area of species \f$j\f$ from PFT
   !! \f$\alpha\f$,
   !!
-  !! \f[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha}
+  !! \f[ \label{emiss_combust_factor} {E_{\alpha, j}}= ((\vec{C}_\alpha\cdot mho_{\alpha}
   !! )\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450},\qquad (Eqn 23)
   !! \f]
   !!

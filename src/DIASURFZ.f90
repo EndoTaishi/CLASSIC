@@ -1,23 +1,23 @@
 !> \file
 !> Calculate the diagnostic values of U, V, T, Q
 !! near the surface (ZU and ZT)
-!! @author Y. Delage, G. Pellerin,B. Bilodeau,R. Sarrazin,G. Pellerin,D. Verseghy,
-!! M. Mackay,F. Seglenieks,P.Bartlett,E.Chan,B.Dugas,J.Melton
+!! @author Y. Delage, G. Pellerin, B. Bilodeau, R. Sarrazin, G. Pellerin, D. Verseghy,
+!! M. Mackay, F. Seglenieks, P.Bartlett, E.Chan, B.Dugas, J.Melton
 !
-subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
-                   H,UE,FTEMP,FVAP,ZU,ZT,LAT,F,IL1,IL2,JL)
+subroutine DIASURFZ(UZ, VZ, TZ, QZ, NI, U, V, TG, QG, Z0, Z0T, ILMO, ZA, &
+                    H, UE, FTEMP, FVAP, ZU, ZT, LAT, F, IL1, IL2, JL)
 
-  use classic_params, only : AS,ASX,CI,BETA,FACTN,HMIN,ANGMAX, &
-                            GRAV,SPHAIR,VKC
+  use classic_params, only : AS, ASX, CI, BETA, FACTN, HMIN, ANGMAX, &
+                            GRAV, SPHAIR, VKC
 
   implicit none
 
-  integer, intent(in) :: NI,JL
-  real, intent(in) :: ZT(NI),ZU(NI)
-  real, intent(inout) :: UZ(NI),VZ(NI),TZ(NI),QZ(NI)
-  real, intent(in) :: ZA(NI),U(NI),V(NI)
-  real, intent(in) :: TG(NI),QG(NI),UE(NI),FTEMP(NI),FVAP(NI)
-  real, intent(in) :: ILMO(NI),Z0T(NI),Z0(NI),H(NI),F(NI)
+  integer, intent(in) :: NI, JL
+  real, intent(in) :: ZT(NI), ZU(NI)
+  real, intent(inout) :: UZ(NI), VZ(NI), TZ(NI), QZ(NI)
+  real, intent(in) :: ZA(NI), U(NI), V(NI)
+  real, intent(in) :: TG(NI), QG(NI), UE(NI), FTEMP(NI), FVAP(NI)
+  real, intent(in) :: ILMO(NI), Z0T(NI), Z0(NI), H(NI), F(NI)
   real :: LAT(NI)
   ! Author
   !          Yves Delage  (Aug1990)
@@ -79,15 +79,15 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
   ! LAT      LATITUDE
   ! F        Fraction of surface type being studied
 
-  real :: ANG,ANGI,VITS,LZZ0,LZZ0T
-  real :: CT,DANG,CM
-  real :: XX,XX0,YY,YY0,fh,fm,hi
+  real :: ANG, ANGI, VITS, LZZ0, LZZ0T
+  real :: CT, DANG, CM
+  real :: XX, XX0, YY, YY0, fh, fm, hi
   real :: RAC3
-  integer :: J,IL1,IL2
+  integer :: J, IL1, IL2
 
   RAC3 = SQRT(3.)
 
-  do J = IL1,IL2
+  do J = IL1, IL2
     if (F(J) > 0.0) then
 
       LZZ0T = LOG((ZT(J) + Z0(J)) / Z0T(J))
@@ -98,22 +98,22 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
         !
         hi = 0.
         ! CDIR IEXPAND
-        fh = fhi(ZT(J) + Z0(J),Z0T(j),LZZ0T,ILMO(J),YY,YY0)
+        fh = fhi(ZT(J) + Z0(J), Z0T(j), LZZ0T, ILMO(J), YY, YY0)
         ! CDIR IEXPAND
-        fm = fmi(ZU(J) + Z0(J),Z0 (J),LZZ0 ,ILMO(J),XX,XX0)
+        fm = fmi(ZU(J) + Z0(J), Z0 (J), LZZ0, ILMO(J), XX, XX0)
       else
         !---------------------------------------------------------------------
         !                        STABLE CASE
-        hi = 1.0 / MAX(HMIN,H(J),(ZA(J) + 10.0 * Z0(J)) * factn,factn / &
-         (4.0 * AS * BETA * ilmo(j)))
+        hi = 1.0 / MAX(HMIN, H(J),(ZA(J) + 10.0 * Z0(J)) * factn, factn / &
+             (4.0 * AS * BETA * ilmo(j)))
         ! CDIR IEXPAND
-        fh = BETA * (LZZ0T + min( psi(ZT(J) + Z0(J),HI,ILMO(J)) &
-                                  - psi(Z0T(J),HI,ILMO(J)), &
-                                  ASX * ILMO(J) * (ZT(J) + Z0(J) - Z0T(J))))
+        fh = BETA * (LZZ0T + min( psi(ZT(J) + Z0(J), HI, ILMO(J)) &
+             - psi(Z0T(J), HI, ILMO(J)), &
+             ASX * ILMO(J) * (ZT(J) + Z0(J) - Z0T(J))))
         ! CDIR IEXPAND
-        fm = LZZ0 + min( psi(zu(J) + Z0(J),HI,ILMO(J)) &
-                         - psi(Z0(J),HI,ILMO(J)), &
-                         ASX * ILMO(J) * ZU(J))
+        fm = LZZ0 + min( psi(zu(J) + Z0(J), HI, ILMO(J)) &
+             - psi(Z0(J), HI, ILMO(J)), &
+             ASX * ILMO(J) * ZU(J))
       end if
       !---------------------------------------------------------------------
       ! CT=KARMAN/FH
@@ -127,7 +127,7 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
 
       ! CALCULATE WIND DIRECTION CHANGE FROM TOP OF SURFACE LAYER
       DANG = (ZA(J) - ZU(J)) * HI * ANGMAX * SIN(LAT(J))
-      ANGI = ATAN2(V(J),SIGN(ABS(U(J)) + 1.e-05,U(J)))
+      ANGI = ATAN2(V(J), SIGN(ABS(U(J)) + 1.e-05, U(J)))
       if (ILMO(J) > 0.) then
         ANG = ANGI + DANG
       else
@@ -144,24 +144,24 @@ subroutine DIASURFZ(UZ,VZ,TZ,QZ,NI,U,V,TG,QG,Z0,Z0T,ILMO,ZA, &
 contains
 
   !   The following code is taken from the RPN/CMC physics library file
-  !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk,v
+  !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk, v
 
   !   Internal function FMI
   !   Stability function for momentum in the unstable regime (ilmo<0)
   !   Reference: Delage Y. and Girard C. BLM 58 (19-31) Eq. 19
   !
-  real function FMI(Z2,Z02,LZZ02,ILMO2,X,X0)
+  real function FMI(Z2, Z02, LZZ02, ILMO2, X, X0)
     implicit none
     !
-    real, intent(in ) :: Z2,Z02,LZZ02,ILMO2
-    real, intent(out) :: X,X0
+    real, intent(in) :: Z2, Z02, LZZ02, ILMO2
+    real, intent(out) :: X, X0
     !
     X = (1.0 - CI * Z2 * BETA * ILMO2) ** (0.16666666)
     X0 = (1.0 - CI * Z02 * BETA * ILMO2) ** (0.16666666)
     FMI = LZZ02 + LOG((X0 + 1.0) ** 2 * SQRT(X0 ** 2 - X0 + 1.0) * (X0 ** 2 + X0 + 1.0) ** 1.5 &
-                / ((X + 1.0) ** 2 * SQRT(X ** 2 - X + 1.0) * (X ** 2 + X + 1.0) ** 1.5)) &
-               + RAC3 * ATAN(RAC3 * ((X ** 2 - 1.0) * X0 - (X0 ** 2 - 1.0) * X) / &
-               ((X0 ** 2 - 1.0) * (X ** 2 - 1.0) + 3.0 * X * X0))
+          / ((X + 1.0) ** 2 * SQRT(X ** 2 - X + 1.0) * (X ** 2 + X + 1.0) ** 1.5)) &
+          + RAC3 * ATAN(RAC3 * ((X ** 2 - 1.0) * X0 - (X0 ** 2 - 1.0) * X) / &
+          ((X0 ** 2 - 1.0) * (X ** 2 - 1.0) + 3.0 * X * X0))
     !
     return
   end function FMI
@@ -170,16 +170,16 @@ contains
   !   Stability function for heat and moisture in the unstable regime (ilmo<0)
   !   Reference: Delage Y. and Girard C. BLM 58 (19-31) Eq. 17
   !
-  real function FHI(Z2,Z0T2,LZZ0T2,ILMO2,Y,Y0)
+  real function FHI(Z2, Z0T2, LZZ0T2, ILMO2, Y, Y0)
     implicit none
     !
-    real, intent(in ) :: Z2,Z0T2,LZZ0T2,ILMO2
-    real, intent(out) :: Y,Y0
+    real, intent(in) :: Z2, Z0T2, LZZ0T2, ILMO2
+    real, intent(out) :: Y, Y0
     !
     Y = (1.0 - CI * Z2  * BETA * ILMO2) ** (0.33333333)
     Y0 = (1.0 - CI * Z0T2 * BETA * ILMO2) ** (0.33333333)
     FHI = BETA * (LZZ0T2 + 1.5 * LOG((Y0 ** 2 + Y0 + 1.0) / (Y ** 2 + Y + 1.0)) + RAC3 * &
-         ATAN(RAC3 * 2.0 * (Y - Y0) / ((2.0 * Y0 + 1.0) * (2.0 * Y + 1.0) + 3.0)))
+          ATAN(RAC3 * 2.0 * (Y - Y0) / ((2.0 * Y0 + 1.0) * (2.0 * Y + 1.0) + 3.0)))
     !
     return
   end function FHI
@@ -188,18 +188,18 @@ contains
   !   Stability function for momentum in the stable regime (unsl>0)
   !   Reference :  Y. Delage, BLM, 82 (p23-48) (Eqs.33-37)
   !
-  real function PSI(Z2,HI2,ILMO2)
+  real function PSI(Z2, HI2, ILMO2)
     implicit none
     !
-    real :: a,b,c,d
-    real, intent(in ) :: ILMO2,Z2,HI2
+    real :: a, b, c, d
+    real, intent(in) :: ILMO2, Z2, HI2
     !
     d = 4.0 * AS * BETA * ILMO2
     c = d * hi2 - hi2 ** 2
     b = d - 2.0 * hi2
     a = sqrt(1.0 + b * z2 - c * z2 ** 2)
     psi = 0.5 * (a - z2 * hi2 - log(1.0 + b * z2 * 0.5 + a) - &
-             b / (2.0 * sqrt(c)) * asin((b - 2.0 * c * z2) / d))
+          b / (2.0 * sqrt(c)) * asin((b - 2.0 * c * z2) / d))
     !
     return
   end function PSI

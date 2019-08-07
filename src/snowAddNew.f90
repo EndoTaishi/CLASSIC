@@ -1,8 +1,8 @@
 !> \file
 !! Adds snow incident on the ground surface to the snow pack.
 !
-subroutine snowAddNew(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS, & ! Formerly SNOADD
-                      FI,S,TS,RHOSNI,WSNOW,ILG,IL1,IL2,JL)
+subroutine snowAddNew(ALBSNO, TSNOW, RHOSNO, ZSNOW, HCPSNO, HTCS, & ! Formerly SNOADD
+                      FI, S, TS, RHOSNI, WSNOW, ILG, IL1, IL2, JL)
   !
   !     * NOV 17/11 - M.LAZARE.   CHANGE SNOW ALBEDO REFRESHMENT
   !     *                         THRESHOLD (SNOWFALL IN CURRENT
@@ -27,13 +27,13 @@ subroutine snowAddNew(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS, & ! Formerly SNOADD
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. ACCUMULATION OF SNOW ON GROUND.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,HCPICE,RHOW,RHOICE
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, RHOICE
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL
+  integer, intent(in) :: ILG, IL1, IL2, JL
   integer :: I
   !
   !     * INPUT/OUTPUT ARRAYS.
@@ -56,13 +56,13 @@ subroutine snowAddNew(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS, & ! Formerly SNOADD
 
   !     * TEMPORARY VARIABLES.
   !
-  real :: SNOFAL,HCPSNP
+  real :: SNOFAL, HCPSNP
   !
 
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. S(I) > 0.) then
       HTCS  (I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-                   ZSNOW(I) / DELT
+                  ZSNOW(I) / DELT
       SNOFAL = S(I) * DELT
       if (SNOFAL >= 1.E-4) then
         ALBSNO(I) = 0.84
@@ -71,16 +71,16 @@ subroutine snowAddNew(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS, & ! Formerly SNOADD
       end if
       HCPSNP = HCPICE * RHOSNI(I) / RHOICE
       TSNOW (I) = ((TSNOW(I) + TFREZ) * ZSNOW(I) * HCPSNO(I) + &
-      (TS   (I) + TFREZ) * SNOFAL  * HCPSNP) / &
-      (ZSNOW(I) * HCPSNO(I) + SNOFAL * HCPSNP) - &
-      TFREZ
+                  (TS   (I) + TFREZ) * SNOFAL  * HCPSNP) / &
+                  (ZSNOW(I) * HCPSNO(I) + SNOFAL * HCPSNP) - &
+                  TFREZ
       RHOSNO(I) = (ZSNOW(I) * RHOSNO(I) + SNOFAL * RHOSNI(I)) / &
-      (ZSNOW(I) + SNOFAL)
+                  (ZSNOW(I) + SNOFAL)
       ZSNOW (I) = ZSNOW(I) + SNOFAL
       HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-      (RHOW * ZSNOW(I))
+                  (RHOW * ZSNOW(I))
       HTCS  (I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-      ZSNOW(I) / DELT
+                  ZSNOW(I) / DELT
     end if
   end do ! loop 100
   !

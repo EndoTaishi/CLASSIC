@@ -21,17 +21,17 @@ import re
 class WhitespaceChecker(object):
 
     def __init__(self, fname):
-        self.fname = fname
+        self.fname = fname # name of the file being checked
         with open(self.fname, 'r') as f:
             lines = f.readlines()
-        self.lines = lines
-        self.fixedlines = []
-        self.ignoreLines = 0
-        self.directive = False
-        self.levelNumber = 0
-        self.continuedIf = False
+        self.lines = lines # stores the lines of the pre-linted file
+        self.fixedlines = [] # will store the linted lines to be put back into the file
+        self.ignoreLines = 0 # tracks number of lines from the !ignoreLint(x) directive
+        self.directive = False # if true, we're in a preprocessor directive (and won't touch anything)
+        self.levelNumber = 0 # how many block indentations in are we?
+        self.continuedIf = False # flag for if we're in a continued if statement (important edge case)
         self.checkWhiteSpace()
-        if self.levelNumber != 0:
+        if self.levelNumber != 0: # we haven't finished with 0 whitespace; this is a problem.
             print("Whitespace error in {}: finished with levelNumber {}".format(self.fname, self.levelNumber))
         with open(self.fname, 'w') as f:
             for line in self.fixedlines:
@@ -40,35 +40,38 @@ class WhitespaceChecker(object):
                 f.write(line)
 
     def checkWhiteSpace(self):
-        stack = []
-        continuationLine = False
-        subcall = 0
-        errr = False
+        continuationLine = False # flag for if we're continuing from a previous line with '&'
+        subcall = 0 # tracks the number of spaces to indent subsequent lines of a multi-line subroutine call
         for i, line in enumerate(self.lines):
-            if self.ignoreLines == 0 and self.levelNumber < 0 and not errr:
+            if self.ignoreLines == 0 and self.levelNumber < 0: # big error! we've got negative whitespace.
                 print("Whitepsace error in {} at line {}: levelNumber < 0".format(self.fname, i+1))
-                errr = True
-            # ignore blank lines
+                return
+            # ignore blank lines; just tack a newline into the fixedlines list, and move on
             if re.match(r'^\s*\n', line, re.IGNORECASE):
                 self.fixedlines.append("\n")
                 continue
+            # check if there's another reason we should be ignoring this line
             if self.skippable(line):
                 continue
+            # check if we flagged the previous line as continuation
             elif continuationLine:
                 newline = ""
+                # are we continuing a multi-line subroutine call?
                 if subcall > 0:
                     for x in range(subcall):
                         newline += " "
                     newline += line.strip()
+                # otherwise, just use the line as-is
                 else:
                     newline = line
-                # end of continuation lines
+                # end of continuation lines?
                 if not re.match(r'^[^\n!]*&', line, re.IGNORECASE) and \
                    not re.match(r'^\s*!', line, re.IGNORECASE):
                     continuationLine = False
                     subcall = 0
                 self.fixedlines.append(newline)
                 continue
+            # all other cases
             else:
                 newline = ""
                 # check that this line follows regular formatting
@@ -88,6 +91,7 @@ class WhitespaceChecker(object):
                 num_spaces = max(0, 2*self.levelNumber - len(newline))
                 for x in range(num_spaces):
                     newline += " "
+                # 'contains' should be shifted back by 2 spaces
                 if re.match(r'\bcontains\b', parsed_line.group(4), re.IGNORECASE):
                     newline = newline[:-2]
                 newline += parsed_line.group(4)
@@ -95,23 +99,34 @@ class WhitespaceChecker(object):
                 self.analyzeLine2(parsed_line.group(4))
                 if re.match(r'^[^\n!]*&', line, re.IGNORECASE) and not self.continuedIf:
                     continuationLine = True
-                    line2 = re.match(r'^([^\n!]*)\b(call)\b([^\n!\(]*)\(', line, re.IGNORECASE)
-                    if line2:
-                        subcall = len(line2.group(0))
+                    subfuncall = re.match(r'^([^\n!\"\']*)\b(call|subroutine)\b([^\n!\(]*)\(', line, re.IGNORECASE)
+                    declaration = re.match(r'^([^\n!:\"\']*):: ', line, re.IGNORECASE)
+                    arithmetic = re.match(r'^([^\n!=\"\']*)= ', line, re.IGNORECASE)
+                    if subfuncall:
+                        subcall = len(subfuncall.group(0))
+                    elif declaration:
+                        subcall = len(declaration.group(0))
+                    elif arithmetic:
+                        subcall = len(arithmetic.group(0))
+
 
     # checks if a line should be skipped by the linter
     def skippable(self, line):
+        # are we still in a preprocessor directive?
         if self.directive:
             if re.match(r'^[ \t]*#endif', line, re.IGNORECASE):
                 self.directive = False
             self.fixedlines.append(line)
             return True
+        # other possible cases:
         else:
+            # are we starting a preprocessor directive?
             if re.match(r'^[ \t]*#if', line, re.IGNORECASE):
                 self.fixedlines.append(line)
                 self.directive = True
                 return True
             else:
+                # is there an !ignoreLint(x) directive?
                 lineSkip = re.match(r'^\s*!ignoreLint\((\d+)\)ff', line, re.IGNORECASE)
                 if lineSkip:
                     self.ignoreLines = int(lineSkip.group(1))
@@ -121,6 +136,7 @@ class WhitespaceChecker(object):
                     self.ignoreLines -= 1
                     self.fixedlines.append(line)
                     return True
+        # no reason has been found to skip the line.
         return False
 
     # checks if we should revert whitespace on this line (eg. 'end if')

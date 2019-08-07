@@ -3,8 +3,8 @@
 !! @author V. Arora, J. Melton
 module metDisaggModule
 
-  use model_state_drivers, only : metInputTimeStep,metTime,metFss,metFdl,metPre,metTa,metQa,metUv,metPres
-  use generalUtils, only : closeEnough,parseTimeStamp
+  use model_state_drivers, only : metInputTimeStep, metTime, metFss, metFdl, metPre, metTa, metQa, metUv, metPres
+  use generalUtils, only : closeEnough, parseTimeStamp
   use classic_params, only : pi
 
   implicit none
@@ -40,11 +40,11 @@ contains
     implicit none
 
     real, intent(in) :: longitude, latitude  ! in degrees
-    integer          :: vcount,vcountPlus
+    integer          :: vcount, vcountPlus
 
     !> First check that we should be doing the disaggregation. If we are already
     !! at the needed timestep (delt) then we can return to the main.
-    if (closeEnough(metInputTimeStep,delt,0.001)) then
+    if (closeEnough(metInputTimeStep, delt, 0.001)) then
       return
     end if
 
@@ -70,7 +70,7 @@ contains
     !> Expand original MET data to physics timestep. This increases the array size
     !! and puts the old values within the larger array. It also duplicates the first
     !! and last days for the interpolation. This also expands the time array (metTime)
-    call makebig(vcount,vcountPlus)
+    call makebig(vcount, vcountPlus)
 
     !> Perform the interpolations that are either step (for longwave), linear (for
     !! for air temperature, specific humidity, wind, pressure), randomly distributed
@@ -85,7 +85,7 @@ contains
 
     !> Adjust the met arrays for the timezone relative to Greenwich and also
     !! trim off the added two days.
-    call timeShift(timeZone(longitude),vcount,vcountPlus)
+    call timeShift(timeZone(longitude), vcount, vcountPlus)
 
   end subroutine disaggMet
   !! @}
@@ -97,7 +97,7 @@ contains
   !! timesteps on the physics timestep. Also copies the first day and last day values
   !! into the array to give a startday -1 and endday + 1 values for the interpolations.
   !! While we are at it we also expand the time array
-  subroutine makebig(vcount,vcountPlus)
+  subroutine makebig(vcount, vcountPlus)
 
     use classic_params, only : delt
 
@@ -105,25 +105,25 @@ contains
 
     integer, intent(in) :: vcount
     integer, intent(in) :: vcountPlus
-    real, allocatable, dimension(:) :: tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres,tmpTime
-    integer :: i,j,timePlusTwoDays
+    real, allocatable, dimension(:) :: tmpFss, tmpFdl, tmpPre, tmpTa, tmpQa, tmpUv, tmpPres, tmpTime
+    integer :: i, j, timePlusTwoDays
 
     !> Transfer the present contents of the met*** arrays to temp ones.
-    call move_alloc(metFss,tmpFss)
-    call move_alloc(metFdl,tmpFdl)
-    call move_alloc(metPre,tmpPre)
-    call move_alloc(metTa,tmpTa)
-    call move_alloc(metQa,tmpQa)
-    call move_alloc(metUv,tmpUv)
-    call move_alloc(metPres,tmpPres)
-    call move_alloc(metTime,tmpTime)
+    call move_alloc(metFss, tmpFss)
+    call move_alloc(metFdl, tmpFdl)
+    call move_alloc(metPre, tmpPre)
+    call move_alloc(metTa, tmpTa)
+    call move_alloc(metQa, tmpQa)
+    call move_alloc(metUv, tmpUv)
+    call move_alloc(metPres, tmpPres)
+    call move_alloc(metTime, tmpTime)
 
     !> Allocate the met*** arrays in preparation to fill with old contents
     !! the allocated size is now including the met on the physics timestep.
     !! The shortwave and precipitation arrays don't require the extra two
     !! padding days.
-    allocate(metFss(vcountPlus),metFdl(vcountPlus),metPre(vcountPlus),metTa(vcountPlus), &
-             metQa(vcountPlus),metUv(vcountPlus),metPres(vcountPlus),metTime(vcount))
+    allocate(metFss(vcountPlus), metFdl(vcountPlus), metPre(vcountPlus), metTa(vcountPlus), &
+             metQa(vcountPlus), metUv(vcountPlus), metPres(vcountPlus), metTime(vcount))
 
     ! initialize to zero so they are not filled in with random value by the compiler
     metFdl = 0. ; metFss = 0. ; metPre = 0. ; metTa = 0. ; metQa = 0. ; metUv = 0. ; metPres = 0.
@@ -154,12 +154,12 @@ contains
     !> Now expand the time dimension and fill in the values.
     do j = 1, tslongCount ! Don't need the buffer days so use tslongCount
       metTime((j - 1) * numberPhysInMet + 1) = tmpTime(j)
-      do i = 1,numberPhysInMet - 1
+      do i = 1, numberPhysInMet - 1
         metTime((j - 1) * numberPhysInMet + 1 + i) = tmpTime(j) + i * delt / 86400.
       end do
     end do
 
-    deallocate(tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres,tmpTime)
+    deallocate(tmpFss, tmpFdl, tmpPre, tmpTa, tmpQa, tmpUv, tmpPres, tmpTime)
 
   end subroutine makebig
   !! @}
@@ -232,23 +232,23 @@ contains
   !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
   subroutine precipDistribution(var)
 
-    use classic_params, only : delt,zero
+    use classic_params, only : delt, zero
 
     implicit none
 
     real, intent(inout)                         :: var(:)
-    integer                                     :: i, j, k, T,start, endpt, countr,wetpds,attempts
-    real                                        :: temp,startpre
+    integer                                     :: i, j, k, T, start, endpt, countr, wetpds, attempts
+    real                                        :: temp, startpre
     real, allocatable, dimension(:)             :: random
     integer, allocatable, dimension(:)          :: sort_ind
-    real, allocatable, dimension(:)             :: incomingPre,tmpvar
+    real, allocatable, dimension(:)             :: incomingPre, tmpvar
     logical                                     :: needDistrib
 
     ! Set some initial conditions
     needDistrib = .true.
     attempts = 1
 
-    allocate(random(numberPhysInMet),sort_ind(numberPhysInMet))
+    allocate(random(numberPhysInMet), sort_ind(numberPhysInMet))
 
     countr = size(var)
 
@@ -259,7 +259,7 @@ contains
     var = var * metInputTimeStep
 
     ! Save the incoming precip for balance check later
-    allocate(incomingPre(countr),tmpvar(countr))
+    allocate(incomingPre(countr), tmpvar(countr))
     incomingPre = var
 
     do while (needDistrib)
@@ -278,18 +278,18 @@ contains
 
           ! We expect precipitation for this relation to be in mm/6h
           wetpds = nint( &
-                                max( &
-                                    min( &
-                                        abs(2.6 * log10(6.93 * var(start) ) ) &
-                                        , real(numberPhysInMet)) &
-                                            , 1.0) &
-                                    )
+                   max( &
+                   min( &
+                   abs(2.6 * log10(6.93 * var(start) ) ) &
+                   , real(numberPhysInMet)) &
+                   , 1.0) &
+                   )
 
           ! Create an array of random numbers
           call random_number(random(:))
 
           ! Create an array of integers from 1 to numberPhysInMet
-          do k = 1,numberPhysInMet
+          do k = 1, numberPhysInMet
             sort_ind(k) = k
           end do
 
@@ -299,8 +299,8 @@ contains
           ! random number. The sorting continues until integer :: 1 is in the index position
           ! of the smallest random number generated.
 
-          do k = 1,numberPhysInMet
-            do j = k,numberPhysInMet
+          do k = 1, numberPhysInMet
+            do j = k, numberPhysInMet
               if (random(k) < random(j)) then
                 temp = random(k)
                 random(k) = random(j)
@@ -329,7 +329,7 @@ contains
 
           ! Disperse precipitiation randomly across the random indice
           k = 1
-          do j = start,endpt
+          do j = start, endpt
             ! Assign this time period its precipitation
             tmpvar(j) = random(k) * startpre
             k = k + 1
@@ -347,7 +347,7 @@ contains
       ! Balance check that we have conserved our precip
       if ((sum(tmpvar) - sum(incomingPre)) > 1.0e-5) then
         if (attempts > 3) then
-          print * ,'Warning: In precipDistribution, precip is not being conserved',sum(var),sum(incomingPre)
+          print * ,'Warning: In precipDistribution, precip is not being conserved',sum(var), sum(incomingPre)
           call errorHandler('metModule', - 1)
           return ! this is needed here as it ensures we don't get caught in a loop where it keeps failing but not moving on.
         else ! retry, could have just been a bad draw.
@@ -365,7 +365,7 @@ contains
     ! we now need to then convert back to mm/s
     var = tmpvar / delt
 
-    deallocate(random,sort_ind,incomingPre,tmpvar)
+    deallocate(random, sort_ind, incomingPre, tmpvar)
 
   end subroutine precipDistribution
   !! @}
@@ -382,7 +382,7 @@ contains
 
     real, intent(inout)                         :: shortWave(:)
     real, intent(in)                            :: latitude
-    integer                                     :: i,d, start, endpt, midday
+    integer                                     :: i, d, start, endpt, midday
     integer, allocatable                        :: daylightIndYear(:,:)
     real, allocatable                           :: zenithAngYear(:,:)
     real, allocatable                           :: zenithNoon(:)
@@ -398,18 +398,18 @@ contains
       timesteps(i) = real(i - 1) * delt
     end do
 
-    allocate(daylightIndYear(365,shortSteps),zenithAngYear(365,shortSteps), &
+    allocate(daylightIndYear(365, shortSteps), zenithAngYear(365, shortSteps), &
                     zenithNoon(365))
 
     latRad = latitude * pi / 180.00
 
     ! Assume we are going to run the model for at least one full year so just find the
     ! zenith angles and daylight timesteps for one year and store the values.
-    do d = 1,365 ! FLAG not set up for leap yet !
-      zenithAngYear(d,:) = zenithAngles(timesteps, d, latRad, 365,shortSteps)
+    do d = 1, 365 ! FLAG not set up for leap yet !
+      zenithAngYear(d,:) = zenithAngles(timesteps, d, latRad, 365, shortSteps)
       ! Find the zenith angle at noon
-      zenithNoon(d) = zenithAngYear(d,midday)
-      daylightIndYear(d,:) = daylightIndices(zenithAngYear(d,:),shortSteps)
+      zenithNoon(d) = zenithAngYear(d, midday)
+      daylightIndYear(d,:) = daylightIndices(zenithAngYear(d,:), shortSteps)
     end do
 
     d = 365 ! We start on day 365 since we have the extra day added on the start
@@ -419,12 +419,12 @@ contains
 
       swMean = sum(shortWave(start:endpt)) / numberMetInputinDay ! Finds the mean of this day's values
 
-      shortWave(start:endpt) = distributeDiurnally(zenithAngYear(d,:),daylightIndYear(d,:),zenithNoon(d),swMean,shortSteps)
+      shortWave(start:endpt) = distributeDiurnally(zenithAngYear(d,:), daylightIndYear(d,:), zenithNoon(d), swMean, shortSteps)
       d = d + 1
       if (d > 365) d = 1
     end do
 
-    deallocate(daylightIndYear,zenithAngYear,zenithNoon)
+    deallocate(daylightIndYear, zenithAngYear, zenithNoon)
 
   end subroutine diurnalDistribution
   !! @}
@@ -433,15 +433,15 @@ contains
   !> \ingroup metDisaggModule_zenithAngles
   !! @{
   !> Find zenith angles depending on day of year and latitude
-  function zenithAngles(timesteps, day, latRad, lastDOY,countr)
+  function zenithAngles(timesteps, day, latRad, lastDOY, countr)
 
     implicit none
 
-    integer,    intent(in)          :: day
-    real,       intent(in)          :: timesteps(:)
-    integer,    intent(in)          :: countr
-    integer,    intent(in)          :: lastDOY
-    real,       intent(in)          :: latRad     !< In radians
+    integer, intent(in)          :: day
+    real, intent(in)          :: timesteps(:)
+    integer, intent(in)          :: countr
+    integer, intent(in)          :: lastDOY
+    real, intent(in)          :: latRad     !< In radians
     real, allocatable               :: zenithAngles(:)
     integer                         :: i
     real                            :: radHourAngle, degHourAngle, psi, dec
@@ -461,7 +461,7 @@ contains
       degHourAngle = 15. * (12. - (timesteps(i) / secondsInHour))
       radHourAngle = (degHourAngle / 360.) * 2. * pi
       zenithAngles(i) = acos((sin(latRad) * sin(dec)) + &
-            (cos(latRad) * cos(dec) * cos(radHourAngle)))
+                        (cos(latRad) * cos(dec) * cos(radHourAngle)))
     end do
 
   end function zenithAngles
@@ -471,7 +471,7 @@ contains
   !> \ingroup metDisaggModule_daylightIndices
   !! @{
   !> Find day lengths depending on zenith angles
-  function daylightIndices(zenithAngles,countr)
+  function daylightIndices(zenithAngles, countr)
 
     use classic_params, only : delt
 
@@ -479,7 +479,7 @@ contains
 
     integer                         :: i, daylightCount
     integer, intent(in)             :: countr
-    real,  intent(in)               :: zenithAngles(:)
+    real, intent(in)               :: zenithAngles(:)
     integer, allocatable            :: daylightIndices(:)
     real                            :: zenithCos
     real                            :: dayLength
@@ -505,26 +505,26 @@ contains
   !> \ingroup metDisaggModule_distributeDiurnally
   !! @{
   !> Determines correction for input values based on daylight indices and zenith angles
-  function distributeDiurnally(zenithAngles, daylightIndices, zenithNoon,swMean,countr)
+  function distributeDiurnally(zenithAngles, daylightIndices, zenithNoon, swMean, countr)
 
     implicit none
 
-    integer,    intent(in)          :: countr
-    real,       intent(in)          :: zenithAngles(:), zenithNoon, swMean
-    integer,    intent(in)          :: daylightIndices(:)
-    real,       allocatable         :: distributeDiurnally(:)
-    real,       allocatable         :: diurnalDistrib(:)
+    integer, intent(in)          :: countr
+    real, intent(in)          :: zenithAngles(:), zenithNoon, swMean
+    integer, intent(in)          :: daylightIndices(:)
+    real, allocatable         :: distributeDiurnally(:)
+    real, allocatable         :: diurnalDistrib(:)
     integer                         :: i, daylightIndex
     real                            :: vsum, correction, diurnalMean
 
-    allocate(diurnalDistrib(countr),distributeDiurnally(countr))
+    allocate(diurnalDistrib(countr), distributeDiurnally(countr))
 
     vsum = 0.0
     do i = 1, countr
       daylightIndex = daylightIndices(i)              ! check with daylight_indices to see if it there is daylight at the time,
       if (daylightIndex > 0) then                     ! if there is find the value for s
         diurnalDistrib(i) = swMean * pi / 2. * cos((zenithAngles(daylightIndex) - zenithNoon) &
-                                                            / (pi / 2. - zenithNoon) * pi / 2.)
+                            / (pi / 2. - zenithNoon) * pi / 2.)
       else ! else set it to 0
         diurnalDistrib(i) = 0
       end if
@@ -555,7 +555,7 @@ contains
 
     implicit none
 
-    real,       intent(in)      :: longitude
+    real, intent(in)      :: longitude
 
     !> Each timezone is 15 deg of longitude per hour. So convert our physics
     !! timestep into a minutes equivalent.
@@ -575,34 +575,34 @@ contains
   !! @{
   !> Perform a circular shift on the met arrays to account for the timezone the present cell is in.
   !! Also trims the met arrays to remove the two extra days added for the interpolations
-  subroutine timeShift(timeZoneOffset,vcount,vcountPlus)
+  subroutine timeShift(timeZoneOffset, vcount, vcountPlus)
 
     implicit none
 
     real, intent(in)                :: timeZoneOffset
     integer, intent(in)             :: vcount
     integer, intent(in)             :: vcountPlus
-    real, allocatable, dimension(:) :: tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres
+    real, allocatable, dimension(:) :: tmpFss, tmpFdl, tmpPre, tmpTa, tmpQa, tmpUv, tmpPres
 
     !> Do a circular shift to the arrays (except Fss !) to adjust for the timezone
-    metFdl = cshift(metFdl,int(timeZoneOffset))
-    metPre = cshift(metPre,int(timeZoneOffset))
-    metTa = cshift(metTa,int(timeZoneOffset))
-    metQa = cshift(metQa,int(timeZoneOffset))
-    metUv = cshift(metUv,int(timeZoneOffset))
-    metPres = cshift(metPres,int(timeZoneOffset))
+    metFdl = cshift(metFdl, int(timeZoneOffset))
+    metPre = cshift(metPre, int(timeZoneOffset))
+    metTa = cshift(metTa, int(timeZoneOffset))
+    metQa = cshift(metQa, int(timeZoneOffset))
+    metUv = cshift(metUv, int(timeZoneOffset))
+    metPres = cshift(metPres, int(timeZoneOffset))
 
     !> Transfer the present contents of the met*** arrays to temp ones.
-    call move_alloc(metFss,tmpFss)
-    call move_alloc(metFdl,tmpFdl)
-    call move_alloc(metPre,tmpPre)
-    call move_alloc(metTa,tmpTa)
-    call move_alloc(metQa,tmpQa)
-    call move_alloc(metUv,tmpUv)
-    call move_alloc(metPres,tmpPres)
+    call move_alloc(metFss, tmpFss)
+    call move_alloc(metFdl, tmpFdl)
+    call move_alloc(metPre, tmpPre)
+    call move_alloc(metTa, tmpTa)
+    call move_alloc(metQa, tmpQa)
+    call move_alloc(metUv, tmpUv)
+    call move_alloc(metPres, tmpPres)
 
-    allocate(metFss(vcount),metFdl(vcount),metPre(vcount),metTa(vcount), &
-                 metQa(vcount),metUv(vcount),metPres(vcount))
+    allocate(metFss(vcount), metFdl(vcount), metPre(vcount), metTa(vcount), &
+                 metQa(vcount), metUv(vcount), metPres(vcount))
 
     metFss = tmpFss(shortSteps:vcountPlus - shortSteps)
     metFdl = tmpFdl(shortSteps:vcountPlus - shortSteps)
@@ -612,7 +612,7 @@ contains
     metUv = tmpUv(shortSteps:vcountPlus - shortSteps)
     metPres = tmpPres(shortSteps:vcountPlus - shortSteps)
 
-    deallocate(tmpFss,tmpFdl,tmpPre,tmpTa,tmpQa,tmpUv,tmpPres)
+    deallocate(tmpFss, tmpFdl, tmpPre, tmpTa, tmpQa, tmpUv, tmpPres)
 
   end subroutine timeShift
   !! @}

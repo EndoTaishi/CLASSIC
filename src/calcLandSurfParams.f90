@@ -6,23 +6,23 @@
 !! (e.g. needleleaf trees, broadleaf trees, crops and grass), if an unknown PFT is present, a call to abort  number of
 !! is performed.
 
-subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Formerly APREP
-                             FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN, &
-                             SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS, &
-                             ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC, &
-                              CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, ZPLIMC,  &
-                              ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, FROOT, FROOTS,  &
-                              WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS,     &
-                              PSIGND, FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX,    &
-                              PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN,   &
+subroutine calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & ! Formerly APREP
+                              FRAINC, FSNOWC, FRAICS, FSNOCS, RAICAN, RAICNS, SNOCAN, &
+                              SNOCNS, DISP, DISPS, ZOMLNC, ZOMLCS, ZOELNC, ZOELCS, &
+                              ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, CHCAP, CHCAPS, CMASSC, &
+                              CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, ZPLIMC, &
+                              ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, FROOT, FROOTS, &
+                              WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS, &
+                              PSIGND, FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX, &
+                              PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN, &
                               GROWTH, ZSNOW, TSNOW, FSNOW, RHOSNO, SNO, Z0ORO, ZBLEND, &
-                              ZPLMG0, ZPLMS0, TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ,    &
-                              DELZW, ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS,   &
-                              ISAND, ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP,     &
-                              IZREF, IWF, IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA,      &
-                              GROWN, GROWB, RRESID, SRESID, FRTOT, FRTOTS, FCANCMX,    &
-                              ICTEM, ctem_on, RMATC, AILC, PAIC, AILCG,                &
-                              NOL2PFTS, AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC,        &
+                              ZPLMG0, ZPLMS0, TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ, &
+                              DELZW, ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS, &
+                              ISAND, ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP, &
+                              IZREF, IWF, IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA, &
+                              GROWN, GROWB, RRESID, SRESID, FRTOT, FRTOTS, FCANCMX, &
+                              ICTEM, ctem_on, RMATC, AILC, PAIC, AILCG, &
+                              NOL2PFTS, AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC, &
                               SLAIC, ipeatland)
 
   !     * JAN 2019 - J. Melton    Remove common block parameters, use classic_params instead.
@@ -50,7 +50,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !     *                         CALCULATION OVER ORGANIC SOILS THE SAME
   !     *                         AS OVER MINERAL SOILS (LOOP 175).
   !     * DEC 23/09 - D.VERSEGHY. IN LIMITING PONDING DEPTH CALCULATIONS,
-  !     *                         IDENTIFY PEATLANDS WHERE ISAND(I,2)=-2
+  !     *                         IDENTIFY PEATLANDS WHERE ISAND(I, 2)=-2
   !     * JAN 06/09 - D.VERSEGHY. REINTRODUCE CHECKS ON FRACTIONAL AREAS.
   !     * MAR 25/08 - D.VERSEGHY. DISTINGUISH BETWEEN LEAF AREA INDEX
   !     *                         AND PLANT AREA INDEX.
@@ -146,18 +146,18 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !     *                         PARAMETERS.
   !
 
-  use classic_params,        only : zolnmoss,DELT,HCPW,HCPICE, &
-                  HCPSND,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE, &
-                  PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,GROWYR,ZORAT, &
-                  CANEXT,XLEAF,classpfts,CL4CTEM,ctempfts
+  use classic_params, only : zolnmoss, DELT, HCPW, HCPICE, &
+                  HCPSND, SPHW, SPHICE, SPHVEG, SPHAIR, RHOW, RHOICE, &
+                  PI, ZOLNG, ZOLNS, ZOLNI, ZORATG, GROWYR, ZORAT, &
+                  CANEXT, XLEAF, classpfts, CL4CTEM, ctempfts
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,IPAI,IHGT
+  integer, intent(in) :: ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP, IZREF, IWF, IPAI, IHGT
   !
-  integer :: I,J,K,IN,NL
+  integer :: I, J, K, IN, NL
   !
   !     * OUTPUT ARRAYS USED ELSEWHERE IN CLASS.
   !
@@ -197,10 +197,10 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   real, intent(out) :: CHCAPS(ILG) !< Heat capacity of canopy over snow [\f$J m^{-2} K^{-1}\f$]
   real, intent(out) :: CMASSC(ILG) !< Mass of canopy over bare ground [\f$kg m^{-2}\f$]
   real, intent(out) :: CMASCS(ILG) !< Mass of canopy over snow [\f$kg m^{-2}\f$]
-  real, intent(out) :: CWLCAP(ILG) !< Storage capacity of canopy over bare ground for liquid water (\f$W_{l,max}\f$) [\f$kg m^{-2}\f$]
-  real, intent(out) :: CWFCAP(ILG) !< Storage capacity of canopy over bare ground for frozen water (\f$W_{f,max}\f$) [\f$kg m^{-2}\f$]
-  real, intent(out) :: CWLCPS(ILG) !< Storage capacity of canopy over snow for liquid water (\f$W_{l,max}\f$) [\f$kg m^{-2}\f$]
-  real, intent(out) :: CWFCPS(ILG) !< Storage capacity of canopy over snow for frozen water (\f$W_{f,max}\f$) [\f$kg m^{-2}\f$]
+  real, intent(out) :: CWLCAP(ILG) !< Storage capacity of canopy over bare ground for liquid water (\f$W_{l, max}\f$) [\f$kg m^{-2}\f$]
+  real, intent(out) :: CWFCAP(ILG) !< Storage capacity of canopy over bare ground for frozen water (\f$W_{f, max}\f$) [\f$kg m^{-2}\f$]
+  real, intent(out) :: CWLCPS(ILG) !< Storage capacity of canopy over snow for liquid water (\f$W_{l, max}\f$) [\f$kg m^{-2}\f$]
+  real, intent(out) :: CWFCPS(ILG) !< Storage capacity of canopy over snow for frozen water (\f$W_{f, max}\f$) [\f$kg m^{-2}\f$]
 
   real, intent(out) :: ZPLIMC(ILG) !< Maximum water ponding depth for ground under canopy [m]
   real, intent(out) :: ZPLIMG(ILG) !< Maximum water ponding depth for bare ground [m]
@@ -216,38 +216,38 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   real, intent(out) :: WTRG  (ILG) !< Diagnosed residual water transferred into or out of the soil [\f$kg m^{-2} s^{-1}\f$]
   real, intent(out) :: CMAI  (ILG) !< Aggregated mass of vegetation canopy [\f$kg m^{-2}\f$]
 
-  real, intent(out) :: FROOT (ILG,IG) !< Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
-  real, intent(out) :: FROOTS(ILG,IG) !< Fraction of total transpiration contributed by soil layer over snow-covered subarea  [  ]
-  real, intent(out) :: HTC   (ILG,IG) !< Diagnosed internal energy change of soil layer
+  real, intent(out) :: FROOT (ILG, IG) !< Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
+  real, intent(out) :: FROOTS(ILG, IG) !< Fraction of total transpiration contributed by soil layer over snow-covered subarea  [  ]
+  real, intent(out) :: HTC   (ILG, IG) !< Diagnosed internal energy change of soil layer
   !! due to conduction and/or change in mass [\f$W m^{-2}\f$]
 
   !
   !     * OUTPUT ARRAYS ONLY USED ELSEWHERE IN radiationDriver.
   !
-  real, intent(inout) :: PAI   (ILG,IC) !< Plant area index of vegetation category over bare ground [ ]
-  real, intent(inout) :: PAIS  (ILG,IC) !< Plant area index of vegetation category over snow [ ]
-  real, intent(inout) :: AIL   (ILG,IC) !< Leaf area index of vegetation category over bare ground [ ]
-  real, intent(inout) :: FCAN  (ILG,IC) !< Fractional coverage of vegetation category over bare ground (\f$X_i\f$) [ ]
-  real, intent(inout) :: FCANS (ILG,IC) !< Fractional coverage of vegetation category over snow (\f$X_i\f$) [ ]
+  real, intent(inout) :: PAI   (ILG, IC) !< Plant area index of vegetation category over bare ground [ ]
+  real, intent(inout) :: PAIS  (ILG, IC) !< Plant area index of vegetation category over snow [ ]
+  real, intent(inout) :: AIL   (ILG, IC) !< Leaf area index of vegetation category over bare ground [ ]
+  real, intent(inout) :: FCAN  (ILG, IC) !< Fractional coverage of vegetation category over bare ground (\f$X_i\f$) [ ]
+  real, intent(inout) :: FCANS (ILG, IC) !< Fractional coverage of vegetation category over snow (\f$X_i\f$) [ ]
   real, intent(inout) :: PSIGND(ILG)    !< Minimum liquid moisture suction in soil layers [m]
 
   !
   !     * INPUT ARRAYS.
   !
   integer, intent(in) :: ipeatland (ilg) !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
-  real, intent(in) :: FCANMX(ILG,ICP1) !< Maximum fractional coverage of modelled area by vegetation category [ ]
-  real, intent(inout) :: ZOLN  (ILG,ICP1) !< Natural logarithm of maximum roughness length of vegetation category [ ]
-  real, intent(in) :: PAIMAX(ILG,IC)   !< Maximum plant area index of vegetation category [ ]
-  real, intent(in) :: PAIMIN(ILG,IC)   !< Minimum plant area index of vegetation category [ ]
-  real, intent(in) :: CWGTMX(ILG,IC)   !< Maximum canopy mass for vegetation category [\f$kg m^{-2}\f$]
-  real, intent(in) :: ZRTMAX(ILG,IC)   !< Maximum rooting depth of vegetation category [m]
-  real, intent(in) :: PAIDAT(ILG,IC)   !< Optional user-specified value of plant area indices of
+  real, intent(in) :: FCANMX(ILG, ICP1) !< Maximum fractional coverage of modelled area by vegetation category [ ]
+  real, intent(inout) :: ZOLN  (ILG, ICP1) !< Natural logarithm of maximum roughness length of vegetation category [ ]
+  real, intent(in) :: PAIMAX(ILG, IC)   !< Maximum plant area index of vegetation category [ ]
+  real, intent(in) :: PAIMIN(ILG, IC)   !< Minimum plant area index of vegetation category [ ]
+  real, intent(in) :: CWGTMX(ILG, IC)   !< Maximum canopy mass for vegetation category [\f$kg m^{-2}\f$]
+  real, intent(in) :: ZRTMAX(ILG, IC)   !< Maximum rooting depth of vegetation category [m]
+  real, intent(in) :: PAIDAT(ILG, IC)   !< Optional user-specified value of plant area indices of
   !! vegetation categories to override CLASS-calculated values [ ]
-  real, intent(in) :: HGTDAT(ILG,IC)   !< Optional user-specified values of height of
+  real, intent(in) :: HGTDAT(ILG, IC)   !< Optional user-specified values of height of
   !! vegetation categories to override CLASS-calculated values [m]
-  real, intent(inout) :: THLIQ (ILG,IG)   !< Volumetric liquid water content of soil layers (\f$\theta\f$ l) [\f$m^3 m^{-3}\f$]
-  real, intent(inout) :: THICE (ILG,IG)   !< Frozen water content of soil layers under vegetation [\f$m^3 m^{-3}\f$]
-  real, intent(inout) :: TBAR  (ILG,IG)   !< Temperature of soil layers [K]
+  real, intent(inout) :: THLIQ (ILG, IG)   !< Volumetric liquid water content of soil layers (\f$\theta\f$ l) [\f$m^3 m^{-3}\f$]
+  real, intent(inout) :: THICE (ILG, IG)   !< Frozen water content of soil layers under vegetation [\f$m^3 m^{-3}\f$]
+  real, intent(inout) :: TBAR  (ILG, IG)   !< Temperature of soil layers [K]
 
   real, intent(inout) :: RCAN  (ILG) !< Intercepted liquid water stored on canopy (\f$W_l\f$) [\f$kg m^{-2}\f$]
   real, intent(inout) :: SNCAN (ILG) !< Intercepted frozen water stored on canopy (\f$W_f\f$) [\f$kg m^{-2}\f$]
@@ -263,7 +263,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   real, intent(in) :: DLON  (ILG) !< Longitude of grid cell (east of Greenwich) [degrees]
   real, intent(in) :: Z0ORO (ILG) !< Orographic roughness length [m]
   real, intent(in) :: ZBLEND(ILG) !< Atmospheric blending height for surface roughness length averaging (\f$z_b\f$) [m]
-  real, intent(in) :: RHOSNI(ILG) !< Density of fresh snow (\f$\rho\f$ s,f) [\f$kg m^{-3}\f$]
+  real, intent(in) :: RHOSNI(ILG) !< Density of fresh snow (\f$\rho\f$ s, f) [\f$kg m^{-3}\f$]
   real, intent(in) :: ZPLMG0(ILG) !< Maximum water ponding depth for snow-free subareas
   !! (user-specified when running MESH code) [m]
   real, intent(in) :: ZPLMS0(ILG) !< Maximum water ponding depth for snow-covered subareas
@@ -273,43 +273,43 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !
   !     * SOIL PROPERTY ARRAYS.
   !
-  real, intent(in) :: DELZW (ILG,IG) !< Permeable thickness of soil layer [m]
-  real, intent(in) :: ZBOTW (ILG,IG) !< Depth to permeable bottom of soil layer [m]
-  real, intent(in) :: THPOR (ILG,IG) !< Pore volume in soil layer (\f$\theta\f$ p) [\f$m^3 m^{-3}\f$]
-  real, intent(in) :: THLMIN(ILG,IG) !< Residual soil liquid water content remaining after freezing or evaporation [\f$m^3 m^{-3}\f$]
-  real, intent(in) :: PSISAT(ILG,IG) !< Soil moisture suction at saturation (\f$\Psi\f$ sat) [m]
-  real, intent(in) :: BI    (ILG,IG) !< Clapp and Hornberger empirical "b" parameter [ ]
-  real, intent(in) :: PSIWLT(ILG,IG) !< Soil moisture suction at wilting point (\f$\Psi\f$ w) [m]
-  real, intent(in) :: HCPS  (ILG,IG) !< Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
+  real, intent(in) :: DELZW (ILG, IG) !< Permeable thickness of soil layer [m]
+  real, intent(in) :: ZBOTW (ILG, IG) !< Depth to permeable bottom of soil layer [m]
+  real, intent(in) :: THPOR (ILG, IG) !< Pore volume in soil layer (\f$\theta\f$ p) [\f$m^3 m^{-3}\f$]
+  real, intent(in) :: THLMIN(ILG, IG) !< Residual soil liquid water content remaining after freezing or evaporation [\f$m^3 m^{-3}\f$]
+  real, intent(in) :: PSISAT(ILG, IG) !< Soil moisture suction at saturation (\f$\Psi\f$ sat) [m]
+  real, intent(in) :: BI    (ILG, IG) !< Clapp and Hornberger empirical "b" parameter [ ]
+  real, intent(in) :: PSIWLT(ILG, IG) !< Soil moisture suction at wilting point (\f$\Psi\f$ w) [m]
+  real, intent(in) :: HCPS  (ILG, IG) !< Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
   real, intent(in) :: DELZ  (IG)     !< Soil layer thickness [m]
-  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
   !
   !     * WORK ARRAYS NOT USED ELSEWHERE IN radiationDriver.
   !
-  real, intent(inout) :: RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC), &
-      CWCPAV(ILG),     GROWA (ILG),     GROWN (ILG), &
-      GROWB (ILG),     RRESID(ILG),     SRESID(ILG), &
-      FRTOT (ILG),     FRTOTS(ILG)
+  real, intent(inout) :: RMAT (ILG, IC, IG), H     (ILG, IC), HS    (ILG, IC), &
+                         CWCPAV(ILG), GROWA (ILG), GROWN (ILG), &
+                         GROWB (ILG), RRESID(ILG), SRESID(ILG), &
+                         FRTOT (ILG), FRTOTS(ILG)
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: DAY,GROWG,FSUM,SNOI,ZSNADD,THSUM,THICEI,THLIQI,ZROOT, &
-      ZROOTG,FCOEFF,PSII,LZ0ORO,THR_LAI,PSIRAT,buriedcrp, &
-      buriedgras,sumfcanmx,temp1
+  real :: DAY, GROWG, FSUM, SNOI, ZSNADD, THSUM, THICEI, THLIQI, ZROOT, &
+          ZROOTG, FCOEFF, PSII, LZ0ORO, THR_LAI, PSIRAT, buriedcrp, &
+          buriedgras, sumfcanmx, temp1
   !
   !     * CTEM-RELATED FIELDS.
   !
-  real, intent(in)  :: AILC (ILG,IC)   !<
-  real, intent(in)  :: PAIC   (ILG,IC)   !<
-  real, intent(in)  :: AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
-  real, intent(out)  :: AILCGS (ILG,ICTEM) !< GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
-  real, intent(in)  :: RMATC(ILG,IC,IG)   !<
-  real, intent(in)  :: FCANCMX(ILG,ICTEM)   !<
-  real, intent(out)  :: FCANC(ILG,ICTEM)   !< FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
-  real, intent(out)  :: FCANCS (ILG,ICTEM) !< FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
-  real, intent(in)  :: ZOLNC(ILG,IC)   !<
-  real, intent(in)  :: CMASVEGC(ILG,IC)   !<
-  real, intent(in)  :: SLAIC(ILG,IC)   !<
+  real, intent(in)  :: AILC (ILG, IC)   !<
+  real, intent(in)  :: PAIC   (ILG, IC)   !<
+  real, intent(in)  :: AILCG(ILG, ICTEM)   !< GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
+  real, intent(out)  :: AILCGS (ILG, ICTEM) !< GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
+  real, intent(in)  :: RMATC(ILG, IC, IG)   !<
+  real, intent(in)  :: FCANCMX(ILG, ICTEM)   !<
+  real, intent(out)  :: FCANC(ILG, ICTEM)   !< FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
+  real, intent(out)  :: FCANCS (ILG, ICTEM) !< FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
+  real, intent(in)  :: ZOLNC(ILG, IC)   !<
+  real, intent(in)  :: CMASVEGC(ILG, IC)   !<
+  real, intent(in)  :: SLAIC(ILG, IC)   !<
   !
   !     * NOL2PFTS - NUMBER OF LEVEL 2 CTEM PFTs
   !     * SEE BIO2STR SUBROUTINE FOR EXPLANATION OF OTHER CTEM VARIABLES
@@ -317,7 +317,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !     * INTERNAL WORK FIELD.
   !
   integer, intent(in) :: ICTEM, NOL2PFTS(IC)   !<
-  real  :: SFCANCMX(ILG,IC)
+  real  :: SFCANCMX(ILG, IC)
   !
   logical, intent(in) :: ctem_on
 
@@ -327,11 +327,11 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !
   !     * INITIALIZE DIAGNOSTIC AND OTHER ARRAYS.
   !
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     HTCC(I) = 0.0
     HTCS(I) = 0.0
-    do J = 1,IG ! loop 50
-      HTC(I,J) = 0.0
+    do J = 1, IG ! loop 50
+      HTC(I, J) = 0.0
     end do ! loop 50
     WTRC(I) = 0.0
     WTRS(I) = 0.0
@@ -381,39 +381,39 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     !! end to ensure that GROWA is not less than 0 or greater than 1. If the calculated value of GROWA is
     !! vanishingly small, it is set to zero.
     !!
-    do I = IL1,IL2 ! loop 120
-      IN = INT( (RADJ(I) + PI / 2.0) * 18.0 / PI ) + 1
+    do I = IL1, IL2 ! loop 120
+      IN = INT( (RADJ(I) + PI / 2.0) * 18.0 / PI) + 1
       if (DLON(I) > 190. .and. DLON(I) < 330.) then
         NL = 2
       else
         NL = 1
       end if
-      if (GROWYR(IN,1,NL) < 0.1) then
+      if (GROWYR(IN, 1, NL) < 0.1) then
         GROWA(I) = 1.0
       else
         if (IN > 9) then
-          if (DAY >= GROWYR(IN,2,NL) .and. DAY < GROWYR(IN,3,NL)) &
+          if (DAY >= GROWYR(IN, 2, NL) .and. DAY < GROWYR(IN, 3, NL)) &
           GROWA(I) = 1.0
-          if (DAY >= GROWYR(IN,4,NL) .or. DAY < GROWYR(IN,1,NL)) &
+          if (DAY >= GROWYR(IN, 4, NL) .or. DAY < GROWYR(IN, 1, NL)) &
           GROWA(I) = 0.0
         else
-          if (DAY >= GROWYR(IN,2,NL) .or. DAY < GROWYR(IN,3,NL)) &
+          if (DAY >= GROWYR(IN, 2, NL) .or. DAY < GROWYR(IN, 3, NL)) &
           GROWA(I) = 1.0
-          if (DAY >= GROWYR(IN,4,NL) .and. DAY < GROWYR(IN,1,NL)) &
+          if (DAY >= GROWYR(IN, 4, NL) .and. DAY < GROWYR(IN, 1, NL)) &
           GROWA(I) = 0.0
         end if
-        if (DAY >= GROWYR(IN,1,NL) .and. DAY < GROWYR(IN,2,NL)) &
-        GROWA(I) = (DAY - GROWYR(IN,1,NL)) / (GROWYR(IN,2,NL) - &
-        GROWYR(IN,1,NL))
-        if (DAY >= GROWYR(IN,3,NL) .and. DAY < GROWYR(IN,4,NL)) &
-        GROWA(I) = (GROWYR(IN,4,NL) - DAY) / (GROWYR(IN,4,NL) - &
-        GROWYR(IN,3,NL))
-        GROWA(I) = MAX(0.0,MIN(GROWA(I),1.0))
+        if (DAY >= GROWYR(IN, 1, NL) .and. DAY < GROWYR(IN, 2, NL)) &
+        GROWA(I) = (DAY - GROWYR(IN, 1, NL)) / (GROWYR(IN, 2, NL) - &
+        GROWYR(IN, 1, NL))
+        if (DAY >= GROWYR(IN, 3, NL) .and. DAY < GROWYR(IN, 4, NL)) &
+        GROWA(I) = (GROWYR(IN, 4, NL) - DAY) / (GROWYR(IN, 4, NL) - &
+        GROWYR(IN, 3, NL))
+        GROWA(I) = MAX(0.0, MIN(GROWA(I), 1.0))
         if (GROWA(I) < 1.0E-5) GROWA(I) = 0.0
       end if
     end do ! loop 120
   else
-    do I = IL1,IL2
+    do I = IL1, IL2
       GROWA(I) = 1.
     end do
   end if
@@ -438,11 +438,11 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! of double the value of GROWTH, with upper and lower limits of 1 and 0. Finally, the growth index of
   !! grasses is set to 1 all year round.
   !!
-  do I = IL1,IL2 ! loop 150
+  do I = IL1, IL2 ! loop 150
 
     GROWN(I) = ABS(GROWTH(I))
     if (GROWTH(I) > 0.0) then
-      GROWB(I) = MIN(1.0,GROWTH(I) * 2.0)
+      GROWB(I) = MIN(1.0, GROWTH(I) * 2.0)
     else
       GROWB(I) = MAX(0.0,(ABS(GROWTH(I)) * 2.0 - 1.0))
     end if
@@ -450,8 +450,8 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
 
     !    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
     if (ctem_on) then
-      do J = 1,IC
-        ZOLN(I,J) = ZOLNC(I,J)
+      do J = 1, IC
+        ZOLN(I, J) = ZOLNC(I, J)
       end do
     end if
 
@@ -468,10 +468,10 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     if (IHGT == 0) then ! Vegetation height from CLASS
       do J = 1, IC
         select case (classpfts(J))
-        case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh')  ! <tree,grass, and shrub
-          H(I,J) = 10.0 * EXP(ZOLN(I,J))
+        case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh')  ! <tree, grass, and shrub
+          H(I, J) = 10.0 * EXP(ZOLN(I, J))
         case ('Crops') ! <Crops
-          H(I,J) = 10.0 * EXP(ZOLN(I,J)) * GROWA(I)
+          H(I, J) = 10.0 * EXP(ZOLN(I, J)) * GROWA(I)
         case default
           print * ,'Unknown PFT in calcLandSurfParams ',classpfts(J)
           call errorHandler('calcLandSurfParams', - 1)
@@ -479,17 +479,17 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       end do
     else ! Vegetation height read in from external file
       do J = 1, IC
-        H(I,J) = HGTDAT(I,J) ! <Vegetation heights are user specified.
+        H(I, J) = HGTDAT(I, J) ! <Vegetation heights are user specified.
       end do
     end if
 
     !> Now account for burying under snow:
     do J = 1, IC
       select case (classpfts(J))
-      case ('NdlTr' , 'BdlTr', 'BdlSh')   ! tree,shrub (shrub with no bending or burying here)
-        HS(I,J) = H(I,J)
-      case ('Crops','Grass') ! Crops,Grass
-        HS(I,J) = MAX(H(I,J) - ZSNOW(I),1.0E-3)
+      case ('NdlTr' , 'BdlTr', 'BdlSh')   ! tree, shrub (shrub with no bending or burying here)
+        HS(I, J) = H(I, J)
+      case ('Crops','Grass') ! Crops, Grass
+        HS(I, J) = MAX(H(I, J) - ZSNOW(I), 1.0E-3)
       case default
         print * ,'Unknown PFT in calcLandSurfParams ',classpfts(J)
         call errorHandler('calcLandSurfParams', - 2)
@@ -512,23 +512,23 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       !             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
       if (ctem_on) then
         do J = 1, IC
-          PAI(I,J) = PAIC(I,J)
+          PAI(I, J) = PAIC(I, J)
         end do
       else ! CLASS (physics) only
         do J = 1, IC
           select case (classpfts(J))
           case ('BdlTr','BdlSh')   ! <Broadleaf tree and shrub
-            PAI(I,J) = PAIMIN(I,J) + GROWB(I) * (PAIMAX(I,J) - &
-                       PAIMIN(I,J))
+            PAI(I, J) = PAIMIN(I, J) + GROWB(I) * (PAIMAX(I, J) - &
+                        PAIMIN(I, J))
           case ('NdlTr') ! <Needleleaf tree
-            PAI(I,J) = PAIMIN(I,J) + GROWN(I) * &
-                       (PAIMAX(I,J) - PAIMIN(I,J))
+            PAI(I, J) = PAIMIN(I, J) + GROWN(I) * &
+                        (PAIMAX(I, J) - PAIMIN(I, J))
           case ('Crops') ! <Crops
-            PAI(I,J) = PAIMIN(I,J) + GROWA(I) * (PAIMAX(I,J) - &
-                       PAIMIN(I,J))
+            PAI(I, J) = PAIMIN(I, J) + GROWA(I) * (PAIMAX(I, J) - &
+                        PAIMIN(I, J))
           case ('Grass ') ! <Grass
-            PAI(I,J) = PAIMIN(I,J) + GROWG   * (PAIMAX(I,J) - &
-                       PAIMIN(I,J))
+            PAI(I, J) = PAIMIN(I, J) + GROWG   * (PAIMAX(I, J) - &
+                        PAIMIN(I, J))
           case default
             ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft=>',classpfts(j)
@@ -538,8 +538,8 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       end if ! CTEM on/off
     else ! IPAI = 1, so
       ! Use a read-in time series of PAI.
-      do J = 1,IC
-        PAI(I,J) = PAIDAT(I,J)
+      do J = 1, IC
+        PAI(I, J) = PAIDAT(I, J)
       end do
     end if
 
@@ -547,12 +547,12 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     do J = 1, IC
       select case (classpfts(J))
       case ('NdlTr' , 'BdlTr', 'BdlSh')   ! <trees and shrub (NO SNOW BURIAL)
-        PAIS(I,J) = PAI(I,J)
+        PAIS(I, J) = PAI(I, J)
       case ('Crops','Grass') ! <Crops, Grass
-        if (H(I,J) > 0.0) then
-          PAIS(I,J) = PAI(I,J) * HS(I,J) / H(I,J)
+        if (H(I, J) > 0.0) then
+          PAIS(I, J) = PAI(I, J) * HS(I, J) / H(I, J)
         else
-          PAIS(I,J) = 0.0
+          PAIS(I, J) = 0.0
         end if
       case default
         ! Error checking, if no known CLASS PFT given, bail.
@@ -562,18 +562,18 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     end do
 
     if (ctem_on) then
-      do J = 1,IC
-        AIL(I,J) = MAX(AILC(I,J), SLAIC(I,J))
+      do J = 1, IC
+        AIL(I, J) = MAX(AILC(I, J), SLAIC(I, J))
       end do
     else ! CLASS (physics) only
       do J = 1, IC
         select case (classpfts(J))
         case ('Crops','Grass')   ! <Crops and Grass
-          AIL(I,J) = PAI(I,J)
+          AIL(I, J) = PAI(I, J)
         case ('NdlTr') ! <Needleleaf
-          AIL(I,J) = PAI(I,J) * 0.90    ! BDCS P?
+          AIL(I, J) = PAI(I, J) * 0.90    ! BDCS P?
         case ('BdlTr','BdlSh') ! <Broadleaf
-          AIL(I,J) = MAX((PAI(I,J) - PAIMIN(I,J)),0.0)
+          AIL(I, J) = MAX((PAI(I, J) - PAIMIN(I, J)), 0.0)
         case default
           ! Error checking, if no known CLASS PFT given, bail.
           print * ,'calcLandSurfParams says: Unknown CLASS pft => ',classpfts(j)
@@ -590,14 +590,14 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         select case (ctempfts(J))
         case ('NdlEvgTr','NdlDcdTr','BdlEvgTr','BdlDCoTr', &
                 'BdlDDrTr','BdlDCoSh','BdlEvgSh') ! <Tree and shrub
-          AILCGS(I,J) = AILCG(I,J)
+          AILCGS(I, J) = AILCG(I, J)
         case ('CropC3  ','CropC4  ','GrassC3 ', &
                 'GrassC4 ','Sedge   ')
-          if (H(I,CL4CTEM(J)) > 0.0) then
-            AILCGS(I,J) = AILCG(I,J) * HS(I,CL4CTEM(J)) / &
-                         H(I,CL4CTEM(J))
+          if (H(I, CL4CTEM(J)) > 0.0) then
+            AILCGS(I, J) = AILCG(I, J) * HS(I, CL4CTEM(J)) / &
+                           H(I, CL4CTEM(J))
           else
-            AILCGS(I,J) = 0.0
+            AILCGS(I, J) = 0.0
           end if
         case default
           ! Error checking, if no known CTEM PFT given, bail.
@@ -657,41 +657,41 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! are assigned.
   !!
 
-  do I = IL1,IL2 ! loop 175
+  do I = IL1, IL2 ! loop 175
     do J = 1, IC
-      FCAN(I,J) = FCANMX(I,J) * (1.0 - FSNOW(I))
-      if (FCAN(I,J) < 1.0E-5) FCAN(I,J) = 0.0
+      FCAN(I, J) = FCANMX(I, J) * (1.0 - FSNOW(I))
+      if (FCAN(I, J) < 1.0E-5) FCAN(I, J) = 0.0
       select case (classpfts(J))
       case ('Crops','Grass')
-        if (PAI(I,J) < THR_LAI) then
-          FCAN(I,J) = FCANMX(I,J) * (1.0 - FSNOW(I)) * PAI(I,J)
-          PAI (I,J) = THR_LAI
-          if (FCAN(I,J) < 1.0E-5) FCAN(I,J) = 0.0
+        if (PAI(I, J) < THR_LAI) then
+          FCAN(I, J) = FCANMX(I, J) * (1.0 - FSNOW(I)) * PAI(I, J)
+          PAI (I, J) = THR_LAI
+          if (FCAN(I, J) < 1.0E-5) FCAN(I, J) = 0.0
         end if
       case ('NdlTr' , 'BdlTr', 'BdlSh')
-        if (PAI(I,J) < THR_LAI) then ! FLAG HACK
-          FCAN(I,J) = FCANMX(I,J) * (1.0 - FSNOW(I)) * PAI(I,J)
-          PAI (I,J) = THR_LAI
-          if (FCAN(I,J) < 1.0E-5) FCAN(I,J) = 0.0
+        if (PAI(I, J) < THR_LAI) then ! FLAG HACK
+          FCAN(I, J) = FCANMX(I, J) * (1.0 - FSNOW(I)) * PAI(I, J)
+          PAI (I, J) = THR_LAI
+          if (FCAN(I, J) < 1.0E-5) FCAN(I, J) = 0.0
         end if
         ! Do nothing.
       end select
     end do
     do J = 1, IC
-      FCANS(I,J) = FCANMX(I,J) * FSNOW(I)
-      if (FCANS(I,J) < 1.0E-5) FCANS(I,J) = 0.0
+      FCANS(I, J) = FCANMX(I, J) * FSNOW(I)
+      if (FCANS(I, J) < 1.0E-5) FCANS(I, J) = 0.0
       select case (classpfts(J))
       case ('Crops','Grass')
-        if (PAIS(I,J) < THR_LAI) then
-          FCANS(I,J) = FCANMX(I,J) * FSNOW(I) * PAIS(I,J)
-          PAIS (I,J) = THR_LAI
-          if (FCANS(I,J) < 1.0E-5) FCANS(I,J) = 0.0
+        if (PAIS(I, J) < THR_LAI) then
+          FCANS(I, J) = FCANMX(I, J) * FSNOW(I) * PAIS(I, J)
+          PAIS (I, J) = THR_LAI
+          if (FCANS(I, J) < 1.0E-5) FCANS(I, J) = 0.0
         end if
       case ('NdlTr' , 'BdlTr', 'BdlSh')
-        if (PAIS(I,J) < THR_LAI) then ! FLAG HACK
-          FCANS(I,J) = FCANMX(I,J) * FSNOW(I) * PAIS(I,J)
-          PAIS (I,J) = THR_LAI
-          if (FCANS(I,J) < 1.0E-5) FCANS(I,J) = 0.0
+        if (PAIS(I, J) < THR_LAI) then ! FLAG HACK
+          FCANS(I, J) = FCANMX(I, J) * FSNOW(I) * PAIS(I, J)
+          PAIS (I, J) = THR_LAI
+          if (FCANS(I, J) < 1.0E-5) FCANS(I, J) = 0.0
         end if
         ! Do nothing
       end select
@@ -709,23 +709,23 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       end if
       if (FCS(I) > 0.) then
         do J = 1, IC
-          FCANS(I,J) = FCANS(I,J) * FSNOW(I) / FCS(I)
+          FCANS(I, J) = FCANS(I, J) * FSNOW(I) / FCS(I)
         end do
       end if
       if (FC(I) > 0.) then
         do J = 1, IC
-          FCAN(I,J) = FCAN(I,J) * (1.0 - FSNOW(I)) / FC(I)
+          FCAN(I, J) = FCAN(I, J) * (1.0 - FSNOW(I)) / FC(I)
         end do
       end if
-      FCS(I) = MIN(FSNOW(I),1.0)
+      FCS(I) = MIN(FSNOW(I), 1.0)
       FC(I) = 1.0 - FCS(I)
       FGS(I) = 0.0
       FG(I) = 0.0
     end if
-    FC (I) = MAX(FC (I),0.0)
-    FG (I) = MAX(FG (I),0.0)
-    FCS(I) = MAX(FCS(I),0.0)
-    FGS(I) = MAX(FGS(I),0.0)
+    FC (I) = MAX(FC (I), 0.0)
+    FG (I) = MAX(FG (I), 0.0)
+    FCS(I) = MAX(FCS(I), 0.0)
+    FGS(I) = MAX(FGS(I), 0.0)
     FSUM = (FCS(I) + FGS(I) + FC(I) + FG(I))
     FC (I) = FC (I) / FSUM
     FG (I) = FG (I) / FSUM
@@ -736,9 +736,9 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     call errorHandler('calcLandSurfParams',1)
     !
     if (IWF == 0) then
-      if (ISAND(I,1) == - 4) then
+      if (ISAND(I, 1) == - 4) then
         ZPLIMG(I) = 0.001  ! BDCS P?
-      else if (ISAND(I,1) == - 3) then
+      else if (ISAND(I, 1) == - 3) then
         ZPLIMG(I) = 0.001
       else
         ZPLIMG(I) = 0.002
@@ -750,12 +750,12 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         buriedgras = 0.
         buriedcrp = 0.
         do J = 1, IC
-          sumfcanmx = sumfcanmx + FCANMX(I,J)
+          sumfcanmx = sumfcanmx + FCANMX(I, J)
           select case (classpfts(J))
           case ('Crops')
-            buriedcrp = FSNOW(I) * FCANMX(I,J) - FCANS(I,J)
+            buriedcrp = FSNOW(I) * FCANMX(I, J) - FCANS(I, J)
           case ('Grass')
-            buriedgras = FSNOW(I) * FCANMX(I,J) - FCANS(I,J)
+            buriedgras = FSNOW(I) * FCANMX(I, J) - FCANS(I, J)
           case ('NdlTr' , 'BdlTr', 'BdlSh')
             ! Assume not buried so do nothing.
           case default
@@ -766,9 +766,9 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
           end select
         end do
         ZPLMGS(I) = (ZPLIMG(I) * FSNOW(I) * (1.0 - sumfcanmx) &
-                      + ZPLIMG(I) * buriedcrp + 0.003 &
-                      * buriedgras) &
-                      / FGS(I)
+                    + ZPLIMG(I) * buriedcrp + 0.003 &
+                    * buriedgras) &
+                    / FGS(I)
       end if
       !
       ZPLIMC(I) = 0.0
@@ -776,9 +776,9 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         do J = 1, IC
           select case (classpfts(J))
           case ('NdlTr' , 'BdlTr', 'BdlSh') ! assume trees and shrubs don't differ here.
-            ZPLIMC(I) = ZPLIMC(I) + 0.01 * FCAN(I,J)
+            ZPLIMC(I) = ZPLIMC(I) + 0.01 * FCAN(I, J)
           case ('Crops','Grass')
-            ZPLIMC(I) = ZPLIMC(I) + 0.003 * FCAN(I,J)
+            ZPLIMC(I) = ZPLIMC(I) + 0.003 * FCAN(I, J)
           case default
             ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
@@ -794,9 +794,9 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         do J = 1, IC
           select case (classpfts(J))
           case ('NdlTr' , 'BdlTr', 'BdlSh') ! assume trees and shrubs don't differ here.
-            ZPLMCS(I) = ZPLMCS(I) + 0.01 * FCANS(I,J)
+            ZPLMCS(I) = ZPLMCS(I) + 0.01 * FCANS(I, J)
           case ('Crops','Grass')
-            ZPLMCS(I) = ZPLMCS(I) + 0.003 * FCANS(I,J)
+            ZPLMCS(I) = ZPLMCS(I) + 0.003 * FCANS(I, J)
           case default
             ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
@@ -826,8 +826,8 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! In loop 200, calculations are done related to the interception of water on vegetation. First, the plant area
   !! indices of the composite vegetation canopy over the snow-free and snow-covered subareas are calculated
   !! as weighted averages of the plant area indices of the four vegetation categories over each subarea. The
-  !! liquid water interception capacity \f$W_{l,max}\f$ on each of the two subareas is calculated as
-  !! \f$W_{l,max} = 0.20 \Lambda_p\f$
+  !! liquid water interception capacity \f$W_{l, max}\f$ on each of the two subareas is calculated as
+  !! \f$W_{l, max} = 0.20 \Lambda_p\f$
   !! where \f$\Lambda_p\f$ is the plant area index of the composite canopy. This simple relation has been found to work
   !! well for a wide range of canopy types and precipitation events (see Verseghy et al, 1993). If either the
   !! average amount of liquid water on the canopy, RCAN, or the total cancpy coverage, FC+FCS, is less than
@@ -837,19 +837,19 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! area. Then the intercepted liquid water amounts on vegetation over snow-free (RAICAN) and snow-
   !! covered areas (RAICNS) are calculated by making use of the relations
   !!
-  !! \f$W_{L,0} / \Lambda_{p,0} = W_{L,s} / \Lambda_{p,s}\f$ and
+  !! \f$W_{L, 0} / \Lambda_{p, 0} = W_{L, s} / \Lambda_{p, s}\f$ and
   !!
-  !! \f$W_l (X_0 + X_s) = W_{l,0} X_0 + W_{l,s} X_s\f$
+  !! \f$W_l (X_0 + X_s) = W_{l, 0} X_0 + W_{l, s} X_s\f$
   !!
   !! where \f$W_l\f$ is the liquid water on the canopy, \f$X\f$ is the fractional area, and the subscripts \f$0\f$ and \f$s\f$ refer to
   !! snow-free and snow-covered areas respectively.
   !!
-  !! For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p,0}\f$ and \f$\Lambda_{p,s}\f$ is
+  !! For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p, 0}\f$ and \f$\Lambda_{p, s}\f$ is
   !! performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
-  !! of needle clumping. The interception capacity for snow, \f$W_{f,max}\f$, is calculated following Bartlett et al.
+  !! of needle clumping. The interception capacity for snow, \f$W_{f, max}\f$, is calculated following Bartlett et al.
   !! (2006) \cite Bartlett2006-xp, using a relation developed by Schmidt and Gluns (1991):
-  !! \f$W_{f,max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s,f} ]\f$
-  !! where \f$\rho_{s,f}\f$ is the density of fresh snow. As was done for the intercepted liquid water, if either the average
+  !! \f$W_{f, max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s, f} ]\f$
+  !! where \f$\rho_{s, f}\f$ is the density of fresh snow. As was done for the intercepted liquid water, if either the average
   !! amount of snow on the canopy, SNCAN, or the total cancpy coverage is less than a small threshold value,
   !! the value of SNCAN is stored in a residual water array SRESID, and SNCAN is set to zero. Next the
   !! intercepted snow is partitioned between FC and FCS. First SNCAN is recalculated as an average over the
@@ -879,19 +879,19 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! recalculated, the diagnosed change in internal energy HTC is updated, and RRESID and SRESID are
   !! added to WTRG, the diagnosed residual water transferred into or out of the soil, and are then set to zero.
   !!
-  do I = IL1,IL2 ! loop 200
+  do I = IL1, IL2 ! loop 200
     PAICAN(I) = 0.
     if (FC(I) > 0.) then
-      do J = 1,IC
-        PAICAN(I) = PAICAN(I) + FCAN(I,J) * PAI(I,J)
+      do J = 1, IC
+        PAICAN(I) = PAICAN(I) + FCAN(I, J) * PAI(I, J)
       end do
       PAICAN(I) = PAICAN(I) / FC(I)
     end if
 
     PAICNS(I) = 0.0
     if (FCS(I) > 0.) then
-      do J = 1,IC
-        PAICNS(I) = PAICNS(I) + FCANS(I,J) * PAIS(I,J)
+      do J = 1, IC
+        PAICNS(I) = PAICNS(I) + FCANS(I, J) * PAIS(I, J)
       end do
       PAICNS(I) = PAICNS(I) / FCS(I)
     end if
@@ -909,13 +909,13 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       RCAN(I) = RCAN(I) / (FC(I) + FCS(I))
       if (PAICAN(I) > 0.0) then
         RAICAN(I) = RCAN(I) * (FC(I) + FCS(I)) / (FC(I) + FCS(I) * &
-                       PAICNS(I) / PAICAN(I))
+                    PAICNS(I) / PAICAN(I))
       else
         RAICAN(I) = 0.0
       end if
       if (PAICNS(I) > 0.0) then
         RAICNS(I) = RCAN(I) * (FC(I) + FCS(I)) / (FCS(I) + FC(I) * &
-                       PAICAN(I) / PAICNS(I))
+                    PAICAN(I) / PAICNS(I))
       else
         RAICNS(I) = 0.0
       end if
@@ -924,16 +924,16 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       RAICNS(I) = 0.0
     end if
 
-    ! For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p,0}\f$ and \f$\Lambda_{p,s}\f$ is performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
+    ! For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p, 0}\f$ and \f$\Lambda_{p, s}\f$ is performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
     ! of needle clumping.
     PAICAN(I) = 0.
     if (FC(I) > 0.) then
-      do J = 1,IC
+      do J = 1, IC
         select case (classpfts(J))
         case ('BdlTr', 'Crops', 'Grass', 'BdlSh')
-          PAICAN(I) = PAICAN(I) + FCAN(I,J) * PAI(I,J)
+          PAICAN(I) = PAICAN(I) + FCAN(I, J) * PAI(I, J)
         case ('NdlTr')
-          PAICAN(I) = PAICAN(I) + 0.7 * FCAN(I,J) * PAI(I,J)
+          PAICAN(I) = PAICAN(I) + 0.7 * FCAN(I, J) * PAI(I, J)
         case default
           ! Error checking, if no known CLASS PFT given, bail.
           print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
@@ -946,12 +946,12 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
 
     PAICNS(I) = 0.0
     if (FCS(I) > 0.) then
-      do J = 1,IC
+      do J = 1, IC
         select case (classpfts(J))
         case ('BdlTr', 'Crops', 'Grass', 'BdlSh')
-          PAICNS(I) = PAICNS(I) + FCANS(I,J) * PAIS(I,J)
+          PAICNS(I) = PAICNS(I) + FCANS(I, J) * PAIS(I, J)
         case ('NdlTr')
-          PAICNS(I) = PAICNS(I) + 0.7 * FCANS(I,J) * PAIS(I,J)
+          PAICNS(I) = PAICNS(I) + 0.7 * FCANS(I, J) * PAIS(I, J)
         case default
           ! Error checking, if no known CLASS PFT given, bail.
           print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
@@ -977,13 +977,13 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       SNCAN(I) = SNCAN(I) / (FC(I) + FCS(I))
       if (PAICAN(I) > 0.0) then
         SNOCAN(I) = SNCAN(I) * (FC(I) + FCS(I)) / (FC(I) + FCS(I) * &
-                       PAICNS(I) / PAICAN(I))
+                    PAICNS(I) / PAICAN(I))
       else
         SNOCAN(I) = 0.0
       end if
       if (PAICNS(I) > 0.0) then
         SNOCNS(I) = SNCAN(I) * (FC(I) + FCS(I)) / (FCS(I) + FC(I) * &
-                       PAICAN(I) / PAICNS(I))
+                    PAICAN(I) / PAICNS(I))
       else
         SNOCNS(I) = 0.0
       end if
@@ -993,28 +993,28 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     end if
     !
     if (CWFCAP(I) > 0.0) then
-      FSNOWC(I) = MIN(SNOCAN(I) / CWFCAP(I),1.0)
+      FSNOWC(I) = MIN(SNOCAN(I) / CWFCAP(I), 1.0)
     else
       FSNOWC(I) = 0.0
     end if
     if (CWFCPS(I) > 0.0) then
-      FSNOCS(I) = MIN(SNOCNS(I) / CWFCPS(I),1.0)
+      FSNOCS(I) = MIN(SNOCNS(I) / CWFCPS(I), 1.0)
     else
       FSNOCS(I) = 0.0
     end if
     !
     if (CWLCAP(I) > 0.0) then
-      FRAINC(I) = MIN(RAICAN(I) / CWLCAP(I),1.0)
+      FRAINC(I) = MIN(RAICAN(I) / CWLCAP(I), 1.0)
     else
       FRAINC(I) = 0.0
     end if
     if (CWLCPS(I) > 0.0) then
-      FRAICS(I) = MIN(RAICNS(I) / CWLCPS(I),1.0)
+      FRAICS(I) = MIN(RAICNS(I) / CWLCPS(I), 1.0)
     else
       FRAICS(I) = 0.0
     end if
-    FRAINC(I) = MAX(0.0,MIN(FRAINC(I) - FSNOWC(I),1.0))
-    FRAICS(I) = MAX(0.0,MIN(FRAICS(I) - FSNOCS(I),1.0))
+    FRAINC(I) = MAX(0.0, MIN(FRAINC(I) - FSNOWC(I), 1.0))
+    FRAICS(I) = MAX(0.0, MIN(FRAICS(I) - FSNOCS(I), 1.0))
     !
     if (RAICAN(I) > CWLCAP(I)) then
       RRESID(I) = RRESID(I) + FC(I) * (RAICAN(I) - CWLCAP(I))
@@ -1036,40 +1036,40 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
     !
     WTRC (I) = WTRC(I) - (RRESID(I) + SRESID(I)) / DELT
     HTCC (I) = HTCC(I) - TCAN(I) * (SPHW * RRESID(I) + SPHICE * SRESID(I)) / &
-    DELT
+               DELT
     if (FSNOW(I) > 0.0) then
       SNOI = SNO(I)
       ZSNADD = SRESID(I) / (RHOSNO(I) * FSNOW(I))
       ZSNOW(I) = ZSNOW(I) + ZSNADD
       SNO(I) = ZSNOW(I) * FSNOW(I) * RHOSNO(I)
       TSNOW(I) = (TCAN(I) * SPHICE * SRESID(I) + TSNOW(I) * HCPICE * &
-                  SNOI / RHOICE) / (HCPICE * SNO(I) / RHOICE)
+                 SNOI / RHOICE) / (HCPICE * SNO(I) / RHOICE)
       HTCS (I) = HTCS(I) + TCAN(I) * SPHICE * SRESID(I) / DELT
       WTRS (I) = WTRS(I) + SRESID(I) / DELT
       SRESID(I) = 0.0
     end if
     !
-    do J = 1,IG ! loop 190
-      if (DELZW(I,J) > 0.0 .and. (RRESID(I) > 0.0 &
+    do J = 1, IG ! loop 190
+      if (DELZW(I, J) > 0.0 .and. (RRESID(I) > 0.0 &
       .or. SRESID(I) > 0.0)) then
-        THSUM = THLIQ(I,J) + THICE(I,J) + &
-                 (RRESID(I) + SRESID(I)) / (RHOW * DELZW(I,J))
-        if (THSUM < THPOR(I,J)) then
-          THICEI = THICE(I,J)
-          THLIQI = THLIQ(I,J)
-          THICE(I,J) = THICE(I,J) + SRESID(I) / &
-                     (RHOICE * DELZW(I,J))
-          THLIQ(I,J) = THLIQ(I,J) + RRESID(I) / &
-                     (RHOW * DELZW(I,J))
-          TBAR(I,J) = (TBAR(I,J) * ((DELZ(J) - DELZW(I,J)) * &
-                     HCPSND + DELZW(I,J) * (THLIQI * HCPW + THICEI * &
-                     HCPICE + (1.0 - THPOR(I,J)) * HCPS(I,J))) + TCAN(I) * &
-                     (RRESID(I) * HCPW / RHOW + SRESID(I) * HCPICE / RHOICE)) &
-                     / ((DELZ(J) - DELZW(I,J)) * HCPSND + DELZW(I,J) * &
-                     (HCPW * THLIQ(I,J) + HCPICE * THICE(I,J) + HCPS(I,J) * &
-                     (1.0 - THPOR(I,J))))
-          HTC(I,J) = HTC(I,J) + TCAN(I) * (RRESID(I) * HCPW / RHOW + &
-                     SRESID(I) * HCPICE / RHOICE) / DELT
+        THSUM = THLIQ(I, J) + THICE(I, J) + &
+                (RRESID(I) + SRESID(I)) / (RHOW * DELZW(I, J))
+        if (THSUM < THPOR(I, J)) then
+          THICEI = THICE(I, J)
+          THLIQI = THLIQ(I, J)
+          THICE(I, J) = THICE(I, J) + SRESID(I) / &
+                        (RHOICE * DELZW(I, J))
+          THLIQ(I, J) = THLIQ(I, J) + RRESID(I) / &
+                        (RHOW * DELZW(I, J))
+          TBAR(I, J) = (TBAR(I, J) * ((DELZ(J) - DELZW(I, J)) * &
+                       HCPSND + DELZW(I, J) * (THLIQI * HCPW + THICEI * &
+                       HCPICE + (1.0 - THPOR(I, J)) * HCPS(I, J))) + TCAN(I) * &
+                       (RRESID(I) * HCPW / RHOW + SRESID(I) * HCPICE / RHOICE)) &
+                       / ((DELZ(J) - DELZW(I, J)) * HCPSND + DELZW(I, J) * &
+                       (HCPW * THLIQ(I, J) + HCPICE * THICE(I, J) + HCPS(I, J) * &
+                       (1.0 - THPOR(I, J))))
+          HTC(I, J) = HTC(I, J) + TCAN(I) * (RRESID(I) * HCPW / RHOW + &
+                      SRESID(I) * HCPICE / RHOICE) / DELT
           WTRG (I) = WTRG(I) + (RRESID(I) + SRESID(I)) / DELT
           RRESID(I) = 0.0
           SRESID(I) = 0.0
@@ -1087,10 +1087,10 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !>
   !! In loops 250 and 275, calculations of the displacement height and the logarithms of the roughness lengths
   !! for heat and momentum are performed for the vegetated subareas. The displacement height \f$d_i\f$ and the
-  !! roughness length \f$z_{0,i}\f$ for the separate vegetation categories are obtained as simple ratios of the canopy
+  !! roughness length \f$z_{0, i}\f$ for the separate vegetation categories are obtained as simple ratios of the canopy
   !! height H:
   !! \f$d_i = 0.70 H\f$
-  !! \f$z_{0,i} = 0.10 H\f$
+  !! \f$z_{0, i} = 0.10 H\f$
   !!
   !! The averaged displacement height d over the vegetated subareas is only calculated if the flag IDISP has
   !! been set to 1. If IDISP = 0, this indicates that the atmospheric model is using a terrain-following
@@ -1107,28 +1107,28 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! \f$z_{0e} z_{0mX} = \Pi ( z_{0i}^{2Xi} )\f$
   !!
 
-  do J = 1,IC ! loop 250
-    do I = IL1,IL2
-      if (FC(I) > 0. .and. H(I,J) > 0.) then
-        if (IDISP == 1)   DISP(I) = DISP(I) + FCAN (I,J) * &
-        LOG(0.7 * H(I,J))   ! BDCS P?
-        ZOMLNC(I) = ZOMLNC(I) + FCAN (I,J) / &
-        ((LOG(ZBLEND(I) / (0.1 * H(I,J)))) ** 2)   ! BDCS P?
+  do J = 1, IC ! loop 250
+    do I = IL1, IL2
+      if (FC(I) > 0. .and. H(I, J) > 0.) then
+        if (IDISP == 1)   DISP(I) = DISP(I) + FCAN (I, J) * &
+        LOG(0.7 * H(I, J))   ! BDCS P?
+        ZOMLNC(I) = ZOMLNC(I) + FCAN (I, J) / &
+        ((LOG(ZBLEND(I) / (0.1 * H(I, J)))) ** 2)   ! BDCS P?
         ZOELNC(I) = ZOELNC(I) * &
-        (0.01 * H(I,J) * H(I,J) / ZORAT(IC)) ** FCAN(I,J)
+        (0.01 * H(I, J) * H(I, J) / ZORAT(IC)) ** FCAN(I, J)
       end if
-      if (FCS(I) > 0. .and. HS(I,J) > 0.) then
-        if (IDISP == 1)   DISPS(I) = DISPS (I) + FCANS(I,J) * &
-        LOG(0.7 * HS(I,J))
-        ZOMLCS(I) = ZOMLCS(I) + FCANS(I,J) / &
-        ((LOG(ZBLEND(I) / (0.1 * HS(I,J)))) ** 2)
+      if (FCS(I) > 0. .and. HS(I, J) > 0.) then
+        if (IDISP == 1)   DISPS(I) = DISPS (I) + FCANS(I, J) * &
+        LOG(0.7 * HS(I, J))
+        ZOMLCS(I) = ZOMLCS(I) + FCANS(I, J) / &
+        ((LOG(ZBLEND(I) / (0.1 * HS(I, J)))) ** 2)
         ZOELCS(I) = ZOELCS(I) * &
-        (0.01 * HS(I,J) * HS(I,J) / ZORAT(IC)) ** FCANS(I,J)
+        (0.01 * HS(I, J) * HS(I, J) / ZORAT(IC)) ** FCANS(I, J)
       end if
     end do
   end do ! loop 250
   !
-  do I = IL1,IL2 ! loop 275
+  do I = IL1, IL2 ! loop 275
     if (FC(I) > 0.) then
       if (IDISP == 1)   DISP(I) = EXP(DISP(I) / FC(I))
       ZOMLNC(I) = ZBLEND(I) / EXP(SQRT(1.0 / (ZOMLNC(I) / FC(I))))
@@ -1158,16 +1158,16 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! In the same loop the roughness length for peatlands is also calculated assuming
   !! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in classic_params.f90)
   !!
-  do I = IL1,IL2 ! loop 300
+  do I = IL1, IL2 ! loop 300
     if (FG(I) > 0.) then
-      if (ISAND(I,1) /= - 4) then
-        ZOMLNG(I) = ((FG(I) - FCANMX(I,ICP1) * (1.0 - FSNOW(I))) * ZOLNG + &
-                       FCANMX(I,ICP1) * (1.0 - FSNOW(I)) * ZOLN(I,ICP1)) &
-                       / FG(I)
+      if (ISAND(I, 1) /= - 4) then
+        ZOMLNG(I) = ((FG(I) - FCANMX(I, ICP1) * (1.0 - FSNOW(I))) * ZOLNG + &
+                    FCANMX(I, ICP1) * (1.0 - FSNOW(I)) * ZOLN(I, ICP1)) &
+                    / FG(I)
         if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
-          ZOMLNG(I) = ((FG(I) - FCANMX(I,ICP1) * (1.0 - FSNOW(I))) &
-               * zolnmoss + FCANMX(I,ICP1) * (1.0 - FSNOW(I)) * &
-                ZOLN(I,ICP1)) / FG(I)
+          ZOMLNG(I) = ((FG(I) - FCANMX(I, ICP1) * (1.0 - FSNOW(I))) &
+                      * zolnmoss + FCANMX(I, ICP1) * (1.0 - FSNOW(I)) * &
+                      ZOLN(I, ICP1)) / FG(I)
         end if
       else
         ZOMLNG(I) = ZOLNI
@@ -1175,8 +1175,8 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       ZOELNG(I) = ZOMLNG(I) - LOG(ZORATG)
     end if
     if (FGS(I) > 0.) then
-      ZOMLNS(I) = ((FGS(I) - FCANMX(I,ICP1) * FSNOW(I)) * ZOLNS + &
-                   FCANMX(I,ICP1) * FSNOW(I) * ZOLN(I,ICP1)) / FGS(I)
+      ZOMLNS(I) = ((FGS(I) - FCANMX(I, ICP1) * FSNOW(I)) * ZOLNS + &
+                  FCANMX(I, ICP1) * FSNOW(I) * ZOLN(I, ICP1)) / FGS(I)
       ZOELNS(I) = ZOMLNS(I) - LOG(ZORATG)
     end if
   end do ! loop 300
@@ -1190,16 +1190,16 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of
   !! the subareas, these are reset to LZ0ORO.
   !!
-  do I = IL1,IL2 ! loop 325
+  do I = IL1, IL2 ! loop 325
     if (Z0ORO(I) > 1.0E-4) then
       LZ0ORO = LOG(Z0ORO(I))
     else
       LZ0ORO = - 10.0
     end if
-    ZOMLNC(I) = MAX(ZOMLNC(I),LZ0ORO)
-    ZOMLCS(I) = MAX(ZOMLCS(I),LZ0ORO)
-    ZOMLNG(I) = MAX(ZOMLNG(I),LZ0ORO)
-    ZOMLNS(I) = MAX(ZOMLNS(I),LZ0ORO)
+    ZOMLNC(I) = MAX(ZOMLNC(I), LZ0ORO)
+    ZOMLCS(I) = MAX(ZOMLCS(I), LZ0ORO)
+    ZOMLNG(I) = MAX(ZOMLNG(I), LZ0ORO)
+    ZOMLNS(I) = MAX(ZOMLNS(I), LZ0ORO)
   end do ! loop 325
   !
   !     * CALCULATE HEAT CAPACITY FOR CANOPY OVERLYING BARE SOIL AND
@@ -1221,22 +1221,22 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! CMAI is recalculated, and is used to determine the change in internal energy of the canopy, HTCC, owing
   !! to growth or disappearance of the vegetation.
   !!
-  do I = IL1,IL2 ! loop 350
+  do I = IL1, IL2 ! loop 350
     if (FC(I) > 0.) then ! For non-snow covered ground
       if (ctem_on) then
         CMASSC(I) = 0.0
-        do J = 1,IC
-          CMASSC(I) = CMASSC(I) + FCAN(I,J) * CMASVEGC(I,J)
+        do J = 1, IC
+          CMASSC(I) = CMASSC(I) + FCAN(I, J) * CMASVEGC(I, J)
         end do
         CMASSC(I) = CMASSC(I) / FC(I)
       else ! CLASS (physics) only
         CMASSC(I) = 0.0
-        do J = 1,IC
+        do J = 1, IC
           select case (classpfts(J))
           case ('NdlTr','BdlTr','Grass', 'BdlSh')
-            CMASSC(I) = CMASSC(I) + FCAN(I,J) * CWGTMX(I,J)
+            CMASSC(I) = CMASSC(I) + FCAN(I, J) * CWGTMX(I, J)
           case ('Crops')
-            CMASSC(I) = CMASSC(I) + FCAN(I,J) * CWGTMX(I,J) * GROWA(I)
+            CMASSC(I) = CMASSC(I) + FCAN(I, J) * CWGTMX(I, J) * GROWA(I)
           case default
             ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
@@ -1250,18 +1250,18 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       !> if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
       if (IDISP == 0) then
         temp1 = 0.0
-        do J = 1,IC
-          temp1 = temp1 + FCAN(I,J) * H(I,J)
+        do J = 1, IC
+          temp1 = temp1 + FCAN(I, J) * H(I, J)
         end do
         CMASSC(I) = CMASSC(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & ! BDCS P?
-        temp1 / FC(I)
+                    temp1 / FC(I)
       end if
       !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
       !> if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
       if (IZREF == 2) then
         temp1 = 0.0
-        do J = 1,IC
-          temp1 = temp1 + FCAN(I,J) * H(I,J)
+        do J = 1, IC
+          temp1 = temp1 + FCAN(I, J) * H(I, J)
         end do
         CMASSC(I) = CMASSC(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.1 * &
                     temp1 / FC(I)
@@ -1272,13 +1272,13 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
 
       if (ctem_on) then
         CMASCS(I) = 0.0
-        do J = 1,IC
+        do J = 1, IC
           select case (classpfts(J))
           case ('NdlTr','BdlTr','BdlSh')
-            CMASCS(I) = CMASCS(I) + FCANS(I,J) * CMASVEGC(I,J)
+            CMASCS(I) = CMASCS(I) + FCANS(I, J) * CMASVEGC(I, J)
           case ('Crops','Grass')
-            CMASCS(I) = CMASCS(I) + FCANS(I,J) * CMASVEGC(I,J) * &
-                         HS(I,J) / MAX(H(I,J),HS(I,J))
+            CMASCS(I) = CMASCS(I) + FCANS(I, J) * CMASVEGC(I, J) * &
+                        HS(I, J) / MAX(H(I, J), HS(I, J))
           case default
             ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ', &
@@ -1289,16 +1289,16 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
         CMASCS(I) = CMASCS(I) / FCS(I)
       else ! CLASS (physics) only
         CMASCS(I) = 0.0
-        do J = 1,IC
+        do J = 1, IC
           select case (classpfts(J))
           case ('NdlTr','BdlTr','BdlSh')
-            CMASCS(I) = CMASCS(I) + FCANS(I,J) * CWGTMX(I,J)
+            CMASCS(I) = CMASCS(I) + FCANS(I, J) * CWGTMX(I, J)
           case ('Crops')
-            CMASCS(I) = CMASCS(I) + FCANS(I,J) * CWGTMX(I,J) * &
-                         GROWA(I) * HS(I,J) / MAX(H(I,J),HS(I,J))
+            CMASCS(I) = CMASCS(I) + FCANS(I, J) * CWGTMX(I, J) * &
+                        GROWA(I) * HS(I, J) / MAX(H(I, J), HS(I, J))
           case ('Grass')
-            CMASCS(I) = CMASCS(I) + FCANS(I,J) * CWGTMX(I,J) * &
-                         HS(I,J) / MAX(H(I,J),HS(I,J))
+            CMASCS(I) = CMASCS(I) + FCANS(I, J) * CWGTMX(I, J) * &
+                        HS(I, J) / MAX(H(I, J), HS(I, J))
           case default
             ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ', &
@@ -1312,22 +1312,22 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       !> if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
       if (IDISP == 0) then
         temp1 = 0.0
-        do J = 1,IC
-          temp1 = temp1 + FCANS(I,J) * HS(I,J)
+        do J = 1, IC
+          temp1 = temp1 + FCANS(I, J) * HS(I, J)
         end do
         CMASCS(I) = CMASCS(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & ! BDCS
-        temp1 / FCS(I)
+                    temp1 / FCS(I)
       end if
 
       !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
       !> if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
       if (IZREF == 2) then
         temp1 = 0.0
-        do J = 1,IC
-          temp1 = temp1 + FCANS(I,J) * HS(I,J)
+        do J = 1, IC
+          temp1 = temp1 + FCANS(I, J) * HS(I, J)
         end do
         CMASCS(I) = CMASCS(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.1 * &
-                       temp1 / FCS(I)
+                    temp1 / FCS(I)
       end if
     end if
 
@@ -1360,12 +1360,12 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! rooting depth ZROOT is set to the background maximum value, except in the case of crops, for which it
   !! is set to the maximum scaled by GROWA. If the soil permeable depth is less than ZROOT, ZROOT is
   !! set to this depth instead. Values are then assigned in the matrix RMAT, which stores the fraction of roots
-  !! in each vegetation category for each soil layer. According to Feddes et al. (1974) \cite Feddes1974-ff , the fractional root
+  !! in each vegetation category for each soil layer. According to Feddes et al. (1974) \cite Feddes1974-ff, the fractional root
   !! volume R(z) below a depth z is well represented for many varieties of plants by the following exponential
   !! function:
   !! \f$R(z) = a_1 exp(-3.0z) + a_2.\f$
   !!
-  !! Making use of the boundary conditions \f$R(0) = 1\f$ and \f$R(z_r ) = 0\f$, where \f$z_r\f$ is the rooting depth ZROOT, it
+  !! Making use of the boundary conditions \f$R(0) = 1\f$ and \f$R(z_r) = 0\f$, where \f$z_r\f$ is the rooting depth ZROOT, it
   !! can be seen that the fraction of roots within a soil depth interval \f$\Delta z\f$ can be obtained as the difference
   !! between R(z) evaluated at the top \f$(z_T)\f$ and bottom \f$(z_B)\f$ of the interval:
   !! \f$R(\Delta z) = [exp(-3.0z_T) - exp(-3.0z_B)]/ [1 - exp(-3.0z_r)]\f$
@@ -1375,62 +1375,62 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !!
   !! In loop 450, a leaf boundary resistance parameter \f$C_{rb}\f$ , incorporating the plant area indices of the four
   !! vegetation subareas, is also calculated for later use in subroutine energBalVegSolve:
-  !! \f$C_{rb} = C_l \Lambda_{p,i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p,i}^{0.5} )]\f$
+  !! \f$C_{rb} = C_l \Lambda_{p, i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p, i}^{0.5} )]\f$
   !! where \f$C_l\f$ is a parameter that varies with the vegetation category. The aggregated value of \f$C_{rb}\f$ is obtained
   !! as a weighted average over the four vegetation categories over bare ground and snow cover.
   !!
-  do J = 1,IC ! loop 450
-    do I = IL1,IL2
+  do J = 1, IC ! loop 450
+    do I = IL1, IL2
       if (ctem_on) then
-        do K = 1,IG
-          RMAT(I,J,K) = RMATC(I,J,K)
+        do K = 1, IG
+          RMAT(I, J, K) = RMATC(I, J, K)
         end do
       else
-        ZROOT = ZRTMAX(I,J)
-        if (J == 3) ZROOT = ZRTMAX(I,J) * GROWA(I)
+        ZROOT = ZRTMAX(I, J)
+        if (J == 3) ZROOT = ZRTMAX(I, J) * GROWA(I)
         ZROOTG = 0.0
-        do K = 1,IG ! loop 375
-          ZROOTG = ZROOTG + DELZW(I,K)
+        do K = 1, IG ! loop 375
+          ZROOTG = ZROOTG + DELZW(I, K)
         end do ! loop 375
-        ZROOT = MIN(ZROOT,ZROOTG)
-        do K = 1,IG ! loop 400
-          if (ZROOT <= (ZBOTW(I,K) - DELZW(I,K) + 0.0001)) then
-            RMAT(I,J,K) = 0.0
-          else if (ZROOT <= ZBOTW(I,K)) then
-            RMAT(I,J,K) = (EXP( - 3.0 * (ZBOTW(I,K) - DELZW(I,K))) - & ! BDCS P?
-                          EXP( - 3.0 * ZROOT)) / (1.0 - EXP( - 3.0 * ZROOT))
+        ZROOT = MIN(ZROOT, ZROOTG)
+        do K = 1, IG ! loop 400
+          if (ZROOT <= (ZBOTW(I, K) - DELZW(I, K) + 0.0001)) then
+            RMAT(I, J, K) = 0.0
+          else if (ZROOT <= ZBOTW(I, K)) then
+            RMAT(I, J, K) = (EXP( - 3.0 * (ZBOTW(I, K) - DELZW(I, K))) - & ! BDCS P?
+                            EXP( - 3.0 * ZROOT)) / (1.0 - EXP( - 3.0 * ZROOT))
           else
-            RMAT(I,J,K) = (EXP( - 3.0 * (ZBOTW(I,K) - DELZW(I,K))) - &
-                          EXP( - 3.0 * ZBOTW(I,K))) / (1.0 - EXP( - 3.0 * ZROOT))
+            RMAT(I, J, K) = (EXP( - 3.0 * (ZBOTW(I, K) - DELZW(I, K))) - &
+                            EXP( - 3.0 * ZBOTW(I, K))) / (1.0 - EXP( - 3.0 * ZROOT))
           end if
         end do ! loop 400
       end if
       if ((FC(I) + FCS(I)) > 0.) then
         RBCOEF(I) = RBCOEF(I) + &
-                   (FCAN(I,J) * XLEAF(J) * (SQRT(PAI(I,J)) / 0.75) * &
-                   (1.0 - EXP( - 0.75 * SQRT(PAI(I,J)))) + &
-                   FCANS(I,J) * XLEAF(J) * (SQRT(PAIS(I,J)) / 0.75) * &
-                   (1.0 - EXP( - 0.75 * SQRT(PAIS(I,J))))) / &
-                   (FC(I) + FCS(I))
+                    (FCAN(I, J) * XLEAF(J) * (SQRT(PAI(I, J)) / 0.75) * &
+                    (1.0 - EXP( - 0.75 * SQRT(PAI(I, J)))) + &
+                    FCANS(I, J) * XLEAF(J) * (SQRT(PAIS(I, J)) / 0.75) * &
+                    (1.0 - EXP( - 0.75 * SQRT(PAIS(I, J))))) / &
+                    (FC(I) + FCS(I))
       end if
     end do
   end do ! loop 450
   !
-  do K = 1,IG ! loop 500
-    do I = IL1,IL2
-      FROOT(I,K) = 0.0
-      FROOTS(I,K) = 0.0
+  do K = 1, IG ! loop 500
+    do I = IL1, IL2
+      FROOT(I, K) = 0.0
+      FROOTS(I, K) = 0.0
       if (FC(I) > 0.) then
-        do J = 1,IC
-          FROOT(I,K) = FROOT(I,K) + FCAN(I,J) * RMAT(I,J,K)
+        do J = 1, IC
+          FROOT(I, K) = FROOT(I, K) + FCAN(I, J) * RMAT(I, J, K)
         end do
-        FROOT(I,K) = FROOT(I,K) / FC(I)
+        FROOT(I, K) = FROOT(I, K) / FC(I)
       end if
       if (FCS(I) > 0.) then
-        do J = 1,IC
-          FROOTS(I,K) = FROOTS(I,K) + FCANS(I,J) * RMAT(I,J,K)
+        do J = 1, IC
+          FROOTS(I, K) = FROOTS(I, K) + FCANS(I, J) * RMAT(I, J, K)
         end do
-        FROOTS(I,K) = FROOTS(I,K) / FCS(I)
+        FROOTS(I, K) = FROOTS(I, K) / FCS(I)
       end if
     end do
   end do ! loop 500
@@ -1447,18 +1447,18 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! weighted averages over the four vegetation categories.
   !!
 
-  do I = IL1,IL2 ! loop 600
+  do I = IL1, IL2 ! loop 600
     FSVF (I) = 0.0
     if (FC(I) > 0.) then
-      do J = 1,IC
-        FSVF(I) = FSVF(I) + FCAN(I,J) * EXP(CANEXT(J) * PAI(I,J))
+      do J = 1, IC
+        FSVF(I) = FSVF(I) + FCAN(I, J) * EXP(CANEXT(J) * PAI(I, J))
       end do
       FSVF(I) = FSVF(I) / FC(I)
     end if
     FSVFS(I) = 0.0
     if (FCS(I) > 0.) then
-      do J = 1,IC
-        FSVFS(I) = FSVFS(I) + FCANS(I,J) * EXP(CANEXT(J) * PAIS(I,J))
+      do J = 1, IC
+        FSVFS(I) = FSVFS(I) + FCANS(I, J) * EXP(CANEXT(J) * PAIS(I, J))
       end do
       FSVFS(I) = FSVFS(I) / FCS(I)
     end if
@@ -1471,43 +1471,43 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !>
   !! In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil
   !! layer is determined. This is done by weighting the values of FROOT and FROOTS calculated above by the relative soil
-  !! moisture suction in each layer: \f$( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )\f$
+  !! moisture suction in each layer: \f$( \Psi_w - \Psi_i)/( \Psi_w - \Psi_{sat} )\f$
   !! where \f$\Psi_i\f$ , the soil moisture suction in the layer, is obtained as
-  !! \f$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}\f$
+  !! \f$\Psi_i = \Psi_{sat} ( \theta_{l, i} / \theta_p)^{-b}\f$
   !! In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at
-  !! saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore
+  !! saturation, \f$\theta_{l, i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore
   !! volume, and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite Clapp1978-898. The layer values of FROOT and FROOTS are then
   !! re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
   !! calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
   !! \f$\Psi_w\f$ over all the soil layers.
   !!
-  do J = 1,IG ! loop 650
-    do I = IL1,IL2
+  do J = 1, IG ! loop 650
+    do I = IL1, IL2
       if (FCS(I) > 0.0 .or. FC(I) > 0.0) then
-        if (THLIQ(I,J) > (THLMIN(I,J) + 0.01)) then
-          PSII = PSISAT(I,J) * (THLIQ(I,J) / THPOR(I,J)) ** ( - BI(I,J))
-          PSII = MIN(PSII,PSIWLT(I,J))
-          if (FROOT(I,J) > 0.0) PSIGND(I) = MIN(PSIGND(I),PSII)
-          PSIRAT = (PSIWLT(I,J) - PSII) / (PSIWLT(I,J) - PSISAT(I,J))
-          FROOT(I,J) = FROOT(I,J) * PSIRAT
-          FROOTS(I,J) = FROOTS(I,J) * PSIRAT
-          FRTOT(I) = FRTOT(I) + FROOT(I,J)
-          FRTOTS(I) = FRTOTS(I) + FROOTS(I,J)
+        if (THLIQ(I, J) > (THLMIN(I, J) + 0.01)) then
+          PSII = PSISAT(I, J) * (THLIQ(I, J) / THPOR(I, J)) ** ( - BI(I, J))
+          PSII = MIN(PSII, PSIWLT(I, J))
+          if (FROOT(I, J) > 0.0) PSIGND(I) = MIN(PSIGND(I), PSII)
+          PSIRAT = (PSIWLT(I, J) - PSII) / (PSIWLT(I, J) - PSISAT(I, J))
+          FROOT(I, J) = FROOT(I, J) * PSIRAT
+          FROOTS(I, J) = FROOTS(I, J) * PSIRAT
+          FRTOT(I) = FRTOT(I) + FROOT(I, J)
+          FRTOTS(I) = FRTOTS(I) + FROOTS(I, J)
         else
-          FROOT(I,J) = 0.0
-          FROOTS(I,J) = 0.0
+          FROOT(I, J) = 0.0
+          FROOTS(I, J) = 0.0
         end if
       end if
     end do
   end do ! loop 650
 
-  do J = 1,IG ! loop 700
-    do I = IL1,IL2
+  do J = 1, IG ! loop 700
+    do I = IL1, IL2
       if (FRTOT(I) > 0.) then
-        FROOT(I,J) = FROOT(I,J) / FRTOT(I)
+        FROOT(I, J) = FROOT(I, J) / FRTOT(I)
       end if
       if (FRTOTS(I) > 0.) then
-        FROOTS(I,J) = FROOTS(I,J) / FRTOTS(I)
+        FROOTS(I, J) = FROOTS(I, J) / FRTOTS(I)
       end if
     end do
   end do ! loop 700
@@ -1521,19 +1521,19 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
   !! is being run coupled with CTEM, a set of CTEM-related calculations is performed.
   !!
 
-  do I = IL1,IL2 ! loop 800
+  do I = IL1, IL2 ! loop 800
     PAICAN(I) = 0.0
     if (FC(I) > 0.) then
-      do J = 1,IC
-        PAICAN(I) = PAICAN(I) + FCAN(I,J) * PAI(I,J)
+      do J = 1, IC
+        PAICAN(I) = PAICAN(I) + FCAN(I, J) * PAI(I, J)
       end do
       PAICAN(I) = PAICAN(I) / FC(I)
     end if
 
     PAICNS(I) = 0.0
     if (FCS(I) > 0.) then
-      do J = 1,IC
-        PAICNS(I) = PAICNS(I) + FCANS(I,J) * PAIS(I,J)
+      do J = 1, IC
+        PAICNS(I) = PAICNS(I) + FCANS(I, J) * PAIS(I, J)
       end do
       PAICNS(I) = PAICNS(I) / FCS(I)
     end if
@@ -1555,7 +1555,7 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       K2 = K1 + NOL2PFTS(J) - 1
       do M = K1, K2 ! loop 820
         do I = IL1, IL2
-          SFCANCMX(I,J) = SFCANCMX(I,J) + FCANCMX(I,M)
+          SFCANCMX(I, J) = SFCANCMX(I, J) + FCANCMX(I, M)
         end do
       end do ! loop 820
     end do ! loop 830
@@ -1569,12 +1569,12 @@ subroutine calcLandSurfParams(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, & ! Former
       K2 = K1 + NOL2PFTS(J) - 1
       do M = K1, K2 ! loop 850
         do I = IL1, IL2
-          if (SFCANCMX(I,J) > 1.E-20) then
-            FCANC(I,M)  = FCAN(I,J) * (FCANCMX(I,M) / SFCANCMX(I,J))
-            FCANCS(I,M) = FCANS(I,J) * (FCANCMX(I,M) / SFCANCMX(I,J))
+          if (SFCANCMX(I, J) > 1.E-20) then
+            FCANC(I, M)  = FCAN(I, J) * (FCANCMX(I, M) / SFCANCMX(I, J))
+            FCANCS(I, M) = FCANS(I, J) * (FCANCMX(I, M) / SFCANCMX(I, J))
           else
-            FCANC(I,M)  = 0.0
-            FCANCS(I,M) = 0.0
+            FCANC(I, M)  = 0.0
+            FCANCS(I, M) = 0.0
           end if
         end do
       end do ! loop 850

@@ -3,7 +3,7 @@
 !! an error condition is encountered.
 !! @author J. D. Henderson, E. Chan
 !
-subroutine errorHandler(NAME,N) ! Formerly XIT
+subroutine errorHandler(NAME, N) ! Formerly XIT
 
   use generalUtils, only : abandonCell
 
@@ -44,11 +44,11 @@ subroutine errorHandler(NAME,N) ! Formerly XIT
   !! abort is then executed.
   !!
   NAME8 = NAME
-  if (N >= 0) write(6,6010) DASH,NAME8,(DASH,I = 1,9),N
+  if (N >= 0) write(6, 6010) DASH, NAME8,(DASH, I = 1, 9), N
   !
-  if (N < 0) write(6,6010) STAR,NAME8,(STAR,I = 1,9),N
+  if (N < 0) write(6, 6010) STAR, NAME8,(STAR, I = 1, 9), N
   !
-  if ( N >= 0 .or. N < - 100 ) then
+  if (N >= 0 .or. N < - 100) then
     ! CALL EXIT
     call abandonCell
   else

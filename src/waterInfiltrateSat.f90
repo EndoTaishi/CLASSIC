@@ -3,11 +3,11 @@
 !! conditions.
 !! @author D. Verseghy, M. Lazare, Y. Delage, J. P. Blanchette
 !
-subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Formerly WFLOW
-                              R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX, &
-                              DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ, &
-                              THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP, &
-                              IGRN,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+subroutine waterInfiltrateSat(WMOVE, TMOVE, LZF, NINF, TRMDR, TPOND, ZPOND, & ! Formerly WFLOW
+                              R, TR, EVAP, PSIF, GRKINF, THLINF, THLIQX, TBARWX, &
+                              DELZX, ZBOTX, FMAX, ZF, DZF, DTFLOW, THLNLZ, &
+                              THLQLZ, DZDISP, WDISP, WABS, ITER, NEND, ISIMP, &
+                              IGRN, IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
 
   !     * FEB 09/09 - J.P.BLANCHETTE. INCREASE LIMITING VALUE OF NEND.
   !     * JAN 06/09 - D.VERSEGHY. CHECKS ON WETTING FRONT LOCATION
@@ -32,19 +32,19 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. SATURATED FLOW OF WATER THROUGH SOIL.
   !
-  use classic_params,        only : DELT
+  use classic_params, only : DELT
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IG,IGP1,IGP2,ILG,IL1,IL2,JL,N
-  integer             :: I,J,NPNTS,NIT
+  integer, intent(in) :: IG, IGP1, IGP2, ILG, IL1, IL2, JL, N
+  integer             :: I, J, NPNTS, NIT
   !
   !     * INPUT/OUTPUT FIELDS.
   !
-  real, intent(inout)    :: WMOVE (ILG,IGP2) !< Water movement matrix \f$[m^3 m^{-2}]\f$
-  real, intent(inout)    :: TMOVE (ILG,IGP2) !< Temperature matrix associated with ground water movement [C]
+  real, intent(inout)    :: WMOVE (ILG, IGP2) !< Water movement matrix \f$[m^3 m^{-2}]\f$
+  real, intent(inout)    :: TMOVE (ILG, IGP2) !< Temperature matrix associated with ground water movement [C]
   integer, intent(inout) :: LZF   (ILG)      !< Index of soil layer in which wetting front is located
   integer, intent(inout) :: NINF  (ILG)      !< Number of levels involved in water movement
   real, intent(inout)    :: TRMDR (ILG)      !< Time remaining in current time step [s]
@@ -56,13 +56,13 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   real, intent(in)    :: R     (ILG)      !< Rainfall rate at ground surface \f$[m s^{-1}]\f$
   real, intent(in)    :: TR    (ILG)      !< Temperature of rainfall [C]
   real, intent(in)    :: EVAP  (ILG)      !< Surface evaporation rate \f$[m s^{-1}]\f$
-  real, intent(in)    :: PSIF  (ILG,IGP1) !< Soil water suction across the wetting front \f$[m] (\Psi_f)\f$
-  real, intent(in)    :: GRKINF(ILG,IGP1) !< Hydraulic conductivity of soil behind the wetting front \f$[m s^{-1}] (K)\f$
-  real, intent(in)    :: THLINF(ILG,IGP1) !< Volumetric liquid water content behind the wetting front \f$[m^3 m^{-3}]\f$
-  real, intent(in)    :: THLIQX(ILG,IGP1) !< Volumetric liquid water content of soil layer \f$[m^3 m^{-3}]\f$
-  real, intent(in)    :: TBARWX(ILG,IGP1) !< Temperature of water in soil layer [C]
-  real, intent(in)    :: DELZX (ILG,IGP1) !< Permeable depth of soil layer \f$[m] (\Delta z_{z,w})\f$
-  real, intent(in)    :: ZBOTX (ILG,IGP1) !< Depth of bottom of soil layer [m]
+  real, intent(in)    :: PSIF  (ILG, IGP1) !< Soil water suction across the wetting front \f$[m] (\Psi_f)\f$
+  real, intent(in)    :: GRKINF(ILG, IGP1) !< Hydraulic conductivity of soil behind the wetting front \f$[m s^{-1}] (K)\f$
+  real, intent(in)    :: THLINF(ILG, IGP1) !< Volumetric liquid water content behind the wetting front \f$[m^3 m^{-3}]\f$
+  real, intent(in)    :: THLIQX(ILG, IGP1) !< Volumetric liquid water content of soil layer \f$[m^3 m^{-3}]\f$
+  real, intent(in)    :: TBARWX(ILG, IGP1) !< Temperature of water in soil layer [C]
+  real, intent(in)    :: DELZX (ILG, IGP1) !< Permeable depth of soil layer \f$[m] (\Delta z_{z, w})\f$
+  real, intent(in)    :: ZBOTX (ILG, IGP1) !< Depth of bottom of soil layer [m]
   real, intent(inout) :: FMAX  (ILG)      !< Maximum infiltration rate, defined as minimum value of GRKINF
   real, intent(inout) :: ZF    (ILG)      !< Depth of the wetting front \f$[m] (z_f)\f$
   integer, intent(in) :: IGRN  (ILG)      !< Flag to indicate whether infiltration is occurring
@@ -96,9 +96,9 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     * CALCULATE ITERATION ENDPOINT "NEND", AND SET SWITCH "ITER" TO 1
   !     * FOR POINTS OVER WHICH THIS SUBROUTINE IS TO BE PERFORMED.
   !
-  do I = IL1,IL2 ! loop 50
+  do I = IL1, IL2 ! loop 50
     if (IGRN(I) > 0 .and. TRMDR(I) > 0.0) then
-      RESID = MOD(TRMDR(I),120.)
+      RESID = MOD(TRMDR(I), 120.)
       if (RESID > 0.) then
         NEND(I) = NINT(TRMDR(I) / 120. + 0.5) + 100
       else
@@ -113,10 +113,10 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   end do ! loop 50
   NIT = 1
   !
-  do J = 1,IGP1 ! loop 75
-    do I = IL1,IL2
+  do J = 1, IGP1 ! loop 75
+    do I = IL1, IL2
       if (ITER(I) > 0 .and. LZF(I) > 1 .and. J < LZF(I)) then
-        FMAX(I) = MIN(GRKINF(I,J),FMAX(I))
+        FMAX(I) = MIN(GRKINF(I, J), FMAX(I))
       end if
     end do
   end do ! loop 75
@@ -173,18 +173,18 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     * (SOME ARRAYS ARE GATHERED (ON LZF) TO AVOID MULTIPLE INDIRECT-
   !     * ADDRESSING REFERENCES IN THE ENSUING LOOPS.)
   !
-  do I = IL1,IL2 ! loop 200
+  do I = IL1, IL2 ! loop 200
     if (ITER(I) == 1) then
-      THLNLZ(I) = THLINF(I,LZF(I))
-      THLQLZ(I) = THLIQX(I,LZF(I))
+      THLNLZ(I) = THLINF(I, LZF(I))
+      THLQLZ(I) = THLIQX(I, LZF(I))
       if (THLQLZ(I) > (THLNLZ(I) - 1.0E-6) .and. LZF(I) < IGP1 &
       .and. THLQLZ(I) > 0.0001) then
-        ZF(I) = ZBOTX(I,LZF(I))
-        WMOVE(I,NINF(I)) = THLQLZ(I) * DELZX(I,LZF(I))
-        TMOVE(I,NINF(I)) = TBARWX(I,LZF(I))
-        FINF = GRKINF(I,LZF(I)) * (ZF(I) + ZPOND(I) + PSIF (I,LZF(I))) / &
-                  ZF(I)
-        FMAX(I) = MIN(FMAX(I),FINF)
+        ZF(I) = ZBOTX(I, LZF(I))
+        WMOVE(I, NINF(I)) = THLQLZ(I) * DELZX(I, LZF(I))
+        TMOVE(I, NINF(I)) = TBARWX(I, LZF(I))
+        FINF = GRKINF(I, LZF(I)) * (ZF(I) + ZPOND(I) + PSIF (I, LZF(I))) / &
+               ZF(I)
+        FMAX(I) = MIN(FMAX(I), FINF)
         LZF(I) = LZF(I) + 1
         NINF(I) = NINF(I) + 1
         ISIMP(I) = 1
@@ -201,14 +201,14 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     * CURRENT SOIL LAYER. IF ZERO, RECALCULATE POND DEPTH AND POND
   !     * TEMPERATURE AND SET "ISIMP" TO -1; ELSE SET "ISIMP" TO -2.
   !
-  do I = IL1,IL2 ! loop 300
+  do I = IL1, IL2 ! loop 300
     if (ITER(I) == 1 .and. ISIMP(I) /= 1) then
-      DTFLOW(I) = MIN(TRMDR(I),120.)
-      if (GRKINF(I,LZF(I)) > 1.0E-12) then
+      DTFLOW(I) = MIN(TRMDR(I), 120.)
+      if (GRKINF(I, LZF(I)) > 1.0E-12) then
         ISIMP(I) = - 2
       else
         TPOND(I) = (ZPOND(I) * TPOND(I) + R(I) * DTFLOW(I) * TR(I)) / &
-                      (ZPOND(I) + R(I) * DTFLOW(I))
+                   (ZPOND(I) + R(I) * DTFLOW(I))
         if (ABS(R(I) - EVAP(I)) > 1.0E-11) then
           ZPTEST = ZPOND(I) + (R(I) - EVAP(I)) * DTFLOW(I)
         else
@@ -259,17 +259,17 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     * RE-EVALUATE POND TEMPERATURE AND POND DEPTH; UPDATE WATER
   !     * MOVEMENT MATRIX; ADJUST CURRENT POSITION OF WETTING FRONT.
   !
-  do I = IL1,IL2 ! loop 400
+  do I = IL1, IL2 ! loop 400
     if (ITER(I) == 1 .and. ISIMP(I) == - 2) then
       if (LZF(I) < IGP1) then
         if (ZF(I) > 1.0E-7) then
-          FINF = GRKINF(I,LZF(I)) * (ZF(I) + ZPOND(I) + &
-                      PSIF (I,LZF(I))) / ZF(I)
+          FINF = GRKINF(I, LZF(I)) * (ZF(I) + ZPOND(I) + &
+                 PSIF (I, LZF(I))) / ZF(I)
         else
-          FINF = GRKINF(I,1)
+          FINF = GRKINF(I, 1)
         end if
       else
-        FINF = GRKINF(I,LZF(I)) * (ZF(I) + ZPOND(I)) / ZF(I)
+        FINF = GRKINF(I, LZF(I)) * (ZF(I) + ZPOND(I)) / ZF(I)
       end if
       if (ZPOND(I) < 1.0E-8 .and. FINF > R(I))      FINF = R(I)
       if (FINF > FMAX(I)) FINF = FMAX(I)
@@ -279,12 +279,12 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
         WDISP(I) = DZF(I) * THLQLZ(I)
         DZDISP(I) = WDISP(I) / (THLNLZ(I) - THLQLZ(I))
         WABS(I) = DZDISP(I) * THLQLZ(I)
-        if ((ZF(I) + DZF(I) + DZDISP(I)) > ZBOTX(I,LZF(I))) then
-          DTFLOW(I) = (ZBOTX(I,LZF(I)) - ZF(I)) / &
-                          (FINF / THLNLZ(I) + &
-                          (FINF * THLQLZ(I)) / &
-                          (THLNLZ(I) * &
-                          (THLNLZ(I) - THLQLZ(I))))
+        if ((ZF(I) + DZF(I) + DZDISP(I)) > ZBOTX(I, LZF(I))) then
+          DTFLOW(I) = (ZBOTX(I, LZF(I)) - ZF(I)) / &
+                      (FINF / THLNLZ(I) + &
+                      (FINF * THLQLZ(I)) / &
+                      (THLNLZ(I) * &
+                      (THLNLZ(I) - THLQLZ(I))))
           WINF = FINF * DTFLOW(I)
           DZF(I) = WINF / THLNLZ(I)
           WDISP(I) = DZF(I) * THLQLZ(I)
@@ -294,11 +294,11 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
       end if
       if (ZPOND(I) + R(I) * DTFLOW(I) > 1.0E-8) then
         TPOND(I) = (ZPOND(I) * TPOND(I) + R(I) * DTFLOW(I) * TR(I)) / &
-                      (ZPOND(I) + R(I) * DTFLOW(I))
+                   (ZPOND(I) + R(I) * DTFLOW(I))
       end if
       if (ABS(R(I) - FINF - EVAP(I)) > 1.0E-11) then
         ZPTEST = ZPOND(I) + R(I) * DTFLOW(I) - WINF - EVAP(I) * &
-                    DTFLOW(I)
+                 DTFLOW(I)
       else
         ZPTEST = ZPOND(I)
       end if
@@ -315,11 +315,11 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
       else
         ZPOND(I) = ZPTEST
       end if
-      if ((WMOVE(I,1) + WINF) > 0.) then
-        TMOVE(I,1) = (WMOVE(I,1) * TMOVE(I,1) + WINF * TPOND(I)) / &
-                       (WMOVE(I,1) + WINF)
+      if ((WMOVE(I, 1) + WINF) > 0.) then
+        TMOVE(I, 1) = (WMOVE(I, 1) * TMOVE(I, 1) + WINF * TPOND(I)) / &
+                      (WMOVE(I, 1) + WINF)
       end if
-      WMOVE(I,1) = WMOVE(I,1) + WINF
+      WMOVE(I, 1) = WMOVE(I, 1) + WINF
     end if
   end do ! loop 400
   !
@@ -327,10 +327,10 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     * BECAUSE IT WOULD NOT VECTORIZE. ONE MIGHT TRY AND RE-COMBINE
   !     * IT ON THE SX-3 (GOES IN FIRST PART OF IF BLOCK)).
   !
-  do I = IL1,IL2 ! loop 450
+  do I = IL1, IL2 ! loop 450
     if (ITER(I) == 1 .and. ISIMP(I) == - 2 .and. &
     LZF(I) < IGP1) then
-      WMOVE(I,NINF(I)) = WMOVE(I,NINF(I)) + WDISP(I) + WABS(I)
+      WMOVE(I, NINF(I)) = WMOVE(I, NINF(I)) + WDISP(I) + WABS(I)
       ZF(I) = ZF(I) + DZF(I) + DZDISP(I)
     end if
   end do ! loop 450
@@ -345,18 +345,18 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !     * CALCULATE REMAINING ITERATION TIME; RE-EVALUATE INFILTRATION
   !     * PARAMETERS.
   !
-  do I = IL1,IL2 ! loop 500
+  do I = IL1, IL2 ! loop 500
     if (ITER(I) == 1 .and. ISIMP(I) /= 1) then
       TRMDR(I) = TRMDR(I) - DTFLOW(I)
-      if (ABS(ZF(I) - ZBOTX(I,LZF(I))) < 1.0E-6 .and. &
+      if (ABS(ZF(I) - ZBOTX(I, LZF(I))) < 1.0E-6 .and. &
       TRMDR(I) > 0. .and. LZF(I) < IGP1 .and. &
       THLQLZ(I) > 0.0001) then
-        FINF = GRKINF(I,LZF(I)) * (ZBOTX(I,LZF(I)) + ZPOND(I) + &
-                  PSIF (I,LZF(I))) / ZBOTX(I,LZF(I))
-        FMAX(I) = MIN(FMAX(I),FINF)
+        FINF = GRKINF(I, LZF(I)) * (ZBOTX(I, LZF(I)) + ZPOND(I) + &
+               PSIF (I, LZF(I))) / ZBOTX(I, LZF(I))
+        FMAX(I) = MIN(FMAX(I), FINF)
         LZF(I) = LZF(I) + 1
         NINF(I) = NINF(I) + 1
-        TMOVE(I,NINF(I)) = TBARWX(I,LZF(I))
+        TMOVE(I, NINF(I)) = TBARWX(I, LZF(I))
       end if
     end if
   end do ! loop 500
@@ -375,7 +375,7 @@ subroutine waterInfiltrateSat(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND, & ! Former
   !! the current tile is changed from 1 to 0, signaling the end of the saturated infiltration calculations
   !! for that tile.
   !!
-  do I = IL1,IL2 ! loop 600
+  do I = IL1, IL2 ! loop 600
     if (IGRN(I) > 0) then
       if (NIT <= NEND(I) .and. ITER(I) == 1 .and. &
       (ZPOND(I) > 1.0E-8 .or. R(I) > 0.)  .and. &

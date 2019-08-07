@@ -3,12 +3,12 @@
 !! calculations over ice sheets.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Formerly ICEBAL
-                           ALBSNO,HMFG,HTCS,HTC,WTRS,WTRG,GFLUX, &
-                           RUNOFF,TRUNOF,OVRFLW,TOVRFL,ZPLIM,GGEO, &
-                           FI,EVAP,R,TR,GZERO,G12,G23,HCP,QMELT,WSNOW, &
-                           ZMAT,TMOVE,WMOVE,ZRMDR,TADD,ZMOVE,TBOT,DELZ, &
-                           ISAND,ICONT,IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
+subroutine iceSheetBalance(TBAR, TPOND, ZPOND, TSNOW, RHOSNO, ZSNOW, HCPSNO, & ! Formerly ICEBAL
+                           ALBSNO, HMFG, HTCS, HTC, WTRS, WTRG, GFLUX, &
+                           RUNOFF, TRUNOF, OVRFLW, TOVRFL, ZPLIM, GGEO, &
+                           FI, EVAP, R, TR, GZERO, G12, G23, HCP, QMELT, WSNOW, &
+                           ZMAT, TMOVE, WMOVE, ZRMDR, TADD, ZMOVE, TBOT, DELZ, &
+                           ISAND, ICONT, IWF, IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
   !
   !     * OCT 03/14 - D.VERSEGHY. CHANGE LIMITING VALUE OF SNOW ON ICE
   !     *                         FROM 100 KG/M2 TO 10 M.
@@ -49,22 +49,22 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !     *                         PONDED WATER TO RUNOFF; ADJUST LAYER
   !     *                         DEPTHS FOR ACCUMULATION/ABLATION.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,HCPICE,RHOW,RHOICE, &
-                            TCGLAC,CLHMLT
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, RHOICE, &
+                            TCGLAC, CLHMLT
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N
-  integer :: I,J,K
+  integer, intent(in) :: IWF, IG, IGP1, IGP2, ILG, IL1, IL2, JL, N
+  integer :: I, J, K
   !
   !     * INPUT/OUTPUT FIELDS.
   !
-  real, intent(inout) :: TBAR  (ILG,IG) !< Temperature of ice layer \f$[C] (T_{av}( \Delta z))\f$
-  real, intent(inout) :: HMFG  (ILG,IG) !< Energy associated with freezing or thawing of water in ice layer \f$[W m^{-2}]\f$
-  real, intent(inout) :: HTC   (ILG,IG) !< Internal energy change of ice layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ij)
-  real, intent(inout) :: GFLUX (ILG,IG) !< Heat flow between ice layers \f$[W m^{-2}] (G(\Delta z))\f$
+  real, intent(inout) :: TBAR  (ILG, IG) !< Temperature of ice layer \f$[C] (T_{av}( \Delta z))\f$
+  real, intent(inout) :: HMFG  (ILG, IG) !< Energy associated with freezing or thawing of water in ice layer \f$[W m^{-2}]\f$
+  real, intent(inout) :: HTC   (ILG, IG) !< Internal energy change of ice layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ij)
+  real, intent(inout) :: GFLUX (ILG, IG) !< Heat flow between ice layers \f$[W m^{-2}] (G(\Delta z))\f$
   real, intent(inout) :: TPOND (ILG)  !< Temperature of ponded water [C]
   real, intent(inout) :: ZPOND (ILG)  !< Depth of ponded water [m]
   real, intent(inout) :: TSNOW (ILG)  !< Temperature of the snow pack [C]
@@ -93,18 +93,18 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   real, intent(in) :: G23   (ILG)  !< Heat flow between second and third ice layers \f$[W m^{-2}] (G(\Delta z2))\f$
   real, intent(in) :: ZPLIM (ILG)  !< Limiting depth of ponded water [m]
   real, intent(in) :: GGEO  (ILG)  !< Geothermal heat flux at bottom of modelled ice profile \f$[W m^{-2}]\f$
-  real, intent(in) :: HCP   (ILG,IG)   !< Heat capacity of ice layer \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in) :: HCP   (ILG, IG)   !< Heat capacity of ice layer \f$[J m^{-3} K^{-1}]\f$
   real, intent(in) :: DELZ  (IG)       !< Overall thickness of ice layer \f$[m] (\Delta z)\f$
   !
-  integer, intent(in) :: ISAND (ILG,IG)!< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG)!< Sand content flag
   !
   !
   !     * WORK FIELDS.
   !
-  real, intent(inout) :: ZMAT  (ILG,IGP2,IGP1)
-  real, intent(inout) :: TMOVE (ILG,IGP2)
-  real, intent(inout) :: WMOVE (ILG,IGP2)
-  real, intent(inout) :: ZRMDR (ILG,IGP1)
+  real, intent(inout) :: ZMAT  (ILG, IGP2, IGP1)
+  real, intent(inout) :: TMOVE (ILG, IGP2)
+  real, intent(inout) :: WMOVE (ILG, IGP2)
+  real, intent(inout) :: ZRMDR (ILG, IGP1)
   real, intent(inout) :: TADD  (ILG)
   real, intent(inout) :: ZMOVE (ILG)
   real, intent(inout) :: TBOT  (ILG)
@@ -113,7 +113,7 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: TZERO,RADD,QADD,ZMELT,GP1,HCOOL,HWARM,HFREZ,ZFREZ,SNOCONV
+  real :: TZERO, RADD, QADD, ZMELT, GP1, HCOOL, HWARM, HFREZ, ZFREZ, SNOCONV
   !
   !-----------------------------------------------------------------------
   !>
@@ -125,15 +125,15 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !     * ADD RAINFALL OR SNOWMELT TO PONDED WATER AND ASSIGN EXCESS
   !     * TO RUNOFF.  CHECK FOR POND FREEZING.
   !
-  do I = IL1,IL2
-    if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
+  do I = IL1, IL2
+    if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
       if (R(I) > 0.) then
         RADD = R(I) * DELT
         TPOND(I) = ((TPOND(I) + TFREZ) * ZPOND(I) + (TR(I) + TFREZ) * &
-                RADD) / (ZPOND(I) + RADD) - TFREZ
+                   RADD) / (ZPOND(I) + RADD) - TFREZ
         ZPOND(I) = ZPOND(I) + RADD
-        HTC (I,1) = HTC(I,1) + FI(I) * (TR(I) + TFREZ) * HCPW * &
-                      RADD / DELT
+        HTC (I, 1) = HTC(I, 1) + FI(I) * (TR(I) + TFREZ) * HCPW * &
+                     RADD / DELT
       end if
       !>
       !! If a full-scale hydrological modelling application is not being run, that is, if only vertical fluxes of energy
@@ -156,9 +156,9 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
                     FI(I) * (ZPOND(I) - ZPLIM(I))) / (OVRFLW(I) + &
                     FI(I) * (ZPOND(I) - ZPLIM(I)))
         OVRFLW(I) = OVRFLW(I) + FI(I) * (ZPOND(I) - ZPLIM(I))
-        HTC(I,1) = HTC(I,1) - FI(I) * (TPOND(I) + TFREZ) * HCPW * &
+        HTC(I, 1) = HTC(I, 1) - FI(I) * (TPOND(I) + TFREZ) * HCPW * &
                     (ZPOND(I) - ZPLIM(I)) / DELT
-        ZPOND(I) = MIN(ZPOND(I),ZPLIM(I))
+        ZPOND(I) = MIN(ZPOND(I), ZPLIM(I))
       end if
       !>
       !! If the temperature of the remaining ponded water is greater than 0 C, the sink of energy required to cool
@@ -170,12 +170,12 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
       !!
       if (TPOND(I) > 0.001) then
         HCOOL = TPOND(I) * HCPW * ZPOND(I)
-        HWARM = - TBAR(I,1) * HCPICE * DELZ(1)
+        HWARM = - TBAR(I, 1) * HCPICE * DELZ(1)
         if (HWARM > HCOOL) then
-          TBAR(I,1) = TBAR(I,1) + HCOOL / (HCPICE * DELZ(1))
+          TBAR(I, 1) = TBAR(I, 1) + HCOOL / (HCPICE * DELZ(1))
           TPOND(I) = 0.0
         else
-          TBAR(I,1) = 0.0
+          TBAR(I, 1) = 0.0
           TPOND(I) = 0.0
           QMELT(I) = QMELT(I) + (HCOOL - HWARM) / DELT
         end if
@@ -199,28 +199,28 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !! of the snow density. Finally, the diagnostic amounts of water transferred to the snow pack, WTRS, and
   !! from the ice, WTRG, are updated using ZFREZ.
   !!
-  do I = IL1,IL2
-    if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-      if (TBAR(I,1) < - 2.0 .and. ZPOND(I) > 1.0E-8) then
+  do I = IL1, IL2
+    if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+      if (TBAR(I, 1) < - 2.0 .and. ZPOND(I) > 1.0E-8) then
         HFREZ = ZPOND(I) * RHOW * CLHMLT
-        HWARM = - TBAR(I,1) * HCPICE * DELZ(1)
+        HWARM = - TBAR(I, 1) * HCPICE * DELZ(1)
         if (HWARM >= HFREZ) then
-          TBAR(I,1) = TBAR(I,1) + HFREZ / (HCPICE * DELZ(1))
-          HMFG(I,1) = HMFG(I,1) - FI(I) * HFREZ / DELT
-          HTC(I,1) = HTC(I,1) - FI(I) * HCPW * TFREZ * ZPOND(I) / DELT
+          TBAR(I, 1) = TBAR(I, 1) + HFREZ / (HCPICE * DELZ(1))
+          HMFG(I, 1) = HMFG(I, 1) - FI(I) * HFREZ / DELT
+          HTC(I, 1) = HTC(I, 1) - FI(I) * HCPW * TFREZ * ZPOND(I) / DELT
           ZFREZ = ZPOND(I) * RHOW / RHOICE
           ZPOND(I) = 0.0
           TPOND(I) = 0.0
           HTCS(I) = HTCS(I) + FI(I) * HCPICE * TFREZ * ZFREZ / DELT
           if (.not.(ZSNOW(I) > 0.0)) ALBSNO(I) = 0.50
           TSNOW(I) = ((TSNOW(I) + TFREZ) * HCPSNO(I) * ZSNOW(I) + &
-          TFREZ * HCPICE * ZFREZ) &
-          / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ) - TFREZ
+                     TFREZ * HCPICE * ZFREZ) &
+                     / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ) - TFREZ
           RHOSNO(I) = (RHOSNO(I) * ZSNOW(I) + RHOICE * ZFREZ) / &
-          (ZSNOW(I) + ZFREZ)
+                      (ZSNOW(I) + ZFREZ)
           ZSNOW(I) = ZSNOW(I) + ZFREZ
           HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-          (RHOW * ZSNOW(I))
+                      (RHOW * ZSNOW(I))
           WTRS(I) = WTRS(I) + FI(I) * ZFREZ * RHOICE / DELT
           WTRG(I) = WTRG(I) - FI(I) * ZFREZ * RHOICE / DELT
         end if
@@ -249,11 +249,11 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !! of the layer, and \f$\lambda_i\f$ is the thermal conductivity of ice.
   !!
   if (IG > 3) then
-    do J = 4,IG ! loop 150
-      do I = IL1,IL2
-        if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-          GFLUX(I,J) = 2.0 * TCGLAC * (TBAR(I,J - 1) - TBAR(I,J)) / &
-                          (DELZ(J - 1) + DELZ(J))
+    do J = 4, IG ! loop 150
+      do I = IL1, IL2
+        if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+          GFLUX(I, J) = 2.0 * TCGLAC * (TBAR(I, J - 1) - TBAR(I, J)) / &
+                        (DELZ(J - 1) + DELZ(J))
         end if
       end do
     end do ! loop 150
@@ -293,28 +293,28 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !! determined in the energyBudgetDriver subroutines. Finally, the latter fluxes are assigned to the appropriate levels in
   !! the diagnostic GFLUX vector.
   !!
-  do I = IL1,IL2 ! loop 200
-    if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
+  do I = IL1, IL2 ! loop 200
+    if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
       if (IG == 3) then
-        TZERO = TBAR(I,1) + DELZ(1) * (GZERO(I) + 0.5 * G12(I)) / &
-                 (3.0 * TCGLAC)
+        TZERO = TBAR(I, 1) + DELZ(1) * (GZERO(I) + 0.5 * G12(I)) / &
+                (3.0 * TCGLAC)
         TBOT(I) = TZERO - (G23(I) * (DELZ(3) + DELZ(2)) + G12(I) * &
-                     (DELZ(1) + DELZ(2)) + GZERO(I) * DELZ(1)) / &
-                     (2.0 * TCGLAC)
-        TBAR(I,3) = TBAR(I,3) - GGEO(I) * DELT / &
-                     (HCP(I,3) * DELZ(3))
+                  (DELZ(1) + DELZ(2)) + GZERO(I) * DELZ(1)) / &
+                  (2.0 * TCGLAC)
+        TBAR(I, 3) = TBAR(I, 3) - GGEO(I) * DELT / &
+                     (HCP(I, 3) * DELZ(3))
       else
-        TBOT(I) = TBAR(I,IG)
+        TBOT(I) = TBAR(I, IG)
       end if
-      TBAR(I,1) = TBAR(I,1) + (GZERO(I) - G12(I)) * DELT / &
-      (HCP(I,1) * DELZ(1))
-      TBAR(I,2) = TBAR(I,2) + (G12(I) - G23(I)) * DELT / &
-      (HCP(I,2) * DELZ(2))
-      TBAR(I,3) = TBAR(I,3) + G23(I) * DELT / &
-      (HCP(I,3) * DELZ(3))
-      GFLUX(I,1) = GZERO(I)
-      GFLUX(I,2) = G12(I)
-      GFLUX(I,3) = G23(I)
+      TBAR(I, 1) = TBAR(I, 1) + (GZERO(I) - G12(I)) * DELT / &
+                   (HCP(I, 1) * DELZ(1))
+      TBAR(I, 2) = TBAR(I, 2) + (G12(I) - G23(I)) * DELT / &
+                   (HCP(I, 2) * DELZ(2))
+      TBAR(I, 3) = TBAR(I, 3) + G23(I) * DELT / &
+                   (HCP(I, 3) * DELZ(3))
+      GFLUX(I, 1) = GZERO(I)
+      GFLUX(I, 2) = G12(I)
+      GFLUX(I, 3) = G23(I)
     end if
   end do ! loop 200
   !
@@ -330,23 +330,23 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
     !! where \f$C_i\f$ is the heat capacity of ice, \f$Delta t\f$ is the length of the time step, and \f$X_i\f$ is the
     !! fractional coverage of the subarea under consideration relative to the modelled area.
     !!
-    do J = 3,IG ! loop 250
-      do I = IL1,IL2
-        if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-          HTC (I,J) = HTC(I,J) - FI(I) * (TBAR(I,J) + TFREZ) * HCPICE * &
-                     DELZ(J) / DELT
+    do J = 3, IG ! loop 250
+      do I = IL1, IL2
+        if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+          HTC (I, J) = HTC(I, J) - FI(I) * (TBAR(I, J) + TFREZ) * HCPICE * &
+                       DELZ(J) / DELT
           if (J == 3) then
-            TBAR(I,J) = TBAR(I,J) - GFLUX(I,J + 1) * DELT / &
-                         (HCP(I,J) * DELZ(J))
+            TBAR(I, J) = TBAR(I, J) - GFLUX(I, J + 1) * DELT / &
+                         (HCP(I, J) * DELZ(J))
           else if (J == IG) then
-            TBAR(I,J) = TBAR(I,J) + (GFLUX(I,J) - GGEO(I)) * DELT / &
-                         (HCP(I,J) * DELZ(J))
+            TBAR(I, J) = TBAR(I, J) + (GFLUX(I, J) - GGEO(I)) * DELT / &
+                         (HCP(I, J) * DELZ(J))
           else
-            TBAR(I,J) = TBAR(I,J) + (GFLUX(I,J) - GFLUX(I,J + 1)) * DELT / &
-                         (HCP(I,J) * DELZ(J))
+            TBAR(I, J) = TBAR(I, J) + (GFLUX(I, J) - GFLUX(I, J + 1)) * DELT / &
+                         (HCP(I, J) * DELZ(J))
           end if
-          HTC (I,J) = HTC(I,J) + FI(I) * (TBAR(I,J) + TFREZ) * HCPICE * &
-          DELZ(J) / DELT
+          HTC (I, J) = HTC(I, J) + FI(I) * (TBAR(I, J) + TFREZ) * HCPICE * &
+                       DELZ(J) / DELT
         end if
       end do
     end do ! loop 250
@@ -364,18 +364,18 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !! layer is reset to 0 C. Finally, the first half of a calculation of the change of internal energy of each ice layer
   !! is performed, to be completed at the end of the subroutine.
   !!
-  do J = 1,IG ! loop 300
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-        if (TBAR(I,J) > 0.) then
-          QADD = TBAR(I,J) * HCPICE * DELZ(J) / DELT
+  do J = 1, IG ! loop 300
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+        if (TBAR(I, J) > 0.) then
+          QADD = TBAR(I, J) * HCPICE * DELZ(J) / DELT
           QMELT(I) = QMELT(I) + QADD
-          HTC(I,J) = HTC(I,J) - FI(I) * QADD
-          HTC(I,1) = HTC(I,1) + FI(I) * QADD
-          TBAR(I,J) = 0.0
+          HTC(I, J) = HTC(I, J) - FI(I) * QADD
+          HTC(I, 1) = HTC(I, 1) + FI(I) * QADD
+          TBAR(I, J) = 0.0
         end if
-        HTC(I,J) = HTC(I,J) - FI(I) * (TBAR(I,J) + TFREZ) * HCPICE * &
-        DELZ(J) / DELT
+        HTC(I, J) = HTC(I, J) - FI(I) * (TBAR(I, J) + TFREZ) * HCPICE * &
+                    DELZ(J) / DELT
       end if
     end do
   end do ! loop 300
@@ -400,44 +400,44 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !     * WATER TO TOTAL RUNOFF; CALCULATE DEPTH OF ICE REMOVED BY MELTING
   !     * AND SUBLIMATION; RECALCULATE ICE LAYER TEMPERATURES.
   !
-  do J = 1,IG - 1 ! loop 325
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-        TMOVE(I,J) = TBAR(I,J + 1)
+  do J = 1, IG - 1 ! loop 325
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+        TMOVE(I, J) = TBAR(I, J + 1)
       end if
     end do
   end do ! loop 325
   !
-  do I = IL1,IL2
-    if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
+  do I = IL1, IL2
+    if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
       if (QMELT(I) > 0. .or. EVAP(I) > 0.) then
-        TMOVE(I,IG) = TBOT(I)
-        ZMELT = QMELT(I) * DELT / ((0.0 - TBAR(I,1)) * HCPICE + &
-                   CLHMLT * RHOICE)
+        TMOVE(I, IG) = TBOT(I)
+        ZMELT = QMELT(I) * DELT / ((0.0 - TBAR(I, 1)) * HCPICE + &
+                CLHMLT * RHOICE)
         if (ZMELT > 0.) then
           TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + TFREZ * ZMELT * &
-                    RHOICE / RHOW) / (RUNOFF(I) + ZMELT * RHOICE / RHOW)
+                      RHOICE / RHOW) / (RUNOFF(I) + ZMELT * RHOICE / RHOW)
           TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + TFREZ * FI(I) * ZMELT * &
-                    RHOICE / RHOW) / (OVRFLW(I) + FI(I) * ZMELT * RHOICE / &
-                    RHOW)
+                      RHOICE / RHOW) / (OVRFLW(I) + FI(I) * ZMELT * RHOICE / &
+                      RHOW)
         end if
         RUNOFF(I) = RUNOFF(I) + ZMELT * RHOICE / RHOW
         OVRFLW(I) = OVRFLW(I) + FI(I) * ZMELT * RHOICE / RHOW
-        HMFG(I,1) = HMFG(I,1) + FI(I) * CLHMLT * RHOICE * ZMELT / DELT
-        HTC (I,1) = HTC(I,1) - FI(I) * (QMELT(I) - CLHMLT * RHOICE * &
-        ZMELT / DELT)
+        HMFG(I, 1) = HMFG(I, 1) + FI(I) * CLHMLT * RHOICE * ZMELT / DELT
+        HTC (I, 1) = HTC(I, 1) - FI(I) * (QMELT(I) - CLHMLT * RHOICE * &
+                     ZMELT / DELT)
         ZMOVE (I) = ZMELT + EVAP(I) * DELT * RHOW / RHOICE
         WTRG  (I) = WTRG(I) + FI(I) * ZMOVE(I) * RHOICE / DELT
       end if
     end if
   end do ! loop 350
   !
-  do J = 1,IG ! loop 400
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4 .and. &
+  do J = 1, IG ! loop 400
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
       (QMELT(I) > 0. .or. EVAP(I) > 0.)) then
-        TBAR(I,J) = (TBAR(I,J) * (DELZ(J) - ZMOVE(I)) + TMOVE(I,J) * &
-                      ZMOVE(I)) / DELZ(J)
+        TBAR(I, J) = (TBAR(I, J) * (DELZ(J) - ZMOVE(I)) + TMOVE(I, J) * &
+                     ZMOVE(I)) / DELZ(J)
       end if
     end do
   end do ! loop 400
@@ -463,26 +463,26 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !     * 900 KG M-3, CONVERT EXCESS TO ICE AND MOVE THE LOCATIONS
   !     * OF THE ICE LAYERS ACCORDINGLY.
   !
-  do I = IL1,IL2
-    if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
+  do I = IL1, IL2
+    if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
       ICONT(I) = 0
       SNOCONV = 0.
       HTCS(I) = HTCS(I) - FI(I) * (TSNOW(I) + TFREZ) * HCPSNO(I) * &
-                 ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
       if ((ZSNOW(I)) > 10.) then
         SNOCONV = (ZSNOW(I) - 10.0) * RHOSNO(I)
-        WMOVE(I,1) = SNOCONV / RHOICE
-        TMOVE(I,1) = TSNOW(I)
-        WTRS(I) = WTRS(I) - FI(I) * WMOVE(I,1) * RHOICE / DELT
-        WTRG(I) = WTRG(I) + FI(I) * WMOVE(I,1) * RHOICE / DELT
+        WMOVE(I, 1) = SNOCONV / RHOICE
+        TMOVE(I, 1) = TSNOW(I)
+        WTRS(I) = WTRS(I) - FI(I) * WMOVE(I, 1) * RHOICE / DELT
+        WTRG(I) = WTRG(I) + FI(I) * WMOVE(I, 1) * RHOICE / DELT
         ZSNOW(I) = 10.0
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-                 (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         ICONT(I) = 1
       else if (RHOSNO(I) >= 900.) then
         SNOCONV = ZSNOW(I) * RHOSNO(I)
-        WMOVE(I,1) = SNOCONV / RHOICE
-        TMOVE(I,1) = TSNOW(I)
+        WMOVE(I, 1) = SNOCONV / RHOICE
+        TMOVE(I, 1) = TSNOW(I)
         WTRS(I) = WTRS(I) - FI(I) * (SNOCONV + WSNOW(I)) / DELT
         WTRG(I) = WTRG(I) + FI(I) * (SNOCONV + WSNOW(I)) / DELT
         ZSNOW(I) = 0.0
@@ -490,11 +490,11 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
         HCPSNO(I) = 0.0
         if (WSNOW(I) > 0.0) then
           TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TSNOW(I) + TFREZ) * &
-                       WSNOW(I) / RHOW) / (RUNOFF(I) + WSNOW(I) / RHOW)
+                      WSNOW(I) / RHOW) / (RUNOFF(I) + WSNOW(I) / RHOW)
           RUNOFF(I) = RUNOFF(I) + WSNOW(I) / RHOW
           TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + (TSNOW(I) + TFREZ) * &
-                       FI(I) * WSNOW(I) / RHOW) / (OVRFLW(I) + FI(I) * &
-                       WSNOW(I) / RHOW)
+                      FI(I) * WSNOW(I) / RHOW) / (OVRFLW(I) + FI(I) * &
+                      WSNOW(I) / RHOW)
           OVRFLW(I) = OVRFLW(I) + FI(I) * WSNOW(I) / RHOW
         end if
         TSNOW(I) = 0.0
@@ -502,9 +502,9 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
         ICONT(I) = 1
       end if
       HTCS(I) = HTCS(I) + FI(I) * (TSNOW(I) + TFREZ) * HCPSNO(I) * &
-      ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
       if (SNOCONV > 0.) TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + &
-      TBAR(I,IG) * SNOCONV / RHOW) / (RUNOFF(I) + SNOCONV / RHOW)
+      TBAR(I, IG) * SNOCONV / RHOW) / (RUNOFF(I) + SNOCONV / RHOW)
       RUNOFF(I) = RUNOFF(I) + SNOCONV / RHOW
     end if
   end do ! loop 500
@@ -516,60 +516,60 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
   !! set to the value of DELZ and TBAR respectively of the J-1 ice level. The ZMAT matrix represents the
   !! depth of each ice layer J that is occupied by ice from level K in the layer movement matrix WMOVE after
   !! the layer adjustments are complete. In the 700 loop, starting at the top of the ice profile, an attempt is
-  !! made to assign each layer of WMOVE in turn to the K,J level of ZMAT. If the calculated value of
+  !! made to assign each layer of WMOVE in turn to the K, J level of ZMAT. If the calculated value of
   !! ZMAT is greater than the available depth ZRMDR of the layer, ZMAT is set to ZRMDR, WMOVE is
   !! decremented by ZRMDR, and ZRMDR is set to zero. Otherwise the calculated value of ZMAT is
   !! accepted, ZRMDR is decremented by ZMAT, and WMOVE is set to zero.
   !!
   !! Finally, the 900 loop is performed over each ice layer J to determine the new layer
   !! temperature. The temperature adjustment variable TADD is initialized to zero, and then incremented by the
-  !! temperature TMOVE of each level K weighted by the corresponding K,J level of ZMAT, and finally by
+  !! temperature TMOVE of each level K weighted by the corresponding K, J level of ZMAT, and finally by
   !! the original layer temperature weighted by the corresponding level of ZRMDR. The layer temperature is
   !! reset to TADD normalized by DELZ, and the updating of HTC, begun at the end of the 300 loop, is completed.
   !!
-  do J = 1,IG ! loop 550
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-        ZRMDR(I,J) = DELZ(J)
+  do J = 1, IG ! loop 550
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+        ZRMDR(I, J) = DELZ(J)
       end if
     end do
   end do ! loop 550
   !
-  do J = 1,IG ! loop 600
-    do K = 1,IG + 1
-      do I = IL1,IL2
-        if (FI(I) > 0. .and. ISAND(I,1) == - 4 .and. &
+  do J = 1, IG ! loop 600
+    do K = 1, IG + 1
+      do I = IL1, IL2
+        if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
         ICONT(I) == 1) then
-          ZMAT(I,K,J) = 0.0
+          ZMAT(I, K, J) = 0.0
         end if
       end do
     end do
   end do ! loop 600
   !
-  do J = 2,IG + 1 ! loop 650
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4 .and. &
+  do J = 2, IG + 1 ! loop 650
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
       ICONT(I) == 1) then
-        WMOVE(I,J) = DELZ(J - 1)
-        TMOVE(I,J) = TBAR(I,J - 1)
+        WMOVE(I, J) = DELZ(J - 1)
+        TMOVE(I, J) = TBAR(I, J - 1)
       end if
     end do
   end do ! loop 650
   !
-  do K = 1,IG + 1 ! loop 700
-    do J = 1,IG
-      do I = IL1,IL2
-        if (FI(I) > 0. .and. ISAND(I,1) == - 4 .and. &
+  do K = 1, IG + 1 ! loop 700
+    do J = 1, IG
+      do I = IL1, IL2
+        if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
         ICONT(I) == 1) then
-          if (ZRMDR(I,J) > 0. .and. WMOVE(I,K) > 0.) then
-            ZMAT(I,K,J) = WMOVE(I,K)
-            if (ZMAT(I,K,J) >= ZRMDR(I,J)) then
-              ZMAT(I,K,J) = ZRMDR(I,J)
-              WMOVE(I,K) = WMOVE(I,K) - ZRMDR(I,J)
-              ZRMDR(I,J) = 0.0
+          if (ZRMDR(I, J) > 0. .and. WMOVE(I, K) > 0.) then
+            ZMAT(I, K, J) = WMOVE(I, K)
+            if (ZMAT(I, K, J) >= ZRMDR(I, J)) then
+              ZMAT(I, K, J) = ZRMDR(I, J)
+              WMOVE(I, K) = WMOVE(I, K) - ZRMDR(I, J)
+              ZRMDR(I, J) = 0.0
             else
-              ZRMDR(I,J) = ZRMDR(I,J) - ZMAT(I,K,J)
-              WMOVE(I,K) = 0.0
+              ZRMDR(I, J) = ZRMDR(I, J) - ZMAT(I, K, J)
+              WMOVE(I, K) = 0.0
             end if
           end if
         end if
@@ -577,28 +577,28 @@ subroutine iceSheetBalance(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO, & ! Forme
     end do
   end do ! loop 700
   !
-  do J = 1,IG ! loop 900
-    do I = IL1,IL2 ! loop 750
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
+  do J = 1, IG ! loop 900
+    do I = IL1, IL2 ! loop 750
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
         TADD(I) = 0.
       end if
     end do ! loop 750
     !
-    do K = 1,IG + 1 ! loop 800
-      do I = IL1,IL2
-        if (FI(I) > 0. .and. ISAND(I,1) == - 4 .and. &
+    do K = 1, IG + 1 ! loop 800
+      do I = IL1, IL2
+        if (FI(I) > 0. .and. ISAND(I, 1) == - 4 .and. &
         ICONT(I) == 1) then
-          TADD(I) = TADD(I) + TMOVE(I,K) * ZMAT(I,K,J)
+          TADD(I) = TADD(I) + TMOVE(I, K) * ZMAT(I, K, J)
         end if
       end do
     end do ! loop 800
     !
-    do I = IL1,IL2 ! loop 850
-      if (FI(I) > 0. .and. ISAND(I,1) == - 4) then
-        TADD(I) = TADD(I) + TBAR(I,J) * ZRMDR(I,J)
-        TBAR(I,J) = TADD(I) / DELZ(J)
-        HTC(I,J) = HTC(I,J) + FI(I) * (TBAR(I,J) + TFREZ) * HCPICE * &
-                      DELZ(J) / DELT
+    do I = IL1, IL2 ! loop 850
+      if (FI(I) > 0. .and. ISAND(I, 1) == - 4) then
+        TADD(I) = TADD(I) + TBAR(I, J) * ZRMDR(I, J)
+        TBAR(I, J) = TADD(I) / DELZ(J)
+        HTC(I, J) = HTC(I, J) + FI(I) * (TBAR(I, J) + TFREZ) * HCPICE * &
+                    DELZ(J) / DELT
       end if
     end do ! loop 850
   end do ! loop 900

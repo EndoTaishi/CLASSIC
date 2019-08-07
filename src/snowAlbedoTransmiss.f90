@@ -3,11 +3,11 @@
 !! all-wave albedo at the current time step. Calculates snowpack
 !! transmissivity for shortwave radiation.
 !
-subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly SNOWALBA
+subroutine snowAlbedoTransmiss(ALVSSN, ALIRSN, ALVSSC, ALIRSC, ALBSNO, & ! Formerly SNOWALBA
                                TRSNOWC, ALSNO, TRSNOWG, FSDB, FSFB, RHOSNO, &
-                               REFSN,BCSN,SNO,CSZ,ZSNOW,FSNOW,ASVDAT,ASIDAT, &
+                               REFSN, BCSN, SNO, CSZ, ZSNOW, FSNOW, ASVDAT, ASIDAT, &
                                ALVSG, ALIRG, &
-                               ILG,IG,IL1,IL2,JL,IALS,NBS,ISNOALB)
+                               ILG, IG, IL1, IL2, JL, IALS, NBS, ISNOALB)
   !
   !     * JAN 27/16 - D.VERSEGHY. REFINE CALCULATIONS OF ALVSSN AND ALIRSN.
   !     * NOV 16/13 - J.COLE.     Final version for gcm17:
@@ -46,24 +46,24 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IG,IL1,IL2,JL,IALS
+  integer, intent(in) :: ILG, IG, IL1, IL2, JL, IALS
   integer, intent(in) :: NBS       !< Number of modelled shortwave radiation wavelength bands
   integer, intent(in) :: ISNOALB   !< Switch to model snow albedo in two or more wavelength bands
-  integer             :: IPTBAD,I,IB
+  integer             :: IPTBAD, I, IB
   !
   !     * OUTPUT ARRAYS.
   !
   real, intent(out)   :: ALVSSC(ILG)  !< Visible albedo of snow on ground under vegetation canopy [ ]
   real, intent(out)   :: ALIRSC(ILG)  !< Near-IR albedo of snow on ground under vegetation canopy [ ]
-  real, intent(out)   :: ALSNO (ILG,NBS) !< Albedo of snow in each modelled wavelength band  [  ]
-  real, intent(out)   :: TRSNOWG(ILG,NBS)!< Transmissivity of snow in bare areas to shortwave radiation \f$[ ] (\tau_{s,g})\f$
+  real, intent(out)   :: ALSNO (ILG, NBS) !< Albedo of snow in each modelled wavelength band  [  ]
+  real, intent(out)   :: TRSNOWG(ILG, NBS)!< Transmissivity of snow in bare areas to shortwave radiation \f$[ ] (\tau_{s, g})\f$
   !
   real, intent(inout) :: TRSNOWC(ILG) !< Transmissivity of snow under vegetation to shortwave radiation
-  !< \f$[ ] (\tau_{s,c})\f$
+  !< \f$[ ] (\tau_{s, c})\f$
   real, intent(inout) :: ALVSSN(ILG)  !< Visible albedo of snow pack on bare ground \f$[ ]
-  !< (alpha_{s,VIS})\f$
+  !< (alpha_{s, VIS})\f$
   real, intent(inout) :: ALIRSN(ILG)  !< Near-IR albedo of snow pack on bare ground \f$[ ]
-  !< (alpha_{s,NIR})\f$
+  !< (alpha_{s, NIR})\f$
 
 
   !
@@ -71,8 +71,8 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
   !
   real, intent(in)    :: ALVSG  (ILG)    !< Near-IR albedo f bare ground  [  ]
   real, intent(in)    :: ALIRG  (ILG)    !< Visible albedo of bare ground  [  ]
-  real, intent(in)    :: FSDB(ILG,NBS)!< Direct solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
-  real, intent(in)    :: FSFB(ILG,NBS)!< Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
+  real, intent(in)    :: FSDB(ILG, NBS)!< Direct solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
+  real, intent(in)    :: FSFB(ILG, NBS)!< Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
   real, intent(in)    :: ZSNOW (ILG)  !< Depth of snow \f$[m] (z_s)\f$
   real, intent(in)    :: FSNOW (ILG)  !< Fractional coverage of snow on grid cell [ ]
   real, intent(in)    :: ASVDAT(ILG)  !< Assigned value of visible albedo of snow pack –
@@ -84,13 +84,13 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
   real, intent(in)    :: CSZ   (ILG)  !< Cosine of solar zenith angle  [  ]
   real, intent(in)    :: SNO   (ILG)  !< Mass of snow pack \f$[kg m^{-2}]\f$
   real, intent(in)    :: RHOSNO(ILG)  !< Density of snow pack  \f$[kg m^{-3}]\f$
-  real, intent(inout) :: ALBSNO(ILG)  !< All-wave albedo of snow pack \f$[ ] (\alpha_{s,T})\f$
+  real, intent(inout) :: ALBSNO(ILG)  !< All-wave albedo of snow pack \f$[ ] (\alpha_{s, T})\f$
 
   !
   !     * LOCAL ARRAYS
   !
-  real    :: SALBG(ILG,NBS), ALDIR(ILG,NBS), ALDIF (ILG,NBS), &
-             TRDIR(ILG,NBS), TRDIF (ILG,NBS), REFSNO(ILG), BCSNO(ILG)
+  real    :: SALBG(ILG, NBS), ALDIR(ILG, NBS), ALDIF (ILG, NBS), &
+             TRDIR(ILG, NBS), TRDIF (ILG, NBS), REFSNO(ILG), BCSNO(ILG)
   integer :: C_FLAG(ILG)
   !
   !     * CONSTANTS.
@@ -100,7 +100,7 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
   !------------------------------------------------------------------
 
   IPTBAD = 0
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (ALBSNO(I) < 0.50 .and. ALBSNO(I) > 0.499) ALBSNO(I) = 0.50
     if (FSNOW(I) > 0.0 .and. IALS == 0) then
       if (ALBSNO(I) > 0.70) then
@@ -122,29 +122,29 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
   end do ! loop 100
   !
   if (IPTBAD /= 0) then
-    write(6,6100) IPTBAD,JL,ALVSSN(IPTBAD),ALIRSN(IPTBAD)
-6100 format('0AT (I,J) = (',I3,',',I3,'), ALVSSN,ALIRSN = ',2F10.5)
+    write(6, 6100) IPTBAD, JL, ALVSSN(IPTBAD), ALIRSN(IPTBAD)
+6100 format('0AT (I, J) = (',I3,',',I3,'), ALVSSN, ALIRSN = ',2F10.5)
     call errorHandler('snowAlbedoTransmiss', - 1)
   end if
   !
   if (ISNOALB == 0) then
     do I = IL1, IL2
-      ALSNO(I,1) = ALVSSN(I)
-      ALSNO(I,2) = ALIRSN(I)
-      ALSNO(I,3) = ALIRSN(I)
-      ALSNO(I,4) = ALIRSN(I)
+      ALSNO(I, 1) = ALVSSN(I)
+      ALSNO(I, 2) = ALIRSN(I)
+      ALSNO(I, 3) = ALIRSN(I)
+      ALSNO(I, 4) = ALIRSN(I)
 
-      TRSNOWG(I,1:NBS) = TRSNOWC(I)
+      TRSNOWG(I, 1:NBS) = TRSNOWC(I)
     end do ! I
   else if (ISNOALB == 1) then
     do IB = 1, NBS
       do I = IL1, IL2
         if (IB == 1) then
-          SALBG(I,IB) = ALVSG(I)
-          ALSNO(I,IB) = ALVSSN(I)
+          SALBG(I, IB) = ALVSG(I)
+          ALSNO(I, IB) = ALVSSN(I)
         else
-          SALBG(I,IB) = ALIRG(I)
-          ALSNO(I,IB) = ALIRSN(I)
+          SALBG(I, IB) = ALIRG(I)
+          ALSNO(I, IB) = ALIRSN(I)
         end if
       end do ! I
     end do ! IB
@@ -164,7 +164,7 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
         !! Convert the units of the snow grain size and BC mixing ratio
         !! Snow grain size from meters to microns and BC from \f$kg BC/m^3\f$ to ng BC/kg SNOW
         !!
-        do I = IL1,IL2
+        do I = IL1, IL2
           if (C_FLAG(I) == 1) then
             REFSNO(I) = REFSN(I) * 1.0E6
             BCSNO(I)  = (BCSN(I) / RHOSNO(I)) * 1.0E12
@@ -200,31 +200,31 @@ subroutine snowAlbedoTransmiss(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO, & ! Formerly 
         do IB = 1, NBS
           do I = IL1, IL2
             if (C_FLAG(I) == 1) then
-              WDIRCT = FSDB(I,IB) &
-                          / (FSDB(I,IB) + FSFB(I,IB) + 1.E-10)
+              WDIRCT = FSDB(I, IB) &
+                       / (FSDB(I, IB) + FSFB(I, IB) + 1.E-10)
               WDIFF  = 1.0 - WDIRCT
-              ALSNO(I,IB) = ALDIF (I,IB) * WDIFF &
-                               + ALDIR(I,IB) * WDIRCT
-              TRSNOWG(I,IB) = TRDIF (I,IB) * WDIFF &
-                                 + TRDIR(I,IB) * WDIRCT
+              ALSNO(I, IB) = ALDIF (I, IB) * WDIFF &
+                             + ALDIR(I, IB) * WDIRCT
+              TRSNOWG(I, IB) = TRDIF (I, IB) * WDIFF &
+                               + TRDIR(I, IB) * WDIRCT
             end if ! C_FLAG
           end do ! I
         end do ! IB
       else ! SUM_C_FLAG == 0
         do I = IL1, IL2
-          ALSNO(I,1)     = ALVSSN(I)
-          ALSNO(I,2:NBS) = ALIRSN(I)
-          TRSNOWG(I,1:NBS) = TRSNOWC(I)
+          ALSNO(I, 1)     = ALVSSN(I)
+          ALSNO(I, 2:NBS) = ALIRSN(I)
+          TRSNOWG(I, 1:NBS) = TRSNOWC(I)
         end do ! I
       end if ! SUM_C_FLAG
     else if (IALS == 1) then
       do I = IL1, IL2
-        ALSNO(I,1) = ASVDAT(I)
-        ALSNO(I,2) = ASIDAT(I)
-        ALSNO(I,3) = ASIDAT(I)
-        ALSNO(I,4) = ASIDAT(I)
+        ALSNO(I, 1) = ASVDAT(I)
+        ALSNO(I, 2) = ASIDAT(I)
+        ALSNO(I, 3) = ASIDAT(I)
+        ALSNO(I, 4) = ASIDAT(I)
 
-        TRSNOWG(I,1:NBS) = TRSNOWC(I)
+        TRSNOWG(I, 1:NBS) = TRSNOWC(I)
       end do ! I
     end if ! IALS
   end if ! ISNOALB
@@ -255,48 +255,48 @@ end
 !!
 !! The same decay function is assumed to apply to all three albedo
 !! ranges, so the relative location of the visible and near-IR
-!! albedos, \f$\alpha_{s,VIS}\f$ and \f$\alpha_{s,NIR}\f$, on the decay curve will be analogous
-!! to that of the total albedo, \f$\alpha_{s,T}\f$. Thus, for dry snow:
+!! albedos, \f$\alpha_{s, VIS}\f$ and \f$\alpha_{s, NIR}\f$, on the decay curve will be analogous
+!! to that of the total albedo, \f$\alpha_{s, T}\f$. Thus, for dry snow:
 !!
-!! \f$[\alpha_{s,VIS} - 0.84]/[0.95-0.84] = [\alpha_{s,T} - 0.70]/[0.84-0.70]\f$
-!! \f$[\alpha_{s,NIR} - 0.56]/[0.73-0.56] = [\alpha_{s,T} - 0.70]/[0.84-0.70]\f$
+!! \f$[\alpha_{s, VIS} - 0.84]/[0.95-0.84] = [\alpha_{s, T} - 0.70]/[0.84-0.70]\f$
+!! \f$[\alpha_{s, NIR} - 0.56]/[0.73-0.56] = [\alpha_{s, T} - 0.70]/[0.84-0.70]\f$
 !!
 !! or, simplifying:
 !!
-!! \f$\alpha_{s,VIS} = 0.7857 \alpha_{s,T} + 0.2900\f$
-!! \f$\alpha_{s,NIR} = 1.2142 \alpha_{s,T} - 0.2900\f$
+!! \f$\alpha_{s, VIS} = 0.7857 \alpha_{s, T} + 0.2900\f$
+!! \f$\alpha_{s, NIR} = 1.2142 \alpha_{s, T} - 0.2900\f$
 !!
 !! For melting snow:
 !!
-!! [\f$\alpha_{s,VIS} - 0.62]/[0.95-0.62] = [\alpha_{s,T} - 0.50]/[0.84-0.50]\f$
-!! [\f$\alpha_{s,NIR} - 0.38]/[0.73-0.38] = [\alpha_{s,T} - 0.50]/[0.84-0.50]\f$
+!! [\f$\alpha_{s, VIS} - 0.62]/[0.95-0.62] = [\alpha_{s, T} - 0.50]/[0.84-0.50]\f$
+!! [\f$\alpha_{s, NIR} - 0.38]/[0.73-0.38] = [\alpha_{s, T} - 0.50]/[0.84-0.50]\f$
 !!
 !! or, simplifying:
 !!
-!! \f$\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347\f$
-!! \f$\alpha_{s,NIR} = 1.0294 \alpha_{s,T} - 0.1347\f$
+!! \f$\alpha_{s, VIS} = 0.9706 \alpha_{s, T} + 0.1347\f$
+!! \f$\alpha_{s, NIR} = 1.0294 \alpha_{s, T} - 0.1347\f$
 !!
 !! The above calculations are performed if the flag IALS is set to
 !! zero. If IALS is set to one, indicating that assigned snow
-!! albedos are to be used instead of calculated values, \f$\alpha_{s,VIS}\f$ and
-!! \f$\alpha_{s,NIR}\f$ are set to the assigned values ASVDAT and ASIDAT
+!! albedos are to be used instead of calculated values, \f$\alpha_{s, VIS}\f$ and
+!! \f$\alpha_{s, NIR}\f$ are set to the assigned values ASVDAT and ASIDAT
 !! respectively. The sub-canopy values of visible and near-IR albedo
 !! are currently set equal to the open snowpack values (this is
 !! expected to change if a canopy litterfall parametrization is
 !! developed).
 !!
-!! The transmissivity of snow under vegetation \f$\tau_{s,c}\f$ is
+!! The transmissivity of snow under vegetation \f$\tau_{s, c}\f$ is
 !! then calculated from the snow depth
 !! ZSNOW using Beer’s law, with an empirical extinction coefficient
 !! of \f$25.0 m^{-1}\f$ derived from the literature (Grenfell and Maykut,
 !! 1977 \cite Grenfell1977-pi ; Thomas, 1963):
 !!
-!! \f$\tau_{s,c} = exp[-25.0 z_s]\f$
+!! \f$\tau_{s, c} = exp[-25.0 z_s]\f$
 !!
 !! If the ISNOALB switch is set to zero, the value of ALSNO in the first
-!! wavelength band is set to the previously calculated value of \f$\alpha_{s,VIS}\f$
+!! wavelength band is set to the previously calculated value of \f$\alpha_{s, VIS}\f$
 !! and the values for the remaining bands are set to the previously calculated value
-!! of \f$\alpha_{s,NIR}\f$; the value of \f$\tau_{s,g}\f$  is set to \f$\tau_{s,c}\f$.
+!! of \f$\alpha_{s, NIR}\f$; the value of \f$\tau_{s, g}\f$  is set to \f$\tau_{s, c}\f$.
 !! If the ISNOALB switch is set to 1, a new parameterization for the snow albedo and
 !! transmissivity in four shortwave radiation bands (one visible and three near-IR)
 !! is used, according to Cole et al. (2017).  This parameterization incorporates

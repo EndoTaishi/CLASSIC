@@ -19,14 +19,14 @@ contains
   !> Calculates bioclimatic parameters required to determine existance of PFTs
   !! @author V. Arora, J. Melton, R. Shrestha
 
-  subroutine  bioclim (iday,     ta,       precip,   netrad,     &
-                       il1,      il2,      nilg,     leapnow,    &
-                       tcurm,    srpcuryr, dftcuryr, inibioclim, &
-                       tmonth,   anpcpcur, anpecur,  gdd5cur,    &
-                       surmncur, defmncur, srplscur, defctcur,   &
-                       twarmm,   tcoldm,   gdd5,     aridity,    &
-                       srplsmon, defctmon, anndefct, annsrpls,   &
-                       annpcp,   dry_season_length)
+  subroutine  bioclim (iday, ta, precip, netrad, &
+                       il1, il2, nilg, leapnow, &
+                       tcurm, srpcuryr, dftcuryr, inibioclim, &
+                       tmonth, anpcpcur, anpecur, gdd5cur, &
+                       surmncur, defmncur, srplscur, defctcur, &
+                       twarmm, tcoldm, gdd5, aridity, &
+                       srplsmon, defctmon, anndefct, annsrpls, &
+                       annpcp, dry_season_length)
 
     !
     !     10  Jun 2014  - Add in new dry_season_length variable
@@ -80,7 +80,7 @@ contains
     real, dimension(nilg), intent(inout) :: tcurm     !< temperature of the current month (c)
     real, dimension(nilg), intent(inout) :: srpcuryr  !< water surplus for the current year
     real, dimension(nilg), intent(inout) :: dftcuryr  !< water deficit for the current year
-    real, dimension(12,nilg), intent(inout) :: tmonth !< monthly temperatures
+    real, dimension(12, nilg), intent(inout) :: tmonth !< monthly temperatures
     real, dimension(nilg), intent(inout) :: anpcpcur  !< annual precipitation for current year (mm)
     real, dimension(nilg), intent(inout) :: anpecur   !< annual potential evaporation for current year (mm)
     real, dimension(nilg), intent(inout) :: gdd5cur   !< growing degree days above 5 c for current year
@@ -130,8 +130,8 @@ contains
       if (allocated(wet_dry_mon_index2)) deallocate(wet_dry_mon_index2)
       if (allocated(dry_season_length_curyr)) deallocate(dry_season_length_curyr)
 
-      allocate(wet_dry_mon_index(nilg,12))
-      allocate(wet_dry_mon_index2(nilg,24))
+      allocate(wet_dry_mon_index(nilg, 12))
+      allocate(wet_dry_mon_index2(nilg, 24))
       allocate(dry_season_length_curyr(nilg))
 
       do i = il1, il2 ! loop 100
@@ -148,8 +148,8 @@ contains
         defctcur(i) = 0.0   !< current month's water deficit
         dry_season_length_curyr(i) = 0.   !< current year's maximum dry month length
 
-        do month = 1,12
-          tmonth(month,i) = 0.0
+        do month = 1, 12
+          tmonth(month, i) = 0.0
         end do
       end do ! loop 100
     end if
@@ -202,13 +202,13 @@ contains
     !!
     do i = il1, il2 ! loop 250
       if (atmonthend == 1) then
-        tmonth(curmonth,i) = tcurm(i)
-        if ( srplscur(i) >= defctcur(i) ) then
+        tmonth(curmonth, i) = tcurm(i)
+        if (srplscur(i) >= defctcur(i) ) then
           surmncur(i) = surmncur(i) + 1.
-          wet_dry_mon_index(i,curmonth) = 1
+          wet_dry_mon_index(i, curmonth) = 1
         else if (srplscur(i) < defctcur(i) ) then
           defmncur(i) = defmncur(i) + 1.
-          wet_dry_mon_index(i,curmonth) = - 1
+          wet_dry_mon_index(i, curmonth) = - 1
         end if
         srpcuryr(i) = srpcuryr(i) + srplscur(i)
         dftcuryr(i) = dftcuryr(i) + defctcur(i)
@@ -230,17 +230,17 @@ contains
         end if
 
         !> this loop doubles up the size of the "wet_dry_mon_index" matrix
-        do j = 1,12
-          do k = 1,2
+        do j = 1, 12
+          do k = 1, 2
             m = (k - 1) * 12 + j
-            wet_dry_mon_index2(i,m) = wet_dry_mon_index(i,j)
+            wet_dry_mon_index2(i, m) = wet_dry_mon_index(i, j)
           end do
         end do
 
         n = 0       ! number of dry month
         nmax = 0    ! maximum length of dry month
         do l = 1, 24
-          temp = wet_dry_mon_index2(i,l)
+          temp = wet_dry_mon_index2(i, l)
           if (temp == - 1) then
             n = n + 1
             nmax = max(nmax, n)
@@ -314,10 +314,10 @@ contains
   !> Determines if a PFT can exist in a grid cell based on climatic conditions
   !! @author V. Arora, J. Melton
 
-  subroutine existence(iday,     il1,       il2,      nilg,     &
-                       sort,     twarmm,    tcoldm,   gdd5,     &
-                       aridity,  srplsmon,  defctmon, anndefct, &
-                       annsrpls, annpcp,    pftexist,           &
+  subroutine existence(iday, il1, il2, nilg, &
+                       sort, twarmm, tcoldm, gdd5, &
+                       aridity, srplsmon, defctmon, anndefct, &
+                       annsrpls, annpcp, pftexist, &
                        dry_season_length)
 
     !     17  Aug 2017  - Add shrub into existence code
@@ -355,7 +355,7 @@ contains
     !                     not.
 
     use classic_params, only : zero, kk, icc, ican, tcoldmin, tcoldmax, twarmmax, &
-                        gdd5lmt, aridlmt, dryseasonlmt,ctempfts,nol2pfts
+                        gdd5lmt, aridlmt, dryseasonlmt, ctempfts, nol2pfts
 
     implicit none
 
@@ -382,10 +382,10 @@ contains
     real, dimension(nilg), intent(in) :: annpcp    !< annual precipitation (mm)
     real, dimension(nilg), intent(in) :: dry_season_length !< length of dry season (months)
 
-    logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !< binary array indicating pfts exist (=1) or not (=0)
+    logical, dimension(nilg, icc), intent(out) :: pftexist(nilg, icc) !< binary array indicating pfts exist (=1) or not (=0)
 
     ! local variables
-    integer :: i,j,k
+    integer :: i, j, k
 
     !> ----------------------------------------------------------------------
     !>     Constants and parameters are located in classic_params.f90
@@ -396,32 +396,32 @@ contains
     k = 0
     do i = il1, il2 ! loop 100
       do j = 1, icc ! loop 102
-        pftexist(i,j) = .false.
+        pftexist(i, j) = .false.
         if (ctempfts(j) == 'BdlDCoTr') k = j ! save the index of 'BdlDCoTr'
         select case (ctempfts(j))
         case ('NdlEvgTr') !> needleleaf evergreen
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j)) ) pftexist(i,j) = .true.
+          gdd5(i) >= gdd5lmt(sort(j)) ) pftexist(i, j) = .true.
 
         case ('NdlDcdTr') !> needleleaf deciduous
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
           twarmm(i) <= twarmmax(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j))) pftexist(i,j) = .true.
+          gdd5(i) >= gdd5lmt(sort(j))) pftexist(i, j) = .true.
 
         case ('BdlEvgTr') !> broadleaf evergreen
           if (tcoldm(i) >= tcoldmin(sort(j)) .and. &
-          gdd5(i) >= gdd5lmt(sort(j))) pftexist(i,j) = .true.
+          gdd5(i) >= gdd5lmt(sort(j))) pftexist(i, j) = .true.
 
         case ('BdlDCoTr') !> broadleaf deciduous cold  (see note below 'BdlDDrTr' too)
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
           gdd5(i) >= gdd5lmt(sort(j)) .and. &
-          tcoldm(i) >= tcoldmin (sort(j))) pftexist(i,j) = .true.
+          tcoldm(i) >= tcoldmin (sort(j))) pftexist(i, j) = .true.
 
         case ('BdlDDrTr') !> broadleaf deciduous dry
           if (tcoldm(i) >= tcoldmin(sort(j)) .and. &
           aridity(i) >= aridlmt(sort(j)) .and. &
           dry_season_length(i) >= dryseasonlmt(sort(j))) then
-            pftexist(i,j) = .true.
+            pftexist(i, j) = .true.
 
             if (k == 0) then
               print * ,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays, please switch the order'
@@ -429,27 +429,27 @@ contains
             end if
             !> We don't want both broadleaf species co-existing so if it has BdlDDrTr
             !> remove BdlDCoTr. k is the index of BdlDCoTr
-            pftexist(i,k) = .false.
+            pftexist(i, k) = .false.
           end if
 
         case ('CropC3  ')
-          pftexist(i,j) = .true.
+          pftexist(i, j) = .true.
 
         case ('CropC4  ')
-          pftexist(i,j) = .true.
+          pftexist(i, j) = .true.
 
         case ('GrassC3 ')
           !> if (tcoldm(i)<=tcoldmax(sort(j))) then
-          pftexist(i,j) = .true.
+          pftexist(i, j) = .true.
 
         case ('GrassC4 ')
           !> if (tcoldm(i)>=tcoldmin(sort(j))) then
-          pftexist(i,j) = .true.
+          pftexist(i, j) = .true.
 
         case ('BdlDCoSh')
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
           gdd5(i) >= gdd5lmt(sort(j)) .and. &
-          tcoldm(i) >= tcoldmin(sort(j))) pftexist(i,j) = .true.
+          tcoldm(i) >= tcoldmin(sort(j))) pftexist(i, j) = .true.
 
         case default
           print * ,'Unknown CTEM PFT in competition:existence ',ctempfts(j)
@@ -474,10 +474,10 @@ contains
                          grclarea, lambda, burnvegf, sort, pstemmass, &! In
                          gleafmas, bleafmas, stemmass, rootmass, &! In/Out
                          litrmass, soilcmas, fcancmx, fcanmx, & ! In/Out
-                         tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass, & ! In/Out
+                         tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass, & ! In/Out
                          tracerLitrMass, tracerSoilCMass, & ! In/Out
                          vgbiomas, gavgltms, gavgscms, bmasveg, & ! In / Out
-                         add2allo, colrate,   mortrate) ! Out
+                         add2allo, colrate, mortrate) ! Out
 
     !      9  Feb 2016  - Adapted subroutine for multilayer soilc and litter (fast decaying)
     !     J. Melton       carbon pools
@@ -515,8 +515,8 @@ contains
 
     use classic_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                           icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                          tolrance, crop, grass, numgrass,iccp2, ignd, icp1, &
-                          nol2pfts,reindexPFTs
+                          tolrance, crop, grass, numgrass, iccp2, ignd, icp1, &
+                          nol2pfts, reindexPFTs
 
     use disturbance_scheme, only : burntobare
 
@@ -530,35 +530,35 @@ contains
     !< (this is passed in as either ilg or nlat depending on mos/comp)
     integer, intent(in) :: il1                              !< il1=1
     integer, intent(in) :: il2                              !< il2=nilg
-    logical ,intent(in) :: dofire                           !< if true then we have disturbance on.
-    real,  dimension(nilg),  intent(in) :: grclarea         !< grid cell area, km^2
+    logical, intent(in) :: dofire                           !< if true then we have disturbance on.
+    real, dimension(nilg), intent(in) :: grclarea         !< grid cell area, km^2
     integer, dimension(icc), intent(in) :: sort             !< index for correspondence between 9 ctem pfts and
     !< size 12 of parameter vectors
-    logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
+    logical, dimension(nilg, icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
     logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
     integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
     !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
     !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
-    real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
-    real, dimension(nilg,icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
-    real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
-    real, dimension(nilg,icc), intent(in) :: burnvegf       !< fractional areas burned, for 9 ctem pfts
-    real, dimension(nilg,icc), intent(in) :: pstemmass      !< stem mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, dimension(nilg,icc), intent(in) :: pgleafmass     !< root mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, dimension(nilg,icc,ignd), intent(in) :: rmatctem  ! fraction of roots for each of ctem's 9 pfts in each soil layer
-    real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
-    real, dimension(nilg,icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts, kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg, icc), intent(in) :: geremort       !< growth related mortality (1/day)
+    real, dimension(nilg, icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
+    real, dimension(nilg, icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
+    real, dimension(nilg, icc), intent(in) :: burnvegf       !< fractional areas burned, for 9 ctem pfts
+    real, dimension(nilg, icc), intent(in) :: pstemmass      !< stem mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, dimension(nilg, icc), intent(in) :: pgleafmass     !< root mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, dimension(nilg, icc, ignd), intent(in) :: rmatctem  ! fraction of roots for each of ctem's 9 pfts in each soil layer
+    real, dimension(nilg, icc), intent(inout) :: nppveg      !< npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
+    real, dimension(nilg, icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+    real, dimension(nilg, icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg, icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg, icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg, icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
     ! COMBAK PERLAY
-    real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
-    real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
-    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2 ! COMBAK PERLAY
-    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2 ! COMBAK PERLAY
+    real, dimension(nilg, iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
+    real, dimension(nilg, iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+    ! real, dimension(nilg, iccp2, ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2 ! COMBAK PERLAY
+    ! real, dimension(nilg, iccp2, ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2 ! COMBAK PERLAY
     ! COMBAK PERLAY
     real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
@@ -566,16 +566,16 @@ contains
     real, intent(inout) :: tracerRootMass(:,:)       !< Tracer mass in the roots for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerLitrMass(:,:,:)     !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-    real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
-    real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
-    real, dimension(nilg),     intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
-    real, dimension(nilg),     intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
-    real, dimension(nilg),     intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
-    real, dimension(nilg,icc), intent(out) :: add2allo      !< npp kg c/m2.day that is used for expansion and
+    real, dimension(nilg, icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
+    real, dimension(nilg, icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
+    real, dimension(nilg), intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
+    real, dimension(nilg), intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
+    real, dimension(nilg), intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
+    real, dimension(nilg, icc), intent(out) :: add2allo      !< npp kg c/m2.day that is used for expansion and
     !< subsequently allocated to leaves, stem, and root via
     !< the allocation part of the model.
-    real, dimension(nilg,icc), intent(out) :: colrate       !< colonization rate (1/day)
-    real, dimension(nilg,icc), intent(out) :: mortrate      !< mortality rate
+    real, dimension(nilg, icc), intent(out) :: colrate       !< colonization rate (1/day)
+    real, dimension(nilg, icc), intent(out) :: mortrate      !< mortality rate
 
     ! local variables
 
@@ -584,64 +584,64 @@ contains
     integer :: sdfracin
     integer, dimension(nilg) :: t1
     integer, dimension(icc - numcrops) :: inirank
-    integer, dimension(nilg,icc - numcrops) :: rank
-    integer, dimension(nilg,icc - numcrops) :: exist1
-    integer, dimension(nilg,icc - numcrops) :: useexist
-    integer, dimension(nilg,icc) :: fraciord
+    integer, dimension(nilg, icc - numcrops) :: rank
+    integer, dimension(nilg, icc - numcrops) :: exist1
+    integer, dimension(nilg, icc - numcrops) :: useexist
+    integer, dimension(nilg, icc) :: fraciord
     integer, dimension(nilg) :: bareiord
 
     real :: befrmass, aftrmass
-    real :: sum1, sum2, sum3,term,sum4
+    real :: sum1, sum2, sum3, term, sum4
     real :: colmult
-    real, dimension(nilg,icc) :: mrtboclm
-    real, dimension(nilg,icc) :: usenppvg
+    real, dimension(nilg, icc) :: mrtboclm
+    real, dimension(nilg, icc) :: usenppvg
     real, dimension(nilg) :: temp
-    real, dimension(nilg,icc - numcrops) :: usefrac, usec, usem
-    real, dimension(nilg,icc - numcrops) :: frac
-    real, dimension(nilg,icc - numcrops) :: c1
-    real, dimension(nilg,icc - numcrops) :: m1
-    real, dimension(nilg,icc - numcrops) :: term2, term3, term4, colterm, deathterm
-    real, dimension(nilg,icc - numcrops) :: delfrac
+    real, dimension(nilg, icc - numcrops) :: usefrac, usec, usem
+    real, dimension(nilg, icc - numcrops) :: frac
+    real, dimension(nilg, icc - numcrops) :: c1
+    real, dimension(nilg, icc - numcrops) :: m1
+    real, dimension(nilg, icc - numcrops) :: term2, term3, term4, colterm, deathterm
+    real, dimension(nilg, icc - numcrops) :: delfrac
     real, dimension(nilg) :: cropfrac, vegfrac
-    real, dimension(nilg,icc) :: chngfrac
-    real, dimension(nilg,icc) :: expnterm, mortterm
-    real, dimension(nilg,icc) :: pglfmass
-    real, dimension(nilg,icc) :: pblfmass
-    real, dimension(nilg,icc) :: protmass
-    real, dimension(nilg,icc) :: pstmmass
-    real, dimension(nilg,icc) :: pfcancmx
+    real, dimension(nilg, icc) :: chngfrac
+    real, dimension(nilg, icc) :: expnterm, mortterm
+    real, dimension(nilg, icc) :: pglfmass
+    real, dimension(nilg, icc) :: pblfmass
+    real, dimension(nilg, icc) :: protmass
+    real, dimension(nilg, icc) :: pstmmass
+    real, dimension(nilg, icc) :: pfcancmx
     real, dimension(nilg) :: mincfrac
-    real, dimension(nilg,icc) :: pbiomasvg, biomasvg
-    real, dimension(nilg,icc) :: putaside
-    real, dimension(nilg,icc) :: nppvegar
+    real, dimension(nilg, icc) :: pbiomasvg, biomasvg
+    real, dimension(nilg, icc) :: putaside
+    real, dimension(nilg, icc) :: nppvegar
     ! COMBAK PERLAY
-    real, dimension(nilg,iccp1) :: pltrmass
-    real, dimension(nilg,iccp1) :: psocmass
-    real, dimension(nilg,iccp1) :: incrlitr, incrsolc
+    real, dimension(nilg, iccp1) :: pltrmass
+    real, dimension(nilg, iccp1) :: psocmass
+    real, dimension(nilg, iccp1) :: incrlitr, incrsolc
     real, dimension(nilg) :: grsumlit, grsumsoc
-    ! real, dimension(nilg,iccp1,ignd) :: pltrmass
-    ! real, dimension(nilg,iccp1,ignd) :: psocmass
-    ! real, dimension(nilg,iccp1,ignd) :: incrlitr, incrsolc
-    ! real, dimension(nilg,ignd) :: grsumlit, grsumsoc
+    ! real, dimension(nilg, iccp1, ignd) :: pltrmass
+    ! real, dimension(nilg, iccp1, ignd) :: psocmass
+    ! real, dimension(nilg, iccp1, ignd) :: incrlitr, incrsolc
+    ! real, dimension(nilg, ignd) :: grsumlit, grsumsoc
     ! COMBAK PERLAY
-    real, dimension(nilg,iccp1) :: deadmass
-    real, dimension(nilg,iccp1) :: pdeadmas
+    real, dimension(nilg, iccp1) :: deadmass
+    real, dimension(nilg, iccp1) :: pdeadmas
     real, dimension(nilg) :: barefrac
-    real, dimension(nilg,icc) :: usebmsvg
-    real, dimension(nilg,iccp1) :: ownsolc, ownlitr
-    real, dimension(nilg,icc) :: baresolc
-    real, dimension(nilg,icc) :: barelitr, baresoilc
+    real, dimension(nilg, icc) :: usebmsvg
+    real, dimension(nilg, iccp1) :: ownsolc, ownlitr
+    real, dimension(nilg, icc) :: baresolc
+    real, dimension(nilg, icc) :: barelitr, baresoilc
     real, dimension(nilg) :: pvgbioms
     real, dimension(nilg) :: pgavltms
     real, dimension(nilg) :: pgavscms
-    real, dimension(nilg,iccp1) :: add2dead
+    real, dimension(nilg, iccp1) :: add2dead
     real, dimension(nilg) :: gavgputa
     real, dimension(nilg) :: gavgnpp
     real, dimension(nilg) :: pbarefra
-    real :: tracerGrSumLit(nilg,ignd)
-    real :: tracerGrSumSOC(nilg,ignd)
-    real :: tracerIncrLitr(nilg,iccp1,ignd)
-    real :: tracerIncrSolC(nilg,iccp1,ignd)
+    real :: tracerGrSumLit(nilg, ignd)
+    real :: tracerGrSumSOC(nilg, ignd)
+    real :: tracerIncrLitr(nilg, iccp1, ignd)
+    real :: tracerIncrSolC(nilg, iccp1, ignd)
 
     ! Model switches:
 
@@ -679,13 +679,13 @@ contains
                       burnvegf, pstemmass, pgleafmass, useTracer, & ! In
                       fcancmx, stemmass, rootmass, gleafmas, bleafmas, & ! In/Out
                       litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
-                      tracerGLeafMass,tracerBLeafMass,tracerStemMass,tracerRootMass) ! In/Out
+                      tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass) ! In/Out
 
       !> Since the biomass pools could have changed, update bmasveg.
       do i = il1, il2 ! loop 190
         do j = 1, icc ! loop 195
-          if (fcancmx(i,j) > 0.0) then
-            bmasveg(i,j) = gleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
+          if (fcancmx(i, j) > 0.0) then
+            bmasveg(i, j) = gleafmas(i, j) + stemmass(i, j) + rootmass(i, j)
           end if
         end do ! loop 195
       end do ! loop 190
@@ -696,64 +696,64 @@ contains
 
     do i = il1, il2 ! loop 150
       do j = 1, icc ! loop 160
-        pglfmass(i,j) = gleafmas(i,j) ! save all biomasses before making
-        pblfmass(i,j) = bleafmas(i,j) ! changes so that we can make sure
-        protmass(i,j) = rootmass(i,j) ! mass balance is preserved.
-        pstmmass(i,j) = stemmass(i,j)
+        pglfmass(i, j) = gleafmas(i, j) ! save all biomasses before making
+        pblfmass(i, j) = bleafmas(i, j) ! changes so that we can make sure
+        protmass(i, j) = rootmass(i, j) ! mass balance is preserved.
+        pstmmass(i, j) = stemmass(i, j)
         ! COMBAK PERLAY
-        pltrmass(i,j) = litrmass(i,j)
-        psocmass(i,j) = soilcmas(i,j)
-        ! do k = 1,ignd
-        !   pltrmass(i,j,k)=litrmass(i,j,k)
-        !   psocmass(i,j,k)=soilcmas(i,j,k)
+        pltrmass(i, j) = litrmass(i, j)
+        psocmass(i, j) = soilcmas(i, j)
+        ! do k = 1, ignd
+        !   pltrmass(i, j, k)=litrmass(i, j, k)
+        !   psocmass(i, j, k)=soilcmas(i, j, k)
         ! end do
         ! COMBAK PERLAY
-        pfcancmx(i,j) = fcancmx(i,j)
+        pfcancmx(i, j) = fcancmx(i, j)
 
-        colrate(i,j) = 0.0         ! colonization rate
-        mortrate(i,j) = 0.0        ! mortality rate
-        mrtboclm(i,j) = 0.0 ! mortality rate if long-term bioclimatic conditions become unfavourable
-        usenppvg(i,j) = 0.0
-        chngfrac(i,j) = 0.0
-        expnterm(i,j) = 0.0
-        mortterm(i,j) = 0.0
-        add2allo(i,j) = 0.0
-        biomasvg(i,j) = 0.0
-        pbiomasvg(i,j) = 0.0
-        nppvegar(i,j) = 0.0
-        deadmass(i,j) = 0.0
-        pdeadmas(i,j) = 0.0
-        barelitr(i,j) = 0.0    ! kg c of litter added to bare fraction
-        baresolc(i,j) = 0.0    ! and same for soil c
-        fraciord(i,j) = 0
+        colrate(i, j) = 0.0         ! colonization rate
+        mortrate(i, j) = 0.0        ! mortality rate
+        mrtboclm(i, j) = 0.0 ! mortality rate if long-term bioclimatic conditions become unfavourable
+        usenppvg(i, j) = 0.0
+        chngfrac(i, j) = 0.0
+        expnterm(i, j) = 0.0
+        mortterm(i, j) = 0.0
+        add2allo(i, j) = 0.0
+        biomasvg(i, j) = 0.0
+        pbiomasvg(i, j) = 0.0
+        nppvegar(i, j) = 0.0
+        deadmass(i, j) = 0.0
+        pdeadmas(i, j) = 0.0
+        barelitr(i, j) = 0.0    ! kg c of litter added to bare fraction
+        baresolc(i, j) = 0.0    ! and same for soil c
+        fraciord(i, j) = 0
         ! COMBAK PERLAY
-        incrlitr(i,j) = 0.0
-        incrsolc(i,j) = 0.0
-        ! incrlitr(i,j,:)=0.0
-        ! incrsolc(i,j,:)=0.0
-        tracerIncrLitr(i,j,:) = 0.0
-        tracerIncrSolC(i,j,:) = 0.0
+        incrlitr(i, j) = 0.0
+        incrsolc(i, j) = 0.0
+        ! incrlitr(i, j,:)=0.0
+        ! incrsolc(i, j,:)=0.0
+        tracerIncrLitr(i, j,:) = 0.0
+        tracerIncrSolC(i, j,:) = 0.0
         ! COMBAK PERLAY
-        ownlitr(i,j) = 0.0
-        ownsolc(i,j) = 0.0
+        ownlitr(i, j) = 0.0
+        ownsolc(i, j) = 0.0
       end do ! loop 160
 
       do j = 1, icc - numcrops ! loop 170
-        rank(i,j) = j
-        frac(i,j) = 0.0
-        c1(i,j) = 0.0
-        m1(i,j) = 0.0
-        usefrac(i,j) = 0.0
-        usec(i,j) = 0.0
-        usem(i,j) = 0.0
-        colterm(i,j) = 0.0
-        deathterm(i,j) = 0.0
-        term2(i,j) = 0.0
-        term3(i,j) = 0.0
-        term4(i,j) = 0.0
-        delfrac(i,j) = 0.0
-        exist1(i,j) = 0
-        useexist(i,j) = 0
+        rank(i, j) = j
+        frac(i, j) = 0.0
+        c1(i, j) = 0.0
+        m1(i, j) = 0.0
+        usefrac(i, j) = 0.0
+        usec(i, j) = 0.0
+        usem(i, j) = 0.0
+        colterm(i, j) = 0.0
+        deathterm(i, j) = 0.0
+        term2(i, j) = 0.0
+        term3(i, j) = 0.0
+        term4(i, j) = 0.0
+        delfrac(i, j) = 0.0
+        exist1(i, j) = 0
+        useexist(i, j) = 0
       end do ! loop 170
 
       cropfrac(i) = 0.0
@@ -770,33 +770,33 @@ contains
       gavgltms(i) = 0.0
       gavgscms(i) = 0.0
       ! COMBAK PERLAY
-      pltrmass(i,iccp1) = litrmass(i,iccp1)
-      psocmass(i,iccp1) = soilcmas(i,iccp1)
+      pltrmass(i, iccp1) = litrmass(i, iccp1)
+      psocmass(i, iccp1) = soilcmas(i, iccp1)
       grsumlit(i) = 0.0
       grsumsoc(i) = 0.0
-      incrlitr(i,iccp1) = 0.0
-      incrsolc(i,iccp1) = 0.0
+      incrlitr(i, iccp1) = 0.0
+      incrsolc(i, iccp1) = 0.0
       ! grsumlit(i,:)=0.0
       ! grsumsoc(i,:)=0.0
-      ! incrlitr(i,iccp1,:)=0.0
-      ! incrsolc(i,iccp1,:)=0.0
-      ! do k = 1,ignd
-      !   pltrmass(i,iccp1,k)=litrmass(i,iccp1,k)
-      !   psocmass(i,iccp1,k)=soilcmas(i,iccp1,k)
+      ! incrlitr(i, iccp1,:)=0.0
+      ! incrsolc(i, iccp1,:)=0.0
+      ! do k = 1, ignd
+      !   pltrmass(i, iccp1, k)=litrmass(i, iccp1, k)
+      !   psocmass(i, iccp1, k)=soilcmas(i, iccp1, k)
       ! end do
       ! COMBAK PERLAY
       tracerGrSumLit(i,:) = 0.
       tracerGrSumSOC(i,:) = 0.
-      tracerIncrLitr(i,iccp1,:) = 0.0
-      tracerIncrSolC(i,iccp1,:) = 0.0
-      deadmass(i,iccp1) = 0.0
-      pdeadmas(i,iccp1) = 0.0
+      tracerIncrLitr(i, iccp1,:) = 0.0
+      tracerIncrSolC(i, iccp1,:) = 0.0
+      deadmass(i, iccp1) = 0.0
+      pdeadmas(i, iccp1) = 0.0
       add2dead(i,:) = 0.0
       gavgputa(i) = 0.0 ! grid averaged value of c put aside for allocation
       gavgnpp(i) = 0.0  ! grid averaged npp kg c/m2 for balance purposes
       bareiord(i) = 0
-      ownlitr(i,iccp1) = 0.0
-      ownsolc(i,iccp1) = 0.0
+      ownlitr(i, iccp1) = 0.0
+      ownsolc(i, iccp1) = 0.0
     end do ! loop 150
 
     !> initial rank/superiority order for simulating competition. since crops
@@ -806,7 +806,7 @@ contains
     do j = 1, icc - numcrops
       inirank(j) = j
       do i = il1, il2 ! loop 180
-        rank(i,j) = inirank(j)
+        rank(i, j) = inirank(j)
       end do ! loop 180
     end do
 
@@ -818,24 +818,24 @@ contains
 
           !> Colonization rate (1/day). the factor (deltat/963.62) converts
           !! NPP from u-mol co2-c/m2.sec -> kg c/m2.day
-          usebmsvg(i,j) = min(5.0, max(0.25, bmasveg(i,j)))
+          usebmsvg(i, j) = min(5.0, max(0.25, bmasveg(i, j)))
 
-          colrate(i,j) = lambda(i,j) * max(0.0, nppveg(i,j)) * (deltat / 963.62) &
-                       * colmult * (1.0 / (bio2sap(sort(j)) * usebmsvg(i,j)))
+          colrate(i, j) = lambda(i, j) * max(0.0, nppveg(i, j)) * (deltat / 963.62) &
+                          * colmult * (1.0 / (bio2sap(sort(j)) * usebmsvg(i, j)))
 
           !> Mortality rate is the sum of growth related mortality, intrinsic mortality,
           !! and an additional mortality that kicks in when long term averaged
           !! bioclimatic conditions become unfavourable for a PFT. This last term is based
           !! on the binary array pftexist.
-          if (.not. pftexist(i,j)) then
+          if (.not. pftexist(i, j)) then
             if (leapnow) then
-              mrtboclm(i,j) = bioclimrt / 366.0
+              mrtboclm(i, j) = bioclimrt / 366.0
             else
-              mrtboclm(i,j) = bioclimrt / 365.0
+              mrtboclm(i, j) = bioclimrt / 365.0
             end if
           end if
 
-          mortrate(i,j) = geremort(i,j) + intrmort(i,j) + mrtboclm(i,j)
+          mortrate(i, j) = geremort(i, j) + intrmort(i, j) + mrtboclm(i, j)
 
         end do ! loop 210
       end if
@@ -856,12 +856,12 @@ contains
 
         ! Find crop fraction
         if (crop(j)) then
-          cropfrac(i) = cropfrac(i) + fcancmx(i,j)
+          cropfrac(i) = cropfrac(i) + fcancmx(i, j)
         end if
 
         ! Prepare to rank the tree pfts according to their colonization rates
-        if (pftexist(i,j)) then
-          usenppvg(i,j) = colrate(i,j)
+        if (pftexist(i, j)) then
+          usenppvg(i, j) = colrate(i, j)
         end if
 
       end do ! loop 221
@@ -873,13 +873,13 @@ contains
     do j = 1, numtreepfts ! loop 270
       do n = 1, numtreepfts ! loop 280
         do i = il1, il2 ! loop 290
-          if (usenppvg(i,n) < usenppvg(i,j)) then
-            temp(i) = usenppvg(i,n)
-            usenppvg(i,n) = usenppvg(i,j)
-            usenppvg(i,j) = temp(i)
-            t1(i) = rank(i,n)
-            rank(i,n) = rank(i,j)
-            rank(i,j) = t1(i)
+          if (usenppvg(i, n) < usenppvg(i, j)) then
+            temp(i) = usenppvg(i, n)
+            usenppvg(i, n) = usenppvg(i, j)
+            usenppvg(i, j) = temp(i)
+            t1(i) = rank(i, n)
+            rank(i, n) = rank(i, j)
+            rank(i, j) = t1(i)
           end if
         end do ! loop 290
       end do ! loop 280
@@ -889,7 +889,7 @@ contains
     !! their NPP but grasses are always assumed to be inferior to tree pfts
 
     ! Find index of the first grass pft and give it to the temp variable, k.
-    do j = 1,icc
+    do j = 1, icc
       if (grass(j)) then
         k = j
         exit
@@ -901,13 +901,13 @@ contains
     do j = k, k + numgrass - 1 ! loop 300
       do n = k, k + numgrass - 1 ! loop 305
         do i = il1, il2 ! loop 310
-          if (usenppvg(i,n) < usenppvg(i,j)) then
-            temp(i) = usenppvg(i,n)
-            usenppvg(i,n) = usenppvg(i,j)
-            usenppvg(i,j) = temp(i)
-            t1(i) = rank(i,n - numcrops)
-            rank(i,n - numcrops) = rank(i,j - numcrops)
-            rank(i,j - numcrops) = t1(i)
+          if (usenppvg(i, n) < usenppvg(i, j)) then
+            temp(i) = usenppvg(i, n)
+            usenppvg(i, n) = usenppvg(i, j)
+            usenppvg(i, j) = temp(i)
+            t1(i) = rank(i, n - numcrops)
+            rank(i, n - numcrops) = rank(i, j - numcrops)
+            rank(i, j - numcrops) = t1(i)
           end if
         end do ! loop 310
       end do ! loop 305
@@ -923,57 +923,57 @@ contains
         n = j + numcrops
       end if
       do i = il1, il2 ! loop 340
-        frac(i,j) = max(seed, fcancmx(i,n))
-        if (pftexist(i,n)) then
-          exist1(i,j) = 1
-          c1(i,j) = colrate(i,n)
+        frac(i, j) = max(seed, fcancmx(i, n))
+        if (pftexist(i, n)) then
+          exist1(i, j) = 1
+          c1(i, j) = colrate(i, n)
         else
-          exist1(i,j) = 0
-          c1(i,j) = 0.0
+          exist1(i, j) = 0
+          c1(i, j) = 0.0
         end if
-        m1(i,j) = mortrate(i,n)
+        m1(i, j) = mortrate(i, n)
       end do ! loop 340
     end do ! loop 330
 
     !> Arrange colonization and mortality rates, and fractions, according to superiority ranks
     do n = 1, icc - numcrops ! loop 350 - n now goes from 1 to icc-numcrops
       do i = il1, il2 ! loop 360
-        usefrac(i,n) = frac(i,rank(i,n))
-        usec(i,n) = c1(i,rank(i,n))
-        usem(i,n) = m1(i,rank(i,n))
-        useexist(i,n) = exist1(i,rank(i,n))
+        usefrac(i, n) = frac(i, rank(i, n))
+        usec(i, n) = c1(i, rank(i, n))
+        usem(i, n) = m1(i, rank(i, n))
+        useexist(i, n) = exist1(i, rank(i, n))
       end do ! loop 360
     end do ! loop 350
 
     do n = 1, icc - numcrops   ! loop 400 - n now goes from 1 to icc-numcrops
       do i = il1, il2 ! loop 410
 
-        colterm(i,n) = usec(i,n) * (usefrac(i,n) ** a) ! colonization term
+        colterm(i, n) = usec(i, n) * (usefrac(i, n) ** a) ! colonization term
 
         sum1 = cropfrac(i) + seed ! loop 420 -  minbare
         do k = 1, n - 1, 1
-          sum1 = sum1 + usefrac(i,k)
+          sum1 = sum1 + usefrac(i, k)
         end do ! loop 420
 
-        term2(i,n) = usec(i,n) * (usefrac(i,n) ** a) * (sum1 + (usefrac(i,n) ** b)) ! self & expansion thinning
-        term3(i,n) = usem(i,n) * usefrac(i,n) ! mortality term
+        term2(i, n) = usec(i, n) * (usefrac(i, n) ** a) * (sum1 + (usefrac(i, n) ** b)) ! self & expansion thinning
+        term3(i, n) = usem(i, n) * usefrac(i, n) ! mortality term
 
         sum2 = 0.0
         do j = 1, n - 1, 1 ! loop 430
           sum3 = cropfrac(i)
           do k = 1, j - 1, 1 ! loop 440
-            sum3 = sum3 + usefrac(i,k)
+            sum3 = sum3 + usefrac(i, k)
           end do ! loop 440
           sum4 = cropfrac(i)
           do k = 1, j, 1 ! loop 450
-            sum4 = sum4 + usefrac(i,k)
+            sum4 = sum4 + usefrac(i, k)
           end do ! loop 450
-          sum2 = sum2 + ((((1. - sum3) ** g) * usec(i,j) * (usefrac(i,j) ** a) * usefrac(i,n)) &
-                          / ((1. - sum4) ** g))
+          sum2 = sum2 + ((((1. - sum3) ** g) * usec(i, j) * (usefrac(i, j) ** a) * usefrac(i, n)) &
+                 / ((1. - sum4) ** g))
         end do ! loop 430
-        term4(i,n) = sum2  ! invasion
-        deathterm(i,n) = term2(i,n) + term3(i,n) + term4(i,n)
-        delfrac(i,n) = colterm(i,n) - deathterm(i,n) ! delta fraction
+        term4(i, n) = sum2  ! invasion
+        deathterm(i, n) = term2(i, n) + term3(i, n) + term4(i, n)
+        delfrac(i, n) = colterm(i, n) - deathterm(i, n) ! delta fraction
 
       end do ! loop 410
     end do ! loop 400
@@ -981,12 +981,12 @@ contains
     !> Update fractions and check if all fractions are positive
     do n = 1, icc - numcrops ! loop 500
       do i = il1, il2 ! loop 510
-        usefrac(i,n) = usefrac(i,n) + delfrac(i,n)
-        if (usefrac(i,n) < 0.0) then
+        usefrac(i, n) = usefrac(i, n) + delfrac(i, n)
+        if (usefrac(i, n) < 0.0) then
           write(6, * )'fractional coverage - ve for cell ',i,' and pft',n
           call errorHandler('competition', - 5)
         end if
-        usefrac(i,n) = max(seed, usefrac(i,n))
+        usefrac(i, n) = max(seed, usefrac(i, n))
       end do ! loop 510
     end do ! loop 500
 
@@ -1002,18 +1002,18 @@ contains
 
     do n = 1, icc - numcrops ! loop 540
       do i = il1, il2 ! loop 541
-        vegfrac(i) = vegfrac(i) + usefrac(i,n)
-        if (abs(usefrac(i,n) - seed) <= zero) then
-          mincfrac(i) = mincfrac(i) + usefrac(i,n)
+        vegfrac(i) = vegfrac(i) + usefrac(i, n)
+        if (abs(usefrac(i, n) - seed) <= zero) then
+          mincfrac(i) = mincfrac(i) + usefrac(i, n)
         end if
       end do ! loop 541
     end do ! loop 540
 
     do n = 1, icc - numcrops ! loop 550
       do i = il1, il2 ! loop 551
-        if (vegfrac(i) > 1.0 .and. abs(usefrac(i,n) - seed) > zero) then
+        if (vegfrac(i) > 1.0 .and. abs(usefrac(i, n) - seed) > zero) then
           term = (1. - mincfrac(i)) / (vegfrac(i) - mincfrac(i))
-          usefrac(i,n) = usefrac(i,n) * term
+          usefrac(i, n) = usefrac(i, n) * term
         end if
       end do ! loop 551
     end do ! loop 550
@@ -1025,7 +1025,7 @@ contains
 
     do n = 1, icc - numcrops ! loop 570
       do i = il1, il2 ! loop 571
-        vegfrac(i) = vegfrac(i) + usefrac(i,n)
+        vegfrac(i) = vegfrac(i) + usefrac(i, n)
       end do ! loop 571
     end do ! loop 570
 
@@ -1041,15 +1041,15 @@ contains
     !! corresponding to the actual number of pfts
     do j = 1, icc - numcrops   ! loop 590 - j now goes from 1 to icc-numcrops
       do i = il1, il2 ! loop 591
-        if (rank(i,j) <= numtreepfts) then
-          k = rank(i,j)
+        if (rank(i, j) <= numtreepfts) then
+          k = rank(i, j)
         else
-          k = rank(i,j) + 2
+          k = rank(i, j) + 2
         end if
-        expnterm(i,k) = colterm(i,j)
-        mortterm(i,k) = deathterm(i,j)
-        fcancmx(i,k) = usefrac(i,j)
-        chngfrac(i,k) = fcancmx(i,k) - pfcancmx(i,k)
+        expnterm(i, k) = colterm(i, j)
+        mortterm(i, k) = deathterm(i, j)
+        fcancmx(i, k) = usefrac(i, j)
+        chngfrac(i, k) = fcancmx(i, k) - pfcancmx(i, k)
       end do ! loop 591
     end do ! loop 590
 
@@ -1058,18 +1058,18 @@ contains
     ! get bare fraction
     do j = 1, icc ! loop 600
       do i = il1, il2 ! loop 601
-        barefrac(i) = barefrac(i) - fcancmx(i,j)
-        pbarefra(i) = pbarefra(i) - pfcancmx(i,j)
+        barefrac(i) = barefrac(i) - fcancmx(i, j)
+        pbarefra(i) = pbarefra(i) - pfcancmx(i, j)
       end do ! loop 601
     end do ! loop 600
 
     !> Check if a pft's fractional cover is increasing or decreasing
     do j = 1, icc ! loop 620
       do i = il1, il2 ! loop 621
-        if ((fcancmx(i,j) > pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
-          fraciord(i,j) = 1
-        else if ((fcancmx(i,j) < pfcancmx(i,j)) .and. (abs(pfcancmx(i,j) - fcancmx(i,j)) > zero)) then
-          fraciord(i,j) = - 1
+        if ((fcancmx(i, j) > pfcancmx(i, j)) .and. (abs(pfcancmx(i, j) - fcancmx(i, j)) > zero)) then
+          fraciord(i, j) = 1
+        else if ((fcancmx(i, j) < pfcancmx(i, j)) .and. (abs(pfcancmx(i, j) - fcancmx(i, j)) > zero)) then
+          fraciord(i, j) = - 1
         end if
       end do ! loop 621
     end do ! loop 620
@@ -1108,53 +1108,53 @@ contains
     do j = 1, icc ! loop 660
       if (.not. crop(j)) then  ! do not run for crops
         do i = il1, il2 ! loop 661
-          if (fraciord(i,j) == 1) then ! Expand
+          if (fraciord(i, j) == 1) then ! Expand
 
             ! Reduce biomass density by spreading over larger fraction
-            term = pfcancmx(i,j) / fcancmx(i,j)
+            term = pfcancmx(i, j) / fcancmx(i, j)
 
-            gleafmas(i,j) = gleafmas(i,j) * term
-            bleafmas(i,j) = bleafmas(i,j) * term
-            stemmass(i,j) = stemmass(i,j) * term
-            rootmass(i,j) = rootmass(i,j) * term
+            gleafmas(i, j) = gleafmas(i, j) * term
+            bleafmas(i, j) = bleafmas(i, j) * term
+            stemmass(i, j) = stemmass(i, j) * term
+            rootmass(i, j) = rootmass(i, j) * term
             if (useTracer > 0) then ! Now same operation for tracer
-              tracerGLeafMass(i,j) = tracerGLeafMass(i,j) * term
-              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) * term
-              tracerStemMass(i,j) = tracerStemMass(i,j) * term
-              tracerRootMass(i,j) = tracerRootMass(i,j) * term
+              tracerGLeafMass(i, j) = tracerGLeafMass(i, j) * term
+              tracerBLeafMass(i, j) = tracerBLeafMass(i, j) * term
+              tracerStemMass(i, j) = tracerStemMass(i, j) * term
+              tracerRootMass(i, j) = tracerRootMass(i, j) * term
             end if
 
             ! COMBAK PERLAY
-            litrmass(i,j) = litrmass(i,j) * term
-            soilcmas(i,j) = soilcmas(i,j) * term
-            incrlitr(i,j) = 0.
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
-            do k = 1,ignd
-              !  litrmass(i,j,k) = litrmass(i,j,k) * term
-              !  soilcmas(i,j,k) = soilcmas(i,j,k) * term
+            litrmass(i, j) = litrmass(i, j) * term
+            soilcmas(i, j) = soilcmas(i, j) * term
+            incrlitr(i, j) = 0.
+            grsumlit(i) = grsumlit(i) + incrlitr(i, j)
+            do k = 1, ignd
+              !  litrmass(i, j, k) = litrmass(i, j, k) * term
+              !  soilcmas(i, j, k) = soilcmas(i, j, k) * term
               if (useTracer > 0) then ! Now same operation for tracer
-                tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) * term
-                tracerSoilCMass(i,j,k) = tracerSoilCMass(i,j,k) * term
+                tracerLitrMass(i, j, k) = tracerLitrMass(i, j, k) * term
+                tracerSoilCMass(i, j, k) = tracerSoilCMass(i, j, k) * term
               end if
-              !  incrlitr(i,j,k) = 0.
-              !  grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+              !  incrlitr(i, j, k) = 0.
+              !  grsumlit(i, k) = grsumlit(i, k) + incrlitr(i, j, k)
               if (useTracer > 0) then ! Now same operation for tracer
-                tracerIncrLitr(i,j,k) = 0.
-                tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,j,k)
+                tracerIncrLitr(i, j, k) = 0.
+                tracerGrSumLit(i, k) = tracerGrSumLit(i, k) + tracerIncrLitr(i, j, k)
               end if
             end do
             ! COMBAK PERLAY
-            add2allo(i,j) = 0.
+            add2allo(i, j) = 0.
 
-          else if (fraciord(i,j) == - 1) then ! Contract
+          else if (fraciord(i, j) == - 1) then ! Contract
 
             ! COMBAK PERLAY
-            incrlitr(i,j) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
-                               + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) + litrmass(i,j))
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
-            incrsolc(i,j) = abs(chngfrac(i,j)) * soilcmas(i,j)
-            grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
-            do k = 1,ignd
+            incrlitr(i, j) = abs(chngfrac(i, j)) * (gleafmas(i, j) &
+                             + bleafmas(i, j) + stemmass(i, j) + rootmass(i, j) + litrmass(i, j))
+            grsumlit(i) = grsumlit(i) + incrlitr(i, j)
+            incrsolc(i, j) = abs(chngfrac(i, j)) * soilcmas(i, j)
+            grsumsoc(i) = grsumsoc(i) + incrsolc(i, j)
+            do k = 1, ignd
               ! All npp used for expansion becomes litter plus there is
               ! additional mortality of the standing biomass. the npp that
               ! becomes litter is now spread over the whole grid cell.
@@ -1165,48 +1165,48 @@ contains
               ! but the roots and litr must be put in the proper soil layers. To do
               ! this we bring in the rmatctem for the root placement.
               ! if (k == 1) then
-              !  incrlitr(i,j,k) = abs(chngfrac(i,j)) * (gleafmas(i,j) &
-              !                    + bleafmas(i,j) + stemmass(i,j) + rootmass(i,j) &
-              !                    * rmatctem(i,j,k) + litrmass(i,j,k))
+              !  incrlitr(i, j, k) = abs(chngfrac(i, j)) * (gleafmas(i, j) &
+              !                    + bleafmas(i, j) + stemmass(i, j) + rootmass(i, j) &
+              !                    * rmatctem(i, j, k) + litrmass(i, j, k))
               ! else
-              !  incrlitr(i,j,k) = abs(chngfrac(i,j)) * (rootmass(i,j) * rmatctem(i,j,k) + litrmass(i,j,k))
+              !  incrlitr(i, j, k) = abs(chngfrac(i, j)) * (rootmass(i, j) * rmatctem(i, j, k) + litrmass(i, j, k))
               ! end if
 
-              ! grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,j,k)
+              ! grsumlit(i, k) = grsumlit(i, k) + incrlitr(i, j, k)
 
               ! Chop off soil C from the fraction that goes down and
               ! spread it uniformly over the soil c pool of entire grid cell
-              ! incrsolc(i,j,k) = abs(chngfrac(i,j)) * soilcmas(i,j,k)
-              ! grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+              ! incrsolc(i, j, k) = abs(chngfrac(i, j)) * soilcmas(i, j, k)
+              ! grsumsoc(i, k) = grsumsoc(i, k) + incrsolc(i, j, k)
 
               if (useTracer > 0) then ! Now same operation for tracer
                 if (k == 1) then
-                  tracerIncrLitr(i,j,k) = abs(chngfrac(i,j)) * (tracerGLeafMass(i,j) &
-                                  + tracerBLeafMass(i,j) + tracerStemMass(i,j) + tracerRootMass(i,j) &
-                                  * rmatctem(i,j,k) + tracerLitrMass(i,j,k))
+                  tracerIncrLitr(i, j, k) = abs(chngfrac(i, j)) * (tracerGLeafMass(i, j) &
+                                            + tracerBLeafMass(i, j) + tracerStemMass(i, j) + tracerRootMass(i, j) &
+                                            * rmatctem(i, j, k) + tracerLitrMass(i, j, k))
                 else
-                  tracerIncrLitr(i,j,k) = abs(chngfrac(i,j)) * (tracerRootMass(i,j) * rmatctem(i,j,k) &
-                                          + tracerLitrMass(i,j,k))
+                  tracerIncrLitr(i, j, k) = abs(chngfrac(i, j)) * (tracerRootMass(i, j) * rmatctem(i, j, k) &
+                                            + tracerLitrMass(i, j, k))
                 end if
-                tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,j,k)
+                tracerGrSumLit(i, k) = tracerGrSumLit(i, k) + tracerIncrLitr(i, j, k)
 
-                tracerIncrSolC(i,j,k) = abs(chngfrac(i,j)) * tracerSoilCMass(i,j,k)
-                tracerGrSumSOC(i,k) = tracerGrSumSOC(i,k) + tracerIncrSolC(i,j,k)
+                tracerIncrSolC(i, j, k) = abs(chngfrac(i, j)) * tracerSoilCMass(i, j, k)
+                tracerGrSumSOC(i, k) = tracerGrSumSOC(i, k) + tracerIncrSolC(i, j, k)
 
               end if
 
             end do
             ! COMBAK PERLAY
-          else if (fraciord(i,j) == 0) then
+          else if (fraciord(i, j) == 0) then
 
             ! COMBAK PERLAY
-            incrlitr(i,j) = 0.
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
-            ! incrlitr(i,j,:) = 0.
-            ! grsumlit(i,:) = grsumlit(i,:) + incrlitr(i,j,:)
+            incrlitr(i, j) = 0.
+            grsumlit(i) = grsumlit(i) + incrlitr(i, j)
+            ! incrlitr(i, j,:) = 0.
+            ! grsumlit(i,:) = grsumlit(i,:) + incrlitr(i, j,:)
             if (useTracer > 0) then ! Now same operation for tracer
-              tracerIncrLitr(i,j,:) = 0.
-              tracerGrSumLit(i,:) = tracerGrSumLit(i,:) + tracerIncrLitr(i,j,:)
+              tracerIncrLitr(i, j,:) = 0.
+              tracerGrSumLit(i,:) = tracerGrSumLit(i,:) + tracerIncrLitr(i, j,:)
             end if
             ! COMBAK PERLAY
           end if
@@ -1221,37 +1221,37 @@ contains
     ! COMBAK PERLAY
     do i = il1, il2 ! loop 680
       if (bareiord(i) == - 1) then ! decrease in bare area
-        incrlitr(i,iccp1) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1)
-        grsumlit(i) = grsumlit(i) + incrlitr(i,iccp1)
-        incrsolc(i,iccp1) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1)
-        grsumsoc(i) = grsumsoc(i) + incrsolc(i,iccp1)
-        ! do k = 1,ignd
-        !  incrlitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * litrmass(i,iccp1,k)
-        !  grsumlit(i,k) = grsumlit(i,k) + incrlitr(i,iccp1,k)
-        !  incrsolc(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * soilcmas(i,iccp1,k)
-        !  grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,iccp1,k)
+        incrlitr(i, iccp1) = (pbarefra(i) - barefrac(i)) * litrmass(i, iccp1)
+        grsumlit(i) = grsumlit(i) + incrlitr(i, iccp1)
+        incrsolc(i, iccp1) = (pbarefra(i) - barefrac(i)) * soilcmas(i, iccp1)
+        grsumsoc(i) = grsumsoc(i) + incrsolc(i, iccp1)
+        ! do k = 1, ignd
+        !  incrlitr(i, iccp1, k) = (pbarefra(i) - barefrac(i)) * litrmass(i, iccp1, k)
+        !  grsumlit(i, k) = grsumlit(i, k) + incrlitr(i, iccp1, k)
+        !  incrsolc(i, iccp1, k) = (pbarefra(i) - barefrac(i)) * soilcmas(i, iccp1, k)
+        !  grsumsoc(i, k) = grsumsoc(i, k) + incrsolc(i, iccp1, k)
         ! end do
 
         if (useTracer > 0) then ! Now same operation for tracer
-          do k = 1,ignd
-            tracerIncrLitr(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * tracerLitrMass(i,iccp1,k)
-            tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,iccp1,k)
+          do k = 1, ignd
+            tracerIncrLitr(i, iccp1, k) = (pbarefra(i) - barefrac(i)) * tracerLitrMass(i, iccp1, k)
+            tracerGrSumLit(i, k) = tracerGrSumLit(i, k) + tracerIncrLitr(i, iccp1, k)
 
-            tracerIncrSolC(i,iccp1,k) = (pbarefra(i) - barefrac(i)) * tracerSoilCMass(i,iccp1,k)
-            tracerGrSumSOC(i,k) = tracerGrSumSOC(i,k) + tracerIncrSolC(i,iccp1,k)
+            tracerIncrSolC(i, iccp1, k) = (pbarefra(i) - barefrac(i)) * tracerSoilCMass(i, iccp1, k)
+            tracerGrSumSOC(i, k) = tracerGrSumSOC(i, k) + tracerIncrSolC(i, iccp1, k)
           end do
         end if
 
       else if (bareiord(i) == 1) then ! increase in bare area
         term = pbarefra(i) / barefrac(i)
-        litrmass(i,iccp1) = litrmass(i,iccp1) * term
-        soilcmas(i,iccp1) = soilcmas(i,iccp1) * term
-        do k = 1,ignd
-          !  litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
-          !  soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+        litrmass(i, iccp1) = litrmass(i, iccp1) * term
+        soilcmas(i, iccp1) = soilcmas(i, iccp1) * term
+        do k = 1, ignd
+          !  litrmass(i, iccp1, k) = litrmass(i, iccp1, k) * term
+          !  soilcmas(i, iccp1, k) = soilcmas(i, iccp1, k) * term
           if (useTracer > 0) then ! Now same operation for tracer
-            tracerLitrMass(i,iccp1,k) = tracerLitrMass(i,iccp1,k) * term
-            tracerSoilCMass(i,iccp1,k) = tracerSoilCMass(i,iccp1,k) * term
+            tracerLitrMass(i, iccp1, k) = tracerLitrMass(i, iccp1, k) * term
+            tracerSoilCMass(i, iccp1, k) = tracerSoilCMass(i, iccp1, k) * term
           end if
         end do
       end if
@@ -1263,67 +1263,67 @@ contains
     !! together and spread its live and dead biomass over the grid cell.
     do j = 1, icc ! loop 690
       do i = il1, il2 ! loop 691
-        if (.not. pftexist(i,j) .and. fcancmx(i,j) < 1.0e-05) then
+        if (.not. pftexist(i, j) .and. fcancmx(i, j) < 1.0e-05) then
 
-          barefrac(i) = barefrac(i) + fcancmx(i,j)
-          term = (barefrac(i) - fcancmx(i,j)) / barefrac(i)
+          barefrac(i) = barefrac(i) + fcancmx(i, j)
+          term = (barefrac(i) - fcancmx(i, j)) / barefrac(i)
 
           ! COMBAK PERLAY
-          incrlitr(i,j) = incrlitr(i,j) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
-                                            + stemmass(i,j) + rootmass(i,j) &
-                                            + litrmass(i,j))
-          do k = 1,ignd
+          incrlitr(i, j) = incrlitr(i, j) + fcancmx(i, j) * (gleafmas(i, j) + bleafmas(i, j) &
+                           + stemmass(i, j) + rootmass(i, j) &
+                           + litrmass(i, j))
+          do k = 1, ignd
             ! Put the incrlitr in the first layer (from the leaves and stems)
             ! but the roots and litr must be put in the proper soil layers. To do
             ! this we bring in the rmatctem for the root placement. JM Feb 2016
             ! if (k == 1) then
-            !  incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
-            !                                    + stemmass(i,j) + rootmass(i,j) * rmatctem(i,j,k) &
-            !                                    + litrmass(i,j,k))
+            !  incrlitr(i, j, k) = incrlitr(i, j, k) + fcancmx(i, j) * (gleafmas(i, j) + bleafmas(i, j) &
+            !                                    + stemmass(i, j) + rootmass(i, j) * rmatctem(i, j, k) &
+            !                                    + litrmass(i, j, k))
             ! else
-            !  incrlitr(i,j,k) = incrlitr(i,j,k) + fcancmx(i,j) * (rootmass(i,j) * rmatctem(i,j,k) &
-            !                                    + litrmass(i,j,k))
+            !  incrlitr(i, j, k) = incrlitr(i, j, k) + fcancmx(i, j) * (rootmass(i, j) * rmatctem(i, j, k) &
+            !                                    + litrmass(i, j, k))
             ! end if
 
-            grsumlit(i) = grsumlit(i) + incrlitr(i,j)
-            ! grsumlit(i,k) = grsumlit(i,k)+ incrlitr(i,j,k)
+            grsumlit(i) = grsumlit(i) + incrlitr(i, j)
+            ! grsumlit(i, k) = grsumlit(i, k)+ incrlitr(i, j, k)
 
-            incrsolc(i,j) = incrsolc(i,j) + fcancmx(i,j) * soilcmas(i,j)
-            grsumsoc(i) = grsumsoc(i) + incrsolc(i,j)
-            ! incrsolc(i,j,k) = incrsolc(i,j,k) + fcancmx(i,j) * soilcmas(i,j,k)
-            ! grsumsoc(i,k) = grsumsoc(i,k) + incrsolc(i,j,k)
+            incrsolc(i, j) = incrsolc(i, j) + fcancmx(i, j) * soilcmas(i, j)
+            grsumsoc(i) = grsumsoc(i) + incrsolc(i, j)
+            ! incrsolc(i, j, k) = incrsolc(i, j, k) + fcancmx(i, j) * soilcmas(i, j, k)
+            ! grsumsoc(i, k) = grsumsoc(i, k) + incrsolc(i, j, k)
 
             if (useTracer > 0) then ! Now same operation for tracer
               if (k == 1) then
-                tracerIncrLitr(i,j,k) = tracerIncrLitr(i,j,k) + fcancmx(i,j) * (tracerGLeafMass(i,j) &
-                                                + tracerBLeafMass(i,j) &
-                                                + tracerStemMass(i,j) + tracerRootMass(i,j) * rmatctem(i,j,k) &
-                                                + tracerLitrMass(i,j,k))
+                tracerIncrLitr(i, j, k) = tracerIncrLitr(i, j, k) + fcancmx(i, j) * (tracerGLeafMass(i, j) &
+                                          + tracerBLeafMass(i, j) &
+                                          + tracerStemMass(i, j) + tracerRootMass(i, j) * rmatctem(i, j, k) &
+                                          + tracerLitrMass(i, j, k))
               else
-                tracerIncrLitr(i,j,k) = tracerIncrLitr(i,j,k) + fcancmx(i,j) * (tracerRootMass(i,j) * rmatctem(i,j,k) &
-                                                + tracerLitrMass(i,j,k))
+                tracerIncrLitr(i, j, k) = tracerIncrLitr(i, j, k) + fcancmx(i, j) * (tracerRootMass(i, j) * rmatctem(i, j, k) &
+                                          + tracerLitrMass(i, j, k))
               end if
 
-              tracerGrSumLit(i,k) = tracerGrSumLit(i,k) + tracerIncrLitr(i,j,k)
+              tracerGrSumLit(i, k) = tracerGrSumLit(i, k) + tracerIncrLitr(i, j, k)
 
-              tracerIncrSolC(i,j,k) = tracerIncrSolC(i,j,k) + fcancmx(i,j) * tracerSoilCMass(i,j,k)
-              tracerGrSumSOC(i,k) = tracerGrSumSOC(i,k) + tracerIncrSolC(i,j,k)
+              tracerIncrSolC(i, j, k) = tracerIncrSolC(i, j, k) + fcancmx(i, j) * tracerSoilCMass(i, j, k)
+              tracerGrSumSOC(i, k) = tracerGrSumSOC(i, k) + tracerIncrSolC(i, j, k)
             end if
 
             !> Adjust litter and soil c mass densities for increase in
             !! barefrac over the bare fraction.
-            litrmass(i,iccp1) = litrmass(i,iccp1) * term
-            soilcmas(i,iccp1) = soilcmas(i,iccp1) * term
-            ! litrmass(i,iccp1,k) = litrmass(i,iccp1,k) * term
-            ! soilcmas(i,iccp1,k) = soilcmas(i,iccp1,k) * term
+            litrmass(i, iccp1) = litrmass(i, iccp1) * term
+            soilcmas(i, iccp1) = soilcmas(i, iccp1) * term
+            ! litrmass(i, iccp1, k) = litrmass(i, iccp1, k) * term
+            ! soilcmas(i, iccp1, k) = soilcmas(i, iccp1, k) * term
 
             if (useTracer > 0) then ! Now same operation for tracer
-              tracerLitrMass(i,iccp1,k) = tracerLitrMass(i,iccp1,k) * term
-              tracerSoilCMass(i,iccp1,k) = tracerSoilCMass(i,iccp1,k) * term
+              tracerLitrMass(i, iccp1, k) = tracerLitrMass(i, iccp1, k) * term
+              tracerSoilCMass(i, iccp1, k) = tracerSoilCMass(i, iccp1, k) * term
             end if
           end do
           ! COMBAK PERLAY
-          fcancmx(i,j) = 0.0 ! FLAG could this cause problems since it is 0 and not seed? JM May 27
+          fcancmx(i, j) = 0.0 ! FLAG could this cause problems since it is 0 and not seed? JM May 27
 
         end if
       end do ! loop 691
@@ -1332,35 +1332,35 @@ contains
     !> Spread litter and soil c over all pfts and the barefrac
     do j = 1, icc ! loop 700
       do i = il1, il2 ! loop 701
-        if (fcancmx(i,j) > zero) then
+        if (fcancmx(i, j) > zero) then
           ! COMBAK PERLAY
-          litrmass(i,j) = litrmass(i,j) + grsumlit(i)
-          soilcmas(i,j) = soilcmas(i,j) + grsumsoc(i)
-          ! litrmass(i,j,:) = litrmass(i,j,:) + grsumlit(i,:)
-          ! soilcmas(i,j,:) = soilcmas(i,j,:) + grsumsoc(i,:)
+          litrmass(i, j) = litrmass(i, j) + grsumlit(i)
+          soilcmas(i, j) = soilcmas(i, j) + grsumsoc(i)
+          ! litrmass(i, j,:) = litrmass(i, j,:) + grsumlit(i,:)
+          ! soilcmas(i, j,:) = soilcmas(i, j,:) + grsumsoc(i,:)
           if (useTracer > 0) then ! Now same operation for tracer
-            tracerLitrMass(i,j,:) = tracerLitrMass(i,j,:) + tracerGrSumLit(i,:)
-            tracerSoilCMass(i,j,:) = tracerSoilCMass(i,j,:) + tracerGrSumSOC(i,:)
+            tracerLitrMass(i, j,:) = tracerLitrMass(i, j,:) + tracerGrSumLit(i,:)
+            tracerSoilCMass(i, j,:) = tracerSoilCMass(i, j,:) + tracerGrSumSOC(i,:)
           end if
           ! COMBAK PERLAY
         else
-          gleafmas(i,j) = 0.0
-          bleafmas(i,j) = 0.0
-          stemmass(i,j) = 0.0
-          rootmass(i,j) = 0.0  ! FLAG, should I set rmatctem to zero here too? JM Feb 2016.
+          gleafmas(i, j) = 0.0
+          bleafmas(i, j) = 0.0
+          stemmass(i, j) = 0.0
+          rootmass(i, j) = 0.0  ! FLAG, should I set rmatctem to zero here too? JM Feb 2016.
           ! COMBAK PERLAY
-          litrmass(i,j) = 0.0
-          soilcmas(i,j) = 0.0
-          ! litrmass(i,j,:)=0.0
-          ! soilcmas(i,j,:)=0.0
+          litrmass(i, j) = 0.0
+          soilcmas(i, j) = 0.0
+          ! litrmass(i, j,:)=0.0
+          ! soilcmas(i, j,:)=0.0
           ! COMBAK PERLAY
           if (useTracer > 0) then ! Now same operation for tracer
-            tracerGLeafMass(i,j) = 0.0
-            tracerBLeafMass(i,j) = 0.0
-            tracerStemMass(i,j) = 0.0
-            tracerRootMass(i,j) = 0.0
-            tracerLitrMass(i,j,:) = 0.0
-            tracerSoilCMass(i,j,:) = 0.0
+            tracerGLeafMass(i, j) = 0.0
+            tracerBLeafMass(i, j) = 0.0
+            tracerStemMass(i, j) = 0.0
+            tracerRootMass(i, j) = 0.0
+            tracerLitrMass(i, j,:) = 0.0
+            tracerSoilCMass(i, j,:) = 0.0
           end if
         end if
       end do ! loop 701
@@ -1369,24 +1369,24 @@ contains
     do i = il1, il2 ! loop 720
       if (barefrac(i) > zero) then
         ! COMBAK PERLAY
-        litrmass(i,iccp1) = litrmass(i,iccp1) + grsumlit(i)
-        soilcmas(i,iccp1) = soilcmas(i,iccp1) + grsumsoc(i)
-        ! litrmass(i,iccp1,:) = litrmass(i,iccp1,:) + grsumlit(i,:)
-        ! soilcmas(i,iccp1,:) = soilcmas(i,iccp1,:) + grsumsoc(i,:)
+        litrmass(i, iccp1) = litrmass(i, iccp1) + grsumlit(i)
+        soilcmas(i, iccp1) = soilcmas(i, iccp1) + grsumsoc(i)
+        ! litrmass(i, iccp1,:) = litrmass(i, iccp1,:) + grsumlit(i,:)
+        ! soilcmas(i, iccp1,:) = soilcmas(i, iccp1,:) + grsumsoc(i,:)
       else
-        litrmass(i,iccp1) = 0.0
-        soilcmas(i,iccp1) = 0.0
-        ! litrmass(i,iccp1,:) = 0.0
-        ! soilcmas(i,iccp1,:) = 0.0
+        litrmass(i, iccp1) = 0.0
+        soilcmas(i, iccp1) = 0.0
+        ! litrmass(i, iccp1,:) = 0.0
+        ! soilcmas(i, iccp1,:) = 0.0
         ! COMBAK PERLAY
       end if
       if (useTracer > 0) then ! Now same operation for tracer
         if (barefrac(i) > zero) then
-          tracerLitrMass(i,iccp1,:) = tracerLitrMass(i,iccp1,:) + tracerGrSumLit(i,:)
-          tracerSoilCMass(i,iccp1,:) = tracerSoilCMass(i,iccp1,:) + tracerGrSumSOC(i,:)
+          tracerLitrMass(i, iccp1,:) = tracerLitrMass(i, iccp1,:) + tracerGrSumLit(i,:)
+          tracerSoilCMass(i, iccp1,:) = tracerSoilCMass(i, iccp1,:) + tracerGrSumSOC(i,:)
         else
-          tracerLitrMass(i,iccp1,:) = 0.0
-          tracerSoilCMass(i,iccp1,:) = 0.0
+          tracerLitrMass(i, iccp1,:) = 0.0
+          tracerSoilCMass(i, iccp1,:) = 0.0
         end if
       end if
     end do ! loop 720
@@ -1394,14 +1394,14 @@ contains
     ! Get fcanmxs for use by CLASS based on the new fcancmxs
     do j = 1, ican ! loop 740
       do i = il1, il2 ! loop 741
-        fcanmx(i,j) = 0.0 ! fractional coverage of class' pfts
+        fcanmx(i, j) = 0.0 ! fractional coverage of class' pfts
       end do ! loop 741
     end do ! loop 740
 
     do j = 1, ican ! loop 750
-      do l = reindexPFTs(j,1), reindexPFTs(j,2) ! loop 751
+      do l = reindexPFTs(j, 1), reindexPFTs(j, 2) ! loop 751
         do i = il1, il2 ! loop 752
-          fcanmx(i,j) = fcanmx(i,j) + fcancmx(i,l)
+          fcanmx(i, j) = fcanmx(i, j) + fcancmx(i, l)
         end do ! loop 752
       end do ! loop 751
     end do ! loop 750
@@ -1409,14 +1409,14 @@ contains
     !> Update grid averaged vegetation biomass, and litter and soil c densities
     do j = 1, icc ! loop 800
       do i = il1, il2 ! loop 801
-        vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
-                                               + stemmass(i,j) + rootmass(i,j))
+        vgbiomas(i) = vgbiomas(i) + fcancmx(i, j) * (gleafmas(i, j) + bleafmas(i, j) &
+                      + stemmass(i, j) + rootmass(i, j))
         ! COMBAK PERLAY
-        gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j)
-        gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j)
+        gavgltms(i) = gavgltms(i) + fcancmx(i, j) * litrmass(i, j)
+        gavgscms(i) = gavgscms(i) + fcancmx(i, j) * soilcmas(i, j)
         ! do k = 1, ignd
-        !   gavgltms(i) = gavgltms(i) + fcancmx(i,j) * litrmass(i,j,k)
-        !   gavgscms(i) = gavgscms(i) + fcancmx(i,j) * soilcmas(i,j,k)
+        !   gavgltms(i) = gavgltms(i) + fcancmx(i, j) * litrmass(i, j, k)
+        !   gavgscms(i) = gavgscms(i) + fcancmx(i, j) * soilcmas(i, j, k)
         ! end do
         ! COMBAK PERLAY
       end do ! loop 801
@@ -1424,11 +1424,11 @@ contains
 
     do i = il1, il2 ! loop 810
       ! COMBAK PERLAY
-      gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1)
-      gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1)
+      gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i, iccp1)
+      gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i, iccp1)
       ! do k = 1, ignd
-      !   gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i,iccp1,k)
-      !   gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i,iccp1,k)
+      !   gavgltms(i) = gavgltms(i) + barefrac(i) * litrmass(i, iccp1, k)
+      !   gavgscms(i) = gavgscms(i) + barefrac(i) * soilcmas(i, iccp1, k)
       ! end do
       ! COMBAK PERLAY
     end do ! loop 810
@@ -1443,86 +1443,86 @@ contains
       if (.not. crop(j)) then
         do i = il1, il2 ! loop 831
 
-          biomasvg(i,j) = fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
-                                        + stemmass(i,j) + rootmass(i,j))
-          pbiomasvg(i,j) = pfcancmx(i,j) * (pglfmass(i,j) + pblfmass(i,j) &
-                                        + protmass(i,j) + pstmmass(i,j))
+          biomasvg(i, j) = fcancmx(i, j) * (gleafmas(i, j) + bleafmas(i, j) &
+                           + stemmass(i, j) + rootmass(i, j))
+          pbiomasvg(i, j) = pfcancmx(i, j) * (pglfmass(i, j) + pblfmass(i, j) &
+                            + protmass(i, j) + pstmmass(i, j))
 
           ! part of npp that we will use later for allocation
-          putaside(i,j) = add2allo(i,j) * fcancmx(i,j)
-          gavgputa(i) = gavgputa(i) + putaside(i,j)
+          putaside(i, j) = add2allo(i, j) * fcancmx(i, j)
+          gavgputa(i) = gavgputa(i) + putaside(i, j)
 
           ! COMBAK PERLAY
           ! litter added to bare
-          barelitr(i,j) = barelitr(i,j) + grsumlit(i) * fcancmx(i,j)
-          ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j)
+          barelitr(i, j) = barelitr(i, j) + grsumlit(i) * fcancmx(i, j)
+          ownlitr(i, j) = ownlitr(i, j) + incrlitr(i, j)
 
           ! soil c added to bare
-          baresolc(i,j) = baresolc(i,j) + grsumsoc(i) * fcancmx(i,j)
-          ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j)
-          ! do k = 1,ignd
+          baresolc(i, j) = baresolc(i, j) + grsumsoc(i) * fcancmx(i, j)
+          ownsolc(i, j) = ownsolc(i, j) + incrsolc(i, j)
+          ! do k = 1, ignd
           !   ! litter added to bare
-          !   barelitr(i,j) = barelitr(i,j) + grsumlit(i,k) * fcancmx(i,j)
-          !   ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
+          !   barelitr(i, j) = barelitr(i, j) + grsumlit(i, k) * fcancmx(i, j)
+          !   ownlitr(i, j) = ownlitr(i, j) + incrlitr(i, j, k)
           !
           !   ! soil c added to bare
-          !   baresolc(i,j) = baresolc(i,j) + grsumsoc(i,k) * fcancmx(i,j)
-          !   ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
+          !   baresolc(i, j) = baresolc(i, j) + grsumsoc(i, k) * fcancmx(i, j)
+          !   ownsolc(i, j) = ownsolc(i, j) + incrsolc(i, j, k)
           ! end do
           ! COMBAK PERLAY
 
-          add2dead(i,j) = add2dead(i,j) + barelitr(i,j) + baresolc(i,j)
+          add2dead(i, j) = add2dead(i, j) + barelitr(i, j) + baresolc(i, j)
 
           ! Not in use. JM Jun 2014.
           ! npp we had in first place to expand
-          ! nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-          nppvegar(i,j) = 0.
+          ! nppvegar(i, j)=max(0.0, nppveg(i, j))*(deltat/963.62)*lambda(i, j)*pfcancmx(i, j)
+          nppvegar(i, j) = 0.
 
-          gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
+          gavgnpp(i) = gavgnpp(i) + nppvegar(i, j)
 
           ! COMBAK PERLAY
-          deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j) + soilcmas(i,j))
-          pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j) + psocmass(i,j))
+          deadmass(i, j) = deadmass(i, j) + fcancmx(i, j) * (litrmass(i, j) + soilcmas(i, j))
+          pdeadmas(i, j) = pdeadmas(i, j) + pfcancmx(i, j) * (pltrmass(i, j) + psocmass(i, j))
           ! do k = 1, ignd
-          !   deadmass(i,j) = deadmass(i,j) + fcancmx(i,j) * (litrmass(i,j,k) + soilcmas(i,j,k))
-          !   pdeadmas(i,j) = pdeadmas(i,j) + pfcancmx(i,j) * (pltrmass(i,j,k) + psocmass(i,j,k))
+          !   deadmass(i, j) = deadmass(i, j) + fcancmx(i, j) * (litrmass(i, j, k) + soilcmas(i, j, k))
+          !   pdeadmas(i, j) = pdeadmas(i, j) + pfcancmx(i, j) * (pltrmass(i, j, k) + psocmass(i, j, k))
           ! end do
           ! COMBAK PERLAY
 
           !! total mass before competition
-          befrmass = pbiomasvg(i,j) + nppvegar(i,j) + pdeadmas(i,j)
+          befrmass = pbiomasvg(i, j) + nppvegar(i, j) + pdeadmas(i, j)
 
           !! total mass after competition
-          aftrmass = biomasvg(i,j) + putaside(i,j) + deadmass(i,j) - barelitr(i,j) &
-                                  - baresolc(i,j) + ownlitr(i,j) + ownsolc(i,j)
+          aftrmass = biomasvg(i, j) + putaside(i, j) + deadmass(i, j) - barelitr(i, j) &
+                     - baresolc(i, j) + ownlitr(i, j) + ownsolc(i, j)
 
           if (abs(befrmass - aftrmass) > tolrance) then
             write(6, * )'total biomass for pft',j,', and grid cell = ',i
             write(6, * )'does not balance before and after competition'
             write(6, * )' '
-            write(6, * )'chngfrac(',i,',',j,') = ',chngfrac(i,j)
-            write(6, * )'fraciord(',i,',',j,') = ',fraciord(i,j)
+            write(6, * )'chngfrac(',i,',',j,') = ',chngfrac(i, j)
+            write(6, * )'fraciord(',i,',',j,') = ',fraciord(i, j)
             write(6, * )' '
-            write(6, * )'pbiomasvg(',i,',',j,') = ',pbiomasvg(i,j)
-            write(6, * )'pdeadmas(',i,',',j,') = ',pdeadmas(i,j)
-            write(6, * )'nppvegar(',i,',',j,') = ',nppvegar(i,j)
+            write(6, * )'pbiomasvg(',i,',',j,') = ',pbiomasvg(i, j)
+            write(6, * )'pdeadmas(',i,',',j,') = ',pdeadmas(i, j)
+            write(6, * )'nppvegar(',i,',',j,') = ',nppvegar(i, j)
             write(6, * )' '
-            write(6, * )' biomasvg(',i,',',j,') = ',biomasvg(i,j)
-            write(6, * )'deadmass(',i,',',j,') = ',deadmass(i,j)
-            write(6, * )'putaside(',i,',',j,') = ',putaside(i,j)
+            write(6, * )' biomasvg(',i,',',j,') = ',biomasvg(i, j)
+            write(6, * )'deadmass(',i,',',j,') = ',deadmass(i, j)
+            write(6, * )'putaside(',i,',',j,') = ',putaside(i, j)
             write(6, * )' '
-            write(6, * )'before biomass density = ',gleafmas(i,j) + &
-                bleafmas(i,j) + stemmass(i,j) + rootmass(i,j)
-            write(6, * )'after  biomass density = ',pglfmass(i,j) + &
-               pblfmass(i,j) + protmass(i,j) + pstmmass(i,j)
+            write(6, * )'before biomass density = ',gleafmas(i, j) + &
+                bleafmas(i, j) + stemmass(i, j) + rootmass(i, j)
+            write(6, * )'after  biomass density = ',pglfmass(i, j) + &
+               pblfmass(i, j) + protmass(i, j) + pstmmass(i, j)
             write(6, * )' '
-            write(6, * )'barelitr(',i,',',j,') = ',barelitr(i,j)
-            write(6, * )'baresolc(',i,',',j,') = ',baresolc(i,j)
-            write(6, * )'ownlitr(',i,',',j,') = ',ownlitr(i,j)
-            write(6, * )'ownsolc(',i,',',j,') = ',ownsolc(i,j)
+            write(6, * )'barelitr(',i,',',j,') = ',barelitr(i, j)
+            write(6, * )'baresolc(',i,',',j,') = ',baresolc(i, j)
+            write(6, * )'ownlitr(',i,',',j,') = ',ownlitr(i, j)
+            write(6, * )'ownsolc(',i,',',j,') = ',ownsolc(i, j)
             write(6, * )' '
-            write(6, * )'fcancmx(',i,',',j,') = ',fcancmx(i,j)
-            write(6, * )'pfcancmx(',i,',',j,') = ',pfcancmx(i,j)
+            write(6, * )'fcancmx(',i,',',j,') = ',fcancmx(i, j)
+            write(6, * )'pfcancmx(',i,',',j,') = ',pfcancmx(i, j)
             write(6, * )' '
             write(6, * )'abs(befrmass - aftrmass) = ',abs(befrmass - aftrmass)
             call errorHandler('competition', - 8)
@@ -1536,34 +1536,34 @@ contains
     j = iccp1
     do i = il1, il2 ! loop 851
       ! COMBAK PERLAY
-      deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j) + soilcmas(i,j))
-      pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j) + psocmass(i,j))
+      deadmass(i, j) = deadmass(i, j) + barefrac(i) * (litrmass(i, j) + soilcmas(i, j))
+      pdeadmas(i, j) = pdeadmas(i, j) + pbarefra(i) * (pltrmass(i, j) + psocmass(i, j))
 
-      add2dead(i,j) = add2dead(i,j) + (grsumlit(i) + grsumsoc(i)) * barefrac(i)
+      add2dead(i, j) = add2dead(i, j) + (grsumlit(i) + grsumsoc(i)) * barefrac(i)
 
-      ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j)
-      ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j)
-      ! do k = 1,ignd
-      !   deadmass(i,j) = deadmass(i,j) + barefrac(i) * (litrmass(i,j,k) + soilcmas(i,j,k))
-      !   pdeadmas(i,j) = pdeadmas(i,j) + pbarefra(i) * (pltrmass(i,j,k) + psocmass(i,j,k))
+      ownlitr(i, j) = ownlitr(i, j) + incrlitr(i, j)
+      ownsolc(i, j) = ownsolc(i, j) + incrsolc(i, j)
+      ! do k = 1, ignd
+      !   deadmass(i, j) = deadmass(i, j) + barefrac(i) * (litrmass(i, j, k) + soilcmas(i, j, k))
+      !   pdeadmas(i, j) = pdeadmas(i, j) + pbarefra(i) * (pltrmass(i, j, k) + psocmass(i, j, k))
       !
-      !   add2dead(i,j) = add2dead(i,j) + (grsumlit(i,k) + grsumsoc(i,k)) * barefrac(i)
+      !   add2dead(i, j) = add2dead(i, j) + (grsumlit(i, k) + grsumsoc(i, k)) * barefrac(i)
       !
-      !   ownlitr(i,j) = ownlitr(i,j) + incrlitr(i,j,k)
-      !   ownsolc(i,j) = ownsolc(i,j) + incrsolc(i,j,k)
+      !   ownlitr(i, j) = ownlitr(i, j) + incrlitr(i, j, k)
+      !   ownsolc(i, j) = ownsolc(i, j) + incrsolc(i, j, k)
       ! end do
       ! COMBAK PERLAY
-      befrmass = pdeadmas(i,j) + add2dead(i,j)
-      aftrmass = deadmass(i,j) + ownlitr(i,j) + ownsolc(i,j)
+      befrmass = pdeadmas(i, j) + add2dead(i, j)
+      aftrmass = deadmass(i, j) + ownlitr(i, j) + ownsolc(i, j)
 
       if (abs(befrmass - aftrmass) > tolrance) then
         write(6, * )'total dead mass for grid cell = ',i,'does not balance over bare'
-        write(6, * )'pdeadmas(',i,',',j,') = ',pdeadmas(i,j)
-        write(6, * )'add2dead(',i,') term = ',add2dead(i,j)
-        write(6, * )'deadmass(',i,',',j,') = ',deadmass(i,j)
+        write(6, * )'pdeadmas(',i,',',j,') = ',pdeadmas(i, j)
+        write(6, * )'add2dead(',i,') term = ',add2dead(i, j)
+        write(6, * )'deadmass(',i,',',j,') = ',deadmass(i, j)
         write(6, * )' '
-        write(6, * )'ownlitr(',i,',',j,') = ',ownlitr(i,j)
-        write(6, * )'ownsolc(',i,',',j,') = ',ownsolc(i,j)
+        write(6, * )'ownlitr(',i,',',j,') = ',ownlitr(i, j)
+        write(6, * )'ownsolc(',i,',',j,') = ',ownsolc(i, j)
         write(6, * )' '
         write(6, * )'pbarefra(',i,') = ',pbarefra(i)
         write(6, * )'bareiord(',i,') = ',bareiord(i)
@@ -1588,7 +1588,7 @@ contains
   !! the colonization rate in competition).
   !! @author V. Arora, J. Melton
   !!
-  function expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
+  function expansion(il1, il2, ilg, sort, ailcg, lfstatus, nppveg, pftexist)
 
     use classic_params, only : icc, crop, laimin, laimax, lambdamax, &
                              ctempfts
@@ -1602,13 +1602,13 @@ contains
     integer, intent(in) :: sort(:)          !< Maps the CTEM PFTs to the parameter arrays.
     real, intent(in) :: ailcg(:,:)          !< Green lai for ctem's pfts
     integer, intent(in) :: lfstatus(:,:)    !< leaf phenology status
-    real, intent(in) :: nppveg(:,:)         !< npp for individual pfts,  u-mol co2/m2.sec
-    logical ,intent(in) :: pftexist(:,:)    !< logical array indicating pfts exist (t) or not (f)
+    real, intent(in) :: nppveg(:,:)         !< npp for individual pfts, u-mol co2/m2.sec
+    logical, intent(in) :: pftexist(:,:)    !< logical array indicating pfts exist (t) or not (f)
 
-    real :: expansion(ilg,icc)        !< Used to determine the colonization rate
+    real :: expansion(ilg, icc)        !< Used to determine the colonization rate
 
     ! local vars
-    integer :: j,i,n
+    integer :: j, i, n
     real :: lambdaalt
 
     ! --
@@ -1619,31 +1619,31 @@ contains
         do i = il1, il2 ! loop 101
 
           n = sort(j)
-          if (ailcg(i,j) <= laimin(n)) then
-            expansion(i,j) = 0.0
-          else if (ailcg(i,j) >= laimax(n)) then
-            expansion(i,j) = lambdamax
+          if (ailcg(i, j) <= laimin(n)) then
+            expansion(i, j) = 0.0
+          else if (ailcg(i, j) >= laimax(n)) then
+            expansion(i, j) = lambdamax
           else
-            expansion(i,j) = ((ailcg(i,j) - laimin(n)) * lambdamax) / &
-                     (laimax(n) - laimin(n))
+            expansion(i, j) = ((ailcg(i, j) - laimin(n)) * lambdamax) / &
+                              (laimax(n) - laimin(n))
           end if
 
           !> We use the following new function to smooth the transition for expansion as
           !! an abrupt linear increase does not give good results. JM Jun 2014
-          if (ailcg(i,j) > laimin(n) * 0.25) then
-            lambdaalt = cosh((ailcg(i,j) - laimin(n) * 0.25) * 0.115) - 1.
+          if (ailcg(i, j) > laimin(n) * 0.25) then
+            lambdaalt = cosh((ailcg(i, j) - laimin(n) * 0.25) * 0.115) - 1.
           else
             lambdaalt = 0.
           end if
-          expansion(i,j) = max(expansion(i,j),lambdaalt)
+          expansion(i, j) = max(expansion(i, j), lambdaalt)
 
-          expansion(i,j) = max(0.0, min(lambdamax, expansion(i,j)))
+          expansion(i, j) = max(0.0, min(lambdamax, expansion(i, j)))
 
           !> If tree and leaves still coming out, or if npp is negative, then do not expand
-          if ((lfstatus(i,j) == 1) .or. nppveg(i,j) < 0.0 .or. .not.pftexist(i,j)) then
+          if ((lfstatus(i, j) == 1) .or. nppveg(i, j) < 0.0 .or. .not.pftexist(i, j)) then
             select case (ctempfts(J))
             case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
-              expansion(i,j) = 0.0
+              expansion(i, j) = 0.0
             case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
               ! no change.
             case default
@@ -1663,8 +1663,8 @@ contains
   !!
   !! # Competition parameterization
   !!
-  !! Competition between PFTs in CTEM is based upon modified L--V equations (Arora and Boer, 2006a,b) \cite Arora2006-pp
-  !! \cite Arora2006-ax. The L--V equations (Lotka 1925 \cite Lotka1925-dg , Volterra 1926 \cite Volterra1926-iz ) have
+  !! Competition between PFTs in CTEM is based upon modified L--V equations (Arora and Boer, 2006a, b) \cite Arora2006-pp
+  !! \cite Arora2006-ax. The L--V equations (Lotka 1925 \cite Lotka1925-dg, Volterra 1926 \cite Volterra1926-iz) have
   !! been adapted from their initial application for simulating predator--prey interactions
   !! in ecosystem models as described below.
   !!
@@ -1697,14 +1697,14 @@ contains
   !!
   !! \f[
   !! \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1}
-  !! +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\
+  !! +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha, N}f_{N})\nonumber\\
   !! - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1),
   !! \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}\qquad (Eqn 2)
   !! \f]
   !!
   !! where the exponent \f$b\f$ is an empirical parameter, which controls the behaviour
   !! of the L--V equations. In the original L--V formulation, \f$b\f$ is 1, but we
-  !! modify the L--V relations by using \f$b = 0\f$ following Arora and Boer (2006a,b) \cite Arora2006-pp
+  !! modify the L--V relations by using \f$b = 0\f$ following Arora and Boer (2006a, b) \cite Arora2006-pp
   !! \cite Arora2006-ax (implications of this choice are expanded upon below). The
   !! fractional cover of PFT \f$\alpha\f$ then changes depending on the gains it makes
   !! into the area of less dominant PFTs and the losses it suffers due to mortality
