@@ -1,9 +1,9 @@
 !> \file
 !> Sublimation calculations for the snow pack on the ground.
 !
-subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Formerly SNOVAP
-                           WLOST,TRUNOF,RUNOFF,TOVRFL,OVRFLW, &
-                           FI,R,S,RHOSNI,WSNOW,ILG,IL1,IL2,JL)
+subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, & ! Formerly SNOVAP
+                           WLOST, TRUNOF, RUNOFF, TOVRFL, OVRFLW, &
+                           FI, R, S, RHOSNI, WSNOW, ILG, IL1, IL2, JL)
   !
   !     * AUG 25/11 - D.VERSEGHY. CORRECT CALCULATION OF TRUNOF
   !     *                         AND TOVRFL.
@@ -33,14 +33,14 @@ subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Form
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. SUBLIMATION FROM SNOWPACK.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,HCPICE,RHOW, &
-                             RHOICE,CLHMLT,CLHVAP
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
+                             RHOICE, CLHMLT, CLHVAP
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL
+  integer, intent(in) :: ILG, IL1, IL2, JL
   integer :: I
   !
   !     * INPUT/OUTPUT ARRAYS.
@@ -70,21 +70,21 @@ subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Form
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: ZADD,ZLOST,ZREM
+  real :: ZADD, ZLOST, ZREM
   !
   !-----------------------------------------------------------------------
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. (S(I) < 1.0E-11 .or. R(I) < 1.0E-11) &
-    .and. ZSNOW(I) > 0.) then
+        .and. ZSNOW(I) > 0.) then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-                 ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
       if (EVAP(I) < 0.) then
         ZADD = - EVAP(I) * DELT * RHOW / RHOSNI(I)
         RHOSNO(I) = (ZSNOW(I) * RHOSNO(I) + ZADD * RHOSNI(I)) / &
-                       (ZSNOW(I) + ZADD)
+                    (ZSNOW(I) + ZADD)
         ZSNOW (I) = ZSNOW(I) + ZADD
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-                 (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         EVAP  (I) = 0.0
       else
         ZLOST = EVAP(I) * DELT * RHOW / RHOSNO(I)
@@ -92,7 +92,7 @@ subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Form
           ZSNOW(I) = ZSNOW(I) - ZLOST
           EVAP (I) = 0.0
           HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-                     (RHOW * ZSNOW(I))
+                      (RHOW * ZSNOW(I))
         else
           ZREM = (ZLOST - ZSNOW(I)) * RHOSNO(I) / RHOW
           ZSNOW(I) = 0.0
@@ -100,13 +100,13 @@ subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Form
           EVAP(I) = ZREM * (CLHMLT + CLHVAP) / (CLHVAP * DELT)
           WLOST(I) = WLOST(I) - ZREM * RHOW * CLHMLT / CLHVAP
           if (RUNOFF(I) > 0. .or. WSNOW(I) > 0.) &
-          TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TSNOW(I) + TFREZ) * &
-          WSNOW(I) / RHOW) / (RUNOFF(I) + WSNOW(I) / RHOW)
+              TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TSNOW(I) + TFREZ) * &
+              WSNOW(I) / RHOW) / (RUNOFF(I) + WSNOW(I) / RHOW)
           RUNOFF(I) = RUNOFF(I) + WSNOW(I) / RHOW
           if (OVRFLW(I) > 0. .or. WSNOW(I) > 0.) &
-          TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + (TSNOW(I) + TFREZ) * &
-          FI(I) * WSNOW(I) / RHOW) / (OVRFLW(I) + FI(I) * &
-          WSNOW(I) / RHOW)
+              TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + (TSNOW(I) + TFREZ) * &
+              FI(I) * WSNOW(I) / RHOW) / (OVRFLW(I) + FI(I) * &
+              WSNOW(I) / RHOW)
           OVRFLW(I) = OVRFLW(I) + FI(I) * WSNOW(I) / RHOW
           TSNOW(I) = 0.0
           WSNOW(I) = 0.0
@@ -115,7 +115,7 @@ subroutine snowSublimation(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS, & ! Form
         end if
       end if
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-      ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
     end if
   end do ! loop 100
   return

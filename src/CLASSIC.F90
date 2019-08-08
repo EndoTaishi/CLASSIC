@@ -11,14 +11,14 @@ program CLASSIC
     use mpi
 #endif
 
-  use model_state_drivers,    only : read_modelsetup,rsid
-  use xmlManager,             only : loadoutputDescriptor
-  use outputManager,          only : generateOutputFiles,closeNCFiles
-  use readjobopts,            only : read_from_job_options
-  use main,                   only : main_driver
-  use ctem_statevars,         only : alloc_ctem_vars
-  use class_statevars,        only : alloc_class_vars
-  use classic_params,         only : prepareGlobalParams
+  use model_state_drivers, only : read_modelsetup, rsid
+  use xmlManager, only : loadoutputDescriptor
+  use outputManager, only : generateOutputFiles, closeNCFiles
+  use readjobopts, only : read_from_job_options
+  use main, only : main_driver
+  use ctem_statevars, only : alloc_ctem_vars
+  use class_statevars, only : alloc_class_vars
+  use classic_params, only : prepareGlobalParams
 
   implicit none
 
@@ -63,7 +63,7 @@ contains
     ! PROCESS LAND CELLS
     ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells, stored in lonLandCell and latLandCell
 
-    use outputManager,              only : myDomain
+    use outputManager, only : myDomain
     use fileIOModule
 
     implicit none
@@ -78,18 +78,18 @@ contains
 
     do i = 1, blocks - 1                    ! Go through every block except for the last one
       cell = (i - 1) * size + rank + 1
-      print * ,'in process',rank,i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell), &
-                                myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
-      call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell), &
-                       myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
+      print * ,'in process',rank, i, cell, myDomain%lonLandCell(cell), myDomain%latLandCell(cell), myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), &
+                                myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell)
+      call main_driver(myDomain%lonLandCell(cell), myDomain%latLandCell(cell), myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), &
+                       myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell))
     end do
 
     cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells
 
-    if (rank < remainder) print * ,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell), &
-    myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
-    if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell), &
-    myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
+    if (rank < remainder) print * ,'final in process',cell, myDomain%lonLandCell(cell), myDomain%latLandCell(cell), &
+        myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell)
+    if (rank < remainder) call main_driver(myDomain%lonLandCell(cell), myDomain%latLandCell(cell), &
+        myDomain%lonLandIndex(cell), myDomain%latLandIndex(cell), myDomain%lonLocalIndex(cell), myDomain%latLocalIndex(cell))
 
   end subroutine processLandCells
   !! @}
@@ -134,7 +134,7 @@ contains
   !! CLASSIC are used to find the start points (srtx and srty)
   !! in the netcdf file, placing the gridcell on the domain of the
   !! input/output netcdfs. In read_modelsetup we use the netcdf to set
-  !! the nmos (number of tiles), ignd (number of soil layers),and ilg (number of latitude
+  !! the nmos (number of tiles), ignd (number of soil layers), and ilg (number of latitude
   !! points times nmos, which defaults to nmos in offline mode) constants.
   !! It also opens the initial conditions file that is used below in
   !! read_initialstate as well as the restart file that is written to later.

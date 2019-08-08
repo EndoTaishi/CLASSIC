@@ -293,8 +293,8 @@ contains
       suffix = ''
     end select
     generateFilename = trim(c_switch%output_directory) // '/' // &
-        trim(descriptor%shortName) // '_' // &
-        trim(descriptor%timeFreq) // trim(suffix) // '.nc'
+                       trim(descriptor%shortName) // '_' // &
+                       trim(descriptor%timeFreq) // trim(suffix) // '.nc'
   end function generateFilename
 
   !< @}

@@ -29,7 +29,7 @@ contains
   !!
   subroutine abandonCell(errmsg)
 
-    use class_statevars,    only : class_rot
+    use class_statevars, only : class_rot
 
     implicit none
 
@@ -44,9 +44,9 @@ contains
     run_model = .false.
     if (present(errmsg)) then
       print * ,errmsg
-      print * ,'exiting cell: ',DLONROW,DLATROW
+      print * ,'exiting cell: ',DLONROW, DLATROW
     end if
-    print * ,'died on',DLONROW,DLATROW
+    print * ,'died on',DLONROW, DLATROW
     return
 
   end subroutine abandonCell
@@ -57,7 +57,7 @@ contains
   !> Calculate the daylength based on the latitude and day of year
   !! @author Joe Melton
   !!
-  real function findDaylength(solday,radl)
+  real function findDaylength(solday, radl)
 
     ! Joe Melton Dec 18 2015 (taken from phenlogy.f)
 
@@ -74,7 +74,7 @@ contains
     theta = 0.2163108 + 2.0 * atan(0.9671396 * tan(0.0086 * (solday - 186.0)))
     decli = asin(0.39795 * cos(theta))      ! declination ! note I see that CLASS does this also but with different formula...
     term = (sin(radl) * sin(decli))  /(cos(radl) * cos(decli))
-    term = max( - 1.0,min(term,1.0))
+    term = max( - 1.0, min(term, 1.0))
     findDaylength = 24.0 - (24.0/pi) * acos(term)
 
   end function findDaylength
@@ -85,9 +85,9 @@ contains
   !> Check if this year is a leap year
   !! @author Joe Melton
   !!
-  subroutine findLeapYears(iyear,leapnow,lastDOY)
+  subroutine findLeapYears(iyear, leapnow, lastDOY)
 
-    use classic_params,        only : monthend, mmday,monthdays
+    use classic_params, only : monthend, mmday, monthdays
 
     implicit none
 
@@ -95,11 +95,11 @@ contains
     integer, intent(in) :: iyear
     integer, intent(inout) :: lastDOY
 
-    if (mod(iyear,4) /= 0) then ! it is a common year
+    if (mod(iyear, 4) /= 0) then ! it is a common year
       leapnow = .false.
-    else if (mod(iyear,100) /= 0) then ! it is a leap year
+    else if (mod(iyear, 100) /= 0) then ! it is a leap year
       leapnow = .true.
-    else if (mod(iyear,400) /= 0) then ! it is a common year
+    else if (mod(iyear, 400) /= 0) then ! it is a common year
       leapnow = .false.
     else ! it is a leap year
       leapnow = .true.
@@ -116,14 +116,14 @@ contains
     ! in the code it will fail and print an error message to screen warning you
     ! that your file is not correct.
     if (leapnow) then ! adjust the calendar and set the error check.
-      monthdays = (/ 31,29,31,30,31,30,31,31,30,31,30,31 /)
-      monthend = (/ 0,31,60,91,121,152,182,213,244,274,305,335,366 /)
-      mmday = (/ 16,46,76,107,137,168,198,229,260,290,321,351 /)
+      monthdays = (/ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 /)
+      monthend = (/ 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 /)
+      mmday = (/ 16, 46, 76, 107, 137, 168, 198, 229, 260, 290, 321, 351 /)
 
     else
-      monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
-      monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
-      mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !< mid-month day
+      monthdays = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ] !< days in each month
+      monthend  = [ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 ] !< calender day at end of each month
+      mmday     = [ 16, 46, 75, 106, 136, 167, 197, 228, 259, 289, 320, 350 ] !< mid-month day
     end if
 
   end subroutine findLeapYears
@@ -140,7 +140,7 @@ contains
   !> is at the horizon, and 0.10 when it is at the zenith).
   !! @author Diana Verseghy
   !!
-  subroutine findCloudiness(nltest,imin,ihour,iday,lastDOY)
+  subroutine findCloudiness(nltest, imin, ihour, iday, lastDOY)
 
     use classic_params, only : pi
     use class_statevars, only : class_rot
@@ -175,15 +175,15 @@ contains
     decl = sin(2. * pi * (284. + day)/real(lastDOY)) * 23.45 * pi/180.
     hour = (real(ihour) + real(imin)/60.) * pi/12. - pi
 
-    do i = 1,nltest
+    do i = 1, nltest
 
       cosz = sin(radjrow(i)) * sin(decl) + cos(radjrow(i)) * cos(decl) * cos(hour)
 
-      cszrow(i) = sign(max(abs(cosz),1.0e-3),cosz)
+      cszrow(i) = sign(max(abs(cosz), 1.0e-3), cosz)
       if (prerow(i) > 0.) then
         xdiffus(i) = 1.0
       else
-        xdiffus(i) = max(0.0,min(1.0 - 0.9 * cosz,1.0))
+        xdiffus(i) = max(0.0, min(1.0 - 0.9 * cosz, 1.0))
       end if
       fclorow(i) = xdiffus(i)
     end do
@@ -207,7 +207,7 @@ contains
     real, dimension(5) :: parseTimeStamp
     real, intent(in) :: timeStamp
     real :: date, moment
-    integer :: intdate, day, month, year,totdays,t
+    integer :: intdate, day, month, year, totdays, t
 
     date = floor(timeStamp) ! remove the part days
     parseTimeStamp(4) = timeStamp - date ! save the part days
@@ -234,10 +234,10 @@ contains
   !> Finds the active layer depth and depth to the frozen water table.
   !! @author Joe Melton
   !!
-  subroutine findPermafrostVars(nltest,nmtest,iday)
+  subroutine findPermafrostVars(nltest, nmtest, iday)
 
-    use classic_params, only : ignd,tfrez,eftime,efoldfact
-    use class_statevars, only : class_rot,class_gat
+    use classic_params, only : ignd, tfrez, eftime, efoldfact
+    use class_statevars, only : class_rot, class_gat
 
     implicit none
 
@@ -275,22 +275,22 @@ contains
 
     actlyr = 0.0
     ftable = 0.0
-    do j = 1,ignd
+    do j = 1, ignd
       do i = 1, nltest
-        do m = 1,nmtest
-          if (abs(tbarrot(i,m,j) - tfrez) < 0.0001) then
-            if (isndrot(i,m,j) > - 3) then
-              actlyr(i,m) = actlyr(i,m) + (thlqrot(i,m,j) / (thlqrot(i,m,j) &
-                             + thicrot(i,m,j))) * dlzwrot(i,m,j)
-              ftable(i,m) = ftable(i,m) + (thicrot(i,m,j) / (thlqrot(i,m,j) &
-                             + thicrot(i,m,j) - thmrot(i,m,j))) * dlzwrot(i,m,j)
-              ! else if (isndgat(1,j)==-3) then
+        do m = 1, nmtest
+          if (abs(tbarrot(i, m, j) - tfrez) < 0.0001) then
+            if (isndrot(i, m, j) > - 3) then
+              actlyr(i, m) = actlyr(i, m) + (thlqrot(i, m, j) / (thlqrot(i, m, j) &
+                             + thicrot(i, m, j))) * dlzwrot(i, m, j)
+              ftable(i, m) = ftable(i, m) + (thicrot(i, m, j) / (thlqrot(i, m, j) &
+                             + thicrot(i, m, j) - thmrot(i, m, j))) * dlzwrot(i, m, j)
+              ! else if (isndgat(1, j)==-3) then
               !    actlyr=actlyr+delz(j)
               !    ftable=ftable+delz(j)
             end if
-          else if (tbarrot(i,m,j) > tfrez) then
-            actlyr(i,m) = actlyr(i,m) + delz(j)
-            ftable(i,m) = ftable(i,m) + delz(j)
+          else if (tbarrot(i, m, j) > tfrez) then
+            actlyr(i, m) = actlyr(i, m) + delz(j)
+            ftable(i, m) = ftable(i, m) + delz(j)
           end if
 
         end do
@@ -298,7 +298,7 @@ contains
     end do
 
     do i = 1, nltest
-      do m = 1,nmtest
+      do m = 1, nmtest
 
         ! Once a year we adjust the maximum annual active layer depth
         ! in an e-folding sense with the
@@ -307,13 +307,13 @@ contains
         ! to ensure roots are not placed into frozen soil layers.
 
         if ((dlatrow(i) > 0. .and. iday == 355) & ! Boreal :: winter solstice.
-        .or. (dlatrow(i) < 0. .and. iday == 172)) then  ! Austral winter solstice.
-          maxAnnualActLyr(i,m) = maxAnnualActLyr(i,m) * efoldfact &
-                             + actLyrThisYr(i,m) * (1.0 - efoldfact)
-          actLyrThisYr(i,m) = 0.0
+            .or. (dlatrow(i) < 0. .and. iday == 172)) then  ! Austral winter solstice.
+          maxAnnualActLyr(i, m) = maxAnnualActLyr(i, m) * efoldfact &
+                                  + actLyrThisYr(i, m) * (1.0 - efoldfact)
+          actLyrThisYr(i, m) = 0.0
         else
           ! Compare the present active layer depth against actLyrThisYr
-          actLyrThisYr(i,m) = max(actLyrThisYr(i,m), actlyr(i,m))
+          actLyrThisYr(i, m) = max(actLyrThisYr(i, m), actlyr(i, m))
         end if
       end do
     end do
@@ -326,7 +326,7 @@ contains
   !> As real :: numbers are not precise, this is a simple way to compare two reals
   !! @author Joe Melton
   !!
-  logical function closeEnough(num1, num2,error)
+  logical function closeEnough(num1, num2, error)
 
     implicit none
 

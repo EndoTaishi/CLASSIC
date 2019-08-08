@@ -24,13 +24,13 @@
 !!     *
 !!     *   v(mvidx) .le/>= x <=/>= v(mvidx+1)
 !!
-integer function MVIDX(V,N,X)
+integer function MVIDX(V, N, X)
   !-----------------------------------------------------------------------
   implicit none
 
-  real, intent(in) :: X,V(N)
+  real, intent(in) :: X, V(N)
   integer, intent(in) :: N
-  integer :: JL,JM,JU
+  integer :: JL, JM, JU
   !-----------------------------------------------------------------------
 
   if (X == V(1)) then

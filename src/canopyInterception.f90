@@ -4,10 +4,10 @@
 !! result of throughfall and unloading.
 !! @author D. Verseghy, M. Lazare, S. Fassnacht, E. Chan, P. Bartlett
 !
-subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! Formerly CANADD
-                              HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF, &
-                              CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP, &
-                              ILG,IL1,IL2, JL)
+subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP, & ! Formerly CANADD
+                              HTCC, ROFC, ROVG, PCPN, PCPG, FI, FSVF, &
+                              CWLCAP, CWFCAP, CMASS, RHOSNI, TSURX, RDRIP, SDRIP, &
+                              ILG, IL1, IL2, JL)
 
   !     * NOV 22/06 - E.CHAN/D.VERSEGHY. UNCONDITIONALLY SET TR AND TS.
   !     * JAN 05/05 - P.BARTLETT. CORRECT/REFINE SNOW INTERCEPTION
@@ -32,13 +32,13 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
   !     *                         ADJUST CANOPY TEMPERATURE AND HEAT
   !     *                         CAPACITY.
   !
-  use classic_params, only : DELT,TFREZ,SPHW,SPHICE,SPHVEG,RHOW
+  use classic_params, only : DELT, TFREZ, SPHW, SPHICE, SPHVEG, RHOW
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IWATER,ILG,IL1,IL2,JL
+  integer, intent(in) :: IWATER, ILG, IL1, IL2, JL
   integer :: I
   !
   !     * INPUT/OUTPUT ARRAYS.
@@ -48,9 +48,9 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
   real, intent(inout) :: S     (ILG)  !< Snowfall rate over subarea in question \f$[m s^{-1}]\f$
   real, intent(inout) :: TS    (ILG)  !< Temperature of snowfall [C]
   real, intent(inout) :: RAICAN(ILG)  !< Intercepted liquid water stored on the canopy
-  !! \f$[kg m^{-2}] (W_{l,c})\f$
+  !! \f$[kg m^{-2}] (W_{l, c})\f$
   real, intent(inout) :: SNOCAN(ILG)  !< Intercepted frozen water stored on the canopy
-  !! \f$[kg m^{-2}] (W_{f,c})\f$
+  !! \f$[kg m^{-2}] (W_{f, c})\f$
   real, intent(inout) :: TCAN  (ILG)  !< Temperature of vegetation canopy \f$[K] (T_c)\f$
   real, intent(inout) :: CHCAP (ILG)  !< Heat capacity of vegetation canopy \f$[J m^{-2} K^{-1}] (C_c)\f$
   real, intent(inout) :: HTCC  (ILG)  !< Internal energy change of canopy due to changes
@@ -69,19 +69,19 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
   real, intent(in) :: CWLCAP(ILG)  !< Interception storage capacity of vegetation for
   !! liquid water \f$[kg m^{-2}]\f$
   real, intent(in) :: CWFCAP(ILG)  !< Interception storage capacity of vegetation for
-  !! frozen water \f$[kg m^{-2}] (W_{f,max})\f$
+  !! frozen water \f$[kg m^{-2}] (W_{f, max})\f$
   real, intent(in) :: CMASS (ILG)  !< Mass of vegetation canopy \f$[kg m^{-2}]\f$
   real, intent(in) :: RHOSNI(ILG)  !< Density of fresh snow \f$[kg m^{-3}]\f$
   real, intent(in) :: TSURX (ILG)  !< Ground or snow surface temperature of subarea [K]
   !
   !     * INTERNAL WORK ARRAYS.
   !
-  real, intent(inout) :: RDRIP (ILG),    SDRIP (ILG)
+  real, intent(inout) :: RDRIP (ILG), SDRIP (ILG)
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: RTHRU,RINT,STHRU,SINT,TRCAN,TSCAN,RWXCES,SLOAD,SWXCES, &
-      SNUNLD,CHCAPI,TCANI
+  real :: RTHRU, RINT, STHRU, SINT, TRCAN, TSCAN, RWXCES, SLOAD, SWXCES, &
+          SNUNLD, CHCAPI, TCANI
 
   !-----------------------------------------------------------------------
   !>
@@ -100,11 +100,11 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
   !> the canopy temperature TCAN, and SINT at the snowfall temperature
   !> TS.
   !>
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     RDRIP(I) = 0.0
     SDRIP(I) = 0.0
     if (FI(I) > 0. .and. (R(I) > 0. .or. S(I) > 0. .or. &
-    RAICAN(I) > 0. .or. SNOCAN(I) > 0.)) then
+        RAICAN(I) > 0. .or. SNOCAN(I) > 0.)) then
       RTHRU = R(I) * FSVF(I)
       RINT = (R(I) - RTHRU) * DELT * RHOW
       STHRU = S(I) * FSVF(I)
@@ -140,7 +140,7 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
         RDRIP(I) = RWXCES / (DELT * RHOW)
         if ((RDRIP(I) + RTHRU) > 0.) then
           TR(I) = (RDRIP(I) * TRCAN + RTHRU * TR(I)) / &
-                       (RDRIP(I) + RTHRU)
+                  (RDRIP(I) + RTHRU)
         else
           TR(I) = 0.0
         end if
@@ -153,11 +153,11 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
       !
       !>
       !> Interception and unloading of snow on the canopy is calculated using a more complex :: method. The
-      !> amount of snow intercepted during a snowfall event over a time step, \f$\Delta W_{f,i}\f$ , or SLOAD, is obtained from
-      !> the initial intercepted snow amount \f$W_{f,c}\f$ and the interception capacity \f$W_{f,max}\f$ , following Hedstrom and
+      !> amount of snow intercepted during a snowfall event over a time step, \f$\Delta W_{f, i}\f$ , or SLOAD, is obtained from
+      !> the initial intercepted snow amount \f$W_{f, c}\f$ and the interception capacity \f$W_{f, max}\f$ , following Hedstrom and
       !> Pomeroy (1998), as:
       !>
-      !> \f$\Delta W_{f,i} = (W_{f,max} – W_{f,c} ) [1 – exp(-S_{int} /W_{f,max} )]\f$
+      !> \f$\Delta W_{f, i} = (W_{f, max} – W_{f, c} ) [1 – exp(-S_{int} /W_{f, max} )]\f$
       !>
       !> where \f$S_{int}\f$ is the amount of snow incident on the canopy
       !> during the time step. The amount of snow not stored by
@@ -166,10 +166,10 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
       !> from the canopy through wind gusts and snow
       !> densification. These effects of these processes are
       !> estimated using an empirical exponential relationship for
-      !> the snow unloading rate \f$W_{f,u}\f$ or SNUNLD, again following
+      !> the snow unloading rate \f$W_{f, u}\f$ or SNUNLD, again following
       !> Hedstrom and Pomeroy (1998):
       !>
-      !> \f$W_{f,u} = {W_{f,c} + \Delta W_{f,i} } exp (-U \Delta t)\f$
+      !> \f$W_{f, u} = {W_{f, c} + \Delta W_{f, i} } exp (-U \Delta t)\f$
       !>
       !> where U is a snow unloading coefficient, assigned a value
       !> of \f$0.1 d^{-1}\f$ or \f$1.157 * 10^{-6} s{-1}\f$. The sum of SWXCES and
@@ -188,15 +188,15 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
       SWXCES = SINT - SLOAD
       SNUNLD = (SLOAD + SNOCAN(I)) * (1.0 - EXP( - 1.157E-6 * DELT))  ! BDCS P?
       if (SWXCES > 0. .or. SNUNLD > 0.) then
-        SDRIP(I) = (MAX(SWXCES,0.0) + SNUNLD) / (DELT * RHOSNI(I))
+        SDRIP(I) = (MAX(SWXCES, 0.0) + SNUNLD) / (DELT * RHOSNI(I))
         if ((SDRIP(I) + STHRU) > 0.) then
           TS(I) = (SDRIP(I) * TSCAN + STHRU * TS(I)) / &
-                       (SDRIP(I) + STHRU)
+                  (SDRIP(I) + STHRU)
         else
           TS(I) = 0.0
         end if
         S(I) = SDRIP(I) + STHRU
-        SNOCAN(I) = SNOCAN(I) + SINT - MAX(SWXCES,0.0) - SNUNLD
+        SNOCAN(I) = SNOCAN(I) + SINT - MAX(SWXCES, 0.0) - SNUNLD
       else
         S(I) = STHRU
         SNOCAN(I) = SNOCAN(I) + SINT
@@ -241,30 +241,30 @@ subroutine canopyInterception(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP, & ! For
       TCANI   = TCAN(I)
       CHCAP(I) = RAICAN(I) * SPHW + SNOCAN(I) * SPHICE + CMASS(I) * SPHVEG
       TCAN (I) = (RAICAN(I) * SPHW * TRCAN + SNOCAN(I) * SPHICE * TSCAN + &
-      CMASS(I) * SPHVEG * TCAN(I)) / CHCAP(I)
+                 CMASS(I) * SPHVEG * TCAN(I)) / CHCAP(I)
       HTCC (I) = HTCC(I) + FI(I) * (CHCAP(I) * TCAN(I) - CHCAPI * TCANI) / &
-      DELT
+                 DELT
       if (R(I) > 0.0) then
         TR(I) = TR(I) - TFREZ
       else
-        TR(I) = MAX(TSURX(I) - TFREZ,0.0)
+        TR(I) = MAX(TSURX(I) - TFREZ, 0.0)
       end if
       if (S(I) > 0.0) then
         TS(I) = TS(I) - TFREZ
       else
-        TS(I) = MIN(TSURX(I) - TFREZ,0.0)
+        TS(I) = MIN(TSURX(I) - TFREZ, 0.0)
       end if
       if (IWATER == 2) then
         ROFC(I) = ROFC(I) + FI(I) * (RDRIP(I) * RHOW + SDRIP(I) * &
-                 RHOSNI(I))
+                  RHOSNI(I))
         PCPN(I) = PCPN(I) + FI(I) * (RDRIP(I) * RHOW + SDRIP(I) * &
-                 RHOSNI(I))
+                  RHOSNI(I))
       end if
       if (IWATER == 1) then
         ROFC(I) = ROFC(I) + FI(I) * (RDRIP(I) * RHOW + SDRIP(I) * &
-                 RHOSNI(I))
+                  RHOSNI(I))
         ROVG(I) = ROVG(I) + FI(I) * (RDRIP(I) * RHOW + SDRIP(I) * &
-                 RHOSNI(I))
+                  RHOSNI(I))
         PCPN(I) = PCPN(I) + FI(I) * SDRIP(I) * RHOSNI(I)
         PCPG(I) = PCPG(I) + FI(I) * RDRIP(I) * RHOW
       end if

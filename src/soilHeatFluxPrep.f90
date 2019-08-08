@@ -2,11 +2,11 @@
 !! Calculate coefficients for solution of heat conduction
 !! into soil.
 !
-subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
-                            GCONST,CPHCHG,IWATER, &
-                            TBAR,TCTOP,TCBOT, &
-                            FI,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW, &
-                            ISAND,ILG,IL1,IL2,JL,IG)
+subroutine soilHeatFluxPrep(A1, A2, B1, B2, C2, GDENOM, GCOEFF, & ! Formerly TNPREP
+                            GCONST, CPHCHG, IWATER, &
+                            TBAR, TCTOP, TCBOT, &
+                            FI, ZPOND, TBAR1P, DELZ, TCSNOW, ZSNOW, &
+                            ISAND, ILG, IL1, IL2, JL, IG)
   !
   !     * MAR 03/08 - D.VERSEGHY. ASSIGN TCTOP3 AND TCBOT3 ON THE BASIS
   !     *                         OF SUBAREA VALUES FROM energyBudgetPrep; REPLACE
@@ -15,7 +15,7 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   !     *                         VALUES.
   !     * AUG 16/06 - D.VERSEGHY. REMOVE TSTART.
   !     * MAY 24/05 - D.VERSEGHY. LIMIT DELZ3 TO <= 4.1 M.
-  !     * OCT 04/05 - D.VERSEGHY. USE THREE-LAYER TBAR,TCTOP,TCBOT.
+  !     * OCT 04/05 - D.VERSEGHY. USE THREE-LAYER TBAR, TCTOP, TCBOT.
   !     * NOV 04/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * AUG 06/02 - D.VERSEGHY. SHORTENED CLASS3 COMMON BLOCK,
   !     * JUN 17/02 - D.VERSEGHY. USE NEW LUMPED SOIL AND PONDED
@@ -35,7 +35,7 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   !     *                         BETWEEN SOIL LAYERS AND FRACTIONAL
   !     *                         ORGANIC MATTER CONTENT.
   !     * NOV 28/94 - M. LAZARE.  CLASS - VERSION 2.3.
-  !     *                         TCSATW,TCSATI DECLARED REAL(16).
+  !     *                         TCSATW, TCSATI DECLARED REAL(16).
   !     * APR 10/92 - M. LAZARE.  CLASS - VERSION 2.1.
   !     *                         DIVIDE PREVIOUS SUBROUTINE "T3LAYR"
   !     *                         INTO "soilHeatFluxPrep" AND "soilHeatFluxCleanup" AND
@@ -52,14 +52,14 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   !     *                         THE STARTING TEMPERATURE FOR THE
   !     *                         ITERATION IN "energBalVegSolve"/"energBalNoVegSolve".
 
-  use classic_params,        only : CLHMLT,CLHVAP
+  use classic_params, only : CLHMLT, CLHVAP
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL,IG
-  integer :: I,J
+  integer, intent(in) :: ILG, IL1, IL2, JL, IG
+  integer :: I, J
   !
   !     * OUTPUT ARRAYS.
   !
@@ -78,10 +78,10 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: TBAR  (ILG,IG) !< Temperatures of soil layers, averaged over modelled area [K]
-  real, intent(in) :: TCTOP (ILG,IG) !< Thermal conductivity of soil at top of
+  real, intent(in) :: TBAR  (ILG, IG) !< Temperatures of soil layers, averaged over modelled area [K]
+  real, intent(in) :: TCTOP (ILG, IG) !< Thermal conductivity of soil at top of
   !< layer \f$[W m^{-1} K^{-1}] (\lambda_t)\f$
-  real, intent(in) :: TCBOT (ILG,IG) !< Thermal conductivity of soil at bottom of
+  real, intent(in) :: TCBOT (ILG, IG) !< Thermal conductivity of soil at bottom of
   !< layer \f$[W m^{-1} K^{-1}] (\lambda_b)\f$
   !
   real, intent(in) :: FI    (ILG)    !< Fractional coverage of subarea in question on modelled area [ ]
@@ -90,25 +90,25 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
   real, intent(in) :: TCSNOW(ILG)    !< Thermal conductivity of snow \f$[W m^{-1} K^{-1}]\f$
   real, intent(in) :: ZSNOW (ILG)    !< Depth of snow pack [m]
   !
-  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
   !
   real, intent(in) :: DELZ  (IG)     !< Overall thickness of soil layer \f$[m] (\Delta_z)\f$
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: DELZ1,A3,B3,C3,TCZERO
+  real :: DELZ1, A3, B3, C3, TCZERO
   !
   !-----------------------------------------------------------------------
   !     * INITIALIZATION OF ARRAYS.
   !
 
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0.) then
       DELZ1 = DELZ(1) + ZPOND(I)
       if (ZPOND(I) > 0.5E-3) then
         IWATER(I) = 1
       else
-        if (ISAND(I,1) > - 4) then
+        if (ISAND(I, 1) > - 4) then
           IWATER(I) = 0
         else
           IWATER(I) = 2
@@ -122,24 +122,24 @@ subroutine soilHeatFluxPrep(A1,A2,B1,B2,C2,GDENOM,GCOEFF, & ! Formerly TNPREP
       end if
       !
       if (ZSNOW(I) > 0.0) then
-        TCZERO = 1.0 / (0.5 / TCSNOW(I) + 0.5 / TCTOP(I,1))
+        TCZERO = 1.0 / (0.5 / TCSNOW(I) + 0.5 / TCTOP(I, 1))
       else
-        TCZERO = TCTOP(I,1)
+        TCZERO = TCTOP(I, 1)
       end if
       A1(I) = DELZ1 / (3.0 * TCZERO)
       A2(I) = DELZ1 / (2.0 * TCZERO)
       A3 = A2(I)
-      B1(I) = DELZ1 / (6.0 * TCBOT(I,1))
-      B2(I) = DELZ1 / (2.0 * TCBOT(I,1)) + DELZ(2) / (3.0 * TCTOP(I,2))
-      B3 = DELZ1 / (2.0 * TCBOT(I,1)) + DELZ(2) / (2.0 * TCTOP(I,2))
-      C2(I) = DELZ(2) / (6.0 * TCBOT(I,2))
-      C3 = DELZ(2) / (2.0 * TCBOT(I,2)) + DELZ(3) / (3.0 * TCTOP(I,3))
+      B1(I) = DELZ1 / (6.0 * TCBOT(I, 1))
+      B2(I) = DELZ1 / (2.0 * TCBOT(I, 1)) + DELZ(2) / (3.0 * TCTOP(I, 2))
+      B3 = DELZ1 / (2.0 * TCBOT(I, 1)) + DELZ(2) / (2.0 * TCTOP(I, 2))
+      C2(I) = DELZ(2) / (6.0 * TCBOT(I, 2))
+      C3 = DELZ(2) / (2.0 * TCBOT(I, 2)) + DELZ(3) / (3.0 * TCTOP(I, 3))
       GDENOM(I) = A1(I) * (B2(I) * C3 - B3 * C2(I)) - B1(I) * (A2(I) * C3 - &
-      A3 * C2(I))
+                  A3 * C2(I))
       GCOEFF(I) = (B2(I) * C3 - B3 * C2(I) - B1(I) * (C3 - C2(I))) / GDENOM(I)
       GCONST(I) = ( - TBAR1P(I) * (B2(I) * C3 - B3 * C2(I)) + &
-      TBAR(I,2) * B1(I) * C3 - &
-      TBAR(I,3) * B1(I) * C2(I)) / GDENOM(I)
+                  TBAR(I, 2) * B1(I) * C3 - &
+                  TBAR(I, 3) * B1(I) * C2(I)) / GDENOM(I)
     end if
   end do ! loop 100
   !

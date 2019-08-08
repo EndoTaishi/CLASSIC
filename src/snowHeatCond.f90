@@ -1,14 +1,14 @@
 !> \file
 !! Calculate coefficients for solution of snow pack heat conduction.
 !
-subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
-                        FI,ZSNOW,TSNOW,TCSNOW, &
-                        ILG,IL1,IL2,JL)
+subroutine snowHeatCond(GCOEFFS, GCONSTS, CPHCHG, IWATER, & ! Formerly TSPREP
+                        FI, ZSNOW, TSNOW, TCSNOW, &
+                        ILG, IL1, IL2, JL)
   !
   !     * AUG 16/06 - D.VERSEGHY. MAJOR REVISION TO IMPLEMENT THERMAL
   !     *                         SEPARATION OF SNOW AND SOIL.
   !     * MAY 24/06 - D.VERSEGHY. LIMIT DELZ3 TO <= 4.1 M.
-  !     * OCT 04/05 - D.VERSEGHY. USE THREE-LAYER TBAR,TCTOP,TCBOT.
+  !     * OCT 04/05 - D.VERSEGHY. USE THREE-LAYER TBAR, TCTOP, TCBOT.
   !     * NOV 04/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * AUG 06/02 - D.VERSEGHY. SHORTENED CLASS3 COMMON BLOCK.
   !     * JUN 17/02 - D.VERSEGHY. USE NEW LUMPED SOIL AND PONDED WATER
@@ -23,7 +23,7 @@ subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
   !     *                         BETWEEN SOIL LAYERS AND FRACTIONAL
   !     *                         ORGANIC MATTER CONTENT.
   !     * NOV 28/94 - M. LAZARE.  CLASS - VERSION 2.3.
-  !     *                         TCSATW,TCSATI DECLARED REAL(16).
+  !     *                         TCSATW, TCSATI DECLARED REAL(16).
   !     * APR 10/92 - M. LAZARE.  CLASS - VERSION 2.1.
   !     *                         DIVIDE PREVIOUS SUBROUTINE "T4LAYR"
   !     *                         INTO "snowHeatCond" AND "snowTempUpdate" AND
@@ -40,14 +40,14 @@ subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
   !     *                         AND THE STARTING TEMPERATURE FOR THE
   !     *                         ITERATION IN "energBalVegSolve"/"energBalNoVegSolve".
   !
-  use classic_params,      only : CLHMLT,CLHVAP
+  use classic_params, only : CLHMLT, CLHVAP
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL
-  integer :: I,J
+  integer, intent(in) :: ILG, IL1, IL2, JL
+  integer :: I, J
   !
   !     * OUTPUT ARRAYS.
   !
@@ -71,7 +71,7 @@ subroutine snowHeatCond(GCOEFFS,GCONSTS,CPHCHG,IWATER, & ! Formerly TSPREP
   !
   !     * CALCULATE COEFFICIENTS.
   !
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0.) then
       GCOEFFS(I) = 3.0 * TCSNOW(I) / ZSNOW(I)
       GCONSTS(I) = - 3.0 * TCSNOW(I) * TSNOW(I) / ZSNOW(I)

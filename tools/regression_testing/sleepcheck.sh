@@ -1,7 +1,7 @@
 #!/bin/bash
 JOB_ID=$1
 echo "Job ID: $JOB_ID"
-sleep 5
+sleep 20
 let sleepcount=0
 while [ $sleepcount -lt 1080 ] ;
 do

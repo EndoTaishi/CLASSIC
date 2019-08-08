@@ -2,8 +2,8 @@
 !! Calculates near surface output variables
 !! @author Y. Delage, D. Verseghy, M. Lazare, J. Melton
 !
-subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
-                  Z0M,Z0E,F,ZA,ZU,ZT,ILG,IL1,IL2,JL)
+subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
+                  Z0M, Z0E, F, ZA, ZU, ZT, ILG, IL1, IL2, JL)
 
   !     * JUN 23/14 - M.LAZARE.   New version for gcm18+:
   !     *                         - Bugfix to calculation of
@@ -23,14 +23,14 @@ subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
   !     * NOV 04/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * JUL 19/96 - Y. DELAGE.
   !     ------------------------------------
-  use classic_params, only : GRAV,VKC,VMIN
+  use classic_params, only : GRAV, VKC, VMIN
 
   implicit none
   !
   !     * INTEGER CONSTANTS
   !
   integer, intent(in) :: ILG   !< NUMBER OF POINTS TO BE TREATED
-  integer, intent(in) :: IL1,IL2,JL
+  integer, intent(in) :: IL1, IL2, JL
   integer :: I
   !
   !     * OUTPUT FIELDS
@@ -59,9 +59,9 @@ subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
   !
   !     TEMPORARY VARIABLES
   !
-  real :: PR,WSPD,CM,US,TS,QS,L,UVA,RATIO,UVU,TTA,CE
+  real :: PR, WSPD, CM, US, TS, QS, L, UVA, RATIO, UVU, TTA, CE
   !
-  real :: PSM,PSE,Y,PIM,PIE,X
+  real :: PSM, PSE, Y, PIM, PIE, X
 
   !     * STABILITY FUNCTIONS FOR THE STABLE CASE
 
@@ -75,12 +75,12 @@ subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
   PIE(X) = 2.0 * LOG(1.0 + X ** 2)
 
   PR = 1.0
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (F(I) > 0.) then
 
       !     * CALCULATION OF SURFACE FLUXES AND MONIN-OBUKHOV LENGTH
 
-      WSPD = MAX(VMIN,SQRT(UA(I) ** 2 + VA(I) ** 2))
+      WSPD = MAX(VMIN, SQRT(UA(I) ** 2 + VA(I) ** 2))
       CM = SQRT(CDM(I))
       US = CM * WSPD
 
@@ -107,12 +107,12 @@ subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
         UVA = US / VKC * (LOG(ZA(I) / Z0M(I)) - PSM(ZA(I) / L) + PSM(Z0M(I) / L))
         RATIO = WSPD / UVA
         UVU = US / VKC * (LOG((ZU(I) + Z0M(I)) / Z0M(I)) - PSM((ZU(I) + Z0M(I)) / L) &
-        + PSM(Z0M(I) / L)) * RATIO
+              + PSM(Z0M(I) / L)) * RATIO
         TTA = T0(I) + TS / VKC * PR * (LOG(ZA(I) / Z0E(I)) - PSE(ZA(I) / L) + &
-           PSE(Z0E(I) / L))
-        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)),1.E-4),TTA - T0(I))
+              PSE(Z0E(I) / L))
+        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)), 1.E-4), TTA - T0(I))
         CE = (LOG((ZT(I) + Z0M(I)) / Z0E(I)) - PSE((ZT(I) + Z0M(I)) / L) &
-       + PSE(Z0E(I) / L)) * RATIO * PR / VKC
+             + PSE(Z0E(I) / L)) * RATIO * PR / VKC
 
       else
 
@@ -121,13 +121,13 @@ subroutine SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0, &
         UVA = US / VKC * (LOG(ZA(I) / Z0M(I)) - PIM(Y(ZA(I) / L)) + PIM(Y(Z0M(I) / L)))
         RATIO = WSPD / UVA
         UVU = US / VKC * (LOG((ZU(I) + Z0M(I)) / Z0M(I)) - PIM(Y((ZU(I) + Z0M(I)) / L)) &
-         + PIM(Y(Z0M(I) / L))) * RATIO
+              + PIM(Y(Z0M(I) / L))) * RATIO
 
         TTA = T0(I) + TS / VKC * PR * (LOG(ZA(I) / Z0E(I)) - PIE(Y(ZA(I) / L)) + &
-           PIE(Y(Z0E(I) / L)))
-        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)),1.E-4),TTA - T0(I))
+              PIE(Y(Z0E(I) / L)))
+        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)), 1.E-4), TTA - T0(I))
         CE = (LOG((ZT(I) + Z0M(I)) / Z0E(I)) - PIE(Y((ZT(I) + Z0M(I)) / L)) &
-       + PIE(Y(Z0E(I) / L))) * RATIO * PR / VKC
+             + PIE(Y(Z0E(I) / L))) * RATIO * PR / VKC
 
       end if
       !

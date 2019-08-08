@@ -1,14 +1,14 @@
 !> \file
 !! Net Photosynthesis and canopy conductance
 !
-subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & ! Formerly PHTSYN3
-                                 CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND, &
-                                 TA,   RMAT,   COSZS, XDIFFUS,  ILG, &
-                                 IL1,    IL2,   IG,     ICC,   ISNOW, SLAI, &
-                                 THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS, &
-  !  ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
-                                 RC,  CO2I1, CO2I2, AN_VEG, RML_VEG, &
-                                 DAYL,DAYL_MAX)
+subroutine photosynCanopyConduct(AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! Formerly PHTSYN3
+                                 CFLUX, QA, QSWV, IC, THLIQ, ISAND, &
+                                 TA, RMAT, COSZS, XDIFFUS, ILG, &
+                                 IL1, IL2, IG, ICC, ISNOW, SLAI, &
+                                 THFC, THLW, FCANCMX, L2MAX, NOL2PFTS, &
+                                 !  ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
+                                 RC, CO2I1, CO2I2, AN_VEG, RML_VEG, &
+                                 DAYL, DAYL_MAX)
 
   !     HISTORY:
   !
@@ -51,7 +51,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !     *                M.LAZARE.   - GAMMA_W NOW 0.25 INSTEAD OF 0.425.
   !     *                            - QA IS NOW INPUT WITH RH AS AN
   !     *                              ALLOCATABLE ARRAY, INSTEAD OF RH
-  !     *                              AS INPUT AND EA,EASAT AS ALLOCATABLE
+  !     *                              AS INPUT AND EA, EASAT AS ALLOCATABLE
   !     *                              ARRAYS. THE LATTER TWO DON'T HAVE
   !     *                              TO BE ARRAYS TO CALCULATE VPD AND
   !     *                              DOING IT THIS WAY IS MORE CONSISTENT
@@ -63,23 +63,23 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !
   !     ------------------------------------------------------------------
   !
-  use classic_params, only : KN,TUP,TLOW,alpha_phtsyn,omega_phtsyn, &
-                         ISC4,MM,BB,VPD0,SN,SMSCALE,VMAX,REQITER, &
-                         CO2IMAX,BETA1,BETA2,INICO2I,CHI,RMLCOEFF, &
-                         GAMMA_W,GAMMA_M,TFREZ,ZERO,STD_PRESS
+  use classic_params, only : KN, TUP, TLOW, alpha_phtsyn, omega_phtsyn, &
+                         ISC4, MM, BB, VPD0, SN, SMSCALE, VMAX, REQITER, &
+                         CO2IMAX, BETA1, BETA2, INICO2I, CHI, RMLCOEFF, &
+                         GAMMA_W, GAMMA_M, TFREZ, ZERO, STD_PRESS
 
   implicit none
   !
   integer, DIMENSION(:,:), ALLOCATABLE  :: USESLAI
   integer, DIMENSION(:), ALLOCATABLE    :: SORT
 
-  real, DIMENSION(:), ALLOCATABLE       :: FC_TEST, SIGMA,  TGAMMA, &
+  real, DIMENSION(:), ALLOCATABLE       :: FC_TEST, SIGMA, TGAMMA, &
       KC, KO, IPAR, GB, RH, VPD, O2_CONC, CO2A, USEBB
 
   real, DIMENSION(:,:), ALLOCATABLE     :: USEAILCG, SM_FUNC, &
-      AVE_SM_FUNC, VMAXC, JE3,SM_FUNC2,TOT_RMAT, &
+      AVE_SM_FUNC, VMAXC, JE3, SM_FUNC2, TOT_RMAT, &
       VMUNS1, VMUNS2, VMUNS3, VMUNS, VM, CO2I, PREV_CO2I, &
-      FPAR, JC,  JC1, JC2, JC3, JE, JE1, JE2, JS, A_VEG, &
+      FPAR, JC, JC1, JC2, JC3, JE, JE1, JE2, JS, A_VEG, &
       RC_VEG, GCTU, GCMIN, GCMAX, VPD_TERM, CO2LS, GC
   !    -----------------------------------------------------------------
   !                 VARIABLES USED ONLY FOR THE TWO LEAF MODEL
@@ -107,31 +107,31 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   integer, intent(in) :: L2MAX    !< MAX. NUMBER OF LEVEL 2 PFTs
   integer :: PS_COUP, LEAFOPT, K1, K2, ICOUNT, IT_COUNT, I, J, M, N  !<
   !
-  real, intent(in) :: FCANC(ILG,ICC) !< FRACTIONAL COVERAGE OF CTEM's 9 PFTs
-  real, intent(in) :: AILCG(ILG,ICC) !< GREEN LEAF AREA INDEX FOR USE BY PHOTOSYNTHESIS, \f$M^2/M^2\f$
+  real, intent(in) :: FCANC(ILG, ICC) !< FRACTIONAL COVERAGE OF CTEM's 9 PFTs
+  real, intent(in) :: AILCG(ILG, ICC) !< GREEN LEAF AREA INDEX FOR USE BY PHOTOSYNTHESIS, \f$M^2/M^2\f$
   real, intent(in) :: TCAN(ILG)      !< CANOPY TEMPERATURE, KELVIN
   real, intent(in) :: FC(ILG)        !< SUM OF ALL FCANC OVER A GIVEN SUB-AREA
   real, intent(in) :: CFLUX(ILG)     !< AERODYNAMIC CONDUCTANCE, M/S
-  real, intent(in) :: SLAI(ILG,ICC)  !< SCREEN LEVEL HUMIDITY IN KG/KG - STORAGE LAI. THIS LAI IS USED FOR PHTSYN EVEN IF ACTUAL LAI IS ZERO. ESTIMATE OF NET PHOTOSYNTHESIS BASED ON SLAI IS USED FOR INITIATING LEAF ONSET. SEE PHENOLGY SUBROUTINE FOR MORE DETAILS.
+  real, intent(in) :: SLAI(ILG, ICC)  !< SCREEN LEVEL HUMIDITY IN KG/KG - STORAGE LAI. THIS LAI IS USED FOR PHTSYN EVEN IF ACTUAL LAI IS ZERO. ESTIMATE OF NET PHOTOSYNTHESIS BASED ON SLAI IS USED FOR INITIATING LEAF ONSET. SEE PHENOLGY SUBROUTINE FOR MORE DETAILS.
   real, intent(in) :: QA(ILG)        !<
   !
   real, intent(in) :: CO2CONC(ILG) !< ATMOS. \f$CO_2\f$ IN PPM, AND THEN CONVERT IT TO PARTIAL PRESSURE, PASCALS, CO2A, FOR USE IN THIS SUBROUTINE
   real :: Q10_FUNCN        !<
   real :: Q10_FUNC         !<
   real, intent(in) :: PRESSG(ILG)      !< ATMOS. PRESSURE, PASCALS
-  real, intent(out) :: RML_VEG(ILG,ICC) !< LEAF RESPIRATION RATE, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) FOR EACH PFT
-  real, intent(out) :: AN_VEG(ILG,ICC)  !< NET PHOTOSYNTHESIS RATE, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) FOR EACH PFT
+  real, intent(out) :: RML_VEG(ILG, ICC) !< LEAF RESPIRATION RATE, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) FOR EACH PFT
+  real, intent(out) :: AN_VEG(ILG, ICC)  !< NET PHOTOSYNTHESIS RATE, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$) FOR EACH PFT
   real, intent(in) :: QSWV(ILG)        !< ABSORBED VISIBLE PART OF SHORTWAVE RADIATION, \f$W/M^2\f$
   real, intent(in) :: TA(ILG)          !< AIR TEMPERATURE IN KELVINS
-  real, intent(in) :: RMAT(ILG,ICC,IG) !< FRACTION OF ROOTS IN EACH LAYER (grid cell, vegetation, layer)
-  real, intent(out) :: CO2I1(ILG,ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FROM THE PREVIOUS TIME STEP WHICH GETS UPDATED FOR THE SINGLE LEAF OR THE SUNLIT PART OF THE TWO LEAF MODEL
-  real, intent(out) :: CO2I2(ILG,ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FOR THE SHADED PART OF THE TWO LEAF MODEL FROM THE PREVIOUS TIME STEP
+  real, intent(in) :: RMAT(ILG, ICC, IG) !< FRACTION OF ROOTS IN EACH LAYER (grid cell, vegetation, layer)
+  real, intent(out) :: CO2I1(ILG, ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FROM THE PREVIOUS TIME STEP WHICH GETS UPDATED FOR THE SINGLE LEAF OR THE SUNLIT PART OF THE TWO LEAF MODEL
+  real, intent(out) :: CO2I2(ILG, ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FOR THE SHADED PART OF THE TWO LEAF MODEL FROM THE PREVIOUS TIME STEP
   real :: CA               !<
   real :: CB               !<
-  real, intent(in) :: THLIQ(ILG,IG)    !< LIQUID MOIS. CONTENT OF 3 SOIL LAYERS
-  real, intent(in) :: THFC(ILG,IG)     !< SOIL FIELD CAPACITY.
-  real, intent(in) :: THLW(ILG,IG)     !< SOIL WILT CAPACITY.
-  real, intent(in) :: FCANCMX(ILG,ICC) !< MAX. FRACTIONAL COVERAGES OF CTEM's 8 PFTs. THIS IS DIFFERENT FROM FCANC AND FCANCS (WHICH MAY VARY WITH SNOW DEPTH).
+  real, intent(in) :: THLIQ(ILG, IG)    !< LIQUID MOIS. CONTENT OF 3 SOIL LAYERS
+  real, intent(in) :: THFC(ILG, IG)     !< SOIL FIELD CAPACITY.
+  real, intent(in) :: THLW(ILG, IG)     !< SOIL WILT CAPACITY.
+  real, intent(in) :: FCANCMX(ILG, ICC) !< MAX. FRACTIONAL COVERAGES OF CTEM's 8 PFTs. THIS IS DIFFERENT FROM FCANC AND FCANCS (WHICH MAY VARY WITH SNOW DEPTH).
   !< FCANCMX DOESN'T CHANGE, UNLESS OF COURSE ITS CHANGED BY LAND USE CHANGE OR DYNAMIC VEGETATION.
   real :: Q10_FUNCD        !<
   !
@@ -148,7 +148,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   real :: TEMP_JP
   real ::  TEMP_AN
   !
-  integer, intent(in) :: ISAND(ILG,IG) !< SAND INDEX.
+  integer, intent(in) :: ISAND(ILG, IG) !< SAND INDEX.
   real, intent(in) :: DAYL_MAX(ILG)      !< MAXIMUM DAYLENGTH FOR THAT LOCATION
   real, intent(in) :: DAYL(ILG)          !< DAYLENGTH FOR THAT LOCATION
   real :: use_vmax
@@ -183,70 +183,70 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !     --------------------------------------------------------------
   !
   !
-  ALLOCATE(USESLAI(ILG,ICC))
+  ALLOCATE(USESLAI(ILG, ICC))
   ALLOCATE(SORT(ICC))
   ALLOCATE(USEBB(ICC))
 
   ALLOCATE(FC_TEST(ILG))
-  ALLOCATE(USEAILCG(ILG,ICC))
-  ALLOCATE(SM_FUNC(ILG,IG))
-  ALLOCATE(SM_FUNC2(ILG,IG))
-  ALLOCATE(AVE_SM_FUNC(ILG,ICC))
-  ALLOCATE(TOT_RMAT(ILG,ICC))
+  ALLOCATE(USEAILCG(ILG, ICC))
+  ALLOCATE(SM_FUNC(ILG, IG))
+  ALLOCATE(SM_FUNC2(ILG, IG))
+  ALLOCATE(AVE_SM_FUNC(ILG, ICC))
+  ALLOCATE(TOT_RMAT(ILG, ICC))
 
-  ALLOCATE(VMAXC(ILG,ICC))
-  ALLOCATE(JE3(ILG,ICC))
-  ALLOCATE(VMUNS1(ILG,ICC), VMUNS2(ILG,ICC), VMUNS3(ILG,ICC))
-  ALLOCATE(VMUNS(ILG,ICC))
-  ALLOCATE(VM(ILG,ICC))
+  ALLOCATE(VMAXC(ILG, ICC))
+  ALLOCATE(JE3(ILG, ICC))
+  ALLOCATE(VMUNS1(ILG, ICC), VMUNS2(ILG, ICC), VMUNS3(ILG, ICC))
+  ALLOCATE(VMUNS(ILG, ICC))
+  ALLOCATE(VM(ILG, ICC))
   ALLOCATE(SIGMA(ILG))
   ALLOCATE(TGAMMA(ILG))
   ALLOCATE(KC(ILG))
   ALLOCATE(KO(ILG))
-  ALLOCATE(CO2I(ILG,ICC), PREV_CO2I(ILG,ICC))
-  ALLOCATE(FPAR(ILG,ICC))
-  ALLOCATE(JC(ILG,ICC))
-  ALLOCATE(JC1(ILG,ICC), JC2(ILG,ICC), JC3(ILG,ICC))
-  ALLOCATE(JE(ILG,ICC), JE1(ILG,ICC), JE2(ILG,ICC))
+  ALLOCATE(CO2I(ILG, ICC), PREV_CO2I(ILG, ICC))
+  ALLOCATE(FPAR(ILG, ICC))
+  ALLOCATE(JC(ILG, ICC))
+  ALLOCATE(JC1(ILG, ICC), JC2(ILG, ICC), JC3(ILG, ICC))
+  ALLOCATE(JE(ILG, ICC), JE1(ILG, ICC), JE2(ILG, ICC))
   ALLOCATE(IPAR(ILG))
-  ALLOCATE(JS(ILG,ICC))
-  ALLOCATE(A_VEG(ILG,ICC))
+  ALLOCATE(JS(ILG, ICC))
+  ALLOCATE(A_VEG(ILG, ICC))
   ALLOCATE(GB(ILG))
-  ALLOCATE(RC_VEG(ILG,ICC))
-  ALLOCATE(GCTU(ILG,ICC))
-  ALLOCATE(GCMIN(ILG,ICC))
-  ALLOCATE(GCMAX(ILG,ICC))
+  ALLOCATE(RC_VEG(ILG, ICC))
+  ALLOCATE(GCTU(ILG, ICC))
+  ALLOCATE(GCMIN(ILG, ICC))
+  ALLOCATE(GCMAX(ILG, ICC))
   ALLOCATE(RH(ILG))
-  ALLOCATE(VPD(ILG), VPD_TERM(ILG,ICC))
+  ALLOCATE(VPD(ILG), VPD_TERM(ILG, ICC))
 
-  ALLOCATE(CO2LS(ILG,ICC))
-  ALLOCATE(GC(ILG,ICC))
+  ALLOCATE(CO2LS(ILG, ICC))
+  ALLOCATE(GC(ILG, ICC))
   ALLOCATE(O2_CONC(ILG))
   ALLOCATE(CO2A(ILG))
 
-  ALLOCATE(GDIR(ILG,ICC),   KB(ILG,ICC))
-  ALLOCATE(FPAR_SUN(ILG,ICC),   FPAR_SHA(ILG,ICC))
-  ALLOCATE(VMAXC_SUN(ILG,ICC), VMAXC_SHA(ILG,ICC))
-  ALLOCATE(VMUNS1_SUN(ILG,ICC),  VMUNS1_SHA(ILG,ICC))
-  ALLOCATE(VMUNS_SUN(ILG,ICC),  VMUNS_SHA(ILG,ICC))
-  ALLOCATE(VM_SUN(ILG,ICC), VM_SHA(ILG,ICC))
-  ALLOCATE(CO2I_SUN(ILG,ICC), PREV_CO2I_SUN(ILG,ICC))
-  ALLOCATE(CO2I_SHA(ILG,ICC), PREV_CO2I_SHA(ILG,ICC))
-  ALLOCATE(JC1_SUN(ILG,ICC),    JC1_SHA(ILG,ICC))
-  ALLOCATE(JC3_SUN(ILG,ICC),    JC3_SHA(ILG,ICC))
-  ALLOCATE(JC_SUN(ILG,ICC),      JC_SHA(ILG,ICC))
-  ALLOCATE(IPAR_SUN(ILG),       IPAR_SHA(ILG))
-  ALLOCATE(JE1_SUN(ILG,ICC), JE1_SHA(ILG,ICC))
-  ALLOCATE(JE2_SUN(ILG,ICC), JE2_SHA(ILG,ICC))
-  ALLOCATE(JE_SUN(ILG,ICC),  JE_SHA(ILG,ICC))
-  ALLOCATE(JS_SUN(ILG,ICC), JS_SHA(ILG,ICC))
-  ALLOCATE(A_VEG_SUN(ILG,ICC),   A_VEG_SHA(ILG,ICC))
-  ALLOCATE(RML_SUN(ILG,ICC),    RML_SHA(ILG,ICC))
-  ALLOCATE(AN_SUN(ILG,ICC), AN_SHA(ILG,ICC))
-  ALLOCATE(CO2LS_SUN(ILG,ICC),   CO2LS_SHA(ILG,ICC))
-  ALLOCATE(AILCG_SUN(ILG,ICC),  AILCG_SHA(ILG,ICC))
-  ALLOCATE(GC_SUN(ILG,ICC), GC_SHA(ILG,ICC))
-  ALLOCATE(GCTU_SUN(ILG,ICC),    GCTU_SHA(ILG,ICC))
+  ALLOCATE(GDIR(ILG, ICC), KB(ILG, ICC))
+  ALLOCATE(FPAR_SUN(ILG, ICC), FPAR_SHA(ILG, ICC))
+  ALLOCATE(VMAXC_SUN(ILG, ICC), VMAXC_SHA(ILG, ICC))
+  ALLOCATE(VMUNS1_SUN(ILG, ICC), VMUNS1_SHA(ILG, ICC))
+  ALLOCATE(VMUNS_SUN(ILG, ICC), VMUNS_SHA(ILG, ICC))
+  ALLOCATE(VM_SUN(ILG, ICC), VM_SHA(ILG, ICC))
+  ALLOCATE(CO2I_SUN(ILG, ICC), PREV_CO2I_SUN(ILG, ICC))
+  ALLOCATE(CO2I_SHA(ILG, ICC), PREV_CO2I_SHA(ILG, ICC))
+  ALLOCATE(JC1_SUN(ILG, ICC), JC1_SHA(ILG, ICC))
+  ALLOCATE(JC3_SUN(ILG, ICC), JC3_SHA(ILG, ICC))
+  ALLOCATE(JC_SUN(ILG, ICC), JC_SHA(ILG, ICC))
+  ALLOCATE(IPAR_SUN(ILG), IPAR_SHA(ILG))
+  ALLOCATE(JE1_SUN(ILG, ICC), JE1_SHA(ILG, ICC))
+  ALLOCATE(JE2_SUN(ILG, ICC), JE2_SHA(ILG, ICC))
+  ALLOCATE(JE_SUN(ILG, ICC), JE_SHA(ILG, ICC))
+  ALLOCATE(JS_SUN(ILG, ICC), JS_SHA(ILG, ICC))
+  ALLOCATE(A_VEG_SUN(ILG, ICC), A_VEG_SHA(ILG, ICC))
+  ALLOCATE(RML_SUN(ILG, ICC), RML_SHA(ILG, ICC))
+  ALLOCATE(AN_SUN(ILG, ICC), AN_SHA(ILG, ICC))
+  ALLOCATE(CO2LS_SUN(ILG, ICC), CO2LS_SHA(ILG, ICC))
+  ALLOCATE(AILCG_SUN(ILG, ICC), AILCG_SHA(ILG, ICC))
+  ALLOCATE(GC_SUN(ILG, ICC), GC_SHA(ILG, ICC))
+  ALLOCATE(GCTU_SUN(ILG, ICC), GCTU_SHA(ILG, ICC))
 
   !
   !     --------------------------------------------------------------
@@ -270,32 +270,32 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
     do J = 1, ICC
       USEBB(J) = 0.0
       do I = IL1, IL2
-        FPAR(I,J) = 0.0
-        VMAXC(I,J) = 0.0
-        VMUNS1(I,J) = 0.0
-        VMUNS2(I,J) = 0.0
-        VMUNS3(I,J) = 0.0
-        VMUNS(I,J) = 0.0
-        AVE_SM_FUNC(I,J) = 0.0
-        TOT_RMAT(I,J) = 0.0
-        VM(I,J) = 0.0
-        JC1(I,J) = 0.0
-        JC2(I,J) = 0.0
-        JC3(I,J) = 0.0
-        JC(I,J) = 0.0
-        JE(I,J) = 0.0
-        JE1(I,J) = 0.0
-        JE2(I,J) = 0.0
-        JS(I,J) = 0.0
-        A_VEG(I,J) = 0.0
-        RML_VEG(I,J) = 0.0
-        AN_VEG(I,J) = 0.0
-        CO2LS(I,J) = 0.0
-        GC(I,J) = 0.0
-        GCTU(I,J) = 0.0
-        RC_VEG(I,J) = 5000.0
-        USESLAI(I,J) = 0
-        USEAILCG(I,J) = 0.0
+        FPAR(I, J) = 0.0
+        VMAXC(I, J) = 0.0
+        VMUNS1(I, J) = 0.0
+        VMUNS2(I, J) = 0.0
+        VMUNS3(I, J) = 0.0
+        VMUNS(I, J) = 0.0
+        AVE_SM_FUNC(I, J) = 0.0
+        TOT_RMAT(I, J) = 0.0
+        VM(I, J) = 0.0
+        JC1(I, J) = 0.0
+        JC2(I, J) = 0.0
+        JC3(I, J) = 0.0
+        JC(I, J) = 0.0
+        JE(I, J) = 0.0
+        JE1(I, J) = 0.0
+        JE2(I, J) = 0.0
+        JS(I, J) = 0.0
+        A_VEG(I, J) = 0.0
+        RML_VEG(I, J) = 0.0
+        AN_VEG(I, J) = 0.0
+        CO2LS(I, J) = 0.0
+        GC(I, J) = 0.0
+        GCTU(I, J) = 0.0
+        RC_VEG(I, J) = 5000.0
+        USESLAI(I, J) = 0
+        USEAILCG(I, J) = 0.0
       end do ! loop 201
     end do ! loop 200
     !
@@ -318,53 +318,53 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
     do J = 1, ICC
       USEBB(J) = 0.0
       do I = IL1, IL2
-        GDIR(I,J) = 0.0
-        KB(I,J) = 0.0
-        AILCG_SUN(I,J) = 0.0
-        AILCG_SHA(I,J) = 0.0
-        FPAR_SUN(I,J) = 0.0
-        FPAR_SHA(I,J) = 0.0
-        VMAXC_SUN(I,J) = 0.0
-        VMAXC_SHA(I,J) = 0.0
-        VMUNS1_SUN(I,J) = 0.0
-        VMUNS1_SHA(I,J) = 0.0
-        VMUNS_SUN(I,J) = 0.0
-        VMUNS_SHA(I,J) = 0.0
-        AVE_SM_FUNC(I,J) = 0.0
-        TOT_RMAT(I,J) = 0.0
-        VM_SUN(I,J) = 0.0
-        VM_SHA(I,J) = 0.0
-        JC1_SUN(I,J) = 0.0
-        JC1_SHA(I,J) = 0.0
-        JC3_SUN(I,J) = 0.0
-        JC3_SHA(I,J) = 0.0
-        JC_SUN(I,J) = 0.0
-        JC_SHA(I,J) = 0.0
-        JE_SUN(I,J) = 0.0
-        JE_SHA(I,J) = 0.0
-        JE1_SUN(I,J) = 0.0
-        JE1_SHA(I,J) = 0.0
-        JE2_SUN(I,J) = 0.0
-        JE2_SHA(I,J) = 0.0
-        JS_SUN(I,J) = 0.0
-        JS_SHA(I,J) = 0.0
-        A_VEG_SUN(I,J) = 0.0
-        A_VEG_SHA(I,J) = 0.0
-        RML_SUN(I,J) = 0.0
-        RML_SHA(I,J) = 0.0
-        AN_SUN(I,J) = 0.0
-        AN_SHA(I,J) = 0.0
-        CO2LS_SUN(I,J) = 0.0
-        CO2LS_SHA(I,J) = 0.0
-        GC_SUN(I,J) = 0.0
-        GC_SHA(I,J) = 0.0
-        GCTU_SUN(I,J) = 0.0
-        GCTU_SHA(I,J) = 0.0
-        RC_VEG(I,J) = 5000.0
-        AN_VEG(I,J) = 0.0
-        RML_VEG(I,J) = 0.0
-        USESLAI(I,J) = 0
-        USEAILCG(I,J) = 0.0
+        GDIR(I, J) = 0.0
+        KB(I, J) = 0.0
+        AILCG_SUN(I, J) = 0.0
+        AILCG_SHA(I, J) = 0.0
+        FPAR_SUN(I, J) = 0.0
+        FPAR_SHA(I, J) = 0.0
+        VMAXC_SUN(I, J) = 0.0
+        VMAXC_SHA(I, J) = 0.0
+        VMUNS1_SUN(I, J) = 0.0
+        VMUNS1_SHA(I, J) = 0.0
+        VMUNS_SUN(I, J) = 0.0
+        VMUNS_SHA(I, J) = 0.0
+        AVE_SM_FUNC(I, J) = 0.0
+        TOT_RMAT(I, J) = 0.0
+        VM_SUN(I, J) = 0.0
+        VM_SHA(I, J) = 0.0
+        JC1_SUN(I, J) = 0.0
+        JC1_SHA(I, J) = 0.0
+        JC3_SUN(I, J) = 0.0
+        JC3_SHA(I, J) = 0.0
+        JC_SUN(I, J) = 0.0
+        JC_SHA(I, J) = 0.0
+        JE_SUN(I, J) = 0.0
+        JE_SHA(I, J) = 0.0
+        JE1_SUN(I, J) = 0.0
+        JE1_SHA(I, J) = 0.0
+        JE2_SUN(I, J) = 0.0
+        JE2_SHA(I, J) = 0.0
+        JS_SUN(I, J) = 0.0
+        JS_SHA(I, J) = 0.0
+        A_VEG_SUN(I, J) = 0.0
+        A_VEG_SHA(I, J) = 0.0
+        RML_SUN(I, J) = 0.0
+        RML_SHA(I, J) = 0.0
+        AN_SUN(I, J) = 0.0
+        AN_SHA(I, J) = 0.0
+        CO2LS_SUN(I, J) = 0.0
+        CO2LS_SHA(I, J) = 0.0
+        GC_SUN(I, J) = 0.0
+        GC_SHA(I, J) = 0.0
+        GCTU_SUN(I, J) = 0.0
+        GCTU_SHA(I, J) = 0.0
+        RC_VEG(I, J) = 5000.0
+        AN_VEG(I, J) = 0.0
+        RML_VEG(I, J) = 0.0
+        USESLAI(I, J) = 0
+        USEAILCG(I, J) = 0.0
       end do ! loop 220
     end do ! loop 230
   end if
@@ -372,15 +372,15 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !     FOLLOWING VARIABLES AND CONSTANTS ARE COMMON TO BOTH SINGLE AND TWO-LEAF MODEL
   do J = 1, IG
     do I = IL1, IL2
-      SM_FUNC(I,J) = 0.0
-      SM_FUNC2(I,J) = 0.0
+      SM_FUNC(I, J) = 0.0
+      SM_FUNC2(I, J) = 0.0
     end do ! loop 250
   end do ! loop 240
   !
   do J = 1, ICC
     do I = IL1, IL2
-      GCMIN(I,J) = 0.0
-      GCMAX(I,J) = 0.0
+      GCMIN(I, J) = 0.0
+      GCMAX(I, J) = 0.0
     end do ! loop 270
   end do ! loop 260
   !
@@ -407,11 +407,11 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !!
   do J = 1, ICC
     do I = IL1, IL2
-      if (AILCG(I,J) < SLAI(I,J)) then
-        USESLAI(I,J) = 1
-        USEAILCG(I,J) = SLAI(I,J)
+      if (AILCG(I, J) < SLAI(I, J)) then
+        USESLAI(I, J) = 1
+        USEAILCG(I, J) = SLAI(I, J)
       else
-        USEAILCG(I,J) = AILCG(I,J)
+        USEAILCG(I, J) = AILCG(I, J)
       end if
     end do ! loop 350
   end do ! loop 340
@@ -421,17 +421,17 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !!
   do J = 1, ICC
     do I = IL1, IL2
-      GCMIN(I,J) = 0.0002 * (TFREZ / TCAN(I)) * (1. / 0.0224) * &
-       (PRESSG(I) / STD_PRESS)
+      GCMIN(I, J) = 0.0002 * (TFREZ / TCAN(I)) * (1. / 0.0224) * &
+                    (PRESSG(I) / STD_PRESS)
       !
       if (LEAFOPT == 1) then
-        !           GCMAX(I,J)=0.0196 * (TFREZ/TCAN(I)) * (1./0.0224) *
-        GCMAX(I,J) = 0.1    * (TFREZ / TCAN(I)) * (1. / 0.0224) * &
-         (PRESSG(I) / STD_PRESS)
+        !           GCMAX(I, J)=0.0196 * (TFREZ/TCAN(I)) * (1./0.0224) *
+        GCMAX(I, J) = 0.1    * (TFREZ / TCAN(I)) * (1. / 0.0224) * &
+                      (PRESSG(I) / STD_PRESS)
       else if (LEAFOPT == 2) then
-        !           GCMAX(I,J)=0.0196 * (TFREZ/TCAN(I)) * (1./0.0224) *
-        GCMAX(I,J) = 0.1    * (TFREZ / TCAN(I)) * (1. / 0.0224) * &
-         (PRESSG(I) / STD_PRESS) * 0.5
+        !           GCMAX(I, J)=0.0196 * (TFREZ/TCAN(I)) * (1./0.0224) *
+        GCMAX(I, J) = 0.1    * (TFREZ / TCAN(I)) * (1. / 0.0224) * &
+                      (PRESSG(I) / STD_PRESS) * 0.5
       end if
       !
     end do ! loop 370
@@ -443,7 +443,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   if (PS_COUP == 2) then
     do J = 1, ICC
       do I = IL1, IL2
-        VPD_TERM(I,J) = 0.0
+        VPD_TERM(I, J) = 0.0
       end do ! loop 400
     end do ! loop 390
     !
@@ -460,7 +460,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
       EASAT  = 611.0 * EXP(CA * (TCAN(I) - TFREZ) / (TCAN(I) - CB))
       RH(I)  = EA / EASAT
       VPD(I) = EASAT - EA
-      VPD(I) = MAX(0.0,VPD(I))
+      VPD(I) = MAX(0.0, VPD(I))
 
     end do ! loop 420
     !
@@ -474,7 +474,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
       K2 = K1 + NOL2PFTS(J) - 1
       do M = K1, K2
         do I = IL1, IL2
-          VPD_TERM(I,M) = 1.0 / ( 1.0 + ( VPD(I) / VPD0(SORT(M)) ) )
+          VPD_TERM(I, M) = 1.0 / ( 1.0 + ( VPD(I) / VPD0(SORT(M)) ) )
         end do ! loop 450
       end do ! loop 445
     end do ! loop 440
@@ -497,7 +497,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   end do ! loop 460
   !
   K1 = 0
-  do J = 1,IC
+  do J = 1, IC
     if (J == 1) then
       K1 = K1 + 1
     else
@@ -506,7 +506,7 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
     K2 = K1 + NOL2PFTS(J) - 1
     do M = K1, K2
       do I = IL1, IL2
-        if (FCANC(I,M) > ZERO) then
+        if (FCANC(I, M) > ZERO) then
           !>
           !> FOR TWO-LEAF MODEL FIND Kb AS A FUNCTION OF COSZS AND LEAF ANGLE DISTRIBUTION (VEGETATION DEPENDENT)
           !>
@@ -516,26 +516,26 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
               !> MAKE SURE -0.4 < CHI < 0.6
               CHI(SORT(M)) = MIN (MAX (CHI(SORT(M)), - 0.4), 0.6)
               !> MAKE VALUES CLOSE TO ZERO EQUAL TO 0.01
-              if ( ABS(CHI(SORT(M))) <= 0.01 ) CHI(SORT(M)) = 0.01
+              if (ABS(CHI(SORT(M))) <= 0.01) CHI(SORT(M)) = 0.01
               !
               TEMP_PHI1 = 0.5 - 0.633 * &
-              CHI(SORT(M)) - 0.33 * CHI(SORT(M)) * CHI(SORT(M))
+                          CHI(SORT(M)) - 0.33 * CHI(SORT(M)) * CHI(SORT(M))
               TEMP_PHI2 = 0.877 * (1. - 2. * TEMP_PHI1)
-              GDIR(I,M) = TEMP_PHI1 + TEMP_PHI2 * COSZS(I)
-              KB(I,M) = (GDIR(I,M) / COSZS(I))
-              KB(I,M) = KB(I,M) * (SQRT(1. - omega_phtsyn(SORT(M)) ))
+              GDIR(I, M) = TEMP_PHI1 + TEMP_PHI2 * COSZS(I)
+              KB(I, M) = (GDIR(I, M) / COSZS(I))
+              KB(I, M) = KB(I, M) * (SQRT(1. - omega_phtsyn(SORT(M)) ))
               !>
               !> ALSO FIND SUNLIT AND SHADED LAI
-              AILCG_SUN(I,M) = (1.0 / KB(I,M)) * &
-              ( 1.0 - EXP( - 1.0 * KB(I,M) * USEAILCG(I,M) ) )
-              AILCG_SHA(I,M) = USEAILCG(I,M) - AILCG_SUN(I,M)
+              AILCG_SUN(I, M) = (1.0 / KB(I, M)) * &
+                                (1.0 - EXP( - 1.0 * KB(I, M) * USEAILCG(I, M) ) )
+              AILCG_SHA(I, M) = USEAILCG(I, M) - AILCG_SUN(I, M)
               !>
               !> FOLLOWING FEW LINES TO MAKE SURE THAT ALL LEAVES ARE SHADED WHEN XDIFFUS EQUALS 1. NOT DOING
               !! SO GIVES ERRATIC RESULTS WHEN TWO LEAF OPTION IS USED
               !!
               if (XDifFUS(I) > 0.99) then
-                AILCG_SUN(I,M) = 0.0
-                AILCG_SHA(I,M) = USEAILCG(I,M)
+                AILCG_SUN(I, M) = 0.0
+                AILCG_SHA(I, M) = USEAILCG(I, M)
               end if
               !
             end if
@@ -547,24 +547,24 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
           !! THUS PERFORM CALCULATIONS TWICE, AND IN THE END ADD CONDUCTANCE AND NET PHOTOSYNTHESIS FROM
           !! THE TWO LEAVES TO GET THE TOTAL.
           !!
-          FPAR(I,M) = (1.0 / KN(SORT(M))) * (1.0 - EXP( - KN(SORT(M)) &
-          * USEAILCG(I,M)))
+          FPAR(I, M) = (1.0 / KN(SORT(M))) * (1.0 - EXP( - KN(SORT(M)) &
+                       * USEAILCG(I, M)))
 
           if (LEAFOPT == 2) then
-            FPAR_SUN(I,M) = ( 1.0 / (KN(SORT(M)) + KB(I,M)) ) * &
-         ( 1.0 - EXP( - 1. * (KN(SORT(M)) + KB(I,M)) * USEAILCG(I,M) ) )
-            FPAR_SHA(I,M) = FPAR(I,M) - FPAR_SUN(I,M)
+            FPAR_SUN(I, M) = ( 1.0 / (KN(SORT(M)) + KB(I, M)) ) * &
+                             (1.0 - EXP( - 1. * (KN(SORT(M)) + KB(I, M)) * USEAILCG(I, M) ) )
+            FPAR_SHA(I, M) = FPAR(I, M) - FPAR_SUN(I, M)
             !>
             !! IF ALL RADIATION IS DIFFUSED, THEN ALL LEAVES ARE SHADED, AND WE ADJUST FPARs ACCORDINGLY.
             !! WITHOUT THIS THE TWO LEAF MODELS MAY BEHAVE ERRATICALLY
             !!
             if (XDifFUS(I) > 0.99) then
-              FPAR_SHA(I,M) = FPAR(I,M)
-              FPAR_SUN(I,M) = 0.0
+              FPAR_SHA(I, M) = FPAR(I, M)
+              FPAR_SUN(I, M) = 0.0
             end if
           end if
           !>
-          !> FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE LEAF MODEL
+          !> FIND Vmax, canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE LEAF MODEL
           !>
           !> ------------- Changing Vcmax seasonally -----------------------
           !!
@@ -583,45 +583,45 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
             use_vmax = vmax(sort(m))
           end if
 
-          vmaxc(i,m) = use_vmax * fpar(i,m)
+          vmaxc(i, m) = use_vmax * fpar(i, m)
 
           if (LEAFOPT == 2) then
             !> The two leaf is assumed to be affect by the insolation seasonal cycle the
             !> same for each sun/shade leaf
-            VMAXC_SUN(I,M) = use_vmax * FPAR_SUN(I,M)
-            VMAXC_SHA(I,M) = use_vmax * FPAR_SHA(I,M)
+            VMAXC_SUN(I, M) = use_vmax * FPAR_SUN(I, M)
+            VMAXC_SHA(I, M) = use_vmax * FPAR_SHA(I, M)
           end if
           !>
           !> ------------- Changing Vcmax seasonally -----------------------///
 
 
-          !> FIND Vm,unstressed (DUE TO WATER) BUT STRESSED DUE TO TEMPERATURE
+          !> FIND Vm, unstressed (DUE TO WATER) BUT STRESSED DUE TO TEMPERATURE
           !>
           Q10 = 2.00
           Q10_FUNC = Q10 ** (0.1 * (TCAN(I) - 298.16))
           !
           if (COSZS(I) > 0.0) then
             if (LEAFOPT == 1) then
-              VMUNS1(I,M) = VMAXC(I,M) * Q10_FUNC
+              VMUNS1(I, M) = VMAXC(I, M) * Q10_FUNC
             else if (LEAFOPT == 2) then
-              VMUNS1_SUN(I,M) = VMAXC_SUN(I,M) * Q10_FUNC
-              VMUNS1_SHA(I,M) = VMAXC_SHA(I,M) * Q10_FUNC
+              VMUNS1_SUN(I, M) = VMAXC_SUN(I, M) * Q10_FUNC
+              VMUNS1_SHA(I, M) = VMAXC_SHA(I, M) * Q10_FUNC
             end if
           end if
           !>
           !> ASSUMING THAT SUNLIT AND SHADED TEMPERATURES ARE SAME
           !>
-          VMUNS2(I,M) = (1. + EXP(0.3 * (TCAN(I) - TUP(SORT(M)))))
-          VMUNS3(I,M) = (1. + EXP(0.3 * (TLOW(SORT(M)) - TCAN(I))))
+          VMUNS2(I, M) = (1. + EXP(0.3 * (TCAN(I) - TUP(SORT(M)))))
+          VMUNS3(I, M) = (1. + EXP(0.3 * (TLOW(SORT(M)) - TCAN(I))))
           !
           if (LEAFOPT == 1) then
-            VMUNS(I,M) = VMUNS1(I,M) / &
-         (VMUNS2(I,M) * VMUNS3(I,M))
+            VMUNS(I, M) = VMUNS1(I, M) / &
+                          (VMUNS2(I, M) * VMUNS3(I, M))
           else if (LEAFOPT == 2) then
-            VMUNS_SUN(I,M) = VMUNS1_SUN(I,M) / &
-         (VMUNS2(I,M) * VMUNS3(I,M))
-            VMUNS_SHA(I,M) = VMUNS1_SHA(I,M) / &
-         (VMUNS2(I,M) * VMUNS3(I,M))
+            VMUNS_SUN(I, M) = VMUNS1_SUN(I, M) / &
+                              (VMUNS2(I, M) * VMUNS3(I, M))
+            VMUNS_SHA(I, M) = VMUNS1_SHA(I, M) / &
+                              (VMUNS2(I, M) * VMUNS3(I, M))
           end if
           !
         end if
@@ -650,17 +650,17 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   do J = 1, IG
     do I = IL1, IL2
       !
-      if (ISAND(I,J) == - 3 .or. ISAND(I,J) == - 4) then
-        SM_FUNC(I,J) = 0.0
+      if (ISAND(I, J) == - 3 .or. ISAND(I, J) == - 4) then
+        SM_FUNC(I, J) = 0.0
       else ! I.E., ISAND/=-3 OR -4
-        if (THLIQ(I,J) <= THLW(I,J)) then
-          SM_FUNC(I,J) = 0.0
-        else if (THLIQ(I,J) > THLW(I,J) .and. &
-       THLIQ(I,J) < THFC(I,J)) then
-          SM_FUNC(I,J) = (THLIQ(I,J) - THLW(I,J)) / &
-           (THFC(I,J) - THLW(I,J))
-        else if (THLIQ(I,J) >= THFC(I,J)) then
-          SM_FUNC(I,J) = 1.0
+        if (THLIQ(I, J) <= THLW(I, J)) then
+          SM_FUNC(I, J) = 0.0
+        else if (THLIQ(I, J) > THLW(I, J) .and. &
+       THLIQ(I, J) < THFC(I, J)) then
+          SM_FUNC(I, J) = (THLIQ(I, J) - THLW(I, J)) / &
+                          (THFC(I, J) - THLW(I, J))
+        else if (THLIQ(I, J) >= THFC(I, J)) then
+          SM_FUNC(I, J) = 1.0
         end if
         !
       end if ! ISAND==-3 OR -4
@@ -678,21 +678,21 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
     do M = K1, K2
       do I = IL1, IL2
         do N = 1, IG
-          if (ISAND(I,N) /= - 3) then ! ONLY FOR NON-BEDROCK LAYERS
-            SM_FUNC2(I,N) = (1.0 - (1.0 - SM_FUNC(I,N)) ** SN(SORT(M)))
-            SM_FUNC2(I,N) = SM_FUNC2(I,N) + (1.0 - SM_FUNC2(I,N)) &
-                  * SMSCALE(SORT(M))
-            AVE_SM_FUNC(I,M) = AVE_SM_FUNC(I,M) + SM_FUNC2(I,N) * RMAT(I,M,N)
-            TOT_RMAT(I,M) = TOT_RMAT(I,M) + RMAT(I,M,N)
+          if (ISAND(I, N) /= - 3) then ! ONLY FOR NON-BEDROCK LAYERS
+            SM_FUNC2(I, N) = (1.0 - (1.0 - SM_FUNC(I, N)) ** SN(SORT(M)))
+            SM_FUNC2(I, N) = SM_FUNC2(I, N) + (1.0 - SM_FUNC2(I, N)) &
+                             * SMSCALE(SORT(M))
+            AVE_SM_FUNC(I, M) = AVE_SM_FUNC(I, M) + SM_FUNC2(I, N) * RMAT(I, M, N)
+            TOT_RMAT(I, M) = TOT_RMAT(I, M) + RMAT(I, M, N)
 
           end if
         end do ! loop 535
 
-        AVE_SM_FUNC(I,M) = AVE_SM_FUNC(I,M) / TOT_RMAT(I,M)
+        AVE_SM_FUNC(I, M) = AVE_SM_FUNC(I, M) / TOT_RMAT(I, M)
 
-        if (TOT_RMAT(I,M) < 0.9) then
+        if (TOT_RMAT(I, M) < 0.9) then
           write(6, * )'PFT = ',M,' I = ',I
-          write(6, * )'RMAT ADD = ',TOT_RMAT(I,M)
+          write(6, * )'RMAT ADD = ',TOT_RMAT(I, M)
           call errorHandler('PHTSYN', - 99)
         end if
 
@@ -700,18 +700,18 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
     end do ! loop 525
   end do ! loop 520
   !>
-  !> USE SOIL MOISTURE FUNCTION TO MAKE Vm,unstressed -> Vm STRESSED
+  !> USE SOIL MOISTURE FUNCTION TO MAKE Vm, unstressed -> Vm STRESSED
   !>
   do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (COSZS(I) > 0.0) then
           if (LEAFOPT == 1) then
-            VM(I,J) = VMUNS(I,J) * AVE_SM_FUNC(I,J)
+            VM(I, J) = VMUNS(I, J) * AVE_SM_FUNC(I, J)
           else if (LEAFOPT == 2) then
-            VM_SUN(I,J) = VMUNS_SUN(I,J) * AVE_SM_FUNC(I,J)
-            VM_SHA(I,J) = VMUNS_SHA(I,J) * AVE_SM_FUNC(I,J)
+            VM_SUN(I, J) = VMUNS_SUN(I, J) * AVE_SM_FUNC(I, J)
+            VM_SHA(I, J) = VMUNS_SHA(I, J) * AVE_SM_FUNC(I, J)
           end if
         end if
         !
@@ -756,22 +756,22 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !ignoreLint(1)
 999 CONTINUE ! Anchor for a GO TO statement that needs to be removed
   !
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
       !
       if (LEAFOPT == 1) then
-        CO2I(I,J) = CO2I1(I,J)
-        if (CO2I(I,J) <= ZERO) then
-          CO2I(I,J) = INICO2I(SORT(J)) * CO2A(I)
+        CO2I(I, J) = CO2I1(I, J)
+        if (CO2I(I, J) <= ZERO) then
+          CO2I(I, J) = INICO2I(SORT(J)) * CO2A(I)
         end if
       else if (LEAFOPT == 2) then
-        CO2I_SUN(I,J) = CO2I1(I,J)
-        if (CO2I_SUN(I,J) <= ZERO) then
-          CO2I_SUN(I,J) = INICO2I(SORT(J)) * CO2A(I)
+        CO2I_SUN(I, J) = CO2I1(I, J)
+        if (CO2I_SUN(I, J) <= ZERO) then
+          CO2I_SUN(I, J) = INICO2I(SORT(J)) * CO2A(I)
         end if
-        CO2I_SHA(I,J) = CO2I2(I,J)
-        if (CO2I_SHA(I,J) <= ZERO) then
-          CO2I_SHA(I,J) = INICO2I(SORT(J)) * CO2A(I)
+        CO2I_SHA(I, J) = CO2I2(I, J)
+        if (CO2I_SHA(I, J) <= ZERO) then
+          CO2I_SHA(I, J) = INICO2I(SORT(J)) * CO2A(I)
         end if
       end if
       !
@@ -780,34 +780,34 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !>
   !> ESTIMATE RUBISCO LIMITED PHOTOSYNTHETIC RATE
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (COSZS(I) > 0.0) then
           if (LEAFOPT == 1) then
-            JC1(I,J) = CO2I(I,J) - TGAMMA(I)
-            JC2(I,J) = KC(I) * (1.0 + (O2_CONC(I) / KO(I)) )
-            JC3(I,J) = CO2I(I,J) + JC2(I,J)
+            JC1(I, J) = CO2I(I, J) - TGAMMA(I)
+            JC2(I, J) = KC(I) * (1.0 + (O2_CONC(I) / KO(I)) )
+            JC3(I, J) = CO2I(I, J) + JC2(I, J)
             !
             if (ISC4(SORT(J))) then
-              JC(I,J)  = VM(I,J)
+              JC(I, J)  = VM(I, J)
             else
-              JC(I,J)  = VM(I,J) * (JC1(I,J) / JC3(I,J))
+              JC(I, J)  = VM(I, J) * (JC1(I, J) / JC3(I, J))
             end if
           else if (LEAFOPT == 2) then
-            JC1_SUN(I,J) = CO2I_SUN(I,J) - TGAMMA(I)
-            JC1_SHA(I,J) = CO2I_SHA(I,J) - TGAMMA(I)
-            JC2(I,J) = KC(I) * (1.0 + (O2_CONC(I) / KO(I)) )
-            JC3_SUN(I,J) = CO2I_SUN(I,J) + JC2(I,J)
-            JC3_SHA(I,J) = CO2I_SHA(I,J) + JC2(I,J)
+            JC1_SUN(I, J) = CO2I_SUN(I, J) - TGAMMA(I)
+            JC1_SHA(I, J) = CO2I_SHA(I, J) - TGAMMA(I)
+            JC2(I, J) = KC(I) * (1.0 + (O2_CONC(I) / KO(I)) )
+            JC3_SUN(I, J) = CO2I_SUN(I, J) + JC2(I, J)
+            JC3_SHA(I, J) = CO2I_SHA(I, J) + JC2(I, J)
             !
             if (ISC4(SORT(J))) then
-              JC_SUN(I,J) = VM_SUN(I,J)
-              JC_SHA(I,J) = VM_SHA(I,J)
+              JC_SUN(I, J) = VM_SUN(I, J)
+              JC_SHA(I, J) = VM_SHA(I, J)
             else
-              JC_SUN(I,J) = VM_SUN(I,J) * (JC1_SUN(I,J) / JC3_SUN(I,J))
-              JC_SHA(I,J) = VM_SHA(I,J) * (JC1_SHA(I,J) / JC3_SHA(I,J))
+              JC_SUN(I, J) = VM_SUN(I, J) * (JC1_SUN(I, J) / JC3_SUN(I, J))
+              JC_SHA(I, J) = VM_SHA(I, J) * (JC1_SHA(I, J) / JC3_SHA(I, J))
             end if
           end if
         end if
@@ -818,37 +818,37 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !>
   !> ESTIMATE PHOTOSYNTHETIC RATE LIMITED BY AVAILABLE LIGHT
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (COSZS(I) > 0.0) then
           if (LEAFOPT == 1) then
-            JE1(I,J) = FPAR(I,J) * alpha_phtsyn(SORT(J)) &
-                 * (1.0 - omega_phtsyn(SORT(J)))
-            JE2(I,J) = ( CO2I(I,J) - TGAMMA(I) ) / &
-         ( CO2I(I,J) + (2.0 * TGAMMA(I)) )
+            JE1(I, J) = FPAR(I, J) * alpha_phtsyn(SORT(J)) &
+                        * (1.0 - omega_phtsyn(SORT(J)))
+            JE2(I, J) = ( CO2I(I, J) - TGAMMA(I) ) / &
+                        (CO2I(I, J) + (2.0 * TGAMMA(I)) )
             !
             if (ISC4(SORT(J))) then
-              JE(I,J) = IPAR(I) * JE1(I,J)
+              JE(I, J) = IPAR(I) * JE1(I, J)
             else
-              JE(I,J) = IPAR(I) * JE1(I,J) * JE2(I,J)
+              JE(I, J) = IPAR(I) * JE1(I, J) * JE2(I, J)
             end if
           else if (LEAFOPT == 2) then
-            JE1_SUN(I,J) = FPAR_SUN(I,J) * alpha_phtsyn(SORT(J))
-            JE1_SHA(I,J) = FPAR_SHA(I,J) * alpha_phtsyn(SORT(J))
-            JE2_SUN(I,J) = ( CO2I_SUN(I,J) - TGAMMA(I) ) / &
-         ( CO2I_SUN(I,J) + (2.0 * TGAMMA(I)) )
-            JE2_SHA(I,J) = ( CO2I_SHA(I,J) - TGAMMA(I) ) / &
-         ( CO2I_SHA(I,J) + (2.0 * TGAMMA(I)) )
+            JE1_SUN(I, J) = FPAR_SUN(I, J) * alpha_phtsyn(SORT(J))
+            JE1_SHA(I, J) = FPAR_SHA(I, J) * alpha_phtsyn(SORT(J))
+            JE2_SUN(I, J) = ( CO2I_SUN(I, J) - TGAMMA(I) ) / &
+                            (CO2I_SUN(I, J) + (2.0 * TGAMMA(I)) )
+            JE2_SHA(I, J) = ( CO2I_SHA(I, J) - TGAMMA(I) ) / &
+                            (CO2I_SHA(I, J) + (2.0 * TGAMMA(I)) )
 
             if (ISC4(SORT(J))) then
-              JE_SUN(I,J) = (IPAR_SUN(I) + IPAR_SHA(I)) * JE1_SUN(I,J)
-              JE_SHA(I,J) = IPAR_SHA(I) * JE1_SHA(I,J)
+              JE_SUN(I, J) = (IPAR_SUN(I) + IPAR_SHA(I)) * JE1_SUN(I, J)
+              JE_SHA(I, J) = IPAR_SHA(I) * JE1_SHA(I, J)
             else
-              JE_SUN(I,J) = (IPAR_SUN(I) + IPAR_SHA(I)) * JE1_SUN(I,J) * &
-                     JE2_SUN(I,J)
-              JE_SHA(I,J) = IPAR_SHA(I) * JE1_SHA(I,J) * JE2_SHA(I,J)
+              JE_SUN(I, J) = (IPAR_SUN(I) + IPAR_SHA(I)) * JE1_SUN(I, J) * &
+                             JE2_SUN(I, J)
+              JE_SHA(I, J) = IPAR_SHA(I) * JE1_SHA(I, J) * JE2_SHA(I, J)
             end if
           end if
         end if
@@ -859,24 +859,24 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !>
   !> ESTIMATE PHOTOSYNTHETIC RATE LIMITED BY TRANSPORT CAPACITY
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (COSZS(I) > 0.0) then
           if (LEAFOPT == 1) then
             if (ISC4(SORT(J))) then
-              JS(I,J) = 20000.0 * VM(I,J) * (CO2I(I,J) / PRESSG(I))
+              JS(I, J) = 20000.0 * VM(I, J) * (CO2I(I, J) / PRESSG(I))
             else
-              JS(I,J) = 0.5 * VM(I,J)
+              JS(I, J) = 0.5 * VM(I, J)
             end if
           else if (LEAFOPT == 2) then
             if (ISC4(SORT(J))) then
-              JS_SUN(I,J) = 20000.0 * VM_SUN(I,J) * (CO2I_SUN(I,J) / PRESSG(I))
-              JS_SHA(I,J) = 20000.0 * VM_SHA(I,J) * (CO2I_SHA(I,J) / PRESSG(I))
+              JS_SUN(I, J) = 20000.0 * VM_SUN(I, J) * (CO2I_SUN(I, J) / PRESSG(I))
+              JS_SHA(I, J) = 20000.0 * VM_SHA(I, J) * (CO2I_SHA(I, J) / PRESSG(I))
             else
-              JS_SUN(I,J) = 0.5 * VM_SUN(I,J)
-              JS_SHA(I,J) = 0.5 * VM_SHA(I,J)
+              JS_SUN(I, J) = 0.5 * VM_SUN(I, J)
+              JS_SHA(I, J) = 0.5 * VM_SHA(I, J)
             end if
           end if
         end if
@@ -902,9 +902,9 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !> AND JS USING COLLATZ'S TWO QUADRATIC EQUATIONS, OR FIND THE MIN.
   !> OF THIS TWO RATES OR FIND MIN. OF JC AND JE.
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (COSZS(I) > 0.0) then
           if (LEAFOPT == 1) then
@@ -916,31 +916,31 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
               TEMP_Q2 = 0.0
               TEMP_JP = 0.0
               !
-              TEMP_B  = JC(I,J) + JE(I,J)
-              TEMP_C  = JC(I,J) * JE(I,J)
+              TEMP_B  = JC(I, J) + JE(I, J)
+              TEMP_C  = JC(I, J) * JE(I, J)
               TEMP_R  = MAX( (TEMP_B ** 2 - 4. * BETA1 * TEMP_C), 0.0)
               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_JP = MIN(TEMP_Q1, TEMP_Q2)
               !
-              TEMP_B  = TEMP_JP + JS(I,J)
-              TEMP_C  = TEMP_JP * JS(I,J)
+              TEMP_B  = TEMP_JP + JS(I, J)
+              TEMP_C  = TEMP_JP * JS(I, J)
               TEMP_R  = MAX( (TEMP_B ** 2 - 4. * BETA2 * TEMP_C), 0.0)
               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA2)
               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA2)
-              A_VEG(I,J) = MIN(TEMP_Q1, TEMP_Q2)
+              A_VEG(I, J) = MIN(TEMP_Q1, TEMP_Q2)
             else if (MIN2) then
-              A_VEG(I,J) = MIN(JC(I,J), JE(I,J))
+              A_VEG(I, J) = MIN(JC(I, J), JE(I, J))
             else if (MIN3) then
-              A_VEG(I,J) = MIN(JC(I,J), JE(I,J), JS(I,J))
+              A_VEG(I, J) = MIN(JC(I, J), JE(I, J), JS(I, J))
             else
               call errorHandler('PHTSYN', - 1)
             end if
             !> DOWN-REGULATE PHOTOSYNTHESIS FOR C3 PLANTS
             if (.not. ISC4(SORT(J))) then
-              A_VEG(I,J) = A_VEG(I,J) * N_EFFECT(I)
+              A_VEG(I, J) = A_VEG(I, J) * N_EFFECT(I)
             end if
-            A_VEG(I,J) = MAX(0.0, A_VEG(I,J))
+            A_VEG(I, J) = MAX(0.0, A_VEG(I, J))
           else if (LEAFOPT == 2) then
             if (SMOOTH) then
               TEMP_B  = 0.0
@@ -950,30 +950,30 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
               TEMP_Q2 = 0.0
               TEMP_JP = 0.0
               !
-              TEMP_B  = JC_SUN(I,J) + JE_SUN(I,J)
-              TEMP_C  = JC_SUN(I,J) * JE_SUN(I,J)
+              TEMP_B  = JC_SUN(I, J) + JE_SUN(I, J)
+              TEMP_C  = JC_SUN(I, J) * JE_SUN(I, J)
               TEMP_R  = MAX( (TEMP_B ** 2 - 4. * BETA1 * TEMP_C), 0.0)
               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_JP = MIN(TEMP_Q1, TEMP_Q2)
 
-              TEMP_B  = TEMP_JP + JS_SUN(I,J)
-              TEMP_C  = TEMP_JP * JS_SUN(I,J)
+              TEMP_B  = TEMP_JP + JS_SUN(I, J)
+              TEMP_C  = TEMP_JP * JS_SUN(I, J)
               TEMP_R  = MAX( (TEMP_B ** 2 - 4. * BETA2 * TEMP_C), 0.0)
               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA2)
               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA2)
-              A_VEG_SUN(I,J) = MIN(TEMP_Q1, TEMP_Q2)
+              A_VEG_SUN(I, J) = MIN(TEMP_Q1, TEMP_Q2)
             else if (MIN2) then
-              A_VEG_SUN(I,J) = MIN(JC_SUN(I,J), JE_SUN(I,J))
+              A_VEG_SUN(I, J) = MIN(JC_SUN(I, J), JE_SUN(I, J))
             else if (MIN3) then
-              A_VEG_SUN(I,J) = MIN(JC_SUN(I,J),JE_SUN(I,J),JS_SUN(I,J))
+              A_VEG_SUN(I, J) = MIN(JC_SUN(I, J), JE_SUN(I, J), JS_SUN(I, J))
             else
               call errorHandler('PHTSYN', - 2)
             end if
             if (.not. ISC4(SORT(J))) then
-              A_VEG_SUN(I,J) = A_VEG_SUN(I,J) * N_EFFECT(I)
+              A_VEG_SUN(I, J) = A_VEG_SUN(I, J) * N_EFFECT(I)
             end if
-            A_VEG_SUN(I,J) = MAX(0.0, A_VEG_SUN(I,J))
+            A_VEG_SUN(I, J) = MAX(0.0, A_VEG_SUN(I, J))
             !
             if (SMOOTH) then
               TEMP_B  = 0.0
@@ -983,28 +983,28 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
               TEMP_Q2 = 0.0
               TEMP_JP = 0.0
               !
-              TEMP_B  = JC_SHA(I,J) + JE_SHA(I,J)
-              TEMP_C  = JC_SHA(I,J) * JE_SHA(I,J)
+              TEMP_B  = JC_SHA(I, J) + JE_SHA(I, J)
+              TEMP_C  = JC_SHA(I, J) * JE_SHA(I, J)
               TEMP_R  = MAX( (TEMP_B ** 2 - 4. * BETA1 * TEMP_C), 0.0)
               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_JP = MIN(TEMP_Q1, TEMP_Q2)
               !
-              TEMP_B  = TEMP_JP + JS_SHA(I,J)
-              TEMP_C  = TEMP_JP * JS_SHA(I,J)
+              TEMP_B  = TEMP_JP + JS_SHA(I, J)
+              TEMP_C  = TEMP_JP * JS_SHA(I, J)
               TEMP_R  = MAX( (TEMP_B ** 2 - 4. * BETA2 * TEMP_C), 0.0)
               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA2)
               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA2)
-              A_VEG_SHA(I,J) = MIN(TEMP_Q1, TEMP_Q2)
+              A_VEG_SHA(I, J) = MIN(TEMP_Q1, TEMP_Q2)
             else if (MIN2) then
-              A_VEG_SHA(I,J) = MIN(JC_SHA(I,J), JE_SHA(I,J))
+              A_VEG_SHA(I, J) = MIN(JC_SHA(I, J), JE_SHA(I, J))
             else if (MIN3) then
-              A_VEG_SHA(I,J) = MIN(JC_SHA(I,J),JE_SHA(I,J),JS_SHA(I,J))
+              A_VEG_SHA(I, J) = MIN(JC_SHA(I, J), JE_SHA(I, J), JS_SHA(I, J))
             end if
             if (.not. ISC4(SORT(J))) then
-              A_VEG_SHA(I,J) = A_VEG_SHA(I,J) * N_EFFECT(I)
+              A_VEG_SHA(I, J) = A_VEG_SHA(I, J) * N_EFFECT(I)
             end if
-            A_VEG_SHA(I,J) = MAX(0.0, A_VEG_SHA(I,J))
+            A_VEG_SHA(I, J) = MAX(0.0, A_VEG_SHA(I, J))
           end if
         end if
         !
@@ -1015,9 +1015,9 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !> ESTIMATE LEAF MAINTENANCE RESPIRATION RATES AND NET PHOTOSYNTHETIC
   !> RATE. THIS NET PHOSYNTHETIC RATE IS /M^2 OF VEGETATED LAND.
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !>
         !> RECENT STUDIES SHOW RmL IS LESS TEMPERATURE SENSITIVE THAN
         !> PHOTOSYNTHESIS DURING DAY, THAT'S WHY A SMALL Q10 VALUE IS
@@ -1028,21 +1028,21 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
         !
         if (LEAFOPT == 1) then
           if (COSZS(I) > 0.0) then
-            RML_VEG(I,J) = RMLCOEFF(SORT(J)) * VMAXC(I,J) * Q10_FUNCD
+            RML_VEG(I, J) = RMLCOEFF(SORT(J)) * VMAXC(I, J) * Q10_FUNCD
           else
-            RML_VEG(I,J) = RMLCOEFF(SORT(J)) * VMAXC(I,J) * Q10_FUNCN
+            RML_VEG(I, J) = RMLCOEFF(SORT(J)) * VMAXC(I, J) * Q10_FUNCN
           end if
-          AN_VEG(I,J) = A_VEG(I,J) - RML_VEG(I,J)
+          AN_VEG(I, J) = A_VEG(I, J) - RML_VEG(I, J)
         else if (LEAFOPT == 2) then
           if (COSZS(I) > 0.0) then
-            RML_SUN(I,J) = RMLCOEFF(SORT(J)) * VMAXC_SUN(I,J) * Q10_FUNCD
-            RML_SHA(I,J) = RMLCOEFF(SORT(J)) * VMAXC_SHA(I,J) * Q10_FUNCD
+            RML_SUN(I, J) = RMLCOEFF(SORT(J)) * VMAXC_SUN(I, J) * Q10_FUNCD
+            RML_SHA(I, J) = RMLCOEFF(SORT(J)) * VMAXC_SHA(I, J) * Q10_FUNCD
           else
-            RML_SUN(I,J) = RMLCOEFF(SORT(J)) * VMAXC_SUN(I,J) * Q10_FUNCN
-            RML_SHA(I,J) = RMLCOEFF(SORT(J)) * VMAXC_SHA(I,J) * Q10_FUNCN
+            RML_SUN(I, J) = RMLCOEFF(SORT(J)) * VMAXC_SUN(I, J) * Q10_FUNCN
+            RML_SHA(I, J) = RMLCOEFF(SORT(J)) * VMAXC_SHA(I, J) * Q10_FUNCN
           end if
-          AN_SUN(I,J) = A_VEG_SUN(I,J) - RML_SUN(I,J)
-          AN_SHA(I,J) = A_VEG_SHA(I,J) - RML_SHA(I,J)
+          AN_SUN(I, J) = A_VEG_SUN(I, J) - RML_SUN(I, J)
+          AN_SHA(I, J) = A_VEG_SHA(I, J) - RML_SHA(I, J)
         end if
         !
       end if
@@ -1057,30 +1057,30 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !> FOR DIFFERENT VEGETATION TYPES WITHIN A SUB-AREA.
   !> ALSO CHANGE AERODYNAMIC CONDUCTANCE, CFLUX, FROM M/S TO \f$MOL/M^2/S\f$
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         GB(I) = CFLUX(I) * (TFREZ / TCAN(I)) * (PRESSG(I) / STD_PRESS) &
-           * (1. / 0.0224)
+                * (1. / 0.0224)
         !
         GB(I) = MIN(10.0, MAX(0.1, GB(I)) )
         !
         if (LEAFOPT == 1) then
-          TEMP_AN = AN_VEG(I,J)
-          CO2LS(I,J) = 0.5 * (CO2LS(I,J) + &
-         (CO2A(I) - ( (TEMP_AN * 1.37 * PRESSG(I)) / GB(I)))  )
-          CO2LS(I,J) = MAX (1.05 * TGAMMA(I) , CO2LS(I,J))
+          TEMP_AN = AN_VEG(I, J)
+          CO2LS(I, J) = 0.5 * (CO2LS(I, J) + &
+                        (CO2A(I) - ( (TEMP_AN * 1.37 * PRESSG(I)) / GB(I)))  )
+          CO2LS(I, J) = MAX (1.05 * TGAMMA(I), CO2LS(I, J))
         else if (LEAFOPT == 2) then
-          TEMP_AN = AN_SUN(I,J)
-          CO2LS_SUN(I,J) = 0.5 * (CO2LS_SUN(I,J) + &
-         (CO2A(I) - ( (TEMP_AN * 1.37 * PRESSG(I)) / GB(I))) )
-          CO2LS_SUN(I,J) = MAX (1.05 * TGAMMA(I), CO2LS_SUN(I,J))
+          TEMP_AN = AN_SUN(I, J)
+          CO2LS_SUN(I, J) = 0.5 * (CO2LS_SUN(I, J) + &
+                            (CO2A(I) - ( (TEMP_AN * 1.37 * PRESSG(I)) / GB(I))) )
+          CO2LS_SUN(I, J) = MAX (1.05 * TGAMMA(I), CO2LS_SUN(I, J))
           !
-          TEMP_AN = AN_SHA(I,J)
-          CO2LS_SHA(I,J) = 0.5 * (CO2LS_SHA(I,J) + &
-         (CO2A(I) - ( (TEMP_AN * 1.37 * PRESSG(I)) / GB(I))) )
-          CO2LS_SHA(I,J) = MAX (1.05 * TGAMMA(I), CO2LS_SHA(I,J))
+          TEMP_AN = AN_SHA(I, J)
+          CO2LS_SHA(I, J) = 0.5 * (CO2LS_SHA(I, J) + &
+                            (CO2A(I) - ( (TEMP_AN * 1.37 * PRESSG(I)) / GB(I))) )
+          CO2LS_SHA(I, J) = MAX (1.05 * TGAMMA(I), CO2LS_SHA(I, J))
         end if
         !
       end if
@@ -1091,9 +1091,9 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !> USED BY COLLATZ ET AL. OR USE THE LEUNING TYPE FORMULATION WHICH
   !> USES VPD INSTEAD OF RH
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !>
         !> IF LIGHT IS TOO LESS MAKE PARAMETER BB VERY SMALL
         if (QSWV(I) < 2.0) then
@@ -1104,49 +1104,49 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
         RH(I) = MAX(0.3, RH(I))          ! FOLLOWING IBIS
         !
         if (LEAFOPT == 1) then
-          TEMP_AN = AN_VEG(I,J)
+          TEMP_AN = AN_VEG(I, J)
           if (PS_COUP == 1) then
-            GC(I,J) = ( (MM(SORT(J)) * RH(I) * PRESSG(I) * TEMP_AN ) / &
-           CO2LS(I,J) ) + USEBB(J) * USEAILCG(I,J) * AVE_SM_FUNC(I,J)
+            GC(I, J) = ( (MM(SORT(J)) * RH(I) * PRESSG(I) * TEMP_AN) / &
+                       CO2LS(I, J) ) + USEBB(J) * USEAILCG(I, J) * AVE_SM_FUNC(I, J)
           else if (PS_COUP == 2) then
-            GC(I,J) = ( (MM(SORT(J)) * VPD_TERM(I,J) * PRESSG(I) * TEMP_AN ) / &
-           (CO2LS(I,J) - TGAMMA(I)) ) + &
-           USEBB(J) * USEAILCG(I,J) * AVE_SM_FUNC(I,J)
+            GC(I, J) = ( (MM(SORT(J)) * VPD_TERM(I, J) * PRESSG(I) * TEMP_AN) / &
+                       (CO2LS(I, J) - TGAMMA(I)) ) + &
+                       USEBB(J) * USEAILCG(I, J) * AVE_SM_FUNC(I, J)
           end if
           !
-          GC(I,J) = MAX(GCMIN(I,J), &
-          USEBB(J) * USEAILCG(I,J) * AVE_SM_FUNC(I,J), GC(I,J))
-          GC(I,J) = MIN(GCMAX(I,J), GC(I,J))
+          GC(I, J) = MAX(GCMIN(I, J), &
+                     USEBB(J) * USEAILCG(I, J) * AVE_SM_FUNC(I, J), GC(I, J))
+          GC(I, J) = MIN(GCMAX(I, J), GC(I, J))
         else if (LEAFOPT == 2) then
-          TEMP_AN = AN_SUN(I,J)
+          TEMP_AN = AN_SUN(I, J)
           if (PS_COUP == 1) then
-            GC_SUN(I,J) = ( (MM(SORT(J)) * RH(I) * PRESSG(I) * TEMP_AN ) / &
-           CO2LS_SUN(I,J) ) + &
-           USEBB(J) * AILCG_SUN(I,J) * AVE_SM_FUNC(I,J)
+            GC_SUN(I, J) = ( (MM(SORT(J)) * RH(I) * PRESSG(I) * TEMP_AN) / &
+                           CO2LS_SUN(I, J) ) + &
+                           USEBB(J) * AILCG_SUN(I, J) * AVE_SM_FUNC(I, J)
           else if (PS_COUP == 2) then
-            GC_SUN(I,J) = ((MM(SORT(J)) * VPD_TERM(I,J) * PRESSG(I) * TEMP_AN) / &
-           ( CO2LS_SUN(I,J) - TGAMMA(I) ) ) + &
-           USEBB(J) * AILCG_SUN(I,J) * AVE_SM_FUNC(I,J)
+            GC_SUN(I, J) = ((MM(SORT(J)) * VPD_TERM(I, J) * PRESSG(I) * TEMP_AN) / &
+                           (CO2LS_SUN(I, J) - TGAMMA(I) ) ) + &
+                           USEBB(J) * AILCG_SUN(I, J) * AVE_SM_FUNC(I, J)
           end if
           !
-          GC_SUN(I,J) = MAX(GCMIN(I,J), &
-          USEBB(J) * AILCG_SUN(I,J) * AVE_SM_FUNC(I,J), GC_SUN(I,J))
-          GC_SUN(I,J) = MIN(GCMAX(I,J), GC_SUN(I,J))
+          GC_SUN(I, J) = MAX(GCMIN(I, J), &
+                         USEBB(J) * AILCG_SUN(I, J) * AVE_SM_FUNC(I, J), GC_SUN(I, J))
+          GC_SUN(I, J) = MIN(GCMAX(I, J), GC_SUN(I, J))
           !
-          TEMP_AN = AN_SHA(I,J)
+          TEMP_AN = AN_SHA(I, J)
           if (PS_COUP == 1) then
-            GC_SHA(I,J) = ( (MM(SORT(J)) * RH(I) * PRESSG(I) * TEMP_AN ) / &
-           CO2LS_SHA(I,J) ) + &
-           USEBB(J) * AILCG_SHA(I,J) * AVE_SM_FUNC(I,J)
+            GC_SHA(I, J) = ( (MM(SORT(J)) * RH(I) * PRESSG(I) * TEMP_AN) / &
+                           CO2LS_SHA(I, J) ) + &
+                           USEBB(J) * AILCG_SHA(I, J) * AVE_SM_FUNC(I, J)
           else if (PS_COUP == 2) then
-            GC_SHA(I,J) = ((MM(SORT(J)) * VPD_TERM(I,J) * PRESSG(I) * TEMP_AN) / &
-           (CO2LS_SHA(I,J) - TGAMMA(I)) ) + &
-           USEBB(J) * AILCG_SHA(I,J) * AVE_SM_FUNC(I,J)
+            GC_SHA(I, J) = ((MM(SORT(J)) * VPD_TERM(I, J) * PRESSG(I) * TEMP_AN) / &
+                           (CO2LS_SHA(I, J) - TGAMMA(I)) ) + &
+                           USEBB(J) * AILCG_SHA(I, J) * AVE_SM_FUNC(I, J)
           end if
           !
-          GC_SHA(I,J) = MAX(GCMIN(I,J), &
-          USEBB(J) * AILCG_SHA(I,J) * AVE_SM_FUNC(I,J), GC_SHA(I,J))
-          GC_SHA(I,J) = MIN(GCMAX(I,J), GC_SHA(I,J))
+          GC_SHA(I, J) = MAX(GCMIN(I, J), &
+                         USEBB(J) * AILCG_SHA(I, J) * AVE_SM_FUNC(I, J), GC_SHA(I, J))
+          GC_SHA(I, J) = MIN(GCMAX(I, J), GC_SHA(I, J))
         end if
         !
       end if
@@ -1155,46 +1155,46 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !>
   !> FIND THE INTERCELLULAR \f$CO_2\f$ CONCENTRATION BASED ON ESTIMATED VALUE OF GC
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (LEAFOPT == 1) then
-          TEMP_AN = AN_VEG(I,J)
-          CO2I(I,J) = 0.5 * (CO2I(I,J) + (CO2LS(I,J) - &
-         ( (TEMP_AN * 1.65 * PRESSG(I)) / GC(I,J) ) ) )
-          CO2I(I,J) = MAX(1.05 * TGAMMA(I), MIN(CO2IMAX, CO2I(I,J)))
-          PREV_CO2I(I,J) = CO2I(I,J)
+          TEMP_AN = AN_VEG(I, J)
+          CO2I(I, J) = 0.5 * (CO2I(I, J) + (CO2LS(I, J) - &
+                       ( (TEMP_AN * 1.65 * PRESSG(I)) / GC(I, J) ) ) )
+          CO2I(I, J) = MAX(1.05 * TGAMMA(I), MIN(CO2IMAX, CO2I(I, J)))
+          PREV_CO2I(I, J) = CO2I(I, J)
         else if (LEAFOPT == 2) then
-          TEMP_AN = AN_SUN(I,J)
-          CO2I_SUN(I,J) = 0.5 * (CO2I_SUN(I,J) + (CO2LS_SUN(I,J) - &
-         ( (TEMP_AN * 1.65 * PRESSG(I)) / GC_SUN(I,J))) )
-          CO2I_SUN(I,J) = MAX(1.05 * TGAMMA(I), MIN(CO2IMAX, &
-          CO2I_SUN(I,J)))
-          PREV_CO2I_SUN(I,J) = CO2I_SUN(I,J)
+          TEMP_AN = AN_SUN(I, J)
+          CO2I_SUN(I, J) = 0.5 * (CO2I_SUN(I, J) + (CO2LS_SUN(I, J) - &
+                           ( (TEMP_AN * 1.65 * PRESSG(I)) / GC_SUN(I, J))) )
+          CO2I_SUN(I, J) = MAX(1.05 * TGAMMA(I), MIN(CO2IMAX, &
+                           CO2I_SUN(I, J)))
+          PREV_CO2I_SUN(I, J) = CO2I_SUN(I, J)
           !
-          TEMP_AN = AN_SHA(I,J)
-          CO2I_SHA(I,J) = 0.5 * (CO2I_SHA(I,J) + (CO2LS_SHA(I,J) - &
-         ( (TEMP_AN * 1.65 * PRESSG(I)) / GC_SHA(I,J))) )
-          CO2I_SHA(I,J) = MAX(1.05 * TGAMMA(I), MIN(CO2IMAX, &
-          CO2I_SHA(I,J)))
-          PREV_CO2I_SHA(I,J) = CO2I_SHA(I,J)
+          TEMP_AN = AN_SHA(I, J)
+          CO2I_SHA(I, J) = 0.5 * (CO2I_SHA(I, J) + (CO2LS_SHA(I, J) - &
+                           ( (TEMP_AN * 1.65 * PRESSG(I)) / GC_SHA(I, J))) )
+          CO2I_SHA(I, J) = MAX(1.05 * TGAMMA(I), MIN(CO2IMAX, &
+                           CO2I_SHA(I, J)))
+          PREV_CO2I_SHA(I, J) = CO2I_SHA(I, J)
         end if
         !
       end if
     end do ! loop 750
   end do ! loop 740
   !
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
 
         if (LEAFOPT == 1) then
-          CO2I1(I,J) = PREV_CO2I(I,J)
-          CO2I2(I,J) = 0.0
+          CO2I1(I, J) = PREV_CO2I(I, J)
+          CO2I2(I, J) = 0.0
         else if (LEAFOPT == 2) then
-          CO2I1(I,J) = PREV_CO2I_SUN(I,J)
-          CO2I2(I,J) = PREV_CO2I_SHA(I,J)
+          CO2I1(I, J) = PREV_CO2I_SUN(I, J)
+          CO2I2(I, J) = PREV_CO2I_SHA(I, J)
         end if
 
       end if
@@ -1215,31 +1215,31 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !> USE CONDUCTANCES TO FIND RESISTANCES. GCTU IMPLIES GC IN TRADITIONAL
   !> UNITS OF M/S
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      if (FCANC(I,J) > ZERO) then
+      if (FCANC(I, J) > ZERO) then
         !
         if (LEAFOPT == 1) then
-          GCTU(I,J) = GC(I,J) * (TCAN(I) / TFREZ) * &
-         (STD_PRESS / PRESSG(I)) * 0.0224
-          RC_VEG(I,J) = 1. / GCTU(I,J)
+          GCTU(I, J) = GC(I, J) * (TCAN(I) / TFREZ) * &
+                       (STD_PRESS / PRESSG(I)) * 0.0224
+          RC_VEG(I, J) = 1. / GCTU(I, J)
         else if (LEAFOPT == 2) then
-          GCTU_SUN(I,J) = GC_SUN(I,J) * (TCAN(I) / TFREZ) * &
-         (STD_PRESS / PRESSG(I)) * 0.0224
-          GCTU_SHA(I,J) = GC_SHA(I,J) * (TCAN(I) / TFREZ) * &
-         (STD_PRESS / PRESSG(I)) * 0.0224
+          GCTU_SUN(I, J) = GC_SUN(I, J) * (TCAN(I) / TFREZ) * &
+                           (STD_PRESS / PRESSG(I)) * 0.0224
+          GCTU_SHA(I, J) = GC_SHA(I, J) * (TCAN(I) / TFREZ) * &
+                           (STD_PRESS / PRESSG(I)) * 0.0224
           !
           if (COSZS(I) < 0.0 .or. QSWV(I) < 2.0) then
             !> DON'T WANT TO REDUCE RESISTANCE AT NIGHT TO LESS THAN
             !> OUR MAX. VALUE OF AROUND 5000 S/M
-            GCTU(I,J) = 0.5 * (GCTU_SUN(I,J) + GCTU_SHA(I,J))
+            GCTU(I, J) = 0.5 * (GCTU_SUN(I, J) + GCTU_SHA(I, J))
           else
-            GCTU(I,J) = GCTU_SUN(I,J) + GCTU_SHA(I,J)
+            GCTU(I, J) = GCTU_SUN(I, J) + GCTU_SHA(I, J)
           end if
           !
-          RC_VEG(I,J) = 1. / GCTU(I,J)
-          AN_VEG(I,J) = AN_SUN(I,J) + AN_SHA(I,J)
-          RML_VEG(I,J) = RML_SUN(I,J) + RML_SHA(I,J)
+          RC_VEG(I, J) = 1. / GCTU(I, J)
+          AN_VEG(I, J) = AN_SUN(I, J) + AN_SHA(I, J)
+          RML_VEG(I, J) = RML_SUN(I, J) + RML_SHA(I, J)
         end if
         !
       end if
@@ -1250,8 +1250,8 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !>
   do J = 1, ICC
     do I = IL1, IL2
-      if (USESLAI(I,J) == 1 .and. AILCG(I,J) < 0.2) then
-        RC_VEG(I,J) = 5000.0
+      if (USESLAI(I, J) == 1 .and. AILCG(I, J) < 0.2) then
+        RC_VEG(I, J) = 5000.0
       end if
     end do ! loop 810
   end do ! loop 800
@@ -1259,9 +1259,9 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !> AND FINALLY TAKE WEIGHTED AVERAGE OF RC_VEG BASED ON FRACTIONAL
   !> COVERAGE OF OUR 4 VEGETATION TYPES
   !>
-  do J = 1,ICC
+  do J = 1, ICC
     do I = IL1, IL2
-      RC(I) = RC(I) + FCANC(I,J) * RC_VEG(I,J)
+      RC(I) = RC(I) + FCANC(I, J) * RC_VEG(I, J)
     end do ! loop 830
   end do ! loop 820
   !
@@ -1278,8 +1278,8 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   !>
   do J = 1, ICC
     do I = IL1, IL2
-      AN_VEG(I,J) = AN_VEG(I,J) * 1.0E+06
-      RML_VEG(I,J) = RML_VEG(I,J) * 1.0E+06
+      AN_VEG(I, J) = AN_VEG(I, J) * 1.0E+06
+      RML_VEG(I, J) = RML_VEG(I, J) * 1.0E+06
     end do ! loop 880
   end do ! loop 870
   !
@@ -1326,27 +1326,27 @@ subroutine photosynCanopyConduct(AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC, & 
   DEALLOCATE(O2_CONC)
   DEALLOCATE(CO2A)
 
-  DEALLOCATE(GDIR,   KB)
-  DEALLOCATE(FPAR_SUN,   FPAR_SHA)
+  DEALLOCATE(GDIR, KB)
+  DEALLOCATE(FPAR_SUN, FPAR_SHA)
   DEALLOCATE(VMAXC_SUN, VMAXC_SHA)
-  DEALLOCATE(VMUNS1_SUN,  VMUNS1_SHA)
-  DEALLOCATE(VMUNS_SUN,  VMUNS_SHA)
+  DEALLOCATE(VMUNS1_SUN, VMUNS1_SHA)
+  DEALLOCATE(VMUNS_SUN, VMUNS_SHA)
   DEALLOCATE(VM_SUN, VM_SHA)
   DEALLOCATE(CO2I_SUN, PREV_CO2I_SUN)
   DEALLOCATE(CO2I_SHA, PREV_CO2I_SHA)
-  DEALLOCATE(JC1_SUN,    JC1_SHA)
-  DEALLOCATE(JC3_SUN,    JC3_SHA)
-  DEALLOCATE(JC_SUN,      JC_SHA)
-  DEALLOCATE(IPAR_SUN,       IPAR_SHA)
+  DEALLOCATE(JC1_SUN, JC1_SHA)
+  DEALLOCATE(JC3_SUN, JC3_SHA)
+  DEALLOCATE(JC_SUN, JC_SHA)
+  DEALLOCATE(IPAR_SUN, IPAR_SHA)
   DEALLOCATE(JE1_SUN, JE1_SHA)
   DEALLOCATE(JE2_SUN, JE2_SHA)
-  DEALLOCATE(JE_SUN,  JE_SHA)
+  DEALLOCATE(JE_SUN, JE_SHA)
   DEALLOCATE(JS_SUN, JS_SHA)
-  DEALLOCATE(A_VEG_SUN,   A_VEG_SHA)
-  DEALLOCATE(RML_SUN,    RML_SHA)
+  DEALLOCATE(A_VEG_SUN, A_VEG_SHA)
+  DEALLOCATE(RML_SUN, RML_SHA)
   DEALLOCATE(AN_SUN, AN_SHA)
-  DEALLOCATE(CO2LS_SUN,   CO2LS_SHA)
-  DEALLOCATE(AILCG_SUN,  AILCG_SHA)
+  DEALLOCATE(CO2LS_SUN, CO2LS_SHA)
+  DEALLOCATE(AILCG_SUN, AILCG_SHA)
   DEALLOCATE(GC_SUN, GC_SHA)
   DEALLOCATE(GCTU_SUN, GCTU_SHA)
 
@@ -1364,9 +1364,9 @@ end
 !! conductance. This canopy conductance is then used by CLASSIC in its energy and water balance calculations.
 !!
 !! The photosynthesis parametrization is based upon the approach of Farquhar et al. (1980) \cite Farquhar1980-96e and
-!! Collatz et al. (1991,1992) \cite Collatz1991-5bc \cite Collatz1992-jf as implemented in SiB2 (Sellers et al. 1996)
+!! Collatz et al. (1991, 1992) \cite Collatz1991-5bc \cite Collatz1992-jf as implemented in SiB2 (Sellers et al. 1996)
 !! \cite Sellers1996-bh and MOSES (Cox et al. 1999) \cite Cox1999-ia with some minor modifications as described in
-!! Arora (2003 )\cite Arora2003-3b7. Arora (2003) \cite Arora2003-3b7 outlines four possible configurations for the
+!! Arora (2003)\cite Arora2003-3b7. Arora (2003) \cite Arora2003-3b7 outlines four possible configurations for the
 !! model based on choice of a \f$\textit{big-leaf}\f$ or \f$\textit{two-leaf}\f$ (sunlight and shaded leaves) mode
 !! and stomatal conductance formulations based on either Ball et a. (1987) \cite Ball1987-ou or Leuning (1995)
 !! \cite Leuning1995-ab. The Ball et al. (1987) \cite Ball1987-ou formulation uses relative humidity while
@@ -1440,7 +1440,7 @@ end
 !! \qquad (Eqn 7)\f]
 !!
 !! where \f$\theta_{i}\f$ is the volumetric soil moisture (\f$m^{3} water\,(m^{3} soil)^{-1}\f$) of the \f$i\f$th soil
-!! layer and \f$\theta_{i,field}\f$ and \f$\theta_{i, wilt}\f$ the soil moisture at field capacity and wilting point, respectively.
+!! layer and \f$\theta_{i, field}\f$ and \f$\theta_{i, wilt}\f$ the soil moisture at field capacity and wilting point, respectively.
 !!
 !! The \f$CO_2\f$ compensation point (\f$\Gamma\f$) is the \f$CO_2\f$ partial pressure where photosynthetic uptake
 !! equals the leaf respiratory losses (used in Eqs. 1 and 2). \f$\Gamma\f$ is zero for \f$C_4\f$ plants
@@ -1504,13 +1504,13 @@ end
 !! \f]
 !! which yields the gross primary productivity (\f$G_{canopy}\f$, GPP). \f$k_\mathrm{n}\f$ is the extinction
 !! coefficient that describes the nitrogen and time-mean photosynthetically absorbed radiation (\f$PAR\f$)
-!! profile along the depth of the canopy (see also classic_params.f90) (Ingestad and Lund ,1986; \cite Ingestad1986-td
+!! profile along the depth of the canopy (see also classic_params.f90) (Ingestad and Lund, 1986; \cite Ingestad1986-td
 !! Field and Mooney, 1986 \cite Field1986-kd), and \f$LAI\f$ (\f$m^{2}\,leaf\,(m^{2}\,ground)^{-1}\f$) is the leaf area index.
 !!
-!! The net canopy photosynthetic rate, \f$G_{canopy,net}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is calculated
+!! The net canopy photosynthetic rate, \f$G_{canopy, net}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), is calculated
 !! by subtracting canopy leaf maintenance respiration costs (\f$R_{mL}\f$; see mainres.f) as
 !! \f[
-!! \label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}.\qquad (Eqn 13)
+!! \label{Gnet} G_{canopy, net} = G_{canopy} - R_{mL}.\qquad (Eqn 13)
 !! \f]
 !!
 !! **Coupling of photosynthesis and canopy conductance**
@@ -1519,7 +1519,7 @@ end
 !! When using the Leuning (1995) \cite Leuning1995-ab approach for photosynthesis--canopy conductance coupling,
 !! canopy conductance (\f$g_\mathrm{c}\f$; \f$mol\,m^{-2}\,s^{-1}\f$) is expressed as a function of the net canopy photosynthesis rate, \f$G_{canopy, net}\f$, as
 !! \f[
-!! \label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI}\qquad (Eqn 14)
+!! \label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy, net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI}\qquad (Eqn 14)
 !! \f]
 !! where \f$p\f$ is the surface atmospheric pressure (\f$Pa\f$), the parameter \f$m\f$ is set to 9.0 for needle-leaved trees,
 !! 12.0 for other \f$C_3\f$ plants and 6.0 for \f$C_4\f$ plants, parameter \f$b\f$ is assigned the values of 0.01 and 0.04
@@ -1527,18 +1527,18 @@ end
 !! \f$V_\mathrm{o}\f$ is set to \f$2000\,Pa\f$ for trees and \f$1500\,Pa\f$ for crops and grasses. The partial
 !! pressure of \f$CO_2\f$ at the leaf surface, \f$c_\mathrm{s}\f$, is found via
 !! \f[
-!! \label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}.\qquad (Eqn 15)
+!! \label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy, net} p}{g_b}.\qquad (Eqn 15)
 !! \f]
 !!
 !! Here, \f$c_{ap}\f$ is the atmospheric \f$CO_2\f$ partial pressure (\f$Pa\f$) and \f$g_b\f$ is the aerodynamic conductance
 !! estimated by CLASS (\f$mol\,m^{-2}\,s^{-1}\f$). The intra-cellular \f$CO_2\f$ concentration required in Eqs. 1--3 is calculated as
 !! \f[
-!! \label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}.\qquad (Eqn 16)
+!! \label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy, net} p}{g_\mathrm{c}}.\qquad (Eqn 16)
 !! \f]
 !!
-!! Since calculations of \f$G_{canopy,net}\f$ and \f$c_\mathrm{i}\f$ depend on each other, the photosynthesis-canopy
+!! Since calculations of \f$G_{canopy, net}\f$ and \f$c_\mathrm{i}\f$ depend on each other, the photosynthesis-canopy
 !! conductance equations need to be solved iteratively. The initial value of \f$c_\mathrm{i}\f$ used in calculation
-!! of \f$G_{canopy,net}\f$ is the value from the previous time step or, in its absence, \f$c_\mathrm{i}\f$ is assumed to be \f$0.7c_{ap}\f$.
+!! of \f$G_{canopy, net}\f$ is the value from the previous time step or, in its absence, \f$c_\mathrm{i}\f$ is assumed to be \f$0.7c_{ap}\f$.
 !!
 !! Canopy (\f$g_\mathrm{c}\f$) and aerodynamic (\f$g_b\f$) conductance used in above calculations are expressed in
 !! units of \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$ but can be converted to the traditional units of \f$m\,s^{-1}\f$ as follows

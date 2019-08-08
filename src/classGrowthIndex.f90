@@ -29,7 +29,7 @@
 !! in subroutine calcLandSurfParams; thus its shape as used there is that of a
 !! symmetrical trapezoidal function.
 !!
-subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly CGROW
+subroutine classGrowthIndex(GROWTH, TBAR, TA, FC, FCS, ILG, IG, IL1, IL2, JL) ! Formerly CGROW
 
 
   !     * MAR 09/07 - D.VERSEGHY. CHANGE SENESCENCE THRESHOLD FROM
@@ -46,13 +46,13 @@ subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly 
   !     *                         VEGETATION TYPES 1 AND 2 (NEEDLELEAF
   !     *                         AND BROADLEAF TREES).
   !
-  use classic_params, only : DELT,TFREZ
+  use classic_params, only : DELT, TFREZ
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IG,IL1,IL2,JL
+  integer, intent(in) :: ILG, IG, IL1, IL2, JL
   integer :: I
   !
   !     * OUTPUT ARRAY.
@@ -61,7 +61,7 @@ subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly 
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: TBAR  (ILG,IG)   !< Temperature of soil layers [K]
+  real, intent(in) :: TBAR  (ILG, IG)   !< Temperature of soil layers [K]
   !
   real, intent(in) :: TA(ILG)  !< Air temperature [K]
   real, intent(in) :: FC(ILG)  !< Fractional coverage of vegetation without snow on
@@ -70,13 +70,13 @@ subroutine classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly 
   !! snow pack on modelled area [ ]
   !-----------------------------------------------------------------------
 
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if ((FC(I) + FCS(I)) > 0.0) then
       if (GROWTH(I) < 0.0) then
         GROWTH(I) = MIN(0.0,(GROWTH(I) + DELT / 5.184E6))
       else
-        if (TA(I) > (TFREZ + 2.0) .and. TBAR(I,1) > (TFREZ + 2.0)) &
-        then
+        if (TA(I) > (TFREZ + 2.0) .and. TBAR(I, 1) > (TFREZ + 2.0)) &
+            then
           GROWTH(I) = MIN(1.0,(GROWTH(I) + DELT / 5.184E6))
         else
           if (GROWTH(I) > 0.90) then

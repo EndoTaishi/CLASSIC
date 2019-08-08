@@ -5,36 +5,36 @@
 !! @author D. Verseghy, M. Lazare, Y. Delage, R. Harvey, R. Soulis, P. Bartlett
 !
 subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! Formerly WPREP
-                         THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS, &
-                         GRKSC,  GRKSG,  GRKSCS, GRKSGS, &
-                         SPCC,   SPCG,   SPCCS,  SPCGS,  TSPCC,  TSPCG, &
-                         TSPCCS, TSPCGS, RPCC,   RPCG,   RPCCS,  RPCGS, &
-                         TRPCC,  TRPCG,  TRPCCS, TRPCGS, EVPIC,  EVPIG, &
+                         THICCS, THICGS, HCPCO, HCPGO, HCPCS, HCPGS, &
+                         GRKSC, GRKSG, GRKSCS, GRKSGS, &
+                         SPCC, SPCG, SPCCS, SPCGS, TSPCC, TSPCG, &
+                         TSPCCS, TSPCGS, RPCC, RPCG, RPCCS, RPCGS, &
+                         TRPCC, TRPCG, TRPCCS, TRPCGS, EVPIC, EVPIG, &
                          EVPICS, EVPIGS, ZPONDC, ZPONDG, ZPNDCS, ZPNDGS, &
                          XSNOWC, XSNOWG, XSNOCS, XSNOGS, ZSNOWC, ZSNOWG, &
-                         ZSNOCS, ZSNOGS, ALBSC,  ALBSG,  ALBSCS, ALBSGS, &
-                         RHOSC,  RHOSG,  HCPSC,  HCPSG,  HCPSCS, HCPSGS, &
-                         RUNFC,  RUNFG,  RUNFCS, RUNFGS, &
-                         TRUNFC, TRUNFG, TRNFCS, TRNFGS, TBASC,  TBASG, &
-                         TBASCS, TBASGS, GFLXC,  GFLXG,  GFLXCS, GFLXGS, &
-                         SUBLC,  SUBLCS, WLOSTC, WLOSTG, WLSTCS, WLSTGS, &
-                         RAC,    RACS,   SNC,    SNCS,   TSNOWC, TSNOWG, &
+                         ZSNOCS, ZSNOGS, ALBSC, ALBSG, ALBSCS, ALBSGS, &
+                         RHOSC, RHOSG, HCPSC, HCPSG, HCPSCS, HCPSGS, &
+                         RUNFC, RUNFG, RUNFCS, RUNFGS, &
+                         TRUNFC, TRUNFG, TRNFCS, TRNFGS, TBASC, TBASG, &
+                         TBASCS, TBASGS, GFLXC, GFLXG, GFLXCS, GFLXGS, &
+                         SUBLC, SUBLCS, WLOSTC, WLOSTG, WLSTCS, WLSTGS, &
+                         RAC, RACS, SNC, SNCS, TSNOWC, TSNOWG, &
                          OVRFLW, SUBFLW, BASFLW, TOVRFL, TSUBFL, TBASFL, &
-                         PCFC,   PCLC,   PCPN,   PCPG,   QFCF,   QFCL, &
-                         QFN,    QFG,    QFC,    HMFG, &
-                         ROVG,   ROFC,   ROFN,   TRUNOF, &
+                         PCFC, PCLC, PCPN, PCPG, QFCF, QFCL, &
+                         QFN, QFG, QFC, HMFG, &
+                         ROVG, ROFC, ROFN, TRUNOF, &
                          THLIQX, THICEX, THLDUM, THIDUM, &
-                         DT,     RDUMMY, ZERO,   IZERO,  DELZZ, &
-                         FC,     FG,     FCS,    FGS, &
-                         THLIQC, THLIQG, THICEC, THICEG, HCPC,   HCPG, &
-                         TBARC,  TBARG,  TBARCS, TBARGS, TBASE,  TSURX, &
-                         FSVF,   FSVFS,  RAICAN, SNOCAN, RAICNS, SNOCNS, &
-                         EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
-                         RPCP,   TRPCP,  SPCP,   TSPCP,  RHOSNI, ZPOND, &
-                         ZSNOW,  ALBSNO, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
-                         THPOR,  HCPS,   GRKSAT, ISAND,  DELZW,  DELZ, &
-                         ILG,    IL1,    IL2,    JL,     IG,     IGP1, &
-                         NLANDCS,NLANDGS,NLANDC, NLANDG, RADD,   SADD )
+                         DT, RDUMMY, ZERO, IZERO, DELZZ, &
+                         FC, FG, FCS, FGS, &
+                         THLIQC, THLIQG, THICEC, THICEG, HCPC, HCPG, &
+                         TBARC, TBARG, TBARCS, TBARGS, TBASE, TSURX, &
+                         FSVF, FSVFS, RAICAN, SNOCAN, RAICNS, SNOCNS, &
+                         EVAPC, EVAPCG, EVAPG, EVAPCS, EVPCSG, EVAPGS, &
+                         RPCP, TRPCP, SPCP, TSPCP, RHOSNI, ZPOND, &
+                         ZSNOW, ALBSNO, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
+                         THPOR, HCPS, GRKSAT, ISAND, DELZW, DELZ, &
+                         ILG, IL1, IL2, JL, IG, IGP1, &
+                         NLANDCS, NLANDGS, NLANDC, NLANDG, RADD, SADD)
   !
   !     * AUG 25/11 - D.VERSEGHY. REFINE CALCULATION OF TEMPERATURE OF
   !     *                         LUMPED PRECIPITATION.
@@ -99,14 +99,14 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. PREPARATION AND INITIALIZATION FOR
   !     *                         LAND SURFACE WATER BUDGET CALCULATIONS.
-  use classic_params,        only : DELT, TFREZ, HCPW, HCPICE, RHOW, RHOICE
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, RHOICE
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL,IG,IGP1,NLANDCS,NLANDGS,NLANDC,NLANDG
-  integer             :: I,J
+  integer, intent(in) :: ILG, IL1, IL2, JL, IG, IGP1, NLANDCS, NLANDGS, NLANDC, NLANDG
+  integer             :: I, J
   !
   !     * OUTPUT ARRAYS.
   !
@@ -114,42 +114,42 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !(Suffix CS = vegetation over snow cover; GS = bare snow cover; C
   ! or CO = vegetation over ground; G or GO = bare ground.)
   !
-  real, intent(out) :: THLQCO(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: THLQGO(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: THLQCS(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: THLQGS(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THLQCO(ILG, IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THLQGO(ILG, IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THLQCS(ILG, IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THLQGS(ILG, IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
   !
-  real, intent(out) :: THICCO(ILG,IG) !< Subarea volumetric frozen water content of soil layers
+  real, intent(out) :: THICCO(ILG, IG) !< Subarea volumetric frozen water content of soil layers
   !< \f$[m^3 m^{-3}] (\theta_i)\f$
-  real, intent(out) :: THICGO(ILG,IG) !< Subarea volumetric frozen water content of soil layers
+  real, intent(out) :: THICGO(ILG, IG) !< Subarea volumetric frozen water content of soil layers
   !< \f$[m^3 m^{-3}] (\theta_i)\f$
-  real, intent(out) :: THICCS(ILG,IG) !< Subarea volumetric frozen water content of soil layers
+  real, intent(out) :: THICCS(ILG, IG) !< Subarea volumetric frozen water content of soil layers
   !< \f$[m^3 m^{-3}] (\theta_i)\f$
-  real, intent(out) :: THICGS(ILG,IG) !< Subarea volumetric frozen water content of soil layers
+  real, intent(out) :: THICGS(ILG, IG) !< Subarea volumetric frozen water content of soil layers
   !< \f$[m^3 m^{-3}] (\theta_i)\f$
   !
-  real, intent(out) :: HCPCO (ILG,IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
-  real, intent(out) :: HCPGO (ILG,IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
-  real, intent(out) :: HCPCS (ILG,IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
-  real, intent(out) :: HCPGS (ILG,IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+  real, intent(out) :: HCPCO (ILG, IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+  real, intent(out) :: HCPGO (ILG, IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+  real, intent(out) :: HCPCS (ILG, IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+  real, intent(out) :: HCPGS (ILG, IG) !< Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
   !
-  real, intent(out) :: GRKSC (ILG,IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
-  real, intent(out) :: GRKSG (ILG,IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
-  real, intent(out) :: GRKSCS(ILG,IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
-  real, intent(out) :: GRKSGS(ILG,IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+  real, intent(out) :: GRKSC (ILG, IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+  real, intent(out) :: GRKSG (ILG, IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+  real, intent(out) :: GRKSCS(ILG, IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+  real, intent(out) :: GRKSGS(ILG, IG) !< Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
   !
-  real, intent(out) :: GFLXC (ILG,IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
-  real, intent(out) :: GFLXG (ILG,IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
-  real, intent(out) :: GFLXCS(ILG,IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
-  real, intent(out) :: GFLXGS(ILG,IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+  real, intent(out) :: GFLXC (ILG, IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+  real, intent(out) :: GFLXG (ILG, IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+  real, intent(out) :: GFLXCS(ILG, IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+  real, intent(out) :: GFLXGS(ILG, IG) !< Subarea heat flux between soil layers \f$[W m^{-2}]\f$
   !
-  real, intent(out) :: THLDUM(ILG,IG) !< Internal waterBudgetDriver dummy variable for soil frozen water \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: THIDUM(ILG,IG) !< Internal waterBudgetDriver dummy variable for soil frozen water \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: QFC   (ILG,IG) !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(out) :: HMFG  (ILG,IG) !< Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
+  real, intent(out) :: THLDUM(ILG, IG) !< Internal waterBudgetDriver dummy variable for soil frozen water \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THIDUM(ILG, IG) !< Internal waterBudgetDriver dummy variable for soil frozen water \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: QFC   (ILG, IG) !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
+  real, intent(out) :: HMFG  (ILG, IG) !< Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
   !
-  real, intent(out) :: THLIQX(ILG,IGP1) !< Internal waterBudgetDriver work array for soil frozen water \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: THICEX(ILG,IGP1) !< Internal waterBudgetDriver work array for soil frozen water \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THLIQX(ILG, IGP1) !< Internal waterBudgetDriver work array for soil frozen water \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THICEX(ILG, IGP1) !< Internal waterBudgetDriver work array for soil frozen water \f$[m^3 m^{-3}]\f$
   !
   real, intent(out) :: SPCC  (ILG) !< Subarea snowfall rate \f$[m s^{-1}]\f$
   real, intent(out) :: SPCG  (ILG) !< Subarea snowfall rate \f$[m s^{-1}]\f$
@@ -294,29 +294,29 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   real, intent(in) :: RHOSCS(ILG)  !< Density of snow under vegetation \f$[kg m^{-3}] (\rho_s)\f$
   real, intent(in) :: RHOSGS(ILG)  !< Density of snow in bare areas \f$[kg m^{-3}] (\rho_s)\f$
   real, intent(in) :: TBASE (ILG)  !< Temperature of bedrock in third soil layer [K]
-  real, intent(in) :: TSURX(ILG,4) !< Ground surface temperature over subarea [K]
+  real, intent(in) :: TSURX(ILG, 4) !< Ground surface temperature over subarea [K]
   !
-  real, intent(in) :: THLIQC(ILG,IG) !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THLIQG(ILG,IG) !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THICEC(ILG,IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THICEG(ILG,IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: TBARC (ILG,IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
-  real, intent(in) :: TBARG (ILG,IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
-  real, intent(in) :: TBARCS(ILG,IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
-  real, intent(in) :: TBARGS(ILG,IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
-  real, intent(in) :: HCPC  (ILG,IG) !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}]\f$
-  real, intent(in) :: HCPG  (ILG,IG) !<
+  real, intent(in) :: THLIQC(ILG, IG) !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THLIQG(ILG, IG) !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THICEC(ILG, IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THICEG(ILG, IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: TBARC (ILG, IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
+  real, intent(in) :: TBARG (ILG, IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
+  real, intent(in) :: TBARCS(ILG, IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
+  real, intent(in) :: TBARGS(ILG, IG) !< Subarea temperatures of soil layers \f$[C] (T_g)\f$
+  real, intent(in) :: HCPC  (ILG, IG) !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in) :: HCPG  (ILG, IG) !<
   !
   !     * SOIL INFORMATION ARRAYS.
   !
-  real, intent(in)  :: THPOR (ILG,IG) !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
-  real, intent(in)  :: HCPS  (ILG,IG) !< Heat capacity of soil material \f$[J m^{-3} K^{-1}]\f$
-  real, intent(in)  :: GRKSAT(ILG,IG) !< Saturated hydraulic conductivity of soil layers \f$[m s^{-1}]\f$
-  real, intent(out) :: DELZZ (ILG,IG) !< Soil layer depth variable used in soilWaterPhaseChg/TMCALC [m]
-  real, intent(in)  :: DELZW (ILG,IG) !< Permeable thickness of soil layer [m]
+  real, intent(in)  :: THPOR (ILG, IG) !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
+  real, intent(in)  :: HCPS  (ILG, IG) !< Heat capacity of soil material \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in)  :: GRKSAT(ILG, IG) !< Saturated hydraulic conductivity of soil layers \f$[m s^{-1}]\f$
+  real, intent(out) :: DELZZ (ILG, IG) !< Soil layer depth variable used in soilWaterPhaseChg/TMCALC [m]
+  real, intent(in)  :: DELZW (ILG, IG) !< Permeable thickness of soil layer [m]
   real, intent(in)  :: DELZ  (IG)     !< Overall thickness of soil layer [m]
   !
-  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
   !
   !     * INTERNAL WORK ARRAYS.
   !
@@ -329,50 +329,50 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !!
   !     * INITIALIZE 2-D ARRAYS.
   !
-  do J = 1,IG ! loop 50
-    do I = IL1,IL2
-      THLQCO(I,J) = 0.0
-      THLQGO(I,J) = 0.0
-      THLQCS(I,J) = 0.0
-      THLQGS(I,J) = 0.0
-      THICCO(I,J) = 0.0
-      THICGO(I,J) = 0.0
-      THICCS(I,J) = 0.0
-      THICGS(I,J) = 0.0
-      HCPCO (I,J) = 0.0
-      HCPGO (I,J) = 0.0
-      HCPCS (I,J) = 0.0
-      HCPGS (I,J) = 0.0
-      GRKSC (I,J) = 0.0
-      GRKSG (I,J) = 0.0
-      GRKSCS(I,J) = 0.0
-      GRKSGS(I,J) = 0.0
-      GFLXC (I,J) = 0.0
-      GFLXG (I,J) = 0.0
-      GFLXCS(I,J) = 0.0
-      GFLXGS(I,J) = 0.0
-      QFC   (I,J) = 0.0
-      HMFG  (I,J) = 0.0
-      THLDUM(I,J) = 0.0
-      THIDUM(I,J) = 0.0
+  do J = 1, IG ! loop 50
+    do I = IL1, IL2
+      THLQCO(I, J) = 0.0
+      THLQGO(I, J) = 0.0
+      THLQCS(I, J) = 0.0
+      THLQGS(I, J) = 0.0
+      THICCO(I, J) = 0.0
+      THICGO(I, J) = 0.0
+      THICCS(I, J) = 0.0
+      THICGS(I, J) = 0.0
+      HCPCO (I, J) = 0.0
+      HCPGO (I, J) = 0.0
+      HCPCS (I, J) = 0.0
+      HCPGS (I, J) = 0.0
+      GRKSC (I, J) = 0.0
+      GRKSG (I, J) = 0.0
+      GRKSCS(I, J) = 0.0
+      GRKSGS(I, J) = 0.0
+      GFLXC (I, J) = 0.0
+      GFLXG (I, J) = 0.0
+      GFLXCS(I, J) = 0.0
+      GFLXGS(I, J) = 0.0
+      QFC   (I, J) = 0.0
+      HMFG  (I, J) = 0.0
+      THLDUM(I, J) = 0.0
+      THIDUM(I, J) = 0.0
       if (J == 3 .and. IG == 3) then
-        DELZZ (I,J) = DELZW(I,J)
+        DELZZ (I, J) = DELZW(I, J)
       else
-        DELZZ (I,J) = DELZ(J)
+        DELZZ (I, J) = DELZ(J)
       end if
     end do
   end do ! loop 50
   !
-  do J = 1,IGP1 ! loop 75
-    do I = IL1,IL2
-      THLIQX(I,J) = 0.0
-      THICEX(I,J) = 0.0
+  do J = 1, IGP1 ! loop 75
+    do I = IL1, IL2
+      THLIQX(I, J) = 0.0
+      THICEX(I, J) = 0.0
     end do
   end do ! loop 75
   !
   !     * INITIALIZE OTHER DIAGNOSTIC AND WORK ARRAYS.
   !
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     EVPICS(I) = EVAPCS(I) + EVPCSG(I)
     EVPIGS(I) = EVAPGS(I)
     EVPIC (I) = EVAPC (I) + EVAPCG(I)
@@ -466,16 +466,16 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
     !!
     if (RPCP(I) > 0.) then
       PCLC(I) = (FCS(I) * (1.0 - FSVFS(I)) + FC(I) * (1.0 - FSVF(I))) * &
-                 RPCP(I) * RHOW
+                RPCP(I) * RHOW
       PCPN(I) = (FCS(I) * FSVFS(I) + FGS(I)) * RPCP(I) * RHOW
       PCPG(I) = (FC(I) * FSVF(I) + FG(I)) * RPCP(I) * RHOW
     end if
     !
     if (SPCP(I) > 0.) then
       PCFC(I) = (FCS(I) * (1.0 - FSVFS(I)) + FC(I) * (1.0 - FSVF(I))) * &
-                 SPCP(I) * RHOSNI(I)
+                SPCP(I) * RHOSNI(I)
       PCPN(I) = PCPN(I) + (FCS(I) * FSVFS(I) + FGS(I) + &
-                 FC(I) * FSVF(I) + FG(I)) * SPCP(I) * RHOSNI(I)
+                FC(I) * FSVF(I) + FG(I)) * SPCP(I) * RHOSNI(I)
     end if
   end do ! loop 100
   !>
@@ -498,18 +498,18 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !
   if (NLANDCS > 0) then
     !
-    do J = 1,IG ! loop 200
-      do I = IL1,IL2
+    do J = 1, IG ! loop 200
+      do I = IL1, IL2
         if (FCS(I) > 0.) then
-          THLQCS(I,J) = THLIQC(I,J)
-          THICCS(I,J) = THICEC(I,J)
-          HCPCS (I,J) = HCPC  (I,J)
-          if (THPOR(I,J) > 0.0001) then
-            GRKSCS(I,J) = GRKSAT(I,J) * (1.7915E-03 / &
-                       (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
-                       MIN(100.,TBARCS(I,J))) ** 0.9) / 22.))))
+          THLQCS(I, J) = THLIQC(I, J)
+          THICCS(I, J) = THICEC(I, J)
+          HCPCS (I, J) = HCPC  (I, J)
+          if (THPOR(I, J) > 0.0001) then
+            GRKSCS(I, J) = GRKSAT(I, J) * (1.7915E-03 / &
+                           (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
+                           MIN(100.,TBARCS(I, J))) ** 0.9) / 22.))))
           else
-            GRKSCS(I,J) = GRKSAT(I,J)
+            GRKSCS(I, J) = GRKSAT(I, J)
           end if
         end if
       end do
@@ -556,7 +556,7 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
     !!
     !! \f$C_s = C_i [\rho_s /\rho_i] + C_w w_s /[\rho_w z_s]\f$
     !!
-    do I = IL1,IL2 ! loop 250
+    do I = IL1, IL2 ! loop 250
       if (FCS(I) > 0.) then
         if (SNOCNS(I) > 0.) then
           SUBLCS(I) = EVAPCS(I)
@@ -568,14 +568,14 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
           QFCF(I) = QFCF(I) + FCS(I) * SUBLCS(I) * RHOW
         else
           QFCF(I) = QFCF(I) + FCS(I) * (1.0 - FSVFS(I)) * SUBLCS(I) * &
-                         RHOW
+                    RHOW
           QFN(I) = QFN(I) + FCS(I) * FSVFS(I) * SUBLCS(I) * RHOW
         end if
         if (EVAPCS(I) > 0.0) then
           QFCL(I) = QFCL(I) + FCS(I) * EVAPCS(I) * RHOW
         else
           QFCL(I) = QFCL(I) + FCS(I) * (1.0 - FSVFS(I)) * EVAPCS(I) * &
-                         RHOW
+                    RHOW
           QFN(I) = QFN(I) + FCS(I) * FSVFS(I) * EVAPCS(I) * RHOW
         end if
         !
@@ -585,22 +585,22 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
           if (SADD(I) > 0.0) then
             if (SUBLCS(I) > 0.) then
               QFCF(I) = QFCF(I) - FCS(I) * FSVFS(I) * &
-                                 SUBLCS(I) * RHOW
+                        SUBLCS(I) * RHOW
               QFN(I) = QFN(I) + FCS(I) * FSVFS(I) * &
-                                 SUBLCS(I) * RHOW
+                       SUBLCS(I) * RHOW
             end if
             SPCCS (I) = SADD(I)
             if (SPCP(I) > 0.0) then
               TSPCCS(I) = TSPCP(I) + TFREZ
             else
-              TSPCCS(I) = MIN(TSURX(I,1),TFREZ)
+              TSPCCS(I) = MIN(TSURX(I, 1), TFREZ)
             end if
             SUBLCS(I) = 0.0
           else
             PCPN(I) = PCPN(I) - FCS(I) * FSVFS(I) * SPCP(I) * &
-                         RHOSNI(I)
+                      RHOSNI(I)
             PCFC(I) = PCFC(I) + FCS(I) * FSVFS(I) * SPCP(I) * &
-                         RHOSNI(I)
+                      RHOSNI(I)
             SUBLCS(I) = - SADD(I) * RHOSNI(I) / RHOW
             SPCCS (I) = 0.0
             TSPCCS(I) = 0.0
@@ -616,15 +616,15 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
           if (RADD(I) > 0.) then
             if (EVAPCS(I) > 0.) then
               QFCL(I) = QFCL(I) - FCS(I) * FSVFS(I) * &
-                                 EVAPCS(I) * RHOW
+                        EVAPCS(I) * RHOW
               QFN(I) = QFN(I) + FCS(I) * FSVFS(I) * &
-                                 EVAPCS(I) * RHOW
+                       EVAPCS(I) * RHOW
             end if
             RPCCS (I) = RADD(I)
             if (RPCP(I) > 0.0) then
               TRPCCS(I) = TRPCP(I) + TFREZ
             else
-              TRPCCS(I) = MAX(TSURX(I,1),TFREZ)
+              TRPCCS(I) = MAX(TSURX(I, 1), TFREZ)
             end if
             EVAPCS(I) = 0.0
           else
@@ -642,7 +642,7 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
         ZSNOCS(I) = ZSNOW (I)
         ALBSCS(I) = ALBSNO(I)
         HCPSCS(I) = HCPICE * RHOSCS(I) / RHOICE + HCPW * WSNOCS(I) / &
-        (RHOW * ZSNOCS(I))
+                    (RHOW * ZSNOCS(I))
         QFN   (I) = QFN(I) + FCS(I) * EVPCSG(I) * RHOW
       end if
     end do ! loop 250
@@ -652,24 +652,24 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !
   if (NLANDGS > 0) then
     !
-    do J = 1,IG ! loop 300
-      do I = IL1,IL2
+    do J = 1, IG ! loop 300
+      do I = IL1, IL2
         if (FGS(I) > 0.) then
-          THLQGS(I,J) = THLIQG(I,J)
-          THICGS(I,J) = THICEG(I,J)
-          HCPGS (I,J) = HCPG  (I,J)
-          if (THPOR(I,J) > 0.0001) then
-            GRKSGS(I,J) = GRKSAT(I,J) * (1.7915E-03 / &
-                       (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
-                       MIN(100.,TBARGS(I,J))) ** 0.9) / 22.))))
+          THLQGS(I, J) = THLIQG(I, J)
+          THICGS(I, J) = THICEG(I, J)
+          HCPGS (I, J) = HCPG  (I, J)
+          if (THPOR(I, J) > 0.0001) then
+            GRKSGS(I, J) = GRKSAT(I, J) * (1.7915E-03 / &
+                           (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
+                           MIN(100.,TBARGS(I, J))) ** 0.9) / 22.))))
           else
-            GRKSGS(I,J) = GRKSAT(I,J)
+            GRKSGS(I, J) = GRKSAT(I, J)
           end if
         end if
       end do
     end do ! loop 300
     !
-    do I = IL1,IL2 ! loop 350
+    do I = IL1, IL2 ! loop 350
       if (FGS(I) > 0.) then
         QFN(I) = QFN(I) + FGS(I) * EVAPGS(I) * RHOW
         if (SPCP(I) > 0. .or. EVAPGS(I) < 0.) then
@@ -680,7 +680,7 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
             if (SPCP(I) > 0.0) then
               TSPCGS(I) = TSPCP(I)
             else
-              TSPCGS(I) = MIN((TSURX(I,2) - TFREZ),0.0)
+              TSPCGS(I) = MIN((TSURX(I, 2) - TFREZ), 0.0)
             end if
             EVAPGS(I) = 0.0
           else
@@ -713,7 +713,7 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
         ZSNOGS(I) = ZSNOW (I)
         ALBSGS(I) = ALBSNO(I)
         HCPSGS(I) = HCPICE * RHOSGS(I) / RHOICE + HCPW * WSNOGS(I) / &
-        (RHOW * ZSNOGS(I))
+                    (RHOW * ZSNOGS(I))
       end if
     end do ! loop 350
   end if
@@ -722,24 +722,24 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !
   if (NLANDC > 0) then
     !
-    do J = 1,IG ! loop 400
-      do I = IL1,IL2
+    do J = 1, IG ! loop 400
+      do I = IL1, IL2
         if (FC(I) > 0.) then
-          THLQCO(I,J) = THLIQC(I,J)
-          THICCO(I,J) = THICEC(I,J)
-          HCPCO (I,J) = HCPC  (I,J)
-          if (THPOR(I,J) > 0.0001) then
-            GRKSC (I,J) = GRKSAT(I,J) * (1.7915E-03 / &
-                       (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
-                       MIN(100.,TBARC(I,J))) ** 0.9) / 22.))))
+          THLQCO(I, J) = THLIQC(I, J)
+          THICCO(I, J) = THICEC(I, J)
+          HCPCO (I, J) = HCPC  (I, J)
+          if (THPOR(I, J) > 0.0001) then
+            GRKSC (I, J) = GRKSAT(I, J) * (1.7915E-03 / &
+                           (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
+                           MIN(100.,TBARC(I, J))) ** 0.9) / 22.))))
           else
-            GRKSC (I,J) = GRKSAT(I,J)
+            GRKSC (I, J) = GRKSAT(I, J)
           end if
         end if
       end do
     end do ! loop 400
     !
-    do I = IL1,IL2 ! loop 450
+    do I = IL1, IL2 ! loop 450
       if (FC(I) > 0.) then
         if (SNOCAN(I) > 0.) then
           SUBLC(I) = EVAPC(I)
@@ -751,14 +751,14 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
           QFCF(I) = QFCF(I) + FC(I) * SUBLC(I) * RHOW
         else
           QFCF(I) = QFCF(I) + FC(I) * (1.0 - FSVF(I)) * SUBLC(I) * &
-                         RHOW
+                    RHOW
           QFN(I) = QFN(I) + FC(I) * FSVF(I) * SUBLC(I) * RHOW
         end if
         if (EVAPC(I) > 0.0) then
           QFCL(I) = QFCL(I) + FC(I) * EVAPC(I) * RHOW
         else
           QFCL(I) = QFCL(I) + FC(I) * (1.0 - FSVF(I)) * EVAPC(I) * &
-                         RHOW
+                    RHOW
           QFG(I) = QFG(I) + FC(I) * FSVF(I) * EVAPC(I) * RHOW
         end if
         !
@@ -768,22 +768,22 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
           if (SADD(I) > 0.0) then
             if (SUBLC(I) > 0.) then
               QFCF(I) = QFCF(I) - FC(I) * FSVF(I) * SUBLC(I) * &
-                                 RHOW
+                        RHOW
               QFN(I) = QFN(I) + FC(I) * FSVF(I) * SUBLC(I) * &
-                                 RHOW
+                       RHOW
             end if
             SPCC  (I) = SADD(I)
             if (SPCP(I) > 0.0) then
               TSPCC (I) = TSPCP(I) + TFREZ
             else
-              TSPCC(I) = MIN(TSURX(I,3),TFREZ)
+              TSPCC(I) = MIN(TSURX(I, 3), TFREZ)
             end if
             SUBLC (I) = 0.0
           else
             PCPN(I) = PCPN(I) - FC(I) * FSVF(I) * SPCP(I) * &
-                         RHOSNI(I)
+                      RHOSNI(I)
             PCFC(I) = PCFC(I) + FC(I) * FSVF(I) * SPCP(I) * &
-                         RHOSNI(I)
+                      RHOSNI(I)
             SUBLC (I) = - SADD(I) * RHOSNI(I) / RHOW
             SPCC  (I) = 0.0
             TSPCC (I) = 0.0
@@ -799,15 +799,15 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
           if (RADD(I) > 0.) then
             if (EVAPC(I) > 0.) then
               QFCL(I) = QFCL(I) - FC(I) * FSVF(I) * EVAPC(I) * &
-                                 RHOW
+                        RHOW
               QFG(I) = QFG(I) + FC(I) * FSVF(I) * EVAPC(I) * &
-                                 RHOW
+                       RHOW
             end if
             RPCC  (I) = RADD(I)
             if (RPCP(I) > 0.0) then
               TRPCC (I) = TRPCP(I) + TFREZ
             else
-              TRPCC (I) = MAX(TSURX(I,3),TFREZ)
+              TRPCC (I) = MAX(TSURX(I, 3), TFREZ)
             end if
             EVAPC (I) = 0.0
           else
@@ -834,24 +834,24 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
   !
   if (NLANDG > 0) then
     !
-    do J = 1,IG ! loop 500
-      do I = IL1,IL2
+    do J = 1, IG ! loop 500
+      do I = IL1, IL2
         if (FG(I) > 0.) then
-          THLQGO(I,J) = THLIQG(I,J)
-          THICGO(I,J) = THICEG(I,J)
-          HCPGO (I,J) = HCPG  (I,J)
-          if (THPOR(I,J) > 0.0001) then
-            GRKSG (I,J) = GRKSAT(I,J) * (1.7915E-03 / &
-                       (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
-                       MIN(100.,TBARG(I,J))) ** 0.9) / 22.))))
+          THLQGO(I, J) = THLIQG(I, J)
+          THICGO(I, J) = THICEG(I, J)
+          HCPGO (I, J) = HCPG  (I, J)
+          if (THPOR(I, J) > 0.0001) then
+            GRKSG (I, J) = GRKSAT(I, J) * (1.7915E-03 / &
+                           (2.0319E-04 + 1.5883E-03 * EXP( - ((MAX(0.0, &
+                           MIN(100.,TBARG(I, J))) ** 0.9) / 22.))))
           else
-            GRKSG (I,J) = GRKSAT(I,J)
+            GRKSG (I, J) = GRKSAT(I, J)
           end if
         end if
       end do
     end do ! loop 500
     !
-    do I = IL1,IL2 ! loop 550
+    do I = IL1, IL2 ! loop 550
       if (FG(I) > 0.) then
         QFG(I) = QFG(I) + FG(I) * EVAPG(I) * RHOW
         if (SPCP(I) > 0.) then
@@ -883,7 +883,7 @@ subroutine waterCalcPrep(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! For
             if (RPCP(I) > 0.0) then
               TRPCG (I) = TRPCP(I)
             else
-              TRPCG (I) = MAX((TSURX(I,4) - TFREZ),0.0)
+              TRPCG (I) = MAX((TSURX(I, 4) - TFREZ), 0.0)
             end if
             EVAPG (I) = 0.0
           else

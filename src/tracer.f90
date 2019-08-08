@@ -52,11 +52,11 @@ contains
   !! at the start of the balance check.
   !!
   !> @author Joe Melton
-  subroutine prepTracer(il1, il2,ilg, tracerCO2, & ! In
-                                tracerValue) ! Out
+  subroutine prepTracer(il1, il2, ilg, tracerCO2, & ! In
+                        tracerValue) ! Out
 
     use classic_params, only : icc, deltat, iccp2, zero, grass, ignd, nlat
-    use ctem_statevars, only : tracer,c_switch,vgat
+    use ctem_statevars, only : tracer, c_switch, vgat
 
     implicit none
 
@@ -88,7 +88,7 @@ contains
     integer, pointer :: ipeatland(:) !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     !
     ! Local
-    integer :: i,j,k
+    integer :: i, j, k
 
     ! Point pointers
     tracerGLeafMass   => tracer%gLeafMassgat
@@ -128,14 +128,14 @@ contains
     do i = il1, il2
       do j = 1, iccp2
         if (j <= icc) then ! these are just icc sized arrays.
-          if (rootmass(i,j) < zero) tracerRootMass(i,j) = 0.
-          if (stemmass(i,j) < zero) tracerStemMass(i,j) = 0.
-          if (bleafmas(i,j) < zero) tracerBLeafMass(i,j) = 0.
-          if (gleafmas(i,j) < zero) tracerGLeafMass(i,j) = 0.
+          if (rootmass(i, j) < zero) tracerRootMass(i, j) = 0.
+          if (stemmass(i, j) < zero) tracerStemMass(i, j) = 0.
+          if (bleafmas(i, j) < zero) tracerBLeafMass(i, j) = 0.
+          if (gleafmas(i, j) < zero) tracerGLeafMass(i, j) = 0.
         end if
         ! COMBAK PERLAY
-        ! if (sum(litrmass(i,j,:)) < zero) tracerLitrMass(i,j,:) = 0.
-        ! if (sum(soilcmas(i,j,:)) < zero) tracerSoilCMass(i,j,:) = 0.
+        ! if (sum(litrmass(i, j,:)) < zero) tracerLitrMass(i, j,:) = 0.
+        ! if (sum(soilcmas(i, j,:)) < zero) tracerSoilCMass(i, j,:) = 0.
         ! COMBAK PERLAY
       end do ! j
 
@@ -160,9 +160,9 @@ contains
   !! \cite Koven2013-dd we adjust for that faster equilbration by
   !! increasing the decay in the soil C tracer pool by spinfast.
   !> @author Joe Melton
-  subroutine decay14C(il1,il2)
+  subroutine decay14C(il1, il2)
 
-    use ctem_statevars, only : c_switch,iccp2,icc,tracer,ignd
+    use ctem_statevars, only : c_switch, iccp2, icc, tracer, ignd
     use classic_params, only : lambda14C
 
     implicit none
@@ -181,7 +181,7 @@ contains
     integer, pointer :: spinfast               !< Set this to a higher number up to 10 to spin up
     !< soil carbon pool faster
 
-    integer  :: i,j,k    ! counters
+    integer  :: i, j, k    ! counters
     real :: dfac    !< decay constant. \f$y^{-1}\f$
 
     ! point pointers
@@ -204,14 +204,14 @@ contains
       tracerMossLitrMass = ((tracerMossLitrMass(i) + 1.) * dfac) - 1.
       do j = 1, iccp2
         if (j <= icc) then
-          tracerGLeafMass(i,j) = ((tracerGLeafMass(i,j) + 1.) * dfac) - 1.
-          tracerBLeafMass(i,j) = ((tracerBLeafMass(i,j) + 1.) * dfac) - 1.
-          tracerStemMass(i,j) = ((tracerStemMass(i,j) + 1.) * dfac) - 1.
-          tracerRootMass(i,j) = ((tracerRootMass(i,j) + 1.) * dfac) - 1.
+          tracerGLeafMass(i, j) = ((tracerGLeafMass(i, j) + 1.) * dfac) - 1.
+          tracerBLeafMass(i, j) = ((tracerBLeafMass(i, j) + 1.) * dfac) - 1.
+          tracerStemMass(i, j) = ((tracerStemMass(i, j) + 1.) * dfac) - 1.
+          tracerRootMass(i, j) = ((tracerRootMass(i, j) + 1.) * dfac) - 1.
         end if
         do k = 1, ignd
-          tracerLitrMass(i,j,k) = ((tracerLitrMass(i,j,k) + 1.) * dfac) - 1.
-          tracerSoilCMass(i,j,k) = ((tracerSoilCMass(i,j,k) + 1.) * dfac * spinfast) - 1.
+          tracerLitrMass(i, j, k) = ((tracerLitrMass(i, j, k) + 1.) * dfac) - 1.
+          tracerSoilCMass(i, j, k) = ((tracerSoilCMass(i, j, k) + 1.) * dfac * spinfast) - 1.
         end do
       end do
     end do
@@ -266,11 +266,11 @@ contains
   !! @author Joe Melton
   function convertTracerUnits(tracerco2conc)
 
-    use ctem_statevars, only : c_switch,tracer,nlat,nmos
+    use ctem_statevars, only : c_switch, tracer, nlat, nmos
 
     implicit none
 
-    real, dimension(nlat,nmos) :: convertTracerUnits
+    real, dimension(nlat, nmos) :: convertTracerUnits
     real, dimension(:,:), intent(in) :: tracerco2conc
     integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used.
     ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the
@@ -316,10 +316,10 @@ contains
   !! notes of updateSimpleTracer. checkTracerBalance uses the
   !! same tolerance for comparisions as balcar.
   !! @author Joe Melton
-  subroutine checkTracerBalance(il1,il2)
+  subroutine checkTracerBalance(il1, il2)
 
     use classic_params, only : icc, iccp2, ignd, tolrance
-    use ctem_statevars, only : tracer,vgat,c_switch
+    use ctem_statevars, only : tracer, vgat, c_switch
 
     implicit none
 
@@ -347,7 +347,7 @@ contains
     ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     ! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
 
-    integer :: i,j,k
+    integer :: i, j, k
 
     tracerGLeafMass   => tracer%gLeafMassgat
     tracerBLeafMass   => tracer%bLeafMassgat
@@ -381,34 +381,34 @@ contains
         if (j <= icc) then
 
           ! green leaf mass
-          if (abs(tracerGLeafMass(i,j) - gleafmas(i,j)) > tolrance) then
+          if (abs(tracerGLeafMass(i, j) - gleafmas(i, j)) > tolrance) then
             print * ,'checkTracerBalance: Tracer balance fail for green leaf mass'
-            print * ,i,'PFT',j,'tracerGLeafMass',tracerGLeafMass(i,j), &
-                    'gleafmas',gleafmas(i,j)
+            print * ,i,'PFT',j,'tracerGLeafMass',tracerGLeafMass(i, j), &
+                    'gleafmas',gleafmas(i, j)
             call errorHandler('checkTracerBalance', - 1)
           end if
 
           ! brown leaf mass
-          if (abs(tracerBLeafMass(i,j) - bleafmas(i,j)) > tolrance) then
+          if (abs(tracerBLeafMass(i, j) - bleafmas(i, j)) > tolrance) then
             print * ,'checkTracerBalance: Tracer balance fail for brown leaf mass'
-            print * ,i,'PFT',j,'tracerBLeafMass',tracerBLeafMass(i,j), &
-                    'bleafmas',bleafmas(i,j)
+            print * ,i,'PFT',j,'tracerBLeafMass',tracerBLeafMass(i, j), &
+                    'bleafmas',bleafmas(i, j)
             call errorHandler('checkTracerBalance', - 2)
           end if
 
           ! stem mass
-          if (abs(tracerStemMass(i,j) - stemmass(i,j)) > tolrance) then
+          if (abs(tracerStemMass(i, j) - stemmass(i, j)) > tolrance) then
             print * ,'checkTracerBalance: Tracer balance fail for stem mass'
-            print * ,i,'PFT',j,'tracerStemMass',tracerStemMass(i,j), &
-                    'stemmass',stemmass(i,j)
+            print * ,i,'PFT',j,'tracerStemMass',tracerStemMass(i, j), &
+                    'stemmass',stemmass(i, j)
             call errorHandler('checkTracerBalance', - 1)
           end if
 
           ! root mass
-          if (abs(tracerRootMass(i,j) - rootmass(i,j)) > tolrance) then
+          if (abs(tracerRootMass(i, j) - rootmass(i, j)) > tolrance) then
             print * ,'checkTracerBalance: Tracer balance fail for root mass'
-            print * ,i,'PFT',j,'tracerRootMass',tracerRootMass(i,j), &
-                    'rootmass',rootmass(i,j)
+            print * ,i,'PFT',j,'tracerRootMass',tracerRootMass(i, j), &
+                    'rootmass',rootmass(i, j)
             call errorHandler('checkTracerBalance', - 1)
           end if
         end if
@@ -416,17 +416,17 @@ contains
         ! COMBAK PERLAY
         ! do k = 1, ignd
         !   ! green leaf mass
-        !   if (abs(tracerLitrMass(i,j,k) - litrmass(i,j,k)) > tolrance) then
+        !   if (abs(tracerLitrMass(i, j, k) - litrmass(i, j, k)) > tolrance) then
         !     print*,'checkTracerBalance: Tracer balance fail for litter mass'
-        !     print*,i,'PFT',j,'layer',k,'tracerLitrMass',tracerLitrMass(i,j,k), &
-        !               'litrmass',litrmass(i,j,k)
+        !     print*,i,'PFT',j,'layer',k,'tracerLitrMass',tracerLitrMass(i, j, k), &
+        !               'litrmass',litrmass(i, j, k)
         !     call errorHandler('checkTracerBalance',-1)
         !   end if
         !   ! green leaf mass
-        !   if (abs(tracerSoilCMass(i,j,k) - soilcmas(i,j,k)) > tolrance) then
+        !   if (abs(tracerSoilCMass(i, j, k) - soilcmas(i, j, k)) > tolrance) then
         !     print*,'checkTracerBalance: Tracer balance fail for soil C mass'
-        !     print*,i,'PFT',j,'layer',k,'tracerSoilCMass',tracerSoilCMass(i,j,k), &
-        !               'soilcmas',soilcmas(i,j,k)
+        !     print*,i,'PFT',j,'layer',k,'tracerSoilCMass',tracerSoilCMass(i, j, k), &
+        !               'soilcmas',soilcmas(i, j, k)
         !     call errorHandler('checkTracerBalance',-1)
         !   end if
         ! end do

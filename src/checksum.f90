@@ -19,9 +19,9 @@ contains
   !!
   subroutine checksumCalc(lonIndex, latIndex)
 
-    use ctem_statevars,     only : c_switch,vrot
-    use class_statevars,    only : class_rot
-    use classic_params,     only : icc,nmos,ignd,icp1,modelpft,iccp2,TFREZ
+    use ctem_statevars, only : c_switch, vrot
+    use class_statevars, only : class_rot
+    use classic_params, only : icc, nmos, ignd, icp1, modelpft, iccp2, TFREZ
 
     implicit none
 
@@ -138,7 +138,7 @@ contains
       checksum = checksum + bitcount(PFTCover(k))
     end do
     write(checksumchar, '(I4)')checksum   !< transfer to a string variable
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "PFTCover",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -150,7 +150,7 @@ contains
       checksum = checksum + bitcount(Soil(k))
     end do
     write(checksumchar, '(I4)')checksum
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "Soil",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -168,7 +168,7 @@ contains
     end do
 
     write(checksumchar, '(I4)')checksum
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "Canopy",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -180,7 +180,7 @@ contains
       checksum = checksum + bitcount(Snow(k))
     end do
     write(checksumchar, '(I4)')checksum
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "Snow",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -192,7 +192,7 @@ contains
       checksum = checksum + bitcount(Cpools(k))
     end do
     write(checksumchar, '(I4)')checksum
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "Cpools",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -204,7 +204,7 @@ contains
       checksum = checksum + bitcount(Peatlands(k))
     end do
     write(checksumchar, '(I4)')checksum
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "Peatlands",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -216,7 +216,7 @@ contains
       checksum = checksum + bitcount(CompetClimate(k))
     end do
     write(checksumchar, '(I4)')checksum
-    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)),TRIM(adjustl(latchar)), &
+    write(buffer,"(A,',',A,',',A,',',A)") TRIM(adjustl(lonchar)), TRIM(adjustl(latchar)), &
                                           "CompetClimate",TRIM(adjustl(checksumchar))
     write(500, "(A)") TRIM(adjustl(buffer))
 
@@ -231,17 +231,17 @@ contains
   !! This function generates the bitcount of the specified variable
   !! @author M. Fortier
   !!
-  integer function bitcount( scalar )
+  integer function bitcount(scalar)
 
     implicit none
     real    :: scalar     !< Scalar to be bit-counted
-    integer(SELECTED_REAL_KIND(15,307)) :: scalar_int !< Integer with memory representation of 'scalar'
+    integer(SELECTED_REAL_KIND(15, 307)) :: scalar_int !< Integer with memory representation of 'scalar'
 
     integer :: bit
     bitcount = 0
     scalar_int = TRANSFER(scalar, scalar_int)
-    do bit = 0,BIT_SIZE(scalar_int) - 1
-      if ( BTEST(scalar_int, bit) ) bitcount = bitcount + 1
+    do bit = 0, BIT_SIZE(scalar_int) - 1
+      if (BTEST(scalar_int, bit) ) bitcount = bitcount + 1
     end do
 
   end function bitcount
@@ -253,15 +253,15 @@ contains
   !! This function generates the bitcount of the specified variable, from an integer
   !! @author M. Fortier
   !!
-  integer function bitcount_int( scalar )
+  integer function bitcount_int(scalar)
 
     implicit none
     integer    :: scalar     !< Scalar to be bit-counted
     integer    :: bit
 
     bitcount_int = 0
-    do bit = 0,BIT_SIZE(scalar) - 1
-      if ( BTEST(scalar, bit) ) bitcount_int = bitcount_int + 1
+    do bit = 0, BIT_SIZE(scalar) - 1
+      if (BTEST(scalar, bit) ) bitcount_int = bitcount_int + 1
     end do
 
   end function bitcount_int

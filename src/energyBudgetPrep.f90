@@ -3,30 +3,30 @@
 !! parameters for surface energy budget calculations.
 !! @author D. Verseghy, M. Lazare, A. Wu, Y. Delage, J. P. Paquin, R. Harvey
 !
-subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! Formerly TPREP
-                            TBARCS, TBARGS, HCPC,   HCPG,   TCTOPC, TCBOTC, &
+subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! Formerly TPREP
+                            TBARCS, TBARGS, HCPC, HCPG, TCTOPC, TCBOTC, &
                             TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
                             TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
-                            TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO, &
-                            EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, &
+                            TCANS, CEVAP, IEVAP, TBAR1P, WTABLE, ZERO, &
+                            EVAPC, EVAPCG, EVAPG, EVAPCS, EVPCSG, EVAPGS, &
                             GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
-                            QMELTC, QMELTG, EVAP,   GSNOW, &
+                            QMELTC, QMELTG, EVAP, GSNOW, &
                             TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
-                            QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS, &
-                            ILMOX,  UEX,    HBLX, &
-                            ILMO,   UE,     HBL, &
-                            ST,     SU,     SV,     SQ,     SRH, &
-                            CDH,    CDM,    QSENS,  QEVAP,  QLWAVG, &
-                            FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG, &
-                            HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG, &
-                            HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND, &
-                            DRAG,   THLIQ,  THICE,  TBAR,   ZPOND,  TPOND, &
-                            THPOR,  THLMIN, THLRET, THFC,   HCPS,   TCS, &
-                            TA,     RHOSNO, TSNOW,  ZSNOW,  WSNOW,  TCAN, &
-                            FC,     FCS,    DELZ,   DELZW,  ZBOTW, &
-                            ISAND,  ILG,    IL1,    IL2,    JL,     IG, &
-                            FVEG,   TCSATU, TCSATF, FTEMP,  FTEMPX, FVAP, &
-                            FVAPX,  RIB,    RIBX)
+                            QEVAPC, QEVAPG, TACCO, QACCO, TACCS, QACCS, &
+                            ILMOX, UEX, HBLX, &
+                            ILMO, UE, HBL, &
+                            ST, SU, SV, SQ, SRH, &
+                            CDH, CDM, QSENS, QEVAP, QLWAVG, &
+                            FSGV, FSGS, FSGG, FLGV, FLGS, FLGG, &
+                            HFSC, HFSS, HFSG, HEVC, HEVS, HEVG, &
+                            HMFC, HMFN, QFCF, QFCL, EVPPOT, ACOND, &
+                            DRAG, THLIQ, THICE, TBAR, ZPOND, TPOND, &
+                            THPOR, THLMIN, THLRET, THFC, HCPS, TCS, &
+                            TA, RHOSNO, TSNOW, ZSNOW, WSNOW, TCAN, &
+                            FC, FCS, DELZ, DELZW, ZBOTW, &
+                            ISAND, ILG, IL1, IL2, JL, IG, &
+                            FVEG, TCSATU, TCSATF, FTEMP, FTEMPX, FVAP, &
+                            FVAPX, RIB, RIBX)
   !
   !     * JUN 21/13 - M.LAZARE.   PASS IN AND INITIALIZE TO ZERO "GSNOW".
   !     * NOV 24/11 - R.HARVEY.   NEW SNOW THERMAL CONDUCTIVITY FROM
@@ -39,13 +39,13 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !     * DEC 12/07 - D.VERSEGHY. MAJOR REVISIONS TO CALCULATION OF
   !     *                         SOIL THERMAL CONDUCTIVITY.
   !     * MAY 18/06 - D.VERSEGHY. ADJUST CALCULATION OF TBAR1P FOR ROCK
-  !     *                         SOILS; LIMIT CALCULATION OF TBAR3(I,3)
+  !     *                         SOILS; LIMIT CALCULATION OF TBAR3(I, 3)
   !     *                         TO UPPER 4.1 M OF SOIL; CORRECT WTABLE
   !     *                         TO ACCOUNT FOR PRESENCE OF ICE.
   !     * MAR 23/06 - D.VERSEGHY. MODIFY CALCULATION OF HCPSNO TO ACCOUNT
   !     *                         FOR PRESENCE OF WATER IN SNOWPACK.
   !     * MAR 21/06 - P.BARTLETT. INITIALIZE ADDITIONAL VARIABLES TO ZERO.
-  !     * OCT 04/05 - D.VERSEGHY. NEW VARIABLES TBAR3,TCTOP3,TCBOT3.
+  !     * OCT 04/05 - D.VERSEGHY. NEW VARIABLES TBAR3, TCTOP3, TCBOT3.
   !     * APR 08/05 - Y.DELAGE. TCTOP VARIES GRADUALLY WITH ZPOND TO TCW.
   !     * MAR 16/05 - D.VERSEGHY. TREAT FROZEN SOIL WATER AS ICE
   !     *                         VOLUME RATHER THAN AS EQUIVALENT
@@ -112,8 +112,8 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !     *                         CALCULATION OF "PSIZRO" TO AVOID
   !     *                         OVERFLOWS.
   !     * JUL 27/93 - D.VERSEGHY/M.LAZARE. INITIALIZE NEW DIAGNOSTIC
-  !     *                                  FIELDS FSGV,FSGG,FLGV,FLGG,
-  !     *                                  HFSC,HFSG,HMFC.
+  !     *                                  FIELDS FSGV, FSGG, FLGV, FLGG,
+  !     *                                  HFSC, HFSG, HMFC.
   !     * MAY 06/93 - D.VERSEGHY/M.LAZARE. CLASS - VERSION 2.1.
   !     *                                  MODIFICATIONS TO CANOPY
   !     *                                  RESISTANCE TO ADD "RCS"
@@ -127,38 +127,38 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !     *                         LAND SURFACE ENERGY BUDGET
   !     *                         CALCULATIONS.
   !
-  use classic_params,        only : TCW,TCICE,TCSAND,HCPW,HCPICE, &
-                                   HCPSND,RHOW,RHOICE,TCGLAC
+  use classic_params, only : TCW, TCICE, TCSAND, HCPW, HCPICE, &
+                                   HCPSND, RHOW, RHOICE, TCGLAC
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL,IG
-  integer :: I,J
+  integer, intent(in) :: ILG, IL1, IL2, JL, IG
+  integer :: I, J
   !
   !     * OUTPUT ARRAYS.
   !
   !     (Suffix CS = vegetation over snow cover; GS = bare snow cover; C
   !     or CO = vegetation over ground; G or GO = bare ground.)
   !
-  real, intent(out)   :: TBARC (ILG,IG) !< Subarea temperatures of soil layers [C]
-  real, intent(out)   :: TBARG (ILG,IG) !< Subarea temperatures of soil layers [C]
-  real, intent(out)   :: TBARCS(ILG,IG) !< Subarea temperatures of soil layers [C]
-  real, intent(out)   :: TBARGS(ILG,IG) !< Subarea temperatures of soil layers [C]
-  real, intent(inout) :: THLIQC(ILG,IG) !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
-  real, intent(inout) :: THLIQG(ILG,IG) !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
-  real, intent(inout) :: THICEC(ILG,IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
-  real, intent(inout) :: THICEG(ILG,IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
-  real, intent(out)   :: HCPC  (ILG,IG) !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}] (C_g)\f$
-  real, intent(inout) :: HCPG  (ILG,IG) !< Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{1}] (Cg)\f$
-  real, intent(inout) :: TCTOPC(ILG,IG) !< Thermal conductivity of soil at top of layer in canopy-covered subareas
+  real, intent(out)   :: TBARC (ILG, IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out)   :: TBARG (ILG, IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out)   :: TBARCS(ILG, IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out)   :: TBARGS(ILG, IG) !< Subarea temperatures of soil layers [C]
+  real, intent(inout) :: THLIQC(ILG, IG) !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+  real, intent(inout) :: THLIQG(ILG, IG) !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+  real, intent(inout) :: THICEC(ILG, IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+  real, intent(inout) :: THICEG(ILG, IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+  real, intent(out)   :: HCPC  (ILG, IG) !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}] (C_g)\f$
+  real, intent(inout) :: HCPG  (ILG, IG) !< Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{1}] (Cg)\f$
+  real, intent(inout) :: TCTOPC(ILG, IG) !< Thermal conductivity of soil at top of layer in canopy-covered subareas
   !< \f$[W m^{-1} K^{-1}] (\lambda)\f$
-  real, intent(out)   :: TCBOTC(ILG,IG) !< Thermal conductivity of soil at bottom of layer in canopy-covered subareas
+  real, intent(out)   :: TCBOTC(ILG, IG) !< Thermal conductivity of soil at bottom of layer in canopy-covered subareas
   !< \f$[W m^{-1} K^{-1}] (\lambda)\f$
-  real, intent(out)   :: TCTOPG(ILG,IG) !< Thermal conductivity of soil at top of
+  real, intent(out)   :: TCTOPG(ILG, IG) !< Thermal conductivity of soil at top of
   !< layer in bare ground subareas \f$[W m^{-1} K^{-1}] (\lambda)\f$
-  real, intent(out)   :: TCBOTG(ILG,IG) !< Thermal conductivity of soil at bottom of
+  real, intent(out)   :: TCBOTG(ILG, IG) !< Thermal conductivity of soil at bottom of
   !< layer in bare ground subareas \f$[W m^{-1} K^{-1}] (\lambda)\f$
   !
   real, intent(inout) :: HCPSCS(ILG)    !< Heat capacity of snow pack under vegetation canopy \f$[J m^{-3} K^1] (C_s)\f$
@@ -258,11 +258,11 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: THLIQ (ILG,IG)   !< Volumetric liquid water content of soil
+  real, intent(in) :: THLIQ (ILG, IG)   !< Volumetric liquid water content of soil
   !< layers \f$[m^3 m^{-3}] (\theta_l)\f$
-  real, intent(in) :: THICE (ILG,IG)   !< Volumetric frozen water content of soil
+  real, intent(in) :: THICE (ILG, IG)   !< Volumetric frozen water content of soil
   !< layers \f$[m^3 m^{-3}] (\theta_i)\f$
-  real, intent(in) :: TBAR  (ILG,IG)   !< Temperature of soil layers [K]
+  real, intent(in) :: TBAR  (ILG, IG)   !< Temperature of soil layers [K]
   real, intent(in) :: ZPOND (ILG)      !< Depth of ponded water on surface [m]
   real, intent(in) :: TPOND (ILG)      !< Temperature of ponded water [K]
   !
@@ -277,18 +277,18 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !
   !     * SOIL PROPERTY ARRAYS.
   !
-  real, intent(in) :: THPOR(ILG,IG)    !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
-  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content
+  real, intent(in) :: THPOR(ILG, IG)    !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
+  real, intent(in) :: THLMIN(ILG, IG)   !< Residual soil liquid water content
   !< remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THLRET(ILG,IG)   !< Liquid water retention capacity for organic soil \f$[m^3 m^{-3}] (\theta_{ret})\f$
-  real, intent(in) :: THFC  (ILG,IG)   !< Field capacity \f$[m^3 m^{-3}] (theta_{fc})\f$
-  real, intent(in) :: HCPS  (ILG,IG)   !< Heat capacity of soil material \f$[J m^{-3} K^{-1}] (C_m)\f$
-  real, intent(in) :: TCS   (ILG,IG)   !< Thermal conductivity of soil particles \f$[W m^{-1} K^{-1}] (\theta_s)\f$
-  real, intent(in) :: DELZW(ILG,IG)    !< Permeable thickness of soil layer \f$[m] (\Delta z_w)\f$
-  real, intent(in) :: ZBOTW(ILG,IG)    !< Depth to permeable bottom of soil layer \f$[m] (z_{b,w})\f$
+  real, intent(in) :: THLRET(ILG, IG)   !< Liquid water retention capacity for organic soil \f$[m^3 m^{-3}] (\theta_{ret})\f$
+  real, intent(in) :: THFC  (ILG, IG)   !< Field capacity \f$[m^3 m^{-3}] (theta_{fc})\f$
+  real, intent(in) :: HCPS  (ILG, IG)   !< Heat capacity of soil material \f$[J m^{-3} K^{-1}] (C_m)\f$
+  real, intent(in) :: TCS   (ILG, IG)   !< Thermal conductivity of soil particles \f$[W m^{-1} K^{-1}] (\theta_s)\f$
+  real, intent(in) :: DELZW(ILG, IG)    !< Permeable thickness of soil layer \f$[m] (\Delta z_w)\f$
+  real, intent(in) :: ZBOTW(ILG, IG)    !< Depth to permeable bottom of soil layer \f$[m] (z_{b, w})\f$
   real, intent(in) :: DELZ(IG)         !< Overall thickness of soil layer [m]
   !
-  integer, intent(in) :: ISAND (ILG,IG)!< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG)!< Sand content flag
   !
   !     * INTERNAL WORK FIELDS FOR THIS ROUTINE.
   !
@@ -297,8 +297,8 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: SATRAT,THLSAT,THISAT,TCDRY,TCKAPU,TCKAPF,TCRATU,TCRATF, &
-      TCSOLU,TCSOLF,TCSOIL,TSUM1,TSUM2,ZSUM
+  real :: SATRAT, THLSAT, THISAT, TCDRY, TCKAPU, TCKAPF, TCRATU, TCRATF, &
+          TCSOLU, TCSOLF, TCSOIL, TSUM1, TSUM2, ZSUM
   integer :: IWTABL(ILG)
   !
   !----------------------------------------------------------------------
@@ -315,26 +315,26 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !!
   !     * INITIALIZE 2-D AND 3-D ARRAYS.
   !
-  do J = 1,IG ! loop 50
-    do I = IL1,IL2
-      THLIQG(I,J) = THLIQ(I,J)
-      THICEG(I,J) = THICE(I,J)
-      THLIQC(I,J) = THLIQ(I,J)
-      THICEC(I,J) = THICE(I,J)
-      TBARCS(I,J) = 0.0
-      TBARGS(I,J) = 0.0
-      TBARC (I,J) = 0.0
-      TBARG (I,J) = 0.0
-      TCTOPC(I,J) = 0.0
-      TCBOTC(I,J) = 0.0
-      TCTOPG(I,J) = 0.0
-      TCBOTG(I,J) = 0.0
+  do J = 1, IG ! loop 50
+    do I = IL1, IL2
+      THLIQG(I, J) = THLIQ(I, J)
+      THICEG(I, J) = THICE(I, J)
+      THLIQC(I, J) = THLIQ(I, J)
+      THICEC(I, J) = THICE(I, J)
+      TBARCS(I, J) = 0.0
+      TBARGS(I, J) = 0.0
+      TBARC (I, J) = 0.0
+      TBARG (I, J) = 0.0
+      TCTOPC(I, J) = 0.0
+      TCBOTC(I, J) = 0.0
+      TCTOPG(I, J) = 0.0
+      TCBOTG(I, J) = 0.0
     end do
   end do ! loop 50
   !
   !     * INITIALIZE 1-D INTERNAL WORK FIELDS AND DIAGNOSTIC ARRAYS.
   !
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     FVEG  (I) = FC(I) + FCS(I)
     if (TCAN(I) > 5.0) then
       TCANS (I) = TCAN(I)
@@ -436,16 +436,16 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !! where \f$\theta_l\f$ is the liquid water content of the first soil layer
   !! and \f$\theta_{fc}\f$ is its field capacity.
   !!
-  do I = IL1,IL2 ! loop 200
-    if (THLIQG(I,1) < (THLMIN(I,1) + 0.001)) then
+  do I = IL1, IL2 ! loop 200
+    if (THLIQG(I, 1) < (THLMIN(I, 1) + 0.001)) then
       IEVAP(I) = 0
       CEVAP(I) = 0.0
-    else if (THLIQG(I,1) > THFC(I,1)) then
+    else if (THLIQG(I, 1) > THFC(I, 1)) then
       IEVAP(I) = 1
       CEVAP(I) = 1.0
     else
       IEVAP(I) = 1
-      CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I,1) / THFC(I,1))) ** 2
+      CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I, 1) / THFC(I, 1))) ** 2
     end if
   end do ! loop 200
   !
@@ -462,16 +462,16 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !! where \f$C_m\f$ is the heat capacity of the soil matter and \f$\theta_p\f$ is
   !! the pore volume. (The heat capacity of air is neglected.)
   !!
-  do J = 1,IG ! loop 300
-    do I = IL1,IL2
-      if (ISAND(I,1) > - 4) then
-        HCPG(I,J) = HCPW * THLIQG(I,J) + HCPICE * THICEG(I,J) + &
-               HCPS(I,J) * (1.0 - THPOR(I,J))
-        HCPC(I,J) = HCPW * THLIQC(I,J) + HCPICE * THICEC(I,J) + &
-               HCPS(I,J) * (1.0 - THPOR(I,J))
+  do J = 1, IG ! loop 300
+    do I = IL1, IL2
+      if (ISAND(I, 1) > - 4) then
+        HCPG(I, J) = HCPW * THLIQG(I, J) + HCPICE * THICEG(I, J) + &
+                     HCPS(I, J) * (1.0 - THPOR(I, J))
+        HCPC(I, J) = HCPW * THLIQC(I, J) + HCPICE * THICEC(I, J) + &
+                     HCPS(I, J) * (1.0 - THPOR(I, J))
       else
-        HCPC(I,J) = HCPICE
-        HCPG(I,J) = HCPICE
+        HCPC(I, J) = HCPICE
+        HCPG(I, J) = HCPICE
       end if
     end do
   end do ! loop 300
@@ -498,17 +498,17 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !!
   !! \f$\lambda_s = 0.234 x 10^{-3} \rho_s + 0.023                                \rho_s < 156.0 \f$
   !!
-  do I = IL1,IL2 ! loop 400
+  do I = IL1, IL2 ! loop 400
     if (ZSNOW(I) > 0.) then
       HCPSCS(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-             (RHOW * ZSNOW(I))
+                  (RHOW * ZSNOW(I))
       HCPSGS(I) = HCPSCS(I)
       !             TCSNOW(I)=2.576E-6*RHOSNO(I)*RHOSNO(I)+0.074
       if (RHOSNO(I) < 156.0) then
         TCSNOW(I) = 0.234E-3 * RHOSNO(I) + 0.023
       else
         TCSNOW(I) = 3.233E-6 * RHOSNO(I) * RHOSNO(I) - 1.01E-3 * &
-                 RHOSNO(I) + 0.138
+                    RHOSNO(I) + 0.138
       end if
       if (FVEG(I) < 1.) then
         TSNOGS(I) = TSNOW(I)
@@ -560,7 +560,7 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !! permeable bottom of the soil layer; and if \f$\theta_l + \theta_i\f$ is
   !! between these two values, its location is given by:
   !!
-  !! \f$z_{wt} = z_{b,w} - \Delta z_w [(\theta_l + \theta_i - \theta_{ret})/(\theta_p - \theta_{ret})]\f$
+  !! \f$z_{wt} = z_{b, w} - \Delta z_w [(\theta_l + \theta_i - \theta_{ret})/(\theta_p - \theta_{ret})]\f$
   !!
   !! where \f$\Delta z_w\f$ is the permeable thickness of the soil layer.
   !!
@@ -645,17 +645,17 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !! if the pond depth ZPOND is zero, to the thermal conductivity of
   !! water if ZPOND \f$\geq 10^{-2} m\f$.
   !!
-  do J = IG,1, - 1 ! loop 500
-    do I = IL1,IL2
-      if    (ISAND(I,1) == - 4) then
-        TCTOPG(I,J) = TCGLAC
-        TCBOTG(I,J) = TCGLAC
-      else if (ISAND(I,J) == - 3) then
-        TCTOPC(I,J) = TCSAND
-        TCTOPG(I,J) = TCSAND
-        TCBOTC(I,J) = TCSAND
-        TCBOTG(I,J) = TCSAND
-      else if (ISAND(I,J) == - 2) then
+  do J = IG, 1, - 1 ! loop 500
+    do I = IL1, IL2
+      if    (ISAND(I, 1) == - 4) then
+        TCTOPG(I, J) = TCGLAC
+        TCBOTG(I, J) = TCGLAC
+      else if (ISAND(I, J) == - 3) then
+        TCTOPC(I, J) = TCSAND
+        TCTOPG(I, J) = TCSAND
+        TCBOTC(I, J) = TCSAND
+        TCBOTG(I, J) = TCSAND
+      else if (ISAND(I, J) == - 2) then
         !             FLAG - Needs to be reviewed.   EC Feb 032017.
         !                    For some peatland cases, thliqg+thiceg > thpor-0.01 at bottom layer
         !                    and wtable remains 9999, causing wrong values of socres_peat
@@ -666,121 +666,121 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
         !                    crash is avoided.
         !                    Removing the check for WTABLE<9000 also doesn't change the result.
         !                    This ensures that the water table is at least in the last layer.
-        !             IF (J==IG .AND. (THLIQG(I,J)+THICEG(I,J))<
-        !    1            (THPOR(I,J)-0.01)) IWTABL(I)=1
+        !             IF (J==IG .AND. (THLIQG(I, J)+THICEG(I, J))<
+        !    1            (THPOR(I, J)-0.01)) IWTABL(I)=1
         if (IWTABL(I) == 0) then ! YW
-          if ((THLIQG(I,J) + THICEG(I,J)) > (THPOR(I,J) - 0.01)) then
-            WTABLE(I) = ZBOTW(I,J) - DELZW(I,J)
+          if ((THLIQG(I, J) + THICEG(I, J)) > (THPOR(I, J) - 0.01)) then
+            WTABLE(I) = ZBOTW(I, J) - DELZW(I, J)
             ! ELSEIF (WTABLE(I)<9000.0)             THEN
           else
-            WTABLE(I) = ZBOTW(I,J) - DELZW(I,J) * MIN(1.0, &
-                         (THLIQG(I,J) + THICEG(I,J) - THLRET(I,J)) / &
-                         (THPOR(I,J) - THLRET(I,J)))
+            WTABLE(I) = ZBOTW(I, J) - DELZW(I, J) * MIN(1.0, &
+                        (THLIQG(I, J) + THICEG(I, J) - THLRET(I, J)) / &
+                        (THPOR(I, J) - THLRET(I, J)))
             IWTABL(I) = 1
           end if
         end if
-        if (THLIQG(I,J) > (THLRET(I,J) + 0.0001)) then
-          SATRAT = MIN((THLRET(I,J) + THICEG(I,J)) / &
-                      THPOR(I,J), 1.0)
-          THLSAT = THLIQG(I,J) / (THLIQG(I,J) + THICEG(I,J))
-          THISAT = THICEG(I,J) / (THLIQG(I,J) + THICEG(I,J))
-          TCDRY = 0.30 * EXP( - 2.0 * THPOR(I,J))
-          TCSATU(I) = TCW * THPOR(I,J) + TCS(I,J) * (1.0 - THPOR(I,J))
-          TCSATF(I) = TCICE * THPOR(I,J) + TCS(I,J) * (1.0 - THPOR(I,J))
+        if (THLIQG(I, J) > (THLRET(I, J) + 0.0001)) then
+          SATRAT = MIN((THLRET(I, J) + THICEG(I, J)) / &
+                   THPOR(I, J), 1.0)
+          THLSAT = THLIQG(I, J) / (THLIQG(I, J) + THICEG(I, J))
+          THISAT = THICEG(I, J) / (THLIQG(I, J) + THICEG(I, J))
+          TCDRY = 0.30 * EXP( - 2.0 * THPOR(I, J))
+          TCSATU(I) = TCW * THPOR(I, J) + TCS(I, J) * (1.0 - THPOR(I, J))
+          TCSATF(I) = TCICE * THPOR(I, J) + TCS(I, J) * (1.0 - THPOR(I, J))
           TCRATU = 0.6 * SATRAT / (1.0 - 0.4 * SATRAT)
           TCRATF = 0.25 * SATRAT / (1.0 - 0.75 * SATRAT)
           TCSOLU = (TCSATU(I) - TCDRY) * TCRATU + TCDRY
           TCSOLF = (TCSATF(I) - TCDRY) * TCRATF + TCDRY
           TCSOIL = TCSOLU * THLSAT + TCSOLF * THISAT
-          if (DELZW(I,J) > 0.0) then
-            TCTOPC(I,J) = TCSOIL
-            TCTOPG(I,J) = TCSOIL
+          if (DELZW(I, J) > 0.0) then
+            TCTOPC(I, J) = TCSOIL
+            TCTOPG(I, J) = TCSOIL
           else
-            TCTOPC(I,J) = TCSAND
-            TCTOPG(I,J) = TCSAND
+            TCTOPC(I, J) = TCSAND
+            TCTOPG(I, J) = TCSAND
           end if
-          if (DELZW(I,J) < (DELZ(J) - 0.01)) then
-            TCBOTC(I,J) = TCSAND
-            TCBOTG(I,J) = TCSAND
+          if (DELZW(I, J) < (DELZ(J) - 0.01)) then
+            TCBOTC(I, J) = TCSAND
+            TCBOTG(I, J) = TCSAND
           else
-            TCBOTC(I,J) = TCSATU(I) * THLSAT + TCSATF(I) * THISAT
-            TCBOTG(I,J) = TCSATU(I) * THLSAT + TCSATF(I) * THISAT
+            TCBOTC(I, J) = TCSATU(I) * THLSAT + TCSATF(I) * THISAT
+            TCBOTG(I, J) = TCSATU(I) * THLSAT + TCSATF(I) * THISAT
           end if
           if (J == 1) then
-            TCTOPC(I,J) = TCTOPC(I,J) + (TCW - TCTOPC(I,J)) * &
-                               MIN(ZPOND(I),1.0E-2) * 100.0
-            TCTOPG(I,J) = TCTOPC(I,J)
+            TCTOPC(I, J) = TCTOPC(I, J) + (TCW - TCTOPC(I, J)) * &
+                           MIN(ZPOND(I), 1.0E-2) * 100.0
+            TCTOPG(I, J) = TCTOPC(I, J)
           end if
         else
-          SATRAT = MIN((THLIQG(I,J) + THICEG(I,J)) / &
-                      THPOR(I,J), 1.0)
-          THLSAT = THLIQG(I,J) / (THLIQG(I,J) + THICEG(I,J))
-          THISAT = THICEG(I,J) / (THLIQG(I,J) + THICEG(I,J))
-          TCDRY = 0.30 * EXP( - 2.0 * THPOR(I,J))
-          TCSATU(I) = TCW * THPOR(I,J) + TCS(I,J) * (1.0 - THPOR(I,J))
-          TCSATF(I) = TCICE * THPOR(I,J) + TCS(I,J) * (1.0 - THPOR(I,J))
+          SATRAT = MIN((THLIQG(I, J) + THICEG(I, J)) / &
+                   THPOR(I, J), 1.0)
+          THLSAT = THLIQG(I, J) / (THLIQG(I, J) + THICEG(I, J))
+          THISAT = THICEG(I, J) / (THLIQG(I, J) + THICEG(I, J))
+          TCDRY = 0.30 * EXP( - 2.0 * THPOR(I, J))
+          TCSATU(I) = TCW * THPOR(I, J) + TCS(I, J) * (1.0 - THPOR(I, J))
+          TCSATF(I) = TCICE * THPOR(I, J) + TCS(I, J) * (1.0 - THPOR(I, J))
           TCRATU = 0.6 * SATRAT / (1.0 - 0.4 * SATRAT)
           TCRATF = 0.25 * SATRAT / (1.0 - 0.75 * SATRAT)
           TCSOLU = (TCSATU(I) - TCDRY) * TCRATU + TCDRY
           TCSOLF = (TCSATF(I) - TCDRY) * TCRATF + TCDRY
           TCSOIL = TCSOLU * THLSAT + TCSOLF * THISAT
-          if (DELZW(I,J) > 0.0) then
-            TCTOPC(I,J) = TCSOIL
-            TCTOPG(I,J) = TCSOIL
+          if (DELZW(I, J) > 0.0) then
+            TCTOPC(I, J) = TCSOIL
+            TCTOPG(I, J) = TCSOIL
           else
-            TCTOPC(I,J) = TCSAND
-            TCTOPG(I,J) = TCSAND
+            TCTOPC(I, J) = TCSAND
+            TCTOPG(I, J) = TCSAND
           end if
-          if (DELZW(I,J) < (DELZ(J) - 0.01)) then
-            TCBOTC(I,J) = TCSAND
-            TCBOTG(I,J) = TCSAND
+          if (DELZW(I, J) < (DELZ(J) - 0.01)) then
+            TCBOTC(I, J) = TCSAND
+            TCBOTG(I, J) = TCSAND
           else
-            TCBOTC(I,J) = TCSOIL
-            TCBOTG(I,J) = TCSOIL
+            TCBOTC(I, J) = TCSOIL
+            TCBOTG(I, J) = TCSOIL
           end if
           if (J == 1) then
-            TCTOPC(I,J) = TCTOPC(I,J) + (TCW - TCTOPC(I,J)) * &
-                               MIN(ZPOND(I),1.0E-2) * 100.0
-            TCTOPG(I,J) = TCTOPC(I,J)
+            TCTOPC(I, J) = TCTOPC(I, J) + (TCW - TCTOPC(I, J)) * &
+                           MIN(ZPOND(I), 1.0E-2) * 100.0
+            TCTOPG(I, J) = TCTOPC(I, J)
           end if
         end if
       else
 
-        SATRAT = MIN((THLIQG(I,J) + THICEG(I,J)) / &
-                  THPOR(I,J), 1.0)
-        THLSAT = THLIQG(I,J) / (THLIQG(I,J) + THICEG(I,J))
-        THISAT = THICEG(I,J) / (THLIQG(I,J) + THICEG(I,J))
-        TCDRY = 0.75 * EXP( - 2.76 * THPOR(I,J))
-        TCSATU(I) = TCW * THPOR(I,J) + TCS(I,J) * (1.0 - THPOR(I,J))
-        TCSATF(I) = TCICE * THPOR(I,J) + TCS(I,J) * (1.0 - THPOR(I,J))
-        TCKAPU = (4.0 * real(ISAND(I,J)) + 1.9 * real(100 - ISAND(I,J))) / &
-                  100.0
-        TCKAPF = (1.2 * real(ISAND(I,J)) + 0.85 * real(100 - ISAND(I,J))) / &
-                  100.0
+        SATRAT = MIN((THLIQG(I, J) + THICEG(I, J)) / &
+                 THPOR(I, J), 1.0)
+        THLSAT = THLIQG(I, J) / (THLIQG(I, J) + THICEG(I, J))
+        THISAT = THICEG(I, J) / (THLIQG(I, J) + THICEG(I, J))
+        TCDRY = 0.75 * EXP( - 2.76 * THPOR(I, J))
+        TCSATU(I) = TCW * THPOR(I, J) + TCS(I, J) * (1.0 - THPOR(I, J))
+        TCSATF(I) = TCICE * THPOR(I, J) + TCS(I, J) * (1.0 - THPOR(I, J))
+        TCKAPU = (4.0 * real(ISAND(I, J)) + 1.9 * real(100 - ISAND(I, J))) / &
+                 100.0
+        TCKAPF = (1.2 * real(ISAND(I, J)) + 0.85 * real(100 - ISAND(I, J))) / &
+                 100.0
         TCRATU = TCKAPU * SATRAT / (1.0 + (TCKAPU - 1.0) * SATRAT)
         TCRATF = TCKAPF * SATRAT / (1.0 + (TCKAPF - 1.0) * SATRAT)
         TCSOLU = (TCSATU(I) - TCDRY) * TCRATU + TCDRY
         TCSOLF = (TCSATF(I) - TCDRY) * TCRATF + TCDRY
         TCSOIL = TCSOLU * THLSAT + TCSOLF * THISAT
-        if (DELZW(I,J) > 0.0) then
-          TCTOPC(I,J) = TCSOIL
-          TCTOPG(I,J) = TCSOIL
-          !                  IF (J==1) TCTOPC(I,J)=TCTOPC(I,J)*0.1
+        if (DELZW(I, J) > 0.0) then
+          TCTOPC(I, J) = TCSOIL
+          TCTOPG(I, J) = TCSOIL
+          !                  IF (J==1) TCTOPC(I, J)=TCTOPC(I, J)*0.1
         else
-          TCTOPC(I,J) = TCSAND
-          TCTOPG(I,J) = TCSAND
+          TCTOPC(I, J) = TCSAND
+          TCTOPG(I, J) = TCSAND
         end if
-        if (DELZW(I,J) < (DELZ(J) - 0.01)) then
-          TCBOTC(I,J) = TCSAND
-          TCBOTG(I,J) = TCSAND
+        if (DELZW(I, J) < (DELZ(J) - 0.01)) then
+          TCBOTC(I, J) = TCSAND
+          TCBOTG(I, J) = TCSAND
         else
-          TCBOTC(I,J) = TCSOIL
-          TCBOTG(I,J) = TCSOIL
+          TCBOTC(I, J) = TCSOIL
+          TCBOTG(I, J) = TCSOIL
         end if
         if (J == 1) then
-          TCTOPC(I,J) = TCTOPC(I,J) + (TCW - TCTOPC(I,J)) * &
-                           MIN(ZPOND(I),1.0E-2) * 100.0
-          TCTOPG(I,J) = TCTOPC(I,J)
+          TCTOPC(I, J) = TCTOPC(I, J) + (TCW - TCTOPC(I, J)) * &
+                         MIN(ZPOND(I), 1.0E-2) * 100.0
+          TCTOPG(I, J) = TCTOPC(I, J)
         end if
       end if
     end do
@@ -797,15 +797,15 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG, & ! F
   !! permeable thickness DELZW, and the heat capacity of rock, HCPSND,
   !! over the impermeable thickness, DELZ-DELZW.)
   !!
-  do I = IL1,IL2
+  do I = IL1, IL2
     if (ZPOND(I) > 0.) then
       TBAR1P(I) = (TPOND(I) * HCPW * ZPOND(I) + &
-                   TBAR(I,1) * (HCPG(I,1) * DELZW(I,1) + &
-                   HCPSND * (DELZ(1) - DELZW(I,1)))) / &
-                   (HCPW * ZPOND(I) + HCPG(I,1) * DELZW(I,1) + &
-                   HCPSND * (DELZ(1) - DELZW(I,1)))
+                  TBAR(I, 1) * (HCPG(I, 1) * DELZW(I, 1) + &
+                  HCPSND * (DELZ(1) - DELZW(I, 1)))) / &
+                  (HCPW * ZPOND(I) + HCPG(I, 1) * DELZW(I, 1) + &
+                  HCPSND * (DELZ(1) - DELZW(I, 1)))
     else
-      TBAR1P(I) = TBAR(I,1)
+      TBAR1P(I) = TBAR(I, 1)
     end if
   end do ! loop 600
   !

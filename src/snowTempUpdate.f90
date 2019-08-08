@@ -3,11 +3,11 @@
 !! energy budget calculations.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
-                   GZERO,TSNBOT,HTCS,HMFN, &
-                   GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR, &
-                   TSURF,ZSNOW,TCSNOW,HCPSNO,QTRANS, &
-                   FI,DELZ,ILG,IL1,IL2,JL,IG)
+subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPOST
+                          GZERO, TSNBOT, HTCS, HMFN, &
+                          GCONSTS, GCOEFFS, GCONST, GCOEFF, TBAR, &
+                          TSURF, ZSNOW, TCSNOW, HCPSNO, QTRANS, &
+                          FI, DELZ, ILG, IL1, IL2, JL, IG)
   !
   !     * AUG 16/06 - D.VERSEGHY. MAJOR REVISION TO IMPLEMENT THERMAL
   !     *                         SEPARATION OF SNOW AND SOIL.
@@ -32,7 +32,7 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
   !     *                         COMPLETION OF ENERGY BALANCE
   !     *                         DIAGNOSTICS.
   !     * DEC 22/94 - D.VERSEGHY. CLASS - VERSION 2.3.
-  !     *                         REVISE CALCULATION OF TBARPR(I,1).
+  !     *                         REVISE CALCULATION OF TBARPR(I, 1).
   !     * APR 10/92 - M.LAZARE.   CLASS - VERSION 2.2.
   !     *                         DIVIDE PREVIOUS SUBROUTINE "T4LAYR" INTO
   !     *                         "snowHeatCond" AND "snowTempUpdate" AND VECTORIZE.
@@ -49,16 +49,16 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
   !     *                         OF FIRST SOIL LAYER; CONVERT LAYER
   !     *                         TEMPERATURES TO DEGREES C.
   !
-  use classic_params,      only : DELT,TFREZ,HCPW,HCPICE,HCPSOL, &
-                                  HCPOM,HCPSND,HCPCLY,RHOW, &
-                                  RHOICE,CLHMLT
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, HCPSOL, &
+                                  HCPOM, HCPSND, HCPCLY, RHOW, &
+                                  RHOICE, CLHMLT
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL,IG
-  integer :: I,J
+  integer, intent(in) :: ILG, IL1, IL2, JL, IG
+  integer :: I, J
   !
   !     * OUTPUT ARRAYS.
   !
@@ -95,13 +95,13 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
   !< surface heat flux to snow surface temperature \f$[W m^{-2}]\f$
   real, intent(in) :: GCOEFFS(ILG) !< Multiplier used in equation relating snow
   !< surface heat flux to snow surface temperature \f$[W m^{-2} K^{-1}]\f$
-  real, intent(in) :: TBAR(ILG,IG) !< Temperatures of soil layers, averaged over
+  real, intent(in) :: TBAR(ILG, IG) !< Temperatures of soil layers, averaged over
   !< modelled area [K]
   real, intent(in) :: DELZ  (IG)   !< Overall thickness of soil layer [m]
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: GSNOLD,HADD,HCONV,WFREZ
+  real :: GSNOLD, HADD, HCONV, WFREZ
   !
   !-----------------------------------------------------------------------
   !
@@ -133,21 +133,21 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
   !! the shortwave radiation transmitted through the snow pack,
   !! QTRANS, is added to GZERO.
   !!
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0.) then
       GSNOLD = GCOEFFS(I) * TSURF(I) + GCONSTS(I)
-      TSNBOT(I) = (ZSNOW(I) * TSNOW(I) + DELZ(1) * TBAR(I,1)) / &
-              (ZSNOW(I) + DELZ(1))
-      !              TSNBOT(I)=0.90*TSNOW(I)+0.10*TBAR(I,1)
+      TSNBOT(I) = (ZSNOW(I) * TSNOW(I) + DELZ(1) * TBAR(I, 1)) / &
+                  (ZSNOW(I) + DELZ(1))
+      !              TSNBOT(I)=0.90*TSNOW(I)+0.10*TBAR(I, 1)
       !              TSNBOT(I)=TSURF(I)-GSNOLD*ZSNOW(I)/(2.0*TCSNOW(I))
-      TSNBOT(I) = MIN(TSNBOT(I),TFREZ)
+      TSNBOT(I) = MIN(TSNBOT(I), TFREZ)
       GZERO(I) = GCOEFF(I) * TSNBOT(I) + GCONST(I)
       if (QMELTG(I) < 0.) then
         GSNOW(I) = GSNOW(I) + QMELTG(I)
         QMELTG(I) = 0.
       end if
       TSNOW(I) = TSNOW(I) + (GSNOW(I) - GZERO(I)) * DELT / &
-      (HCPSNO(I) * ZSNOW(I)) - TFREZ
+                 (HCPSNO(I) * ZSNOW(I)) - TFREZ
       if (TSNOW(I) > 0.) then
         QMELTG(I) = QMELTG(I) + TSNOW(I) * HCPSNO(I) * ZSNOW(I) / DELT
         GSNOW(I) = GSNOW(I) - TSNOW(I) * HCPSNO(I) * ZSNOW(I) / DELT
@@ -191,9 +191,9 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
   !! the diagnostic variables HMFN describing phase changes of water
   !! in the snow pack, and the change in internal energy HTCS.
   !!
-  do I = IL1,IL2 ! loop 200
+  do I = IL1, IL2 ! loop 200
     if (FI(I) > 0. .and. TSNOW(I) < 0. .and. WSNOW(I) > 0.) &
-    then
+        then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
                 DELT
       HADD = - TSNOW(I) * HCPSNO(I) * ZSNOW(I)
@@ -201,11 +201,11 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
       if (HADD <= HCONV) then
         WFREZ = HADD / CLHMLT
         HADD = 0.0
-        WSNOW(I) = MAX(0.0,WSNOW(I) - WFREZ)
+        WSNOW(I) = MAX(0.0, WSNOW(I) - WFREZ)
         TSNOW(I) = 0.0
         RHOSNO(I) = RHOSNO(I) + WFREZ / ZSNOW(I)
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-                (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
       else
         HADD = HADD - HCONV
         WFREZ = WSNOW(I)
@@ -217,7 +217,7 @@ subroutine snowTempUpdate(GSNOW,TSNOW,WSNOW,RHOSNO,QMELTG, & ! Formerly TSPOST
       HMFN(I) = HMFN(I) - FI(I) * CLHMLT * WFREZ / DELT
       HTCS(I) = HTCS(I) - FI(I) * CLHMLT * WFREZ / DELT
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
-      DELT
+                DELT
     end if
   end do ! loop 200
   !
