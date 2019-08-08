@@ -297,7 +297,7 @@ subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLA
           THLW(I,M,J) = 0.0
           PSIWLT(I,M,J) = 0.0
         else if (ISAND(I,M,J) == - 2) then
-          ! FLAG test !
+
           if (j == 1) then
             k = 1
           else if (j == 2 .or. j == 3) then
@@ -311,17 +311,10 @@ subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLA
           BI    (I,M,J) = BORG(k)
           PSISAT(I,M,J) = PSISORG(k)
           GRKSAT(I,M,J) = GRKSORG(k)
-
-          ! THPOR (I,M,J)=THPORG(MIN(J,3))
-          ! THLRET(I,M,J)=THRORG(MIN(J,3))
-          ! THLMIN(I,M,J)=THMORG(MIN(J,3))
-          ! BI    (I,M,J)=BORG(MIN(J,3))
-          ! PSISAT(I,M,J)=PSISORG(MIN(J,3))
-          ! GRKSAT(I,M,J)=GRKSORG(MIN(J,3))
-          ! FLAG end test. JM
           THLRAT(I,M,J) = 0.5 ** (1.0 / (2.0 * BI(I,M,J) + 3.0))
           HCPS(I,M,J) = HCPOM
           TCS(I,M,J) = TCOM
+          
           ! If tile is a peatland, then set up as such.
           ! this setup assumes that the soil has 10 cm
           ! layers in the top 1 meter.
@@ -400,24 +393,6 @@ subroutine soilProperties(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT, & ! Formerly CLA
           PSIWLT(I,M,J) = 150.0
           THLW(I,M,J) = THPOR(I,M,J) * (PSIWLT(I,M,J) / PSISAT(I,M,J)) ** &
           ( - 1.0 / BI(I,M,J))
-          ! FLAG for testing Sep 292016 JM.
-          ! For MINERAL soil:
-          ! Make it so the first layer is considered moss if peatland flag >0.
-          ! This overwrites the previous assignments.
-          ! if (ipeatland(i,m) == 0 ) then ! Peatland flag, 1= bog, 2 = fen
-          !      if (j == 1) then ! First layer is moss
-          !          thpor(i,m,j)  = thpmoss
-          !          thlret(i,m,j) = thrmoss
-          !          thlmin(i,m,j) = thmmoss
-          !          bi(i,m,j)     = bmoss
-          !          psisat(i,m,j) = psismoss
-          !          grksat(i,m,j) = grksmoss
-          !          hcps(i,m,j) = hcpmoss
-          !          tcs(i,m,j) = tcom
-
-          !      end if
-          ! end if
-
         end if
       end do
     end do
