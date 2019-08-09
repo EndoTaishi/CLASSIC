@@ -633,7 +633,7 @@ module class_statevars
     real, allocatable, dimension(:,:,:) :: GFLXROT !<
     real, allocatable, dimension(:,:,:) :: HMFGROT !<
     real, allocatable, dimension(:,:,:) :: HTCROT  !<
-    real, allocatable, dimension(:,:,:) :: QFCROT  !<
+    real, allocatable, dimension(:,:,:) :: QFCROT  !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
 
     ! allocated with nlat, nmos, ignd:
     real, allocatable, dimension(:,:,:) :: TBARACC_M        !< Temperature of soil layers [K] (accumulated for means)
@@ -682,7 +682,7 @@ module class_statevars
     real, allocatable, dimension(:,:) :: GFLXROW !<
     real, allocatable, dimension(:,:) :: HMFGROW !<
     real, allocatable, dimension(:,:) :: HTCROW  !<
-    real, allocatable, dimension(:,:) :: QFCROW  !<
+    real, allocatable, dimension(:,:) :: QFCROW  !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
 
     ! These will be allocated the dimension: 'nlat, nmos, 6, 50'
     integer, allocatable, dimension(:,:,:,:) :: ITCTROT !<

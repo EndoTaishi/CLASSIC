@@ -556,7 +556,7 @@ contains
       !             call writeOutput1D(lonLocalIndex, latLocalIndex,'windu_hh',timeStamp,'windu', [SFCUROW(I)])  ! name
       !             call writeOutput1D(lonLocalIndex, latLocalIndex,'windv_hh',timeStamp,'windv', [SFCVROW(I)])  ! name
       !
-      call writeOutput1D(lonLocalIndex, latLocalIndex,'tbar_hh',timeStamp,'tsl', [TBARROW(I,:) - TFREZ])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'tbar_hh',timeStamp,'tsl', [TBARROW(I,:)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'thlq_hh',timeStamp,'mrsll', [THLQROW(I,:)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'thic_hh',timeStamp,'mrsfl', [THICROW(I,:)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  ! name
@@ -615,8 +615,8 @@ contains
           ! call writeOutput1D(lonLocalIndex, latLocalIndex,'windv_hh_t',timeStamp,'windv', [SFCVROT(I, M)])  ! name
 
           EVAPSUM = QFCFROT(I, M) + QFCLROT(I, M) + QFNROT(I, M) &
-                    + QFGROT(I, M) + QFCROT(I, M, 1) + QFCROT(I, M, 2) + QFCROT(I, M, 3)
-          call writeOutput1D(lonLocalIndex, latLocalIndex,'et_hh_t'   ,timeStamp,'et', [EVAPSUM])
+                    + QFGROT(I, M) + QFCROT(I, M, 1) + QFCROT(I, M, 2) + QFCROT(I, M, 3) !FLAG this only considers the top 3 layers!!
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'evspsbl_hh_t'   ,timeStamp,'evspsbl', [EVAPSUM])
 
           call writeOutput1D(lonLocalIndex, latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I, M,:)])  ! name
           call writeOutput1D(lonLocalIndex, latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I, M,:)])  ! name
@@ -913,14 +913,14 @@ contains
           if (i == 1) altotcntr_d(i) = altotcntr_d(i) + 1 ! only count once per gridcell, not per tile
         end if
 
-        PREACC_M(I, M) = PREACC_M(I, M) + PREROW(I) !*DELT UNITFIX
+        PREACC_M(I, M) = PREACC_M(I, M) + PREROW(I) 
         GTACC_M(I, M) = GTACC_M(I, M) + GTROT(I, M)
         QEVPACC_M(I, M) = QEVPACC_M(I, M) + QEVPROT(I, M)
-        EVAPACC_M(I, M) = EVAPACC_M(I, M) + QFSROT(I, M)   !*DELT UNITFIX
+        EVAPACC_M(I, M) = EVAPACC_M(I, M) + QFSROT(I, M)   
         HFSACC_M(I, M) = HFSACC_M(I, M) + HFSROT(I, M)
         HMFNACC_M(I, M) = HMFNACC_M(I, M) + HMFNROT(I, M)
-        ROFACC_M(I, M) = ROFACC_M(I, M) + ROFROT(I, M)   ! *DELT  UNITFIX
-        OVRACC_M(I, M) = OVRACC_M(I, M) + ROFOROT(I, M) ! *DELT  UNITFIX
+        ROFACC_M(I, M) = ROFACC_M(I, M) + ROFROT(I, M)   
+        OVRACC_M(I, M) = OVRACC_M(I, M) + ROFOROT(I, M) 
         ! WTBLACC_M(I, M)=WTBLACC_M(I, M)+wtableROT(I, M)  ! FLAG fix !
         do J = 1, IGND
           TBARACC_M(I, M, J) = TBARACC_M(I, M, J) + TBARROT(I, M, J)
@@ -1032,7 +1032,7 @@ contains
         call writeOutput1D(lonLocalIndex, latLocalIndex,'qh_d'     ,timeStamp,'hfss', [HFSACC(I)/real(NDAY)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/real(NDAY)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'snm_d'    ,timeStamp,'snm', [HMFNACC(I)/real(NDAY)])
-        call writeOutput1D(lonLocalIndex, latLocalIndex,'tbaracc_d',timeStamp,'tsl', [(TBARACC(I,:)/real(NDAY)) - TFREZ])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'tbaracc_d',timeStamp,'tsl', [(TBARACC(I,:)/real(NDAY))])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'thlqacc_d',timeStamp,'mrsll', [THLQACC(I,:)/real(NDAY)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'thicacc_d',timeStamp,'mrsfl', [THICACC(I,:)/real(NDAY)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'snm_d' ,timeStamp,'snm', [HMFNACC(I)])
@@ -1043,7 +1043,7 @@ contains
         !                 call writeOutput1D(lonLocalIndex, latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  ! name
         ! call writeOutput1D(lonLocalIndex, latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [HMFNACC(I)])
         ! call writeOutput1D(lonLocalIndex, latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)-TFREZ])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)])
         ! call writeOutput1D(lonLocalIndex, latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
         ! call writeOutput1D(lonLocalIndex, latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
         ! call writeOutput1D(lonLocalIndex, latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
@@ -1309,7 +1309,7 @@ contains
     real, pointer, dimension(:) :: WSNOACC_MO
     real, pointer, dimension(:) :: ROFACC_MO
     real, pointer, dimension(:) :: PREACC_MO
-    real, pointer, dimension(:) :: EVAPACC_MO
+    real, pointer, dimension(:) :: EVAPACC_MO    !< Diagnosed total surface evaporation water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
     real, pointer, dimension(:) :: TRANSPACC_MO
     real, pointer, dimension(:) :: TAACC_MO
     real, pointer, dimension(:) :: ACTLYR_MO
@@ -1437,16 +1437,16 @@ contains
       FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I, M) * FAREROT(I, M)
       ACTLYR_tmp = ACTLYR_tmp + ACTLYR(I, M) * FAREROT(I, M)
       FTABLE_tmp = FTABLE_tmp + FTABLE(I, M) * FAREROT(I, M)
-      GROUNDEVAP(I) = GROUNDEVAP(I) + (QFGROT(I, M) + QFNROT(I, M)) * FAREROT(I, M) !*DELT UNITFIX ! ground evap includes both evap and sublimation from snow
-      CANOPYEVAP(I) = CANOPYEVAP(I) + (QFCLROT(I, M) + QFCFROT(I, M)) * FAREROT(I, M) ! *DELT UNITFIX ! canopy evap includes both evap and sublimation
+      GROUNDEVAP(I) = GROUNDEVAP(I) + (QFGROT(I, M) + QFNROT(I, M)) * FAREROT(I, M) ! ground evap includes both evap and sublimation from snow
+      CANOPYEVAP(I) = CANOPYEVAP(I) + (QFCLROT(I, M) + QFCFROT(I, M)) * FAREROT(I, M) ! canopy evap includes both evap and sublimation
 
       if (SNOROT(I, M) > 0.0) then
         WSNOACC_MO(I) = WSNOACC_MO(I) + WSNOROT(I, M) * FAREROT(I, M)
       end if
 
-      ROFACC_MO(I) = ROFACC_MO(I) + ROFROT(I, M) * FAREROT(I, M)!*DELT UNITFIX
-      PREACC_MO(I) = PREACC_MO(I) + PREROW(I) * FAREROT(I, M)!*DELT UNITFIX
-      EVAPACC_MO(I) = EVAPACC_MO(I) + QFSROT(I, M) * FAREROT(I, M)!*DELT UNITFIX
+      ROFACC_MO(I) = ROFACC_MO(I) + ROFROT(I, M) * FAREROT(I, M)
+      PREACC_MO(I) = PREACC_MO(I) + PREROW(I) * FAREROT(I, M)
+      EVAPACC_MO(I) = EVAPACC_MO(I) + QFSROT(I, M) * FAREROT(I, M) ! Only evaporation
 
       if (FSSROW(I) > 0.0) then
         ALTOTACC_MO(I) = ALTOTACC_MO(I) + ( (FSSROW(I) - (FSGVROT(I, M) + FSGSROT(I, M) + FSGGROT(I, M))) &
@@ -1464,7 +1464,8 @@ contains
         ! Add up each soil layers moisture and convert from m3/m3 to kg/m2
         MRSO_MO(I) = MRSO_MO(I) + (THLQROT(I, M, J) * FAREROT(I, M) + THICROT(I, M, J) * FAREROT(I, M)) * 1000. * DLZWROT(I, M, J)
         MRSOL_MO(I, J) = MRSOL_MO(I, J) + (THLQROT(I, M, J) * FAREROT(I, M) + THICROT(I, M, J) * FAREROT(I, M)) * 1000. * DLZWROT(I, M, J)
-        TRANSPACC_MO(I) = TRANSPACC_MO(I) + QFCROT(I, M, J) * FAREROT(I, M)!*DELT UNITFIX
+        TRANSPACC_MO(I) = TRANSPACC_MO(I) + QFCROT(I, M, J) * FAREROT(I, M)
+        
       end do ! loop 823
 
     end do ! loop 821
@@ -1544,16 +1545,17 @@ contains
         call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_mo'     ,timeStamp,'hfls', [QE_MO])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [SNOACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
-        call writeOutput1D(lonLocalIndex, latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I) - TFREZ])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'evspsbl_mo',timeStamp,'evspsbl', [CANOPYEVAP(I)+GROUNDEVAP(I)+TRANSPACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
-        call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_mo',timeStamp,'evap', [EVAPACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'alsnoacc_mo',timeStamp,'albsn', [ALSNOACC_MO(I)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
-        call writeOutput1D(lonLocalIndex, latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:) - TFREZ])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'mrso_mo',timeStamp,'mrso', [MRSO_MO(I)])
@@ -1720,16 +1722,16 @@ contains
       HFSACC_YR(I) = HFSACC_YR(I) + HFSROT(I, M) * FAREROT(I, M)
       QEVPACC_YR(I) = QEVPACC_YR(I) + QEVPROT(I, M) * FAREROT(I, M)
       TAACC_YR(I) = TAACC_YR(I) + TAROW(I) * FAREROT(I, M)
-      ROFACC_YR(I) = ROFACC_YR(I) + ROFROT(I, M) * FAREROT(I, M) !*DELT UNITFIX
-      PREACC_YR(I) = PREACC_YR(I) + PREROW(I) * FAREROT(I, M) !*DELT UNITFIX
-      EVAPACC_YR(I) = EVAPACC_YR(I) + QFSROT(I, M) * FAREROT(I, M) !*DELT UNITFIX
+      ROFACC_YR(I) = ROFACC_YR(I) + ROFROT(I, M) * FAREROT(I, M) 
+      PREACC_YR(I) = PREACC_YR(I) + PREROW(I) * FAREROT(I, M) 
+      EVAPACC_YR(I) = EVAPACC_YR(I) + QFSROT(I, M) * FAREROT(I, M) 
       ACTLYR_YR(I) = ACTLYR_YR(I) + ACTLYR(I, M) * FAREROT(I, M)
       FTABLE_YR(I) = FTABLE_YR(I) + FTABLE(I, M) * FAREROT(I, M)
       ACTLYR_TMP = ACTLYR_TMP + ACTLYR(I, M) * FAREROT(I, M)
       FTABLE_TMP = FTABLE_TMP + FTABLE(I, M) * FAREROT(I, M)
 
       do J = 1, IGND
-        TRANSPACC_YR(I) = TRANSPACC_YR(I) + QFCROT(I, M, J) * FAREROT(I, M) !*DELT UNITFIX
+        TRANSPACC_YR(I) = TRANSPACC_YR(I) + QFCROT(I, M, J) * FAREROT(I, M) 
       end do
 
       if (FSSROW(I) > 0.0) then
@@ -1791,7 +1793,7 @@ contains
       call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_yr'     ,timeStamp,'hfls', [QE_YR])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'rofacc_yr' ,timeStamp,'mrro', [ROFACC_YR(i)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'preacc_yr' ,timeStamp,'pr', [PREACC_YR(i)])
-      call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_yr' ,timeStamp,'evspsbl', [EVAPACC_YR(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_yr' ,timeStamp,'evap', [EVAPACC_YR(i)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'transpacc_yr' ,timeStamp,'tran', [TRANSPACC_YR(i)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'altotacc_yr' ,timeStamp,'albs', [ALTOTACC_YR(i)])
       call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_yr' ,timeStamp,'actlyr', [actlyr_yr(i)])
@@ -2814,6 +2816,7 @@ contains
     real, pointer, dimension(:,:,:) :: fcancmxrow
     real, pointer, dimension(:,:,:) :: laimaxg_mo
     real, pointer, dimension(:,:,:) :: stemmass_mo
+    real, pointer, dimension(:,:,:) :: leafmass_mo
     real, pointer, dimension(:,:,:) :: rootmass_mo
     real, pointer, dimension(:,:,:) :: litrfallveg_mo
     real, pointer, dimension(:,:,:) :: humiftrsveg_mo
@@ -2853,6 +2856,7 @@ contains
     real, pointer, dimension(:,:,:) :: smfuncveg_mo
 
     real, pointer, dimension(:,:) :: laimaxg_mo_t
+    real, pointer, dimension(:,:) :: leafmass_mo_t
     real, pointer, dimension(:,:) :: stemmass_mo_t
     real, pointer, dimension(:,:) :: rootmass_mo_t
     real, pointer, dimension(:,:) :: litrfall_mo_t
@@ -2965,6 +2969,7 @@ contains
 
     real, pointer, dimension(:) :: laimaxg_mo_g
     real, pointer, dimension(:) :: stemmass_mo_g
+    real, pointer, dimension(:) :: leafmass_mo_g
     real, pointer, dimension(:) :: rootmass_mo_g
     ! COMBAK PERLAY
     real, pointer, dimension(:) :: litres_mo_g
@@ -3057,6 +3062,7 @@ contains
     fcancmxrow            => vrot%fcancmx
     laimaxg_mo            =>ctem_mo%laimaxg_mo
     stemmass_mo           =>ctem_mo%stemmass_mo
+    leafmass_mo           =>ctem_mo%leafmass_mo
     rootmass_mo           =>ctem_mo%rootmass_mo
     litrfallveg_mo        =>ctem_mo%litrfallveg_mo
     humiftrsveg_mo        =>ctem_mo%humiftrsveg_mo
@@ -3091,6 +3097,7 @@ contains
 
     laimaxg_mo_t          =>ctem_tile_mo%laimaxg_mo_t
     stemmass_mo_t         =>ctem_tile_mo%stemmass_mo_t
+    leafmass_mo_t         =>ctem_tile_mo%leafmass_mo_t
     rootmass_mo_t         =>ctem_tile_mo%rootmass_mo_t
     litrfall_mo_t         =>ctem_tile_mo%litrfall_mo_t
     humiftrs_mo_t         =>ctem_tile_mo%humiftrs_mo_t
@@ -3196,6 +3203,7 @@ contains
 
     laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
     stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
+    leafmass_mo_g       =>ctem_grd_mo%leafmass_mo_g
     rootmass_mo_g       =>ctem_grd_mo%rootmass_mo_g
     litrmass_mo_g       =>ctem_grd_mo%litrmass_mo_g
     soilcmas_mo_g       =>ctem_grd_mo%soilcmas_mo_g
@@ -3351,6 +3359,7 @@ contains
 
             vgbiomas_mo(i, m, j) = vgbiomas_vegrow(i, m, j)
             stemmass_mo(i, m, j) = stemmassrow(i, m, j)
+            leafmass_mo(i, m, j) = leafmassrow(i, m, j)
             rootmass_mo(i, m, j) = rootmassrow(i, m, j)
             totcmass_mo(i, m, j) = vgbiomas_vegrow(i, m, j)
             ! COMBAK PERLAY
@@ -3391,6 +3400,7 @@ contains
             !   soilcmas_mo_t(i, m, k) = soilcmas_mo_t(i, m, k) + soilcmas_mo(i, m, j, k) * fcancmxrow(i, m, j)
             ! end do
             ! COMBAK PERLAY
+            leafmass_mo_t(i, m) = leafmass_mo_t(i, m) + leafmass_mo(i, m, j) * fcancmxrow(i, m, j)
             stemmass_mo_t(i, m) = stemmass_mo_t(i, m) + stemmass_mo(i, m, j) * fcancmxrow(i, m, j)
             rootmass_mo_t(i, m) = rootmass_mo_t(i, m) + rootmass_mo(i, m, j) * fcancmxrow(i, m, j)
             totcmass_mo_t(i, m) = totcmass_mo_t(i, m) + totcmass_mo(i, m, j) * fcancmxrow(i, m, j)
@@ -3421,6 +3431,7 @@ contains
           !   soilcmas_mo_g(i, k) = soilcmas_mo_g(i, k) + soilcmas_mo_t(i, m, k) * FAREROT(i, m)
           ! end do
           ! COMBAK PERLAY
+          leafmass_mo_g(i) = leafmass_mo_g(i) + leafmass_mo_t(i, m) * FAREROT(i, m)
           stemmass_mo_g(i) = stemmass_mo_g(i) + stemmass_mo_t(i, m) * FAREROT(i, m)
           rootmass_mo_g(i) = rootmass_mo_g(i) + rootmass_mo_t(i, m) * FAREROT(i, m)
           totcmass_mo_g(i) = totcmass_mo_g(i) + totcmass_mo_t(i, m) * FAREROT(i, m)
@@ -3576,8 +3587,9 @@ contains
         call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetDyn_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_g(i)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
-
-        ! COMBAK PERLAY
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'leafmass_mo_g',timeStamp,'cLeaf',[leafmass_mo_g(i)])
+        
+        ! COMBAK PERLAY        
         call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[soilcmas_mo_g(i)])
         call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[litres_mo_g(i)])
@@ -3643,6 +3655,7 @@ contains
           else
             m = 1
             call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_mo' ,timeStamp,'lai', [laimaxg_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'leafmass_mo'  ,timeStamp,'cLeaf',[leafmass_mo(i, m,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_mo',timeStamp,'cVeg',[vgbiomas_mo(i, m,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_mo'     ,timeStamp,'npp',[npp_mo(i, m,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_mo'     ,timeStamp,'gpp',[gpp_mo(i, m,:)])
@@ -3710,8 +3723,10 @@ contains
             call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_mo_t' ,timeStamp,'ra',[autores_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i, 1:iccp1)])
-
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'leafmass_mo_t',timeStamp,'cLeaf',[leafmass_mo_t(i,:)])
+            
             ! COMBAK PERLAY
+            
             call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[litrmass_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[soilcmas_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[litres_mo_t(i,:)])
