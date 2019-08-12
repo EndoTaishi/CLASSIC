@@ -1349,7 +1349,7 @@ contains
       end do
 
       if (transientCO2) then
-        print * ,readMetStartYear, readMetEndYear
+        
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain first requested year')

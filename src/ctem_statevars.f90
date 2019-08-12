@@ -760,6 +760,7 @@ module ctem_statevars
 
     real, allocatable, dimension(:,:,:)   :: laimaxg_mo    !<
     real, allocatable, dimension(:,:,:)   :: stemmass_mo   !<
+    real, allocatable, dimension(:,:,:)   :: leafmass_mo   !<
     real, allocatable, dimension(:,:,:)   :: rootmass_mo   !<
     real, allocatable, dimension(:,:,:)   :: litrfallveg_mo !<
     real, allocatable, dimension(:,:,:) :: humiftrsveg_mo !<
@@ -812,6 +813,7 @@ module ctem_statevars
     ! allocated with nlat:
     real, allocatable, dimension(:) :: laimaxg_mo_g  !<
     real, allocatable, dimension(:) :: stemmass_mo_g !<
+    real, allocatable, dimension(:) :: leafmass_mo_g !<
     real, allocatable, dimension(:) :: rootmass_mo_g !<
     real, allocatable, dimension(:) :: litrfall_mo_g !<
     real, allocatable, dimension(:) :: humiftrs_mo_g !<
@@ -877,6 +879,7 @@ module ctem_statevars
 
     real, allocatable, dimension(:,:) :: laimaxg_mo_t  !<
     real, allocatable, dimension(:,:) :: stemmass_mo_t !<
+    real, allocatable, dimension(:,:) :: leafmass_mo_t !<
     real, allocatable, dimension(:,:) :: rootmass_mo_t !<
     real, allocatable, dimension(:,:) :: litrfall_mo_t !<
     real, allocatable, dimension(:,:) :: humiftrs_mo_t !<
@@ -1593,6 +1596,7 @@ contains
 
     ctem_mo%laimaxg_mo (nlat, nmos, icc), &
          ctem_mo%stemmass_mo (nlat, nmos, icc), &
+         ctem_mo%leafmass_mo (nlat, nmos, icc), &
          ctem_mo%rootmass_mo (nlat, nmos, icc), &
          ctem_mo%litrfallveg_mo (nlat, nmos, icc), &
          ctem_mo%npp_mo (nlat, nmos, icc), &
@@ -1633,6 +1637,7 @@ contains
 
     ctem_grd_mo%laimaxg_mo_g (nlat), &
          ctem_grd_mo%stemmass_mo_g (nlat), &
+         ctem_grd_mo%leafmass_mo_g (nlat), &
          ctem_grd_mo%rootmass_mo_g (nlat), &
          ! COMBAK PERLAY
          ctem_grd_mo%litrmass_mo_g (nlat), &
@@ -1684,6 +1689,7 @@ contains
 
     ctem_tile_mo%laimaxg_mo_t (nlat, nmos), &
          ctem_tile_mo%stemmass_mo_t (nlat, nmos), &
+         ctem_tile_mo%leafmass_mo_t (nlat, nmos), &
          ctem_tile_mo%rootmass_mo_t (nlat, nmos), &
          ctem_tile_mo%litrfall_mo_t (nlat, nmos), &
          ctem_tile_mo%humiftrs_mo_t (nlat, nmos), &
@@ -2036,6 +2042,7 @@ contains
     ! zeroed out at the same time as the other month-end vars.
     do i = 1, nltest
       ctem_grd_mo%stemmass_mo_g(i) = 0.0
+      ctem_grd_mo%leafmass_mo_g(i) = 0.0
       ctem_grd_mo%rootmass_mo_g(i) = 0.0
       ! COMBAK PERLAY
       ctem_grd_mo%litrmass_mo_g(i) = 0.0
@@ -2047,6 +2054,7 @@ contains
       ctem_grd_mo%totcmass_mo_g(i) = 0.0
       do m = 1, nmtest
         ctem_tile_mo%stemmass_mo_t(i, m) = 0.0
+        ctem_tile_mo%leafmass_mo_t(i, m) = 0.0
         ctem_tile_mo%rootmass_mo_t(i, m) = 0.0
         ! COMBAK PERLAY
         ctem_tile_mo%litrmass_mo_t(i, m) = 0.0
@@ -2058,6 +2066,7 @@ contains
         ctem_tile_mo%totcmass_mo_t(i, m) = 0.0
         do j = 1, icc
           ctem_mo%stemmass_mo(i, m, j) = 0.0
+          ctem_mo%leafmass_mo(i, m, j) = 0.0
           ctem_mo%rootmass_mo(i, m, j) = 0.0
           ! COMBAK PERLAY
           ctem_mo%litrmass_mo(i, m, j) = 0.0

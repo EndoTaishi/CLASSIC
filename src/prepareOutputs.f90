@@ -2960,6 +2960,8 @@ contains
     real, pointer, dimension(:,:) :: ch4WetDynrow
     real, pointer, dimension(:,:) :: ch4soillsrow
     real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
+    real, pointer, dimension(:,:,:) :: gleafmassrow
+    real, pointer, dimension(:,:,:) :: bleafmassrow
     real, pointer, dimension(:,:,:) :: stemmassrow
     real, pointer, dimension(:,:,:) :: rootmassrow
     real, pointer, dimension(:,:,:) :: litrfallvegrow
@@ -3185,6 +3187,8 @@ contains
     litrmassrow       => vrot%litrmass
     soilcmasrow       => vrot%soilcmas
     vgbiomas_vegrow   => vrot%vgbiomas_veg
+    gleafmassrow      => vrot%gleafmas
+    bleafmassrow      => vrot%bleafmas
     stemmassrow       => vrot%stemmass
     rootmassrow       => vrot%rootmass
     uvaccrow_m        => vrot%uvaccrow_m
@@ -3359,7 +3363,7 @@ contains
 
             vgbiomas_mo(i, m, j) = vgbiomas_vegrow(i, m, j)
             stemmass_mo(i, m, j) = stemmassrow(i, m, j)
-            leafmass_mo(i, m, j) = leafmassrow(i, m, j)
+            leafmass_mo(i, m, j) = gleafmassrow(i, m, j) + bleafmassrow(i, m, j)
             rootmass_mo(i, m, j) = rootmassrow(i, m, j)
             totcmass_mo(i, m, j) = vgbiomas_vegrow(i, m, j)
             ! COMBAK PERLAY
