@@ -1283,6 +1283,7 @@ contains
     logical, pointer :: transientOBSWETF
     integer, pointer :: fixedYearOBSWETF
     logical, pointer :: leap
+    integer, pointer :: metLoop
     real, pointer, dimension(:,:) :: co2concrow
     real, pointer, dimension(:,:) :: tracerco2conc
     real, pointer, dimension(:,:) :: ch4concrow
@@ -1321,6 +1322,7 @@ contains
     fixedYearLUC    => c_switch%fixedYearLUC
     leap            => c_switch%leap
     useTracer       => c_switch%useTracer
+    metLoop         => c_switch%metLoop
     co2concrow      => vrot%co2conc
     tracerco2conc   => tracer%tracerCO2rot
     ch4concrow      => vrot%ch4conc
@@ -1353,7 +1355,18 @@ contains
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        
+        ! Sometimes it is correct to have transient CO2 but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientCO2 is true. So grab the full length of the CO2 file rather than only 
+        ! the years requested for the met.
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
+        
+        
+        
         if (arrindex2 == 0) stop ('getInput says: The CO2 file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
@@ -1440,7 +1453,15 @@ contains
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CH4 file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        ! Sometimes it is correct to have transient CO2 but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientCO2 is true. So grab the full length of the CO2 file rather than only 
+        ! the years requested for the met.
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
+
         if (arrindex2 == 0) stop ('getInput says: The CH4 file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
@@ -2187,3 +2208,4 @@ contains
   !! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 
 end module model_state_drivers
+
