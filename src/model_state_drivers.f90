@@ -1451,8 +1451,8 @@ contains
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CH4 file does not contain first requested year')
-        ! Sometimes it is correct to have transient CO2 but otherwise have constant conditiions (recycling MET),
-        ! in this case metloop is >1 but transientCO2 is true. So grab the full length of the CO2 file rather than only 
+        ! Sometimes it is correct to have transient CH4 but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientCH4 is true. So grab the full length of the CH4 file rather than only 
         ! the years requested for the met.
         if (metLoop == 1) then
           arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
@@ -1506,7 +1506,15 @@ contains
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The POPD file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        ! Sometimes it is correct to have transient POPD but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientPOPD is true. So grab the full length of the POPD file rather than only 
+        ! the years requested for the met.
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
+
         if (arrindex2 == 0) stop ('getInput says: The POPD file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
@@ -1628,7 +1636,14 @@ contains
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The LUC file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        ! Sometimes it is correct to have transient LUC but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but lnduseon is true. So grab the full length of the LUC file rather than only 
+        ! the years requested for the met. 
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
         if (arrindex2 == 0) stop ('getInput says: The LUC file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
