@@ -275,12 +275,14 @@ CLASS switches determine the configuration of the physics only as well as CLASS+
 
         ! Physics switches:
 
-            IDISP = 0 ,    !  This switch controls the calculation of the vegetation displacement height. In most
+            IDISP = 0 ,    !  This switch controls the calculation of the vegetation        displacement height. In most
                           !atmospheric models a “terrain-following” coordinate system is used, in which the vegetation
                           !displacement height is considered to be part of the “terrain”, and is therefore neglected. 
                           ! For such applications IDISP is set to 0. For studies making use of field data, it should !be set to 1.
             IZREF = 2 ,    !This switch indicates where the bottom of the atmosphere is conceptually located. In
-                          !most atmospheric models the bottom is assumed to lie at the local surface roughness length, ! i.e. where the horizontal wind speed is zero; for such simulations IZREF is set to 2. For ! all other cases it should be set to 1.
+                          !most atmospheric models the bottom is assumed to lie at the local surface roughness length, 
+                          ! i.e. where the horizontal wind speed is zero; for such simulations IZREF is set to 2. For 
+                          ! all other cases, including sites using field data, it should be set to 1.
             ZRFH = 40.0,  ! The reference heights at which the energy variables (air temperature and specific humidity) are provided. When 
                           ! using field data this is the measurement height. 
             ZRFM = 40.0,  ! The reference heights at which the momentum variables (wind speed) are provided. When using field data this is the measurement height. 

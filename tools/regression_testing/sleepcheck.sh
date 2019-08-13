@@ -1,11 +1,12 @@
 #!/bin/bash
 JOB_ID=$1
 echo "Job ID: $JOB_ID"
-sleep 5
+sleep 20
 let sleepcount=0
 while [ $sleepcount -lt 1080 ] ;
 do
-  status=$( jobst -c $HDNODE 2>/dev/null | grep $1 | perl -pe 's/\s+/ /g' | cut -d ' ' -f 5 )
+  status=$( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s ' ' | perl -pe 's/\s+/ /g' | cut -d ' ' -f 3 )
+  status=${status#*|}
   if [ "$status" == "Q" ]; then
     echo "Queued!"
   elif [ "$status" == "R" ]; then
@@ -13,13 +14,13 @@ do
   elif [ -z "$status" ]; then
     break
   else
-    echo "WTF"
-    echo $( jobst -c $HDNODE 2>/dev/null | grep $1 | prel -pe 's/\s+/ /g' )
+    echo "Unexpected jobstat result:"
+    echo $( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s ' ' | perl -pe 's/\s+/ /g' )
     echo $status
   fi
   let sleepcount=$sleepcount+1
   sleep 5
 done
 
-[ $sleepcount -eq 1080 ] && echo "Job just be stuck in queue or something" && exit 1
+[ $sleepcount -eq 1080 ] && echo "Error: Sleep count timed out. The job must be stuck in the queue. Checksums will not be checked." && exit 1
 exit 0

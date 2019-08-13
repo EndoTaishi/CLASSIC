@@ -1,3 +1,4 @@
+!> \file
 !> Central driver to read in, and write out all model state variables (replacing INI and CTM files)
 !! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 
@@ -92,8 +93,8 @@ contains
 
   subroutine read_modelsetup
 
-    use ctem_statevars,     only : c_switch
-    use classic_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine !
+    use ctem_statevars, only : c_switch
+    use classic_params, only : nmos, nlat, ignd, ilg  ! These are set in this subroutine !
     use outputManager, only : myDomain
 
     implicit none
@@ -127,11 +128,11 @@ contains
     ! Local vars
     integer, allocatable, dimension(:,:) :: mask
     integer :: i, j
-    integer :: totlon,totlat,totsize
+    integer :: totlon, totlat, totsize
     integer, dimension(1) :: pos
-    integer, dimension(2) :: xpos,ypos
+    integer, dimension(2) :: xpos, ypos
     integer, dimension(:,:), allocatable :: nmarray
-    integer :: lonloc,latloc,flattenedIndex,tempIndex
+    integer :: lonloc, latloc, flattenedIndex, tempIndex
     character(30) :: row_bounds
 
     ! point pointers:
@@ -206,21 +207,21 @@ contains
       !         if (myDomain%domainBounds(1) < myDomain%allLonValues(1)) then ! W most lon
       !             print*,'=>Your domain bound ', myDomain%domainBounds(1),' is outside of', &
       !                 ' the limits of the init_file ',myDomain%allLonValues(1)
-      !         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues,1))) then ! E most lon
+      !         else if (myDomain%domainBounds(2) > myDomain%allLonValues(ubound(myDomain%allLonValues, 1))) then ! E most lon
       !             print*,'=>Your domain bound ', myDomain%domainBounds(2),' is outside of', &
-      !                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues,1))
+      !                 ' the limits of the init_file ',myDomain%allLonValues(ubound(myDomain%allLonValues, 1))
       !         else if (myDomain%domainBounds(3) < myDomain%allLatValues(1)) then ! S most lat
       !             print*,'=>Your domain bound ', myDomain%domainBounds(3),' is outside of', &
       !                 ' the limits of the init_file ',myDomain%allLatValues(1)
-      !         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues,1))) then ! N most lat
+      !         else if (myDomain%domainBounds(4) > myDomain%allLatValues(ubound(myDomain%allLatValues, 1))) then ! N most lat
       !             print*,'=>Your domain bound ', myDomain%domainBounds(4),' is outside of', &
-      !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues,1))
+      !                 ' the limits of the init_file ',myDomain%allLatValues(ubound(myDomain%allLatValues, 1))
       !         end if
 
       !> Since the domainBounds are coordinates, need to find the indices corresponding to the domain bounds.
 
       if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
-      myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+          myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
         ! Special case, if the domainBounds are 0/0/0/0 then take whole domain.
         print * , ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
         xpos(1) = 1
@@ -253,10 +254,10 @@ contains
       !! In this case, the closest grid point to the specified coordinates is used and the check should not be done.
 
       if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and. &
-      myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
+          myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
 
       if (myDomain%allLatValues(myDomain%srty) < myDomain%domainBounds(3) .and. &
-      myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
+          myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%srty = myDomain%srty + 1
 
       !> Compute the size of the coordinate vectors.
 
@@ -266,10 +267,10 @@ contains
       !> Ensure that the last index of each vector is within the domain bounds.
 
       if (myDomain%allLonValues(maxval(xpos)) > myDomain%domainBounds(2) .and. &
-      myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%cntx = myDomain%cntx - 1
+          myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%cntx = myDomain%cntx - 1
 
       if (myDomain%allLatValues(maxval(ypos)) > myDomain%domainBounds(4) .and. &
-      myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%cnty = myDomain%cnty - 1
+          myDomain%domainBounds(4) /= myDomain%domainBounds(3)) myDomain%cnty = myDomain%cnty - 1
 
     else ! projected grid
 
@@ -287,8 +288,8 @@ contains
       allocate(myDomain%allLonValues(totlat * totlon), myDomain%allLatValues(totlat * totlon))
 
       !> This will get all lon and lat grids as flattened vectors.
-      myDomain%allLonValues = ncGetDimValues(initid, 'lon', count2D = (/totlon,totlat/))
-      myDomain%allLatValues = ncGetDimValues(initid, 'lat', count2D = (/totlon,totlat/))
+      myDomain%allLonValues = ncGetDimValues(initid, 'lon', count2D = (/totlon, totlat/))
+      myDomain%allLatValues = ncGetDimValues(initid, 'lat', count2D = (/totlon, totlat/))
 
       !> Since the domainBounds are indexes, and not coordinates, we can use them directly.
       xpos(1) = myDomain%domainBounds(1)
@@ -298,7 +299,7 @@ contains
 
       !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
       if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
-      myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
+          myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
         print * , ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
         xpos(1) = 1
         xpos(2) = totlon
@@ -338,11 +339,11 @@ contains
     !! the 'Mask' variable is all land (but we don't run over Antarctica).
     allocate(mask(myDomain%cntx, myDomain%cnty))
     mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty], &
-    count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
+           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
     myDomain%LandCellCount = 0
     do i = 1, myDomain%cntx
       do j = 1, myDomain%cnty
-        if (mask(i,j) == - 1) then
+        if (mask(i, j) == - 1) then
           ! print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1) &
           ! , ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
           myDomain%LandCellCount = myDomain%LandCellCount + 1
@@ -388,7 +389,7 @@ contains
     if (myDomain%LandCellCount == 0) then
       print * ,'=>Your domain is not land my friend.'
       if (.not. projectedGrid) then
-        if (closeEnough(myDomain%domainBounds(1),myDomain%domainBounds(2),1.E-5)) then ! point run
+        if (closeEnough(myDomain%domainBounds(1), myDomain%domainBounds(2), 1.E-5)) then ! point run
           lonloc = closestCell(initid,'lon',myDomain%domainBounds(1))
           latloc = closestCell(initid,'lat',myDomain%domainBounds(3))
           print * ,'Closest grid cell is ',myDomain%allLonValues(lonloc),'/',myDomain%allLatValues(latloc)
@@ -403,7 +404,7 @@ contains
     !! for the region we are running.
     allocate(nmarray(myDomain%cntx, myDomain%cnty))
     nmarray = ncGet2DVar(initid, 'nmtest', start = [myDomain%srtx, myDomain%srty], &
-    count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
+              count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
     nmos = maxval(nmarray)
 
     !> Determine the size of ilg which is nlat times nmos
@@ -416,9 +417,9 @@ contains
 
     !> Add global attribute to restart file, storing the rows overwritten.
     !> Could be used in the future to simplify stitching of the restart file when the run is split across multiple nodes.
-    write(row_bounds,'(I0,x,I0)') ypos
+    write(row_bounds,'(I0, x, I0)') ypos
     call ncReDef(rsid)
-    call ncPutAtt(rsid,nf90_global,'row_bounds',charvalues = trim(row_bounds))
+    call ncPutAtt(rsid, nf90_global,'row_bounds',charvalues = trim(row_bounds))
     call ncEndDef(rsid)
 
     if (ctem_on) then
@@ -479,22 +480,22 @@ contains
   !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
   !> @author Joe Melton
 
-  subroutine read_initialstate(lonIndex,latIndex)
+  subroutine read_initialstate(lonIndex, latIndex)
 
     ! J. Melton
     ! Nov 2016
 
-    use ctem_statevars,     only : c_switch,vrot,vgat,tracer
-    use class_statevars,    only : class_rot,class_gat
-    use classic_params,        only : icc,iccp2,nmos,ignd,icp1,nlat,ican,pi,crop,TFREZ, &
-                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB, &
-                                          albdif_lut,albdir_lut,trandif_lut,trandir_lut, &
-                                          nsmu,nsalb,nbc,nreff,nswe,nbnd_lut
+    use ctem_statevars, only : c_switch, vrot, vgat, tracer
+    use class_statevars, only : class_rot, class_gat
+    use classic_params, only : icc, iccp2, nmos, ignd, icp1, nlat, ican, pi, crop, TFREZ, &
+                                          RSMN, QA50, VPDA, VPDB, PSGA, PSGB, &
+                                          albdif_lut, albdir_lut, trandif_lut, trandir_lut, &
+                                          nsmu, nsalb, nbc, nreff, nswe, nbnd_lut
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonIndex,latIndex
+    integer, intent(in) :: lonIndex, latIndex
 
     ! pointers:
     real, pointer, dimension(:,:,:) :: FCANROT      !< Maximum fractional coverage of modelled
@@ -608,10 +609,10 @@ contains
 
     ! local variables
 
-    integer :: i,m,j,n
+    integer :: i, m, j, n
     real :: bots
-    integer :: ipnt,albdim
-    integer :: isalb,ismu,isgs,iswe,ibc
+    integer :: ipnt, albdim
+    integer :: isalb, ismu, isgs, iswe, ibc
     real, dimension(:,:,:), allocatable :: tmpalb
 
     ! point pointers:
@@ -767,12 +768,12 @@ contains
     ! Here we apply the values read in from the namelist file:
     do i = 1, nlat
       do m = 1, nmos
-        RSMNROT(i,m,:) = RSMN(:)
-        QA50ROT(i,m,:) = QA50(:)
-        VPDAROT(i,m,:) = VPDA(:)
-        VPDBROT(i,m,:) = VPDB(:)
-        PSGAROT(i,m,:) = PSGA(:)
-        PSGBROT(i,m,:) = PSGB(:)
+        RSMNROT(i, m,:) = RSMN(:)
+        QA50ROT(i, m,:) = QA50(:)
+        VPDAROT(i, m,:) = VPDA(:)
+        VPDBROT(i, m,:) = VPDB(:)
+        PSGAROT(i, m,:) = PSGA(:)
+        PSGBROT(i, m,:) = PSGB(:)
       end do
     end do
 
@@ -787,7 +788,7 @@ contains
 
     ! From DELZ we can find ZBOT as:
     bots = 0.
-    do n = 1,ignd
+    do n = 1, ignd
       bots = bots + delz(n)
       ZBOT(n) = bots
     end do
@@ -797,31 +798,31 @@ contains
 
       ! Determine the size of the arrays to be read in.
       albdim = NSWE * NREFF * NSMU * NSALB * NBC
-      allocate(tmpalb(4,4,albdim))
+      allocate(tmpalb(4, 4, albdim))
 
       ! Diffuse albedo
-      tmpalb(1,1,:) = ncGet1DVar(initid, 'albedoDiffuse1', start = [1], count = [albdim])
-      tmpalb(1,2,:) = ncGet1DVar(initid, 'albedoDiffuse2', start = [1], count = [albdim])
-      tmpalb(1,3,:) = ncGet1DVar(initid, 'albedoDiffuse3', start = [1], count = [albdim])
-      tmpalb(1,4,:) = ncGet1DVar(initid, 'albedoDiffuse4', start = [1], count = [albdim])
+      tmpalb(1, 1,:) = ncGet1DVar(initid, 'albedoDiffuse1', start = [1], count = [albdim])
+      tmpalb(1, 2,:) = ncGet1DVar(initid, 'albedoDiffuse2', start = [1], count = [albdim])
+      tmpalb(1, 3,:) = ncGet1DVar(initid, 'albedoDiffuse3', start = [1], count = [albdim])
+      tmpalb(1, 4,:) = ncGet1DVar(initid, 'albedoDiffuse4', start = [1], count = [albdim])
 
       ! Direct albedo
-      tmpalb(2,1,:) = ncGet1DVar(initid, 'albedoDirect1', start = [1], count = [albdim])
-      tmpalb(2,2,:) = ncGet1DVar(initid, 'albedoDirect2', start = [1], count = [albdim])
-      tmpalb(2,3,:) = ncGet1DVar(initid, 'albedoDirect3', start = [1], count = [albdim])
-      tmpalb(2,4,:) = ncGet1DVar(initid, 'albedoDirect4', start = [1], count = [albdim])
+      tmpalb(2, 1,:) = ncGet1DVar(initid, 'albedoDirect1', start = [1], count = [albdim])
+      tmpalb(2, 2,:) = ncGet1DVar(initid, 'albedoDirect2', start = [1], count = [albdim])
+      tmpalb(2, 3,:) = ncGet1DVar(initid, 'albedoDirect3', start = [1], count = [albdim])
+      tmpalb(2, 4,:) = ncGet1DVar(initid, 'albedoDirect4', start = [1], count = [albdim])
 
       ! Diffuse transmissivity
-      tmpalb(3,1,:) = ncGet1DVar(initid, 'transmisDiffuse1', start = [1], count = [albdim])
-      tmpalb(3,2,:) = ncGet1DVar(initid, 'transmisDiffuse2', start = [1], count = [albdim])
-      tmpalb(3,3,:) = ncGet1DVar(initid, 'transmisDiffuse3', start = [1], count = [albdim])
-      tmpalb(3,4,:) = ncGet1DVar(initid, 'transmisDiffuse4', start = [1], count = [albdim])
+      tmpalb(3, 1,:) = ncGet1DVar(initid, 'transmisDiffuse1', start = [1], count = [albdim])
+      tmpalb(3, 2,:) = ncGet1DVar(initid, 'transmisDiffuse2', start = [1], count = [albdim])
+      tmpalb(3, 3,:) = ncGet1DVar(initid, 'transmisDiffuse3', start = [1], count = [albdim])
+      tmpalb(3, 4,:) = ncGet1DVar(initid, 'transmisDiffuse4', start = [1], count = [albdim])
 
       ! Direct transmissivity
-      tmpalb(4,1,:) = ncGet1DVar(initid, 'transmisDirect1', start = [1], count = [albdim])
-      tmpalb(4,2,:) = ncGet1DVar(initid, 'transmisDirect2', start = [1], count = [albdim])
-      tmpalb(4,3,:) = ncGet1DVar(initid, 'transmisDirect3', start = [1], count = [albdim])
-      tmpalb(4,4,:) = ncGet1DVar(initid, 'transmisDirect4', start = [1], count = [albdim])
+      tmpalb(4, 1,:) = ncGet1DVar(initid, 'transmisDirect1', start = [1], count = [albdim])
+      tmpalb(4, 2,:) = ncGet1DVar(initid, 'transmisDirect2', start = [1], count = [albdim])
+      tmpalb(4, 3,:) = ncGet1DVar(initid, 'transmisDirect3', start = [1], count = [albdim])
+      tmpalb(4, 4,:) = ncGet1DVar(initid, 'transmisDirect4', start = [1], count = [albdim])
 
       do i = 1, nbnd_lut
         ipnt = 1
@@ -830,10 +831,10 @@ contains
             do isgs = 1, nreff ! nsgs
               do iswe = 1, nswe
                 do ibc = 1, nbc
-                  albdif_lut(ibc,iswe,isgs,ismu,isalb,i) = tmpalb(1,i,ipnt)
-                  albdir_lut(ibc,iswe,isgs,ismu,isalb,i) = tmpalb(2,i,ipnt)
-                  trandif_lut(ibc,iswe,isgs,ismu,isalb,i) = tmpalb(3,i,ipnt)
-                  trandir_lut(ibc,iswe,isgs,ismu,isalb,i) = tmpalb(4,i,ipnt)
+                  albdif_lut(ibc, iswe, isgs, ismu, isalb, i) = tmpalb(1, i, ipnt)
+                  albdir_lut(ibc, iswe, isgs, ismu, isalb, i) = tmpalb(2, i, ipnt)
+                  trandif_lut(ibc, iswe, isgs, ismu, isalb, i) = tmpalb(3, i, ipnt)
+                  trandir_lut(ibc, iswe, isgs, ismu, isalb, i) = tmpalb(4, i, ipnt)
                   ipnt = ipnt + 1
                 end do ! ibc
               end do ! iswe
@@ -850,10 +851,10 @@ contains
     if (.not. ctem_on) then
       FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
       ! Error check:
-      do i = 1,nlat
-        do m = 1,nmos
-          if (FAREROT(i,m) > 1.0) then
-            print * ,'FAREROT > 1',FAREROT(I,M)
+      do i = 1, nlat
+        do m = 1, nmos
+          if (FAREROT(i, m) > 1.0) then
+            print * ,'FAREROT > 1',FAREROT(I, M)
             call errorHandler('read_initialstate', - 1)
           end if
         end do
@@ -863,24 +864,24 @@ contains
 
     ! Complete some initial set up work. The limiting snow
     ! depth, ZSNL, is assigned its operational value of 0.10 m.
-    do I = 1,nlat ! loop 100
-      do M = 1,nmos
-        do J = 1,IGND
-          TBARROT(I,M,J) = TBARROT(I,M,J) + TFREZ
+    do I = 1, nlat ! loop 100
+      do M = 1, nmos
+        do J = 1, IGND
+          TBARROT(I, M, J) = TBARROT(I, M, J) + TFREZ
         end do
-        TSNOROT(I,M) = TSNOROT(I,M) + TFREZ
-        TCANROT(I,M) = TCANROT(I,M) + TFREZ
-        TPNDROT(I,M) = TPNDROT(I,M) + TFREZ
-        TBASROT(I,M) = TBARROT(I,M,IGND)
-        CMAIROT(I,M) = 0.
-        WSNOROT(I,M) = 0.
-        ZSNLROT(I,M) = 0.10
-        TSFSROT(I,M,1) = TFREZ
-        TSFSROT(I,M,2) = TFREZ
-        TSFSROT(I,M,3) = TBARROT(I,M,1)
-        TSFSROT(I,M,4) = TBARROT(I,M,1)
-        TACROT (I,M) = TCANROT(I,M)
-        QACROT (I,M) = 0.5E-2
+        TSNOROT(I, M) = TSNOROT(I, M) + TFREZ
+        TCANROT(I, M) = TCANROT(I, M) + TFREZ
+        TPNDROT(I, M) = TPNDROT(I, M) + TFREZ
+        TBASROT(I, M) = TBARROT(I, M, IGND)
+        CMAIROT(I, M) = 0.
+        WSNOROT(I, M) = 0.
+        ZSNLROT(I, M) = 0.10
+        TSFSROT(I, M, 1) = TFREZ
+        TSFSROT(I, M, 2) = TFREZ
+        TSFSROT(I, M, 3) = TBARROT(I, M, 1)
+        TSFSROT(I, M, 4) = TBARROT(I, M, 1)
+        TACROT (I, M) = TCANROT(I, M)
+        QACROT (I, M) = 0.5E-2
       end do
     end do ! loop 100
 
@@ -889,12 +890,12 @@ contains
 
     ! Check that the THIC and THLQ values are set to zero for soil layers
     ! that are non-permeable (bedrock).
-    do i = 1,nlat
-      do j = 1,nmos
-        do m = 1,ignd - 1
-          if (zbot(m) > SDEPROT(i,j) .and. zbot(m + 1) > SDEPROT(i,j)) then
-            THLQROT(i,j,m:ignd) = 0.
-            THICROT(i,j,m:ignd) = 0.
+    do i = 1, nlat
+      do j = 1, nmos
+        do m = 1, ignd - 1
+          if (zbot(m) > SDEPROT(i, j) .and. zbot(m + 1) > SDEPROT(i, j)) then
+            THLQROT(i, j, m:ignd) = 0.
+            THICROT(i, j, m:ignd) = 0.
             exit
           end if
         end do
@@ -905,7 +906,7 @@ contains
 
       grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex, latIndex], count = [1, 1])
 
-      do i = 1,nmos
+      do i = 1, nmos
         grclarea(i) = grclarea(1)  ! grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
       end do
 
@@ -913,20 +914,20 @@ contains
       Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
       litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
       dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-      fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+      fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
 
-      gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-      bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-      stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-      rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+      gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+      bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+      stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+      rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
 
       !> If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
       if (dofire .and. PFTCompetition) then
-        do i = 1,nlat
-          do m = 1,nmos
-            do j = 1,icc
-              pstemmassrow(i,m,j) = stemmassrow(i,m,j)
-              pgleafmassrow(i,m,j) = rootmassrow(i,m,j)
+        do i = 1, nlat
+          do m = 1, nmos
+            do j = 1, icc
+              pstemmassrow(i, m, j) = stemmassrow(i, m, j)
+              pgleafmassrow(i, m, j) = rootmassrow(i, m, j)
             end do
           end do
         end do
@@ -934,25 +935,25 @@ contains
 
       ! COMBAK PERLAY
       litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
-      soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos,iccp2])
+      soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos], format = [nlat, nmos, iccp2])
       ! litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
-      ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd,nmos], format = [nlat, nmos,iccp2, ignd])
+      ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
       ! COMBAK PERLAY
 
       ! If a tracer is being used, read in those values.
       if (useTracer > 0) then
-        tracerGLeafMass = ncGet3DVar(initid, 'tracerGLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-        tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-        tracerStemMass = ncGet3DVar(initid, 'tracerStemMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-        tracerRootMass = ncGet3DVar(initid, 'tracerRootMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-        tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
-        tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos,iccp2, ignd])
+        tracerGLeafMass = ncGet3DVar(initid, 'tracerGLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+        tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+        tracerStemMass = ncGet3DVar(initid, 'tracerStemMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+        tracerRootMass = ncGet3DVar(initid, 'tracerRootMass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+        tracerLitrMass = ncGet4DVar(initid, 'tracerLitrMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
+        tracerSoilCMass = ncGet4DVar(initid, 'tracerSoilCMass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp2, ignd, nmos], format = [nlat, nmos, iccp2, ignd])
         tracerMossCMass = ncGet2DVar(initid, 'tracerMossCMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         tracerMossLitrMass = ncGet2DVar(initid, 'tracerMossLitrMass', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
       end if
 
-      lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-      pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+      lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
+      pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos, icc])
 
       if (PFTCompetition .and. inibioclim) then  ! read in the bioclimatic parameters
 
@@ -968,7 +969,7 @@ contains
         dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
 
         !> Take the first tile value now and put it over the other tiles
-        do m = 1,nmos
+        do m = 1, nmos
           twarmm(:,m) = twarmm(:,1)
           tcoldm(:,m) = tcoldm(:,1)
           gdd5(:,m) = gdd5(:,1)
@@ -1002,25 +1003,25 @@ contains
       if (PFTCompetition .and. start_bare) then
 
         ! If useTracer > 0 then the tracer values are left initialized at what they were read in as.
-        do i = 1,nlat
-          do m = 1,nmos
-            do j = 1,icc
-              if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
-              gleafmasrow(i,m,j) = 0.0
-              bleafmasrow(i,m,j) = 0.0
-              stemmassrow(i,m,j) = 0.0
-              rootmassrow(i,m,j) = 0.0
-              lfstatusrow(i,m,j) = 4
-              pandaysrow(i,m,j) = 0
+        do i = 1, nlat
+          do m = 1, nmos
+            do j = 1, icc
+              if (.not. crop(j)) fcancmxrow(i, m, j) = 0.0
+              gleafmasrow(i, m, j) = 0.0
+              bleafmasrow(i, m, j) = 0.0
+              stemmassrow(i, m, j) = 0.0
+              rootmassrow(i, m, j) = 0.0
+              lfstatusrow(i, m, j) = 4
+              pandaysrow(i, m, j) = 0
             end do
 
-            lfstatusrow(i,m,1) = 2
+            lfstatusrow(i, m, 1) = 2
             ! COMBAK PERLAY
-            litrmassrow(i,m,j) = 0.0
-            soilcmasrow(i,m,j) = 0.0
-            ! do j = 1,iccp2
-            !   litrmassrow(i,m,j,1:ignd)=0.0
-            !   soilcmasrow(i,m,j,1:ignd)=0.0
+            litrmassrow(i, m, j) = 0.0
+            soilcmasrow(i, m, j) = 0.0
+            ! do j = 1, iccp2
+            !   litrmassrow(i, m, j, 1:ignd)=0.0
+            !   soilcmasrow(i, m, j, 1:ignd)=0.0
             ! end do
             ! COMBAK PERLAY
           end do ! nmtest
@@ -1041,16 +1042,16 @@ contains
   !! influences. This overwrites a pre-existing netcdf file.
   !> @author Joe Melton
 
-  subroutine write_restart(lonIndex,latIndex)
+  subroutine write_restart(lonIndex, latIndex)
 
-    use ctem_statevars,     only : c_switch,vrot,tracer
-    use class_statevars,    only : class_rot
-    use classic_params,        only : icc,nmos,ignd,icp1,modelpft,iccp2,TFREZ
+    use ctem_statevars, only : c_switch, vrot, tracer
+    use class_statevars, only : class_rot
+    use classic_params, only : icc, nmos, ignd, icp1, modelpft, iccp2, TFREZ
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonIndex,latIndex
+    integer, intent(in) :: lonIndex, latIndex
 
     ! pointers:
     real, pointer, dimension(:,:,:) :: FCANROT
@@ -1189,11 +1190,11 @@ contains
       call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
       call ncPut3DVar(rsid, 'rootmass', rootmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
       ! COMBAK PERLAY
-      call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1,1], count = [1, 1, iccp2, nmos])
-      call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1 ,1], count = [1, 1, iccp2,nmos])
+      call ncPut3DVar(rsid, 'litrmass', litrmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos])
+      call ncPut3DVar(rsid, 'soilcmas', soilcmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, iccp2, nmos])
       ! do k = 1, ignd
-      !   call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
-      !   call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+      !   call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k), start = [lonIndex, latIndex, 1, k, 1], count = [1, 1, iccp2, 1, nmos])
+      !   call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k), start = [lonIndex, latIndex, 1, k, 1], count = [1, 1, iccp2, 1, nmos])
       ! end do
       ! COMBAK PERLAY
       call ncPut3DVar(rsid, 'lfstatus', real(lfstatusrow), start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
@@ -1209,8 +1210,8 @@ contains
         call ncPut3DVar(rsid, 'tracerStemMass', tracerStemMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
         call ncPut3DVar(rsid, 'tracerRootMass', tracerRootMass, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
         do k = 1, ignd
-          call ncPut3DVar(rsid, 'tracerLitrMass', tracerLitrMass(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
-          call ncPut3DVar(rsid, 'tracerSoilCMass', tracerSoilCMass(:,:,:,k), start = [lonIndex, latIndex, 1, k ,1], count = [1, 1, iccp2, 1, nmos])
+          call ncPut3DVar(rsid, 'tracerLitrMass', tracerLitrMass(:,:,:,k), start = [lonIndex, latIndex, 1, k, 1], count = [1, 1, iccp2, 1, nmos])
+          call ncPut3DVar(rsid, 'tracerSoilCMass', tracerSoilCMass(:,:,:,k), start = [lonIndex, latIndex, 1, k, 1], count = [1, 1, iccp2, 1, nmos])
         end do
         call ncPut2DVar(rsid, 'tracerMossCMass', tracerMossCMass, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'tracerMossLitrMass', tracerMossLitrMass, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
@@ -1220,16 +1221,16 @@ contains
 
         ! Since these climate related variables are only sensible at the gridcell level, we just write out the
         ! value for the first tile (nlat is always 1 offline too).
-        call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'tcoldm', realValues = reshape(tcoldm(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'gdd5', realValues = reshape(gdd5(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'aridity', realValues = reshape(aridity(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'srplsmon', realValues = reshape(srplsmon(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'defctmon', realValues = reshape(defctmon(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'anndefct', realValues = reshape(anndefct(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'annsrpls', realValues = reshape(annsrpls(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'annpcp', realValues = reshape(annpcp(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
-        call ncPutVar(rsid, 'dry_season_length', realValues = reshape(dry_season_length(1:1,1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'twarmm', realValues = reshape(twarmm(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'tcoldm', realValues = reshape(tcoldm(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'gdd5', realValues = reshape(gdd5(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'aridity', realValues = reshape(aridity(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'srplsmon', realValues = reshape(srplsmon(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'defctmon', realValues = reshape(defctmon(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'anndefct', realValues = reshape(anndefct(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'annsrpls', realValues = reshape(annsrpls(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'annpcp', realValues = reshape(annpcp(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
+        call ncPutVar(rsid, 'dry_season_length', realValues = reshape(dry_season_length(1:1, 1:1), [1]), start = [lonIndex, latIndex], count = [1, 1])
 
       end if ! PFTCompetition
 
@@ -1246,15 +1247,15 @@ contains
   !! as well as the input values into memory.
   !> @author Joe Melton
 
-  subroutine getInput(inputRequested,longitude,latitude,projLonInd,projLatInd)
+  subroutine getInput(inputRequested, longitude, latitude, projLonInd, projLatInd)
 
     use fileIOModule
-    use generalUtils, only : parseTimeStamp,findLeapYears
-    use ctem_statevars, only : c_switch,vrot,tracer
-    use classic_params, only : icc,nmos
+    use generalUtils, only : parseTimeStamp, findLeapYears
+    use ctem_statevars, only : c_switch, vrot, tracer
+    use classic_params, only : icc, nmos
     use outputManager, only : checkForTime
     ! COMBAK PERLAY
-    ! use tracerModule,   only : convertTracerUnits
+    ! use tracerModule, only : convertTracerUnits
     ! COMBAK PERLAY
 
     implicit none
@@ -1265,8 +1266,8 @@ contains
     integer, intent(in), optional :: projLonInd
     integer, intent(in), optional :: projLatInd
     integer :: lengthOfFile
-    integer :: lonloc,latloc
-    integer :: i,arrindex,arrindex2,ntimes,m,numPFTsinFile,d
+    integer :: lonloc, latloc
+    integer :: i, arrindex, arrindex2, ntimes, m, numPFTsinFile, d
     real, dimension(:), allocatable :: fileTime
     logical, pointer :: projectedGrid
     logical, pointer :: transientCO2
@@ -1282,6 +1283,7 @@ contains
     logical, pointer :: transientOBSWETF
     integer, pointer :: fixedYearOBSWETF
     logical, pointer :: leap
+    integer, pointer :: metLoop
     real, pointer, dimension(:,:) :: co2concrow
     real, pointer, dimension(:,:) :: tracerco2conc
     real, pointer, dimension(:,:) :: ch4concrow
@@ -1298,7 +1300,7 @@ contains
     integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
 
     real, dimension(5) :: dateTime
-    real :: startTime,endTime
+    real :: startTime, endTime
     logical :: dummyVar
     integer :: lastDOY
 
@@ -1320,6 +1322,7 @@ contains
     fixedYearLUC    => c_switch%fixedYearLUC
     leap            => c_switch%leap
     useTracer       => c_switch%useTracer
+    metLoop         => c_switch%metLoop
     co2concrow      => vrot%co2conc
     tracerco2conc   => tracer%tracerCO2rot
     ch4concrow      => vrot%ch4conc
@@ -1348,10 +1351,22 @@ contains
       end do
 
       if (transientCO2) then
+        
         ! Find the requested years in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+        
+        ! Sometimes it is correct to have transient CO2 but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientCO2 is true. So grab the full length of the CO2 file rather than only 
+        ! the years requested for the met.
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
+        
+        
+        
         if (arrindex2 == 0) stop ('getInput says: The CO2 file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
@@ -1364,7 +1379,7 @@ contains
         CO2Time = int(fileTime(arrindex:arrindex2))
       else
         ! Find the requested year in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearCO2))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(fixedYearCO2))
         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
 
         ! We read in only the suggested year
@@ -1408,7 +1423,7 @@ contains
 
       else
         ! Find the requested year in the file.
-        arrindex = checkForTime(lengthOfFile,real(tracerCO2Time),real(fixedYearCO2))
+        arrindex = checkForTime(lengthOfFile, real(tracerCO2Time), real(fixedYearCO2))
         if (arrindex == 0) stop ('getInput says: The tracer CO2 file does not contain requested year')
 
         ! We read in only the suggested year
@@ -1436,9 +1451,17 @@ contains
 
       if (transientCH4) then
         ! Find the requested years in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CH4 file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+        ! Sometimes it is correct to have transient CH4 but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientCH4 is true. So grab the full length of the CH4 file rather than only 
+        ! the years requested for the met.
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
+
         if (arrindex2 == 0) stop ('getInput says: The CH4 file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
@@ -1451,7 +1474,7 @@ contains
         CH4Time = int(fileTime(arrindex:arrindex2))
       else
         ! Find the requested year in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearCH4))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(fixedYearCH4))
         if (arrindex == 0) stop ('getInput says: The CH4 file does not contain requested year')
 
         ! We read in only the suggested year
@@ -1483,27 +1506,35 @@ contains
 
       if (transientPOPD) then
         ! Find the requested years in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The POPD file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+        ! Sometimes it is correct to have transient POPD but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but transientPOPD is true. So grab the full length of the POPD file rather than only 
+        ! the years requested for the met.
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
+
         if (arrindex2 == 0) stop ('getInput says: The POPD file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
         ! Read in and keep only the required elements.
 
         allocate(POPDFromFile(ntimes))
-        POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,arrindex], count = [1,1,ntimes])
+        POPDFromFile = ncGet1DVar(popid, trim(popVarName), start = [lonloc, latloc, arrindex], count = [1, 1, ntimes])
 
         allocate(POPDTime(ntimes))
         POPDTime = int(fileTime(arrindex:arrindex2))
       else
         ! Find the requested year in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearPOPD))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(fixedYearPOPD))
         if (arrindex == 0) stop ('getInput says: The POPD file does not contain requested year')
 
         ! We read in only the suggested year
         i = 1 ! offline nlat is always 1 so just set
-        popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [lonloc,latloc,arrindex], count = [1,1,1])
+        popdinrow(i,:) = ncGet1DVar(popid, trim(popVarName), start = [lonloc, latloc, arrindex], count = [1, 1, 1])
 
       end if
 
@@ -1539,16 +1570,16 @@ contains
         startTime = real(readMetStartYear) * 10000. + 1. * 100. + 1.
         endTime = real(readMetEndYear) * 10000. + 12. * 100. + 31.
 
-        arrindex = checkForTime(lengthOfFile,fileTime,startTime)
+        arrindex = checkForTime(lengthOfFile, fileTime, startTime)
         if (arrindex == 0) stop ('getInput says: The LGHT file does not contain first requested day')
-        arrindex2 = checkForTime(lengthOfFile,fileTime,endTime)
+        arrindex2 = checkForTime(lengthOfFile, fileTime, endTime)
         if (arrindex2 == 0) stop ('getInput says: The LGHT file does not contain last requested day')
         ntimes = arrindex2 - arrindex + 1
 
         ! Read in and keep only the required elements.
 
         allocate(LGHTFromFile(ntimes))
-        LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,ntimes])
+        LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc, latloc, arrindex], count = [1, 1, ntimes])
 
         allocate(LGHTTime(ntimes))
         LGHTTime = fileTime(arrindex:arrindex2)
@@ -1557,21 +1588,21 @@ contains
         ! Assume we are grabbing from day 1
         startTime = real(fixedYearLGHT) * 10000. + 1. * 100. + 1.
 
-        arrindex = checkForTime(lengthOfFile,fileTime,startTime)
+        arrindex = checkForTime(lengthOfFile, fileTime, startTime)
         if (arrindex == 0) stop ('getInput says: The LGHT file does not contain requested year')
 
         ! We read in only the suggested year of daily inputs
 
         ! If we are using leap years, check if that year is a leap year
-        call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
+        call findLeapYears(fixedYearLGHT, dummyVar, lastDOY)
 
         ! FLAG Not presently set up for leap years !
         allocate(LGHTFromFile(lastDOY))
-        LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
+        LGHTFromFile = ncGet1DVar(lghtid, trim(lghtVarName), start = [lonloc, latloc, arrindex], count = [1, 1, lastDOY])
 
         ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
         allocate(LGHTTime(lastDOY))
-        do d = 1,lastDOY
+        do d = 1, lastDOY
           LGHTTime(d) = real(d)
         end do
 
@@ -1605,22 +1636,29 @@ contains
 
       if (lnduseon) then
         ! Find the requested years in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(readMetStartYear))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The LUC file does not contain first requested year')
-        arrindex2 = checkForTime(lengthOfFile,fileTime,real(readMetEndYear))
+        ! Sometimes it is correct to have transient LUC but otherwise have constant conditiions (recycling MET),
+        ! in this case metloop is >1 but lnduseon is true. So grab the full length of the LUC file rather than only 
+        ! the years requested for the met. 
+        if (metLoop == 1) then
+          arrindex2 = checkForTime(lengthOfFile, fileTime, real(readMetEndYear))
+        else 
+          arrindex2 = lengthOfFile
+        end if
         if (arrindex2 == 0) stop ('getInput says: The LUC file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
 
         ! Read in and keep only the required elements.
 
-        allocate(LUCFromFile(icc,ntimes))
-        LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,ntimes])
+        allocate(LUCFromFile(icc, ntimes))
+        LUCFromFile = ncGet2DVar(lucid, trim(lucVarName), start = [lonloc, latloc, 1, arrindex], count = [1, 1, icc, ntimes])
 
         allocate(LUCTime(ntimes))
         LUCTime = int(fileTime(arrindex:arrindex2))
       else
         ! Find the requested year in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,real(fixedYearLUC))
+        arrindex = checkForTime(lengthOfFile, fileTime, real(fixedYearLUC))
         if (arrindex == 0) stop ('getInput says: The LUC file does not contain requested year')
 
         ! We read in only the suggested year
@@ -1629,7 +1667,7 @@ contains
 
         if (nmos /= 1) stop ('getInput for LUC is not setup for more than one tile at present !')
 
-        fcancmxrow(i,m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
+        fcancmxrow(i, m,:) = ncGet1DVar(lucid, trim(lucVarName), start = [lonloc, latloc, 1, arrindex], count = [1, 1, icc, 1])
 
       end if
 
@@ -1663,16 +1701,16 @@ contains
         startTime = real(readMetStartYear) * 10000. + 1. * 100. + 1.
         endTime = real(readMetEndYear) * 10000. + 12. * 100. + 31.
 
-        arrindex = checkForTime(lengthOfFile,fileTime,startTime)
+        arrindex = checkForTime(lengthOfFile, fileTime, startTime)
         if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain first requested day')
-        arrindex2 = checkForTime(lengthOfFile,fileTime,endTime)
+        arrindex2 = checkForTime(lengthOfFile, fileTime, endTime)
         if (arrindex2 == 0) stop ('getInput says: The OBSWETF file does not contain last requested day')
         ntimes = arrindex2 - arrindex + 1
 
         ! Read in and keep only the required elements.
 
         allocate(OBSWETFFromFile(ntimes))
-        OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,ntimes])
+        OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc, latloc, arrindex], count = [1, 1, ntimes])
 
         allocate(OBSWETFTime(ntimes))
         OBSWETFTime = fileTime(arrindex:arrindex2)
@@ -1682,20 +1720,20 @@ contains
         startTime = real(fixedYearOBSWETF) * 10000. + 1. * 100. + 1.
 
         ! Find the requested year in the file.
-        arrindex = checkForTime(lengthOfFile,fileTime,startTime)
+        arrindex = checkForTime(lengthOfFile, fileTime, startTime)
         if (arrindex == 0) stop ('getInput says: The OBSWETF file does not contain requested year')
 
         ! We read in only the suggested year's worth of daily data
 
         ! If we are using leap years, check if that year is a leap year
-        call findLeapYears(fixedYearOBSWETF,dummyVar,lastDOY)
+        call findLeapYears(fixedYearOBSWETF, dummyVar, lastDOY)
 
         allocate(OBSWETFFromFile(lastDOY))
-        OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
+        OBSWETFFromFile = ncGet1DVar(obswetid, trim(obswetVarName), start = [lonloc, latloc, arrindex], count = [1, 1, lastDOY])
 
         ! Lastly, remake the OBSWETFTime to be only counting for one year for simplicity
         allocate(OBSWETFTime(lastDOY))
-        do d = 1,lastDOY
+        do d = 1, lastDOY
           OBSWETFTime(d) = real(d)
         end do
       end if
@@ -1717,14 +1755,14 @@ contains
   !> Update the input field variable based on the present model timestep
   !> @author Joe Melton
 
-  subroutine updateInput(inputRequested,yearNeeded,imonth,iday,dom)
+  subroutine updateInput(inputRequested, yearNeeded, imonth, iday, dom)
 
     use outputManager, only : checkForTime
-    use ctem_statevars, only : vrot,c_switch,vgat,tracer
+    use ctem_statevars, only : vrot, c_switch, vgat, tracer
     use classic_params, only : nmos
     use generalUtils, only : abandonCell
     ! COMBAK PERLAY
-    ! use tracerModule,   only : convertTracerUnits
+    ! use tracerModule, only : convertTracerUnits
     ! COMBAK PERLAY
 
     implicit none
@@ -1734,8 +1772,8 @@ contains
     integer, intent(in), optional :: imonth
     integer, intent(in), optional :: iday
     integer, intent(in), optional :: dom            ! day of month
-    integer :: arrindex,lengthTime,i,m
-    real :: LGHTTimeNow,OBSWTimeNow
+    integer :: arrindex, lengthTime, i, m
+    real :: LGHTTimeNow, OBSWTimeNow
     real, pointer, dimension(:,:) :: co2concrow
     real, pointer, dimension(:,:) :: tracerco2conc
     real, pointer, dimension(:,:) :: ch4concrow
@@ -1767,7 +1805,7 @@ contains
       lengthTime = size(CO2Time)
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,real(CO2Time),real(yearNeeded))
+      arrindex = checkForTime(lengthTime, real(CO2Time), real(yearNeeded))
       if (arrindex == 0) then
         write (seqstring,'(I0)') yearNeeded
         call abandonCell('updateInput says: The CO2 file does not contain requested year: '//seqstring)
@@ -1781,7 +1819,7 @@ contains
       lengthTime = size(tracerCO2Time)
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,real(tracerCO2Time),real(yearNeeded))
+      arrindex = checkForTime(lengthTime, real(tracerCO2Time), real(yearNeeded))
 
       if (arrindex == 0) then
         write (seqstring,'(I0)') yearNeeded
@@ -1801,7 +1839,7 @@ contains
       lengthTime = size(CH4Time)
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,real(CH4Time),real(yearNeeded))
+      arrindex = checkForTime(lengthTime, real(CH4Time), real(yearNeeded))
       if (arrindex == 0) then
         write (seqstring,'(I0)') yearNeeded
         call abandonCell('updateInput says: The CH4 file does not contain requested year: '//seqstring)
@@ -1815,7 +1853,7 @@ contains
       lengthTime = size(POPDTime)
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,real(POPDTime),real(yearNeeded))
+      arrindex = checkForTime(lengthTime, real(POPDTime), real(yearNeeded))
       if (arrindex == 0) then
         write (seqstring,'(I0)') yearNeeded
         call abandonCell('updateInput says: The POPD file does not contain requested year: '//seqstring)
@@ -1829,7 +1867,7 @@ contains
       lengthTime = size(LUCTime)
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,real(LUCTime),real(yearNeeded))
+      arrindex = checkForTime(lengthTime, real(LUCTime), real(yearNeeded))
       if (arrindex == 0) then
         write (seqstring,'(I0)') yearNeeded
         call abandonCell('updateInput says: The LUC file does not contain requested year: '//seqstring)
@@ -1837,7 +1875,7 @@ contains
         i = 1 ! offline nlat is always 1 so just set
         m = 1 ! FLAG this is set up only for 1 tile at PRESENT ! JM
         if (nmos > 1) stop ('updateInput for LUC only set up for 1 tile at present')
-        nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+        nfcancmxrow(i, m,:) = LUCFromFile(:,arrindex)
       end if
 
     case ('LGHT')
@@ -1854,10 +1892,10 @@ contains
       end if
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,LGHTTime,LGHTTimeNow)
+      arrindex = checkForTime(lengthTime, LGHTTime, LGHTTimeNow)
       if (arrindex == 0) then
-        write (seqstring,'(I0)') yearNeeded
-        call abandonCell('updateInput says: The LGHT file does not contain requested year: '//seqstring)
+        write (seqstring,'(I0)') LGHTTimeNow
+        call abandonCell('updateInput says: The LGHT file does not contain requested time: '//seqstring)
       else
         lightng(1) = LGHTFromFile(arrindex)
         ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
@@ -1881,7 +1919,7 @@ contains
       end if
 
       ! Find the requested year in the file.
-      arrindex = checkForTime(lengthTime,OBSWETFTime,OBSWTimeNow)
+      arrindex = checkForTime(lengthTime, OBSWETFTime, OBSWTimeNow)
       if (arrindex == 0) then
         write (seqstring,'(I0)') yearNeeded
         call abandonCell('updateInput says: The OBSWETF file does not contain requested year: '//seqstring)
@@ -1911,12 +1949,12 @@ contains
   !! There is an orders of magnitude slow-up otherwise !
   !> @author Joe Melton
 
-  subroutine getMet(longitude,latitude,nday,projLonInd,projLatInd)
+  subroutine getMet(longitude, latitude, nday, projLonInd, projLatInd)
 
     use fileIOModule
     use classic_params, only : delt
     use ctem_statevars, only : c_switch
-    use generalUtils, only : parseTimeStamp,closeEnough
+    use generalUtils, only : parseTimeStamp, closeEnough
 
     implicit none
 
@@ -1932,15 +1970,15 @@ contains
     logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
     !! regions referenced by the indexes, not coordinates, when running a sub-region
 
-    real :: moStart,moEnd,domStart,domEnd !< Assumed start and end months and days of month
+    real :: moStart, moEnd, domStart, domEnd !< Assumed start and end months and days of month
     real :: timeStart, timeEnd            !< Calculated start and end in the format:%Y%m%d.%f
     integer :: lengthOfFile
-    integer :: lonloc,latloc,i
+    integer :: lonloc, latloc, i
     real, dimension(:), allocatable :: fileTime
     real, dimension(:), allocatable :: tempTime
     integer :: validTimestep
     integer :: firstIndex
-    real, dimension(5) :: firstTime,secondTime
+    real, dimension(5) :: firstTime, secondTime
 
     projectedGrid     => c_switch%projectedGrid
     readMetStartYear  => c_switch%readMetStartYear
@@ -1980,9 +2018,9 @@ contains
         validTimestep = validTimestep + 1
         allocate(tempTime(validTimestep))
         tempTime(1:validTimestep - 1) = metTime(1 : validTimestep - 1)
-        call move_alloc(tempTime,metTime)
+        call move_alloc(tempTime, metTime)
         metTime(validTimestep) = fileTime(i)
-        firstIndex = min(firstIndex,i)
+        firstIndex = min(firstIndex, i)
       end if
     end do
 
@@ -1996,7 +2034,7 @@ contains
 
     ! Check that the first day is Jan 1, otherwise warn the user
     firstTime =  parseTimeStamp(metTime(1))
-    if (.not. closeEnough(firstTime(5),1.,0.001)) then
+    if (.not. closeEnough(firstTime(5), 1.,0.001)) then
       print * ,'Warning, your met file does not start on Jan 1.'
     end if
 
@@ -2017,22 +2055,22 @@ contains
     end if
 
     ! Now read in the whole MET times series and store it for each variable
-    allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep), &
-    metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
+    allocate(metFss(validTimestep), metFdl(validTimestep), metPre(validTimestep), &
+    metTa(validTimestep), metQa(validTimestep), metUv(validTimestep), metPres(validTimestep))
 
     ! NOTE: Carefully check that your incoming inputs are in the expected units !
 
     ! WARNING. If you use ncdump on a file it will show the opposite order for the
-    ! dimensions of a variable than how fortran reads them in. So var(lat,lon,time) is actually
-    ! var(time,lon,lat) from the perspective of fortran. Pay careful attention !
+    ! dimensions of a variable than how fortran reads them in. So var(lat, lon, time) is actually
+    ! var(time, lon, lat) from the perspective of fortran. Pay careful attention !
 
-    metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-    metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-    metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-    metTa = ncGet1DVar(metTaId, trim(metTaVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-    metQa = ncGet1DVar(metQaId, trim(metQaVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-    metUv = ncGet1DVar(metUvId, trim(metUvVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-    metPres = ncGet1DVar(metPresId, trim(metPresVarName), start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+    metFss = ncGet1DVar(metFssId, trim(metFssVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
+    metFdl = ncGet1DVar(metFdlId, trim(metFdlVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
+    metPre = ncGet1DVar(metPreId, trim(metPreVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
+    metTa = ncGet1DVar(metTaId, trim(metTaVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
+    metQa = ncGet1DVar(metQaId, trim(metQaVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
+    metUv = ncGet1DVar(metUvId, trim(metUvVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
+    metPres = ncGet1DVar(metPresId, trim(metPresVarName), start = [lonloc, latloc, firstIndex], count = [1, 1, validTimestep])
 
   end subroutine getMet
 
@@ -2045,7 +2083,7 @@ contains
   !! instantaneous variables. This also sets iyear to the present year of MET being read in.
   !> @author Joe Melton
 
-  subroutine updateMet(metTimeIndex,iyear,iday,ihour,imin,metDone)
+  subroutine updateMet(metTimeIndex, iyear, iday, ihour, imin, metDone)
 
     use classic_params, only : delt
     use class_statevars, only : class_rot
@@ -2068,7 +2106,7 @@ contains
     real, pointer, dimension(:) :: UVROW        !< Wind speed at reference height \f$[m s^{-1} ]\f$
     real, pointer, dimension(:) :: PRESROW      !< Surface air pressure \f$[P_a]\f$
 
-    integer :: i,numsteps
+    integer :: i, numsteps
     real, dimension(5) :: theTime
     real :: dayfrac, month, dom, minute
 
@@ -2094,7 +2132,7 @@ contains
     !> The dayfrac can then be parsed to give the hour and minute.
     numsteps = nint(dayfrac * 24. / (delt / 3600.))
     ihour = floor(real(numsteps) / 2.)
-    minute = mod(numsteps,2)
+    minute = mod(numsteps, 2)
     imin = nint(minute) * int((delt / 60.))
 
     !> The meteorological data is then passed to the instantaneous variables
@@ -2108,8 +2146,8 @@ contains
     ! To prevent a divide by zero in atmosphericVarsCalc, we set this lower limit on the specific humidity.
     if (QAROW(i) == 0.) then
       QAROW(i) = 1.E-6
-      print * ,'Warning, specific humidity of 0 in your input file. metTimeindex = ',metTimeIndex
-      print * ,'setting to 1.E-6 g/kg and moving on (updateMet)'
+      ! print * ,'Warning, specific humidity of 0 in your input file. metTimeindex = ',metTimeIndex
+      ! print * ,'setting to 1.E-6 g/kg and moving on (updateMet)'
     end if
 
     UVROW(i)    = metUv(metTimeIndex)
@@ -2130,7 +2168,7 @@ contains
   !> Finds the closest grid cell in the file
   !> @author Joe Melton
 
-  integer function closestCell(ncid,label,gridPoint)
+  integer function closestCell(ncid, label, gridPoint)
 
     use fileIOModule
 
@@ -2176,7 +2214,7 @@ contains
     if (allocated(OBSWETFTime)) deallocate(OBSWETFTime)
     if (allocated(OBSWETFFromFile)) deallocate(OBSWETFFromFile)
 
-    deallocate(metTime,metFss,metFdl,metPre,metPres,metQa,metTa,metUv)
+    deallocate(metTime, metFss, metFdl, metPre, metPres, metQa, metTa, metUv)
 
   end subroutine deallocInput
   !! @}
@@ -2185,3 +2223,4 @@ contains
   !! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 
 end module model_state_drivers
+

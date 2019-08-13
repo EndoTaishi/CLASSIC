@@ -6,6 +6,7 @@
 4. @ref soilColourIndex
 5. @ref runInWindows
 6. @ref windowsEndings
+7. @ref izrefsite
 
 
 ----
@@ -57,3 +58,6 @@ Text files created on DOS/Windows machines have different line endings than file
 
 Any CLASSIC tool that reads in ASCII expects the Linux/Unix line endings.
 
+# My site-level run fails with IZREF = 1 but is okay with IZREF = 2 {#izrefsite}
+
+Site-level runs should use IZREF = 1 with appropriate values of ZRFM and ZRFH for your site (described in @ref setupJobOpts). However it is possible, especially with CTEM (biogeochemistry) on that the vegetation will grow taller than ZRFM/ZRFH causing the model to crash. The model may simulate vegetation at the site taller than reality due to prior land use history at the site, model bias, etc. In this case you will need to raise the ZRFM/ZRFH heights to remain above the canopy. 

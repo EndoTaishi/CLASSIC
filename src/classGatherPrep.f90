@@ -4,9 +4,9 @@
 !! cells.
 !! @author D. Verseghy, M. Lazare, E. Chan
 !
-subroutine classGatherPrep(ILMOS,JLMOS,IWMOS,JWMOS, & ! Formerly GATPREP
-                    NML,NMW,GCROW,FAREA,MOSID, &
-                    NL,NM,ILG,IL1,IL2,IM)
+subroutine classGatherPrep(ILMOS, JLMOS, IWMOS, JWMOS, & ! Formerly GATPREP
+                           NML, NMW, GCROW, FAREA, MOSID, &
+                           NL, NM, ILG, IL1, IL2, IM)
   !
   !     * JAN 12/17 - D.VERSEGHY. NOTE: THIS VERSION OF classGatherPrep
   !     *                         IS DESIGNED SPECIFICALLY FOR LAND.
@@ -56,9 +56,9 @@ subroutine classGatherPrep(ILMOS,JLMOS,IWMOS,JWMOS, & ! Formerly GATPREP
   !
   real     :: GCROW (NL)    !< Real number identifier indicating whether the grid cell
   !< is land (-1.0), sea ice (+1.0), or ocean (0.0)
-  real     :: FAREA (NL,NM) !< Fractional coverage of mosaic tile on grid cell [ ]
+  real     :: FAREA (NL, NM) !< Fractional coverage of mosaic tile on grid cell [ ]
   !
-  integer  :: MOSID (NL,NM) !< Mosaic tile type identifier (1 for land, 0 for inland water)
+  integer  :: MOSID (NL, NM) !< Mosaic tile type identifier (1 for land, 0 for inland water)
   !---------------------------------------------------------------------
   NML = 0
   NMW = 0
@@ -73,11 +73,11 @@ subroutine classGatherPrep(ILMOS,JLMOS,IWMOS,JWMOS, & ! Formerly GATPREP
   !! is incremented by one, and the elements of the vectors IWMOS and JWMOS corresponding to NMW are
   !! set to the indices of the current grid cell and mosaic tile respectively.
   !!
-  do I = IL1,IL2 ! loop 200
+  do I = IL1, IL2 ! loop 200
     if (GCROW(I) <= - 0.5) then
-      do J = 1,IM ! loop 100
-        if (FAREA(I,J) > 0.0) then
-          if (MOSID(I,J) > 0) then
+      do J = 1, IM ! loop 100
+        if (FAREA(I, J) > 0.0) then
+          if (MOSID(I, J) > 0) then
             NML = NML + 1
             ILMOS(NML) = I
             JLMOS(NML) = J

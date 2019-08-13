@@ -8,7 +8,7 @@
 ! Meteorological options:
     readMetStartYear = 1850  ! First year of meteorological forcing to read in from the met file
     readMetEndYear = 1870    ! Last year of meteorological forcing to read in from the met file
-    metLoop = 1 ,            ! no. of times to cycle over the read-in meteorology
+    metLoop = 8 ,            ! no. of times to cycle over the read-in meteorology
     leap = .false. ,         ! True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
@@ -83,7 +83,7 @@
         ! lnduseon to true, it will update the fractional coverages from LUCFile. When lnduseon is false it is
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is
         ! not used at all.
-        lnduseon = .true. ,
+        lnduseon = .false. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
         fixedYearLUC = 1850 ,
 
@@ -94,7 +94,7 @@
         ! to some valid year. If you wish to use only dynamically determined wetland fractions set transientOBSWETF
         ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
         ! dynamically determine wetland extent.
-        transientOBSWETF = .true. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
+        transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
         OBSWETFFile = 'inputFiles/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
         fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
@@ -105,7 +105,9 @@
                   !displacement height is considered to be part of the “terrain”, and is therefore neglected. 
                   ! For such applications IDISP is set to 0. For studies making use of field data, it should be set to 1.
     IZREF = 2 ,   !This switch indicates where the bottom of the atmosphere is conceptually located. In
-                  !most atmospheric models the bottom is assumed to lie at the local surface roughness length, ! i.e. where the horizontal wind speed is zero; for such simulations IZREF is set to 2. For ! all other cases it should be set to 1.
+                  !most atmospheric models the bottom is assumed to lie at the local surface roughness length, 
+                  ! i.e. where the horizontal wind speed is zero; for such simulations IZREF is set to 2. For 
+                  ! all other cases, including sites using field data, it should be set to 1.
     ZRFH = 40.0,  ! The reference heights at which the energy variables (air temperature and specific humidity) are provided. When 
                   ! using field data this is the measurement height. 
     ZRFM = 40.0,  ! The reference heights at which the momentum variables (wind speed) are provided. When using field data this is the measurement height. 

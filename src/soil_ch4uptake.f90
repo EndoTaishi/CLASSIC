@@ -3,11 +3,11 @@
 !! @author J. Melton
 !! Coded up based on \cite Curry2007-du.
 
-subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & ! In
-                      bi,    thlq,     thic,     psis, & ! In
-                    fcan,  wetfdyn,  wetfrac, & ! In
-                   isand,   atm_CH4, thp, & ! In
-              CH4_soills) ! Out
+subroutine soil_ch4uptake(il1, il2, ilg, tbar, & ! In
+                          bi, thlq, thic, psis, & ! In
+                          fcan, wetfdyn, wetfrac, & ! In
+                          isand, atm_CH4, thp, & ! In
+                          CH4_soills) ! Out
 
   ! History:
 
@@ -18,23 +18,23 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & ! In
   !  the soil consumption of atmospheric methane at the global scale. Global
   !  Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
 
-  use classic_params,  only : ignd,ican,nlat,wtCH4,D_air,g_0,betaCH4,k_o, &
-                            GRAV,RHOW,RHOICE,icp1
+  use classic_params, only : ignd, ican, nlat, wtCH4, D_air, g_0, betaCH4, k_o, &
+                            GRAV, RHOW, RHOICE, icp1
 
   implicit none
 
   ! Arguments:
-  real, dimension(ilg,ignd), intent(in) :: tbar     !< Temperature of soil layers (K) - daily average
-  real, dimension(ilg,ignd), intent(in) :: THP      !< Total porosity \f$(cm^3 cm^{-3})\f$ - daily average
-  real, dimension(ilg,ignd), intent(in) :: BI       !< Clapp and Hornberger b-term (-)
-  real, dimension(ilg,ignd), intent(in) :: THLQ     !< Fractional water content (-) - daily average
-  real, dimension(ilg,ignd), intent(in) :: THIC     !< Fractional ice content (-) - daily average
-  real, dimension(ilg,ignd), intent(in) :: PSIS     !< Soil moisture suction at saturation (m)
-  real, dimension(ilg,icp1), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
+  real, dimension(ilg, ignd), intent(in) :: tbar     !< Temperature of soil layers (K) - daily average
+  real, dimension(ilg, ignd), intent(in) :: THP      !< Total porosity \f$(cm^3 cm^{-3})\f$ - daily average
+  real, dimension(ilg, ignd), intent(in) :: BI       !< Clapp and Hornberger b-term (-)
+  real, dimension(ilg, ignd), intent(in) :: THLQ     !< Fractional water content (-) - daily average
+  real, dimension(ilg, ignd), intent(in) :: THIC     !< Fractional ice content (-) - daily average
+  real, dimension(ilg, ignd), intent(in) :: PSIS     !< Soil moisture suction at saturation (m)
+  real, dimension(ilg, icp1), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
   real, dimension(nlat), intent(in) :: wetfrac      !< Prescribed fraction of wetlands in a grid cell
   real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
   real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
-  integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
+  integer, dimension(ilg, ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
   integer, intent(in) :: il1
   integer, intent(in) :: il2
   integer, intent(in) :: ilg
@@ -49,7 +49,7 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & ! In
   real :: k_oxidr                         !< First-order oxidation rate constant \f$(s^-1)\f$
   real :: r_T                             !< Temperature factor used in determination of rate constant (-)
   real :: r_SM                            !< Soil moisture factor used in determination of rate constant (-)
-  integer :: i,j,layer                    !< Counters
+  integer :: i, j, layer                    !< Counters
   real :: psi                             !< Soil moisture suction / matric potential (m)
   real :: r_C                             !< Factor to account for croplands
   real :: r_W                             !< Factor to account for wetlands
@@ -64,10 +64,10 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & ! In
 
   do i = IL1, IL2
 
-    if (isand(i,layer) <= - 1) cycle !> not soil so move on.
+    if (isand(i, layer) <= - 1) cycle !> not soil so move on.
 
     !> Convert tbar to Tsoil (from K to deg C)
-    Tsoil = tbar(i,layer) - 273.16
+    Tsoil = tbar(i, layer) - 273.16
 
     !> Find the diffusion coefficient in soil (D_soil)
 
@@ -75,20 +75,20 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & ! In
     G_T = 1.0 + 0.0055 * Tsoil
 
     !> Find the air filled porosity, THP_air:
-    THP_air = THP(i,layer) - (THLQ(i,layer) + THIC(i,layer) * RHOICE/RHOW)
-    THP_tot = THP(i,layer)
+    THP_air = THP(i, layer) - (THLQ(i, layer) + THIC(i, layer) * RHOICE/RHOW)
+    THP_tot = THP(i, layer)
 
     !> Note: THP_air can fall to < 0 after snow melt
     if (THP_air  < 0.) then
       THP_air = 0.0
-      THP_tot = (THLQ(i,layer) + THIC(i,layer) * RHOICE/RHOW)
+      THP_tot = (THLQ(i, layer) + THIC(i, layer) * RHOICE/RHOW)
     end if
 
     !> The BI  (Clapp and Hornberger b-term) is already calculated by CLASS as:
     !> BI = 15.9 * f_clay + 2.91, thus we use that value.
 
     !> G_soil is the influence of the soil texture, moisture, and porosity:
-    G_soil = THP_tot ** (4./3.) * (THP_air / THP_tot) ** (1.5 + 3. / BI(i,layer))
+    G_soil = THP_tot ** (4./3.) * (THP_air / THP_tot) ** (1.5 + 3. / BI(i, layer))
 
     !> The diffusion coefficient of CH4 in soil is then:
     D_soil = D_air * G_T * G_soil
@@ -109,12 +109,12 @@ subroutine soil_ch4uptake(il1,     il2,      ilg,     tbar, & ! In
 
     !> Find the soil water potential for the uppermost layer
     !> need the absolute value.
-    psi = abs(PSIS(i,layer) * (THLQ(i,layer)/THP_tot) ** ( - BI(i,layer)))
+    psi = abs(PSIS(i, layer) * (THLQ(i, layer)/THP_tot) ** ( - BI(i, layer)))
 
     !> Convert units from m to kPa
     psi = psi * GRAV
 
-    if ( psi < 200.) then !> 0.2 MPa in paper (NOTE: In Charles's code this is \f$\leq\f$, but is < in paper)
+    if (psi < 200.) then !> 0.2 MPa in paper (NOTE: In Charles's code this is \f$\leq\f$, but is < in paper)
       r_SM = 1.0
     else if (psi >= 200. .and. psi <= 1.E5) then !> 0.2 and 100 Mpa in paper
       r_SM = (1. - (log10(psi) - log10(200.)) / (log10(1.E5) - log10(200.))) ** betaCH4

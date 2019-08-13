@@ -1,4 +1,5 @@
-!> Contains CLASSIC globally accessible parameters
+!> \file
+!! Contains CLASSIC globally accessible parameters
 !! @author J. Melton
 !!
 module classic_params
@@ -36,16 +37,16 @@ module classic_params
   real, parameter :: earthrad = 6371.22   !< Radius of Earth, km
   real, parameter :: km2tom2  = 1.0e+06   !< Conversion factor from \f$km^2\f$ to \f$m^2\f$
   real, parameter :: gasc = 8.314         !< Gas constant (\f$J mol^{-1} K^{-1}\f$)
-  real, parameter :: convertkgC = 1.201e-8 !< Converts from umolCO2/m2/s to kgC/m2/s
+  real, parameter :: convertkgC = 1.201e-8 !< Converts from \f$ \mu molCO2/m2/s\f$ to \f$kgC/m2/s\f$
 
   ! The next parameters are normally assigned in the GCM but need to be assigned here since this
   ! is an offline run. The names used below are the same as those in the GCM.
   real, parameter :: TFREZ = 273.16       !< Freezing point of water (K) (GCM name: CELZRO)
-  real, parameter :: RGAS = 287.04        !< Gas constant ($J kg^{-1} K^{-1}$) (GCM name: GAS)
-  real, parameter :: RGASV = 461.50       !< Gas constant for water vapour ($J kg^{-1} K^{-1}$) (GCM name: GASV)
-  real, parameter :: GRAV = 9.80616       !< Acceleration due to gravity ($m s^{-1}) (GCM name: G)
-  real, parameter :: SBC = 5.66796E-8     !< Stefan-Boltzmann constant ($W m^{-2} K^{-4} $) (GCM name: SIGMA)
-  real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air ($J kg^{-1} K^{-1}$) (GCM name: CPRES)
+  real, parameter :: RGAS = 287.04        !< Gas constant (\f$J kg^{-1} K^{-1}\f$) (GCM name: GAS)
+  real, parameter :: RGASV = 461.50       !< Gas constant for water vapour (\f$J kg^{-1} K^{-1}\f$) (GCM name: GASV)
+  real, parameter :: GRAV = 9.80616       !< Acceleration due to gravity (\f$m s^{-1}\f$) (GCM name: G)
+  real, parameter :: SBC = 5.66796E-8     !< Stefan-Boltzmann constant (\f$W m^{-2} K^{-4} \f$) (GCM name: SIGMA)
+  real, parameter :: SPHAIR = 1.00464E3   !< Specific heat of air (\f$J kg^{-1} K^{-1}\f$) (GCM name: CPRES)
   real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
   real, parameter :: STD_PRESS = 101325.0 !< Standard atmospheric pressure (Pa)
 
@@ -59,9 +60,9 @@ module classic_params
   ! SLP=1.0/(T1S-T2S)
 
   ! These month arrays are possibly overwritten in runclassctem due to leap years.
-  integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
-  integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
-  integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !< mid-month day
+  integer, dimension(12) :: monthdays = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ] !< days in each month
+  integer, dimension(13) :: monthend  = [ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 ] !< calender day at end of each month
+  integer, dimension(12) :: mmday     = [ 16, 46, 75, 106, 136, 167, 197, 228, 259, 289, 320, 350 ] !< mid-month day
   integer, parameter :: nmon = 12 !< Number of months in a year
 
   ! Additional values for RPN and GCM common blocks:
@@ -117,14 +118,14 @@ module classic_params
 
   ! Biogeochemical parameters:
   real, parameter :: deltat   = 1.0       !< CTEM's time step in days
-  real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
+  real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition in mosaic mode, all tiles are given this as a minimum
   real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
-  real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+  real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
   real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
 
   integer, parameter :: nbs = 4         !< Number of modelled shortwave radiation wavelength bands COMBAK Can be read in from the init file when I have the new snow albedo scheme fully implemented. Leave here for now.
 
-  integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
+  integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV, ALDV, ALWN, ALDN)
 
   real, parameter  :: tolrance = 0.0001 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
   ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
@@ -170,10 +171,10 @@ module classic_params
   integer, PARAMETER :: nswe     = 11
   integer, PARAMETER :: nbnd_lut = 4
 
-  real, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: albdif_lut
-  real, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: albdir_lut
-  real, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: trandif_lut
-  real, DIMENSION(NBC,NSWE,NREFF,NSMU,NSALB,NBND_LUT) :: trandir_lut
+  real, DIMENSION(NBC, NSWE, NREFF, NSMU, NSALB, NBND_LUT) :: albdif_lut
+  real, DIMENSION(NBC, NSWE, NREFF, NSMU, NSALB, NBND_LUT) :: albdir_lut
+  real, DIMENSION(NBC, NSWE, NREFF, NSMU, NSALB, NBND_LUT) :: trandif_lut
+  real, DIMENSION(NBC, NSWE, NREFF, NSMU, NSALB, NBND_LUT) :: trandir_lut
 
   ! ============================================================
   ! Read in from the namelist: ---------------------------------
@@ -187,29 +188,29 @@ module classic_params
 
   real :: VKC    !< Von Karman Constant (-)
   real :: CT     !< Drag Coefficient for water (-)
-  real :: VMIN   !< Minimum wind speed (m s^{-1})
-  real :: TCW    !< Thermal conductivity of water ($W m^{-1} K^{-1} $)
-  real :: TCICE  !< Thermal conductivity of ice  ($W m^{-1} K^{-1} $)
-  real :: TCSAND !< Thermal conductivity of sand particles  ($W m^{-1} K^{-1} $)
-  real :: TCCLAY !< Thermal conductivity of fine mineral particles  ($W m^{-1} K^{-1} $)
-  real :: TCOM   !< Thermal conductivity of organic matter  ($W m^{-1} K^{-1} $)
-  real :: TCDRYS !< Thermal conductivity of dry mineral soil  ($W m^{-1} K^{-1} $) FLAG QUESTION ever used?
-  real :: RHOSOL !< Particle density of soil mineral matter ($kg m^{-3}$)
-  real :: RHOOM  !< Particle density of soil organic matter ($kg m^{-3}$)
-  real :: HCPW   !< Volumetric heat capacity of water ($J m^{-3} K^{-1}$)
-  real :: HCPICE !< Volumetric heat capacity of ice ($J m^{-3} K^{-1}$)
-  real :: HCPSOL !< Volumetric heat capacity of mineral matter ($J m^{-3} K^{-1}$) FLAG QUESTION ever used?
-  real :: HCPOM  !< Volumetric heat capacity of organic matter ($J m^{-3} K^{-1}$)
-  real :: HCPSND !< Volumetric heat capacity of sand particles ($J m^{-3} K^{-1}$)
-  real :: HCPCLY !< Volumetric heat capacity of fine mineral particles ($J m^{-3} K^{-1}$)
-  real :: SPHW   !< Specific heat of water ($J kg^{-1} K^{-1}$)
-  real :: SPHICE !< Specific heat of ice  ($J kg^{-1} K^{-1}$)
-  real :: SPHVEG !< Specific heat of vegetation matter  ($J kg^{-1} K^{-1}$)
-  real :: RHOW   !< Density of water ($kg m^{-3}$)
-  real :: RHOICE !< Density of ice ($kg m^{-3}$)
-  real :: TCGLAC !< Thermal conductivity of ice sheets ($W m^{-1} K^{-1}$)
-  real :: CLHMLT !< Latent heat of freezing of water ($J kg^{-1}$)
-  real :: CLHVAP !< Latent heat of vaporization of water ($J kg^{-1}$)
+  real :: VMIN   !< Minimum wind speed (\f$m s^{-1}\f$)
+  real :: TCW    !< Thermal conductivity of water (\f$W m^{-1} K^{-1} \f$)
+  real :: TCICE  !< Thermal conductivity of ice  (\f$W m^{-1} K^{-1} \f$)
+  real :: TCSAND !< Thermal conductivity of sand particles  (\f$W m^{-1} K^{-1} \f$)
+  real :: TCCLAY !< Thermal conductivity of fine mineral particles  (\f$W m^{-1} K^{-1} \f$)
+  real :: TCOM   !< Thermal conductivity of organic matter  (\f$W m^{-1} K^{-1} \f$)
+  real :: TCDRYS !< Thermal conductivity of dry mineral soil  (\f$W m^{-1} K^{-1} \f$) FLAG QUESTION ever used?
+  real :: RHOSOL !< Particle density of soil mineral matter (\f$kg m^{-3}\f$)
+  real :: RHOOM  !< Particle density of soil organic matter (\f$kg m^{-3}\f$)
+  real :: HCPW   !< Volumetric heat capacity of water (\f$J m^{-3} K^{-1}\f$)
+  real :: HCPICE !< Volumetric heat capacity of ice (\f$J m^{-3} K^{-1}\f$)
+  real :: HCPSOL !< Volumetric heat capacity of mineral matter (\f$J m^{-3} K^{-1}\f$) FLAG QUESTION ever used?
+  real :: HCPOM  !< Volumetric heat capacity of organic matter (\f$J m^{-3} K^{-1}\f$)
+  real :: HCPSND !< Volumetric heat capacity of sand particles (\f$J m^{-3} K^{-1}\f$)
+  real :: HCPCLY !< Volumetric heat capacity of fine mineral particles (\f$J m^{-3} K^{-1}\f$)
+  real :: SPHW   !< Specific heat of water (\f$J kg^{-1} K^{-1}\f$)
+  real :: SPHICE !< Specific heat of ice  (\f$J kg^{-1} K^{-1}\f$)
+  real :: SPHVEG !< Specific heat of vegetation matter  (\f$J kg^{-1} K^{-1}\f$)
+  real :: RHOW   !< Density of water (\f$kg m^{-3}\f$)
+  real :: RHOICE !< Density of ice (\f$kg m^{-3}\f$)
+  real :: TCGLAC !< Thermal conductivity of ice sheets (\f$W m^{-1} K^{-1}\f$)
+  real :: CLHMLT !< Latent heat of freezing of water (\f$J kg^{-1}\f$)
+  real :: CLHVAP !< Latent heat of vaporization of water (\f$J kg^{-1}\f$)
   real :: ZOLNG  !< Natural log of roughness length of soil (-)
   real :: ZOLNS  !< Natural log of roughness length of snow (-)
   real :: ZOLNI  !< Natural log of roughness length of ice (-)
@@ -229,7 +230,7 @@ module classic_params
 
   !! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric), see the documentation for subroutine soilProperties.
 
-  real, dimension(:), allocatable  :: THPORG !< Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+  real, dimension(:), allocatable  :: THPORG !< Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p)\f$
   real, dimension(:), allocatable  :: THRORG !< Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
   real, dimension(:), allocatable  :: THMORG !< Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
   real, dimension(:), allocatable  :: BORG !< Clapp and Hornberger 'b' value for peat soils [ ]
@@ -374,18 +375,18 @@ module classic_params
   real, dimension(:), allocatable :: frltrrt      !< fraction of root biomass becoming litter after combustion
   real, dimension(:), allocatable :: frltrbrn     !< fraction of litter burned during fire and emitted as gases
   real, dimension(:), allocatable :: standreplace !< pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
-  real, dimension(:), allocatable :: emif_co2     !< pft-specific emission factors for CO2,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_co      !< pft-specific emission factors for CO,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_ch4     !< pft-specific emission factors for CH4,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_nmhc    !< pft-specific emission factors for non-methane hydrocarbons,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_h2      !< pft-specific emission factors for H2,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_nox     !< pft-specific emission factors for NOx,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_n2o     !< pft-specific emission factors for N2O,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_pm25    !< pft-specific emission factors for particles <2.5 micrometers in diameter,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_tpm     !< pft-specific emission factors for total particulate matter,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_tc      !< pft-specific emission factors for total carbon,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_oc      !< pft-specific emission factors for organic carbon,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_bc      !< pft-specific emission factors for black carbon,g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_co2     !< pft-specific emission factors for CO2, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_co      !< pft-specific emission factors for CO, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_ch4     !< pft-specific emission factors for CH4, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_nmhc    !< pft-specific emission factors for non-methane hydrocarbons, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_h2      !< pft-specific emission factors for H2, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_nox     !< pft-specific emission factors for NOx, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_n2o     !< pft-specific emission factors for N2O, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_pm25    !< pft-specific emission factors for particles <2.5 micrometers in diameter, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_tpm     !< pft-specific emission factors for total particulate matter, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_tc      !< pft-specific emission factors for total carbon, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_oc      !< pft-specific emission factors for organic carbon, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_bc      !< pft-specific emission factors for black carbon, g species / (kg DOM)
 
   ! hetres parameters: ----------
 
@@ -441,7 +442,7 @@ module classic_params
 
   ! decp subroutine parameters:
 
-  real ::     dctmin                   !< minimum temperature of soil respiration,K (peatland soils)
+  real ::     dctmin                   !< minimum temperature of soil respiration, K (peatland soils)
   real ::     dcbaset                  !< base temperature for Q10, K (peatland soils)
   real ::     bsrateltms               !< heterotrophic respiration base rate for peatlands (yr-1)
 
@@ -482,8 +483,8 @@ module classic_params
   real, dimension(:), allocatable :: drgta            !< Parameter determining how fast soil dryness causes leaves to fall
   real, dimension(:), allocatable :: eta              !< eta and kappa, parameters for estimating min. stem+root biomass
   real, dimension(:), allocatable :: kappa            !< required to support green leaf biomass. kappa is 1.6 for trees and crops, and 1.2 for grasses.
-  real, dimension(2) :: flhrspan          !< Harvest span (time in days over which crops are harvested,  15 days),
-  !< and  fall span (time in days over which bdl cold dcd plants shed their leaves,  30 days)
+  real, dimension(2) :: flhrspan          !< Harvest span (time in days over which crops are harvested, 15 days),
+  !< and  fall span (time in days over which bdl cold dcd plants shed their leaves, 30 days)
   real :: fracbofg                        !< Parameter used to estimate lai of brown leaves. We assume that SLA of brown leaves is this fraction of SLA of green leaves
   real, dimension(:), allocatable :: harvthrs         !< LAI threshold for harvesting crops. values are zero for all pftsother than c3 and c4 crops.
   real, dimension(:), allocatable :: specsla          !< CTEM can use user-specified specific leaf areas (SLA) if the following specified values are greater than zero
@@ -522,8 +523,8 @@ module classic_params
 
   ! soil_ch4uptake parameters: -----------------------------
 
-  real :: D_air    !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
-  real :: g_0      !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
+  real :: D_air    !< Diffusivity of CH4 in air (\f$cm^2 s^-1\f$) @ STP
+  real :: g_0      !< Scaling factor takes CH4_soills to mg CH4 \f$m^-2 s^-1\f$ (units: \f$mg CH_4 ppmv^{-1} s s^{-1} m^{-2} cm{-1}\f$)
   real :: betaCH4  !< Constant derived in Curry (2007) from comparison against measurements (-)
   real :: k_o      !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
 
@@ -550,7 +551,7 @@ module classic_params
 
   ! Photosynthesis parameters: --------------------------------------------------
 
-  logical , dimension(:), allocatable :: isc4     !< Array telling which vegetation type is c4
+  logical, dimension(:), allocatable :: isc4     !< Array telling which vegetation type is c4
   real, dimension(:), allocatable :: tlow         !< lower temperature limits for photosynthesis, (kelvin)
   real, dimension(:), allocatable :: tup          !< upper temperature limits for photosynthesis, (kelvin)
   real, dimension(:), allocatable :: alpha_phtsyn !< quantum efficiencies, values of 0.08 & 0.04 are used for c3 and c4 plants, respectively
@@ -579,8 +580,8 @@ module classic_params
 
   character(350)    :: runParamsFile
   logical          :: PFTCompetitionSwitch
-  real :: zbldJobOpt,zrfhJobOpt,zrfmJobOpt
-  real, dimension(:), allocatable :: RSMN,QA50,VPDA,VPDB,PSGA,PSGB ! These are temporary variables storing these parameters until they are
+  real :: zbldJobOpt, zrfhJobOpt, zrfmJobOpt
+  real, dimension(:), allocatable :: RSMN, QA50, VPDA, VPDB, PSGA, PSGB ! These are temporary variables storing these parameters until they are
   ! transfered into their ROT structure in read_initialstate
 
 
@@ -622,9 +623,9 @@ contains
       icc, &
       l2max
 
-    open(10,file = trim(runParamsFile),action = 'read',status = 'old')
+    open(10, file = trim(runParamsFile), action = 'read',status = 'old')
 
-    read(10,nml = classicPFTbasic)
+    read(10, nml = classicPFTbasic)
 
     close(10)
 
@@ -746,10 +747,10 @@ contains
             maxage_compete(kk), &
             drlsrtmx_compete(kk))
 
-    allocate(GROWYR(18,4,2), &
+    allocate(GROWYR(18, 4, 2), &
             ZORAT(ican), &
             classpfts(ican), &
-            reindexPFTs(ican,2), &
+            reindexPFTs(ican, 2), &
             CANEXT(ican), &
             XLEAF(ican), &
             RSMN(ican), &
@@ -786,9 +787,9 @@ contains
 
     implicit none
 
-    integer :: i,n,m
+    integer :: i, n, m
     character(8) :: pftkind
-    integer :: isumc,k1c,k2c
+    integer :: isumc, k1c, k2c
 
     namelist /classicparams/ &
         VKC, &
@@ -1036,9 +1037,9 @@ contains
 
     ! ----------
 
-    open(10,file = trim(runParamsFile),action = 'read',status = 'old')
+    open(10, file = trim(runParamsFile), action = 'read',status = 'old')
 
-    read(10,nml = classicparams)
+    read(10, nml = classicparams)
 
     close(10)
 
@@ -1069,7 +1070,7 @@ contains
 
     ! Calculate the CL4CTEM which helps index CTEM to CLASS in calcLandSurfParams.
     do i = 1, ican
-      do m = reindexPFTs(i,1), reindexPFTs(i,2)
+      do m = reindexPFTs(i, 1), reindexPFTs(i, 2)
         CL4CTEM(m) = i
       end do
     end do
@@ -1121,8 +1122,8 @@ contains
 
     implicit none
 
-    integer :: j,k1c,k2c
-    integer :: findPFTindexes(ican,2)
+    integer :: j, k1c, k2c
+    integer :: findPFTindexes(ican, 2)
 
     k1c = 0
     do j = 1, ican
@@ -1132,12 +1133,12 @@ contains
         k1c = k1c + nol2pfts(j - 1)
       end if
       k2c = k1c + nol2pfts(j) - 1
-      findPFTindexes(j,1) = k1c
-      findPFTindexes(j,2) = k2c
+      findPFTindexes(j, 1) = k1c
+      findPFTindexes(j, 2) = k2c
     end do
 
   end function findPFTindexes
-
+  !! @}
 
   !> \file
   !> This module holds CLASSIC globally accessible parameters
@@ -1156,15 +1157,15 @@ contains
   !!
   !! The basic version of CLASSIC includes the following PFTs:
   !! \f[
-  !! \begin{tabular} { | l | c | c | c | c | c | }
+  !! \begin{array} { | l | c | c | c | c | c | }
   !! \hline
-  !! CLASS PFTs &  CTEM PFTs &      --- &      ---  \\ \hline
+  !! \text{CLASS PFTs} &  \text{CTEM PFTs} &     \text{---} &      \text{---}  \\ \hline
   !! \hline
-  !! needle leaf &  evg &      dcd &      ---  \\ \hline
-  !! broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
-  !! crops       &   c3 &       c4 &      ---  \\ \hline
-  !! grasses     &   c3 &       c4 &    --- \\ \hline
-  !! \end{tabular}
+  !! \text{needle leaf} &  \text{evg} &      \text{dcd} &      \text{---}  \\ \hline
+  !! \text{broad leaf}  &  \text{evg} &  \text{dcd-cld} &  \text{dcd-dry} \\ \hline
+  !! \text{crops}       &   \text{c3} &       \text{c4} &      \text{---}  \\ \hline
+  !! \text{grasses}     &   \text{c3} &       \text{c4} &    \text{---} \\ \hline
+  !! \end{array}
   !! \f]
   !!
   !! The peatland module expands upon these PFTs with the addition of two
@@ -1180,30 +1181,31 @@ contains
   !! respiration of vascular PFTs are modelled the same as in the original CTEM.)
   !!
   !! \f[
-  !! \begin{tabular} { | l | c | c | c | c | c | }
+  !! \begin{array} { | l | c | c | c | c | c | }
   !! \hline
-  !! needle leaf &  evg &      dcd &      --- & --- & ---  \\ \hline
-  !! broad leaf  &  evg &  dcd-cld &  dcd-dry &  EVG-shrubs & DCD-shrubs\\ \hline
-  !! crops       &   c3 &       c4 &      ---  & --- & ---\\ \hline
-  !! grasses     &   c3 &       c4 &      sedges & --- & ---\\ \hline
-  !! \end{tabular}
+  !! \text{CLASS PFTs} &  \text{CTEM PFTs} &     \text{---} &      \text{---}  \\ \hline
+  !! \hline
+  !! \text{needle leaf} &  \text{evg} &      \text{dcd} &      \text{---} & \text{---} & \text{---}  \\ \hline
+  !! \text{broad leaf}  &  \text{evg} &  \text{dcd-cld} &  \text{dcd-dry} &  \text{evg-shrubs} & \text{dcd-shrubs}\\ \hline
+  !! \text{crops}       &   \text{C3} &       \text{C4} &      \text{---}  & \text{---} & \text{---}\\ \hline
+  !! \text{grasses}     &   \text{C3} &       \text{C4} &      \text{sedges} & \text{---} & \text{---}\\ \hline
+  !! \end{array}
   !! \f]
   !! Shrubs have now been implimented in the physic subroutines now as a fifth CLASS
   !! PFT as below:
   !!
   !! \f[
-  !! \begin{tabular} { | l | c | c | c | c | c | }
+  !! \begin{array} { | l | c | c | c | c | c | }
   !! \hline
-  !! needle leaf &  evg &      dcd &      ---  \\ \hline
-  !! broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
-  !! crops       &   c3 &       c4 &      ---  \\ \hline
-  !! grasses     &   c3 &       c4 &      sedges \\ \hline
-  !! broad leaf shrubs & EVG-shrubs & DCD-shrubs &      ---  \\ \hline
-  !! \end{tabular}
+  !! \text{CLASS PFTs} &  \text{CTEM PFTs} &     \text{---} &      \text{---}  \\ \hline
+  !! \hline
+  !! \text{needle leaf} &  \text{evg} &      \text{dcd} &      \text{---}  \\ \hline
+  !! \text{broad leaf}  &  \text{evg} &  \text{dcd-cld} &  \text{dcd-dry} \\ \hline
+  !! \text{crops}       &   \text{C3} &       \text{C4} &      \text{---}  \\ \hline
+  !! \text{grasses}     &   \text{C3} &       \text{C4} &      \text{sedges} \\ \hline
+  !! \text{broad leaf shrubs} & \text{evg-shrubs} & \text{dcd-shrubs} &      \text{---}  \\ \hline
+  !! \end{array}
   !! \f]
-
   !!
-
-
-
+  !> \file
 end module classic_params

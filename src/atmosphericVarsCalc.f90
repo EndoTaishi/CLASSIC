@@ -4,11 +4,10 @@
 !! @author D. Verseghy, M. Lazare, R. Brown, S. Fassnacht, P. Bartlett
 !!
 
-subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
-                   RPCP,TRPCP,SPCP,TSPCP, &
-                   TA,QA,PCPR,RRATE,SRATE,PRESSG, &
-                   IPCP,NL,IL1,IL2)
-  !
+subroutine atmosphericVarsCalc(VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, & ! Formerly CLASSI
+                               SPCP, TSPCP, TA, QA, PCPR, RRATE, SRATE, &
+                               PRESSG, IPCP, NL, IL1, IL2)
+
   !     * NOV 17/11 - M.LAZARE.   REMOVE CALCULATION OF PCPR
   !     *                         FOR IPCP=4 (REDUNDANT SINCE
   !     *                         PCPR MUST BE PASSED IN FOR
@@ -32,13 +31,13 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   !     *                         AND RAINFALL/SNOWFALL RATES
   !     *                         IF NECESSARY.
   !
-  use classic_params, only : TFREZ,RGAS,RGASV,RHOW
+  use classic_params, only : TFREZ, RGAS, RGASV, RHOW
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IPCP,NL,IL1,IL2
+  integer, intent(in) :: IPCP, NL, IL1, IL2
   integer             :: I
   !
   !     * OUTPUT ARRAYS.
@@ -47,7 +46,7 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   real, intent(out) :: TADP  (NL)   !< Dew point temperature of air [K]
   real, intent(out) :: PADRY (NL)   !< Partial pressure of dry air \f$[Pa] (p_{dry})\f$
   real, intent(out) :: RHOAIR(NL)   !< Density of air \f$[kg m^{-3}] (\rho_a)\f$
-  real, intent(out) :: RHOSNI(NL)   !< Density of fresh snow \f$[kg m^{-3}] (\rho_{s,i})\f$
+  real, intent(out) :: RHOSNI(NL)   !< Density of fresh snow \f$[kg m^{-3}] (\rho_{s, i})\f$
   real, intent(out) :: RPCP  (NL)   !< Calculated rainfall rate over modelled area \f$[m s^{-1}]\f$
   real, intent(out) :: TRPCP (NL)   !< Rainfall temperature over modelled area [C]
   real, intent(out) :: SPCP  (NL)   !< Calculated snowfall rate over modelled area \f$[m s^{-1}]\f$
@@ -71,7 +70,7 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: EA,CA,CB,EASAT,CONST
+  real :: EA, CA, CB, EASAT, CONST
   !
   !----------------------------------------------------------------
   !
@@ -82,8 +81,8 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   !! pressure, air density and dew point temperature are calculated.
   !! The vapour pressure deficit \f$e_d\f$ (in units of mb) is obtained from
   !! the saturated and actual vapour pressures of the air, \f$e_a\f$ and
-  !! \f$e_{a,sat}\f$ respectively (in units of Pa), as
-  !! \f$e_d = [e_{a,sat} - e_a] /100.0\f$
+  !! \f$e_{a, sat}\f$ respectively (in units of Pa), as
+  !! \f$e_d = [e_{a, sat} - e_a] /100.0\f$
   !!
   !! The air vapour pressure is obtained from the specific humidity \f$q_a\f$
   !! using the formula
@@ -92,12 +91,12 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   !!
   !! where p is the surface atmospheric pressure. For the
   !! saturated vapour pressure, a standard empirical equation is
-  !! utilized relating \f$e_{a,sat}\f$ to the temperature \f$T_a\f$ and the freezing
+  !! utilized relating \f$e_{a, sat}\f$ to the temperature \f$T_a\f$ and the freezing
   !! point \f$T_f\f$:
   !!
-  !! \f$e_{a,sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]\f$    \f$T_a \geq T_f\f$
+  !! \f$e_{a, sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]\f$    \f$T_a \geq T_f\f$
   !!
-  !! \f$e_{a,sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]\f$     \f$T_a < T_f\f$
+  !! \f$e_{a, sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]\f$     \f$T_a < T_f\f$
   !!
   !! The partial pressure of dry air, \f$p_{dry}\f$, is obtained by subtracting
   !! \f$e_a\f$ from p, and the density of the air is calculated as the sum of
@@ -106,7 +105,7 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   !!
   !! where \f$R_d\f$ and \f$R_v\f$ are the gas constants for dry air and water
   !! vapour respectively. The dew point temperature of the air is
-  !! evaluated by substituting \f$e_a\f$ for \f$e_{a,sat}\f$ on the left-hand side of
+  !! evaluated by substituting \f$e_a\f$ for \f$e_{a, sat}\f$ on the left-hand side of
   !! the appropriate equation above, and solving for \f$T_a\f$.
   !!
   !! Finally, if IPCP = 4, this indicates that the partitioning
@@ -115,7 +114,7 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
   !! passed into the subroutine are therefore simply assigned to RPCP
   !! and SPCP.
   !!
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     EA = QA(I) * PRESSG(I) / (0.622 + 0.378 * QA(I))
     if (TA(I) >= TFREZ) then
       CA = 17.269                   ! BDCS P?
@@ -134,20 +133,20 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
     !     * DENSITY OF FRESH SNOW.
     !
     !>
-    !! In the next section, the density of fresh snow \f$\rho_{s,i}\f$ is
+    !! In the next section, the density of fresh snow \f$\rho_{s, i}\f$ is
     !! determined as an empirical function of the air temperature.
     !! For temperatures below 0 C, an equation presented by Hedstrom
     !! and Pomeroy (1998) is used. For temperatures >= 0 C, a
     !! relation following Pomeroy and Gray (1995) is used, with an
     !! upper limit of 200 kg m-3:
     !!
-    !! \f$\rho_{s,i} = 67.92 + 51.25 exp[(T_a – T_f)/2.59]\f$ \f$T_a < T_f\f$
-    !! \f$\rho_{s,i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
+    !! \f$\rho_{s, i} = 67.92 + 51.25 exp[(T_a – T_f)/2.59]\f$ \f$T_a < T_f\f$
+    !! \f$\rho_{s, i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
     !!
     if (TA(I) <= TFREZ) then
       RHOSNI(I) = 67.92 + 51.25 * EXP((TA(I) - TFREZ) / 2.59) ! BDCS P?
     else
-      RHOSNI(I) = MIN((119.17 + 20.0 * (TA(I) - TFREZ)),200.0)
+      RHOSNI(I) = MIN((119.17 + 20.0 * (TA(I) - TFREZ)), 200.0)
     end if
     !
     !     * PRECIPITATION PARTITIONING BETWEEN RAIN AND SNOW.
@@ -158,7 +157,7 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
     !! options for doing so are provided; the user’s selection is
     !! indicated by the flag IPCP. In each case the rainfall and
     !! snowfall rates are converted to units of \f$ m s^{-1}\f$, by dividing
-    !! by the density of water in the case of rain and by \f$\rho_{s,i}\f$ in
+    !! by the density of water in the case of rain and by \f$\rho_{s, i}\f$ in
     !! the case of snow. The rainfall temperature is set to the
     !! maximum of 0 C and \f$T_a\f$, and the snowfall temperature to the
     !! minimum of 0 C and \f$T_a\f$. If IPCP = 1, the precipitation is
@@ -185,10 +184,10 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
       if (IPCP == 1) then
         if (TA(I) > TFREZ) then
           RPCP (I) = PCPR(I) / RHOW
-          TRPCP(I) = MAX((TA(I) - TFREZ),0.0)
+          TRPCP(I) = MAX((TA(I) - TFREZ), 0.0)
         else
           SPCP (I) = PCPR(I) / RHOSNI(I)
-          TSPCP(I) = MIN((TA(I) - TFREZ),0.0)
+          TSPCP(I) = MIN((TA(I) - TFREZ), 0.0)
         end if
       else if (IPCP == 2) then
         if (TA(I) <= TFREZ) then
@@ -199,9 +198,9 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
           PHASE(I) = 1.0 - 0.5 * (TA(I) - TFREZ)
         end if
         RPCP(I) = (1.0 - PHASE(I)) * PCPR(I) / RHOW
-        if (RPCP(I) > 0.0) TRPCP(I) = MAX((TA(I) - TFREZ),0.0)
+        if (RPCP(I) > 0.0) TRPCP(I) = MAX((TA(I) - TFREZ), 0.0)
         SPCP(I) = PHASE(I) * PCPR(I) / RHOSNI(I)
-        if (SPCP(I) > 0.0) TSPCP(I) = MIN((TA(I) - TFREZ),0.0)
+        if (SPCP(I) > 0.0) TSPCP(I) = MIN((TA(I) - TFREZ), 0.0)
       else if (IPCP == 3) then
         if (TA(I) <= TFREZ) then
           PHASE(I) = 1.0
@@ -209,21 +208,21 @@ subroutine atmosphericVarsCalc(VPD,TADP,PADRY,RHOAIR,RHOSNI, & ! Formerly CLASSI
           PHASE(I) = 0.0
         else
           PHASE(I) = (0.0202 * (TA(I) - TFREZ) ** 6 - 0.3660 * & ! BDCS P?
-          (TA(I) - TFREZ) ** 5 + 2.0399 * (TA(I) - TFREZ) ** 4 - &
+                     (TA(I) - TFREZ) ** 5 + 2.0399 * (TA(I) - TFREZ) ** 4 - &
                      1.5089 * (TA(I) - TFREZ) ** 3 - 15.038 * &
                      (TA(I) - TFREZ) ** 2 + 4.6664 * (TA(I) - TFREZ) + 100.0) / &
                      100.0
-          PHASE(I) = MAX(0.0,MIN(1.0,PHASE(I)))
+          PHASE(I) = MAX(0.0, MIN(1.0, PHASE(I)))
         end if
         RPCP(I) = (1.0 - PHASE(I)) * PCPR(I) / RHOW
-        if (RPCP(I) > 0.0) TRPCP(I) = MAX((TA(I) - TFREZ),0.0)
+        if (RPCP(I) > 0.0) TRPCP(I) = MAX((TA(I) - TFREZ), 0.0)
         SPCP(I) = PHASE(I) * PCPR(I) / RHOSNI(I)
-        if (SPCP(I) > 0.0) TSPCP(I) = MIN((TA(I) - TFREZ),0.0)
+        if (SPCP(I) > 0.0) TSPCP(I) = MIN((TA(I) - TFREZ), 0.0)
       else if (IPCP == 4) then
         RPCP(I) = RRATE(I) / RHOW
-        if (RPCP(I) > 0.0) TRPCP(I) = MAX((TA(I) - TFREZ),0.0)
+        if (RPCP(I) > 0.0) TRPCP(I) = MAX((TA(I) - TFREZ), 0.0)
         SPCP(I) = SRATE(I) / RHOSNI(I)
-        if (SPCP(I) > 0.0) TSPCP(I) = MIN((TA(I) - TFREZ),0.0)
+        if (SPCP(I) > 0.0) TSPCP(I) = MIN((TA(I) - TFREZ), 0.0)
       end if
     end if
   end do ! loop 100

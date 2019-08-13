@@ -132,7 +132,7 @@ contains
       call checkNC(nf90_inquire_variable(fileId, varId, name = ncGetVarName), tag = 'ncGetVarName() ')
       varId = varId + 1
       if (trim(ncGetVarName) == 'lat' .or. trim(ncGetVarName) == 'lon' .or. &
-      trim(ncGetVarName) == 'time' .or. trim(ncGetVarName) == 'lev') then
+          trim(ncGetVarName) == 'time' .or. trim(ncGetVarName) == 'lev') then
         notit = .true.
       else
         notit = .false.
@@ -329,7 +329,7 @@ contains
     integer, intent(in), optional               :: start2D(2), count2D(2)
     real, allocatable                           :: ncGetDimValues(:)
     integer                                     :: localCount(1) = [1], localStart(1) = [1]
-    integer                                     :: localCount2D(2) = [1,1], localStart2D(2) = [1,1]
+    integer                                     :: localCount2D(2) = [1, 1], localStart2D(2) = [1, 1]
 
     varId = ncGetVarId(fileId, label)
     ndims = ncGetVarDimensions(fileId, varId)
@@ -701,7 +701,7 @@ contains
     if (ncStatus /= nf90_noerr) then
       print * ,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
 #if PARALLEL
-            call MPI_ABORT( MPI_COMM_WORLD, - 1, status )
+            call MPI_ABORT(MPI_COMM_WORLD, - 1, status)
 #endif
       stop
     end if

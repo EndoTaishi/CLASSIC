@@ -4,11 +4,11 @@
 !! rates.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! Formerly CANVAP
-                   WLOST,CHCAP,QFCF,QFCL,QFN,QFC,HTCC,HTCS,HTC, &
-                   FI,CMASS,TSNOW,HCPSNO,RHOSNO,FROOT,THPOR, &
-                   THLMIN,DELZW,EVLOST,RLOST,IROOT, &
-                   IG,ILG,IL1,IL2,JL,N)
+subroutine canopyWaterUpdate(EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSNOW, & ! Formerly CANVAP
+                             WLOST, CHCAP, QFCF, QFCL, QFN, QFC, HTCC, HTCS, HTC, &
+                             FI, CMASS, TSNOW, HCPSNO, RHOSNO, FROOT, THPOR, &
+                             THLMIN, DELZW, EVLOST, RLOST, IROOT, &
+                             IG, ILG, IL1, IL2, JL, N)
 
   !     * SEP 15/05 - D.VERSEGHY. REMOVE HARD CODING OF IG=3.
   !     * SEP 13/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -38,24 +38,24 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !     *                         SUBLIMATION AND TRANSPIRATION FROM
   !     *                         VEGETATION CANOPY.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,SPHW,SPHICE,SPHVEG, &
-                            RHOW,CLHMLT,CLHVAP
+  use classic_params, only : DELT, TFREZ, HCPW, SPHW, SPHICE, SPHVEG, &
+                            RHOW, CLHMLT, CLHVAP
 
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IG,ILG,IL1,IL2,JL,N
-  integer             :: I,J
+  integer, intent(in) :: IG, ILG, IL1, IL2, JL, N
+  integer             :: I, J
   !
   !     * INPUT/OUTPUT ARRAYS.
   !
-  real, intent(inout) :: THLIQ (ILG,IG)   !< Volumetric liquid water content of soil
+  real, intent(inout) :: THLIQ (ILG, IG)   !< Volumetric liquid water content of soil
   ! layer \f$[m^3 m^{-3}] (\theta_l)\f$
-  real, intent(inout) :: TBAR  (ILG,IG)   !< Temperature of soil layer \f$[K] (T_g)\f$
-  real, intent(inout) :: QFC   (ILG,IG)   !< Transpired water removed from soil layer \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(inout) :: HTC   (ILG,IG)   !< Internal energy change of soil layer due to
+  real, intent(inout) :: TBAR  (ILG, IG)   !< Temperature of soil layer \f$[K] (T_g)\f$
+  real, intent(inout) :: QFC   (ILG, IG)   !< Transpired water removed from soil layer \f$[kg m^{-2} s^{-1}]\f$
+  real, intent(inout) :: HTC   (ILG, IG)   !< Internal energy change of soil layer due to
   !! conduction and/or change in mass \f$[W m^{-2}] (I_g)\f$
   !
   real, intent(inout) :: EVAP  (ILG)  !< Evapotranspiration rate from vegetation canopy \f$[m s^{-1}]\f$
@@ -79,12 +79,12 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: FROOT (ILG,IG)   !< Fractional contribution of soil layer to
+  real, intent(in) :: FROOT (ILG, IG)   !< Fractional contribution of soil layer to
   !! transpiration [ ]
-  real, intent(in) :: THPOR(ILG,IG)    !< Pore volume in soil layer \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content
+  real, intent(in) :: THPOR(ILG, IG)    !< Pore volume in soil layer \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THLMIN(ILG, IG)   !< Residual soil liquid water content
   !! remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: DELZW (ILG,IG)   !< Permeable depth of soil layer \f$[m] (\Delta z_{g,w})\f$
+  real, intent(in) :: DELZW (ILG, IG)   !< Permeable depth of soil layer \f$[m] (\Delta z_{g, w})\f$
   !
   real, intent(in) :: FI    (ILG)  !< Fractional coverage of subarea in question on
   !! modelled area \f$[ ] (X_i)\f$
@@ -95,13 +95,13 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !
   !     * WORK ARRAYS.
   !
-  real, intent(inout)    :: EVLOST(ILG),    RLOST (ILG)
+  real, intent(inout)    :: EVLOST(ILG), RLOST (ILG)
   !
   integer, intent(inout) :: IROOT (ILG)
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: SLOST,THTRAN,THLLIM
+  real :: SLOST, THTRAN, THLLIM
 
   ! C-----------------------------------------------------------------------
   !>
@@ -117,9 +117,9 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !! is calculated as the difference in HTC between the beginning and
   !! end of the subroutine:
   !! \f[
-  !! \Delta I_c = X_i \Delta (C_c T_c )/ \Delta t
+  !! \Delta I_c = X_i \Delta (C_c T_c)/ \Delta t
   !! \f]\f[
-  !! \Delta I_s = X_i \Delta (C_s T_s z_s )/ \Delta t
+  !! \Delta I_s = X_i \Delta (C_s T_s z_s)/ \Delta t
   !! \f]
   !! where the C terms represent volumetric heat capacities and the T
   !! terms temperatures of the canopy and snow pack, \f$\Delta t\f$ is the
@@ -129,7 +129,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !! content is affected by these calculations, the change in internal
   !! energy of each layer is calculated from the change in liquid
   !! water content \f$\theta_l\f$ as:
-  !! \f[ \Delta I_g = X_i C_w \Delta z_{g,w} \Delta (T_g \theta_l )/ \Delta t \f]
+  !! \f[ \Delta I_g = X_i C_w \Delta z_{g, w} \Delta (T_g \theta_l)/ \Delta t \f]
   !!
 
 
@@ -137,23 +137,23 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !     * (THE WORK ARRAY "IROOT" INDICATES POINTS WHERE TRANSPIRATION
   !     * CAN OCCUR.)
   !
-  do I = IL1,IL2 ! loop 50
+  do I = IL1, IL2 ! loop 50
     if (FI(I) > 0.) then
       RLOST (I) = 0.0
       EVLOST(I) = 0.0
       IROOT (I) = 0
       HTCC  (I) = HTCC(I) - FI(I) * TCAN(I) * CHCAP(I) / DELT
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-                 ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
     end if
   end do ! loop 50
   !
-  do J = 1,IG ! loop 100
-    do I = IL1,IL2
+  do J = 1, IG ! loop 100
+    do I = IL1, IL2
       if (FI(I) > 0.) then
-        HTC (I,J) = HTC(I,J) - FI(I) * (TBAR(I,J) + TFREZ) * THLIQ(I,J) * &
-               HCPW * DELZW(I,J) / DELT
-        if (FROOT(I,J) > 1.0E-5) IROOT(I) = 1
+        HTC (I, J) = HTC(I, J) - FI(I) * (TBAR(I, J) + TFREZ) * THLIQ(I, J) * &
+                     HCPW * DELZW(I, J) / DELT
+        if (FROOT(I, J) > 1.0E-5) IROOT(I) = 1
       end if
     end do
   end do ! loop 100
@@ -183,7 +183,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !     * DEMAND, RESIDUAL IS TAKEN FIRST FROM SNOW UNDERLYING CANOPY AND
   !     * THEN FROM LIQUID WATER ON CANOPY.
   !
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 200
     if (FI(I) > 0. .and. SUBL(I) > 0.) then
       SLOST = SUBL(I) * DELT * RHOW
       if (SLOST <= SNOCAN(I)) then
@@ -203,9 +203,9 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
           ZSNOW(I) = 0.0
           WLOST(I) = WLOST(I) - SLOST * CLHMLT / CLHVAP
           EVAP(I) = EVAP(I) + SLOST * (CLHMLT + CLHVAP) / &
-                         (CLHVAP * DELT * RHOW)
+                    (CLHVAP * DELT * RHOW)
           QFCL(I) = QFCL(I) + FI(I) * SLOST * (CLHMLT + CLHVAP) / &
-                         (CLHVAP * DELT)
+                    (CLHVAP * DELT)
         end if
       end if
     end if
@@ -231,7 +231,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !     * EVAPORATION.  IF WATER ON CANOPY IS INSUFFICIENT TO SUPPLY
   !     * DEMAND, ASSIGN RESIDUAL TO TRANSPIRATION.
   !
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 300
     if (FI(I) > 0. .and. EVAP(I) > 0.) then
       RLOST(I) = EVAP(I) * RHOW * DELT
       if (RLOST(I) <= RAICAN(I)) then
@@ -247,7 +247,7 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
       end if
     end if
   end do ! loop 300
-  !!
+  !>
   !! The next loop is performed if IROOT=1, i.e. if transpiration is
   !! possible. For each soil layer, the volumetric water content that
   !! is removed by transpiration, THTRAN, is calculated from RLOST
@@ -263,54 +263,54 @@ subroutine canopyWaterUpdate(EVAP,SUBL,RAICAN,SNOCAN,TCAN,THLIQ,TBAR,ZSNOW, & ! 
   !
   !     * TRANSPIRATION.
   !
-  do J = 1,IG
-    do I = IL1,IL2
+  do J = 1, IG ! loop 400
+    do I = IL1, IL2
       if (FI(I) > 0. .and. IROOT(I) > 0) then
-        if (DELZW(I,J) > 0.0) then
-          THTRAN = RLOST(I) * FROOT(I,J) / (RHOW * DELZW(I,J))
+        if (DELZW(I, J) > 0.0) then
+          THTRAN = RLOST(I) * FROOT(I, J) / (RHOW * DELZW(I, J))
         else
           THTRAN = 0.0
         end if
-        if (THPOR(I,J) < THLMIN(I,J)) then
-          THLLIM = THPOR(I,J)
+        if (THPOR(I, J) < THLMIN(I, J)) then
+          THLLIM = THPOR(I, J)
         else
-          THLLIM = THLMIN(I,J)
+          THLLIM = THLMIN(I, J)
         end if
-        if (THTRAN <= (THLIQ(I,J) - THLLIM)) then
-          QFC  (I,J) = QFC(I,J) + FI(I) * RLOST(I) * FROOT(I,J) / DELT
-          THLIQ(I,J) = THLIQ(I,J) - THTRAN
+        if (THTRAN <= (THLIQ(I, J) - THLLIM)) then
+          QFC  (I, J) = QFC(I, J) + FI(I) * RLOST(I) * FROOT(I, J) / DELT
+          THLIQ(I, J) = THLIQ(I, J) - THTRAN
         else
-          QFC  (I,J) = QFC(I,J) + FI(I) * (THLIQ(I,J) - THLLIM) * RHOW * &
-                       DELZW(I,J) / DELT
-          EVLOST (I) = EVLOST(I) + (THTRAN + THLLIM - THLIQ(I,J)) * RHOW * &
-                       DELZW(I,J)
-          THLIQ(I,J) = THLLIM
+          QFC  (I, J) = QFC(I, J) + FI(I) * (THLIQ(I, J) - THLLIM) * RHOW * &
+                        DELZW(I, J) / DELT
+          EVLOST (I) = EVLOST(I) + (THTRAN + THLLIM - THLIQ(I, J)) * RHOW * &
+                       DELZW(I, J)
+          THLIQ(I, J) = THLLIM
         end if
       end if
     end do
   end do ! loop 400
-  !!
+  !>
   !! In the final cleanup, the canopy heat capacity is recalculated,
   !! the contents of EVLOST are added to WLOST, and the remaining
   !! internal energy calculations are completed.
   !
   !     * CLEANUP.
   !
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 500
     if (FI(I) > 0.) then
       CHCAP(I) = RAICAN(I) * SPHW + SNOCAN(I) * SPHICE + CMASS(I) * SPHVEG
       WLOST(I) = WLOST(I) + EVLOST(I)
       HTCC  (I) = HTCC(I) + FI(I) * TCAN(I) * CHCAP(I) / DELT
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-                 ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
     end if
   end do ! loop 500
   !
-  do J = 1,IG
-    do I = IL1,IL2
+  do J = 1, IG ! loop 550
+    do I = IL1, IL2
       if (FI(I) > 0.) then
-        HTC (I,J) = HTC(I,J) + FI(I) * (TBAR(I,J) + TFREZ) * THLIQ(I,J) * &
-                    HCPW * DELZW(I,J) / DELT
+        HTC (I, J) = HTC(I, J) + FI(I) * (TBAR(I, J) + TFREZ) * THLIQ(I, J) * &
+                     HCPW * DELZW(I, J) / DELT
       end if
     end do
   end do ! loop 550

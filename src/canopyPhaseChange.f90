@@ -4,8 +4,8 @@
 !! intercepted water stores accordingly.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerly CWCALC
-                   HMFC,HTCC,FI,CMASS,ILG,IL1,IL2,JL)
+subroutine canopyPhaseChange(TCAN, RAICAN, SNOCAN, FRAINC, FSNOWC, CHCAP, & ! Formerly CWCALC
+                             HMFC, HTCC, FI, CMASS, ILG, IL1, IL2, JL)
   !
   !
   !     * MAR 25/08 - D.VERSEGHY. UPDATE FRAINC AND FSNOWC.
@@ -28,13 +28,13 @@ subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerl
   !     *                         MOISTURE STORES FOR FREEZING/
   !     *                         THAWING.
   !
-  use classic_params, only : DELT,TFREZ,SPHW,SPHICE,SPHVEG,CLHMLT
+  use classic_params, only : DELT, TFREZ, SPHW, SPHICE, SPHVEG, CLHMLT
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL
+  integer, intent(in) :: ILG, IL1, IL2, JL
   integer :: I
   !
   !     * I/O ARRAYS.
@@ -56,7 +56,7 @@ subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerl
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: HFREZ,HCONV,RCONV,HCOOL,HMELT,SCONV,HWARM
+  real :: HFREZ, HCONV, RCONV, HCOOL, HMELT, SCONV, HWARM
   !
   !---------------------------------------------------------------------
   !>
@@ -71,7 +71,7 @@ subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerl
   !! fractional coverage of the subarea under consideration relative to
   !! the modelled area.
   !!
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0.) then
       HTCC  (I) = HTCC(I) - FI(I) * TCAN(I) * CHCAP(I) / DELT
       !>
@@ -116,7 +116,7 @@ subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerl
           FSNOWC(I) = FSNOWC(I) + FRAINC(I)
           FRAINC(I) = 0.0
           TCAN  (I) = - HCOOL / (SPHVEG * CMASS(I) + SPHICE * &
-                          SNOCAN(I)) + TFREZ
+                      SNOCAN(I)) + TFREZ
           HMFC  (I) = HMFC(I) - FI(I) * CLHMLT * RAICAN(I) / DELT
           HTCC  (I) = HTCC(I) - FI(I) * CLHMLT * RAICAN(I) / DELT
           RAICAN(I) = 0.0
@@ -163,7 +163,7 @@ subroutine canopyPhaseChange(TCAN,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP, & ! Formerl
           FRAINC(I) = FRAINC(I) + FSNOWC(I)
           FSNOWC(I) = 0.0
           TCAN(I) = HWARM / (SPHVEG * CMASS(I) + SPHW * RAICAN(I)) + &
-                        TFREZ
+                    TFREZ
           HMFC  (I) = HMFC(I) + FI(I) * CLHMLT * SNOCAN(I) / DELT
           HTCC  (I) = HTCC(I) + FI(I) * CLHMLT * SNOCAN(I) / DELT
           SNOCAN(I) = 0.0

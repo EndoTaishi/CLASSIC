@@ -3,8 +3,8 @@
 !! pack, and snow ripening.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerly SNINFL
-                   HTCS,HMFN,PCPG,ROFN,FI,ILG,IL1,IL2,JL)
+subroutine snowInfiltrateRipen(R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! Formerly SNINFL
+                               HTCS, HMFN, PCPG, ROFN, FI, ILG, IL1, IL2, JL)
   !
   !     * DEC 23/09 - D.VERSEGHY. RESET WSNOW TO ZERO WHEN SNOW
   !     *                         PACK DISAPPEARS.
@@ -25,14 +25,14 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. RAIN INFILTRATION INTO SNOWPACK.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,HCPICE,RHOW, &
-                            RHOICE,CLHMLT,WSNCAP
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
+                            RHOICE, CLHMLT, WSNCAP
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL
+  integer, intent(in) :: ILG, IL1, IL2, JL
   integer :: I
   !
   !     * INPUT/OUTPUT ARRAYS.
@@ -41,7 +41,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
   real, intent(inout) :: TR    (ILG)  !< Temperature of rainfall [C]
   real, intent(inout) :: ZSNOW (ILG)  !< Depth of snow pack \f$[m] (z_g)\f$
   real, intent(inout) :: TSNOW (ILG)  !< Temperature of the snow pack \f$[C] (T_s)\f$
-  real, intent(inout) :: RHOSNO(ILG)  !< Density of snow pack \f$[kg m^{-3}] (\rho_s )\f$
+  real, intent(inout) :: RHOSNO(ILG)  !< Density of snow pack \f$[kg m^{-3}] (\rho_s)\f$
   real, intent(inout) :: HCPSNO(ILG)  !< Heat capacity of snow pack \f$[J m^{-3} K^{-1}] (C_s)\f$
   real, intent(inout) :: WSNOW (ILG)  !< Liquid water content of snow pack \f$[kg m^{-2}] (w_s)\f$
   real, intent(inout) :: HTCS  (ILG)  !< Internal energy change of snow pack due to conduction and/or change in mass \f$[W m^{-2}] (I_s)\f$
@@ -55,7 +55,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: RAIN,HRCOOL,HRFREZ,HSNWRM,HSNMLT,ZMELT,ZFREZ,WAVAIL
+  real :: RAIN, HRCOOL, HRFREZ, HSNWRM, HSNMLT, ZMELT, ZFREZ, WAVAIL
   !
   !-----------------------------------------------------------------------
   !>
@@ -76,11 +76,11 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
   !! time step, and \f$X_i\f$ the fractional coverage of the subarea under
   !! consideration relative to the modelled area.
   !!
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. R(I) > 0. .and. ZSNOW(I) > 0.) &
-    then
+        then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-                 ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
       RAIN = R(I) * DELT
       !>
       !! Four diagnostic variables are evaluated at the outset.
@@ -158,7 +158,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
         !! the rainfall rate R.
         !!
       else if (HRCOOL >= HSNWRM .and. HRCOOL < (HSNWRM + HSNMLT)) &
- then
+                         then
         HSNMLT = HRCOOL - HSNWRM
         ZMELT = HSNMLT / (CLHMLT * RHOSNO(I))
         HMFN(I) = HMFN(I) + FI(I) * CLHMLT * ZMELT * RHOSNO(I) / DELT
@@ -174,7 +174,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
         end if
         TSNOW(I) = 0.0
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-        (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         TR(I) = 0.0
         R(I) = R(I) + ZMELT / DELT
         !>
@@ -202,7 +202,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
           RHOSNO(I) = RHOICE
         end if
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-        (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         TSNOW(I) = HSNWRM / (HCPSNO(I) * ZSNOW(I))
         TR(I) = 0.0
         R(I) = 0.0
@@ -229,7 +229,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
         !! and TR and TSNOW are set to zero.
         !!
       else if (HSNWRM >= HRCOOL .and. HSNWRM < (HRCOOL + HRFREZ)) &
- then
+                         then
         HRFREZ = HSNWRM - HRCOOL
         ZFREZ = HRFREZ / (CLHMLT * RHOW)
         HMFN(I) = HMFN(I) - FI(I) * CLHMLT * ZFREZ * RHOW / DELT
@@ -248,7 +248,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
           WAVAIL = 0.0
         end if
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-        (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         R(I) = WAVAIL / (RHOW * DELT)
         TR(I) = 0.0
         TSNOW(I) = 0.0
@@ -260,7 +260,7 @@ subroutine snowInfiltrateRipen(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW, & ! Formerl
       !! the diagnostic variables PCPG and ROFN.
       !!
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
-      ZSNOW(I) / DELT
+                ZSNOW(I) / DELT
       PCPG(I) = PCPG(I) + FI(I) * R(I) * RHOW
       ROFN(I) = ROFN(I) + FI(I) * R(I) * RHOW
     end if

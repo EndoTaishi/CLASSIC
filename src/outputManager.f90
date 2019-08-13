@@ -69,7 +69,7 @@ module outputManager
   type netcdfVar
     integer         :: ncid
     character(30)   :: key
-    character(350)   :: filename
+    character(350)  :: filename
   end type
 
   integer, parameter  :: maxncVariableNumber = 300        !< Maximum number of netcdf output files to make (can be adjusted)
@@ -293,8 +293,8 @@ contains
       suffix = ''
     end select
     generateFilename = trim(c_switch%output_directory) // '/' // &
-        trim(descriptor%shortName) // '_' // &
-        trim(descriptor%timeFreq) // trim(suffix) // '.nc'
+                       trim(descriptor%shortName) // '_' // &
+                       trim(descriptor%timeFreq) // trim(suffix) // '.nc'
   end function generateFilename
 
   !< @}
@@ -799,10 +799,10 @@ contains
     id = getIdByKey(key)
 
     if (id == 0) then
-      print * ,'writeOutput1D says: Your requested key does not exist (' // trim(key) // ') in netcdfVars.'
-      print * , 'Possible reasons include '// trim(key) // ' not in xml file so no netcdf created'
-      print * , 'or mismatch between xml group and model switch for this key. Model run will continue'
-      print * , 'without writing this variable.'
+      !print * ,'writeOutput1D says: Your requested key does not exist (' // trim(key) // ') in netcdfVars.'
+      !print * , 'Possible reasons include '// trim(key) // ' not in xml file so no netcdf created'
+      !print * , 'or mismatch between xml group and model switch for this key. Model run will continue'
+      !print * , 'without writing this variable.'
       return
     end if
 

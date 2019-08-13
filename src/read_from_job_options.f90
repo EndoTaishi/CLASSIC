@@ -20,9 +20,9 @@ contains
   subroutine read_from_job_options
 
     use outputManager, only : myDomain
-    use ctem_statevars,     only : c_switch
-    use classic_params, only : runParamsFile,PFTCompetitionSwitch, &
-                                   zbldJobOpt,zrfhJobOpt,zrfmJobOpt
+    use ctem_statevars, only : c_switch
+    use classic_params, only : runParamsFile, PFTCompetitionSwitch, &
+                                   zbldJobOpt, zrfhJobOpt, zrfmJobOpt
 
     implicit none
 
@@ -117,7 +117,7 @@ contains
     character(350) :: jobfile
     character(350) :: argbuff
     integer :: argcount, iargc
-    real :: ZBLD,ZRFH,ZRFM
+    real :: ZBLD, ZRFH, ZRFM
 
     ! Order of the namelist and order in the file don't have to match.
 
@@ -306,17 +306,17 @@ contains
     end if
 
     !> Argument 1 is the jobfile, which is openned and the namelist is read
-    call getarg(1,jobfile)
+    call getarg(1, jobfile)
 
-    open(10,file = jobfile,action = 'read',status = 'old')
+    open(10, file = jobfile, action = 'read',status = 'old')
 
-    read(10,nml = joboptions)
+    read(10, nml = joboptions)
 
     close(10)
 
     !> Parse the 2nd argument to get the domain that the simulation should be run over
-    call getarg(2,argbuff)
-    call parsecoords(argbuff,myDomain%domainBounds)
+    call getarg(2, argbuff)
+    call parsecoords(argbuff, myDomain%domainBounds)
 
     ! Assign some vars that are passed out
     runParamsFile = runparams_file
@@ -334,11 +334,11 @@ contains
   !> Parses a coordinate string
   !> @author Joe Melton
 
-  subroutine parsecoords(coordstring,val)
+  subroutine parsecoords(coordstring, val)
 
     implicit none
 
-    character(45),      intent(in)  :: coordstring
+    character(45), intent(in)  :: coordstring
     real, dimension(4), intent(out) :: val
 
     character(10), dimension(4) :: cval = '0'
@@ -347,7 +347,7 @@ contains
     integer :: lasti = 1
     integer :: part  = 1
 
-    do i = 1,len_trim(coordstring)
+    do i = 1, len_trim(coordstring)
       if (coordstring(i:i) == '/') then
         cval(part) = coordstring(lasti:i - 1)
         lasti = i + 1

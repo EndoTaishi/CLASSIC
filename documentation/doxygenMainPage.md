@@ -31,7 +31,6 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
     - @subpage initPopd
   - @subpage initClimComp "Competition for space between PFTs"
   - Prognostic simulation of methane emissions
-    - @subpage initRice "Rice agriculture"
     - @subpage initWetSlope "Dynamically-determined wetlands"
     - @subpage initWetArea
   - @subpage initPeat "Peatlands"
