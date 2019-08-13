@@ -1351,7 +1351,7 @@ contains
       end do
 
       if (transientCO2) then
-
+        
         ! Find the requested years in the file.
         arrindex = checkForTime(lengthOfFile, fileTime, real(readMetStartYear))
         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain first requested year')
@@ -1364,6 +1364,8 @@ contains
         else 
           arrindex2 = lengthOfFile
         end if
+        
+        
         
         if (arrindex2 == 0) stop ('getInput says: The CO2 file does not contain last requested year')
         ntimes = arrindex2 - arrindex + 1
@@ -2221,3 +2223,4 @@ contains
   !! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 
 end module model_state_drivers
+
