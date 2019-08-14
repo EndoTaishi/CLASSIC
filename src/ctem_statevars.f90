@@ -1,6 +1,7 @@
 !> Contains the biogeochemistry-related variable type structures.
 !! @author J. Melton
 !! Variable types herein:
+!!
 !! 1. c_switch (ctem_switches) - Switches for running the model, read from the joboptions file
 !! 2. vrot (veg_rot) - CTEM's 'rot' vars
 !! 3. vgat (veg_gat) - CTEM's 'gat' vars
@@ -16,8 +17,8 @@ module ctem_statevars
 
   ! J. Melton Apr 2015
 
-  use classic_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp2,iccp1, &
-                    monthend, mmday,modelpft, l2max,deltat, abszero, monthdays,seed, crop, NBS
+  use classic_params, only : nlat, nmos, ilg, ican, ignd, icp1, icc, iccp2, iccp1, &
+                    monthend, mmday, modelpft, l2max, deltat, abszero, monthdays, seed, crop, NBS
 
   implicit none
 
@@ -277,7 +278,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: wtstatus     !< soil water status used for calculating allocation fractions
     real, allocatable, dimension(:,:,:) :: ltstatus     !< light status used for calculating allocation fractions
     real, allocatable, dimension(:,:,:) :: gppveg       !< ! gross primary productity for each pft
-    real, allocatable, dimension(:,:,:) :: nppveg       !< npp for individual pfts,  u-mol co2/m2.sec
+    real, allocatable, dimension(:,:,:) :: nppveg       !< npp for individual pfts, u-mol co2/m2.sec
     real, allocatable, dimension(:,:,:) :: autoresveg   !<
     real, allocatable, dimension(:,:,:) :: rmlvegacc    !<
     real, allocatable, dimension(:,:,:) :: rmsveg       !< stem maintenance resp. rate for each pft
@@ -291,7 +292,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: rmlveg       !< leaf maintenance resp. rate for each pft
 
 
-    ! allocated with nlat,nmos:
+    ! allocated with nlat, nmos:
     real, allocatable, dimension(:,:) :: gavglai               !< grid averaged green leaf area index
     real, allocatable, dimension(:,:) :: co2conc               !< ATMOS. CO2 CONC. IN PPM
     real, allocatable, dimension(:,:) :: ch4conc               !<
@@ -362,7 +363,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: peatdep
     real, allocatable, dimension(:,:) :: pdd
 
-    ! allocated with nlat,nmos,ican:
+    ! allocated with nlat, nmos, ican:
     real, allocatable, dimension(:,:,:) :: zolnc            !< lumped log of roughness length for class' 4 pfts
     real, allocatable, dimension(:,:,:) :: ailc             !< lumped lai for class' 4 pfts
     real, allocatable, dimension(:,:,:) :: cmasvegc         !< total canopy mass for each of the 4 class pfts. recall that
@@ -375,18 +376,18 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: alirctm          !<
     real, allocatable, dimension(:,:,:) :: csum             !<
 
-    ! allocated with nlat,nmos,ican,ignd:
+    ! allocated with nlat, nmos, ican, ignd:
     real, allocatable, dimension(:,:,:,:) :: rmatc       !< fraction of roots for each of class' 4 pfts in each soil layer
 
-    ! allocated with nlat,nmos,icc,ignd:
+    ! allocated with nlat, nmos, icc, ignd:
     real, allocatable, dimension(:,:,:,:) :: rmatctem     !< fraction of roots for each of ctem's 9 pfts in each soil layer
 
-    ! allocated with nlat,nmos,iccp1:
+    ! allocated with nlat, nmos, iccp1:
     real, allocatable, dimension(:,:,:) :: nepveg      !< net ecosystem productity for each pft
     real, allocatable, dimension(:,:,:) :: nbpveg      !< net biome productity for bare fraction OR net biome productity for each pft
     real, allocatable, dimension(:,:,:) :: hetroresveg !<
 
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:,:) :: litrmass    !< litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: soilcmas    !< soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
@@ -400,7 +401,7 @@ module ctem_statevars
     ! real, allocatable, dimension(:,:,:,:) :: humiftrsveg !<
     ! COMBAK PERLAY
 
-    ! allocated with nlat,nmos,{some number}:
+    ! allocated with nlat, nmos,{some number}:
     integer, allocatable, dimension(:,:,:) :: colddays          !< cold days counter for tracking days below a certain
     !< temperature threshold for ndl dcd and crop pfts.
     real, allocatable, dimension(:,:,:)  :: slopefrac          !< prescribed fraction of wetlands based on slope
@@ -419,7 +420,7 @@ module ctem_statevars
   type veg_gat
 
     ! This is the basic data structure that contains the state variables
-    ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1,iccp2}
+    ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc, iccp1, iccp2}
 
     real, allocatable, dimension(:,:) :: gleafmas   !< Green leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bleafmas   !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
@@ -662,7 +663,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: grclarea      !< area of the grid cell, \f$km^2\f$
 
     integer, allocatable, dimension(:) :: altotcount_ctm ! nlat  !< Counter used for calculating total albedo
-    real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)   !< Max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
+    real, allocatable, dimension(:,:)  :: todfrac  !(ilg, icc)   !< Max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
     real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: flutacc_gat !(ilg)    !<
     real, allocatable, dimension(:)    :: flinacc_gat !(ilg)    !<
@@ -671,10 +672,10 @@ module ctem_statevars
     real, allocatable, dimension(:)    :: netrad_gat !(ilg)     !<
     real, allocatable, dimension(:)    :: preacc_gat !(ilg)     !<
     real, allocatable, dimension(:)    :: sdepgat !(ilg)        !<
-    !     real, allocatable, dimension(:,:)  :: rgmgat !(ilg,ignd)    !<
-    real, allocatable, dimension(:,:)  :: sandgat !(ilg,ignd)   !<
-    real, allocatable, dimension(:,:)  :: claygat !(ilg,ignd)   !<
-    real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)   !<
+    !     real, allocatable, dimension(:,:)  :: rgmgat !(ilg, ignd)    !<
+    real, allocatable, dimension(:,:)  :: sandgat !(ilg, ignd)   !<
+    real, allocatable, dimension(:,:)  :: claygat !(ilg, ignd)   !<
+    real, allocatable, dimension(:,:)  :: orgmgat !(ilg, ignd)   !<
     real, allocatable, dimension(:)    :: xdiffusgat !(ilg)
     real, allocatable, dimension(:)    :: faregat !(ilg)
 
@@ -689,17 +690,17 @@ module ctem_statevars
     ! NOTE: Units may vary depending on the tracer used, see convertTracerUnits in tracer.f90
 
     ! Pools:
-    ! allocated with nlat,nmos,...:
+    ! allocated with nlat, nmos,...:
     real, allocatable, dimension(:,:) :: mossCMassrot      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:) :: mossLitrMassrot   !< Tracer mass in moss litter, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:) :: tracerCO2rot     !< Atmopspheric tracer CO2 concentration (units vary)
 
-    ! allocated with nlat,nmos,icc:
+    ! allocated with nlat, nmos, icc:
     real, allocatable, dimension(:,:,:) :: gLeafMassrot      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:,:) :: bLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg C/m^2\f$
     real, allocatable, dimension(:,:,:) :: stemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: rootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     real, allocatable, dimension(:,:,:,:) :: litrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:,:) :: soilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
@@ -707,12 +708,12 @@ module ctem_statevars
     real, allocatable, dimension(:) :: mossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:) :: mossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
     real, allocatable, dimension(:) :: tracerCO2gat     !< Atmopspheric tracer CO2 concentration (units vary)
-    ! allocated with nlat,nmos,icc:
+    ! allocated with nlat, nmos, icc:
     real, allocatable, dimension(:,:) :: gLeafMassgat      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bLeafMassgat      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: stemMassgat       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: rootMassgat       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     real, allocatable, dimension(:,:,:) :: litrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: soilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
@@ -732,16 +733,16 @@ module ctem_statevars
     real, allocatable, dimension(:) :: taaccgat_t       !<
     real, allocatable, dimension(:) :: uvaccgat_t       !<
     real, allocatable, dimension(:) :: vvaccgat_t       !<
-    real, allocatable, dimension(:) :: anmossac_t       !< daily averaged moss net photosynthesis accumulated (/f$\mu mol /m^2 /s\f$)
-    real, allocatable, dimension(:) :: rmlmossac_t      !< daily averaged moss maintainence respiration (/f$\mu mol /m^2 /s\f$)
-    real, allocatable, dimension(:) :: gppmossac_t      !< daily averaged gross primary production (/f$\mu mol /m^2 /s\f$)
+    real, allocatable, dimension(:) :: anmossac_t       !< daily averaged moss net photosynthesis accumulated (\f$\mu mol /m^2 /s\f$)
+    real, allocatable, dimension(:) :: rmlmossac_t      !< daily averaged moss maintainence respiration (\f$\mu mol /m^2 /s\f$)
+    real, allocatable, dimension(:) :: gppmossac_t      !< daily averaged gross primary production (\f$\mu mol /m^2 /s\f$)
 
-    ! allocated with ilg,ignd:
+    ! allocated with ilg, ignd:
     real, allocatable, dimension(:,:) :: tbaraccgat_t !<
     real, allocatable, dimension(:,:) :: thliqacc_t  !<
     real, allocatable, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 
-    ! allocated with ilg,icc:
+    ! allocated with ilg, icc:
     real, allocatable, dimension(:,:) :: ancgvgac_t  !<
     real, allocatable, dimension(:,:) :: rmlcgvga_t  !<
 
@@ -755,10 +756,11 @@ module ctem_statevars
 
     !     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-    ! allocated with nlat,nmos,icc/iccp1/iccp2:
+    ! allocated with nlat, nmos, icc/iccp1/iccp2:
 
     real, allocatable, dimension(:,:,:)   :: laimaxg_mo    !<
     real, allocatable, dimension(:,:,:)   :: stemmass_mo   !<
+    real, allocatable, dimension(:,:,:)   :: leafmass_mo   !<
     real, allocatable, dimension(:,:,:)   :: rootmass_mo   !<
     real, allocatable, dimension(:,:,:)   :: litrfallveg_mo !<
     real, allocatable, dimension(:,:,:) :: humiftrsveg_mo !<
@@ -786,7 +788,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: bterm_mo     !<
     real, allocatable, dimension(:,:,:) :: mterm_mo     !<
     real, allocatable, dimension(:,:,:) :: smfuncveg_mo !<
-    ! allocated with nlat,nmos,icc/iccp1/iccp2,ignd:
+    ! allocated with nlat, nmos, icc/iccp1/iccp2, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:,:) :: litrmass_mo   !<
     real, allocatable, dimension(:,:,:) :: soilcmas_mo   !<
@@ -811,6 +813,7 @@ module ctem_statevars
     ! allocated with nlat:
     real, allocatable, dimension(:) :: laimaxg_mo_g  !<
     real, allocatable, dimension(:) :: stemmass_mo_g !<
+    real, allocatable, dimension(:) :: leafmass_mo_g !<
     real, allocatable, dimension(:) :: rootmass_mo_g !<
     real, allocatable, dimension(:) :: litrfall_mo_g !<
     real, allocatable, dimension(:) :: humiftrs_mo_g !<
@@ -850,7 +853,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: cProduct_mo_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, allocatable, dimension(:) :: fProductDecomp_mo_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
 
-    ! allocated with nlat,ignd:
+    ! allocated with nlat, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:) :: litrmass_mo_g !<
     real, allocatable, dimension(:) :: soilcmas_mo_g !<
@@ -872,10 +875,11 @@ module ctem_statevars
 
     !     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-    ! allocated with nlat,nmos:
+    ! allocated with nlat, nmos:
 
     real, allocatable, dimension(:,:) :: laimaxg_mo_t  !<
     real, allocatable, dimension(:,:) :: stemmass_mo_t !<
+    real, allocatable, dimension(:,:) :: leafmass_mo_t !<
     real, allocatable, dimension(:,:) :: rootmass_mo_t !<
     real, allocatable, dimension(:,:) :: litrfall_mo_t !<
     real, allocatable, dimension(:,:) :: humiftrs_mo_t !<
@@ -915,7 +919,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: wind_mo_t     !<
     real, allocatable, dimension(:,:) :: fProductDecomp_mo_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
 
-    ! allocated with nlat,nmos,ignd:
+    ! allocated with nlat, nmos, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:) :: litrmass_mo_t !<
     real, allocatable, dimension(:,:) :: soilcmas_mo_t !<
@@ -939,7 +943,7 @@ module ctem_statevars
     ! c      Annual output for CTEM mosaic variables:
     ! c      (denoted by name ending in "_yr_m")
     !
-    ! allocated with nlat,nmos,icc/iccp1/iccp2:
+    ! allocated with nlat, nmos, icc/iccp1/iccp2:
 
     real, allocatable, dimension(:,:,:) :: laimaxg_yr   !<
     real, allocatable, dimension(:,:,:) :: stemmass_yr  !<
@@ -970,7 +974,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:,:) :: smfuncveg_yr !<
     real, allocatable, dimension(:,:,:) :: veghght_yr   !<
 
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:,:) :: litrmass_yr !<
     real, allocatable, dimension(:,:,:) :: soilcmas_yr !<
@@ -1034,7 +1038,7 @@ module ctem_statevars
     real, allocatable, dimension(:) :: cProduct_yr_g          !< Carbon in the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2}]\f$
     real, allocatable, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
 
-    ! allocated with nlat,ignd:
+    ! allocated with nlat, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:) :: litrmass_yr_g !<
     real, allocatable, dimension(:) :: soilcmas_yr_g !<
@@ -1057,7 +1061,7 @@ module ctem_statevars
     ! c      Annual output for CTEM mosaic variables:
     ! c      (denoted by name ending in "_yr_m")
     !
-    ! allocated with nlat,nmos:
+    ! allocated with nlat, nmos:
     real, allocatable, dimension(:,:) :: laimaxg_yr_t  !<
     real, allocatable, dimension(:,:) :: stemmass_yr_t !<
     real, allocatable, dimension(:,:) :: rootmass_yr_t !<
@@ -1097,7 +1101,7 @@ module ctem_statevars
     real, allocatable, dimension(:,:) :: peatdep_yr_t  !<
     real, allocatable, dimension(:,:) :: fProductDecomp_yr_t    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
 
-    ! allocated with nlat,nmos,ignd:
+    ! allocated with nlat, nmos, ignd:
     ! COMBAK PERLAY
     real, allocatable, dimension(:,:) :: litrmass_yr_t !<
     real, allocatable, dimension(:,:) :: soilcmas_yr_t !<
@@ -1122,206 +1126,206 @@ contains
 
   subroutine alloc_ctem_vars()
 
-    use classic_params, only : ican, icc,iccp2,iccp1,ilg,nlat,nmos,ignd
+    use classic_params, only : ican, icc, iccp2, iccp1, ilg, nlat, nmos, ignd
 
     implicit none
 
     !-----------
 
-    ! allocated with nlat,nmos, icc:
+    ! allocated with nlat, nmos, icc:
 
-    allocate(vrot%pftexist(nlat,nmos,icc), &
-         vrot%lfstatus(nlat,nmos,icc), &
-         vrot%pandays (nlat,nmos,icc), &
-         vrot%gleafmas(nlat,nmos,icc), &
-         vrot%bleafmas(nlat,nmos,icc), &
-         vrot%stemmass(nlat,nmos,icc), &
-         vrot%rootmass(nlat,nmos,icc), &
-         vrot%pstemmass (nlat,nmos,icc), &
-         vrot%pgleafmass (nlat,nmos,icc), &
-         vrot%fcancmx (nlat,nmos,icc), &
-         vrot%ailcg   (nlat,nmos,icc), &
-         vrot%ailcgs  (nlat,nmos,icc), &
-         vrot%fcancs  (nlat,nmos,icc), &
-         vrot%fcanc   (nlat,nmos,icc), &
-         vrot%co2i1cg (nlat,nmos,icc), &
-         vrot%co2i1cs (nlat,nmos,icc), &
-         vrot%co2i2cg (nlat,nmos,icc), &
-         vrot%co2i2cs (nlat,nmos,icc), &
-         vrot%ancsveg (nlat,nmos,icc), &
-         vrot%ancgveg (nlat,nmos,icc), &
-         vrot%rmlcsveg(nlat,nmos,icc), &
-         vrot%rmlcgveg(nlat,nmos,icc), &
-         vrot%slai    (nlat,nmos,icc), &
-         vrot%ailcb   (nlat,nmos,icc), &
-         vrot%flhrloss(nlat,nmos,icc), &
-         vrot%grwtheff(nlat,nmos,icc), &
-         vrot%lystmmas(nlat,nmos,icc), &
-         vrot%lyrotmas(nlat,nmos,icc), &
-         vrot%tymaxlai(nlat,nmos,icc), &
-         vrot%stmhrlos(nlat,nmos,icc), &
-         vrot%vgbiomas_veg(nlat,nmos,icc), &
-         vrot%emit_co2(nlat,nmos,icc), &
-         vrot%emit_co (nlat,nmos,icc), &
-         vrot%emit_ch4(nlat,nmos,icc), &
-         vrot%emit_nmhc(nlat,nmos,icc), &
-         vrot%emit_h2 (nlat,nmos,icc), &
-         vrot%emit_nox(nlat,nmos,icc), &
-         vrot%emit_n2o(nlat,nmos,icc), &
-         vrot%emit_pm25(nlat,nmos,icc), &
-         vrot%emit_tpm(nlat,nmos,icc), &
-         vrot%emit_tc (nlat,nmos,icc), &
-         vrot%emit_oc (nlat,nmos,icc), &
-         vrot%emit_bc (nlat,nmos,icc), &
-         vrot%burnvegf(nlat,nmos,icc), &
-         vrot%smfuncveg(nlat,nmos,icc), &
-         vrot%bterm   (nlat,nmos,icc), &
-         vrot%mterm   (nlat,nmos,icc), &
-         vrot%bmasveg (nlat,nmos,icc), &
-         vrot%veghght (nlat,nmos,icc), &
-         vrot%rootdpth(nlat,nmos,icc), &
-         vrot%tltrleaf(nlat,nmos,icc), &
-         vrot%tltrstem(nlat,nmos,icc), &
-         vrot%tltrroot(nlat,nmos,icc), &
-         vrot%leaflitr(nlat,nmos,icc), &
-         vrot%roottemp(nlat,nmos,icc), &
-         vrot%afrleaf (nlat,nmos,icc), &
-         vrot%afrstem (nlat,nmos,icc), &
-         vrot%afrroot (nlat,nmos,icc), &
-         vrot%wtstatus(nlat,nmos,icc), &
-         vrot%ltstatus(nlat,nmos,icc), &
-         vrot%gppveg  (nlat,nmos,icc), &
-         vrot%nppveg  (nlat,nmos,icc), &
-         vrot%autoresveg(nlat,nmos,icc), &
-         vrot%rmlvegacc (nlat,nmos,icc), &
-         vrot%rmsveg  (nlat,nmos,icc), &
-         vrot%rmrveg  (nlat,nmos,icc), &
-         vrot%rgveg   (nlat,nmos,icc), &
-         vrot%litrfallveg(nlat,nmos,icc), &
-         vrot%rothrlos(nlat,nmos,icc), &
-         vrot%pfcancmx(nlat,nmos,icc), &
-         vrot%nfcancmx(nlat,nmos,icc), &
-         vrot%anveg   (nlat,nmos,icc), &
-         vrot%rmlveg  (nlat,nmos,icc), &
+    allocate(vrot%pftexist(nlat, nmos, icc), &
+         vrot%lfstatus(nlat, nmos, icc), &
+         vrot%pandays (nlat, nmos, icc), &
+         vrot%gleafmas(nlat, nmos, icc), &
+         vrot%bleafmas(nlat, nmos, icc), &
+         vrot%stemmass(nlat, nmos, icc), &
+         vrot%rootmass(nlat, nmos, icc), &
+         vrot%pstemmass (nlat, nmos, icc), &
+         vrot%pgleafmass (nlat, nmos, icc), &
+         vrot%fcancmx (nlat, nmos, icc), &
+         vrot%ailcg   (nlat, nmos, icc), &
+         vrot%ailcgs  (nlat, nmos, icc), &
+         vrot%fcancs  (nlat, nmos, icc), &
+         vrot%fcanc   (nlat, nmos, icc), &
+         vrot%co2i1cg (nlat, nmos, icc), &
+         vrot%co2i1cs (nlat, nmos, icc), &
+         vrot%co2i2cg (nlat, nmos, icc), &
+         vrot%co2i2cs (nlat, nmos, icc), &
+         vrot%ancsveg (nlat, nmos, icc), &
+         vrot%ancgveg (nlat, nmos, icc), &
+         vrot%rmlcsveg(nlat, nmos, icc), &
+         vrot%rmlcgveg(nlat, nmos, icc), &
+         vrot%slai    (nlat, nmos, icc), &
+         vrot%ailcb   (nlat, nmos, icc), &
+         vrot%flhrloss(nlat, nmos, icc), &
+         vrot%grwtheff(nlat, nmos, icc), &
+         vrot%lystmmas(nlat, nmos, icc), &
+         vrot%lyrotmas(nlat, nmos, icc), &
+         vrot%tymaxlai(nlat, nmos, icc), &
+         vrot%stmhrlos(nlat, nmos, icc), &
+         vrot%vgbiomas_veg(nlat, nmos, icc), &
+         vrot%emit_co2(nlat, nmos, icc), &
+         vrot%emit_co (nlat, nmos, icc), &
+         vrot%emit_ch4(nlat, nmos, icc), &
+         vrot%emit_nmhc(nlat, nmos, icc), &
+         vrot%emit_h2 (nlat, nmos, icc), &
+         vrot%emit_nox(nlat, nmos, icc), &
+         vrot%emit_n2o(nlat, nmos, icc), &
+         vrot%emit_pm25(nlat, nmos, icc), &
+         vrot%emit_tpm(nlat, nmos, icc), &
+         vrot%emit_tc (nlat, nmos, icc), &
+         vrot%emit_oc (nlat, nmos, icc), &
+         vrot%emit_bc (nlat, nmos, icc), &
+         vrot%burnvegf(nlat, nmos, icc), &
+         vrot%smfuncveg(nlat, nmos, icc), &
+         vrot%bterm   (nlat, nmos, icc), &
+         vrot%mterm   (nlat, nmos, icc), &
+         vrot%bmasveg (nlat, nmos, icc), &
+         vrot%veghght (nlat, nmos, icc), &
+         vrot%rootdpth(nlat, nmos, icc), &
+         vrot%tltrleaf(nlat, nmos, icc), &
+         vrot%tltrstem(nlat, nmos, icc), &
+         vrot%tltrroot(nlat, nmos, icc), &
+         vrot%leaflitr(nlat, nmos, icc), &
+         vrot%roottemp(nlat, nmos, icc), &
+         vrot%afrleaf (nlat, nmos, icc), &
+         vrot%afrstem (nlat, nmos, icc), &
+         vrot%afrroot (nlat, nmos, icc), &
+         vrot%wtstatus(nlat, nmos, icc), &
+         vrot%ltstatus(nlat, nmos, icc), &
+         vrot%gppveg  (nlat, nmos, icc), &
+         vrot%nppveg  (nlat, nmos, icc), &
+         vrot%autoresveg(nlat, nmos, icc), &
+         vrot%rmlvegacc (nlat, nmos, icc), &
+         vrot%rmsveg  (nlat, nmos, icc), &
+         vrot%rmrveg  (nlat, nmos, icc), &
+         vrot%rgveg   (nlat, nmos, icc), &
+         vrot%litrfallveg(nlat, nmos, icc), &
+         vrot%rothrlos(nlat, nmos, icc), &
+         vrot%pfcancmx(nlat, nmos, icc), &
+         vrot%nfcancmx(nlat, nmos, icc), &
+         vrot%anveg   (nlat, nmos, icc), &
+         vrot%rmlveg  (nlat, nmos, icc), &
 
-    tracer%gLeafMassrot(nlat,nmos,icc), &
-         tracer%bLeafMassrot(nlat,nmos,icc), &
-         tracer%stemMassrot(nlat,nmos,icc), &
-         tracer%rootMassrot(nlat,nmos,icc), &
+    tracer%gLeafMassrot(nlat, nmos, icc), &
+         tracer%bLeafMassrot(nlat, nmos, icc), &
+         tracer%stemMassrot(nlat, nmos, icc), &
+         tracer%rootMassrot(nlat, nmos, icc), &
 
-    ! allocated with nlat,nmos:
-    vrot%gavglai (nlat,nmos), &
-         vrot%co2conc (nlat,nmos), &
-         vrot%ch4conc (nlat,nmos), &
-         vrot%canres  (nlat,nmos), &
-         vrot%vgbiomas(nlat,nmos), &
-         vrot%gavgltms(nlat,nmos), &
-         vrot%gavgscms(nlat,nmos), &
-         vrot%burnfrac(nlat,nmos), &
-         vrot%popdin  (nlat,nmos), &
-         vrot%lterm   (nlat,nmos), &
-         vrot%extnprob(nlat,nmos), &
-         vrot%prbfrhuc(nlat,nmos), &
-         vrot%rml     (nlat,nmos), &
-         vrot%rms     (nlat,nmos), &
-         vrot%rmr     (nlat,nmos), &
-         vrot%ch4WetSpec (nlat,nmos), &
-         vrot%wetfdyn (nlat,nmos), &
-         vrot%wetfrac_pres(nlat,nmos), &
-         vrot%ch4WetDyn (nlat,nmos), &
-         vrot%ch4_soills(nlat,nmos), &
-         vrot%lucemcom(nlat,nmos), &
-         vrot%lucltrin(nlat,nmos), &
-         vrot%lucsocin(nlat,nmos), &
-         vrot%npp     (nlat,nmos), &
-         vrot%nep     (nlat,nmos), &
-         vrot%nbp     (nlat,nmos), &
-         vrot%gpp     (nlat,nmos), &
-         vrot%hetrores(nlat,nmos), &
-         vrot%autores (nlat,nmos), &
-         vrot%soilcresp(nlat,nmos), &
-         vrot%rm      (nlat,nmos), &
-         vrot%rg      (nlat,nmos), &
-         vrot%litres  (nlat,nmos), &
-         vrot%socres  (nlat,nmos), &
-         vrot%dstcemls(nlat,nmos), &
-         vrot%litrfall(nlat,nmos), &
-         vrot%humiftrs(nlat,nmos), &
-         vrot%cfluxcg (nlat,nmos), &
-         vrot%cfluxcs (nlat,nmos), &
-         vrot%dstcemls3 (nlat,nmos), &
-         vrot%tcanrs  (nlat,nmos), &
-         vrot%tsnors  (nlat,nmos), &
-         vrot%tpndrs  (nlat,nmos), &
-         vrot%uvaccrow_m(nlat,nmos), &
-         vrot%vvaccrow_m (nlat,nmos), &
-         vrot%qevpacc_m_save(nlat,nmos), &
-         vrot%twarmm  (nlat,nmos), &
-         vrot%tcoldm  (nlat,nmos), &
-         vrot%gdd5    (nlat,nmos), &
-         vrot%aridity (nlat,nmos), &
-         vrot%srplsmon(nlat,nmos), &
-         vrot%defctmon(nlat,nmos), &
-         vrot%anndefct(nlat,nmos), &
-         vrot%annsrpls(nlat,nmos), &
-         vrot%annpcp  (nlat,nmos), &
-         vrot%dry_season_length(nlat,nmos), &
-         vrot%ipeatland(nlat,nmos), &
-         vrot%litrmsmoss(nlat,nmos), &
-         vrot%Cmossmas(nlat,nmos), &
-         vrot%dmoss(nlat,nmos), &
-         vrot%nppmoss(nlat,nmos), &
-         vrot%rmlmoss(nlat,nmos), &
-         vrot%gppmoss(nlat,nmos), &
-         vrot%anmoss(nlat,nmos), &
-         vrot%armoss(nlat,nmos), &
-         vrot%peatdep(nlat,nmos), &
-         vrot%pdd(nlat,nmos), &
+    ! allocated with nlat, nmos:
+    vrot%gavglai (nlat, nmos), &
+         vrot%co2conc (nlat, nmos), &
+         vrot%ch4conc (nlat, nmos), &
+         vrot%canres  (nlat, nmos), &
+         vrot%vgbiomas(nlat, nmos), &
+         vrot%gavgltms(nlat, nmos), &
+         vrot%gavgscms(nlat, nmos), &
+         vrot%burnfrac(nlat, nmos), &
+         vrot%popdin  (nlat, nmos), &
+         vrot%lterm   (nlat, nmos), &
+         vrot%extnprob(nlat, nmos), &
+         vrot%prbfrhuc(nlat, nmos), &
+         vrot%rml     (nlat, nmos), &
+         vrot%rms     (nlat, nmos), &
+         vrot%rmr     (nlat, nmos), &
+         vrot%ch4WetSpec (nlat, nmos), &
+         vrot%wetfdyn (nlat, nmos), &
+         vrot%wetfrac_pres(nlat, nmos), &
+         vrot%ch4WetDyn (nlat, nmos), &
+         vrot%ch4_soills(nlat, nmos), &
+         vrot%lucemcom(nlat, nmos), &
+         vrot%lucltrin(nlat, nmos), &
+         vrot%lucsocin(nlat, nmos), &
+         vrot%npp     (nlat, nmos), &
+         vrot%nep     (nlat, nmos), &
+         vrot%nbp     (nlat, nmos), &
+         vrot%gpp     (nlat, nmos), &
+         vrot%hetrores(nlat, nmos), &
+         vrot%autores (nlat, nmos), &
+         vrot%soilcresp(nlat, nmos), &
+         vrot%rm      (nlat, nmos), &
+         vrot%rg      (nlat, nmos), &
+         vrot%litres  (nlat, nmos), &
+         vrot%socres  (nlat, nmos), &
+         vrot%dstcemls(nlat, nmos), &
+         vrot%litrfall(nlat, nmos), &
+         vrot%humiftrs(nlat, nmos), &
+         vrot%cfluxcg (nlat, nmos), &
+         vrot%cfluxcs (nlat, nmos), &
+         vrot%dstcemls3 (nlat, nmos), &
+         vrot%tcanrs  (nlat, nmos), &
+         vrot%tsnors  (nlat, nmos), &
+         vrot%tpndrs  (nlat, nmos), &
+         vrot%uvaccrow_m(nlat, nmos), &
+         vrot%vvaccrow_m (nlat, nmos), &
+         vrot%qevpacc_m_save(nlat, nmos), &
+         vrot%twarmm  (nlat, nmos), &
+         vrot%tcoldm  (nlat, nmos), &
+         vrot%gdd5    (nlat, nmos), &
+         vrot%aridity (nlat, nmos), &
+         vrot%srplsmon(nlat, nmos), &
+         vrot%defctmon(nlat, nmos), &
+         vrot%anndefct(nlat, nmos), &
+         vrot%annsrpls(nlat, nmos), &
+         vrot%annpcp  (nlat, nmos), &
+         vrot%dry_season_length(nlat, nmos), &
+         vrot%ipeatland(nlat, nmos), &
+         vrot%litrmsmoss(nlat, nmos), &
+         vrot%Cmossmas(nlat, nmos), &
+         vrot%dmoss(nlat, nmos), &
+         vrot%nppmoss(nlat, nmos), &
+         vrot%rmlmoss(nlat, nmos), &
+         vrot%gppmoss(nlat, nmos), &
+         vrot%anmoss(nlat, nmos), &
+         vrot%armoss(nlat, nmos), &
+         vrot%peatdep(nlat, nmos), &
+         vrot%pdd(nlat, nmos), &
 
-    tracer%tracerCO2rot(nlat,nmos), &
-         tracer%mossCMassrot(nlat,nmos), &
-         tracer%mossLitrMassrot(nlat,nmos), &
+    tracer%tracerCO2rot(nlat, nmos), &
+         tracer%mossCMassrot(nlat, nmos), &
+         tracer%mossLitrMassrot(nlat, nmos), &
 
-    ! allocated with nlat,nmos,ican:
-    vrot%zolnc(nlat,nmos,ican), &
-         vrot%ailc(nlat,nmos,ican), &
-         vrot%cmasvegc(nlat,nmos,ican), &
-         vrot%alvsctm(nlat,nmos,ican), &
-         vrot%paic(nlat,nmos,ican), &
-         vrot%slaic(nlat,nmos,ican), &
-         vrot%alirctm(nlat,nmos,ican), &
-         vrot%csum(nlat,nmos,ican), &
+    ! allocated with nlat, nmos, ican:
+    vrot%zolnc(nlat, nmos, ican), &
+         vrot%ailc(nlat, nmos, ican), &
+         vrot%cmasvegc(nlat, nmos, ican), &
+         vrot%alvsctm(nlat, nmos, ican), &
+         vrot%paic(nlat, nmos, ican), &
+         vrot%slaic(nlat, nmos, ican), &
+         vrot%alirctm(nlat, nmos, ican), &
+         vrot%csum(nlat, nmos, ican), &
 
-    ! allocated with nlat,nmos,ican,ignd:
-    vrot%rmatc(nlat,nmos,ican,ignd), &
+    ! allocated with nlat, nmos, ican, ignd:
+    vrot%rmatc(nlat, nmos, ican, ignd), &
 
-    ! allocated with nlat,nmos,icc,ignd:
-    vrot%rmatctem(nlat,nmos,icc,ignd), &
+    ! allocated with nlat, nmos, icc, ignd:
+    vrot%rmatctem(nlat, nmos, icc, ignd), &
 
-    ! allocated with nlat,nmos,iccp1:
-    vrot%nepveg(nlat,nmos,iccp1), &
-         vrot%nbpveg(nlat,nmos,iccp1), &
-         vrot%hetroresveg(nlat,nmos,iccp1), &
+    ! allocated with nlat, nmos, iccp1:
+    vrot%nepveg(nlat, nmos, iccp1), &
+         vrot%nbpveg(nlat, nmos, iccp1), &
+         vrot%hetroresveg(nlat, nmos, iccp1), &
 
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     ! COMBAK PERLAY
-    vrot%litrmass(nlat,nmos,iccp2), &
-        vrot%soilcmas(nlat,nmos,iccp2), &
-        vrot%litresveg(nlat,nmos,iccp2), &
-        vrot%soilcresveg(nlat,nmos,iccp2), &
-        vrot%humiftrsveg(nlat,nmos,iccp2), &
-        ! vrot%litrmass(nlat,nmos,iccp2,ignd), &
-        ! vrot%soilcmas(nlat,nmos,iccp2,ignd), &
-        ! vrot%litresveg(nlat,nmos,iccp2,ignd), &
-        ! vrot%soilcresveg(nlat,nmos,iccp2,ignd), &
-        ! vrot%humiftrsveg(nlat,nmos,iccp2,ignd), &
+    vrot%litrmass(nlat, nmos, iccp2), &
+        vrot%soilcmas(nlat, nmos, iccp2), &
+        vrot%litresveg(nlat, nmos, iccp2), &
+        vrot%soilcresveg(nlat, nmos, iccp2), &
+        vrot%humiftrsveg(nlat, nmos, iccp2), &
+        ! vrot%litrmass(nlat, nmos, iccp2, ignd), &
+        ! vrot%soilcmas(nlat, nmos, iccp2, ignd), &
+        ! vrot%litresveg(nlat, nmos, iccp2, ignd), &
+        ! vrot%soilcresveg(nlat, nmos, iccp2, ignd), &
+        ! vrot%humiftrsveg(nlat, nmos, iccp2, ignd), &
         ! COMBAK PERLAY
-        tracer%litrMassrot(nlat,nmos,iccp2,ignd), &
-        tracer%soilCMassrot(nlat,nmos,iccp2,ignd), &
+        tracer%litrMassrot(nlat, nmos, iccp2, ignd), &
+        tracer%soilCMassrot(nlat, nmos, iccp2, ignd), &
 
-    ! allocated with nlat,nmos,{some number}:
-    vrot%colddays(nlat,nmos,2), &
-         vrot%slopefrac(nlat,nmos,8), &
+    ! allocated with nlat, nmos,{some number}:
+    vrot%colddays(nlat, nmos, 2), &
+         vrot%slopefrac(nlat, nmos, 8), &
 
     ! allocated with nlat:
     vrot%dayl_max(nlat), &
@@ -1432,147 +1436,147 @@ contains
          tracer%tracerCO2gat(ilg), &
 
     ! allocated with ilg, icc
-    vgat%gleafmas (ilg,icc), &
-         vgat%bleafmas (ilg,icc), &
-         vgat%stemmass (ilg,icc), &
-         vgat%rootmass (ilg,icc), &
-         vgat%pstemmass (ilg,icc), &
-         vgat%pgleafmass (ilg,icc), &
-         vgat%fcancmx (ilg,icc), &
-         vgat%ailcg (ilg,icc), &
-         vgat%ailcgs (ilg,icc), &
-         vgat%fcancs (ilg,icc), &
-         vgat%fcanc (ilg,icc), &
-         vgat%co2i1cg (ilg,icc), &
-         vgat%co2i1cs (ilg,icc), &
-         vgat%co2i2cg (ilg,icc), &
-         vgat%co2i2cs (ilg,icc), &
-         vgat%ancsveg (ilg,icc), &
-         vgat%ancgveg (ilg,icc), &
-         vgat%rmlcsveg (ilg,icc), &
-         vgat%rmlcgveg (ilg,icc), &
-         vgat%slai (ilg,icc), &
-         vgat%ailcb (ilg,icc), &
-         vgat%flhrloss (ilg,icc), &
-         vgat%grwtheff (ilg,icc), &
-         vgat%lystmmas (ilg,icc), &
-         vgat%lyrotmas (ilg,icc), &
-         vgat%tymaxlai (ilg,icc), &
-         vgat%stmhrlos (ilg,icc), &
-         vgat%vgbiomas_veg (ilg,icc), &
-         vgat%emit_co2 (ilg,icc), &
-         vgat%emit_co (ilg,icc), &
-         vgat%emit_ch4 (ilg,icc), &
-         vgat%emit_nmhc (ilg,icc), &
-         vgat%emit_h2 (ilg,icc), &
-         vgat%emit_nox (ilg,icc), &
-         vgat%emit_n2o (ilg,icc), &
-         vgat%emit_pm25 (ilg,icc), &
-         vgat%emit_tpm (ilg,icc), &
-         vgat%emit_tc (ilg,icc), &
-         vgat%emit_oc (ilg,icc), &
-         vgat%emit_bc (ilg,icc), &
-         vgat%burnvegf (ilg,icc), &
-         vgat%smfuncveg (ilg,icc), &
-         vgat%bterm (ilg,icc), &
-         vgat%mterm (ilg,icc), &
-         vgat%bmasveg (ilg,icc), &
-         vgat%veghght (ilg,icc), &
-         vgat%rootdpth (ilg,icc), &
-         vgat%tltrleaf (ilg,icc), &
-         vgat%blfltrdt (ilg,icc), &
-         vgat%glfltrdt (ilg,icc), &
-         vgat%glcaemls(ilg,icc), &
-         vgat%blcaemls(ilg,icc), &
-         vgat%rtcaemls(ilg,icc), &
-         vgat%stcaemls(ilg,icc), &
-         vgat%ltrcemls(ilg,icc), &
-         vgat%ntchlveg(ilg,icc), &
-         vgat%ntchsveg(ilg,icc), &
-         vgat%ntchrveg(ilg,icc), &
-         vgat%tltrstem (ilg,icc), &
-         vgat%tltrroot (ilg,icc), &
-         vgat%leaflitr (ilg,icc), &
-         vgat%roottemp (ilg,icc), &
-         vgat%afrleaf (ilg,icc), &
-         vgat%afrstem (ilg,icc), &
-         vgat%afrroot (ilg,icc), &
-         vgat%wtstatus (ilg,icc), &
-         vgat%ltstatus (ilg,icc), &
-         vgat%gppveg (ilg,icc), &
-         vgat%nppveg (ilg,icc), &
-         vgat%autoresveg (ilg,icc), &
-         vgat%rmlvegacc (ilg,icc), &
-         vgat%rmsveg (ilg,icc), &
-         vgat%rmrveg (ilg,icc), &
-         vgat%rgveg (ilg,icc), &
-         vgat%litrfallveg (ilg,icc), &
-         vgat%reprocost(ilg,icc), &
-         vgat%anveg (ilg,icc), &
-         vgat%rmlveg (ilg,icc), &
-         vgat%geremort (ilg,icc), &
-         vgat%intrmort (ilg,icc), &
-         vgat%lambda (ilg,icc), &
-         vgat%cc (ilg,icc), &
-         vgat%mm (ilg,icc), &
-         vgat%pftexist (ilg,icc), &
-         vgat%rothrlos (ilg,icc), &
-         vgat%pfcancmx (ilg,icc), &
-         vgat%nfcancmx (ilg,icc), &
-         vgat%lfstatus (ilg,icc), &
-         vgat%pandays (ilg,icc), &
-         vgat%todfrac(ilg,icc), &
-         tracer%gLeafMassgat(ilg,icc), &
-         tracer%bLeafMassgat(ilg,icc), &
-         tracer%stemMassgat(ilg,icc), &
-         tracer%rootMassgat(ilg,icc), &
+    vgat%gleafmas (ilg, icc), &
+         vgat%bleafmas (ilg, icc), &
+         vgat%stemmass (ilg, icc), &
+         vgat%rootmass (ilg, icc), &
+         vgat%pstemmass (ilg, icc), &
+         vgat%pgleafmass (ilg, icc), &
+         vgat%fcancmx (ilg, icc), &
+         vgat%ailcg (ilg, icc), &
+         vgat%ailcgs (ilg, icc), &
+         vgat%fcancs (ilg, icc), &
+         vgat%fcanc (ilg, icc), &
+         vgat%co2i1cg (ilg, icc), &
+         vgat%co2i1cs (ilg, icc), &
+         vgat%co2i2cg (ilg, icc), &
+         vgat%co2i2cs (ilg, icc), &
+         vgat%ancsveg (ilg, icc), &
+         vgat%ancgveg (ilg, icc), &
+         vgat%rmlcsveg (ilg, icc), &
+         vgat%rmlcgveg (ilg, icc), &
+         vgat%slai (ilg, icc), &
+         vgat%ailcb (ilg, icc), &
+         vgat%flhrloss (ilg, icc), &
+         vgat%grwtheff (ilg, icc), &
+         vgat%lystmmas (ilg, icc), &
+         vgat%lyrotmas (ilg, icc), &
+         vgat%tymaxlai (ilg, icc), &
+         vgat%stmhrlos (ilg, icc), &
+         vgat%vgbiomas_veg (ilg, icc), &
+         vgat%emit_co2 (ilg, icc), &
+         vgat%emit_co (ilg, icc), &
+         vgat%emit_ch4 (ilg, icc), &
+         vgat%emit_nmhc (ilg, icc), &
+         vgat%emit_h2 (ilg, icc), &
+         vgat%emit_nox (ilg, icc), &
+         vgat%emit_n2o (ilg, icc), &
+         vgat%emit_pm25 (ilg, icc), &
+         vgat%emit_tpm (ilg, icc), &
+         vgat%emit_tc (ilg, icc), &
+         vgat%emit_oc (ilg, icc), &
+         vgat%emit_bc (ilg, icc), &
+         vgat%burnvegf (ilg, icc), &
+         vgat%smfuncveg (ilg, icc), &
+         vgat%bterm (ilg, icc), &
+         vgat%mterm (ilg, icc), &
+         vgat%bmasveg (ilg, icc), &
+         vgat%veghght (ilg, icc), &
+         vgat%rootdpth (ilg, icc), &
+         vgat%tltrleaf (ilg, icc), &
+         vgat%blfltrdt (ilg, icc), &
+         vgat%glfltrdt (ilg, icc), &
+         vgat%glcaemls(ilg, icc), &
+         vgat%blcaemls(ilg, icc), &
+         vgat%rtcaemls(ilg, icc), &
+         vgat%stcaemls(ilg, icc), &
+         vgat%ltrcemls(ilg, icc), &
+         vgat%ntchlveg(ilg, icc), &
+         vgat%ntchsveg(ilg, icc), &
+         vgat%ntchrveg(ilg, icc), &
+         vgat%tltrstem (ilg, icc), &
+         vgat%tltrroot (ilg, icc), &
+         vgat%leaflitr (ilg, icc), &
+         vgat%roottemp (ilg, icc), &
+         vgat%afrleaf (ilg, icc), &
+         vgat%afrstem (ilg, icc), &
+         vgat%afrroot (ilg, icc), &
+         vgat%wtstatus (ilg, icc), &
+         vgat%ltstatus (ilg, icc), &
+         vgat%gppveg (ilg, icc), &
+         vgat%nppveg (ilg, icc), &
+         vgat%autoresveg (ilg, icc), &
+         vgat%rmlvegacc (ilg, icc), &
+         vgat%rmsveg (ilg, icc), &
+         vgat%rmrveg (ilg, icc), &
+         vgat%rgveg (ilg, icc), &
+         vgat%litrfallveg (ilg, icc), &
+         vgat%reprocost(ilg, icc), &
+         vgat%anveg (ilg, icc), &
+         vgat%rmlveg (ilg, icc), &
+         vgat%geremort (ilg, icc), &
+         vgat%intrmort (ilg, icc), &
+         vgat%lambda (ilg, icc), &
+         vgat%cc (ilg, icc), &
+         vgat%mm (ilg, icc), &
+         vgat%pftexist (ilg, icc), &
+         vgat%rothrlos (ilg, icc), &
+         vgat%pfcancmx (ilg, icc), &
+         vgat%nfcancmx (ilg, icc), &
+         vgat%lfstatus (ilg, icc), &
+         vgat%pandays (ilg, icc), &
+         vgat%todfrac(ilg, icc), &
+         tracer%gLeafMassgat(ilg, icc), &
+         tracer%bLeafMassgat(ilg, icc), &
+         tracer%stemMassgat(ilg, icc), &
+         tracer%rootMassgat(ilg, icc), &
 
     ! allocated with ilg, ican:
-    vgat%zolnc (ilg,ican), &
-         vgat%ailc (ilg,ican), &
-         vgat%cmasvegc (ilg,ican), &
-         vgat%alvsctm (ilg,ican), &
-         vgat%paic (ilg,ican), &
-         vgat%slaic (ilg,ican), &
-         vgat%alirctm (ilg,ican), &
+    vgat%zolnc (ilg, ican), &
+         vgat%ailc (ilg, ican), &
+         vgat%cmasvegc (ilg, ican), &
+         vgat%alvsctm (ilg, ican), &
+         vgat%paic (ilg, ican), &
+         vgat%slaic (ilg, ican), &
+         vgat%alirctm (ilg, ican), &
 
     ! allocated with ilg, iccp1:
-    vgat%nepveg (ilg,iccp1), &
-         vgat%nbpveg (ilg,iccp1), &
-         vgat%hetroresveg (ilg,iccp1), &
+    vgat%nepveg (ilg, iccp1), &
+         vgat%nbpveg (ilg, iccp1), &
+         vgat%hetroresveg (ilg, iccp1), &
 
-    ! allocated with ilg, iccp2,ignd:
+    ! allocated with ilg, iccp2, ignd:
     ! COMBAK PERLAY
-    vgat%litrmass (ilg,iccp2), &
-        vgat%soilcmas (ilg,iccp2), &
-        vgat%litresveg (ilg,iccp2), &
-        vgat%soilcresveg (ilg,iccp2), &
-        vgat%humiftrsveg (ilg,iccp2), &
-        ! vgat%litrmass (ilg,iccp2,ignd), &
-        ! vgat%soilcmas (ilg,iccp2,ignd), &
-        ! vgat%litresveg (ilg,iccp2,ignd), &
-        ! vgat%soilcresveg (ilg,iccp2,ignd), &
-        ! vgat%humiftrsveg (ilg,iccp2,ignd), &
+    vgat%litrmass (ilg, iccp2), &
+        vgat%soilcmas (ilg, iccp2), &
+        vgat%litresveg (ilg, iccp2), &
+        vgat%soilcresveg (ilg, iccp2), &
+        vgat%humiftrsveg (ilg, iccp2), &
+        ! vgat%litrmass (ilg, iccp2, ignd), &
+        ! vgat%soilcmas (ilg, iccp2, ignd), &
+        ! vgat%litresveg (ilg, iccp2, ignd), &
+        ! vgat%soilcresveg (ilg, iccp2, ignd), &
+        ! vgat%humiftrsveg (ilg, iccp2, ignd), &
         ! COMBAK PERLAY
-        tracer%litrMassgat(ilg,iccp2,ignd), &
-        tracer%soilCMassgat(ilg,iccp2,ignd), &
+        tracer%litrMassgat(ilg, iccp2, ignd), &
+        tracer%soilCMassgat(ilg, iccp2, ignd), &
 
-    ! allocated with ilg,ignd:
-    !          vgat%rgmgat(ilg,ignd), &
-    vgat%sandgat(ilg,ignd), &
-         vgat%claygat(ilg,ignd), &
-         vgat%orgmgat(ilg,ignd), &
+    ! allocated with ilg, ignd:
+    !          vgat%rgmgat(ilg, ignd), &
+    vgat%sandgat(ilg, ignd), &
+         vgat%claygat(ilg, ignd), &
+         vgat%orgmgat(ilg, ignd), &
 
     ! allocated with ilg, ican, ignd:
-    vgat%rmatc (ilg,ican,ignd), &
+    vgat%rmatc (ilg, ican, ignd), &
 
     ! allocated with ilg, icc, ignd:
-    vgat%rmatctem (ilg,icc,ignd), &
+    vgat%rmatctem (ilg, icc, ignd), &
 
     ! allocated with ilg, icc, {some number}:
-    vgat%colddays (ilg,2), &
-         vgat%slopefrac (ilg,8), &
-         vgat%tmonth (12,ilg), &
+    vgat%colddays (ilg, 2), &
+         vgat%slopefrac (ilg, 8), &
+         vgat%tmonth (12, ilg), &
 
     ! allocated with ilg
     ctem_tile%fsnowacc_t (ilg), &
@@ -1584,64 +1588,66 @@ contains
          ctem_tile%anmossac_t (ilg), &
          ctem_tile%rmlmossac_t (ilg), &
          ctem_tile%gppmossac_t (ilg), &
-         ctem_tile%tbaraccgat_t (ilg,ignd), &
-         ctem_tile%thliqacc_t (ilg,ignd), &
-         ctem_tile%thiceacc_t (ilg,ignd), &
-         ctem_tile%ancgvgac_t (ilg,icc), &
-         ctem_tile%rmlcgvga_t (ilg,icc), &
+         ctem_tile%tbaraccgat_t (ilg, ignd), &
+         ctem_tile%thliqacc_t (ilg, ignd), &
+         ctem_tile%thiceacc_t (ilg, ignd), &
+         ctem_tile%ancgvgac_t (ilg, icc), &
+         ctem_tile%rmlcgvga_t (ilg, icc), &
 
-    ctem_mo%laimaxg_mo (nlat,nmos,icc), &
-         ctem_mo%stemmass_mo (nlat,nmos,icc), &
-         ctem_mo%rootmass_mo (nlat,nmos,icc), &
-         ctem_mo%litrfallveg_mo (nlat,nmos,icc), &
-         ctem_mo%npp_mo (nlat,nmos,icc), &
-         ctem_mo%gpp_mo (nlat,nmos,icc), &
-         ctem_mo%vgbiomas_mo (nlat,nmos,icc), &
-         ctem_mo%autores_mo (nlat,nmos,icc), &
-         ctem_mo%humiftrsveg_mo (nlat,nmos,iccp2), &
-         ctem_mo%totcmass_mo (nlat,nmos,iccp1), &
+    ctem_mo%laimaxg_mo (nlat, nmos, icc), &
+         ctem_mo%stemmass_mo (nlat, nmos, icc), &
+         ctem_mo%leafmass_mo (nlat, nmos, icc), &
+         ctem_mo%rootmass_mo (nlat, nmos, icc), &
+         ctem_mo%litrfallveg_mo (nlat, nmos, icc), &
+         ctem_mo%npp_mo (nlat, nmos, icc), &
+         ctem_mo%gpp_mo (nlat, nmos, icc), &
+         ctem_mo%vgbiomas_mo (nlat, nmos, icc), &
+         ctem_mo%autores_mo (nlat, nmos, icc), &
+         ctem_mo%humiftrsveg_mo (nlat, nmos, iccp2), &
+         ctem_mo%totcmass_mo (nlat, nmos, iccp1), &
          ! COMBAK PERLAY
-         ctem_mo%litrmass_mo (nlat,nmos,iccp2), &
-         ctem_mo%soilcmas_mo (nlat,nmos,iccp2), &
-         ctem_mo%litres_mo (nlat,nmos,iccp2), &
-         ctem_mo%soilcres_mo (nlat,nmos,iccp2), &
-         ! ctem_mo%litrmass_mo (nlat,nmos,iccp2,ignd), &
-         ! ctem_mo%soilcmas_mo (nlat,nmos,iccp2,ignd), &
-         ! ctem_mo%litres_mo (nlat,nmos,iccp2,ignd), &
-         ! ctem_mo%soilcres_mo (nlat,nmos,iccp2,ignd), &
+         ctem_mo%litrmass_mo (nlat, nmos, iccp2), &
+         ctem_mo%soilcmas_mo (nlat, nmos, iccp2), &
+         ctem_mo%litres_mo (nlat, nmos, iccp2), &
+         ctem_mo%soilcres_mo (nlat, nmos, iccp2), &
+         ! ctem_mo%litrmass_mo (nlat, nmos, iccp2, ignd), &
+         ! ctem_mo%soilcmas_mo (nlat, nmos, iccp2, ignd), &
+         ! ctem_mo%litres_mo (nlat, nmos, iccp2, ignd), &
+         ! ctem_mo%soilcres_mo (nlat, nmos, iccp2, ignd), &
          ! COMBAK PERLAY
-         ctem_mo%nep_mo (nlat,nmos,iccp1), &
-         ctem_mo%hetrores_mo (nlat,nmos,iccp1), &
-         ctem_mo%nbp_mo (nlat,nmos,iccp1), &
-         ctem_mo%emit_co2_mo (nlat,nmos,icc), &
-         ctem_mo%emit_co_mo (nlat,nmos,icc), &
-         ctem_mo%emit_ch4_mo (nlat,nmos,icc), &
-         ctem_mo%emit_nmhc_mo (nlat,nmos,icc), &
-         ctem_mo%emit_h2_mo (nlat,nmos,icc), &
-         ctem_mo%emit_nox_mo (nlat,nmos,icc), &
-         ctem_mo%emit_n2o_mo (nlat,nmos,icc), &
-         ctem_mo%emit_pm25_mo (nlat,nmos,icc), &
-         ctem_mo%emit_tpm_mo (nlat,nmos,icc), &
-         ctem_mo%emit_tc_mo (nlat,nmos,icc), &
-         ctem_mo%emit_oc_mo (nlat,nmos,icc), &
-         ctem_mo%emit_bc_mo (nlat,nmos,icc), &
-         ctem_mo%burnfrac_mo (nlat,nmos,icc), &
-         ctem_mo%bterm_mo (nlat,nmos,icc), &
-         ctem_mo%mterm_mo (nlat,nmos,icc), &
-         ctem_mo%smfuncveg_mo (nlat,nmos,icc), &
+         ctem_mo%nep_mo (nlat, nmos, iccp1), &
+         ctem_mo%hetrores_mo (nlat, nmos, iccp1), &
+         ctem_mo%nbp_mo (nlat, nmos, iccp1), &
+         ctem_mo%emit_co2_mo (nlat, nmos, icc), &
+         ctem_mo%emit_co_mo (nlat, nmos, icc), &
+         ctem_mo%emit_ch4_mo (nlat, nmos, icc), &
+         ctem_mo%emit_nmhc_mo (nlat, nmos, icc), &
+         ctem_mo%emit_h2_mo (nlat, nmos, icc), &
+         ctem_mo%emit_nox_mo (nlat, nmos, icc), &
+         ctem_mo%emit_n2o_mo (nlat, nmos, icc), &
+         ctem_mo%emit_pm25_mo (nlat, nmos, icc), &
+         ctem_mo%emit_tpm_mo (nlat, nmos, icc), &
+         ctem_mo%emit_tc_mo (nlat, nmos, icc), &
+         ctem_mo%emit_oc_mo (nlat, nmos, icc), &
+         ctem_mo%emit_bc_mo (nlat, nmos, icc), &
+         ctem_mo%burnfrac_mo (nlat, nmos, icc), &
+         ctem_mo%bterm_mo (nlat, nmos, icc), &
+         ctem_mo%mterm_mo (nlat, nmos, icc), &
+         ctem_mo%smfuncveg_mo (nlat, nmos, icc), &
 
     ctem_grd_mo%laimaxg_mo_g (nlat), &
          ctem_grd_mo%stemmass_mo_g (nlat), &
+         ctem_grd_mo%leafmass_mo_g (nlat), &
          ctem_grd_mo%rootmass_mo_g (nlat), &
          ! COMBAK PERLAY
          ctem_grd_mo%litrmass_mo_g (nlat), &
          ctem_grd_mo%soilcmas_mo_g (nlat), &
          ctem_grd_mo%litres_mo_g (nlat), &
          ctem_grd_mo%soilcres_mo_g (nlat), &
-         ! ctem_grd_mo%litrmass_mo_g (nlat,ignd), &
-         ! ctem_grd_mo%soilcmas_mo_g (nlat,ignd), &
-         ! ctem_grd_mo%litres_mo_g (nlat,ignd), &
-         ! ctem_grd_mo%soilcres_mo_g (nlat,ignd), &
+         ! ctem_grd_mo%litrmass_mo_g (nlat, ignd), &
+         ! ctem_grd_mo%soilcmas_mo_g (nlat, ignd), &
+         ! ctem_grd_mo%litres_mo_g (nlat, ignd), &
+         ! ctem_grd_mo%soilcres_mo_g (nlat, ignd), &
          ! COMBAK PERLAY
          ctem_grd_mo%litrfall_mo_g (nlat), &
          ctem_grd_mo%humiftrs_mo_g (nlat), &
@@ -1681,95 +1687,96 @@ contains
          ctem_grd_mo%cProduct_mo_g (nlat), &
          ctem_grd_mo%fProductDecomp_mo_g (nlat), &
 
-    ctem_tile_mo%laimaxg_mo_t (nlat,nmos), &
-         ctem_tile_mo%stemmass_mo_t (nlat,nmos), &
-         ctem_tile_mo%rootmass_mo_t (nlat,nmos), &
-         ctem_tile_mo%litrfall_mo_t (nlat,nmos), &
-         ctem_tile_mo%humiftrs_mo_t (nlat,nmos), &
-         ctem_tile_mo%npp_mo_t (nlat,nmos), &
-         ctem_tile_mo%gpp_mo_t (nlat,nmos), &
-         ctem_tile_mo%vgbiomas_mo_t (nlat,nmos), &
-         ctem_tile_mo%autores_mo_t (nlat,nmos), &
-         ctem_tile_mo%totcmass_mo_t (nlat,nmos), &
+    ctem_tile_mo%laimaxg_mo_t (nlat, nmos), &
+         ctem_tile_mo%stemmass_mo_t (nlat, nmos), &
+         ctem_tile_mo%leafmass_mo_t (nlat, nmos), &
+         ctem_tile_mo%rootmass_mo_t (nlat, nmos), &
+         ctem_tile_mo%litrfall_mo_t (nlat, nmos), &
+         ctem_tile_mo%humiftrs_mo_t (nlat, nmos), &
+         ctem_tile_mo%npp_mo_t (nlat, nmos), &
+         ctem_tile_mo%gpp_mo_t (nlat, nmos), &
+         ctem_tile_mo%vgbiomas_mo_t (nlat, nmos), &
+         ctem_tile_mo%autores_mo_t (nlat, nmos), &
+         ctem_tile_mo%totcmass_mo_t (nlat, nmos), &
          ! COMBAK PERLAY
-         ctem_tile_mo%litrmass_mo_t (nlat,nmos), &
-         ctem_tile_mo%soilcmas_mo_t (nlat,nmos), &
-         ctem_tile_mo%litres_mo_t (nlat,nmos), &
-         ctem_tile_mo%soilcres_mo_t (nlat,nmos), &
-         ! ctem_tile_mo%litrmass_mo_t (nlat,nmos,ignd), &
-         ! ctem_tile_mo%soilcmas_mo_t (nlat,nmos,ignd), &
-         ! ctem_tile_mo%litres_mo_t (nlat,nmos,ignd), &
-         ! ctem_tile_mo%soilcres_mo_t (nlat,nmos,ignd), &
+         ctem_tile_mo%litrmass_mo_t (nlat, nmos), &
+         ctem_tile_mo%soilcmas_mo_t (nlat, nmos), &
+         ctem_tile_mo%litres_mo_t (nlat, nmos), &
+         ctem_tile_mo%soilcres_mo_t (nlat, nmos), &
+         ! ctem_tile_mo%litrmass_mo_t (nlat, nmos, ignd), &
+         ! ctem_tile_mo%soilcmas_mo_t (nlat, nmos, ignd), &
+         ! ctem_tile_mo%litres_mo_t (nlat, nmos, ignd), &
+         ! ctem_tile_mo%soilcres_mo_t (nlat, nmos, ignd), &
          ! COMBAK PERLAY
-         ctem_tile_mo%nep_mo_t (nlat,nmos), &
-         ctem_tile_mo%hetrores_mo_t (nlat,nmos), &
-         ctem_tile_mo%nbp_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_co2_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_co_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_ch4_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_nmhc_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_h2_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_nox_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_n2o_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_pm25_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_tpm_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_tc_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_oc_mo_t (nlat,nmos), &
-         ctem_tile_mo%emit_bc_mo_t (nlat,nmos), &
-         ctem_tile_mo%burnfrac_mo_t (nlat,nmos), &
-         ctem_tile_mo%smfuncveg_mo_t (nlat,nmos), &
-         ctem_tile_mo%bterm_mo_t (nlat,nmos), &
-         ctem_tile_mo%luc_emc_mo_t (nlat,nmos), &
-         ctem_tile_mo%lterm_mo_t (nlat,nmos), &
-         ctem_tile_mo%lucsocin_mo_t (nlat,nmos), &
-         ctem_tile_mo%mterm_mo_t (nlat,nmos), &
-         ctem_tile_mo%lucltrin_mo_t (nlat,nmos), &
-         ctem_tile_mo%ch4WetSpec_mo_t (nlat,nmos), &
-         ctem_tile_mo%wetfdyn_mo_t (nlat,nmos), &
-         ctem_tile_mo%wetfpres_mo_t (nlat,nmos), &
-         ctem_tile_mo%ch4WetDyn_mo_t (nlat,nmos), &
-         ctem_tile_mo%ch4soills_mo_t (nlat,nmos), &
-         ctem_tile_mo%wind_mo_t (nlat,nmos), &
-         ctem_tile_mo%fProductDecomp_mo_t (nlat,nmos), &
+         ctem_tile_mo%nep_mo_t (nlat, nmos), &
+         ctem_tile_mo%hetrores_mo_t (nlat, nmos), &
+         ctem_tile_mo%nbp_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_co2_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_co_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_ch4_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_nmhc_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_h2_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_nox_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_n2o_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_pm25_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_tpm_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_tc_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_oc_mo_t (nlat, nmos), &
+         ctem_tile_mo%emit_bc_mo_t (nlat, nmos), &
+         ctem_tile_mo%burnfrac_mo_t (nlat, nmos), &
+         ctem_tile_mo%smfuncveg_mo_t (nlat, nmos), &
+         ctem_tile_mo%bterm_mo_t (nlat, nmos), &
+         ctem_tile_mo%luc_emc_mo_t (nlat, nmos), &
+         ctem_tile_mo%lterm_mo_t (nlat, nmos), &
+         ctem_tile_mo%lucsocin_mo_t (nlat, nmos), &
+         ctem_tile_mo%mterm_mo_t (nlat, nmos), &
+         ctem_tile_mo%lucltrin_mo_t (nlat, nmos), &
+         ctem_tile_mo%ch4WetSpec_mo_t (nlat, nmos), &
+         ctem_tile_mo%wetfdyn_mo_t (nlat, nmos), &
+         ctem_tile_mo%wetfpres_mo_t (nlat, nmos), &
+         ctem_tile_mo%ch4WetDyn_mo_t (nlat, nmos), &
+         ctem_tile_mo%ch4soills_mo_t (nlat, nmos), &
+         ctem_tile_mo%wind_mo_t (nlat, nmos), &
+         ctem_tile_mo%fProductDecomp_mo_t (nlat, nmos), &
 
-    ctem_yr%laimaxg_yr (nlat,nmos,icc), &
-         ctem_yr%stemmass_yr (nlat,nmos,icc), &
-         ctem_yr%rootmass_yr (nlat,nmos,icc), &
-         ctem_yr%npp_yr (nlat,nmos,icc), &
-         ctem_yr%gpp_yr (nlat,nmos,icc), &
-         ctem_yr%vgbiomas_yr (nlat,nmos,icc), &
-         ctem_yr%autores_yr (nlat,nmos,icc), &
-         ctem_yr%totcmass_yr (nlat,nmos,iccp1), &
+    ctem_yr%laimaxg_yr (nlat, nmos, icc), &
+         ctem_yr%stemmass_yr (nlat, nmos, icc), &
+         ctem_yr%rootmass_yr (nlat, nmos, icc), &
+         ctem_yr%npp_yr (nlat, nmos, icc), &
+         ctem_yr%gpp_yr (nlat, nmos, icc), &
+         ctem_yr%vgbiomas_yr (nlat, nmos, icc), &
+         ctem_yr%autores_yr (nlat, nmos, icc), &
+         ctem_yr%totcmass_yr (nlat, nmos, iccp1), &
          ! COMBAK PERLAY
-         ctem_yr%litrmass_yr (nlat,nmos,iccp2), &
-         ctem_yr%soilcmas_yr (nlat,nmos,iccp2), &
-         ctem_yr%litres_yr (nlat,nmos,iccp2), &
-         ctem_yr%soilcres_yr (nlat,nmos,iccp2), &
-         ! ctem_yr%litrmass_yr (nlat,nmos,iccp2,ignd), &
-         ! ctem_yr%soilcmas_yr (nlat,nmos,iccp2,ignd), &
-         ! ctem_yr%litres_yr (nlat,nmos,iccp2,ignd), &
-         ! ctem_yr%soilcres_yr (nlat,nmos,iccp2,ignd), &
+         ctem_yr%litrmass_yr (nlat, nmos, iccp2), &
+         ctem_yr%soilcmas_yr (nlat, nmos, iccp2), &
+         ctem_yr%litres_yr (nlat, nmos, iccp2), &
+         ctem_yr%soilcres_yr (nlat, nmos, iccp2), &
+         ! ctem_yr%litrmass_yr (nlat, nmos, iccp2, ignd), &
+         ! ctem_yr%soilcmas_yr (nlat, nmos, iccp2, ignd), &
+         ! ctem_yr%litres_yr (nlat, nmos, iccp2, ignd), &
+         ! ctem_yr%soilcres_yr (nlat, nmos, iccp2, ignd), &
          ! COMBAK PERLAY
-         ctem_yr%nep_yr (nlat,nmos,iccp1), &
-         ctem_yr%hetrores_yr (nlat,nmos,iccp1), &
-         ctem_yr%nbp_yr (nlat,nmos,iccp1), &
-         ctem_yr%emit_co2_yr (nlat,nmos,icc), &
-         ctem_yr%emit_co_yr (nlat,nmos,icc), &
-         ctem_yr%emit_ch4_yr (nlat,nmos,icc), &
-         ctem_yr%emit_nmhc_yr (nlat,nmos,icc), &
-         ctem_yr%emit_h2_yr (nlat,nmos,icc), &
-         ctem_yr%emit_nox_yr (nlat,nmos,icc), &
-         ctem_yr%emit_n2o_yr (nlat,nmos,icc), &
-         ctem_yr%emit_pm25_yr (nlat,nmos,icc), &
-         ctem_yr%emit_tpm_yr (nlat,nmos,icc), &
-         ctem_yr%emit_tc_yr (nlat,nmos,icc), &
-         ctem_yr%emit_oc_yr (nlat,nmos,icc), &
-         ctem_yr%emit_bc_yr (nlat,nmos,icc), &
-         ctem_yr%bterm_yr (nlat,nmos,icc), &
-         ctem_yr%mterm_yr (nlat,nmos,icc), &
-         ctem_yr%burnfrac_yr (nlat,nmos,icc), &
-         ctem_yr%smfuncveg_yr (nlat,nmos,icc), &
-         ctem_yr%veghght_yr (nlat,nmos,icc), &
+         ctem_yr%nep_yr (nlat, nmos, iccp1), &
+         ctem_yr%hetrores_yr (nlat, nmos, iccp1), &
+         ctem_yr%nbp_yr (nlat, nmos, iccp1), &
+         ctem_yr%emit_co2_yr (nlat, nmos, icc), &
+         ctem_yr%emit_co_yr (nlat, nmos, icc), &
+         ctem_yr%emit_ch4_yr (nlat, nmos, icc), &
+         ctem_yr%emit_nmhc_yr (nlat, nmos, icc), &
+         ctem_yr%emit_h2_yr (nlat, nmos, icc), &
+         ctem_yr%emit_nox_yr (nlat, nmos, icc), &
+         ctem_yr%emit_n2o_yr (nlat, nmos, icc), &
+         ctem_yr%emit_pm25_yr (nlat, nmos, icc), &
+         ctem_yr%emit_tpm_yr (nlat, nmos, icc), &
+         ctem_yr%emit_tc_yr (nlat, nmos, icc), &
+         ctem_yr%emit_oc_yr (nlat, nmos, icc), &
+         ctem_yr%emit_bc_yr (nlat, nmos, icc), &
+         ctem_yr%bterm_yr (nlat, nmos, icc), &
+         ctem_yr%mterm_yr (nlat, nmos, icc), &
+         ctem_yr%burnfrac_yr (nlat, nmos, icc), &
+         ctem_yr%smfuncveg_yr (nlat, nmos, icc), &
+         ctem_yr%veghght_yr (nlat, nmos, icc), &
 
     ctem_grd_yr%laimaxg_yr_g (nlat), &
          ctem_grd_yr%stemmass_yr_g (nlat), &
@@ -1779,10 +1786,10 @@ contains
          ctem_grd_yr%soilcmas_yr_g (nlat), &
          ctem_grd_yr%litres_yr_g (nlat), &
          ctem_grd_yr%soilcres_yr_g (nlat), &
-         ! ctem_grd_yr%litrmass_yr_g (nlat,ignd), &
-         ! ctem_grd_yr%soilcmas_yr_g (nlat,ignd), &
-         ! ctem_grd_yr%litres_yr_g (nlat,ignd), &
-         ! ctem_grd_yr%soilcres_yr_g (nlat,ignd), &
+         ! ctem_grd_yr%litrmass_yr_g (nlat, ignd), &
+         ! ctem_grd_yr%soilcmas_yr_g (nlat, ignd), &
+         ! ctem_grd_yr%litres_yr_g (nlat, ignd), &
+         ! ctem_grd_yr%soilcres_yr_g (nlat, ignd), &
          ! COMBAK PERLAY
          ctem_grd_yr%npp_yr_g (nlat), &
          ctem_grd_yr%gpp_yr_g (nlat), &
@@ -1821,54 +1828,54 @@ contains
          ctem_grd_yr%cProduct_yr_g (nlat), &
          ctem_grd_yr%fProductDecomp_yr_g (nlat), &
 
-    ctem_tile_yr%laimaxg_yr_t (nlat,nmos), &
-         ctem_tile_yr%stemmass_yr_t (nlat,nmos), &
-         ctem_tile_yr%rootmass_yr_t (nlat,nmos), &
-         ctem_tile_yr%npp_yr_t (nlat,nmos), &
-         ctem_tile_yr%gpp_yr_t (nlat,nmos), &
-         ctem_tile_yr%vgbiomas_yr_t (nlat,nmos), &
-         ctem_tile_yr%autores_yr_t (nlat,nmos), &
-         ctem_tile_yr%totcmass_yr_t (nlat,nmos), &
+    ctem_tile_yr%laimaxg_yr_t (nlat, nmos), &
+         ctem_tile_yr%stemmass_yr_t (nlat, nmos), &
+         ctem_tile_yr%rootmass_yr_t (nlat, nmos), &
+         ctem_tile_yr%npp_yr_t (nlat, nmos), &
+         ctem_tile_yr%gpp_yr_t (nlat, nmos), &
+         ctem_tile_yr%vgbiomas_yr_t (nlat, nmos), &
+         ctem_tile_yr%autores_yr_t (nlat, nmos), &
+         ctem_tile_yr%totcmass_yr_t (nlat, nmos), &
          ! COMBAK PERLAY
-         ctem_tile_yr%litrmass_yr_t (nlat,nmos), &
-         ctem_tile_yr%soilcmas_yr_t (nlat,nmos), &
-         ctem_tile_yr%litres_yr_t (nlat,nmos), &
-         ctem_tile_yr%soilcres_yr_t (nlat,nmos), &
-         ! ctem_tile_yr%litrmass_yr_t (nlat,nmos,ignd), &
-         ! ctem_tile_yr%soilcmas_yr_t (nlat,nmos,ignd), &
-         ! ctem_tile_yr%litres_yr_t (nlat,nmos,ignd), &
-         ! ctem_tile_yr%soilcres_yr_t (nlat,nmos,ignd), &
+         ctem_tile_yr%litrmass_yr_t (nlat, nmos), &
+         ctem_tile_yr%soilcmas_yr_t (nlat, nmos), &
+         ctem_tile_yr%litres_yr_t (nlat, nmos), &
+         ctem_tile_yr%soilcres_yr_t (nlat, nmos), &
+         ! ctem_tile_yr%litrmass_yr_t (nlat, nmos, ignd), &
+         ! ctem_tile_yr%soilcmas_yr_t (nlat, nmos, ignd), &
+         ! ctem_tile_yr%litres_yr_t (nlat, nmos, ignd), &
+         ! ctem_tile_yr%soilcres_yr_t (nlat, nmos, ignd), &
          ! COMBAK PERLAY
-         ctem_tile_yr%nep_yr_t (nlat,nmos), &
-         ctem_tile_yr%hetrores_yr_t (nlat,nmos), &
-         ctem_tile_yr%nbp_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_co2_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_co_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_ch4_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_nmhc_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_h2_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_nox_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_n2o_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_pm25_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_tpm_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_tc_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_oc_yr_t (nlat,nmos), &
-         ctem_tile_yr%emit_bc_yr_t (nlat,nmos), &
-         ctem_tile_yr%burnfrac_yr_t (nlat,nmos), &
-         ctem_tile_yr%smfuncveg_yr_t (nlat,nmos), &
-         ctem_tile_yr%bterm_yr_t (nlat,nmos), &
-         ctem_tile_yr%luc_emc_yr_t (nlat,nmos), &
-         ctem_tile_yr%lterm_yr_t (nlat,nmos), &
-         ctem_tile_yr%lucsocin_yr_t (nlat,nmos), &
-         ctem_tile_yr%mterm_yr_t (nlat,nmos), &
-         ctem_tile_yr%lucltrin_yr_t (nlat,nmos), &
-         ctem_tile_yr%ch4WetSpec_yr_t (nlat,nmos), &
-         ctem_tile_yr%wetfdyn_yr_t (nlat,nmos), &
-         ctem_tile_yr%ch4WetDyn_yr_t (nlat,nmos), &
-         ctem_tile_yr%ch4soills_yr_t (nlat,nmos), &
-         ctem_tile_yr%veghght_yr_t (nlat,nmos), &
-         ctem_tile_yr%peatdep_yr_t (nlat,nmos), &
-         ctem_tile_yr%fProductDecomp_yr_t (nlat,nmos))
+         ctem_tile_yr%nep_yr_t (nlat, nmos), &
+         ctem_tile_yr%hetrores_yr_t (nlat, nmos), &
+         ctem_tile_yr%nbp_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_co2_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_co_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_ch4_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_nmhc_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_h2_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_nox_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_n2o_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_pm25_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_tpm_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_tc_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_oc_yr_t (nlat, nmos), &
+         ctem_tile_yr%emit_bc_yr_t (nlat, nmos), &
+         ctem_tile_yr%burnfrac_yr_t (nlat, nmos), &
+         ctem_tile_yr%smfuncveg_yr_t (nlat, nmos), &
+         ctem_tile_yr%bterm_yr_t (nlat, nmos), &
+         ctem_tile_yr%luc_emc_yr_t (nlat, nmos), &
+         ctem_tile_yr%lterm_yr_t (nlat, nmos), &
+         ctem_tile_yr%lucsocin_yr_t (nlat, nmos), &
+         ctem_tile_yr%mterm_yr_t (nlat, nmos), &
+         ctem_tile_yr%lucltrin_yr_t (nlat, nmos), &
+         ctem_tile_yr%ch4WetSpec_yr_t (nlat, nmos), &
+         ctem_tile_yr%wetfdyn_yr_t (nlat, nmos), &
+         ctem_tile_yr%ch4WetDyn_yr_t (nlat, nmos), &
+         ctem_tile_yr%ch4soills_yr_t (nlat, nmos), &
+         ctem_tile_yr%veghght_yr_t (nlat, nmos), &
+         ctem_tile_yr%peatdep_yr_t (nlat, nmos), &
+         ctem_tile_yr%fProductDecomp_yr_t (nlat, nmos))
 
   end subroutine alloc_ctem_vars
   !! @}
@@ -1883,7 +1890,7 @@ contains
 
     implicit none
 
-    ! nlat,nmos
+    ! nlat, nmos
     vrot%co2conc    = 0.0
     vrot%npp        = 0.0
     vrot%nep        = 0.0
@@ -2020,69 +2027,72 @@ contains
   !! @{
   !> Resets monthly variables at month end in preparation for next month
 
-  subroutine resetmonthend(nltest,nmtest)
+  subroutine resetmonthend(nltest, nmtest)
 
-    use classic_params, only : iccp2,icc,iccp1,ignd
+    use classic_params, only : iccp2, icc, iccp1, ignd
 
     implicit none
 
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
 
-    integer :: i,m,j
+    integer :: i, m, j
 
     ! These are assigned to mid-month, but are not accumulated so can be
     ! zeroed out at the same time as the other month-end vars.
-    do i = 1,nltest
+    do i = 1, nltest
       ctem_grd_mo%stemmass_mo_g(i) = 0.0
+      ctem_grd_mo%leafmass_mo_g(i) = 0.0
       ctem_grd_mo%rootmass_mo_g(i) = 0.0
       ! COMBAK PERLAY
       ctem_grd_mo%litrmass_mo_g(i) = 0.0
       ctem_grd_mo%soilcmas_mo_g(i) = 0.0
-      ! ctem_grd_mo%litrmass_mo_g(i,1:ignd)=0.0
-      ! ctem_grd_mo%soilcmas_mo_g(i,1:ignd)=0.0
+      ! ctem_grd_mo%litrmass_mo_g(i, 1:ignd)=0.0
+      ! ctem_grd_mo%soilcmas_mo_g(i, 1:ignd)=0.0
       ! COMBAK PERLAY
       ctem_grd_mo%vgbiomas_mo_g(i) = 0.0
       ctem_grd_mo%totcmass_mo_g(i) = 0.0
       do m = 1, nmtest
-        ctem_tile_mo%stemmass_mo_t(i,m) = 0.0
-        ctem_tile_mo%rootmass_mo_t(i,m) = 0.0
+        ctem_tile_mo%stemmass_mo_t(i, m) = 0.0
+        ctem_tile_mo%leafmass_mo_t(i, m) = 0.0
+        ctem_tile_mo%rootmass_mo_t(i, m) = 0.0
         ! COMBAK PERLAY
-        ctem_tile_mo%litrmass_mo_t(i,m) = 0.0
-        ctem_tile_mo%soilcmas_mo_t(i,m) = 0.0
-        ! ctem_tile_mo%litrmass_mo_t(i,m,1:ignd)=0.0
-        ! ctem_tile_mo%soilcmas_mo_t(i,m,1:ignd)=0.0
+        ctem_tile_mo%litrmass_mo_t(i, m) = 0.0
+        ctem_tile_mo%soilcmas_mo_t(i, m) = 0.0
+        ! ctem_tile_mo%litrmass_mo_t(i, m, 1:ignd)=0.0
+        ! ctem_tile_mo%soilcmas_mo_t(i, m, 1:ignd)=0.0
         ! COMBAK PERLAY
-        ctem_tile_mo%vgbiomas_mo_t(i,m) = 0.0
-        ctem_tile_mo%totcmass_mo_t(i,m) = 0.0
-        do j = 1,icc
-          ctem_mo%stemmass_mo(i,m,j) = 0.0
-          ctem_mo%rootmass_mo(i,m,j) = 0.0
+        ctem_tile_mo%vgbiomas_mo_t(i, m) = 0.0
+        ctem_tile_mo%totcmass_mo_t(i, m) = 0.0
+        do j = 1, icc
+          ctem_mo%stemmass_mo(i, m, j) = 0.0
+          ctem_mo%leafmass_mo(i, m, j) = 0.0
+          ctem_mo%rootmass_mo(i, m, j) = 0.0
           ! COMBAK PERLAY
-          ctem_mo%litrmass_mo(i,m,j) = 0.0
-          ctem_mo%soilcmas_mo(i,m,j) = 0.0
-          ! ctem_mo%litrmass_mo(i,m,j,1:ignd)=0.0
-          ! ctem_mo%soilcmas_mo(i,m,j,1:ignd)=0.0
+          ctem_mo%litrmass_mo(i, m, j) = 0.0
+          ctem_mo%soilcmas_mo(i, m, j) = 0.0
+          ! ctem_mo%litrmass_mo(i, m, j, 1:ignd)=0.0
+          ! ctem_mo%soilcmas_mo(i, m, j, 1:ignd)=0.0
           ! COMBAK PERLAY
-          ctem_mo%vgbiomas_mo(i,m,j) = 0.0
-          ctem_mo%totcmass_mo(i,m,j) = 0.0
+          ctem_mo%vgbiomas_mo(i, m, j) = 0.0
+          ctem_mo%totcmass_mo(i, m, j) = 0.0
         end do
-        ctem_mo%totcmass_mo(i,m,iccp1) = 0.0
+        ctem_mo%totcmass_mo(i, m, iccp1) = 0.0
         ! COMBAK PERLAY
-        ctem_mo%litrmass_mo(i,m,iccp1) = 0.0
-        ctem_mo%soilcmas_mo(i,m,iccp1) = 0.0
-        ctem_mo%litrmass_mo(i,m,iccp2) = 0.0
-        ctem_mo%soilcmas_mo(i,m,iccp2) = 0.0
-        ! ctem_mo%litrmass_mo(i,m,iccp1,1:ignd)=0.0
-        ! ctem_mo%soilcmas_mo(i,m,iccp1,1:ignd)=0.0
-        ! ctem_mo%litrmass_mo(i,m,iccp2,1:ignd)=0.0
-        ! ctem_mo%soilcmas_mo(i,m,iccp2,1:ignd)=0.0
+        ctem_mo%litrmass_mo(i, m, iccp1) = 0.0
+        ctem_mo%soilcmas_mo(i, m, iccp1) = 0.0
+        ctem_mo%litrmass_mo(i, m, iccp2) = 0.0
+        ctem_mo%soilcmas_mo(i, m, iccp2) = 0.0
+        ! ctem_mo%litrmass_mo(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_mo%soilcmas_mo(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_mo%litrmass_mo(i, m, iccp2, 1:ignd)=0.0
+        ! ctem_mo%soilcmas_mo(i, m, iccp2, 1:ignd)=0.0
         ! COMBAK PERLAY
       end do
     end do
 
     ! Now zero out the month end vars.
-    do i = 1,nltest
+    do i = 1, nltest
       ! Grid avg
       ctem_grd_mo%laimaxg_mo_g(i) = 0.0
       ctem_grd_mo%npp_mo_g(i) = 0.0
@@ -2094,8 +2104,8 @@ contains
       ! COMBAK PERLAY
       ctem_grd_mo%litres_mo_g(i) = 0.0
       ctem_grd_mo%soilcres_mo_g(i) = 0.0
-      ! ctem_grd_mo%litres_mo_g(i,1:ignd)=0.0
-      ! ctem_grd_mo%soilcres_mo_g(i,1:ignd)=0.0
+      ! ctem_grd_mo%litres_mo_g(i, 1:ignd)=0.0
+      ! ctem_grd_mo%soilcres_mo_g(i, 1:ignd)=0.0
       ! COMBAK PERLAY
       ctem_grd_mo%litrfall_mo_g(i) = 0.0
       ctem_grd_mo%humiftrs_mo_g(i) = 0.0
@@ -2127,105 +2137,105 @@ contains
       ctem_grd_mo%cProduct_mo_g(i)  = 0.0
       ctem_grd_mo%fProductDecomp_mo_g(i)  = 0.0
 
-      do m = 1,nmtest
+      do m = 1, nmtest
         ! Tile avg
-        ctem_tile_mo%laimaxg_mo_t(i,m) = 0.0
-        ctem_tile_mo%npp_mo_t(i,m) = 0.0
-        ctem_tile_mo%gpp_mo_t(i,m) = 0.0
-        ctem_tile_mo%nep_mo_t(i,m) = 0.0
-        ctem_tile_mo%nbp_mo_t(i,m) = 0.0
-        ctem_tile_mo%hetrores_mo_t(i,m) = 0.0
-        ctem_tile_mo%autores_mo_t(i,m) = 0.0
+        ctem_tile_mo%laimaxg_mo_t(i, m) = 0.0
+        ctem_tile_mo%npp_mo_t(i, m) = 0.0
+        ctem_tile_mo%gpp_mo_t(i, m) = 0.0
+        ctem_tile_mo%nep_mo_t(i, m) = 0.0
+        ctem_tile_mo%nbp_mo_t(i, m) = 0.0
+        ctem_tile_mo%hetrores_mo_t(i, m) = 0.0
+        ctem_tile_mo%autores_mo_t(i, m) = 0.0
         ! COMBAK PERLAY
-        ctem_tile_mo%litres_mo_t(i,m) = 0.0
-        ctem_tile_mo%soilcres_mo_t(i,m) = 0.0
-        ! ctem_tile_mo%litres_mo_t(i,m,1:ignd)=0.0
-        ! ctem_tile_mo%soilcres_mo_t(i,m,1:ignd)=0.0
+        ctem_tile_mo%litres_mo_t(i, m) = 0.0
+        ctem_tile_mo%soilcres_mo_t(i, m) = 0.0
+        ! ctem_tile_mo%litres_mo_t(i, m, 1:ignd)=0.0
+        ! ctem_tile_mo%soilcres_mo_t(i, m, 1:ignd)=0.0
         ! COMBAK PERLAY
-        ctem_tile_mo%litrfall_mo_t(i,m) = 0.0
-        ctem_tile_mo%humiftrs_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_co2_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_co_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_ch4_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_nmhc_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_h2_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_nox_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_n2o_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_pm25_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_tpm_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_tc_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_oc_mo_t(i,m) = 0.0
-        ctem_tile_mo%emit_bc_mo_t(i,m) = 0.0
-        ctem_tile_mo%smfuncveg_mo_t(i,m) = 0.0
-        ctem_tile_mo%luc_emc_mo_t(i,m) = 0.0
-        ctem_tile_mo%lucsocin_mo_t(i,m) = 0.0
-        ctem_tile_mo%lucltrin_mo_t(i,m) = 0.0
-        ctem_tile_mo%burnfrac_mo_t(i,m) = 0.0
-        ctem_tile_mo%bterm_mo_t(i,m)    = 0.0
-        ctem_tile_mo%lterm_mo_t(i,m)    = 0.0
-        ctem_tile_mo%mterm_mo_t(i,m)    = 0.0
-        ctem_tile_mo%ch4WetSpec_mo_t(i,m)  = 0.0
-        ctem_tile_mo%wetfdyn_mo_t(i,m)  = 0.0
-        ctem_tile_mo%wetfpres_mo_t(i,m)  = 0.0
-        ctem_tile_mo%ch4WetDyn_mo_t(i,m)  = 0.0
-        ctem_tile_mo%ch4soills_mo_t(i,m)  = 0.0
-        ctem_tile_mo%wind_mo_t(i,m) = 0.0
-        ctem_tile_mo%fProductDecomp_mo_t(i,m) = 0.0
+        ctem_tile_mo%litrfall_mo_t(i, m) = 0.0
+        ctem_tile_mo%humiftrs_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_co2_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_co_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_ch4_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_nmhc_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_h2_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_nox_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_n2o_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_pm25_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_tpm_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_tc_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_oc_mo_t(i, m) = 0.0
+        ctem_tile_mo%emit_bc_mo_t(i, m) = 0.0
+        ctem_tile_mo%smfuncveg_mo_t(i, m) = 0.0
+        ctem_tile_mo%luc_emc_mo_t(i, m) = 0.0
+        ctem_tile_mo%lucsocin_mo_t(i, m) = 0.0
+        ctem_tile_mo%lucltrin_mo_t(i, m) = 0.0
+        ctem_tile_mo%burnfrac_mo_t(i, m) = 0.0
+        ctem_tile_mo%bterm_mo_t(i, m)    = 0.0
+        ctem_tile_mo%lterm_mo_t(i, m)    = 0.0
+        ctem_tile_mo%mterm_mo_t(i, m)    = 0.0
+        ctem_tile_mo%ch4WetSpec_mo_t(i, m)  = 0.0
+        ctem_tile_mo%wetfdyn_mo_t(i, m)  = 0.0
+        ctem_tile_mo%wetfpres_mo_t(i, m)  = 0.0
+        ctem_tile_mo%ch4WetDyn_mo_t(i, m)  = 0.0
+        ctem_tile_mo%ch4soills_mo_t(i, m)  = 0.0
+        ctem_tile_mo%wind_mo_t(i, m) = 0.0
+        ctem_tile_mo%fProductDecomp_mo_t(i, m) = 0.0
 
-        do j = 1,icc
+        do j = 1, icc
           ! per pft
-          ctem_mo%laimaxg_mo(i,m,j) = 0.0
-          ctem_mo%npp_mo(i,m,j) = 0.0
-          ctem_mo%gpp_mo(i,m,j) = 0.0
-          ctem_mo%nep_mo(i,m,j) = 0.0
-          ctem_mo%nbp_mo(i,m,j) = 0.0
-          ctem_mo%hetrores_mo(i,m,j) = 0.0
-          ctem_mo%autores_mo(i,m,j) = 0.0
+          ctem_mo%laimaxg_mo(i, m, j) = 0.0
+          ctem_mo%npp_mo(i, m, j) = 0.0
+          ctem_mo%gpp_mo(i, m, j) = 0.0
+          ctem_mo%nep_mo(i, m, j) = 0.0
+          ctem_mo%nbp_mo(i, m, j) = 0.0
+          ctem_mo%hetrores_mo(i, m, j) = 0.0
+          ctem_mo%autores_mo(i, m, j) = 0.0
           ! COMBAK PERLAY
-          ctem_mo%litres_mo(i,m,j) = 0.0
-          ctem_mo%soilcres_mo(i,m,j) = 0.0
-          ! ctem_mo%litres_mo(i,m,j,1:ignd)=0.0
-          ! ctem_mo%soilcres_mo(i,m,j,1:ignd)=0.0
+          ctem_mo%litres_mo(i, m, j) = 0.0
+          ctem_mo%soilcres_mo(i, m, j) = 0.0
+          ! ctem_mo%litres_mo(i, m, j, 1:ignd)=0.0
+          ! ctem_mo%soilcres_mo(i, m, j, 1:ignd)=0.0
           ! COMBAK PERLAY
-          ctem_mo%litrfallveg_mo(i,m,j) = 0.0
-          ctem_mo%humiftrsveg_mo(i,m,j) = 0.0
-          ctem_mo%emit_co2_mo(i,m,j) = 0.0
-          ctem_mo%emit_co_mo(i,m,j) = 0.0
-          ctem_mo%emit_ch4_mo(i,m,j) = 0.0
-          ctem_mo%emit_nmhc_mo(i,m,j) = 0.0
-          ctem_mo%emit_h2_mo(i,m,j) = 0.0
-          ctem_mo%emit_nox_mo(i,m,j) = 0.0
-          ctem_mo%emit_n2o_mo(i,m,j) = 0.0
-          ctem_mo%emit_pm25_mo(i,m,j) = 0.0
-          ctem_mo%emit_tpm_mo(i,m,j) = 0.0
-          ctem_mo%emit_tc_mo(i,m,j) = 0.0
-          ctem_mo%emit_oc_mo(i,m,j) = 0.0
-          ctem_mo%emit_bc_mo(i,m,j) = 0.0
-          ctem_mo%burnfrac_mo(i,m,j) = 0.0
-          ctem_mo%bterm_mo(i,m,j) = 0.0
-          ctem_mo%mterm_mo(i,m,j) = 0.0
-          ctem_mo%smfuncveg_mo(i,m,j) = 0.0
+          ctem_mo%litrfallveg_mo(i, m, j) = 0.0
+          ctem_mo%humiftrsveg_mo(i, m, j) = 0.0
+          ctem_mo%emit_co2_mo(i, m, j) = 0.0
+          ctem_mo%emit_co_mo(i, m, j) = 0.0
+          ctem_mo%emit_ch4_mo(i, m, j) = 0.0
+          ctem_mo%emit_nmhc_mo(i, m, j) = 0.0
+          ctem_mo%emit_h2_mo(i, m, j) = 0.0
+          ctem_mo%emit_nox_mo(i, m, j) = 0.0
+          ctem_mo%emit_n2o_mo(i, m, j) = 0.0
+          ctem_mo%emit_pm25_mo(i, m, j) = 0.0
+          ctem_mo%emit_tpm_mo(i, m, j) = 0.0
+          ctem_mo%emit_tc_mo(i, m, j) = 0.0
+          ctem_mo%emit_oc_mo(i, m, j) = 0.0
+          ctem_mo%emit_bc_mo(i, m, j) = 0.0
+          ctem_mo%burnfrac_mo(i, m, j) = 0.0
+          ctem_mo%bterm_mo(i, m, j) = 0.0
+          ctem_mo%mterm_mo(i, m, j) = 0.0
+          ctem_mo%smfuncveg_mo(i, m, j) = 0.0
         end do
 
-        ctem_mo%nep_mo(i,m,iccp1) = 0.0
-        ctem_mo%nbp_mo(i,m,iccp1) = 0.0
-        ctem_mo%hetrores_mo(i,m,iccp1) = 0.0
-        ctem_mo%humiftrsveg_mo(i,m,iccp1) = 0.0
-        ctem_mo%humiftrsveg_mo(i,m,iccp2) = 0.0
+        ctem_mo%nep_mo(i, m, iccp1) = 0.0
+        ctem_mo%nbp_mo(i, m, iccp1) = 0.0
+        ctem_mo%hetrores_mo(i, m, iccp1) = 0.0
+        ctem_mo%humiftrsveg_mo(i, m, iccp1) = 0.0
+        ctem_mo%humiftrsveg_mo(i, m, iccp2) = 0.0
 
         ! COMBAK PERLAY
-        ctem_mo%litres_mo(i,m,iccp1) = 0.0
-        ctem_mo%soilcres_mo(i,m,iccp1) = 0.0
+        ctem_mo%litres_mo(i, m, iccp1) = 0.0
+        ctem_mo%soilcres_mo(i, m, iccp1) = 0.0
 
-        ctem_mo%litres_mo(i,m,iccp2) = 0.0
-        ctem_mo%soilcres_mo(i,m,iccp2) = 0.0
-        ! ctem_mo%litres_mo(i,m,iccp1,1:ignd)=0.0
-        ! ctem_mo%soilcres_mo(i,m,iccp1,1:ignd)=0.0
-        ! ctem_mo%humiftrsveg_mo(i,m,iccp1)=0.0
+        ctem_mo%litres_mo(i, m, iccp2) = 0.0
+        ctem_mo%soilcres_mo(i, m, iccp2) = 0.0
+        ! ctem_mo%litres_mo(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_mo%soilcres_mo(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_mo%humiftrsveg_mo(i, m, iccp1)=0.0
         !
-        ! ctem_mo%litres_mo(i,m,iccp2,1:ignd)=0.0
-        ! ctem_mo%soilcres_mo(i,m,iccp2,1:ignd)=0.0
-        ! ctem_mo%humiftrsveg_mo(i,m,iccp2)=0.0
+        ! ctem_mo%litres_mo(i, m, iccp2, 1:ignd)=0.0
+        ! ctem_mo%soilcres_mo(i, m, iccp2, 1:ignd)=0.0
+        ! ctem_mo%humiftrsveg_mo(i, m, iccp2)=0.0
         ! COMBAK PERLAY
 
       end do ! nmtest
@@ -2239,18 +2249,18 @@ contains
   !! @{
   !> Resets annual variables in preparation for next year
 
-  subroutine resetyearend(nltest,nmtest)
+  subroutine resetyearend(nltest, nmtest)
 
-    use classic_params, only : iccp2,icc,iccp1,ignd
+    use classic_params, only : iccp2, icc, iccp1, ignd
 
     implicit none
 
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
 
-    integer :: i,m,j
+    integer :: i, m, j
 
-    do i = 1,nltest
+    do i = 1, nltest
       ! Grid avg
       ctem_grd_yr%laimaxg_yr_g(i) = 0.0
       ctem_grd_yr%stemmass_yr_g(i) = 0.0
@@ -2260,10 +2270,10 @@ contains
       ctem_grd_yr%soilcmas_yr_g(i) = 0.0
       ctem_grd_yr%litres_yr_g(i) = 0.0
       ctem_grd_yr%soilcres_yr_g(i) = 0.0
-      ! ctem_grd_yr%litrmass_yr_g(i,1:ignd)=0.0
-      ! ctem_grd_yr%soilcmas_yr_g(i,1:ignd)=0.0
-      ! ctem_grd_yr%litres_yr_g(i,1:ignd)=0.0
-      ! ctem_grd_yr%soilcres_yr_g(i,1:ignd)=0.0
+      ! ctem_grd_yr%litrmass_yr_g(i, 1:ignd)=0.0
+      ! ctem_grd_yr%soilcmas_yr_g(i, 1:ignd)=0.0
+      ! ctem_grd_yr%litres_yr_g(i, 1:ignd)=0.0
+      ! ctem_grd_yr%soilcres_yr_g(i, 1:ignd)=0.0
       ! COMBAK PERLAY
       ctem_grd_yr%vgbiomas_yr_g(i) = 0.0
       ctem_grd_yr%totcmass_yr_g(i) = 0.0
@@ -2302,123 +2312,123 @@ contains
       ctem_grd_yr%cProduct_yr_g(i)  = 0.0
       ctem_grd_yr%fProductDecomp_yr_g(i)  = 0.0
 
-      do m = 1,nmtest
+      do m = 1, nmtest
         ! Tile avg
-        ctem_tile_yr%laimaxg_yr_t(i,m) = 0.0
-        ctem_tile_yr%stemmass_yr_t(i,m) = 0.0
-        ctem_tile_yr%rootmass_yr_t(i,m) = 0.0
+        ctem_tile_yr%laimaxg_yr_t(i, m) = 0.0
+        ctem_tile_yr%stemmass_yr_t(i, m) = 0.0
+        ctem_tile_yr%rootmass_yr_t(i, m) = 0.0
         ! COMBAK PERLAY
-        ctem_tile_yr%litrmass_yr_t(i,m) = 0.0
-        ctem_tile_yr%soilcmas_yr_t(i,m) = 0.0
-        ctem_tile_yr%litres_yr_t(i,m) = 0.0
-        ctem_tile_yr%soilcres_yr_t(i,m) = 0.0
-        ! ctem_tile_yr%litrmass_yr_t(i,m,1:ignd)=0.0
-        ! ctem_tile_yr%soilcmas_yr_t(i,m,1:ignd)=0.0
-        ! ctem_tile_yr%litres_yr_t(i,m,1:ignd)=0.0
-        ! ctem_tile_yr%soilcres_yr_t(i,m,1:ignd)=0.0
+        ctem_tile_yr%litrmass_yr_t(i, m) = 0.0
+        ctem_tile_yr%soilcmas_yr_t(i, m) = 0.0
+        ctem_tile_yr%litres_yr_t(i, m) = 0.0
+        ctem_tile_yr%soilcres_yr_t(i, m) = 0.0
+        ! ctem_tile_yr%litrmass_yr_t(i, m, 1:ignd)=0.0
+        ! ctem_tile_yr%soilcmas_yr_t(i, m, 1:ignd)=0.0
+        ! ctem_tile_yr%litres_yr_t(i, m, 1:ignd)=0.0
+        ! ctem_tile_yr%soilcres_yr_t(i, m, 1:ignd)=0.0
         ! COMBAK PERLAY
-        ctem_tile_yr%vgbiomas_yr_t(i,m) = 0.0
-        ctem_tile_yr%totcmass_yr_t(i,m) = 0.0
-        ctem_tile_yr%veghght_yr_t(i,m) = 0.0
-        ctem_tile_yr%npp_yr_t(i,m) = 0.0
-        ctem_tile_yr%gpp_yr_t(i,m) = 0.0
-        ctem_tile_yr%nep_yr_t(i,m) = 0.0
-        ctem_tile_yr%nbp_yr_t(i,m) = 0.0
-        ctem_tile_yr%hetrores_yr_t(i,m) = 0.0
-        ctem_tile_yr%autores_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_co2_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_co_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_ch4_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_nmhc_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_h2_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_nox_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_n2o_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_pm25_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_tpm_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_tc_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_oc_yr_t(i,m) = 0.0
-        ctem_tile_yr%emit_bc_yr_t(i,m) = 0.0
-        ctem_tile_yr%smfuncveg_yr_t(i,m) = 0.0
-        ctem_tile_yr%luc_emc_yr_t(i,m) = 0.0
-        ctem_tile_yr%lucsocin_yr_t(i,m) = 0.0
-        ctem_tile_yr%lucltrin_yr_t(i,m) = 0.0
-        ctem_tile_yr%burnfrac_yr_t(i,m) = 0.0
-        ctem_tile_yr%bterm_yr_t(i,m) = 0.0
-        ctem_tile_yr%lterm_yr_t(i,m) = 0.0
-        ctem_tile_yr%mterm_yr_t(i,m) = 0.0
-        ctem_tile_yr%ch4WetSpec_yr_t(i,m)  = 0.0
-        ctem_tile_yr%wetfdyn_yr_t(i,m)  = 0.0
-        ctem_tile_yr%ch4WetDyn_yr_t(i,m)  = 0.0
-        ctem_tile_yr%ch4soills_yr_t(i,m)  = 0.0
-        ctem_tile_yr%peatdep_yr_t(i,m)  = 0.0
-        ctem_tile_yr%fProductDecomp_yr_t(i,m) = 0.0
+        ctem_tile_yr%vgbiomas_yr_t(i, m) = 0.0
+        ctem_tile_yr%totcmass_yr_t(i, m) = 0.0
+        ctem_tile_yr%veghght_yr_t(i, m) = 0.0
+        ctem_tile_yr%npp_yr_t(i, m) = 0.0
+        ctem_tile_yr%gpp_yr_t(i, m) = 0.0
+        ctem_tile_yr%nep_yr_t(i, m) = 0.0
+        ctem_tile_yr%nbp_yr_t(i, m) = 0.0
+        ctem_tile_yr%hetrores_yr_t(i, m) = 0.0
+        ctem_tile_yr%autores_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_co2_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_co_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_ch4_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_nmhc_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_h2_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_nox_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_n2o_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_pm25_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_tpm_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_tc_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_oc_yr_t(i, m) = 0.0
+        ctem_tile_yr%emit_bc_yr_t(i, m) = 0.0
+        ctem_tile_yr%smfuncveg_yr_t(i, m) = 0.0
+        ctem_tile_yr%luc_emc_yr_t(i, m) = 0.0
+        ctem_tile_yr%lucsocin_yr_t(i, m) = 0.0
+        ctem_tile_yr%lucltrin_yr_t(i, m) = 0.0
+        ctem_tile_yr%burnfrac_yr_t(i, m) = 0.0
+        ctem_tile_yr%bterm_yr_t(i, m) = 0.0
+        ctem_tile_yr%lterm_yr_t(i, m) = 0.0
+        ctem_tile_yr%mterm_yr_t(i, m) = 0.0
+        ctem_tile_yr%ch4WetSpec_yr_t(i, m)  = 0.0
+        ctem_tile_yr%wetfdyn_yr_t(i, m)  = 0.0
+        ctem_tile_yr%ch4WetDyn_yr_t(i, m)  = 0.0
+        ctem_tile_yr%ch4soills_yr_t(i, m)  = 0.0
+        ctem_tile_yr%peatdep_yr_t(i, m)  = 0.0
+        ctem_tile_yr%fProductDecomp_yr_t(i, m) = 0.0
 
-        do j = 1,icc
+        do j = 1, icc
           ! per pft
-          ctem_yr%laimaxg_yr(i,m,j) = 0.0
-          ctem_yr%stemmass_yr(i,m,j) = 0.0
-          ctem_yr%rootmass_yr(i,m,j) = 0.0
+          ctem_yr%laimaxg_yr(i, m, j) = 0.0
+          ctem_yr%stemmass_yr(i, m, j) = 0.0
+          ctem_yr%rootmass_yr(i, m, j) = 0.0
           ! COMBAK PERLAY
-          ctem_yr%litrmass_yr(i,m,j) = 0.0
-          ctem_yr%soilcmas_yr(i,m,j) = 0.0
-          ctem_yr%litres_yr(i,m,j) = 0.0
-          ctem_yr%soilcres_yr(i,m,j) = 0.0
-          ! ctem_yr%litrmass_yr(i,m,j,1:ignd)=0.0
-          ! ctem_yr%soilcmas_yr(i,m,j,1:ignd)=0.0
-          ! ctem_yr%litres_yr(i,m,j,1:ignd)=0.0
-          ! ctem_yr%soilcres_yr(i,m,j,1:ignd)=0.0
+          ctem_yr%litrmass_yr(i, m, j) = 0.0
+          ctem_yr%soilcmas_yr(i, m, j) = 0.0
+          ctem_yr%litres_yr(i, m, j) = 0.0
+          ctem_yr%soilcres_yr(i, m, j) = 0.0
+          ! ctem_yr%litrmass_yr(i, m, j, 1:ignd)=0.0
+          ! ctem_yr%soilcmas_yr(i, m, j, 1:ignd)=0.0
+          ! ctem_yr%litres_yr(i, m, j, 1:ignd)=0.0
+          ! ctem_yr%soilcres_yr(i, m, j, 1:ignd)=0.0
           ! COMBAK PERLAY
-          ctem_yr%vgbiomas_yr(i,m,j) = 0.0
-          ctem_yr%totcmass_yr(i,m,j) = 0.0
-          ctem_yr%veghght_yr(i,m,j) = 0.0
-          ctem_yr%npp_yr(i,m,j) = 0.0
-          ctem_yr%gpp_yr(i,m,j) = 0.0
-          ctem_yr%nep_yr(i,m,j) = 0.0
-          ctem_yr%nbp_yr(i,m,j) = 0.0
-          ctem_yr%hetrores_yr(i,m,j) = 0.0
-          ctem_yr%autores_yr(i,m,j) = 0.0
-          ctem_yr%emit_co2_yr(i,m,j) = 0.0
-          ctem_yr%emit_co_yr(i,m,j) = 0.0
-          ctem_yr%emit_ch4_yr(i,m,j) = 0.0
-          ctem_yr%emit_nmhc_yr(i,m,j) = 0.0
-          ctem_yr%emit_h2_yr(i,m,j) = 0.0
-          ctem_yr%emit_nox_yr(i,m,j) = 0.0
-          ctem_yr%emit_n2o_yr(i,m,j) = 0.0
-          ctem_yr%emit_pm25_yr(i,m,j) = 0.0
-          ctem_yr%emit_tpm_yr(i,m,j) = 0.0
-          ctem_yr%emit_tc_yr(i,m,j) = 0.0
-          ctem_yr%emit_oc_yr(i,m,j) = 0.0
-          ctem_yr%emit_bc_yr(i,m,j) = 0.0
-          ctem_yr%bterm_yr(i,m,j) = 0.0
-          ctem_yr%mterm_yr(i,m,j) = 0.0
-          ctem_yr%burnfrac_yr(i,m,j) = 0.0
-          ctem_yr%smfuncveg_yr(i,m,j) = 0.0
+          ctem_yr%vgbiomas_yr(i, m, j) = 0.0
+          ctem_yr%totcmass_yr(i, m, j) = 0.0
+          ctem_yr%veghght_yr(i, m, j) = 0.0
+          ctem_yr%npp_yr(i, m, j) = 0.0
+          ctem_yr%gpp_yr(i, m, j) = 0.0
+          ctem_yr%nep_yr(i, m, j) = 0.0
+          ctem_yr%nbp_yr(i, m, j) = 0.0
+          ctem_yr%hetrores_yr(i, m, j) = 0.0
+          ctem_yr%autores_yr(i, m, j) = 0.0
+          ctem_yr%emit_co2_yr(i, m, j) = 0.0
+          ctem_yr%emit_co_yr(i, m, j) = 0.0
+          ctem_yr%emit_ch4_yr(i, m, j) = 0.0
+          ctem_yr%emit_nmhc_yr(i, m, j) = 0.0
+          ctem_yr%emit_h2_yr(i, m, j) = 0.0
+          ctem_yr%emit_nox_yr(i, m, j) = 0.0
+          ctem_yr%emit_n2o_yr(i, m, j) = 0.0
+          ctem_yr%emit_pm25_yr(i, m, j) = 0.0
+          ctem_yr%emit_tpm_yr(i, m, j) = 0.0
+          ctem_yr%emit_tc_yr(i, m, j) = 0.0
+          ctem_yr%emit_oc_yr(i, m, j) = 0.0
+          ctem_yr%emit_bc_yr(i, m, j) = 0.0
+          ctem_yr%bterm_yr(i, m, j) = 0.0
+          ctem_yr%mterm_yr(i, m, j) = 0.0
+          ctem_yr%burnfrac_yr(i, m, j) = 0.0
+          ctem_yr%smfuncveg_yr(i, m, j) = 0.0
         end do
 
-        ctem_yr%hetrores_yr(i,m,iccp1) = 0.0
-        ctem_yr%nep_yr(i,m,iccp1) = 0.0
-        ctem_yr%nbp_yr(i,m,iccp1) = 0.0
-        ctem_yr%totcmass_yr(i,m,iccp1) = 0.0
+        ctem_yr%hetrores_yr(i, m, iccp1) = 0.0
+        ctem_yr%nep_yr(i, m, iccp1) = 0.0
+        ctem_yr%nbp_yr(i, m, iccp1) = 0.0
+        ctem_yr%totcmass_yr(i, m, iccp1) = 0.0
 
         ! COMBAK PERLAY
-        ctem_yr%litres_yr(i,m,iccp1) = 0.0
-        ctem_yr%soilcres_yr(i,m,iccp1) = 0.0
-        ctem_yr%litrmass_yr(i,m,iccp1) = 0.0
-        ctem_yr%soilcmas_yr(i,m,iccp1) = 0.0
+        ctem_yr%litres_yr(i, m, iccp1) = 0.0
+        ctem_yr%soilcres_yr(i, m, iccp1) = 0.0
+        ctem_yr%litrmass_yr(i, m, iccp1) = 0.0
+        ctem_yr%soilcmas_yr(i, m, iccp1) = 0.0
 
-        ctem_yr%litrmass_yr(i,m,iccp2) = 0.0
-        ctem_yr%soilcmas_yr(i,m,iccp2) = 0.0
-        ctem_yr%litres_yr(i,m,iccp2) = 0.0
-        ctem_yr%soilcres_yr(i,m,iccp2) = 0.0
-        ! ctem_yr%litres_yr(i,m,iccp1,1:ignd)=0.0
-        ! ctem_yr%soilcres_yr(i,m,iccp1,1:ignd)=0.0
-        ! ctem_yr%litrmass_yr(i,m,iccp1,1:ignd)=0.0
-        ! ctem_yr%soilcmas_yr(i,m,iccp1,1:ignd)=0.0
+        ctem_yr%litrmass_yr(i, m, iccp2) = 0.0
+        ctem_yr%soilcmas_yr(i, m, iccp2) = 0.0
+        ctem_yr%litres_yr(i, m, iccp2) = 0.0
+        ctem_yr%soilcres_yr(i, m, iccp2) = 0.0
+        ! ctem_yr%litres_yr(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_yr%soilcres_yr(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_yr%litrmass_yr(i, m, iccp1, 1:ignd)=0.0
+        ! ctem_yr%soilcmas_yr(i, m, iccp1, 1:ignd)=0.0
         !
-        ! ctem_yr%litrmass_yr(i,m,iccp2,1:ignd)=0.0
-        ! ctem_yr%soilcmas_yr(i,m,iccp2,1:ignd)=0.0
-        ! ctem_yr%litres_yr(i,m,iccp2,1:ignd)=0.0
-        ! ctem_yr%soilcres_yr(i,m,iccp2,1:ignd)=0.0
+        ! ctem_yr%litrmass_yr(i, m, iccp2, 1:ignd)=0.0
+        ! ctem_yr%soilcmas_yr(i, m, iccp2, 1:ignd)=0.0
+        ! ctem_yr%litres_yr(i, m, iccp2, 1:ignd)=0.0
+        ! ctem_yr%soilcres_yr(i, m, iccp2, 1:ignd)=0.0
         ! COMBAK PERLAY
 
       end do ! nmtest

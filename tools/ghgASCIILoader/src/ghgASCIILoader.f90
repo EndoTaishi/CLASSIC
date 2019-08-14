@@ -96,7 +96,7 @@ contains
         ! If the file doesn't already exist, then initialize the file
         if (.not.fileExists(filename)) then
             ! Create the variable file
-            fileId = ncCreate(filename, NF90_CLOBBER)
+            fileId = ncCreate(filename, NF90_NETCDF4)
 
             ! Populate the variable with attribute content
             select case(label)

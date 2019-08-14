@@ -4,12 +4,12 @@
 !! soil layer temperatures and water stores accordingly.
 !! @author D. Verseghy, Y. Delage, M. Lazare
 
-subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
-                   ALBSNO,RHOSNO,HCPSNO,TBASE,OVRFLW,TOVRFL, &
-                   RUNOFF,TRUNOF,HMFG,HTC,HTCS,WTRS,WTRG, &
-                   FI,TBARW,GZERO,G12,G23,GGEO,TA,WSNOW, &
-                   TCTOP,TCBOT,GFLUX,ZPLIM,THPOR,THLMIN,HCPS, &
-                   DELZW,DELZZ,DELZ,ISAND,IWF,IG,ILG,IL1,IL2,JL,N)
+subroutine TMCALC(TBAR, THLIQ, THICE, HCP, TPOND, ZPOND, TSNOW, ZSNOW, &
+                  ALBSNO, RHOSNO, HCPSNO, TBASE, OVRFLW, TOVRFL, &
+                  RUNOFF, TRUNOF, HMFG, HTC, HTCS, WTRS, WTRG, &
+                  FI, TBARW, GZERO, G12, G23, GGEO, TA, WSNOW, &
+                  TCTOP, TCBOT, GFLUX, ZPLIM, THPOR, THLMIN, HCPS, &
+                  DELZW, DELZZ, DELZ, ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
   !
   !     * FEB 22/08 - D.VERSEGHY. STREAMLINE SOME CALCULATIONS.
   !     * NOV 20/06 - D.VERSEGHY. ADD GEOTHERMAL HEAT FLUX.
@@ -67,24 +67,24 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !     *                         CALCULATED AT TOP AND BOTTOM
   !     *                         OF EACH LAYER.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,HCPICE,HCPSND,RHOW, &
-                            RHOICE,CLHMLT
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, HCPSND, RHOW, &
+                            RHOICE, CLHMLT
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IWF,IG,ILG,IL1,IL2,JL,N
-  integer             :: I,J
+  integer, intent(in) :: IWF, IG, ILG, IL1, IL2, JL, N
+  integer             :: I, J
   !
   !     * INPUT/OUTPUT ARRAYS.
   !
-  real, intent(inout) :: TBAR  (ILG,IG) !< Temperature of soil layer \f$[C] (T_g)\f$
-  real, intent(inout) :: THLIQ (ILG,IG) !< Volumetric liquid water content of soil layer \f$(\theta_l) [m^3 m^{-3}]\f$
-  real, intent(inout) :: THICE (ILG,IG) !< Volumetric frozen water content of soil layer \f$(\theta_i) [m^3 m^{-3}]\f$
-  real, intent(inout) :: HCP   (ILG,IG) !< Heat capacity of soil layer \f$[J m^{-3} K^{-1}] (C_g)\f$
-  real, intent(inout) :: HMFG  (ILG,IG) !< Energy associated with freezing or thawing of water in soil layer \f$[W m^{-2}]\f$
-  real, intent(inout) :: HTC   (ILG,IG) !< Internal energy change of soil layer due to conduction and/or
+  real, intent(inout) :: TBAR  (ILG, IG) !< Temperature of soil layer \f$[C] (T_g)\f$
+  real, intent(inout) :: THLIQ (ILG, IG) !< Volumetric liquid water content of soil layer \f$(\theta_l) [m^3 m^{-3}]\f$
+  real, intent(inout) :: THICE (ILG, IG) !< Volumetric frozen water content of soil layer \f$(\theta_i) [m^3 m^{-3}]\f$
+  real, intent(inout) :: HCP   (ILG, IG) !< Heat capacity of soil layer \f$[J m^{-3} K^{-1}] (C_g)\f$
+  real, intent(inout) :: HMFG  (ILG, IG) !< Energy associated with freezing or thawing of water in soil layer \f$[W m^{-2}]\f$
+  real, intent(inout) :: HTC   (ILG, IG) !< Internal energy change of soil layer due to conduction and/or
   !< change in mass \f$[W m^{-2}] (I_g)\f$
   !
   real, intent(inout) :: TPOND (ILG) !< Temperature of ponded water \f$[C] (T_p)\f$
@@ -107,36 +107,36 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !     * INPUT ARRAYS.
   !
   real, intent(in)    :: FI    (ILG)    !< Fractional coverage of subarea in question on modelled area \f$[ ] (X_i)\f$
-  real, intent(in)    :: TBARW (ILG,IG) !< Temperature of water in soil layer [C]
+  real, intent(in)    :: TBARW (ILG, IG) !< Temperature of water in soil layer [C]
   real, intent(inout) :: GZERO (ILG)    !< Heat flow into soil surface \f$[W m^{-2}]\f$
   real, intent(in)    :: G12   (ILG)    !< Heat flow between first and second soil layers \f$[W m^{-2}]\f$
   real, intent(in)    :: G23   (ILG)    !< Heat flow between second and third soil layers \f$[W m^{-2}]\f$
   real, intent(in)    :: GGEO  (ILG)    !< Geothermal heat flux at bottom of soil profile \f$[W m^{-2}]\f$
   real, intent(in)    :: TA    (ILG)    !< Air temperature [K]
   real, intent(in)    :: WSNOW (ILG)    !< Liquid water content of snow pack \f$[kg m^{-2}] (w_s)\f$
-  real, intent(in)    :: TCTOP (ILG,IG) !< Thermal conductivity of soil at top of soil layer \f$[W m^{-1} K^{-1}]\f$
-  real, intent(in)    :: TCBOT (ILG,IG) !< Thermal conductivity of soil at bottom of soil layer \f$[W m^{-1} K^{-1}]\f$
+  real, intent(in)    :: TCTOP (ILG, IG) !< Thermal conductivity of soil at top of soil layer \f$[W m^{-1} K^{-1}]\f$
+  real, intent(in)    :: TCBOT (ILG, IG) !< Thermal conductivity of soil at bottom of soil layer \f$[W m^{-1} K^{-1}]\f$
   real, intent(in)    :: ZPLIM (ILG)    !< Limiting depth of ponded water [m]
   !
   !     * SOIL INFORMATION ARRAYS.
   !
-  real, intent(in) :: THPOR (ILG,IG) !< Pore volume in soil layer \f$(\theta_p) [m^3 m^{-3}]\f$
-  real, intent(in) :: THLMIN(ILG,IG) !< Residual soil liquid water content remaining after
+  real, intent(in) :: THPOR (ILG, IG) !< Pore volume in soil layer \f$(\theta_p) [m^3 m^{-3}]\f$
+  real, intent(in) :: THLMIN(ILG, IG) !< Residual soil liquid water content remaining after
   !< freezing or evaporation \f$(\theta_r) [m^3 m^{-3}]\f$
-  real, intent(in) :: HCPS  (ILG,IG) !< Heat capacity of soil material \f$[J m^{-3} K^{-1}] (C_m)\f$
-  real, intent(in) :: DELZW (ILG,IG) !< Permeable thickness of soil layer \f$(\Delta z_{g,w}) [m]\f$
-  real, intent(in) :: DELZZ (ILG,IG) !< Soil layer thicknesses to bottom of permeable depth
+  real, intent(in) :: HCPS  (ILG, IG) !< Heat capacity of soil material \f$[J m^{-3} K^{-1}] (C_m)\f$
+  real, intent(in) :: DELZW (ILG, IG) !< Permeable thickness of soil layer \f$(\Delta z_{g, w}) [m]\f$
+  real, intent(in) :: DELZZ (ILG, IG) !< Soil layer thicknesses to bottom of permeable depth
   !< for standard three-layer configuration,
-  !< or to bottom of thermal depth for multiple layers \f$(\Delta z_{g,z}) [m]\f$
+  !< or to bottom of thermal depth for multiple layers \f$(\Delta z_{g, z}) [m]\f$
   real, intent(in) :: DELZ  (IG)     !< Overall thickness of soil layer [m]
   !
-  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
   !
   !     * TEMPORARY VARIABLES.
   !
-  real, intent(inout) :: GFLUX (ILG,IG) !< Heat flow between soil layers \f$[W m^{-2}]\f$
+  real, intent(inout) :: GFLUX (ILG, IG) !< Heat flow between soil layers \f$[W m^{-2}]\f$
   !
-  real :: GP1,ZFREZ,HADD,HCONV,TTEST,TLIM,HEXCES,THFREZ,THMELT,G3B
+  real :: GP1, ZFREZ, HADD, HCONV, TTEST, TLIM, HEXCES, THFREZ, THMELT, G3B
   !
   !-----------------------------------------------------------------------
   !
@@ -158,18 +158,18 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! temperature TPOND. Finally, ZPOND is set to ZPLIM.
   !!
 
-  do I = IL1,IL2 ! loop 100
-    if (FI(I) > 0. .and. ISAND(I,1) > - 4 .and. IWF == 0 .and. &
-    (ZPOND(I) - ZPLIM(I)) > 1.0E-8) then
+  do I = IL1, IL2 ! loop 100
+    if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. IWF == 0 .and. &
+        (ZPOND(I) - ZPLIM(I)) > 1.0E-8) then
       TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + (TPOND(I) + TFREZ) * &
-                   (ZPOND(I) - ZPLIM(I))) / (RUNOFF(I) + &
-                   (ZPOND(I) - ZPLIM(I)))
+                  (ZPOND(I) - ZPLIM(I))) / (RUNOFF(I) + &
+                  (ZPOND(I) - ZPLIM(I)))
       RUNOFF(I) = RUNOFF(I) + (ZPOND(I) - ZPLIM(I))
       TOVRFL(I) = (TOVRFL(I) * OVRFLW(I) + (TPOND(I) + TFREZ) * &
-                   FI(I) * (ZPOND(I) - ZPLIM(I))) / (OVRFLW(I) + &
-                   FI(I) * (ZPOND(I) - ZPLIM(I)))
+                  FI(I) * (ZPOND(I) - ZPLIM(I))) / (OVRFLW(I) + &
+                  FI(I) * (ZPOND(I) - ZPLIM(I)))
       OVRFLW(I) = OVRFLW(I) + FI(I) * (ZPOND(I) - ZPLIM(I))
-      ZPOND(I) = MIN(ZPOND(I),ZPLIM(I))
+      ZPOND(I) = MIN(ZPOND(I), ZPLIM(I))
     end if
   end do ! loop 100
   !
@@ -189,21 +189,21 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! the documentation of loop 550 below.)
   !!
 
-  do J = 1,IG ! loop 200
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. DELZW(I,J) > 0. .and. ISAND(I,1) > - 4) &
-      then
-        HTC(I,J) = HTC(I,J) + FI(I) * ((TBARW(I,J) + TFREZ) * &
-                    HCPW * THLIQ(I,J) + (TBAR(I,J) + TFREZ) * &
-                    HCPICE * THICE(I,J)) * DELZW(I,J) / DELT
-        HCP(I,J) = HCPW * THLIQ(I,J) + HCPICE * THICE(I,J) + &
-                    HCPS(I,J) * (1. - THPOR(I,J))
-        TBAR(I,J) = ((TBARW(I,J) + TFREZ) * HCPW * THLIQ(I,J) * &
-                     DELZW(I,J) + (TBAR(I,J) + TFREZ) * ((HCPICE * &
-                     THICE(I,J) + HCPS(I,J) * (1. - THPOR(I,J))) * &
-                     DELZW(I,J) + HCPSND * (DELZZ(I,J) - DELZW(I,J)))) / &
-                     (HCP(I,J) * DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                     DELZW(I,J))) - TFREZ
+  do J = 1, IG ! loop 200
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. DELZW(I, J) > 0. .and. ISAND(I, 1) > - 4) &
+          then
+        HTC(I, J) = HTC(I, J) + FI(I) * ((TBARW(I, J) + TFREZ) * &
+                    HCPW * THLIQ(I, J) + (TBAR(I, J) + TFREZ) * &
+                    HCPICE * THICE(I, J)) * DELZW(I, J) / DELT
+        HCP(I, J) = HCPW * THLIQ(I, J) + HCPICE * THICE(I, J) + &
+                    HCPS(I, J) * (1. - THPOR(I, J))
+        TBAR(I, J) = ((TBARW(I, J) + TFREZ) * HCPW * THLIQ(I, J) * &
+                     DELZW(I, J) + (TBAR(I, J) + TFREZ) * ((HCPICE * &
+                     THICE(I, J) + HCPS(I, J) * (1. - THPOR(I, J))) * &
+                     DELZW(I, J) + HCPSND * (DELZZ(I, J) - DELZW(I, J)))) / &
+                     (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                     DELZW(I, J))) - TFREZ
       end if
     end do
   end do ! loop 200
@@ -224,13 +224,13 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! water is stepped ahead using GZERO and GP1, and GZERO is reset to GP1 for use in the later soil
   !! temperature calculations.
   !!
-  do I = IL1,IL2 ! loop 300
-    if (FI(I) > 0. .and. ISAND(I,1) > - 4 .and. ZPOND(I) > 0.0) &
-    then
-      HTC(I,1) = HTC(I,1) + FI(I) * HCPW * (TPOND(I) + TFREZ) * &
-             ZPOND(I) / DELT
-      GP1 = ZPOND(I) * (G12(I) - GZERO(I)) / (ZPOND(I) + DELZZ(I,1)) + &
-             GZERO(I)
+  do I = IL1, IL2 ! loop 300
+    if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. ZPOND(I) > 0.0) &
+        then
+      HTC(I, 1) = HTC(I, 1) + FI(I) * HCPW * (TPOND(I) + TFREZ) * &
+                  ZPOND(I) / DELT
+      GP1 = ZPOND(I) * (G12(I) - GZERO(I)) / (ZPOND(I) + DELZZ(I, 1)) + &
+            GZERO(I)
       TPOND(I) = TPOND(I) + (GZERO(I) - GP1) * DELT / (HCPW * ZPOND(I))
       GZERO(I) = GP1
     end if
@@ -268,29 +268,29 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! associated with phase changes of water in soil layers, and the diagnostic variables WTRS and WTRG
   !! describing transfers of water into or out of the snow and soil respectively.
   !!
-  do I = IL1,IL2 ! loop 400
-    if (FI(I) > 0. .and. ISAND(I,1) > - 4 .and. ZPOND(I) > 0. &
-    .and. TPOND(I) < 0.) &
-    then
+  do I = IL1, IL2 ! loop 400
+    if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. ZPOND(I) > 0. &
+        .and. TPOND(I) < 0.) &
+        then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
                 ZSNOW(I) / DELT
       ZFREZ = 0.0
       HADD = - TPOND(I) * HCPW * ZPOND(I)
       TPOND(I) = 0.0
       HCONV = CLHMLT * RHOW * ZPOND(I)
-      HTC(I,1) = HTC(I,1) - FI(I) * HCPW * TFREZ * ZPOND(I) / DELT
+      HTC(I, 1) = HTC(I, 1) - FI(I) * HCPW * TFREZ * ZPOND(I) / DELT
       if (HADD <= HCONV) then
         ZFREZ = HADD / (CLHMLT * RHOW)
         ZPOND(I) = ZPOND(I) - ZFREZ
         ZFREZ = ZFREZ * RHOW / RHOICE
         if (.not.(ZSNOW(I) > 0.0)) ALBSNO(I) = 0.50
         TSNOW(I) = TSNOW(I) * HCPSNO(I) * ZSNOW(I) / (HCPSNO(I) * ZSNOW(I) &
-        + HCPICE * ZFREZ)
+                   + HCPICE * ZFREZ)
         RHOSNO(I) = (RHOSNO(I) * ZSNOW(I) + RHOICE * ZFREZ) / (ZSNOW(I) &
-        + ZFREZ)
+                    + ZFREZ)
         if (ZSNOW(I) > 0.0) then
           HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-                    (RHOW * ZSNOW(I))
+                      (RHOW * ZSNOW(I))
         else
           HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE
         end if
@@ -300,40 +300,40 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
         ZFREZ = ZPOND(I) * RHOW / RHOICE
         TTEST = - HADD / (HCPICE * ZFREZ)
         if (ZSNOW(I) > 0.0) then
-          TLIM = MIN(TSNOW(I),TBAR(I,1))
+          TLIM = MIN(TSNOW(I), TBAR(I, 1))
         else
-          TLIM = MIN(TA(I) - TFREZ,TBAR(I,1))
+          TLIM = MIN(TA(I) - TFREZ, TBAR(I, 1))
         end if
         if (TTEST < TLIM) then
           HEXCES = HADD + TLIM * HCPICE * ZFREZ
           GZERO(I) = GZERO(I) - HEXCES / DELT
-          HTC(I,1) = HTC(I,1) + FI(I) * (HADD - HEXCES) / DELT
+          HTC(I, 1) = HTC(I, 1) + FI(I) * (HADD - HEXCES) / DELT
           TSNOW(I) = (TSNOW(I) * HCPSNO(I) * ZSNOW(I) + &
-                       TLIM * HCPICE * ZFREZ) &
-                       / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
+                     TLIM * HCPICE * ZFREZ) &
+                     / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
         else
           TSNOW(I) = (TSNOW(I) * HCPSNO(I) * ZSNOW(I) + TTEST * HCPICE * &
-                        ZFREZ) / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
-          HTC(I,1) = HTC(I,1) + FI(I) * HADD / DELT
+                     ZFREZ) / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
+          HTC(I, 1) = HTC(I, 1) + FI(I) * HADD / DELT
         end if
         if (.not.(ZSNOW(I) > 0.0)) ALBSNO(I) = 0.50
         RHOSNO(I) = (RHOSNO(I) * ZSNOW(I) + RHOICE * ZFREZ) / (ZSNOW(I) + &
-        ZFREZ)
+                    ZFREZ)
         if (ZSNOW(I) > 0.0) then
           HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-                    (RHOW * ZSNOW(I))
+                      (RHOW * ZSNOW(I))
         else
           HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE
         end if
         ZSNOW(I) = ZSNOW(I) + ZFREZ
         ZPOND(I) = 0.0
       end if
-      HTC (I,1) = HTC (I,1) + FI(I) * HCPW * TFREZ * ZPOND(I) / DELT
-      HMFG(I,1) = HMFG(I,1) - FI(I) * CLHMLT * RHOICE * ZFREZ / DELT
+      HTC (I, 1) = HTC (I, 1) + FI(I) * HCPW * TFREZ * ZPOND(I) / DELT
+      HMFG(I, 1) = HMFG(I, 1) - FI(I) * CLHMLT * RHOICE * ZFREZ / DELT
       WTRS(I) = WTRS(I) + FI(I) * ZFREZ * RHOICE / DELT
       WTRG(I) = WTRG(I) - FI(I) * ZFREZ * RHOICE / DELT
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
-      DELT
+                DELT
     end if
   end do ! loop 400
   !
@@ -363,15 +363,15 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
     !! the thermal conductivity \f$\lambda (z)\f$ and the temperature gradient, is given as:
     !! \f$G(z) = \lambda (z) dT(z)/dz\f$
     !! The linearized form is written as:
-    !! \f$G_j = (\lambda_{j-1} + \lambda_j ) (T_{j-1} - T_j ) / (\Delta z_{j-1} - \Delta z_j )\f$
+    !! \f$G_j = (\lambda_{j-1} + \lambda_j) (T_{j-1} - T_j) / (\Delta z_{j-1} - \Delta z_j)\f$
     !! where G j is the heat flux at the top of layer j, and \f$\lambda_j\f$ , \f$T_j\f$ and \f$\Delta z_j\f$ refer to the thermal conductivity,
     !! temperature and heat capacity of the layer.
     !!
-    do J = 4,IG ! loop 500
-      do I = IL1,IL2
-        if (FI(I) > 0. .and. ISAND(I,1) > - 4) then
-          GFLUX(I,J) = (TCBOT(I,J - 1) + TCTOP(I,J)) * (TBAR(I,J - 1) - &
-                          TBAR(I,J)) / (DELZ(J - 1) + DELZ(J))
+    do J = 4, IG ! loop 500
+      do I = IL1, IL2
+        if (FI(I) > 0. .and. ISAND(I, 1) > - 4) then
+          GFLUX(I, J) = (TCBOT(I, J - 1) + TCTOP(I, J)) * (TBAR(I, J - 1) - &
+                        TBAR(I, J)) / (DELZ(J - 1) + DELZ(J))
         end if
       end do
     end do ! loop 500
@@ -393,40 +393,40 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! the third layer is updated using G23, the flux at the top of the layer. For diagnostic purposes, the first
   !! three levels of the GFLUX vector are assigned as GZERO, G12 and G23 respectively.
   !!
-  do I = IL1,IL2 ! loop 550
-    if (FI(I) > 0. .and. ISAND(I,1) > - 4) then
-      TBAR(I,1) = TBAR(I,1) + (GZERO(I) - G12(I)) * DELT / &
-                   (HCP(I,1) * DELZW(I,1) + HCPSND * (DELZZ(I,1) - &
-                   DELZW(I,1)))
-      TBAR(I,2) = TBAR(I,2) + (G12  (I) - G23(I)) * DELT / &
-                   (HCP(I,2) * DELZW(I,2) + HCPSND * (DELZZ(I,2) - &
-                   DELZW(I,2)))
+  do I = IL1, IL2 ! loop 550
+    if (FI(I) > 0. .and. ISAND(I, 1) > - 4) then
+      TBAR(I, 1) = TBAR(I, 1) + (GZERO(I) - G12(I)) * DELT / &
+                   (HCP(I, 1) * DELZW(I, 1) + HCPSND * (DELZZ(I, 1) - &
+                   DELZW(I, 1)))
+      TBAR(I, 2) = TBAR(I, 2) + (G12  (I) - G23(I)) * DELT / &
+                   (HCP(I, 2) * DELZW(I, 2) + HCPSND * (DELZZ(I, 2) - &
+                   DELZW(I, 2)))
       if (IG == 3) then
-        if (DELZZ(I,3) > 0.0) then
-          if (DELZZ(I,IG) < (DELZ(IG) - 1.0E-5)) then
-            G3B = (TCBOT(I,3) + TCTOP(I,3)) * (TBAR(I,3) - &
-                         TBASE(I)) / DELZ(3)
-            TBAR(I,3) = TBAR(I,3) + (G23(I) - G3B) * DELT / &
-                         (HCP(I,3) * DELZZ(I,3))
+        if (DELZZ(I, 3) > 0.0) then
+          if (DELZZ(I, IG) < (DELZ(IG) - 1.0E-5)) then
+            G3B = (TCBOT(I, 3) + TCTOP(I, 3)) * (TBAR(I, 3) - &
+                  TBASE(I)) / DELZ(3)
+            TBAR(I, 3) = TBAR(I, 3) + (G23(I) - G3B) * DELT / &
+                         (HCP(I, 3) * DELZZ(I, 3))
             TBASE(I) = TBASE(I) + (G3B - GGEO(I)) * DELT / &
-                         (HCPSND * (DELZ(3) - DELZZ(I,3)))
+                       (HCPSND * (DELZ(3) - DELZZ(I, 3)))
           else
-            TBAR(I,3) = TBAR(I,3) + (G23(I) - GGEO(I)) * DELT / &
-                         (HCP(I,3) * DELZW(I,3))
+            TBAR(I, 3) = TBAR(I, 3) + (G23(I) - GGEO(I)) * DELT / &
+                         (HCP(I, 3) * DELZW(I, 3))
           end if
         else
           TBASE(I) = TBASE(I) + (G23(I) - GGEO(I)) * DELT / &
                      (HCPSND * DELZ(3))
         end if
-        HTC(I,3) = HTC(I,3) - FI(I) * GGEO(I)
+        HTC(I, 3) = HTC(I, 3) - FI(I) * GGEO(I)
       else
-        TBAR(I,3) = TBAR(I,3) + G23(I) * DELT / &
-                       (HCP(I,3) * DELZW(I,3) + HCPSND * (DELZ(3) - &
-                       DELZW(I,3)))
+        TBAR(I, 3) = TBAR(I, 3) + G23(I) * DELT / &
+                     (HCP(I, 3) * DELZW(I, 3) + HCPSND * (DELZ(3) - &
+                     DELZW(I, 3)))
       end if
-      GFLUX(I,1) = GZERO(I)
-      GFLUX(I,2) = G12(I)
-      GFLUX(I,3) = G23(I)
+      GFLUX(I, 1) = GZERO(I)
+      GFLUX(I, 2) = G12(I)
+      GFLUX(I, 3) = G23(I)
     end if
   end do ! loop 550
   !
@@ -438,28 +438,28 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! GFLUX at the top of the layer and GGEO at the bottom. For the intermediate layers, TBAR is
   !! calculated using the difference between the GFLUX values at the top and bottom of the layer.
   !!
-  do J = 3,IG ! loop 600
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. ISAND(I,1) > - 4 .and. IG > 3) then
-        HTC(I,J) = HTC(I,J) - FI(I) * (TBAR(I,J) + TFREZ) * (HCP(I,J) * &
-                       DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                       DELZW(I,J))) / DELT
+  do J = 3, IG ! loop 600
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. ISAND(I, 1) > - 4 .and. IG > 3) then
+        HTC(I, J) = HTC(I, J) - FI(I) * (TBAR(I, J) + TFREZ) * (HCP(I, J) * &
+                    DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                    DELZW(I, J))) / DELT
         if (J == 3) then
-          TBAR(I,J) = TBAR(I,J) - GFLUX(I,J + 1) * DELT / &
-                         (HCP(I,J) * DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                         DELZW(I,J)))
+          TBAR(I, J) = TBAR(I, J) - GFLUX(I, J + 1) * DELT / &
+                       (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                       DELZW(I, J)))
         else if (J == IG) then
-          TBAR(I,J) = TBAR(I,J) + (GFLUX(I,J) - GGEO(I)) * DELT / &
-                         (HCP(I,J) * DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                         DELZW(I,J)))
+          TBAR(I, J) = TBAR(I, J) + (GFLUX(I, J) - GGEO(I)) * DELT / &
+                       (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                       DELZW(I, J)))
         else
-          TBAR(I,J) = TBAR(I,J) + (GFLUX(I,J) - GFLUX(I,J + 1)) * DELT / &
-                     (HCP(I,J) * DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                     DELZW(I,J)))
+          TBAR(I, J) = TBAR(I, J) + (GFLUX(I, J) - GFLUX(I, J + 1)) * DELT / &
+                       (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                       DELZW(I, J)))
         end if
-        HTC(I,J) = HTC(I,J) + FI(I) * (TBAR(I,J) + TFREZ) * (HCP(I,J) * &
-        DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-        DELZW(I,J))) / DELT
+        HTC(I, J) = HTC(I, J) + FI(I) * (TBAR(I, J) + TFREZ) * (HCP(I, J) * &
+                    DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                    DELZW(I, J))) / DELT
       end if
     end do
   end do ! loop 600
@@ -492,77 +492,77 @@ subroutine TMCALC(TBAR,THLIQ,THICE,HCP,TPOND,ZPOND,TSNOW,ZSNOW, &
   !! HMFG and HTC are recalculated to reflect this. HCP is recomputed, and the remaining energy HADD
   !! is applied to increasing the temperature of the soil layer.
   !!
-  do J = 1,IG ! loop 700
-    do I = IL1,IL2
-      if (FI(I) > 0. .and. DELZW(I,J) > 0. .and. ISAND(I,1) > - 4) &
-      then
-        HTC(I,J) = HTC(I,J) - FI(I) * (TBAR(I,J) + TFREZ) * (HCP(I,J) * &
-                       DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                       DELZW(I,J))) / DELT
-        if (TBAR(I,J) < 0. .and. THLIQ(I,J) > THLMIN(I,J)) &
-        then
-          THFREZ = - (HCP(I,J) * DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                       DELZW(I,J))) * TBAR(I,J) / (CLHMLT * RHOW * &
-                       DELZW(I,J))
-          if (THFREZ <= (THLIQ(I,J) - THLMIN(I,J))) then
-            HMFG(I,J) = HMFG(I,J) - FI(I) * THFREZ * CLHMLT * &
-                             RHOW * DELZW(I,J) / DELT
-            HTC(I,J) = HTC(I,J) - FI(I) * THFREZ * CLHMLT * &
-                             RHOW * DELZW(I,J) / DELT
-            THLIQ(I,J) = THLIQ(I,J) - THFREZ
-            THICE(I,J) = THICE(I,J) + THFREZ * RHOW / RHOICE
-            HCP(I,J) = HCPW * THLIQ(I,J) + HCPICE * THICE(I,J) + &
-                              HCPS(I,J) * (1. - THPOR(I,J))
-            TBAR (I,J) = 0.0
+  do J = 1, IG ! loop 700
+    do I = IL1, IL2
+      if (FI(I) > 0. .and. DELZW(I, J) > 0. .and. ISAND(I, 1) > - 4) &
+          then
+        HTC(I, J) = HTC(I, J) - FI(I) * (TBAR(I, J) + TFREZ) * (HCP(I, J) * &
+                    DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                    DELZW(I, J))) / DELT
+        if (TBAR(I, J) < 0. .and. THLIQ(I, J) > THLMIN(I, J)) &
+            then
+          THFREZ = - (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                   DELZW(I, J))) * TBAR(I, J) / (CLHMLT * RHOW * &
+                   DELZW(I, J))
+          if (THFREZ <= (THLIQ(I, J) - THLMIN(I, J))) then
+            HMFG(I, J) = HMFG(I, J) - FI(I) * THFREZ * CLHMLT * &
+                         RHOW * DELZW(I, J) / DELT
+            HTC(I, J) = HTC(I, J) - FI(I) * THFREZ * CLHMLT * &
+                        RHOW * DELZW(I, J) / DELT
+            THLIQ(I, J) = THLIQ(I, J) - THFREZ
+            THICE(I, J) = THICE(I, J) + THFREZ * RHOW / RHOICE
+            HCP(I, J) = HCPW * THLIQ(I, J) + HCPICE * THICE(I, J) + &
+                        HCPS(I, J) * (1. - THPOR(I, J))
+            TBAR (I, J) = 0.0
           else
-            HMFG(I,J) = HMFG(I,J) - FI(I) * (THLIQ(I,J) - &
-                       THLMIN(I,J)) * CLHMLT * RHOW * DELZW(I,J) / DELT
-            HTC(I,J) = HTC(I,J) - FI(I) * (THLIQ(I,J) - &
-                       THLMIN(I,J)) * CLHMLT * RHOW * DELZW(I,J) / DELT
-            HADD = (THFREZ - (THLIQ(I,J) - THLMIN(I,J))) * CLHMLT * &
-                        RHOW * DELZW(I,J)
-            THICE(I,J) = THICE(I,J) + (THLIQ(I,J) - &
-                              THLMIN(I,J)) * RHOW / RHOICE
-            THLIQ(I,J) = THLMIN(I,J)
-            HCP(I,J) = HCPW * THLIQ(I,J) + HCPICE * THICE(I,J) + &
-                              HCPS(I,J) * (1. - THPOR(I,J))
-            TBAR (I,J) = - HADD / (HCP(I,J) * DELZW(I,J) + HCPSND * &
-                              (DELZZ(I,J) - DELZW(I,J)))
+            HMFG(I, J) = HMFG(I, J) - FI(I) * (THLIQ(I, J) - &
+                         THLMIN(I, J)) * CLHMLT * RHOW * DELZW(I, J) / DELT
+            HTC(I, J) = HTC(I, J) - FI(I) * (THLIQ(I, J) - &
+                        THLMIN(I, J)) * CLHMLT * RHOW * DELZW(I, J) / DELT
+            HADD = (THFREZ - (THLIQ(I, J) - THLMIN(I, J))) * CLHMLT * &
+                   RHOW * DELZW(I, J)
+            THICE(I, J) = THICE(I, J) + (THLIQ(I, J) - &
+                          THLMIN(I, J)) * RHOW / RHOICE
+            THLIQ(I, J) = THLMIN(I, J)
+            HCP(I, J) = HCPW * THLIQ(I, J) + HCPICE * THICE(I, J) + &
+                        HCPS(I, J) * (1. - THPOR(I, J))
+            TBAR (I, J) = - HADD / (HCP(I, J) * DELZW(I, J) + HCPSND * &
+                          (DELZZ(I, J) - DELZW(I, J)))
           end if
         end if
         !
-        if (TBAR(I,J) > 0. .and. THICE(I,J) > 0.) then
-          THMELT = (HCP(I,J) * DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-                       DELZW(I,J))) * TBAR(I,J) / (CLHMLT * RHOICE * &
-                       DELZW(I,J))
-          if (THMELT <= THICE(I,J)) then
-            HMFG(I,J) = HMFG(I,J) + FI(I) * THMELT * CLHMLT * &
-                             RHOICE * DELZW(I,J) / DELT
-            HTC(I,J) = HTC(I,J) + FI(I) * THMELT * CLHMLT * &
-                             RHOICE * DELZW(I,J) / DELT
-            THICE(I,J) = THICE(I,J) - THMELT
-            THLIQ(I,J) = THLIQ(I,J) + THMELT * RHOICE / RHOW
-            HCP(I,J) = HCPW * THLIQ(I,J) + HCPICE * THICE(I,J) + &
-                              HCPS(I,J) * (1. - THPOR(I,J))
-            TBAR (I,J) = 0.0
+        if (TBAR(I, J) > 0. .and. THICE(I, J) > 0.) then
+          THMELT = (HCP(I, J) * DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                   DELZW(I, J))) * TBAR(I, J) / (CLHMLT * RHOICE * &
+                   DELZW(I, J))
+          if (THMELT <= THICE(I, J)) then
+            HMFG(I, J) = HMFG(I, J) + FI(I) * THMELT * CLHMLT * &
+                         RHOICE * DELZW(I, J) / DELT
+            HTC(I, J) = HTC(I, J) + FI(I) * THMELT * CLHMLT * &
+                        RHOICE * DELZW(I, J) / DELT
+            THICE(I, J) = THICE(I, J) - THMELT
+            THLIQ(I, J) = THLIQ(I, J) + THMELT * RHOICE / RHOW
+            HCP(I, J) = HCPW * THLIQ(I, J) + HCPICE * THICE(I, J) + &
+                        HCPS(I, J) * (1. - THPOR(I, J))
+            TBAR (I, J) = 0.0
           else
-            HMFG(I,J) = HMFG(I,J) + FI(I) * THICE(I,J) * CLHMLT * &
-                             RHOICE * DELZW(I,J) / DELT
-            HTC(I,J) = HTC(I,J) + FI(I) * THICE(I,J) * CLHMLT * &
-                             RHOICE * DELZW(I,J) / DELT
-            HADD = (THMELT - THICE(I,J)) * CLHMLT * RHOICE * &
-                             DELZW(I,J)
-            THLIQ(I,J) = THLIQ(I,J) + THICE(I,J) * RHOICE / RHOW
-            THICE(I,J) = 0.0
-            HCP(I,J) = HCPW * THLIQ(I,J) + HCPICE * THICE(I,J) + &
-                              HCPS(I,J) * (1. - THPOR(I,J))
-            TBAR (I,J) = HADD / (HCP(I,J) * DELZW(I,J) + HCPSND * &
-                              (DELZZ(I,J) - DELZW(I,J)))
+            HMFG(I, J) = HMFG(I, J) + FI(I) * THICE(I, J) * CLHMLT * &
+                         RHOICE * DELZW(I, J) / DELT
+            HTC(I, J) = HTC(I, J) + FI(I) * THICE(I, J) * CLHMLT * &
+                        RHOICE * DELZW(I, J) / DELT
+            HADD = (THMELT - THICE(I, J)) * CLHMLT * RHOICE * &
+                   DELZW(I, J)
+            THLIQ(I, J) = THLIQ(I, J) + THICE(I, J) * RHOICE / RHOW
+            THICE(I, J) = 0.0
+            HCP(I, J) = HCPW * THLIQ(I, J) + HCPICE * THICE(I, J) + &
+                        HCPS(I, J) * (1. - THPOR(I, J))
+            TBAR (I, J) = HADD / (HCP(I, J) * DELZW(I, J) + HCPSND * &
+                          (DELZZ(I, J) - DELZW(I, J)))
           end if
         end if
-        HTC(I,J) = HTC(I,J) + FI(I) * (TBAR(I,J) + TFREZ) * (HCP(I,J) * &
-        DELZW(I,J) + HCPSND * (DELZZ(I,J) - &
-        DELZW(I,J))) / DELT
+        HTC(I, J) = HTC(I, J) + FI(I) * (TBAR(I, J) + TFREZ) * (HCP(I, J) * &
+                    DELZW(I, J) + HCPSND * (DELZZ(I, J) - &
+                    DELZW(I, J))) / DELT
       end if
     end do
   end do ! loop 700

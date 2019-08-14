@@ -24,17 +24,17 @@ contains
   !> @{
   !> Prepares and writes the CLASS (physics) half hourly file
   !! @author J. Melton
-  subroutine class_hh_w(lonLocalIndex,latLocalIndex,nltest,nmtest,ncount,nday,iday,realyr)
+  subroutine class_hh_w(lonLocalIndex, latLocalIndex, nltest, nmtest, ncount, nday, iday, realyr)
 
-    use class_statevars, only : class_rot,class_gat,initRowVars
-    use ctem_statevars, only : c_switch,vrot
-    use classic_params, only : ignd,icc,SBC,TFREZ
-    use outputManager, only : writeOutput1D,consecDays
+    use class_statevars, only : class_rot, class_gat, initRowVars
+    use ctem_statevars, only : c_switch, vrot
+    use classic_params, only : ignd, icc, SBC, TFREZ
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: ncount
@@ -48,10 +48,10 @@ contains
     real :: EVAPSUM         !< Total evapotranspiration \f$[kg m^{-2} s^{-1} ]\f$ (temporary variable)
     real :: FLSTAR
     real :: FSSTAR
-    real :: TCN,TPN,TSN,TSURF,ZSN
+    real :: TCN, TPN, TSN, TSURF, ZSN
     real :: an_grd, rml_grd, totvegarea
-    real, dimension(:), allocatable :: anveggrd,rmlveggrd,fcanctot
-    integer :: i,j,m
+    real, dimension(:), allocatable :: anveggrd, rmlveggrd, fcanctot
+    integer :: i, j, m
 
     ! pointers
     logical, pointer :: ctem_on              !< True if this run includes the biogeochemistry parameterizations (CTEM)
@@ -413,76 +413,76 @@ contains
     ! First set all to zero
     call initRowVars(nltest)
 
-    do I = 1,NLTEST
-      do M = 1,NMTEST
-        CDHROW(I) = CDHROW(I) + CDHROT(I,M) * FAREROT(I,M)
-        CDMROW(I) = CDMROW(I) + CDMROT(I,M) * FAREROT(I,M)
-        HFSROW(I) = HFSROW(I) + HFSROT(I,M) * FAREROT(I,M)
-        TFXROW(I) = TFXROW(I) + TFXROT(I,M) * FAREROT(I,M)
-        QEVPROW(I) = QEVPROW(I) + QEVPROT(I,M) * FAREROT(I,M)
-        QFSROW(I) = QFSROW(I) + QFSROT(I,M) * FAREROT(I,M)
-        QFXROW(I) = QFXROW(I) + QFXROT(I,M) * FAREROT(I,M)
-        PETROW(I) = PETROW(I) + PETROT(I,M) * FAREROT(I,M)
-        RHOSROW(I) = RHOSROW(I) + RHOSROT(I,M) * FAREROT(I,M)
-        GAROW(I) = GAROW(I) + GAROT(I,M) * FAREROT(I,M)
-        EFROW(I) = EFROW(I) + EFROT(I,M) * FAREROT(I,M)
-        GTROW(I) = GTROW(I) + GTROT(I,M) * FAREROT(I,M)
-        QGROW(I) = QGROW(I) + QGROT(I,M) * FAREROT(I,M)
-        ALVSROW(I) = ALVSROW(I) + ALVSROT(I,M) * FAREROT(I,M)
-        ALIRROW(I) = ALIRROW(I) + ALIRROT(I,M) * FAREROT(I,M)
-        SFCTROW(I) = SFCTROW(I) + SFCTROT(I,M) * FAREROT(I,M)
-        SFCUROW(I) = SFCUROW(I) + SFCUROT(I,M) * FAREROT(I,M)
-        SFCVROW(I) = SFCVROW(I) + SFCVROT(I,M) * FAREROT(I,M)
-        SFCQROW(I) = SFCQROW(I) + SFCQROT(I,M) * FAREROT(I,M)
-        SFRHROW(I) = SFRHROW(I) + SFRHROT(I,M) * FAREROT(I,M)
-        FSNOROW(I) = FSNOROW(I) + FSNOROT(I,M) * FAREROT(I,M)
-        FSGVROW(I) = FSGVROW(I) + FSGVROT(I,M) * FAREROT(I,M)
-        FSGSROW(I) = FSGSROW(I) + FSGSROT(I,M) * FAREROT(I,M)
-        FSGGROW(I) = FSGGROW(I) + FSGGROT(I,M) * FAREROT(I,M)
-        FLGVROW(I) = FLGVROW(I) + FLGVROT(I,M) * FAREROT(I,M)
-        FLGSROW(I) = FLGSROW(I) + FLGSROT(I,M) * FAREROT(I,M)
-        FLGGROW(I) = FLGGROW(I) + FLGGROT(I,M) * FAREROT(I,M)
-        HFSCROW(I) = HFSCROW(I) + HFSCROT(I,M) * FAREROT(I,M)
-        HFSSROW(I) = HFSSROW(I) + HFSSROT(I,M) * FAREROT(I,M)
-        HFSGROW(I) = HFSGROW(I) + HFSGROT(I,M) * FAREROT(I,M)
-        HEVCROW(I) = HEVCROW(I) + HEVCROT(I,M) * FAREROT(I,M)
-        HEVSROW(I) = HEVSROW(I) + HEVSROT(I,M) * FAREROT(I,M)
-        HEVGROW(I) = HEVGROW(I) + HEVGROT(I,M) * FAREROT(I,M)
-        HMFCROW(I) = HMFCROW(I) + HMFCROT(I,M) * FAREROT(I,M)
-        HMFNROW(I) = HMFNROW(I) + HMFNROT(I,M) * FAREROT(I,M)
-        HTCCROW(I) = HTCCROW(I) + HTCCROT(I,M) * FAREROT(I,M)
-        HTCSROW(I) = HTCSROW(I) + HTCSROT(I,M) * FAREROT(I,M)
-        PCFCROW(I) = PCFCROW(I) + PCFCROT(I,M) * FAREROT(I,M)
-        PCLCROW(I) = PCLCROW(I) + PCLCROT(I,M) * FAREROT(I,M)
-        PCPNROW(I) = PCPNROW(I) + PCPNROT(I,M) * FAREROT(I,M)
-        PCPGROW(I) = PCPGROW(I) + PCPGROT(I,M) * FAREROT(I,M)
-        QFGROW(I) = QFGROW(I) + QFGROT(I,M) * FAREROT(I,M)
-        QFNROW(I) = QFNROW(I) + QFNROT(I,M) * FAREROT(I,M)
-        QFCLROW(I) = QFCLROW(I) + QFCLROT(I,M) * FAREROT(I,M)
-        QFCFROW(I) = QFCFROW(I) + QFCFROT(I,M) * FAREROT(I,M)
-        ROFROW(I) = ROFROW(I) + ROFROT(I,M) * FAREROT(I,M)
-        ROFOROW(I) = ROFOROW(I) + ROFOROT(I,M) * FAREROT(I,M)
-        ROFSROW(I) = ROFSROW(I) + ROFSROT(I,M) * FAREROT(I,M)
-        ROFBROW(I) = ROFBROW(I) + ROFBROT(I,M) * FAREROT(I,M)
-        ROFCROW(I) = ROFCROW(I) + ROFCROT(I,M) * FAREROT(I,M)
-        ROFNROW(I) = ROFNROW(I) + ROFNROT(I,M) * FAREROT(I,M)
-        ROVGROW(I) = ROVGROW(I) + ROVGROT(I,M) * FAREROT(I,M)
-        WTRCROW(I) = WTRCROW(I) + WTRCROT(I,M) * FAREROT(I,M)
-        WTRSROW(I) = WTRSROW(I) + WTRSROT(I,M) * FAREROT(I,M)
-        WTRGROW(I) = WTRGROW(I) + WTRGROT(I,M) * FAREROT(I,M)
-        DRROW(I) = DRROW(I) + DRROT(I,M) * FAREROT(I,M)
-        ! wtableROW(I)=wtableROW(I)+wtableROT(I,M)*FAREROT(I,M)  ! FLAG
-        ILMOROW(I) = ILMOROW(I) + ILMOROT(I,M) * FAREROT(I,M)
-        UEROW(I) = UEROW(I) + UEROT(I,M) * FAREROT(I,M)
-        HBLROW(I) = HBLROW(I) + HBLROT(I,M) * FAREROT(I,M)
-        do J = 1,IGND
-          HMFGROW(I,J) = HMFGROW(I,J) + HMFGROT(I,M,J) * FAREROT(I,M)
-          HTCROW(I,J) = HTCROW(I,J) + HTCROT(I,M,J) * FAREROT(I,M)
-          QFCROW(I,J) = QFCROW(I,J) + QFCROT(I,M,J) * FAREROT(I,M)
-          GFLXROW(I,J) = GFLXROW(I,J) + GFLXROT(I,M,J) * FAREROT(I,M)
-          TBARROW(i,j) = TBARROW(i,j) + TBARROT(i,m,j) * FAREROT(i,m)
-          THLQROW(i,j) = THLQROW(i,j) + THLQROT(i,m,j) * FAREROT(i,m)
-          THICROW(i,j) = THICROW(i,j) + THICROT(i,m,j) * FAREROT(i,m)
+    do I = 1, NLTEST
+      do M = 1, NMTEST
+        CDHROW(I) = CDHROW(I) + CDHROT(I, M) * FAREROT(I, M)
+        CDMROW(I) = CDMROW(I) + CDMROT(I, M) * FAREROT(I, M)
+        HFSROW(I) = HFSROW(I) + HFSROT(I, M) * FAREROT(I, M)
+        TFXROW(I) = TFXROW(I) + TFXROT(I, M) * FAREROT(I, M)
+        QEVPROW(I) = QEVPROW(I) + QEVPROT(I, M) * FAREROT(I, M)
+        QFSROW(I) = QFSROW(I) + QFSROT(I, M) * FAREROT(I, M)
+        QFXROW(I) = QFXROW(I) + QFXROT(I, M) * FAREROT(I, M)
+        PETROW(I) = PETROW(I) + PETROT(I, M) * FAREROT(I, M)
+        RHOSROW(I) = RHOSROW(I) + RHOSROT(I, M) * FAREROT(I, M)
+        GAROW(I) = GAROW(I) + GAROT(I, M) * FAREROT(I, M)
+        EFROW(I) = EFROW(I) + EFROT(I, M) * FAREROT(I, M)
+        GTROW(I) = GTROW(I) + GTROT(I, M) * FAREROT(I, M)
+        QGROW(I) = QGROW(I) + QGROT(I, M) * FAREROT(I, M)
+        ALVSROW(I) = ALVSROW(I) + ALVSROT(I, M) * FAREROT(I, M)
+        ALIRROW(I) = ALIRROW(I) + ALIRROT(I, M) * FAREROT(I, M)
+        SFCTROW(I) = SFCTROW(I) + SFCTROT(I, M) * FAREROT(I, M)
+        SFCUROW(I) = SFCUROW(I) + SFCUROT(I, M) * FAREROT(I, M)
+        SFCVROW(I) = SFCVROW(I) + SFCVROT(I, M) * FAREROT(I, M)
+        SFCQROW(I) = SFCQROW(I) + SFCQROT(I, M) * FAREROT(I, M)
+        SFRHROW(I) = SFRHROW(I) + SFRHROT(I, M) * FAREROT(I, M)
+        FSNOROW(I) = FSNOROW(I) + FSNOROT(I, M) * FAREROT(I, M)
+        FSGVROW(I) = FSGVROW(I) + FSGVROT(I, M) * FAREROT(I, M)
+        FSGSROW(I) = FSGSROW(I) + FSGSROT(I, M) * FAREROT(I, M)
+        FSGGROW(I) = FSGGROW(I) + FSGGROT(I, M) * FAREROT(I, M)
+        FLGVROW(I) = FLGVROW(I) + FLGVROT(I, M) * FAREROT(I, M)
+        FLGSROW(I) = FLGSROW(I) + FLGSROT(I, M) * FAREROT(I, M)
+        FLGGROW(I) = FLGGROW(I) + FLGGROT(I, M) * FAREROT(I, M)
+        HFSCROW(I) = HFSCROW(I) + HFSCROT(I, M) * FAREROT(I, M)
+        HFSSROW(I) = HFSSROW(I) + HFSSROT(I, M) * FAREROT(I, M)
+        HFSGROW(I) = HFSGROW(I) + HFSGROT(I, M) * FAREROT(I, M)
+        HEVCROW(I) = HEVCROW(I) + HEVCROT(I, M) * FAREROT(I, M)
+        HEVSROW(I) = HEVSROW(I) + HEVSROT(I, M) * FAREROT(I, M)
+        HEVGROW(I) = HEVGROW(I) + HEVGROT(I, M) * FAREROT(I, M)
+        HMFCROW(I) = HMFCROW(I) + HMFCROT(I, M) * FAREROT(I, M)
+        HMFNROW(I) = HMFNROW(I) + HMFNROT(I, M) * FAREROT(I, M)
+        HTCCROW(I) = HTCCROW(I) + HTCCROT(I, M) * FAREROT(I, M)
+        HTCSROW(I) = HTCSROW(I) + HTCSROT(I, M) * FAREROT(I, M)
+        PCFCROW(I) = PCFCROW(I) + PCFCROT(I, M) * FAREROT(I, M)
+        PCLCROW(I) = PCLCROW(I) + PCLCROT(I, M) * FAREROT(I, M)
+        PCPNROW(I) = PCPNROW(I) + PCPNROT(I, M) * FAREROT(I, M)
+        PCPGROW(I) = PCPGROW(I) + PCPGROT(I, M) * FAREROT(I, M)
+        QFGROW(I) = QFGROW(I) + QFGROT(I, M) * FAREROT(I, M)
+        QFNROW(I) = QFNROW(I) + QFNROT(I, M) * FAREROT(I, M)
+        QFCLROW(I) = QFCLROW(I) + QFCLROT(I, M) * FAREROT(I, M)
+        QFCFROW(I) = QFCFROW(I) + QFCFROT(I, M) * FAREROT(I, M)
+        ROFROW(I) = ROFROW(I) + ROFROT(I, M) * FAREROT(I, M)
+        ROFOROW(I) = ROFOROW(I) + ROFOROT(I, M) * FAREROT(I, M)
+        ROFSROW(I) = ROFSROW(I) + ROFSROT(I, M) * FAREROT(I, M)
+        ROFBROW(I) = ROFBROW(I) + ROFBROT(I, M) * FAREROT(I, M)
+        ROFCROW(I) = ROFCROW(I) + ROFCROT(I, M) * FAREROT(I, M)
+        ROFNROW(I) = ROFNROW(I) + ROFNROT(I, M) * FAREROT(I, M)
+        ROVGROW(I) = ROVGROW(I) + ROVGROT(I, M) * FAREROT(I, M)
+        WTRCROW(I) = WTRCROW(I) + WTRCROT(I, M) * FAREROT(I, M)
+        WTRSROW(I) = WTRSROW(I) + WTRSROT(I, M) * FAREROT(I, M)
+        WTRGROW(I) = WTRGROW(I) + WTRGROT(I, M) * FAREROT(I, M)
+        DRROW(I) = DRROW(I) + DRROT(I, M) * FAREROT(I, M)
+        ! wtableROW(I)=wtableROW(I)+wtableROT(I, M)*FAREROT(I, M)  ! FLAG
+        ILMOROW(I) = ILMOROW(I) + ILMOROT(I, M) * FAREROT(I, M)
+        UEROW(I) = UEROW(I) + UEROT(I, M) * FAREROT(I, M)
+        HBLROW(I) = HBLROW(I) + HBLROT(I, M) * FAREROT(I, M)
+        do J = 1, IGND
+          HMFGROW(I, J) = HMFGROW(I, J) + HMFGROT(I, M, J) * FAREROT(I, M)
+          HTCROW(I, J) = HTCROW(I, J) + HTCROT(I, M, J) * FAREROT(I, M)
+          QFCROW(I, J) = QFCROW(I, J) + QFCROT(I, M, J) * FAREROT(I, M)
+          GFLXROW(I, J) = GFLXROW(I, J) + GFLXROT(I, M, J) * FAREROT(I, M)
+          TBARROW(i, j) = TBARROW(i, j) + TBARROT(i, m, j) * FAREROT(i, m)
+          THLQROW(i, j) = THLQROW(i, j) + THLQROT(i, m, j) * FAREROT(i, m)
+          THICROW(i, j) = THICROW(i, j) + THICROT(i, m, j) * FAREROT(i, m)
         end do ! loop 550
       end do ! loop 575
     end do ! loop 600
@@ -492,74 +492,74 @@ contains
     timeStamp = consecDays + real(iday - 1) + ((real(ncount) - 1.) / real(nday))
 
     ! Now prepare and write out the grid averaged physics variables to output files
-    do I = 1,NLTEST
+    do I = 1, NLTEST
 
       ! First write out the model meteorological forcing so they can be compared to inputs
       ! or to check on those generated by the dissagregation module.
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'fss_hh' ,timeStamp,'rsds', [FSSROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'fdl_hh' ,timeStamp,'rlds', [FDLROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'pre_hh' ,timeStamp,'pr',   [PREROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'uv_hh' ,timeStamp,'uvas',  [UVROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ta_hh' ,timeStamp,'tas',   [TAROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'qa_hh' ,timeStamp,'huss',  [QAROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'pres_hh' ,timeStamp,'ps',  [PRESROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'fss_hh' ,timeStamp,'rsds', [FSSROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'fdl_hh' ,timeStamp,'rlds', [FDLROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'pre_hh' ,timeStamp,'pr',   [PREROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'uv_hh' ,timeStamp,'uvas',  [UVROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ta_hh' ,timeStamp,'tas',   [TAROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'qa_hh' ,timeStamp,'huss',  [QAROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'pres_hh' ,timeStamp,'ps',  [PRESROW(I)])
 
       ALTOT = 0.0
       if (FSSROW(I) > 0.0) ALTOT = (FSSROW(I) - (FSGVROW(I) + FSGSROW(I) + FSGGROW(I)))/FSSROW(I)
       FSSTAR = FSSROW(I) * (1.0 - ALTOT)
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_hh' ,timeStamp,'rss', [FSSTAR])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'altot_hh' ,timeStamp,'albs', [ALTOT])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'fsstar_hh' ,timeStamp,'rss', [FSSTAR])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'altot_hh' ,timeStamp,'albs', [ALTOT])
 
       FLSTAR = FDLROW(I) - SBC * GTROW(I) ** 4
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_hh' ,timeStamp,'rls', [FLSTAR])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'flstar_hh' ,timeStamp,'rls', [FLSTAR])
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_hh'     ,timeStamp,'hfss', [HFSROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_hh'     ,timeStamp,'hfls', [QEVPROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_hh' ,timeStamp,'snm', [HMFNROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'qh_hh'     ,timeStamp,'hfss', [HFSROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_hh'     ,timeStamp,'hfls', [QEVPROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'snm_hh' ,timeStamp,'snm', [HMFNROW(I)])
 
       ZSN = 0.0
       if (RHOSROW(I) > 0.0) ZSN = SNOROW(I)/RHOSROW(I)
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'sisnthick_hh'   ,timeStamp,'sisnthick', [ZSN])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'sisnthick_hh'   ,timeStamp,'sisnthick', [ZSN])
 
       TCN = 0.0
       if (TCANROW(I) > 0.01) TCN = TCANROW(I) - TFREZ
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'tcs_hh'   ,timeStamp,'tcs', [TCN])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'tcs_hh'   ,timeStamp,'tcs', [TCN])
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'scan_hh'   ,timeStamp,'scanopy', [SCANROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rcan_hh'   ,timeStamp,'rcanopy', [RCANROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'scan_hh'   ,timeStamp,'scanopy', [SCANROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rcan_hh'   ,timeStamp,'rcanopy', [RCANROW(I)])
 
       ! Find the surface temperature for the grid average over all subareas (1-4)
-      TSURF = FCS(I) * TSFSGAT(I,1) + FGS(I) * TSFSGAT(I,2) + FC(I) * TSFSGAT(I,3) + FG(I) * TSFSGAT(I,4)
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'tsurf_hh'  ,timeStamp,'ts', [TSURF])
+      TSURF = FCS(I) * TSFSGAT(I, 1) + FGS(I) * TSFSGAT(I, 2) + FC(I) * TSFSGAT(I, 3) + FG(I) * TSFSGAT(I, 4)
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'tsurf_hh'  ,timeStamp,'ts', [TSURF])
 
       TSN = 0.0
       if (TSNOROW(I) > 0.01) TSN = TSNOROW(I) - TFREZ
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'tsno_hh'   ,timeStamp,'tsn', [TSN])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'tsno_hh'   ,timeStamp,'tsn', [TSN])
 
       TPN = 0.0
       if (TPNDROW(I) > 0.01) TPN = TPNDROW(I) - TFREZ
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'tpond_hh'   ,timeStamp,'tpond', [TPN])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'zpond_hh'   ,timeStamp,'zpond', [ZPNDROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'gt_hh'   ,timeStamp,'tsblack', [GTROW(I) - TFREZ])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'sno_hh' ,timeStamp,'snw', [SNOROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'wsno_hh',timeStamp,'wsnw', [WSNOROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'snodens_hh',timeStamp,'snwdens', [RHOSROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'tpond_hh'   ,timeStamp,'tpond', [TPN])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'zpond_hh'   ,timeStamp,'zpond', [ZPNDROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'gt_hh'   ,timeStamp,'tsblack', [GTROW(I) - TFREZ])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'sno_hh' ,timeStamp,'snw', [SNOROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'wsno_hh',timeStamp,'wsnw', [WSNOROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'snodens_hh',timeStamp,'snwdens', [RHOSROW(I)])
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rof_hh',timeStamp,'mrro', [ROFROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rofo_hh',timeStamp,'mrros', [ROFOROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rofs_hh',timeStamp,'mrroi', [ROFSROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rofb_hh',timeStamp,'mrrob', [ROFBROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rof_hh',timeStamp,'mrro', [ROFROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rofo_hh',timeStamp,'mrros', [ROFOROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rofs_hh',timeStamp,'mrroi', [ROFSROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rofb_hh',timeStamp,'mrrob', [ROFBROW(I)])
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'cdh_hh',timeStamp,'cdh', [CDHROW(I)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'cdm_hh',timeStamp,'cdm', [CDMROW(I)])
-      !             call writeOutput1D(lonLocalIndex,latLocalIndex,'windu_hh',timeStamp,'windu', [SFCUROW(I)])  ! name
-      !             call writeOutput1D(lonLocalIndex,latLocalIndex,'windv_hh',timeStamp,'windv', [SFCVROW(I)])  ! name
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'cdh_hh',timeStamp,'cdh', [CDHROW(I)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'cdm_hh',timeStamp,'cdm', [CDMROW(I)])
+      !             call writeOutput1D(lonLocalIndex, latLocalIndex,'windu_hh',timeStamp,'windu', [SFCUROW(I)])  ! name
+      !             call writeOutput1D(lonLocalIndex, latLocalIndex,'windv_hh',timeStamp,'windv', [SFCVROW(I)])  ! name
       !
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'tbar_hh',timeStamp,'tsl', [TBARROW(I,:) - TFREZ])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'thlq_hh',timeStamp,'mrsll', [THLQROW(I,:)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'thic_hh',timeStamp,'mrsfl', [THICROW(I,:)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  ! name
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'tbar_hh',timeStamp,'tsl', [TBARROW(I,:)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'thlq_hh',timeStamp,'mrsll', [THLQROW(I,:)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'thic_hh',timeStamp,'mrsfl', [THICROW(I,:)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  ! name
 
       ! If requested also prepare and write out the per tile physics variables
       if (dopertileoutput) then
@@ -567,93 +567,93 @@ contains
 
           ALTOT = 0.0
           if (FSSROW(I) > 0.0) then ! there is no ROT for fss, as it will always be the same for all tiles.
-            ALTOT = (FSSROW(I) - (FSGVROT(I,M) + FSGSROT(I,M) + FSGGROT(I,M))) / FSSROW(I)
+            ALTOT = (FSSROW(I) - (FSGVROT(I, M) + FSGSROT(I, M) + FSGGROT(I, M))) / FSSROW(I)
           end if
           FSSTAR = FSSROW(I) * (1.0 - ALTOT)
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_hh_t' ,timeStamp,'rss', [FSSTAR])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'altot_hh_t' ,timeStamp,'albs', [ALTOT])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'fsstar_hh_t' ,timeStamp,'rss', [FSSTAR])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'altot_hh_t' ,timeStamp,'albs', [ALTOT])
 
-          FLSTAR = FDLROW(I) - SBC * GTROT(I,M) ** 4 ! there is no ROT for fdl, as it will always be the same for all tiles.
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_hh_t' ,timeStamp,'rls', [FLSTAR])
+          FLSTAR = FDLROW(I) - SBC * GTROT(I, M) ** 4 ! there is no ROT for fdl, as it will always be the same for all tiles.
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'flstar_hh_t' ,timeStamp,'rls', [FLSTAR])
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_hh_t'     ,timeStamp,'hfss', [HFSROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_hh_t'     ,timeStamp,'hfls', [QEVPROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_hh_t'   ,timeStamp,'snm', [HMFNROT(I,M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'qh_hh_t'     ,timeStamp,'hfss', [HFSROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_hh_t'     ,timeStamp,'hfls', [QEVPROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'snm_hh_t'   ,timeStamp,'snm', [HMFNROT(I, M)])
 
           ZSN = 0.0
-          if (RHOSROT(I,M) > 0.0) ZSN = SNOROT(I,M) / RHOSROT(I,M)
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'sisnthick_hh_t'   ,timeStamp,'sisnthick', [ZSN])
+          if (RHOSROT(I, M) > 0.0) ZSN = SNOROT(I, M) / RHOSROT(I, M)
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'sisnthick_hh_t'   ,timeStamp,'sisnthick', [ZSN])
 
           TCN = 0.0
-          if (TCANROT(I,M) > 0.01) TCN = TCANROT(I,M) - TFREZ
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'tcs_hh_t'   ,timeStamp,'tcs', [TCN])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'scan_hh_t'   ,timeStamp,'scanopy', [SCANROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rcan_hh_t'   ,timeStamp,'rcanopy', [RCANROT(I,M)])
+          if (TCANROT(I, M) > 0.01) TCN = TCANROT(I, M) - TFREZ
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'tcs_hh_t'   ,timeStamp,'tcs', [TCN])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'scan_hh_t'   ,timeStamp,'scanopy', [SCANROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rcan_hh_t'   ,timeStamp,'rcanopy', [RCANROT(I, M)])
 
           ! TACGAT(I)-TFREZ  ! temp of air within canopy.
           TSN = 0.0
-          if (TSNOROT(I,M) > 0.01) TSN = TSNOROT(I,M) - TFREZ
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'tsno_hh_t'   ,timeStamp,'tsn', [TSN])
+          if (TSNOROT(I, M) > 0.01) TSN = TSNOROT(I, M) - TFREZ
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'tsno_hh_t'   ,timeStamp,'tsn', [TSN])
 
           TPN = 0.0
-          if (TPNDROT(I,M) > 0.01) TPN = TPNDROT(I,M) - TFREZ
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'tpond_hh_t'   ,timeStamp,'tpond', [TPN])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'zpond_hh_t'   ,timeStamp,'zpond', [ZPNDROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gt_hh_t'   ,timeStamp,'tsblack', [GTROT(I,M) - TFREZ])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'sno_hh_t' ,timeStamp,'snw', [SNOROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'wsnoacc_hh_t',timeStamp,'wsnw', [WSNOROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'snodens_hh_t',timeStamp,'snwdens', [RHOSROT(I,M)])
+          if (TPNDROT(I, M) > 0.01) TPN = TPNDROT(I, M) - TFREZ
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'tpond_hh_t'   ,timeStamp,'tpond', [TPN])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'zpond_hh_t'   ,timeStamp,'zpond', [ZPNDROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'gt_hh_t'   ,timeStamp,'tsblack', [GTROT(I, M) - TFREZ])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'sno_hh_t' ,timeStamp,'snw', [SNOROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'wsnoacc_hh_t',timeStamp,'wsnw', [WSNOROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'snodens_hh_t',timeStamp,'snwdens', [RHOSROT(I, M)])
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rof_hh_t',timeStamp,'mrro', [ROFROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rofo_hh_t',timeStamp,'mrros', [ROFOROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rofs_hh_t',timeStamp,'mrroi', [ROFSROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rofb_hh_t',timeStamp,'mrrob', [ROFBROT(I,M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rof_hh_t',timeStamp,'mrro', [ROFROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rofo_hh_t',timeStamp,'mrros', [ROFOROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rofs_hh_t',timeStamp,'mrroi', [ROFSROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rofb_hh_t',timeStamp,'mrrob', [ROFBROT(I, M)])
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'cdh_hh_t',timeStamp,'cdh', [CDHROT(I,M)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'cdm_hh_t',timeStamp,'cdm', [CDMROT(I,M)])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'windu_hh_t',timeStamp,'windu', [SFCUROT(I,M)])  ! name
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'windv_hh_t',timeStamp,'windv', [SFCVROT(I,M)])  ! name
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'cdh_hh_t',timeStamp,'cdh', [CDHROT(I, M)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'cdm_hh_t',timeStamp,'cdm', [CDMROT(I, M)])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'windu_hh_t',timeStamp,'windu', [SFCUROT(I, M)])  ! name
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'windv_hh_t',timeStamp,'windv', [SFCVROT(I, M)])  ! name
 
-          EVAPSUM = QFCFROT(I,M) + QFCLROT(I,M) + QFNROT(I,M) &
-          + QFGROT(I,M) + QFCROT(I,M,1) + QFCROT(I,M,2) + QFCROT(I,M,3)
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'et_hh_t'   ,timeStamp,'et', [EVAPSUM])
+          EVAPSUM = QFCFROT(I, M) + QFCLROT(I, M) + QFNROT(I, M) &
+                    + QFGROT(I, M) + QFCROT(I, M, 1) + QFCROT(I, M, 2) + QFCROT(I, M, 3) !FLAG this only considers the top 3 layers!!
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'evspsbl_hh_t'   ,timeStamp,'evspsbl', [EVAPSUM])
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'thic_hh_t',timeStamp,'mrsfl', [THICROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh_t',timeStamp,'gflx', [GFLXROT(I,M,:)])  ! name
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I, M,:)])  ! name
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I, M,:)])  ! name
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'thic_hh_t',timeStamp,'mrsfl', [THICROT(I, M,:)])  ! name
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'gflx_hh_t',timeStamp,'gflx', [GFLXROT(I, M,:)])  ! name
 
         end do
       end if
 
       ! Other ones to make outputs with later.
-      !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
-      !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
-      !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
-      !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
-      ! TROFROT(I,M) !< Temperature of total runoff [K]
-      ! TROOROT(I,M) !< Temperature of overland flow from top of soil column [K]
-      ! TROSROT(I,M) !< Temperature of interflow from sides of soil column [K]
-      ! TROBROT(I,M) !< Temperature of base flow from bottom of soil column [K]
+      !                 call writeOutput1D(lonLocalIndex, latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
+      !                 call writeOutput1D(lonLocalIndex, latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
+      !                 call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
+      !                 call writeOutput1D(lonLocalIndex, latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
+      ! TROFROT(I, M) !< Temperature of total runoff [K]
+      ! TROOROT(I, M) !< Temperature of overland flow from top of soil column [K]
+      ! TROSROT(I, M) !< Temperature of interflow from sides of soil column [K]
+      ! TROBROT(I, M) !< Temperature of base flow from bottom of soil column [K]
 
       !                                 !
-      !                                     &                   FCS(M),FGS(M),FC(M),FG(M),'
-      !                                 WRITE(68,6800) IHOUR,IMIN,IDAY,realyr, &
-      !                                     &                   FSGVROT(I,M),FSGSROT(I,M),FSGGROT(I,M), &
-      !                                     &                   FLGVROT(I,M),FLGSROT(I,M),FLGGROT(I,M), &
-      !                                     &                   HFSCROT(I,M),HFSSROT(I,M),HFSGROT(I,M), &
-      !                                     &                   HEVCROT(I,M),HEVSROT(I,M),HEVGROT(I,M), &
-      !                                     &                   HMFCROT(I,M),HMFNROT(I,M), &
-      !                                     &                   (HMFGROT(I,M,J),J=1,3), &
-      !                                     &                   HTCCROT(I,M),HTCSROT(I,M), &
-      !                                     &                   (HTCROT(I,M,J),J=1,3),' TILE ',M
-      !                                 WRITE(69,6900) IHOUR,IMIN,IDAY,realyr, &
-      !                                     &                   PCFCROT(I,M),PCLCROT(I,M),PCPNROT(I,M), &
-      !                                     &                   PCPGROT(I,M),QFCFROT(I,M),QFCLROT(I,M), &
-      !                                     &                   QFNROT(I,M),QFGROT(I,M),(QFCROT(I,M,J),J=1,3), &
-      !                                     &                   ROFCROT(I,M),ROFNROT(I,M),
-      !                                     &                   ROFROT(I,M),WTRCROT(I,M),WTRSROT(I,M), &
-      !                                     &                   WTRGROT(I,M),' TILE ',M
+      !                                     &                   FCS(M), FGS(M), FC(M), FG(M),'
+      !                                 WRITE(68, 6800) IHOUR, IMIN, IDAY, realyr, &
+      !                                     &                   FSGVROT(I, M), FSGSROT(I, M), FSGGROT(I, M), &
+      !                                     &                   FLGVROT(I, M), FLGSROT(I, M), FLGGROT(I, M), &
+      !                                     &                   HFSCROT(I, M), HFSSROT(I, M), HFSGROT(I, M), &
+      !                                     &                   HEVCROT(I, M), HEVSROT(I, M), HEVGROT(I, M), &
+      !                                     &                   HMFCROT(I, M), HMFNROT(I, M), &
+      !                                     &                   (HMFGROT(I, M, J), J=1, 3), &
+      !                                     &                   HTCCROT(I, M), HTCSROT(I, M), &
+      !                                     &                   (HTCROT(I, M, J), J=1, 3),' TILE ',M
+      !                                 WRITE(69, 6900) IHOUR, IMIN, IDAY, realyr, &
+      !                                     &                   PCFCROT(I, M), PCLCROT(I, M), PCPNROT(I, M), &
+      !                                     &                   PCPGROT(I, M), QFCFROT(I, M), QFCLROT(I, M), &
+      !                                     &                   QFNROT(I, M), QFGROT(I, M),(QFCROT(I, M, J), J=1, 3), &
+      !                                     &                   ROFCROT(I, M), ROFNROT(I, M),
+      !                                     &                   ROFROT(I, M), WTRCROT(I, M), WTRSROT(I, M), &
+      !                                     &                   WTRGROT(I, M),' TILE ',M
 
       ! Write half-hourly CTEM results to file
       !
@@ -662,45 +662,45 @@ contains
       ! are imaginary just like storage lai. note that anveg and rmlveg are not passed to ctem. rather ancsveg, ancgveg, rmlcsveg, and
       ! rmlcgveg are passed.
       !
-      allocate(anveggrd(icc),rmlveggrd(icc),fcanctot(icc))
+      allocate(anveggrd(icc), rmlveggrd(icc), fcanctot(icc))
       if (ctem_on) then
-        do m = 1,nmtest
-          do j = 1,icc
-            if (ailcgrow(i,m,j) <= 0.0) then
-              anvegrow(i,m,j) = 0.0
-              rmlvegrow(i,m,j) = 0.0
+        do m = 1, nmtest
+          do j = 1, icc
+            if (ailcgrow(i, m, j) <= 0.0) then
+              anvegrow(i, m, j) = 0.0
+              rmlvegrow(i, m, j) = 0.0
             else
-              anvegrow(i,m,j) = ancsvegrow(i,m,j) * FSNOROT(i,m) + ancgvegrow(i,m,j) * (1. - FSNOROT(i,m))
-              rmlvegrow(i,m,j) = rmlcsvegrow(i,m,j) * FSNOROT(i,m) + rmlcgvegrow(i,m,j) * (1. - FSNOROT(i,m))
+              anvegrow(i, m, j) = ancsvegrow(i, m, j) * FSNOROT(i, m) + ancgvegrow(i, m, j) * (1. - FSNOROT(i, m))
+              rmlvegrow(i, m, j) = rmlcsvegrow(i, m, j) * FSNOROT(i, m) + rmlcgvegrow(i, m, j) * (1. - FSNOROT(i, m))
             end if
           end do
           if (dopertileoutput) then
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_hh_t',timeStamp,'gpp', [anvegrow(I,M,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh_t',timeStamp,'rmLeaf', [rmlvegrow(I,M,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_hh_t',timeStamp,'gpp', [anvegrow(I, M,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'rml_hh_t',timeStamp,'rmLeaf', [rmlvegrow(I, M,:)])
           end if
           anveggrd = 0.0
           rmlveggrd = 0.0
           fcanctot = 0.0
-          do j = 1,icc
-            anveggrd(j) = anveggrd(j) + anvegrow(i,m,j) * FAREROT(i,m)
-            rmlveggrd(j) = rmlveggrd(j) + rmlvegrow(i,m,j) * FAREROT(i,m)
-            fcanctot(j) = fcanctot(j) + fcancmxrow(i,m,j) * FAREROT(i,m)
+          do j = 1, icc
+            anveggrd(j) = anveggrd(j) + anvegrow(i, m, j) * FAREROT(i, m)
+            rmlveggrd(j) = rmlveggrd(j) + rmlvegrow(i, m, j) * FAREROT(i, m)
+            fcanctot(j) = fcanctot(j) + fcancmxrow(i, m, j) * FAREROT(i, m)
           end do
         end do ! m loop
         if (doperpftoutput) then
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_hh',timeStamp,'gpp', [anveggrd(:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh',timeStamp,'rmLeaf', [rmlveggrd(:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_hh',timeStamp,'gpp', [anveggrd(:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rml_hh',timeStamp,'rmLeaf', [rmlveggrd(:)])
         end if
         ! Grid cell level outputs
         an_grd = 0.
         rml_grd = 0.
         totvegarea = sum(fcanctot)
-        do j = 1,icc
+        do j = 1, icc
           an_grd  = an_grd + anveggrd(j)  * fcanctot(j) / totvegarea
           rml_grd = rml_grd + rmlveggrd(j) * fcanctot(j) / totvegarea
         end do
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_hh_g',timeStamp,'gpp', [an_grd])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'rml_hh_g',timeStamp,'rmLeaf', [rml_grd])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_hh_g',timeStamp,'gpp', [an_grd])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'rml_hh_g',timeStamp,'rmLeaf', [rml_grd])
       end if ! ctem_on
     end do ! nltest loop
 
@@ -716,16 +716,16 @@ contains
   !! The pointer to the daily data structures (in class_statevars) keeps the data between calls.
   !! @author J. Melton
 
-  subroutine class_daily_aw(lonLocalIndex,latLocalIndex,iday,nltest,nmtest,ncount,nday,lastDOY,realyr)
+  subroutine class_daily_aw(lonLocalIndex, latLocalIndex, iday, nltest, nmtest, ncount, nday, lastDOY, realyr)
 
-    use class_statevars, only : class_rot,resetAccVars
-    use classic_params, only : ignd,sbc,delt,TFREZ
-    use outputManager, only : writeOutput1D,consecDays
+    use class_statevars, only : class_rot, resetAccVars
+    use classic_params, only : ignd, sbc, delt, TFREZ
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: iday
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
@@ -735,7 +735,7 @@ contains
     integer, intent(in) :: realyr
 
     ! local variables
-    integer :: i,m,j,k
+    integer :: i, m, j, k
     real, dimension(1) :: timeStamp
     real :: FSSTAR, FLSTAR
     real, allocatable, dimension(:) :: ALIRACC !< Diagnosed total near-infrared albedo of land surface [ ]
@@ -904,64 +904,64 @@ contains
     altotcntr_d => class_rot%altotcntr_d
 
     ! Accumulate output data for diurnally averaged fields. Both grid mean and mosaic mean
-    do I = 1,NLTEST
-      do M = 1,NMTEST
+    do I = 1, NLTEST
+      do M = 1, NMTEST
         if (FSSROW(I) > 0.) then
-          ALTOTACC_M(I,M) = ALTOTACC_M(I,M) + (FSSROW(I) - (FSGVROT(I,M) &
-                           + FSGSROT(I,M) + FSGGROT(I,M)))/FSSROW(I)
-          ALSNOACC_M(I,M) = ALSNOACC_M(I,M) + ALBSROT(I,M)
+          ALTOTACC_M(I, M) = ALTOTACC_M(I, M) + (FSSROW(I) - (FSGVROT(I, M) &
+                             + FSGSROT(I, M) + FSGGROT(I, M)))/FSSROW(I)
+          ALSNOACC_M(I, M) = ALSNOACC_M(I, M) + ALBSROT(I, M)
           if (i == 1) altotcntr_d(i) = altotcntr_d(i) + 1 ! only count once per gridcell, not per tile
         end if
 
-        PREACC_M(I,M) = PREACC_M(I,M) + PREROW(I) !*DELT UNITFIX
-        GTACC_M(I,M) = GTACC_M(I,M) + GTROT(I,M)
-        QEVPACC_M(I,M) = QEVPACC_M(I,M) + QEVPROT(I,M)
-        EVAPACC_M(I,M) = EVAPACC_M(I,M) + QFSROT(I,M)   !*DELT UNITFIX
-        HFSACC_M(I,M) = HFSACC_M(I,M) + HFSROT(I,M)
-        HMFNACC_M(I,M) = HMFNACC_M(I,M) + HMFNROT(I,M)
-        ROFACC_M(I,M) = ROFACC_M(I,M) + ROFROT(I,M)   ! *DELT  UNITFIX
-        OVRACC_M(I,M) = OVRACC_M(I,M) + ROFOROT(I,M) ! *DELT  UNITFIX
-        ! WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)  ! FLAG fix !
-        do J = 1,IGND
-          TBARACC_M(I,M,J) = TBARACC_M(I,M,J) + TBARROT(I,M,J)
-          THLQACC_M(I,M,J) = THLQACC_M(I,M,J) + THLQROT(I,M,J)
-          THICACC_M(I,M,J) = THICACC_M(I,M,J) + THICROT(I,M,J)
+        PREACC_M(I, M) = PREACC_M(I, M) + PREROW(I) 
+        GTACC_M(I, M) = GTACC_M(I, M) + GTROT(I, M)
+        QEVPACC_M(I, M) = QEVPACC_M(I, M) + QEVPROT(I, M)
+        EVAPACC_M(I, M) = EVAPACC_M(I, M) + QFSROT(I, M)   
+        HFSACC_M(I, M) = HFSACC_M(I, M) + HFSROT(I, M)
+        HMFNACC_M(I, M) = HMFNACC_M(I, M) + HMFNROT(I, M)
+        ROFACC_M(I, M) = ROFACC_M(I, M) + ROFROT(I, M)   
+        OVRACC_M(I, M) = OVRACC_M(I, M) + ROFOROT(I, M) 
+        ! WTBLACC_M(I, M)=WTBLACC_M(I, M)+wtableROT(I, M)  ! FLAG fix !
+        do J = 1, IGND
+          TBARACC_M(I, M, J) = TBARACC_M(I, M, J) + TBARROT(I, M, J)
+          THLQACC_M(I, M, J) = THLQACC_M(I, M, J) + THLQROT(I, M, J)
+          THICACC_M(I, M, J) = THICACC_M(I, M, J) + THICROT(I, M, J)
         end do
-        ALVSACC_M(I,M) = ALVSACC_M(I,M) + ALVSROT(I,M) * FSVHROW(I)
-        ALIRACC_M(I,M) = ALIRACC_M(I,M) + ALIRROT(I,M) * FSIHROW(I)
-        if (SNOROT(I,M) > 0.0) then
-          RHOSACC_M(I,M) = RHOSACC_M(I,M) + RHOSROT(I,M)
-          TSNOACC_M(I,M) = TSNOACC_M(I,M) + TSNOROT(I,M)
-          WSNOACC_M(I,M) = WSNOACC_M(I,M) + WSNOROT(I,M)
+        ALVSACC_M(I, M) = ALVSACC_M(I, M) + ALVSROT(I, M) * FSVHROW(I)
+        ALIRACC_M(I, M) = ALIRACC_M(I, M) + ALIRROT(I, M) * FSIHROW(I)
+        if (SNOROT(I, M) > 0.0) then
+          RHOSACC_M(I, M) = RHOSACC_M(I, M) + RHOSROT(I, M)
+          TSNOACC_M(I, M) = TSNOACC_M(I, M) + TSNOROT(I, M)
+          WSNOACC_M(I, M) = WSNOACC_M(I, M) + WSNOROT(I, M)
         end if
-        if (TCANROT(I,M) > 0.5) then
-          TCANACC_M(I,M) = TCANACC_M(I,M) + TCANROT(I,M)
+        if (TCANROT(I, M) > 0.5) then
+          TCANACC_M(I, M) = TCANACC_M(I, M) + TCANROT(I, M)
         end if
-        SNOACC_M(I,M) = SNOACC_M(I,M) + SNOROT(I,M)
-        RCANACC_M(I,M) = RCANACC_M(I,M) + RCANROT(I,M)
-        SCANACC_M(I,M) = SCANACC_M(I,M) + SCANROT(I,M)
-        GROACC_M(I,M) = GROACC_M(I,M) + GROROT(I,M)
-        FSINACC_M(I,M) = FSINACC_M(I,M) + FSSROW(I)  ! not per tile
-        FLINACC_M(I,M) = FLINACC_M(I,M) + FDLROW(I)  ! not per tile
-        FLUTACC_M(I,M) = FLUTACC_M(I,M) + SBC * GTROT(I,M) ** 4
-        TAACC_M(I,M) = TAACC_M(I,M) + TAROW(I)  ! not per tile
-        !                UVACC_M(I,M)=UVACC_M(I,M)+UVROW(I)  ! not per tile
-        !                 PRESACC_M(I,M)=PRESACC_M(I,M)+PRESROW(I)
-        !                 QAACC_M(I,M)=QAACC_M(I,M)+QAROW(I)
+        SNOACC_M(I, M) = SNOACC_M(I, M) + SNOROT(I, M)
+        RCANACC_M(I, M) = RCANACC_M(I, M) + RCANROT(I, M)
+        SCANACC_M(I, M) = SCANACC_M(I, M) + SCANROT(I, M)
+        GROACC_M(I, M) = GROACC_M(I, M) + GROROT(I, M)
+        FSINACC_M(I, M) = FSINACC_M(I, M) + FSSROW(I)  ! not per tile
+        FLINACC_M(I, M) = FLINACC_M(I, M) + FDLROW(I)  ! not per tile
+        FLUTACC_M(I, M) = FLUTACC_M(I, M) + SBC * GTROT(I, M) ** 4
+        TAACC_M(I, M) = TAACC_M(I, M) + TAROW(I)  ! not per tile
+        !                UVACC_M(I, M)=UVACC_M(I, M)+UVROW(I)  ! not per tile
+        !                 PRESACC_M(I, M)=PRESACC_M(I, M)+PRESROW(I)
+        !                 QAACC_M(I, M)=QAACC_M(I, M)+QAROW(I)
       end do ! loop 50
     end do ! loop 75
 
     if (NCOUNT == NDAY) then
 
-      allocate(ALIRACC(nltest),ALVSACC(nltest),EVAPACC(nltest),FLINACC(nltest), &
-        FLUTACC(nltest),FSINACC(nltest),GROACC(nltest),GTACC(nltest), &
-        HFSACC(nltest),HMFNACC(nltest),OVRACC(nltest),PREACC(nltest), &
-        PRESACC(nltest),QAACC(nltest),QEVPACC(nltest),RCANACC(nltest), &
-        RHOSACC(nltest),ROFACC(nltest),SCANACC(nltest),SNOACC(nltest), &
-        TAACC(nltest),TCANACC(nltest),TSNOACC(nltest),UVACC(nltest), &
-        WSNOACC(nltest),WTBLACC(nltest),ALTOTACC(nltest),TBARACC(nltest,ignd), &
-        THLQACC(nltest,ignd),THICACC(nltest,ignd),ALSNOACC(nltest))
-      ! UVACC_M,PRESACC_M,QAACC_M
+      allocate(ALIRACC(nltest), ALVSACC(nltest), EVAPACC(nltest), FLINACC(nltest), &
+        FLUTACC(nltest), FSINACC(nltest), GROACC(nltest), GTACC(nltest), &
+        HFSACC(nltest), HMFNACC(nltest), OVRACC(nltest), PREACC(nltest), &
+        PRESACC(nltest), QAACC(nltest), QEVPACC(nltest), RCANACC(nltest), &
+        RHOSACC(nltest), ROFACC(nltest), SCANACC(nltest), SNOACC(nltest), &
+        TAACC(nltest), TCANACC(nltest), TSNOACC(nltest), UVACC(nltest), &
+        WSNOACC(nltest), WTBLACC(nltest), ALTOTACC(nltest), TBARACC(nltest, ignd), &
+        THLQACC(nltest, ignd), THICACC(nltest, ignd), ALSNOACC(nltest))
+      ! UVACC_M, PRESACC_M, QAACC_M
 
       ALIRACC(:) = 0.0 ; ALVSACC(:) = 0.0 ; EVAPACC(:) = 0.0 ;   FLINACC(:) = 0.0
       FLUTACC(:) = 0.0 ; FSINACC(:) = 0.0 ; GROACC(:) = 0.0 ;    GTACC(:) = 0.0
@@ -973,41 +973,41 @@ contains
       THICACC(:,:) = 0.0 ; TBARACC(:,:) = 0.0 ; ALSNOACC(:) = 0.0
 
 
-      do I = 1,NLTEST
-        do M = 1,NMTEST
-          PREACC(I) = PREACC(I) + PREACC_M(I,M) * FAREROT(I,M)
-          GTACC(I) = GTACC(I) + GTACC_M(I,M) * FAREROT(I,M)
-          QEVPACC(I) = QEVPACC(I) + QEVPACC_M(I,M) * FAREROT(I,M)
-          EVAPACC(I) = EVAPACC(I) + EVAPACC_M(I,M) * FAREROT(I,M)
-          HFSACC(I) = HFSACC(I) + HFSACC_M(I,M) * FAREROT(I,M)
-          HMFNACC(I) = HMFNACC(I) + HMFNACC_M(I,M) * FAREROT(I,M)
-          ROFACC(I) = ROFACC(I) + ROFACC_M(I,M) * FAREROT(I,M)
-          OVRACC(I) = OVRACC(I) + OVRACC_M(I,M) * FAREROT(I,M)
-          WTBLACC(I) = WTBLACC(I) + WTBLACC_M(I,M) * FAREROT(I,M)
-          ALTOTACC(I) = ALTOTACC(I) + ALTOTACC_M(I,M) * FAREROT(I,M)
-          ALSNOACC(I) = ALSNOACC(I) + ALSNOACC_M(I,M) * FAREROT(I,M)
-          do J = 1,IGND
-            TBARACC(I,J) = TBARACC(I,J) + TBARACC_M(I,M,J) * FAREROT(I,M)
-            THLQACC(I,J) = THLQACC(I,J) + THLQACC_M(I,M,J) * FAREROT(I,M)
-            THICACC(I,J) = THICACC(I,J) + THICACC_M(I,M,J) * FAREROT(I,M)
+      do I = 1, NLTEST
+        do M = 1, NMTEST
+          PREACC(I) = PREACC(I) + PREACC_M(I, M) * FAREROT(I, M)
+          GTACC(I) = GTACC(I) + GTACC_M(I, M) * FAREROT(I, M)
+          QEVPACC(I) = QEVPACC(I) + QEVPACC_M(I, M) * FAREROT(I, M)
+          EVAPACC(I) = EVAPACC(I) + EVAPACC_M(I, M) * FAREROT(I, M)
+          HFSACC(I) = HFSACC(I) + HFSACC_M(I, M) * FAREROT(I, M)
+          HMFNACC(I) = HMFNACC(I) + HMFNACC_M(I, M) * FAREROT(I, M)
+          ROFACC(I) = ROFACC(I) + ROFACC_M(I, M) * FAREROT(I, M)
+          OVRACC(I) = OVRACC(I) + OVRACC_M(I, M) * FAREROT(I, M)
+          WTBLACC(I) = WTBLACC(I) + WTBLACC_M(I, M) * FAREROT(I, M)
+          ALTOTACC(I) = ALTOTACC(I) + ALTOTACC_M(I, M) * FAREROT(I, M)
+          ALSNOACC(I) = ALSNOACC(I) + ALSNOACC_M(I, M) * FAREROT(I, M)
+          do J = 1, IGND
+            TBARACC(I, J) = TBARACC(I, J) + TBARACC_M(I, M, J) * FAREROT(I, M)
+            THLQACC(I, J) = THLQACC(I, J) + THLQACC_M(I, M, J) * FAREROT(I, M)
+            THICACC(I, J) = THICACC(I, J) + THICACC_M(I, M, J) * FAREROT(I, M)
           end do
-          ALVSACC(I) = ALVSACC(I) + ALVSACC_M(I,M) * FAREROT(I,M)
-          ALIRACC(I) = ALIRACC(I) + ALIRACC_M(I,M) * FAREROT(I,M)
-          RHOSACC(I) = RHOSACC(I) + RHOSACC_M(I,M) * FAREROT(I,M)
-          TSNOACC(I) = TSNOACC(I) + TSNOACC_M(I,M) * FAREROT(I,M)
-          WSNOACC(I) = WSNOACC(I) + WSNOACC_M(I,M) * FAREROT(I,M)
-          TCANACC(I) = TCANACC(I) + TCANACC_M(I,M) * FAREROT(I,M)
-          SNOACC(I) = SNOACC(I) + SNOACC_M(I,M) * FAREROT(I,M)
-          RCANACC(I) = RCANACC(I) + RCANACC_M(I,M) * FAREROT(I,M)
-          SCANACC(I) = SCANACC(I) + SCANACC_M(I,M) * FAREROT(I,M)
-          GROACC(I) = GROACC(I) + GROACC_M(I,M) * FAREROT(I,M)
-          FSINACC(I) = FSINACC(I) + FSINACC_M(I,M) * FAREROT(I,M)
-          FLINACC(I) = FLINACC(I) + FLINACC_M(I,M) * FAREROT(I,M)
-          FLUTACC(I) = FLUTACC(I) + FLUTACC_M(I,M) * FAREROT(I,M)
-          TAACC(I) = TAACC(I) + TAACC_M(I,M) * FAREROT(I,M)
-          ! UVACC(I)=UVACC(I)+UVACC_M(I)*FAREROT(I,M)
-          ! PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I,M)
-          ! QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I,M)
+          ALVSACC(I) = ALVSACC(I) + ALVSACC_M(I, M) * FAREROT(I, M)
+          ALIRACC(I) = ALIRACC(I) + ALIRACC_M(I, M) * FAREROT(I, M)
+          RHOSACC(I) = RHOSACC(I) + RHOSACC_M(I, M) * FAREROT(I, M)
+          TSNOACC(I) = TSNOACC(I) + TSNOACC_M(I, M) * FAREROT(I, M)
+          WSNOACC(I) = WSNOACC(I) + WSNOACC_M(I, M) * FAREROT(I, M)
+          TCANACC(I) = TCANACC(I) + TCANACC_M(I, M) * FAREROT(I, M)
+          SNOACC(I) = SNOACC(I) + SNOACC_M(I, M) * FAREROT(I, M)
+          RCANACC(I) = RCANACC(I) + RCANACC_M(I, M) * FAREROT(I, M)
+          SCANACC(I) = SCANACC(I) + SCANACC_M(I, M) * FAREROT(I, M)
+          GROACC(I) = GROACC(I) + GROACC_M(I, M) * FAREROT(I, M)
+          FSINACC(I) = FSINACC(I) + FSINACC_M(I, M) * FAREROT(I, M)
+          FLINACC(I) = FLINACC(I) + FLINACC_M(I, M) * FAREROT(I, M)
+          FLUTACC(I) = FLUTACC(I) + FLUTACC_M(I, M) * FAREROT(I, M)
+          TAACC(I) = TAACC(I) + TAACC_M(I, M) * FAREROT(I, M)
+          ! UVACC(I)=UVACC(I)+UVACC_M(I)*FAREROT(I, M)
+          ! PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I, M)
+          ! QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I, M)
         end do
       end do
 
@@ -1016,7 +1016,7 @@ contains
       ! Prepare the timestamp for this month. Take one day off since it referenced to 01-01 of the refyr.
       timeStamp = consecDays + iday - 1
 
-      do i = 1,nltest
+      do i = 1, nltest
         if (altotcntr_d(i) > 0) then
           ALTOTACC(I) = ALTOTACC(I)/real(altotcntr_d(i))
           ALSNOACC(I) = ALSNOACC(I)/real(altotcntr_d(i))
@@ -1025,63 +1025,63 @@ contains
           ALSNOACC(I) = 0.
         end if
         FSSTAR = FSINACC(I)/real(nday) * (1. - ALTOTACC(I))
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_d' ,timeStamp,'rss', [FSSTAR])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'fsstar_d' ,timeStamp,'rss', [FSSTAR])
 
         FLSTAR = (FLINACC(I) - FLUTACC(I))/real(NDAY)
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_d' ,timeStamp,'rls', [FLSTAR])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_d'     ,timeStamp,'hfss', [HFSACC(I)/real(NDAY)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/real(NDAY)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_d'    ,timeStamp,'snm', [HMFNACC(I)/real(NDAY)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_d',timeStamp,'tsl', [(TBARACC(I,:)/real(NDAY)) - TFREZ])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_d',timeStamp,'mrsll', [THLQACC(I,:)/real(NDAY)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_d',timeStamp,'mrsfl', [THICACC(I,:)/real(NDAY)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'snm_d' ,timeStamp,'snm', [HMFNACC(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'flstar_d' ,timeStamp,'rls', [FLSTAR])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'qh_d'     ,timeStamp,'hfss', [HFSACC(I)/real(NDAY)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_d'     ,timeStamp,'hfls', [QEVPACC(I)/real(NDAY)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'snm_d'    ,timeStamp,'snm', [HMFNACC(I)/real(NDAY)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'tbaracc_d',timeStamp,'tsl', [(TBARACC(I,:)/real(NDAY))])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'thlqacc_d',timeStamp,'mrsll', [THLQACC(I,:)/real(NDAY)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'thicacc_d',timeStamp,'mrsfl', [THICACC(I,:)/real(NDAY)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'snm_d' ,timeStamp,'snm', [HMFNACC(I)])
         !                 !                 BEG=FSSTAR+FLSTAR-QH-QE
 
         ! Below are obviously not daily ones but I copy in as a reminder of what likely will be put out daily.
         ! after these writeOutput1D statements is the listed daily file variables. It would be good to do those again
-        !                 call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  ! name
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [HMFNACC(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)-TFREZ])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'alsnoacc',timeStamp,'albsn', [ALSNOACC(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_mo',timeStamp,'ftable', [FTABLE_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_max_mo',timeStamp,'ftablemax', [FTABLE_MAX_MO(I)])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_min_mo',timeStamp,'ftablemin', [FTABLE_MIN_MO(I)])
+        !                 call writeOutput1D(lonLocalIndex, latLocalIndex,'gflx_hh',timeStamp,'gflx', [GFLXROW(I,:)])  ! name
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [HMFNACC(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'alsnoacc',timeStamp,'albsn', [ALSNOACC(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_mo',timeStamp,'ftable', [FTABLE_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_max_mo',timeStamp,'ftablemax', [FTABLE_MAX_MO(I)])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_min_mo',timeStamp,'ftablemin', [FTABLE_MIN_MO(I)])
         !
-        ! !                             &                       BEG,GTOUT,SNOACC(I),RHOSACC(I), &
-        ! !                             &                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
-        ! !                             WRITE(62,6200) IDAY,realyr,(TBARACC(I,J)-TFREZ, &
-        ! !                                 &                       THLQACC(I,J),THICACC(I,J),J=1,3), &
-        ! !                                 &                       TCN,RCANACC(I),SCANACC(I),TSN,ZSN, &
-        ! !                                 &                       ACTLYR_G(I),FTABLE_g(I)
-        ! !                         WRITE(63,6300) IDAY,realyr,FSINACC(I),FLINACC(I), &
-        ! !                             &                       TAACC(I)-TFREZ,UVACC(I),PRESACC(I), &
-        ! !                             &                       QAACC(I),PREACC(I),EVAPACC(I)
-        ! !                                 &                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M), &
-        ! !                                 &                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M), &
+        ! !                             &                       BEG, GTOUT, SNOACC(I), RHOSACC(I), &
+        ! !                             &                       WSNOACC(I), ALTOTACC(I), ROFACC(I), CUMSNO
+        ! !                             WRITE(62, 6200) IDAY, realyr,(TBARACC(I, J)-TFREZ, &
+        ! !                                 &                       THLQACC(I, J), THICACC(I, J), J=1, 3), &
+        ! !                                 &                       TCN, RCANACC(I), SCANACC(I), TSN, ZSN, &
+        ! !                                 &                       ACTLYR_G(I), FTABLE_g(I)
+        ! !                         WRITE(63, 6300) IDAY, realyr, FSINACC(I), FLINACC(I), &
+        ! !                             &                       TAACC(I)-TFREZ, UVACC(I), PRESACC(I), &
+        ! !                             &                       QAACC(I), PREACC(I), EVAPACC(I)
+        ! !                                 &                    BEG, GTOUT, SNOACC_M(I, M), RHOSACC_M(I, M), &
+        ! !                                 &                    WSNOACC_M(I, M), ALTOTACC_M(I, M), ROFACC_M(I, M), &
         ! !                                 &                    CUMSNO,' TILE ',M
-        ! !                                     &                  TCN,RCANACC_M(I,M),SCANACC_M(I,M),TSN,ZSN, &
+        ! !                                     &                  TCN, RCANACC_M(I, M), SCANACC_M(I, M), TSN, ZSN, &
         ! !                                     &                  ' TILE ',M
         ! !                             END IF
-        ! !                             WRITE(631,6300) IDAY,realyr,FSINACC_M(I,M),FLINACC_M(I,M), &
-        ! !                                 &                  TAACC_M(I,M)-TFREZ,UVACC_M(I,M),PRESACC_M(I,M), &
-        ! !                                 &                  QAACC_M(I,M),PREACC_M(I,M),EVAPACC_M(I,M), &
+        ! !                             WRITE(631, 6300) IDAY, realyr, FSINACC_M(I, M), FLINACC_M(I, M), &
+        ! !                                 &                  TAACC_M(I, M)-TFREZ, UVACC_M(I, M), PRESACC_M(I, M), &
+        ! !                                 &                  QAACC_M(I, M), PREACC_M(I, M), EVAPACC_M(I, M), &
         ! !                                 &                  ' TILE ',M
         !
         ! !
       end do
-      ! !             do I=1,NLTEST
+      ! !             do I=1, NLTEST
       ! !                 PREACC(I)=PREACC(I)
       ! !                 GTACC(I)=GTACC(I)/REAL(NDAY)
       ! !                 EVAPACC(I)=EVAPACC(I)
@@ -1089,11 +1089,11 @@ contains
       ! !                 ROFACC(I)=ROFACC(I)
       ! !                 OVRACC(I)=OVRACC(I)
       ! !                 WTBLACC(I)=WTBLACC(I)/REAL(NDAY)
-      ! !                 do J=1,IGND
-      ! !                     TBARACC(I,J)=TBARACC(I,J)/REAL(NDAY)
-      ! !                     THLQACC(I,J)=THLQACC(I,J)/REAL(NDAY)
-      ! !                     THICACC(I,J)=THICACC(I,J)/REAL(NDAY)
-      ! !                     THALACC(I,J)=THALACC(I,J)/REAL(NDAY)
+      ! !                 do J=1, IGND
+      ! !                     TBARACC(I, J)=TBARACC(I, J)/REAL(NDAY)
+      ! !                     THLQACC(I, J)=THLQACC(I, J)/REAL(NDAY)
+      ! !                     THICACC(I, J)=THICACC(I, J)/REAL(NDAY)
+      ! !                     THALACC(I, J)=THALACC(I, J)/REAL(NDAY)
       ! ! 725                     CONTINUE
       ! !                 IF (FSINACC(I)>0.0) THEN
       ! !                     ALVSACC(I)=ALVSACC(I)/(FSINACC(I)*0.5)
@@ -1142,81 +1142,81 @@ contains
       ! !                     end if
       ! !                 END IF
       ! !
-      ! !             do I=1,NLTEST
-      ! !                 do M=1,NMTEST
-      ! !                     PREACC_M(I,M)=PREACC_M(I,M)     ! became [kg m-2 day-1] instead of [kg m-2 s-1]
-      ! !                     GTACC_M(I,M)=GTACC_M(I,M)/REAL(NDAY)
-      ! !                     QEVPACC_M(I,M)=QEVPACC_M(I,M)/REAL(NDAY)
-      ! !                     EVAPACC_M(I,M)=EVAPACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1]
-      ! !                     HFSACC_M(I,M)=HFSACC_M(I,M)/REAL(NDAY)
-      ! !                     HMFNACC_M(I,M)=HMFNACC_M(I,M)/REAL(NDAY)
-      ! !                     ROFACC_M(I,M)=ROFACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1
-      ! !                     OVRACC_M(I,M)=OVRACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1]
-      ! !                     WTBLACC_M(I,M)=WTBLACC_M(I,M)/REAL(NDAY)
-      ! !                     do J=1,IGND
-      ! !                         TBARACC_M(I,M,J)=TBARACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THLQACC_M(I,M,J)=THLQACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THICACC_M(I,M,J)=THICACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THALACC_M(I,M,J)=THALACC_M(I,M,J)/REAL(NDAY)
+      ! !             do I=1, NLTEST
+      ! !                 do M=1, NMTEST
+      ! !                     PREACC_M(I, M)=PREACC_M(I, M)     ! became [kg m-2 day-1] instead of [kg m-2 s-1]
+      ! !                     GTACC_M(I, M)=GTACC_M(I, M)/REAL(NDAY)
+      ! !                     QEVPACC_M(I, M)=QEVPACC_M(I, M)/REAL(NDAY)
+      ! !                     EVAPACC_M(I, M)=EVAPACC_M(I, M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1]
+      ! !                     HFSACC_M(I, M)=HFSACC_M(I, M)/REAL(NDAY)
+      ! !                     HMFNACC_M(I, M)=HMFNACC_M(I, M)/REAL(NDAY)
+      ! !                     ROFACC_M(I, M)=ROFACC_M(I, M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1
+      ! !                     OVRACC_M(I, M)=OVRACC_M(I, M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1]
+      ! !                     WTBLACC_M(I, M)=WTBLACC_M(I, M)/REAL(NDAY)
+      ! !                     do J=1, IGND
+      ! !                         TBARACC_M(I, M, J)=TBARACC_M(I, M, J)/REAL(NDAY)
+      ! !                         THLQACC_M(I, M, J)=THLQACC_M(I, M, J)/REAL(NDAY)
+      ! !                         THICACC_M(I, M, J)=THICACC_M(I, M, J)/REAL(NDAY)
+      ! !                         THALACC_M(I, M, J)=THALACC_M(I, M, J)/REAL(NDAY)
       ! ! 726                         CONTINUE
       ! !
-      ! !                     IF (FSINACC_M(I,M)>0.0) THEN
-      ! !                         ALVSACC_M(I,M)=ALVSACC_M(I,M)/(FSINACC_M(I,M)*0.5)
-      ! !                         ALIRACC_M(I,M)=ALIRACC_M(I,M)/(FSINACC_M(I,M)*0.5)
+      ! !                     IF (FSINACC_M(I, M)>0.0) THEN
+      ! !                         ALVSACC_M(I, M)=ALVSACC_M(I, M)/(FSINACC_M(I, M)*0.5)
+      ! !                         ALIRACC_M(I, M)=ALIRACC_M(I, M)/(FSINACC_M(I, M)*0.5)
       ! !                     ELSE
-      ! !                         ALVSACC_M(I,M)=0.0
-      ! !                         ALIRACC_M(I,M)=0.0
+      ! !                         ALVSACC_M(I, M)=0.0
+      ! !                         ALIRACC_M(I, M)=0.0
       ! !                     END IF
       ! !
-      ! !                     SNOACC_M(I,M)=SNOACC_M(I,M)/REAL(NDAY)
-      ! !                     if (SNOARE_M(I,M) > 0.) THEN
-      ! !                         RHOSACC_M(I,M)=RHOSACC_M(I,M)/SNOARE_M(I,M)
-      ! !                         TSNOACC_M(I,M)=TSNOACC_M(I,M)/SNOARE_M(I,M)
-      ! !                         WSNOACC_M(I,M)=WSNOACC_M(I,M)/SNOARE_M(I,M)
+      ! !                     SNOACC_M(I, M)=SNOACC_M(I, M)/REAL(NDAY)
+      ! !                     if (SNOARE_M(I, M) > 0.) THEN
+      ! !                         RHOSACC_M(I, M)=RHOSACC_M(I, M)/SNOARE_M(I, M)
+      ! !                         TSNOACC_M(I, M)=TSNOACC_M(I, M)/SNOARE_M(I, M)
+      ! !                         WSNOACC_M(I, M)=WSNOACC_M(I, M)/SNOARE_M(I, M)
       ! !                     END IF
-      ! !                     TCANACC_M(I,M)=TCANACC_M(I,M)/REAL(NDAY)
-      ! !                     RCANACC_M(I,M)=RCANACC_M(I,M)/REAL(NDAY)
-      ! !                     SCANACC_M(I,M)=SCANACC_M(I,M)/REAL(NDAY)
-      ! !                     GROACC_M(I,M)=GROACC_M(I,M)/REAL(NDAY)
-      ! !                     FSINACC_M(I,M)=FSINACC_M(I,M)/REAL(NDAY)
-      ! !                     FLINACC_M(I,M)=FLINACC_M(I,M)/REAL(NDAY)
-      ! !                     FLUTACC_M(I,M)=FLUTACC_M(I,M)/REAL(NDAY)
-      ! !                     TAACC_M(I,M)=TAACC_M(I,M)/REAL(NDAY)
-      ! !                     UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
-      ! !                     PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
-      ! !                     QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
+      ! !                     TCANACC_M(I, M)=TCANACC_M(I, M)/REAL(NDAY)
+      ! !                     RCANACC_M(I, M)=RCANACC_M(I, M)/REAL(NDAY)
+      ! !                     SCANACC_M(I, M)=SCANACC_M(I, M)/REAL(NDAY)
+      ! !                     GROACC_M(I, M)=GROACC_M(I, M)/REAL(NDAY)
+      ! !                     FSINACC_M(I, M)=FSINACC_M(I, M)/REAL(NDAY)
+      ! !                     FLINACC_M(I, M)=FLINACC_M(I, M)/REAL(NDAY)
+      ! !                     FLUTACC_M(I, M)=FLUTACC_M(I, M)/REAL(NDAY)
+      ! !                     TAACC_M(I, M)=TAACC_M(I, M)/REAL(NDAY)
+      ! !                     UVACC_M(I, M)=UVACC_M(I, M)/REAL(NDAY)
+      ! !                     PRESACC_M(I, M)=PRESACC_M(I, M)/REAL(NDAY)
+      ! !                     QAACC_M(I, M)=QAACC_M(I, M)/REAL(NDAY)
       ! !                     if (altotcntr_d(i) > 0) then ! altotcntr_d(i) could be 0
-      ! !                         ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
+      ! !                         ALTOTACC_M(I, M)=ALTOTACC_M(I, M)/REAL(altotcntr_d(i))
       ! !                     else
-      ! !                         ALTOTACC_M(I,M)=0.
+      ! !                         ALTOTACC_M(I, M)=0.
       ! !                     end if
-      ! !                     FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
-      ! !                     FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
-      ! !                     QH=HFSACC_M(I,M)
-      ! !                     QE=QEVPACC_M(I,M)
-      ! !                     QEVPACC_M_SAVE(I,M)=QEVPACC_M(I,M)   ! FLAG ! What is the point of this? JM Apr 12015
+      ! !                     FSSTAR=FSINACC_M(I, M)*(1.-ALTOTACC_M(I, M))
+      ! !                     FLSTAR=FLINACC_M(I, M)-FLUTACC_M(I, M)
+      ! !                     QH=HFSACC_M(I, M)
+      ! !                     QE=QEVPACC_M(I, M)
+      ! !                     QEVPACC_M_SAVE(I, M)=QEVPACC_M(I, M)   ! FLAG ! What is the point of this? JM Apr 12015
       ! !                     BEG=FSSTAR+FLSTAR-QH-QE
-      ! !                     SNOMLT=HMFNACC_M(I,M)
+      ! !                     SNOMLT=HMFNACC_M(I, M)
       ! !
-      ! !                     IF (RHOSACC_M(I,M)>0.0) THEN
-      ! !                         ZSN=SNOACC_M(I,M)/RHOSACC_M(I,M)
+      ! !                     IF (RHOSACC_M(I, M)>0.0) THEN
+      ! !                         ZSN=SNOACC_M(I, M)/RHOSACC_M(I, M)
       ! !                     ELSE
       ! !                         ZSN=0.0
       ! !                     END IF
       ! !
-      ! !                     IF (TCANACC_M(I,M)>0.01) THEN
-      ! !                         TCN=TCANACC_M(I,M)-TFREZ
+      ! !                     IF (TCANACC_M(I, M)>0.01) THEN
+      ! !                         TCN=TCANACC_M(I, M)-TFREZ
       ! !                     ELSE
       ! !                         TCN=0.0
       ! !                     END IF
       ! !
-      ! !                     IF (TSNOACC_M(I,M)>0.01) THEN
-      ! !                         TSN=TSNOACC_M(I,M)-TFREZ
+      ! !                     IF (TSNOACC_M(I, M)>0.01) THEN
+      ! !                         TSN=TSNOACC_M(I, M)-TFREZ
       ! !                     ELSE
       ! !                         TSN=0.0
       ! !                     END IF
       ! !
-      ! !                     GTOUT=GTACC_M(I,M)-TFREZ
+      ! !                     GTOUT=GTACC_M(I, M)-TFREZ
       ! !
       ! !                             !         WRITE TO OUTPUT FILES
       ! !                             !
@@ -1225,14 +1225,14 @@ contains
       ! ! 809                     CONTINUE
       ! ! 808                 CONTINUE
 
-      deallocate(ALIRACC,ALVSACC,EVAPACC,FLINACC,FLUTACC,FSINACC,GROACC,GTACC, &
-      HFSACC,HMFNACC,OVRACC,PREACC,PRESACC,QAACC,QEVPACC,RCANACC, &
-      RHOSACC,ROFACC,SCANACC,SNOACC,TAACC,TCANACC,TSNOACC,UVACC, &
-      WSNOACC,WTBLACC,ALTOTACC)
-      ! UVACC_M,PRESACC_M,QAACC_M
+      deallocate(ALIRACC, ALVSACC, EVAPACC, FLINACC, FLUTACC, FSINACC, GROACC, GTACC, &
+      HFSACC, HMFNACC, OVRACC, PREACC, PRESACC, QAACC, QEVPACC, RCANACC, &
+      RHOSACC, ROFACC, SCANACC, SNOACC, TAACC, TCANACC, TSNOACC, UVACC, &
+      WSNOACC, WTBLACC, ALTOTACC)
+      ! UVACC_M, PRESACC_M, QAACC_M
 
       ! RESET ACCUMULATOR ARRAYS (*_M).
-      call resetAccVars(nltest,nmtest)
+      call resetAccVars(nltest, nmtest)
 
     end if ! IF (NCOUNT==NDAY)
 
@@ -1248,16 +1248,16 @@ contains
   !! The pointer to the monthly data structures (in class_statevars) keeps the data between calls.
   !! @author J. Melton
 
-  subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY,nltest,nmtest,lastDOY)
+  subroutine class_monthly_aw(lonLocalIndex, latLocalIndex, IDAY, realyr, NCOUNT, NDAY, nltest, nmtest, lastDOY)
 
-    use class_statevars, only : class_out,resetclassmon,class_rot
-    use classic_params, only : nmon, monthend, nmos, ignd,SBC,DELT,TFREZ
-    use outputManager, only : writeOutput1D,consecDays
+    use class_statevars, only : class_out, resetclassmon, class_rot
+    use classic_params, only : nmon, monthend, nmos, ignd, SBC, DELT, TFREZ
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: IDAY
     integer, intent(in) :: realyr
     integer, intent(in) :: NCOUNT
@@ -1309,7 +1309,7 @@ contains
     real, pointer, dimension(:) :: WSNOACC_MO
     real, pointer, dimension(:) :: ROFACC_MO
     real, pointer, dimension(:) :: PREACC_MO
-    real, pointer, dimension(:) :: EVAPACC_MO
+    real, pointer, dimension(:) :: EVAPACC_MO    !< Diagnosed total surface evaporation water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
     real, pointer, dimension(:) :: TRANSPACC_MO
     real, pointer, dimension(:) :: TAACC_MO
     real, pointer, dimension(:) :: ACTLYR_MO
@@ -1334,7 +1334,7 @@ contains
     real :: ALTOT_MO
     integer :: NT
     integer :: NDMONTH
-    integer :: i,m,j
+    integer :: i, m, j
     integer :: IMONTH
     real :: tovere
     real :: ACTLYR_tmp
@@ -1421,50 +1421,51 @@ contains
     FTABLE_tmp  = 0.0
 
     i = 1 ! offline nlat is always 1 so this array position is always 1.
-    do M = 1,NMTEST
+    do M = 1, NMTEST
 
       ! These are presently not being outputted but the code is kept in place if the need arises.
-      !     ALVSACC_MO(I)=ALVSACC_MO(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
-      !     ALIRACC_MO(I)=ALIRACC_MO(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I)
-      FLUTACC_MO(I) = FLUTACC_MO(I) + SBC * GTROT(I,M) ** 4 * FAREROT(I,M)
-      FSINACC_MO(I) = FSINACC_MO(I) + FSSROW(I) * FAREROT(I,M)
-      FLINACC_MO(I) = FLINACC_MO(I) + FDLROW(I) * FAREROT(I,M)
-      HFSACC_MO(I) = HFSACC_MO(I) + HFSROT(I,M) * FAREROT(I,M)
-      QEVPACC_MO(I) = QEVPACC_MO(I) + QEVPROT(I,M) * FAREROT(I,M)
-      SNOACC_MO(I) = SNOACC_MO(I) + SNOROT(I,M) * FAREROT(I,M)
-      TAACC_MO(I) = TAACC_MO(I) + TAROW(I) * FAREROT(I,M)
-      ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
-      FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
-      ACTLYR_tmp = ACTLYR_tmp + ACTLYR(I,M) * FAREROT(I,M)
-      FTABLE_tmp = FTABLE_tmp + FTABLE(I,M) * FAREROT(I,M)
-      GROUNDEVAP(I) = GROUNDEVAP(I) + (QFGROT(I,M) + QFNROT(I,M)) * FAREROT(I,M) !*DELT UNITFIX ! ground evap includes both evap and sublimation from snow
-      CANOPYEVAP(I) = CANOPYEVAP(I) + (QFCLROT(I,M) + QFCFROT(I,M)) * FAREROT(I,M) ! *DELT UNITFIX ! canopy evap includes both evap and sublimation
+      !     ALVSACC_MO(I)=ALVSACC_MO(I)+ALVSROT(I, M)*FAREROT(I, M)*FSVHROW(I)
+      !     ALIRACC_MO(I)=ALIRACC_MO(I)+ALIRROT(I, M)*FAREROT(I, M)*FSIHROW(I)
+      FLUTACC_MO(I) = FLUTACC_MO(I) + SBC * GTROT(I, M) ** 4 * FAREROT(I, M)
+      FSINACC_MO(I) = FSINACC_MO(I) + FSSROW(I) * FAREROT(I, M)
+      FLINACC_MO(I) = FLINACC_MO(I) + FDLROW(I) * FAREROT(I, M)
+      HFSACC_MO(I) = HFSACC_MO(I) + HFSROT(I, M) * FAREROT(I, M)
+      QEVPACC_MO(I) = QEVPACC_MO(I) + QEVPROT(I, M) * FAREROT(I, M)
+      SNOACC_MO(I) = SNOACC_MO(I) + SNOROT(I, M) * FAREROT(I, M)
+      TAACC_MO(I) = TAACC_MO(I) + TAROW(I) * FAREROT(I, M)
+      ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I, M) * FAREROT(I, M)
+      FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I, M) * FAREROT(I, M)
+      ACTLYR_tmp = ACTLYR_tmp + ACTLYR(I, M) * FAREROT(I, M)
+      FTABLE_tmp = FTABLE_tmp + FTABLE(I, M) * FAREROT(I, M)
+      GROUNDEVAP(I) = GROUNDEVAP(I) + (QFGROT(I, M) + QFNROT(I, M)) * FAREROT(I, M) ! ground evap includes both evap and sublimation from snow
+      CANOPYEVAP(I) = CANOPYEVAP(I) + (QFCLROT(I, M) + QFCFROT(I, M)) * FAREROT(I, M) ! canopy evap includes both evap and sublimation
 
-      if (SNOROT(I,M) > 0.0) then
-        WSNOACC_MO(I) = WSNOACC_MO(I) + WSNOROT(I,M) * FAREROT(I,M)
+      if (SNOROT(I, M) > 0.0) then
+        WSNOACC_MO(I) = WSNOACC_MO(I) + WSNOROT(I, M) * FAREROT(I, M)
       end if
 
-      ROFACC_MO(I) = ROFACC_MO(I) + ROFROT(I,M) * FAREROT(I,M)!*DELT UNITFIX
-      PREACC_MO(I) = PREACC_MO(I) + PREROW(I) * FAREROT(I,M)!*DELT UNITFIX
-      EVAPACC_MO(I) = EVAPACC_MO(I) + QFSROT(I,M) * FAREROT(I,M)!*DELT UNITFIX
+      ROFACC_MO(I) = ROFACC_MO(I) + ROFROT(I, M) * FAREROT(I, M)
+      PREACC_MO(I) = PREACC_MO(I) + PREROW(I) * FAREROT(I, M)
+      EVAPACC_MO(I) = EVAPACC_MO(I) + QFSROT(I, M) * FAREROT(I, M) ! Only evaporation
 
       if (FSSROW(I) > 0.0) then
-        ALTOTACC_MO(I) = ALTOTACC_MO(I) + ( (FSSROW(I) - (FSGVROT(I,M) + FSGSROT(I,M) + FSGGROT(I,M))) &
-      /FSSROW(I) ) * FAREROT(I,M)
-        ALSNOACC_MO(I) = ALSNOACC_MO(I) + ALBSROT(I,M)
+        ALTOTACC_MO(I) = ALTOTACC_MO(I) + ( (FSSROW(I) - (FSGVROT(I, M) + FSGSROT(I, M) + FSGGROT(I, M))) &
+                         /FSSROW(I) ) * FAREROT(I, M)
+        ALSNOACC_MO(I) = ALSNOACC_MO(I) + ALBSROT(I, M)
         altotcntr_m(i) = altotcntr_m(i) + 1
       end if
 
-      do J = 1,IGND
-        TBARACC_MO(I,J) = TBARACC_MO(I,J) + TBARROT(I,M,J) * FAREROT(I,M)
+      do J = 1, IGND
+        TBARACC_MO(I, J) = TBARACC_MO(I, J) + TBARROT(I, M, J) * FAREROT(I, M)
         ! Convert from m3/m3 to kg/m2
-        THLQACC_MO(I,J) = THLQACC_MO(I,J) + THLQROT(I,M,J) * FAREROT(I,M) * 1000. * DLZWROT(I,M,J)
-        THICACC_MO(I,J) = THICACC_MO(I,J) + THICROT(I,M,J) * FAREROT(I,M) * 1000. * DLZWROT(I,M,J)
+        THLQACC_MO(I, J) = THLQACC_MO(I, J) + THLQROT(I, M, J) * FAREROT(I, M) * 1000. * DLZWROT(I, M, J)
+        THICACC_MO(I, J) = THICACC_MO(I, J) + THICROT(I, M, J) * FAREROT(I, M) * 1000. * DLZWROT(I, M, J)
         ! Find the total soil moisture content
         ! Add up each soil layers moisture and convert from m3/m3 to kg/m2
-        MRSO_MO(I) = MRSO_MO(I) + (THLQROT(I,M,J) * FAREROT(I,M) + THICROT(I,M,J) * FAREROT(I,M)) * 1000. * DLZWROT(I,M,J)
-        MRSOL_MO(I,J) = MRSOL_MO(I,J) + (THLQROT(I,M,J) * FAREROT(I,M) + THICROT(I,M,J) * FAREROT(I,M)) * 1000. * DLZWROT(I,M,J)
-        TRANSPACC_MO(I) = TRANSPACC_MO(I) + QFCROT(I,M,J) * FAREROT(I,M)!*DELT UNITFIX
+        MRSO_MO(I) = MRSO_MO(I) + (THLQROT(I, M, J) * FAREROT(I, M) + THICROT(I, M, J) * FAREROT(I, M)) * 1000. * DLZWROT(I, M, J)
+        MRSOL_MO(I, J) = MRSOL_MO(I, J) + (THLQROT(I, M, J) * FAREROT(I, M) + THICROT(I, M, J) * FAREROT(I, M)) * 1000. * DLZWROT(I, M, J)
+        TRANSPACC_MO(I) = TRANSPACC_MO(I) + QFCROT(I, M, J) * FAREROT(I, M)
+        
       end do ! loop 823
 
     end do ! loop 821
@@ -1475,7 +1476,7 @@ contains
     FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp)
     FTABLE_MIN_MO(I) = min(FTABLE_MIN_MO(I), FTABLE_tmp)
 
-    do NT = 1,NMON
+    do NT = 1, NMON
       if (IDAY == monthend(NT + 1) .and. NCOUNT == NDAY) then
 
         IMONTH = NT
@@ -1518,11 +1519,11 @@ contains
         GROUNDEVAP(I) = GROUNDEVAP(I) /real(NDMONTH)
         CANOPYEVAP(I) = CANOPYEVAP(I) /real(NDMONTH)
 
-        do J = 1,IGND
-          TBARACC_MO(I,J) = TBARACC_MO(I,J)/real(NDMONTH)
-          THLQACC_MO(I,J) = THLQACC_MO(I,J)/real(NDMONTH)
-          THICACC_MO(I,J) = THICACC_MO(I,J)/real(NDMONTH)
-          MRSOL_MO(I,J) = MRSOL_MO(I,J)/real(NDMONTH)
+        do J = 1, IGND
+          TBARACC_MO(I, J) = TBARACC_MO(I, J)/real(NDMONTH)
+          THLQACC_MO(I, J) = THLQACC_MO(I, J)/real(NDMONTH)
+          THICACC_MO(I, J) = THICACC_MO(I, J)/real(NDMONTH)
+          MRSOL_MO(I, J) = MRSOL_MO(I, J)/real(NDMONTH)
         end do
 
         FSSTAR_MO = FSINACC_MO(I) * (1. - ALTOTACC_MO(I))
@@ -1537,33 +1538,34 @@ contains
         ! rather than the first day of the next month.
         timeStamp = consecDays + monthend(imonth + 1) - 1
 
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_mo'     ,timeStamp,'hfss', [QH_MO])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_mo'     ,timeStamp,'hfls', [QE_MO])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [SNOACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I) - TFREZ])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'alsnoacc_mo',timeStamp,'albsn', [ALSNOACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:) - TFREZ])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'mrso_mo',timeStamp,'mrso', [MRSO_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'mrsol_mo',timeStamp,'mrsol', [MRSOL_MO(I,:)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_mo',timeStamp,'ftable', [FTABLE_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_max_mo',timeStamp,'ftablemax', [FTABLE_MAX_MO(I)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_min_mo',timeStamp,'ftablemin', [FTABLE_MIN_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'qh_mo'     ,timeStamp,'hfss', [QH_MO])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_mo'     ,timeStamp,'hfls', [QE_MO])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [SNOACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'evspsbl_mo',timeStamp,'evspsbl', [CANOPYEVAP(I)+GROUNDEVAP(I)+TRANSPACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
+        !call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_mo',timeStamp,'evap', [EVAPACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'alsnoacc_mo',timeStamp,'albsn', [ALSNOACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'mrso_mo',timeStamp,'mrso', [MRSO_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'mrsol_mo',timeStamp,'mrsol', [MRSOL_MO(I,:)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_mo',timeStamp,'ftable', [FTABLE_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_max_mo',timeStamp,'ftablemax', [FTABLE_MAX_MO(I)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_min_mo',timeStamp,'ftablemin', [FTABLE_MIN_MO(I)])
         ! tovere
 
         call resetclassmon(nltest)
@@ -1583,17 +1585,17 @@ contains
   !! The pointer to the annual data structures (in class_statevars) keeps the data between calls.
   !! @author J. Melton
 
-  subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,realyr,NCOUNT,NDAY, &
-                            nltest,nmtest,lastDOY)
+  subroutine class_annual_aw(lonLocalIndex, latLocalIndex, IDAY, realyr, NCOUNT, NDAY, &
+                             nltest, nmtest, lastDOY)
 
-    use class_statevars,     only : class_out,resetclassyr,class_rot
-    use classic_params, only : nmon, monthend, nmos, ignd,SBC,DELT
-    use outputManager, only : writeOutput1D,consecDays
+    use class_statevars, only : class_out, resetclassyr, class_rot
+    use classic_params, only : nmon, monthend, nmos, ignd, SBC, DELT
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: IDAY
     integer, intent(in) :: realyr
     integer, intent(in) :: NCOUNT
@@ -1646,7 +1648,7 @@ contains
     real, pointer, dimension(:) :: ALTOTACC_YR
 
     ! local
-    integer :: i,m,j
+    integer :: i, m, j
     real :: tovere
     real :: FSSTAR_YR
     real :: FLSTAR_YR
@@ -1708,33 +1710,33 @@ contains
     FTABLE_tmp  = 0.0
 
     i = 1 ! offline nlat is always 1 so this array position is always 1.
-    do M = 1,NMTEST
+    do M = 1, NMTEST
 
       ! These are presently not being outputted but the code is kept in place if the need arises.
-      !         ALVSACC_YR(I)=ALVSACC_YR(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
-      !         ALIRACC_YR(I)=ALIRACC_YR(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I)
+      !         ALVSACC_YR(I)=ALVSACC_YR(I)+ALVSROT(I, M)*FAREROT(I, M)*FSVHROW(I)
+      !         ALIRACC_YR(I)=ALIRACC_YR(I)+ALIRROT(I, M)*FAREROT(I, M)*FSIHROW(I)
 
-      FLUTACC_YR(I) = FLUTACC_YR(I) + SBC * GTROT(I,M) ** 4 * FAREROT(I,M)
-      FSINACC_YR(I) = FSINACC_YR(I) + FSSROW(I) * FAREROT(I,M)
-      FLINACC_YR(I) = FLINACC_YR(I) + FDLROW(I) * FAREROT(I,M)
-      HFSACC_YR(I) = HFSACC_YR(I) + HFSROT(I,M) * FAREROT(I,M)
-      QEVPACC_YR(I) = QEVPACC_YR(I) + QEVPROT(I,M) * FAREROT(I,M)
-      TAACC_YR(I) = TAACC_YR(I) + TAROW(I) * FAREROT(I,M)
-      ROFACC_YR(I) = ROFACC_YR(I) + ROFROT(I,M) * FAREROT(I,M) !*DELT UNITFIX
-      PREACC_YR(I) = PREACC_YR(I) + PREROW(I) * FAREROT(I,M) !*DELT UNITFIX
-      EVAPACC_YR(I) = EVAPACC_YR(I) + QFSROT(I,M) * FAREROT(I,M) !*DELT UNITFIX
-      ACTLYR_YR(I) = ACTLYR_YR(I) + ACTLYR(I,M) * FAREROT(I,M)
-      FTABLE_YR(I) = FTABLE_YR(I) + FTABLE(I,M) * FAREROT(I,M)
-      ACTLYR_TMP = ACTLYR_TMP + ACTLYR(I,M) * FAREROT(I,M)
-      FTABLE_TMP = FTABLE_TMP + FTABLE(I,M) * FAREROT(I,M)
+      FLUTACC_YR(I) = FLUTACC_YR(I) + SBC * GTROT(I, M) ** 4 * FAREROT(I, M)
+      FSINACC_YR(I) = FSINACC_YR(I) + FSSROW(I) * FAREROT(I, M)
+      FLINACC_YR(I) = FLINACC_YR(I) + FDLROW(I) * FAREROT(I, M)
+      HFSACC_YR(I) = HFSACC_YR(I) + HFSROT(I, M) * FAREROT(I, M)
+      QEVPACC_YR(I) = QEVPACC_YR(I) + QEVPROT(I, M) * FAREROT(I, M)
+      TAACC_YR(I) = TAACC_YR(I) + TAROW(I) * FAREROT(I, M)
+      ROFACC_YR(I) = ROFACC_YR(I) + ROFROT(I, M) * FAREROT(I, M) 
+      PREACC_YR(I) = PREACC_YR(I) + PREROW(I) * FAREROT(I, M) 
+      EVAPACC_YR(I) = EVAPACC_YR(I) + QFSROT(I, M) * FAREROT(I, M) 
+      ACTLYR_YR(I) = ACTLYR_YR(I) + ACTLYR(I, M) * FAREROT(I, M)
+      FTABLE_YR(I) = FTABLE_YR(I) + FTABLE(I, M) * FAREROT(I, M)
+      ACTLYR_TMP = ACTLYR_TMP + ACTLYR(I, M) * FAREROT(I, M)
+      FTABLE_TMP = FTABLE_TMP + FTABLE(I, M) * FAREROT(I, M)
 
-      do J = 1,IGND
-        TRANSPACC_YR(I) = TRANSPACC_YR(I) + QFCROT(I,M,J) * FAREROT(I,M) !*DELT UNITFIX
+      do J = 1, IGND
+        TRANSPACC_YR(I) = TRANSPACC_YR(I) + QFCROT(I, M, J) * FAREROT(I, M) 
       end do
 
       if (FSSROW(I) > 0.0) then
-        ALTOTACC_YR(I) = ALTOTACC_YR(I) + ((FSSROW(I) - (FSGVROT(I,M) + FSGSROT(I,M) + FSGGROT(I,M))) &
-                                        /FSSROW(I) ) * FAREROT(I,M)
+        ALTOTACC_YR(I) = ALTOTACC_YR(I) + ((FSSROW(I) - (FSGVROT(I, M) + FSGSROT(I, M) + FSGGROT(I, M))) &
+                         /FSSROW(I) ) * FAREROT(I, M)
         altotcntr_yr(i) = altotcntr_yr(i) + 1
       end if
 
@@ -1785,21 +1787,21 @@ contains
       ! Prepare the timestamp for this year
       timeStamp = consecDays
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_yr' ,timeStamp,'rss', [FSSTAR_YR])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_yr' ,timeStamp,'rls', [FLSTAR_YR])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_yr'     ,timeStamp,'hfss', [QH_YR])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_yr'     ,timeStamp,'hfls', [QE_YR])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rofacc_yr' ,timeStamp,'mrro', [ROFACC_YR(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_yr' ,timeStamp,'pr', [PREACC_YR(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_yr' ,timeStamp,'evspsbl', [EVAPACC_YR(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_yr' ,timeStamp,'tran', [TRANSPACC_YR(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_yr' ,timeStamp,'albs', [ALTOTACC_YR(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_yr' ,timeStamp,'actlyr', [actlyr_yr(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_yr' ,timeStamp,'ftable', [ftable_yr(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_yr' ,timeStamp,'actlyrmax', [actlyr_max_yr(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_max_yr' ,timeStamp,'ftablemax', [ftable_max_yr(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_yr' ,timeStamp,'actlyrmin', [actlyr_min_yr(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_min_yr' ,timeStamp,'ftablemin', [ftable_min_yr(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'fsstar_yr' ,timeStamp,'rss', [FSSTAR_YR])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'flstar_yr' ,timeStamp,'rls', [FLSTAR_YR])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'qh_yr'     ,timeStamp,'hfss', [QH_YR])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'qe_yr'     ,timeStamp,'hfls', [QE_YR])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rofacc_yr' ,timeStamp,'mrro', [ROFACC_YR(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'preacc_yr' ,timeStamp,'pr', [PREACC_YR(i)])
+      !call writeOutput1D(lonLocalIndex, latLocalIndex,'evapacc_yr' ,timeStamp,'evap', [EVAPACC_YR(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'transpacc_yr' ,timeStamp,'tran', [TRANSPACC_YR(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'altotacc_yr' ,timeStamp,'albs', [ALTOTACC_YR(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_yr' ,timeStamp,'actlyr', [actlyr_yr(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_yr' ,timeStamp,'ftable', [ftable_yr(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_max_yr' ,timeStamp,'actlyrmax', [actlyr_max_yr(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_max_yr' ,timeStamp,'ftablemax', [ftable_max_yr(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'actlyr_min_yr' ,timeStamp,'actlyrmin', [actlyr_min_yr(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ftable_min_yr' ,timeStamp,'ftablemin', [ftable_min_yr(i)])
 
       !> ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
       call resetclassyr(nltest)
@@ -1814,10 +1816,10 @@ contains
   !> \ingroup prepareOutputs_convertUnitsCTEM
   !! @{
   !> Do some unit conversions for CTEM (biogeochemical processes) so they are ready to be written out
-  subroutine convertUnitsCTEM(nltest,nmtest)
+  subroutine convertUnitsCTEM(nltest, nmtest)
 
-    use classic_params, only : icc,ignd,iccp1,wtCH4,convertkgC,iccp2
-    use ctem_statevars,     only :  vrot
+    use classic_params, only : icc, ignd, iccp1, wtCH4, convertkgC, iccp2
+    use ctem_statevars, only :  vrot
 
     implicit none
 
@@ -1855,7 +1857,7 @@ contains
     real, pointer, dimension(:,:) :: ch4soillsrow
     real, pointer, dimension(:,:,:) :: emit_co2row
 
-    integer :: i,m,j,k
+    integer :: i, m, j, k
 
     fcancmxrow        => vrot%fcancmx
     gppvegrow         => vrot%gppveg
@@ -1885,71 +1887,71 @@ contains
     emit_co2row       => vrot%emit_co2
 
     !> Some unit conversions:
-
+    !!
     !! We want to go from umol CO2/m2/s to kg C/m2/s so:
     !! umolCO2/m2/s * mol/10^6umol * mol C/ molCO2 * 12.01 g C / mol C * 1 kg/ 1000g = kgC/m2/s
     !! umolCO2/m2/s * 1.201E-8 = kgC/m2/s
     !! convertkgC = 1.201E-8
 
-    do i = 1,nltest
-      do m = 1 , nmtest
+    do i = 1, nltest
+      do m = 1, nmtest
 
-        nppmossrow(i,m) = nppmossrow(i,m) * convertkgC
-        armossrow(i,m) = armossrow(i,m) * convertkgC
+        nppmossrow(i, m) = nppmossrow(i, m) * convertkgC
+        armossrow(i, m) = armossrow(i, m) * convertkgC
 
-        do j = 1,icc
-          if (fcancmxrow(i,m,j) > 0.0) then
+        do j = 1, icc
+          if (fcancmxrow(i, m, j) > 0.0) then
 
-            gppvegrow(i,m,j) = gppvegrow(i,m,j) * convertkgC
-            nppvegrow(i,m,j) = nppvegrow(i,m,j) * convertkgC
-            nepvegrow(i,m,j) = nepvegrow(i,m,j) * convertkgC
-            nbpvegrow(i,m,j) = nbpvegrow(i,m,j) * convertkgC
-            hetroresvegrow(i,m,j) = hetroresvegrow(i,m,j) * convertkgC
-            autoresvegrow(i,m,j) = autoresvegrow(i,m,j) * convertkgC
+            gppvegrow(i, m, j) = gppvegrow(i, m, j) * convertkgC
+            nppvegrow(i, m, j) = nppvegrow(i, m, j) * convertkgC
+            nepvegrow(i, m, j) = nepvegrow(i, m, j) * convertkgC
+            nbpvegrow(i, m, j) = nbpvegrow(i, m, j) * convertkgC
+            hetroresvegrow(i, m, j) = hetroresvegrow(i, m, j) * convertkgC
+            autoresvegrow(i, m, j) = autoresvegrow(i, m, j) * convertkgC
             ! COMBAK PERLAY
-            litresvegrow(i,m,j) = litresvegrow(i,m,j) * convertkgC
-            soilcresvegrow(i,m,j) = soilcresvegrow(i,m,j) * convertkgC
+            litresvegrow(i, m, j) = litresvegrow(i, m, j) * convertkgC
+            soilcresvegrow(i, m, j) = soilcresvegrow(i, m, j) * convertkgC
             ! do k = 1, ignd
-            !   litresvegrow(i,m,j,k)=litresvegrow(i,m,j,k)*convertkgC
-            !   soilcresvegrow(i,m,j,k)=soilcresvegrow(i,m,j,k)*convertkgC
+            !   litresvegrow(i, m, j, k)=litresvegrow(i, m, j, k)*convertkgC
+            !   soilcresvegrow(i, m, j, k)=soilcresvegrow(i, m, j, k)*convertkgC
             ! end do
             ! COMBAK PERLAY
 
             ! emit_co2, like all fire gas fluxes is in kg {species} / m2 / s. So we need
             ! to convert from kg CO2/m2/s to kg C/m2/s. Since 1 g C = 0.083 mole CO2 = 3.664 g CO2
             ! kg CO2/m2/s * 1 g C/ 3.664 g CO2 = kg C /m2/s
-            emit_co2row(i,m,j) = emit_co2row(i,m,j) / 3.664
+            emit_co2row(i, m, j) = emit_co2row(i, m, j) / 3.664
 
           end if
         end do ! loop 30 ! icc
 
         !> Now for the bare fraction of the grid cell and the LUC products pool.
-        hetroresvegrow(i,m,iccp1) = hetroresvegrow(i,m,iccp1) * convertkgC
-        nepvegrow(i,m,iccp1) = nepvegrow(i,m,iccp1) * convertkgC
-        nbpvegrow(i,m,iccp1) = nbpvegrow(i,m,iccp1) * convertkgC
+        hetroresvegrow(i, m, iccp1) = hetroresvegrow(i, m, iccp1) * convertkgC
+        nepvegrow(i, m, iccp1) = nepvegrow(i, m, iccp1) * convertkgC
+        nbpvegrow(i, m, iccp1) = nbpvegrow(i, m, iccp1) * convertkgC
         ! COMBAK PERLAY
-        litresvegrow(i,m,iccp1:iccp2) = litresvegrow(i,m,iccp1:iccp2) * convertkgC
-        soilcresvegrow(i,m,iccp1:iccp2) = soilcresvegrow(i,m,iccp1:iccp2) * convertkgC
+        litresvegrow(i, m, iccp1:iccp2) = litresvegrow(i, m, iccp1:iccp2) * convertkgC
+        soilcresvegrow(i, m, iccp1:iccp2) = soilcresvegrow(i, m, iccp1:iccp2) * convertkgC
         ! do k = 1, ignd
-        !   litresvegrow(i,m,iccp1:iccp2,k)=litresvegrow(i,m,iccp1:iccp2,k)*convertkgC
-        !   soilcresvegrow(i,m,iccp1:iccp2,k)=soilcresvegrow(i,m,iccp1:iccp2,k)*convertkgC
+        !   litresvegrow(i, m, iccp1:iccp2, k)=litresvegrow(i, m, iccp1:iccp2, k)*convertkgC
+        !   soilcresvegrow(i, m, iccp1:iccp2, k)=soilcresvegrow(i, m, iccp1:iccp2, k)*convertkgC
         ! end do
         ! COMBAK PERLAY
-        npprow(i,m)     = npprow(i,m) * convertkgC
-        gpprow(i,m)     = gpprow(i,m) * convertkgC
-        neprow(i,m)     = neprow(i,m) * convertkgC
-        nbprow(i,m)     = nbprow(i,m) * convertkgC
-        lucemcomrow(i,m) = lucemcomrow(i,m) * convertkgC
-        lucltrinrow(i,m) = lucltrinrow(i,m) * convertkgC
-        lucsocinrow(i,m) = lucsocinrow(i,m) * convertkgC
-        hetroresrow(i,m) = hetroresrow(i,m) * convertkgC
-        autoresrow(i,m) = autoresrow(i,m) * convertkgC
-        litresrow(i,m)  = litresrow(i,m) * convertkgC
-        socresrow(i,m)  = socresrow(i,m) * convertkgC
+        npprow(i, m)     = npprow(i, m) * convertkgC
+        gpprow(i, m)     = gpprow(i, m) * convertkgC
+        neprow(i, m)     = neprow(i, m) * convertkgC
+        nbprow(i, m)     = nbprow(i, m) * convertkgC
+        lucemcomrow(i, m) = lucemcomrow(i, m) * convertkgC
+        lucltrinrow(i, m) = lucltrinrow(i, m) * convertkgC
+        lucsocinrow(i, m) = lucsocinrow(i, m) * convertkgC
+        hetroresrow(i, m) = hetroresrow(i, m) * convertkgC
+        autoresrow(i, m) = autoresrow(i, m) * convertkgC
+        litresrow(i, m)  = litresrow(i, m) * convertkgC
+        socresrow(i, m)  = socresrow(i, m) * convertkgC
 
-        ch4WetSpecrow(i,m) = ch4WetSpecrow(i,m) * convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-        ch4WetDynrow(i,m) = ch4WetDynrow(i,m) * convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
-        ch4soillsrow(i,m) = ch4soillsrow(i,m) * convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+        ch4WetSpecrow(i, m) = ch4WetSpecrow(i, m) * convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+        ch4WetDynrow(i, m) = ch4WetDynrow(i, m) * convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
+        ch4soillsrow(i, m) = ch4soillsrow(i, m) * convertkgC * wtCH4 / 12.01 ! convert from umolch4/m2/s to kg CH4/ m2 /s
 
       end do ! loop 20
     end do ! loop 10
@@ -1964,19 +1966,19 @@ contains
   !> Accumulate and write the daily biogeochemical outputs
   !! @author J. Melton
 
-  subroutine ctem_daily_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,ncount,nday,realyr,grclarea,ipeatlandrow)
+  subroutine ctem_daily_aw(lonLocalIndex, latLocalIndex, nltest, nmtest, iday, ncount, nday, realyr, grclarea, ipeatlandrow)
 
     ! J. Melton Feb 2016.
 
     use class_statevars, only : class_rot
-    use ctem_statevars,     only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
-    use classic_params, only : icc,ignd,nmos,iccp1,wtCH4,seed,convertkgC
-    use outputManager, only : writeOutput1D,consecDays
+    use ctem_statevars, only :  vrot, c_switch !,resetdaily, ctem_grd ctem_tile,
+    use classic_params, only : icc, ignd, nmos, iccp1, wtCH4, seed, convertkgC
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
@@ -2160,7 +2162,7 @@ contains
     real, allocatable, dimension(:,:) :: tltrroot_t !<
     real, allocatable, dimension(:,:) :: ailcg_t    !<
     real, allocatable, dimension(:,:) :: ailcb_t    !<
-    real, allocatable, dimension(:,:,:) :: rmatctem_t !< nlat,nmos,ignd
+    real, allocatable, dimension(:,:,:) :: rmatctem_t !< nlat, nmos, ignd
     real, allocatable, dimension(:,:) :: veghght_t  !<
     real, allocatable, dimension(:,:) :: rootdpth_t !<
     real, allocatable, dimension(:,:) :: roottemp_t !<
@@ -2183,7 +2185,7 @@ contains
     real, allocatable, dimension(:,:) :: emit_ch4_t !<
     real, allocatable, dimension(:,:) :: smfuncveg_t !<
 
-    integer :: i,m,j,nt,k
+    integer :: i, m, j, nt, k
     real :: barefrac
     real :: sumfare
     real, dimension(1) :: timeStamp
@@ -2294,30 +2296,30 @@ contains
     humiftrsrow       => vrot%humiftrs
 
     ! Allocate the grid average and tile average structures
-    allocate(gpp_g (nltest),npp_g (nltest),nbp_g (nltest),socres_g (nltest), &
-          autores_g (nltest),litres_g (nltest),dstcemls3_g (nltest),litrfall_g (nltest), &
-          rml_g (nltest),rms_g (nltest),rg_g (nltest),leaflitr_g (nltest),tltrstem_g (nltest), &
-          tltrroot_g (nltest),nep_g (nltest),hetrores_g (nltest),dstcemls_g (nltest), &
-          humiftrs_g (nltest),rmr_g (nltest),tltrleaf_g (nltest),gavgltms_g (nltest), &
-          vgbiomas_g (nltest),gavglai_g (nltest),gavgscms_g (nltest),gleafmas_g (nltest), &
-          bleafmas_g (nltest),stemmass_g (nltest),rootmass_g (nltest),litrmass_g (nltest), &
-          soilcmas_g (nltest),slai_g (nltest),ailcg_g (nltest),ailcb_g (nltest),veghght_g (nltest), &
-          rootdpth_g (nltest),roottemp_g (nltest),totcmass_g (nltest),tcanoacc_out_g (nltest), &
-          burnfrac_g (nltest),smfuncveg_g (nltest),lucemcom_g (nltest),lucltrin_g (nltest),lucsocin_g (nltest), &
-          emit_co2_g (nltest),emit_ch4_g (nltest),ch4WetSpec_g (nltest),wetfdyn_g (nltest),ch4WetDyn_g (nltest), &
-          ch4soills_g (nltest),afrleaf_g (nltest,icc),afrstem_g (nltest,icc), &
-          afrroot_g (nltest,icc),lfstatus_g (nltest,icc),rmlvegrow_g (nltest,icc),anvegrow_g(nltest,icc), &
-          rmatctem_g (nltest,ignd) )
+    allocate(gpp_g (nltest), npp_g (nltest), nbp_g (nltest), socres_g (nltest), &
+          autores_g (nltest), litres_g (nltest), dstcemls3_g (nltest), litrfall_g (nltest), &
+          rml_g (nltest), rms_g (nltest), rg_g (nltest), leaflitr_g (nltest), tltrstem_g (nltest), &
+          tltrroot_g (nltest), nep_g (nltest), hetrores_g (nltest), dstcemls_g (nltest), &
+          humiftrs_g (nltest), rmr_g (nltest), tltrleaf_g (nltest), gavgltms_g (nltest), &
+          vgbiomas_g (nltest), gavglai_g (nltest), gavgscms_g (nltest), gleafmas_g (nltest), &
+          bleafmas_g (nltest), stemmass_g (nltest), rootmass_g (nltest), litrmass_g (nltest), &
+          soilcmas_g (nltest), slai_g (nltest), ailcg_g (nltest), ailcb_g (nltest), veghght_g (nltest), &
+          rootdpth_g (nltest), roottemp_g (nltest), totcmass_g (nltest), tcanoacc_out_g (nltest), &
+          burnfrac_g (nltest), smfuncveg_g (nltest), lucemcom_g (nltest), lucltrin_g (nltest), lucsocin_g (nltest), &
+          emit_co2_g (nltest), emit_ch4_g (nltest), ch4WetSpec_g (nltest), wetfdyn_g (nltest), ch4WetDyn_g (nltest), &
+          ch4soills_g (nltest), afrleaf_g (nltest, icc), afrstem_g (nltest, icc), &
+          afrroot_g (nltest, icc), lfstatus_g (nltest, icc), rmlvegrow_g (nltest, icc), anvegrow_g(nltest, icc), &
+          rmatctem_g (nltest, ignd) )
 
-    allocate(leaflitr_t (nltest,nmtest),tltrleaf_t (nltest,nmtest),tltrstem_t (nltest,nmtest),tltrroot_t (nltest,nmtest), &
-          ailcg_t (nltest,nmtest),ailcb_t (nltest,nmtest),rmatctem_t (nltest,nmtest,ignd),veghght_t (nltest,nmtest), &
-          rootdpth_t (nltest,nmtest),roottemp_t (nltest,nmtest),slai_t (nltest,nmtest),afrroot_t (nltest,nmtest), &
-          afrleaf_t (nltest,nmtest),afrstem_t (nltest,nmtest),laimaxg_t (nltest,nmtest),stemmass_t (nltest,nmtest), &
-          rootmass_t (nltest,nmtest),gleafmas_t (nltest,nmtest),bleafmas_t(nltest,nmtest), &
-          emit_co2_t (nltest,nmtest),emit_ch4_t (nltest,nmtest),smfuncveg_t (nltest,nmtest), &
+    allocate(leaflitr_t (nltest, nmtest), tltrleaf_t (nltest, nmtest), tltrstem_t (nltest, nmtest), tltrroot_t (nltest, nmtest), &
+          ailcg_t (nltest, nmtest), ailcb_t (nltest, nmtest), rmatctem_t (nltest, nmtest, ignd), veghght_t (nltest, nmtest), &
+          rootdpth_t (nltest, nmtest), roottemp_t (nltest, nmtest), slai_t (nltest, nmtest), afrroot_t (nltest, nmtest), &
+          afrleaf_t (nltest, nmtest), afrstem_t (nltest, nmtest), laimaxg_t (nltest, nmtest), stemmass_t (nltest, nmtest), &
+          rootmass_t (nltest, nmtest), gleafmas_t (nltest, nmtest), bleafmas_t(nltest, nmtest), &
+          emit_co2_t (nltest, nmtest), emit_ch4_t (nltest, nmtest), smfuncveg_t (nltest, nmtest), &
           ! COMBAK PERLAY
-          soilcmas_t (nltest,nmtest),litrmass_t (nltest,nmtest) )
-    ! soilcmas_t (nltest,nmtest,ignd),litrmass_t (nltest,nmtest,ignd) )
+          soilcmas_t (nltest, nmtest), litrmass_t (nltest, nmtest) )
+    ! soilcmas_t (nltest, nmtest, ignd), litrmass_t (nltest, nmtest, ignd) )
     ! COMBAK PERLAY
 
 
@@ -2349,115 +2351,115 @@ contains
     ! COMBAK PERLAY
 
     !> Aggregate to the tile avg vars:
-    do i = 1,nltest
-      do m = 1,nmtest
+    do i = 1, nltest
+      do m = 1, nmtest
         barefrac = 1.0
-        do j = 1,icc
-          barefrac = barefrac - fcancmxrow(i,m,j)
-          leaflitr_t(i,m) = leaflitr_t(i,m) + leaflitrrow(i,m,j) * fcancmxrow(i,m,j)
-          tltrleaf_t(i,m) = tltrleaf_t(i,m) + tltrleafrow(i,m,j) * fcancmxrow(i,m,j)
-          tltrstem_t(i,m) = tltrstem_t(i,m) + tltrstemrow(i,m,j) * fcancmxrow(i,m,j)
-          tltrroot_t(i,m) = tltrroot_t(i,m) + tltrrootrow(i,m,j) * fcancmxrow(i,m,j)
-          veghght_t(i,m) = veghght_t(i,m) + veghghtrow(i,m,j) * fcancmxrow(i,m,j)
-          rootdpth_t(i,m) = rootdpth_t(i,m) + rootdpthrow(i,m,j) * fcancmxrow(i,m,j)
-          roottemp_t(i,m) = roottemp_t(i,m) + roottemprow(i,m,j) * fcancmxrow(i,m,j)
-          slai_t(i,m) = slai_t(i,m) + slairow(i,m,j) * fcancmxrow(i,m,j)
-          afrleaf_t(i,m) = afrleaf_t(i,m) + afrleafrow(i,m,j) * fcancmxrow(i,m,j)
-          afrstem_t(i,m) = afrstem_t(i,m) + afrstemrow(i,m,j) * fcancmxrow(i,m,j)
-          afrroot_t(i,m) = afrroot_t(i,m) + afrrootrow(i,m,j) * fcancmxrow(i,m,j)
-          ailcg_t(i,m) = ailcg_t(i,m) + ailcgrow(i,m,j) * fcancmxrow(i,m,j)
-          ailcb_t(i,m) = ailcb_t(i,m) + ailcbrow(i,m,j) * fcancmxrow(i,m,j)
-          gleafmas_t(i,m) = gleafmas_t(i,m) + gleafmasrow(i,m,j) * fcancmxrow(i,m,j)
-          bleafmas_t(i,m) = bleafmas_t(i,m) + bleafmasrow(i,m,j) * fcancmxrow(i,m,j)
-          stemmass_t(i,m) = stemmass_t(i,m) + stemmassrow(i,m,j) * fcancmxrow(i,m,j)
-          rootmass_t(i,m) = rootmass_t(i,m) + rootmassrow(i,m,j) * fcancmxrow(i,m,j)
-          emit_co2_t(i,m) = emit_co2_t(i,m) + emit_co2row(i,m,j) * fcancmxrow(i,m,j)
-          emit_ch4_t(i,m) = emit_ch4_t(i,m) + emit_ch4row(i,m,j) * fcancmxrow(i,m,j)
-          smfuncveg_t(i,m) = smfuncveg_t(i,m) + smfuncvegrow(i,m,j) * fcancmxrow(i,m,j)
+        do j = 1, icc
+          barefrac = barefrac - fcancmxrow(i, m, j)
+          leaflitr_t(i, m) = leaflitr_t(i, m) + leaflitrrow(i, m, j) * fcancmxrow(i, m, j)
+          tltrleaf_t(i, m) = tltrleaf_t(i, m) + tltrleafrow(i, m, j) * fcancmxrow(i, m, j)
+          tltrstem_t(i, m) = tltrstem_t(i, m) + tltrstemrow(i, m, j) * fcancmxrow(i, m, j)
+          tltrroot_t(i, m) = tltrroot_t(i, m) + tltrrootrow(i, m, j) * fcancmxrow(i, m, j)
+          veghght_t(i, m) = veghght_t(i, m) + veghghtrow(i, m, j) * fcancmxrow(i, m, j)
+          rootdpth_t(i, m) = rootdpth_t(i, m) + rootdpthrow(i, m, j) * fcancmxrow(i, m, j)
+          roottemp_t(i, m) = roottemp_t(i, m) + roottemprow(i, m, j) * fcancmxrow(i, m, j)
+          slai_t(i, m) = slai_t(i, m) + slairow(i, m, j) * fcancmxrow(i, m, j)
+          afrleaf_t(i, m) = afrleaf_t(i, m) + afrleafrow(i, m, j) * fcancmxrow(i, m, j)
+          afrstem_t(i, m) = afrstem_t(i, m) + afrstemrow(i, m, j) * fcancmxrow(i, m, j)
+          afrroot_t(i, m) = afrroot_t(i, m) + afrrootrow(i, m, j) * fcancmxrow(i, m, j)
+          ailcg_t(i, m) = ailcg_t(i, m) + ailcgrow(i, m, j) * fcancmxrow(i, m, j)
+          ailcb_t(i, m) = ailcb_t(i, m) + ailcbrow(i, m, j) * fcancmxrow(i, m, j)
+          gleafmas_t(i, m) = gleafmas_t(i, m) + gleafmasrow(i, m, j) * fcancmxrow(i, m, j)
+          bleafmas_t(i, m) = bleafmas_t(i, m) + bleafmasrow(i, m, j) * fcancmxrow(i, m, j)
+          stemmass_t(i, m) = stemmass_t(i, m) + stemmassrow(i, m, j) * fcancmxrow(i, m, j)
+          rootmass_t(i, m) = rootmass_t(i, m) + rootmassrow(i, m, j) * fcancmxrow(i, m, j)
+          emit_co2_t(i, m) = emit_co2_t(i, m) + emit_co2row(i, m, j) * fcancmxrow(i, m, j)
+          emit_ch4_t(i, m) = emit_ch4_t(i, m) + emit_ch4row(i, m, j) * fcancmxrow(i, m, j)
+          smfuncveg_t(i, m) = smfuncveg_t(i, m) + smfuncvegrow(i, m, j) * fcancmxrow(i, m, j)
 
-          do k = 1,ignd
-            rmatctem_t(i,m,k) = rmatctem_t(i,m,k) + rmatctemrow(i,m,j,k) * fcancmxrow(i,m,j)
+          do k = 1, ignd
+            rmatctem_t(i, m, k) = rmatctem_t(i, m, k) + rmatctemrow(i, m, j, k) * fcancmxrow(i, m, j)
             ! COMBAK PERLAY
-            litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,j) * fcancmxrow(i,m,j)
-            soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,j) * fcancmxrow(i,m,j)
-            ! litrmass_t(i,m,k) = litrmass_t(i,m,k) + litrmassrow(i,m,j,k)*fcancmxrow(i,m,j)
-            ! soilcmas_t(i,m,k) = soilcmas_t(i,m,k) + soilcmasrow(i,m,j,k)*fcancmxrow(i,m,j)
+            litrmass_t(i, m) = litrmass_t(i, m) + litrmassrow(i, m, j) * fcancmxrow(i, m, j)
+            soilcmas_t(i, m) = soilcmas_t(i, m) + soilcmasrow(i, m, j) * fcancmxrow(i, m, j)
+            ! litrmass_t(i, m, k) = litrmass_t(i, m, k) + litrmassrow(i, m, j, k)*fcancmxrow(i, m, j)
+            ! soilcmas_t(i, m, k) = soilcmas_t(i, m, k) + soilcmasrow(i, m, j, k)*fcancmxrow(i, m, j)
             ! COMBAK PERLAY
           end do
         end do ! icc
 
         !> Do the bare ground also:
         ! COMBAK PERLAY
-        litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,iccp1) * barefrac
-        soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,iccp1) * barefrac
+        litrmass_t(i, m) = litrmass_t(i, m) + litrmassrow(i, m, iccp1) * barefrac
+        soilcmas_t(i, m) = soilcmas_t(i, m) + soilcmasrow(i, m, iccp1) * barefrac
         ! do k = 1, ignd
-        !   litrmass_t(i,m,k) = litrmass_t(i,m,k) + litrmassrow(i,m,iccp1,k)*barefrac
-        !   soilcmas_t(i,m,k) = soilcmas_t(i,m,k) + soilcmasrow(i,m,iccp1,k)*barefrac
+        !   litrmass_t(i, m, k) = litrmass_t(i, m, k) + litrmassrow(i, m, iccp1, k)*barefrac
+        !   soilcmas_t(i, m, k) = soilcmas_t(i, m, k) + soilcmasrow(i, m, iccp1, k)*barefrac
         ! end do
         ! COMBAK PERLAY
         !> Calculation of grid averaged variables
 
-        gpp_g(i) = gpp_g(i) + gpprow(i,m) * FAREROT(i,m)
-        npp_g(i) = npp_g(i) + npprow(i,m) * FAREROT(i,m)
-        nep_g(i) = nep_g(i) + neprow(i,m) * FAREROT(i,m)
+        gpp_g(i) = gpp_g(i) + gpprow(i, m) * FAREROT(i, m)
+        npp_g(i) = npp_g(i) + npprow(i, m) * FAREROT(i, m)
+        nep_g(i) = nep_g(i) + neprow(i, m) * FAREROT(i, m)
         ! NOTE: This NBP will include LUC product pool contributions
         ! since it is the nbprow varialbe. nbpveg variable does not
         ! include LUC contributions since they exist at the tile level
         ! not at the PFT level.
-        nbp_g(i) = nbp_g(i) + nbprow(i,m) * FAREROT(i,m)
-        autores_g(i) = autores_g(i) + autoresrow(i,m) * FAREROT(i,m)
-        hetrores_g(i) = hetrores_g(i) + hetroresrow(i,m) * FAREROT(i,m)
-        litres_g(i) = litres_g(i) + litresrow(i,m) * FAREROT(i,m)
-        socres_g(i) = socres_g(i) + socresrow(i,m) * FAREROT(i,m)
-        dstcemls_g(i) = dstcemls_g(i) + dstcemlsrow(i,m) * FAREROT(i,m)
-        dstcemls3_g(i) = dstcemls3_g(i) + dstcemls3row(i,m) * FAREROT(i,m)
-        litrfall_g(i) = litrfall_g(i) + litrfallrow(i,m) * FAREROT(i,m)
-        humiftrs_g(i) = humiftrs_g(i) + humiftrsrow(i,m) * FAREROT(i,m)
-        rml_g(i) = rml_g(i) + rmlrow(i,m) * FAREROT(i,m)
-        rms_g(i) = rms_g(i) + rmsrow(i,m) * FAREROT(i,m)
-        rmr_g(i) = rmr_g(i) + rmrrow(i,m) * FAREROT(i,m)
-        rg_g(i) = rg_g(i) + rgrow(i,m) * FAREROT(i,m)
-        leaflitr_g(i) = leaflitr_g(i) + leaflitr_t(i,m) * FAREROT(i,m)
-        tltrleaf_g(i) = tltrleaf_g(i) + tltrleaf_t(i,m) * FAREROT(i,m)
-        tltrstem_g(i) = tltrstem_g(i) + tltrstem_t(i,m) * FAREROT(i,m)
-        tltrroot_g(i) = tltrroot_g(i) + tltrroot_t(i,m) * FAREROT(i,m)
-        slai_g(i) = slai_g(i) + slai_t(i,m) * FAREROT(i,m)
-        ailcg_g(i) = ailcg_g(i) + ailcg_t(i,m) * FAREROT(i,m)
-        ailcb_g(i) = ailcb_g(i) + ailcb_t(i,m) * FAREROT(i,m)
-        vgbiomas_g(i) = vgbiomas_g(i) + vgbiomasrow(i,m) * FAREROT(i,m)
-        veghght_g(i) = veghght_g(i) + veghght_t(i,m) * FAREROT(i,m)
-        gavglai_g(i) = gavglai_g(i) + gavglairow(i,m) * FAREROT(i,m)
-        gavgltms_g(i) = gavgltms_g(i) + gavgltmsrow(i,m) * FAREROT(i,m)
-        gavgscms_g(i) = gavgscms_g(i) + gavgscmsrow(i,m) * FAREROT(i,m)
+        nbp_g(i) = nbp_g(i) + nbprow(i, m) * FAREROT(i, m)
+        autores_g(i) = autores_g(i) + autoresrow(i, m) * FAREROT(i, m)
+        hetrores_g(i) = hetrores_g(i) + hetroresrow(i, m) * FAREROT(i, m)
+        litres_g(i) = litres_g(i) + litresrow(i, m) * FAREROT(i, m)
+        socres_g(i) = socres_g(i) + socresrow(i, m) * FAREROT(i, m)
+        dstcemls_g(i) = dstcemls_g(i) + dstcemlsrow(i, m) * FAREROT(i, m)
+        dstcemls3_g(i) = dstcemls3_g(i) + dstcemls3row(i, m) * FAREROT(i, m)
+        litrfall_g(i) = litrfall_g(i) + litrfallrow(i, m) * FAREROT(i, m)
+        humiftrs_g(i) = humiftrs_g(i) + humiftrsrow(i, m) * FAREROT(i, m)
+        rml_g(i) = rml_g(i) + rmlrow(i, m) * FAREROT(i, m)
+        rms_g(i) = rms_g(i) + rmsrow(i, m) * FAREROT(i, m)
+        rmr_g(i) = rmr_g(i) + rmrrow(i, m) * FAREROT(i, m)
+        rg_g(i) = rg_g(i) + rgrow(i, m) * FAREROT(i, m)
+        leaflitr_g(i) = leaflitr_g(i) + leaflitr_t(i, m) * FAREROT(i, m)
+        tltrleaf_g(i) = tltrleaf_g(i) + tltrleaf_t(i, m) * FAREROT(i, m)
+        tltrstem_g(i) = tltrstem_g(i) + tltrstem_t(i, m) * FAREROT(i, m)
+        tltrroot_g(i) = tltrroot_g(i) + tltrroot_t(i, m) * FAREROT(i, m)
+        slai_g(i) = slai_g(i) + slai_t(i, m) * FAREROT(i, m)
+        ailcg_g(i) = ailcg_g(i) + ailcg_t(i, m) * FAREROT(i, m)
+        ailcb_g(i) = ailcb_g(i) + ailcb_t(i, m) * FAREROT(i, m)
+        vgbiomas_g(i) = vgbiomas_g(i) + vgbiomasrow(i, m) * FAREROT(i, m)
+        veghght_g(i) = veghght_g(i) + veghght_t(i, m) * FAREROT(i, m)
+        gavglai_g(i) = gavglai_g(i) + gavglairow(i, m) * FAREROT(i, m)
+        gavgltms_g(i) = gavgltms_g(i) + gavgltmsrow(i, m) * FAREROT(i, m)
+        gavgscms_g(i) = gavgscms_g(i) + gavgscmsrow(i, m) * FAREROT(i, m)
         totcmass_g(i) = vgbiomas_g(i) + gavgltms_g(i) + gavgscms_g(i)
-        gleafmas_g(i) = gleafmas_g(i) + gleafmas_t(i,m) * FAREROT(i,m)
-        bleafmas_g(i) = bleafmas_g(i) + bleafmas_t(i,m) * FAREROT(i,m)
-        stemmass_g(i) = stemmass_g(i) + stemmass_t(i,m) * FAREROT(i,m)
-        rootmass_g(i) = rootmass_g(i) + rootmass_t(i,m) * FAREROT(i,m)
-        rootdpth_g(i) = rootdpth_g(i) + rootdpth_t(i,m) * FAREROT(i,m)
-        roottemp_g(i) = roottemp_g(i) + roottemp_t(i,m) * FAREROT(i,m)
-        burnfrac_g(i) = burnfrac_g(i) + burnfracrow(i,m) * FAREROT(i,m)
-        smfuncveg_g(i) = smfuncveg_g(i) + smfuncveg_t(i,m) * FAREROT(i,m)
-        lucemcom_g(i) = lucemcom_g(i) + lucemcomrow(i,m) * FAREROT(i,m)
-        lucltrin_g(i) = lucltrin_g(i) + lucltrinrow(i,m) * FAREROT(i,m)
-        lucsocin_g(i) = lucsocin_g(i) + lucsocinrow(i,m) * FAREROT(i,m)
-        ch4WetSpec_g(i) = ch4WetSpec_g(i) + ch4WetSpecrow(i,m) * farerot(i,m)
-        wetfdyn_g(i) = wetfdyn_g(i) + wetfdynrow(i,m) * farerot(i,m)
-        ch4WetDyn_g(i) = ch4WetDyn_g(i) + ch4WetDynrow(i,m) * farerot(i,m)
-        ch4soills_g(i) = ch4soills_g(i) + ch4soillsrow(i,m) * farerot(i,m)
-        emit_co2_g(i) = emit_co2_g(i) + emit_co2_t(i,m) * FAREROT(i,m)
-        emit_ch4_g(i) = emit_ch4_g(i) + emit_ch4_t(i,m) * FAREROT(i,m)
-        ! nppmoss_g(i)  = nppmoss_g(i) +nppmossrow(i,m)*FAREROT(i,m)
-        ! armoss_g(i)   = armoss_g(i) + armossrow(i,m)*FAREROT(i,m)
+        gleafmas_g(i) = gleafmas_g(i) + gleafmas_t(i, m) * FAREROT(i, m)
+        bleafmas_g(i) = bleafmas_g(i) + bleafmas_t(i, m) * FAREROT(i, m)
+        stemmass_g(i) = stemmass_g(i) + stemmass_t(i, m) * FAREROT(i, m)
+        rootmass_g(i) = rootmass_g(i) + rootmass_t(i, m) * FAREROT(i, m)
+        rootdpth_g(i) = rootdpth_g(i) + rootdpth_t(i, m) * FAREROT(i, m)
+        roottemp_g(i) = roottemp_g(i) + roottemp_t(i, m) * FAREROT(i, m)
+        burnfrac_g(i) = burnfrac_g(i) + burnfracrow(i, m) * FAREROT(i, m)
+        smfuncveg_g(i) = smfuncveg_g(i) + smfuncveg_t(i, m) * FAREROT(i, m)
+        lucemcom_g(i) = lucemcom_g(i) + lucemcomrow(i, m) * FAREROT(i, m)
+        lucltrin_g(i) = lucltrin_g(i) + lucltrinrow(i, m) * FAREROT(i, m)
+        lucsocin_g(i) = lucsocin_g(i) + lucsocinrow(i, m) * FAREROT(i, m)
+        ch4WetSpec_g(i) = ch4WetSpec_g(i) + ch4WetSpecrow(i, m) * farerot(i, m)
+        wetfdyn_g(i) = wetfdyn_g(i) + wetfdynrow(i, m) * farerot(i, m)
+        ch4WetDyn_g(i) = ch4WetDyn_g(i) + ch4WetDynrow(i, m) * farerot(i, m)
+        ch4soills_g(i) = ch4soills_g(i) + ch4soillsrow(i, m) * farerot(i, m)
+        emit_co2_g(i) = emit_co2_g(i) + emit_co2_t(i, m) * FAREROT(i, m)
+        emit_ch4_g(i) = emit_ch4_g(i) + emit_ch4_t(i, m) * FAREROT(i, m)
+        ! nppmoss_g(i)  = nppmoss_g(i) +nppmossrow(i, m)*FAREROT(i, m)
+        ! armoss_g(i)   = armoss_g(i) + armossrow(i, m)*FAREROT(i, m)
 
-        do k = 1,ignd
-          rmatctem_g(i,k) = rmatctem_g(i,k) + rmatctem_t(i,m,k) * FAREROT(i,m)
+        do k = 1, ignd
+          rmatctem_g(i, k) = rmatctem_g(i, k) + rmatctem_t(i, m, k) * FAREROT(i, m)
           ! FLAG not putting as per layer yet since it is not presently written out.
           ! COMBAK PERLAY
-          litrmass_g(i) = litrmass_g(i) + litrmass_t(i,m) * FAREROT(i,m)
-          soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i,m) * FAREROT(i,m)
-          ! litrmass_g(i) = litrmass_g(i) + litrmass_t(i,m,k) * FAREROT(i,m)
-          ! soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i,m,k) * FAREROT(i,m)
+          litrmass_g(i) = litrmass_g(i) + litrmass_t(i, m) * FAREROT(i, m)
+          soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i, m) * FAREROT(i, m)
+          ! litrmass_g(i) = litrmass_g(i) + litrmass_t(i, m, k) * FAREROT(i, m)
+          ! soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i, m, k) * FAREROT(i, m)
           ! COMBAK PERLAY
         end do
       end do ! loop 70 ! nmtest
@@ -2470,18 +2472,18 @@ contains
 
     !> Write grid average values
 
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_d_g' ,timeStamp,'gpp', [gpp_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_d_g' ,timeStamp,'npp', [npp_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_d_g' ,timeStamp,'nep', [nep_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_d_g' ,timeStamp,'nbp', [nbp_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_d_g' ,timeStamp,'ra', [autores_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_d_g' ,timeStamp,'rh', [hetrores_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_d_g' ,timeStamp,'gpp', [gpp_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_d_g' ,timeStamp,'npp', [npp_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_d_g' ,timeStamp,'nep', [nep_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_d_g' ,timeStamp,'nbp', [nbp_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_d_g' ,timeStamp,'ra', [autores_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_d_g' ,timeStamp,'rh', [hetrores_g(i)])
     if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) then
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_d_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetSpec_d_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_g(i)])
     end if
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_d_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_d_g' ,timeStamp,'soilCH4cons',[ch4soills_g(i)])
-    call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_d_g' ,timeStamp,'fFireCH4',[emit_ch4_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetDyn_d_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4soills_d_g' ,timeStamp,'soilCH4cons',[ch4soills_g(i)])
+    call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_d_g' ,timeStamp,'fFireCH4',[emit_ch4_g(i)])
     ! litres_g(i),
     ! socres_g(i), &
     !         (dstcemls_g(i)+dstcemls3_g(i)), &
@@ -2491,88 +2493,88 @@ contains
     if (doperpftoutput) then
 
       !                     !> File: .CT01D
-      !                     write(72,8200)iday,realyr,gppvegrow(i,m,j),nppvegrow(i,m,j), &
-      !                     nepvegrow(i,m,j),nbpvegrow(i,m,j),autoresvegrow(i,m,j), &
-      !                     hetroresvegrow(i,m,j),litresvegrow(i,m,j),soilcresvegrow(i,m,j), &
-      !                     (dstcemlsrow(i,m)+dstcemls3row(i,m)), &   ! FLAG at present dstcemls are only per tile values
-      !                     litrfallrow(i,m),humiftrsrow(i,m), & ! same with litrfall and humiftrs.
-      !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+      !                     write(72, 8200)iday, realyr, gppvegrow(i, m, j), nppvegrow(i, m, j), &
+      !                     nepvegrow(i, m, j), nbpvegrow(i, m, j), autoresvegrow(i, m, j), &
+      !                     hetroresvegrow(i, m, j), litresvegrow(i, m, j), soilcresvegrow(i, m, j), &
+      !                     (dstcemlsrow(i, m)+dstcemls3row(i, m)), &   ! FLAG at present dstcemls are only per tile values
+      !                     litrfallrow(i, m), humiftrsrow(i, m), & ! same with litrfall and humiftrs.
+      !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i, m, j)
       !                 !> File: .CT01D
-      !                 write(72,8200)iday,realyr,0.0,0.0, &
-      !                 nepvegrow(i,m,iccp1),nbpvegrow(i,m,iccp1),0.0, &
-      !                 hetroresvegrow(i,m,iccp1),litresvegrow(i,m,iccp1),soilcresvegrow(i,m,iccp1), &
-      !                 (dstcemlsrow(i,m)+dstcemls3row(i,m)), &   ! FLAG at present dstcemls are only per tile values
-      !                 litrfallrow(i,m),humiftrsrow(i,m), & ! same with litrfall and humiftrs.
+      !                 write(72, 8200)iday, realyr, 0.0, 0.0, &
+      !                 nepvegrow(i, m, iccp1), nbpvegrow(i, m, iccp1), 0.0, &
+      !                 hetroresvegrow(i, m, iccp1), litresvegrow(i, m, iccp1), soilcresvegrow(i, m, iccp1), &
+      !                 (dstcemlsrow(i, m)+dstcemls3row(i, m)), &   ! FLAG at present dstcemls are only per tile values
+      !                 litrfallrow(i, m), humiftrsrow(i, m), & ! same with litrfall and humiftrs.
       !                 ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
 
     end if
 
     if (dopertileoutput) then
       !                 !> File: .CT01D
-      !                 write(72,8200)iday,realyr,gpprow(i,m),npprow(i,m), &
-      !                 neprow(i,m),nbprow(i,m),autoresrow(i,m), &
-      !                 hetroresrow(i,m),litresrow(i,m),socresrow(i,m), &
-      !                 (dstcemlsrow(i,m)+dstcemls3row(i,m)), &
-      !                 litrfallrow(i,m),humiftrsrow(i,m), &
-      !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+      !                 write(72, 8200)iday, realyr, gpprow(i, m), npprow(i, m), &
+      !                 neprow(i, m), nbprow(i, m), autoresrow(i, m), &
+      !                 hetroresrow(i, m), litresrow(i, m), socresrow(i, m), &
+      !                 (dstcemlsrow(i, m)+dstcemls3row(i, m)), &
+      !                 litrfallrow(i, m), humiftrsrow(i, m), &
+      !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i, m)
 
     end if
 
 
-    !     do i=1,nltest
-    !         do m=1,nmtest
+    !     do i=1, nltest
+    !         do m=1, nmtest
     !
     !             barefrac = 1.0
     !
     !             !> First the per PFT values to file .CT01D
-    !             do j=1,icc
+    !             do j=1, icc
     !
-    !                 ! call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
-    !                 if (fcancmxrow(i,m,j) > seed) then
+    !                 ! call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
+    !                 if (fcancmxrow(i, m, j) > seed) then
     !
-    !                     barefrac = barefrac - fcancmxrow(i,m,j)
+    !                     barefrac = barefrac - fcancmxrow(i, m, j)
     !
     !
     !                     !> File .CT02D
-    !                     write(73,8300)iday,realyr,rmlvegaccrow(i,m,j), &
-    !                     rmsvegrow(i,m,j),rmrvegrow(i,m,j),rgvegrow(i,m,j), &
-    !                     leaflitrrow(i,m,j),tltrleafrow(i,m,j), &
-    !                     tltrstemrow(i,m,j),tltrrootrow(i,m,j), &
-    !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+    !                     write(73, 8300)iday, realyr, rmlvegaccrow(i, m, j), &
+    !                     rmsvegrow(i, m, j), rmrvegrow(i, m, j), rgvegrow(i, m, j), &
+    !                     leaflitrrow(i, m, j), tltrleafrow(i, m, j), &
+    !                     tltrstemrow(i, m, j), tltrrootrow(i, m, j), &
+    !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i, m, j)
     !
     !                     !> File *.CT03D
-    !                     write(74,8401)iday,realyr,vgbiomas_vegrow(i,m,j), &
-    !                     ailcgrow(i,m,j),gleafmasrow(i,m,j), &
-    !                     bleafmasrow(i,m,j), stemmassrow(i,m,j), &
-    !                     rootmassrow(i,m,j), litrmassrow(i,m,j),  &
-    !                     soilcmasrow(i,m,j), &
-    !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+    !                     write(74, 8401)iday, realyr, vgbiomas_vegrow(i, m, j), &
+    !                     ailcgrow(i, m, j), gleafmasrow(i, m, j), &
+    !                     bleafmasrow(i, m, j), stemmassrow(i, m, j), &
+    !                     rootmassrow(i, m, j), litrmassrow(i, m, j),  &
+    !                     soilcmasrow(i, m, j), &
+    !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i, m, j)
     !
     !                     !> File .CT04D
-    !                     write(75,8500)iday,realyr, ailcgrow(i,m,j),  &
-    !                     ailcbrow(i,m,j),(rmatctemrow(i,m,j,k),k=1,3), &
-    !                     veghghtrow(i,m,j),rootdpthrow(i,m,j), &
-    !                     roottemprow(i,m,j),slairow(i,m,j), &
-    !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+    !                     write(75, 8500)iday, realyr, ailcgrow(i, m, j),  &
+    !                     ailcbrow(i, m, j),(rmatctemrow(i, m, j, k), k=1, 3), &
+    !                     veghghtrow(i, m, j), rootdpthrow(i, m, j), &
+    !                     roottemprow(i, m, j), slairow(i, m, j), &
+    !                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i, m, j)
     !
     !                     ! File .CT05D
-    !                     ! write(76,8600)iday,realyr, afrleafrow(i,m,j),  &
-    !                     ! afrstemrow(i,m,j),afrrootrow(i,m,j),  &
-    !                     !, lfstatusrow(i,m,j), &
-    !                     !' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+    !                     ! write(76, 8600)iday, realyr, afrleafrow(i, m, j),  &
+    !                     ! afrstemrow(i, m, j), afrrootrow(i, m, j),  &
+    !                     !, lfstatusrow(i, m, j), &
+    !                     !' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i, m, j)
     !
     !                     !> File *.CT06D
     !                     if (dofire .or. lnduseon) then
-    !                         write(77,8800)iday,realyr, &
-    !                         emit_co2row(i,m,j),emit_corow(i,m,j),emit_ch4row(i,m,j), &
-    !                         emit_nmhcrow(i,m,j),emit_h2row(i,m,j),emit_noxrow(i,m,j), &
-    !                         emit_n2orow(i,m,j),emit_pm25row(i,m,j), &
-    !                         emit_tpmrow(i,m,j),emit_tcrow(i,m,j),emit_ocrow(i,m,j), &
-    !                         emit_bcrow(i,m,j),burnvegfrow(i,m,j)*100., &
-    !                         smfuncvegrow(i,m,j),lucemcom_g(i), &  ! FLAG only per grid values for these last ones.
+    !                         write(77, 8800)iday, realyr, &
+    !                         emit_co2row(i, m, j), emit_corow(i, m, j), emit_ch4row(i, m, j), &
+    !                         emit_nmhcrow(i, m, j), emit_h2row(i, m, j), emit_noxrow(i, m, j), &
+    !                         emit_n2orow(i, m, j), emit_pm25row(i, m, j), &
+    !                         emit_tpmrow(i, m, j), emit_tcrow(i, m, j), emit_ocrow(i, m, j), &
+    !                         emit_bcrow(i, m, j), burnvegfrow(i, m, j)*100., &
+    !                         smfuncvegrow(i, m, j), lucemcom_g(i), &  ! FLAG only per grid values for these last ones.
     !                         lucltrin_g(i), lucsocin_g(i), &
-    !                         grclarea(i), btermrow(i,m,j), lterm_g(i), mtermrow(i,m,j), &
-    !                         ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+    !                         grclarea(i), btermrow(i, m, j), lterm_g(i), mtermrow(i, m, j), &
+    !                         ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i, m, j)
     !                     end if
     !
     !                 end if ! fcancmx
@@ -2584,11 +2586,11 @@ contains
     !
     !
     !                 !> File *.CT03D
-    !                 write(74,8401)iday,realyr,0.0, &
-    !                 0.0,0.0, &
+    !                 write(74, 8401)iday, realyr, 0.0, &
     !                 0.0, 0.0, &
-    !                 0.0, litrmassrow(i,m,iccp1),  &
-    !                 soilcmasrow(i,m,iccp1), &
+    !                 0.0, 0.0, &
+    !                 0.0, litrmassrow(i, m, iccp1),  &
+    !                 soilcmasrow(i, m, iccp1), &
     !                 ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
     !
     !             end if
@@ -2599,42 +2601,42 @@ contains
     !
     !
     !                 !> File .CT02D
-    !                 write(73,8300)iday,realyr,rmlrow(i,m),rmsrow(i,m), &
-    !                 rmrrow(i,m),rgrow(i,m),leaflitr_t(i,m),tltrleaf_t(i,m), &
-    !                 tltrstem_t(i,m),tltrroot_t(i,m), &
-    !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+    !                 write(73, 8300)iday, realyr, rmlrow(i, m), rmsrow(i, m), &
+    !                 rmrrow(i, m), rgrow(i, m), leaflitr_t(i, m), tltrleaf_t(i, m), &
+    !                 tltrstem_t(i, m), tltrroot_t(i, m), &
+    !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i, m)
     !
     !                 !> File .CT03D
-    !                 write(74,8401)iday,realyr,vgbiomasrow(i,m), &
-    !                 ailcg_t(i,m), gleafmas_t(i,m), &
-    !                 bleafmas_t(i,m), stemmass_t(i,m), &
-    !                 rootmass_t(i,m), litrmass_t(i,m), &
-    !                 soilcmas_t(i,m), &
-    !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+    !                 write(74, 8401)iday, realyr, vgbiomasrow(i, m), &
+    !                 ailcg_t(i, m), gleafmas_t(i, m), &
+    !                 bleafmas_t(i, m), stemmass_t(i, m), &
+    !                 rootmass_t(i, m), litrmass_t(i, m), &
+    !                 soilcmas_t(i, m), &
+    !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i, m)
     !
     !                 !> File .CT04D
-    !                 write(75,8500)iday,realyr,ailcg_t(i,m), &
-    !                 ailcb_t(i,m),(rmatctem_t(i,m,k),k=1,3), &
-    !                 veghght_t(i,m),rootdpth_t(i,m), &
-    !                 roottemp_t(i,m),slai_t(i,m), &
-    !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+    !                 write(75, 8500)iday, realyr, ailcg_t(i, m), &
+    !                 ailcb_t(i, m),(rmatctem_t(i, m, k), k=1, 3), &
+    !                 veghght_t(i, m), rootdpth_t(i, m), &
+    !                 roottemp_t(i, m), slai_t(i, m), &
+    !                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i, m)
     !
     !                 ! File .CT05D
-    !                 ! write(76,8601)iday,realyr, afrleaf_t(i,m), &
-    !                 !    afrstem_t(i,m),afrroot_t(i,m),  &
+    !                 ! write(76, 8601)iday, realyr, afrleaf_t(i, m), &
+    !                 !    afrstem_t(i, m), afrroot_t(i, m),  &
     !                 !    -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
-    !                 !    ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+    !                 !    ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i, m)
     !
     !                 if (dofire .or. lnduseon) then
-    !                     write(77,8800)iday,realyr,  &
-    !                     emit_co2_t(i,m), emit_co_t(i,m), emit_ch4_t(i,m), &
-    !                     emit_nmhc_t(i,m), emit_h2_t(i,m), emit_nox_t(i,m), &
-    !                     emit_n2o_t(i,m), emit_pm25_t(i,m), emit_tpm_t(i,m), &
-    !                     emit_tc_t(i,m), emit_oc_t(i,m), emit_bc_t(i,m), &
-    !                     burnfrac_g(i)*100., smfuncveg_t(i,m),lucemcom_g(i), & ! FLAG only per grid values for these last ones.
+    !                     write(77, 8800)iday, realyr,  &
+    !                     emit_co2_t(i, m), emit_co_t(i, m), emit_ch4_t(i, m), &
+    !                     emit_nmhc_t(i, m), emit_h2_t(i, m), emit_nox_t(i, m), &
+    !                     emit_n2o_t(i, m), emit_pm25_t(i, m), emit_tpm_t(i, m), &
+    !                     emit_tc_t(i, m), emit_oc_t(i, m), emit_bc_t(i, m), &
+    !                     burnfrac_g(i)*100., smfuncveg_t(i, m), lucemcom_g(i), & ! FLAG only per grid values for these last ones.
     !                     lucltrin_g(i), lucsocin_g(i), &
-    !                     grclarea(i), bterm_t(i,m), lterm_g(i), mterm_t(i,m), &
-    !                     ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+    !                     grclarea(i), bterm_t(i, m), lterm_g(i), mterm_t(i, m), &
+    !                     ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i, m)
     !                 end if
     !
     !             end if ! nmtest>1
@@ -2645,36 +2647,36 @@ contains
     !
     !
     !         !> File .CT02D
-    !         write(73,8300)iday,realyr,rml_g(i),rms_g(i), &
-    !         rmr_g(i),rg_g(i),leaflitr_g(i),tltrleaf_g(i), &
-    !         tltrstem_g(i),tltrroot_g(i),' GRDAV'
+    !         write(73, 8300)iday, realyr, rml_g(i), rms_g(i), &
+    !         rmr_g(i), rg_g(i), leaflitr_g(i), tltrleaf_g(i), &
+    !         tltrstem_g(i), tltrroot_g(i),' GRDAV'
     !
     !         !> File .CT03D
-    !         write(74,8401)iday,realyr,vgbiomas_g(i), &
+    !         write(74, 8401)iday, realyr, vgbiomas_g(i), &
     !         gavglai_g(i), &
     !         gleafmas_g(i), bleafmas_g(i), stemmass_g(i), &
     !         rootmass_g(i), litrmass_g(i), soilcmas_g(i),' GRDAV'
     !
     !         !> File .CT04D
-    !         write(75,8500)iday,realyr, ailcg_g(i),  &
-    !         ailcb_g(i),(rmatctem_g(i,k),k=1,3), &
-    !         veghght_g(i),rootdpth_g(i),roottemp_g(i), &
+    !         write(75, 8500)iday, realyr, ailcg_g(i),  &
+    !         ailcb_g(i),(rmatctem_g(i, k), k=1, 3), &
+    !         veghght_g(i), rootdpth_g(i), roottemp_g(i), &
     !         slai_g(i),' GRDAV'
     !
     !         ! File .CT05D
-    !         ! write(76,8601)iday,realyr, afrleaf_t(i,m), &
-    !         !    afrstem_t(i,m),afrroot_t(i,m),  &
+    !         ! write(76, 8601)iday, realyr, afrleaf_t(i, m), &
+    !         !    afrstem_t(i, m), afrroot_t(i, m),  &
     !         !   , -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
     !         !    ' GRDAV'
     !
     !         !> File *.CT06D
     !         if (dofire .or. lnduseon) then
-    !             write(77,8800)iday,realyr,  &
+    !             write(77, 8800)iday, realyr,  &
     !             emit_co2_g(i), emit_co_g(i), emit_ch4_g(i), &
     !             emit_nmhc_g(i), emit_h2_g(i), emit_nox_g(i), &
     !             emit_n2o_g(i), emit_pm25_g(i), emit_tpm_g(i), &
     !             emit_tc_g(i), emit_oc_g(i), emit_bc_g(i), &
-    !             burnfrac_g(i)*100., smfuncveg_g(i),lucemcom_g(i), &
+    !             burnfrac_g(i)*100., smfuncveg_g(i), lucemcom_g(i), &
     !             lucltrin_g(i), lucsocin_g(i), &
     !             grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i),' GRDAV'
     !         end if
@@ -2682,7 +2684,7 @@ contains
     !
     !         !> File .CT08D
     !         if (.or. obswetf) then
-    !             write(79,8810)iday,realyr, ch4WetSpec_g(i),  &
+    !             write(79, 8810)iday, realyr, ch4WetSpec_g(i),  &
     !              wetfdyn_g(i),  &
     !             ch4WetDyn_g(i),  &
     !             ch4soills_g(i),' GRDAV'
@@ -2698,28 +2700,28 @@ contains
     !         !   - Leave gppmosac_g hard-coded to 1 for now, but should be changed !
     !         !   EC - Feb 2106.
     !         ! I think I will just remove these unless they are needed. JM Nov 2016.
-    !         do m=1,nmtest
+    !         do m=1, nmtest
     !
     !             !   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day
-    !             write (93,6993) iday,realyr, &
-    !             nppmossrow(i,m),armossrow(i,m), &!,gppmosac_g(1)*1.0377, &
-    !             (fcancmxrow(i,m,j)*gppvegrow(i,m,j),j=1,icc),      &
-    !             (fcancmxrow(i,m,j)*nppvegrow(i,m,j),j=1,icc),      &
-    !             (fcancmxrow(i,m,j)*autoresvegrow(i,m,j),j=1,icc),  &
-    !             (fcancmxrow(i,m,j)*hetroresvegrow(i,m,j),j=1,icc), &
-    !             (fcancmxrow(i,m,j),j=1,icc)
+    !             write (93, 6993) iday, realyr, &
+    !             nppmossrow(i, m), armossrow(i, m), &!,gppmosac_g(1)*1.0377, &
+    !             (fcancmxrow(i, m, j)*gppvegrow(i, m, j), j=1, icc),      &
+    !             (fcancmxrow(i, m, j)*nppvegrow(i, m, j), j=1, icc),      &
+    !             (fcancmxrow(i, m, j)*autoresvegrow(i, m, j), j=1, icc),  &
+    !             (fcancmxrow(i, m, j)*hetroresvegrow(i, m, j), j=1, icc), &
+    !             (fcancmxrow(i, m, j), j=1, icc)
     !             !   CT12D_G
-    !             write (94,6993) iday,realyr,(veghghtrow(i,m,j),j=1,icc), &
-    !             (rootdpthrow(i,m,j),j=1,icc),(ailcgrow(i,m,j),j=1,icc), &
-    !             (fcancmxrow(i,m,j)*stemmassrow(i,m,j),j=1,icc), &
-    !             (fcancmxrow(i,m,j)*rootmassrow(i,m,j),j=1,icc), &
-    !             (fcancmxrow(i,m,j)*litrmassrow(i,m,j),j=1,icc), &
-    !             (fcancmxrow(i,m,j)*gleafmasrow(i,m,j),j=1,icc), &
-    !             (fcancmxrow(i,m,j)*bleafmasrow(i,m,j),j=1,icc)
+    !             write (94, 6993) iday, realyr,(veghghtrow(i, m, j), j=1, icc), &
+    !             (rootdpthrow(i, m, j), j=1, icc),(ailcgrow(i, m, j), j=1, icc), &
+    !             (fcancmxrow(i, m, j)*stemmassrow(i, m, j), j=1, icc), &
+    !             (fcancmxrow(i, m, j)*rootmassrow(i, m, j), j=1, icc), &
+    !             (fcancmxrow(i, m, j)*litrmassrow(i, m, j), j=1, icc), &
+    !             (fcancmxrow(i, m, j)*gleafmasrow(i, m, j), j=1, icc), &
+    !             (fcancmxrow(i, m, j)*bleafmasrow(i, m, j), j=1, icc)
     !
     !         end do
     !
-    ! 6993            format(2i5,100f12.6)
+    ! 6993            format(2i5, 100f12.6)
     !
     !         !   ----------------YW March 27, 2015 -------------------------------/
     !
@@ -2727,17 +2729,17 @@ contains
     ! !
     ! !                     sumfare=0.0
     ! !                     if (onetile_perPFT) then
-    ! !                         do m=1,nmos
-    ! !                             sumfare=sumfare+FAREROT(i,m)
+    ! !                         do m=1, nmos
+    ! !                             sumfare=sumfare+FAREROT(i, m)
     ! !                         end do
-    ! !                         write(78,8200)iday,realyr,(FAREROT(i,m)*100.,m=1,nmos),sumfare
+    ! !                         write(78, 8200)iday, realyr,(FAREROT(i, m)*100.,m=1, nmos), sumfare
     ! !                     else ! composite
-    ! !                         do m=1,nmos
+    ! !                         do m=1, nmos
     ! !                             sumfare=0.0
-    ! !                             do j=1,icc  ! m = 1
-    ! !                                 sumfare=sumfare+fcancmxrow(i,m,j)
+    ! !                             do j=1, icc  ! m = 1
+    ! !                                 sumfare=sumfare+fcancmxrow(i, m, j)
     ! !                             end do ! j
-    ! !                             write(78,8200)iday,realyr,(fcancmxrow(i,m,j)*100.,j=1,icc),(1.0-sumfare)*100.,sumfare,' TILE ',m
+    ! !                             write(78, 8200)iday, realyr,(fcancmxrow(i, m, j)*100.,j=1, icc),(1.0-sumfare)*100.,sumfare,' TILE ',m
     ! !                         end do ! m
     ! !                     end if ! mosaic/composite
     ! !                 end if ! PFTCompetition/lnduseon
@@ -2748,18 +2750,18 @@ contains
     !     end if ! if write daily
 
     ! Deallocate the grid average and tile average structures
-    deallocate(gpp_g ,npp_g ,nbp_g ,socres_g ,autores_g ,litres_g ,dstcemls3_g ,litrfall_g , &
-    rml_g ,rms_g ,rg_g ,leaflitr_g ,tltrstem_g ,tltrroot_g ,nep_g ,hetrores_g ,dstcemls_g , &
-    humiftrs_g ,rmr_g ,tltrleaf_g ,gavgltms_g ,vgbiomas_g ,gavglai_g ,gavgscms_g ,gleafmas_g , &
-    bleafmas_g ,stemmass_g ,rootmass_g ,litrmass_g ,soilcmas_g ,slai_g ,ailcg_g ,ailcb_g ,veghght_g , &
-    rootdpth_g ,roottemp_g ,totcmass_g ,tcanoacc_out_g ,burnfrac_g ,smfuncveg_g , &
-    lucemcom_g ,lucltrin_g ,lucsocin_g ,emit_co2_g ,emit_ch4_g ,ch4WetSpec_g ,wetfdyn_g ,ch4WetDyn_g , &
-    ch4soills_g ,afrleaf_g, afrstem_g,afrroot_g,lfstatus_g,rmlvegrow_g,anvegrow_g, &
+    deallocate(gpp_g, npp_g, nbp_g, socres_g, autores_g, litres_g, dstcemls3_g, litrfall_g , &
+    rml_g, rms_g, rg_g, leaflitr_g, tltrstem_g, tltrroot_g, nep_g, hetrores_g, dstcemls_g , &
+    humiftrs_g, rmr_g, tltrleaf_g, gavgltms_g, vgbiomas_g, gavglai_g, gavgscms_g, gleafmas_g , &
+    bleafmas_g, stemmass_g, rootmass_g, litrmass_g, soilcmas_g, slai_g, ailcg_g, ailcb_g, veghght_g , &
+    rootdpth_g, roottemp_g, totcmass_g, tcanoacc_out_g, burnfrac_g, smfuncveg_g , &
+    lucemcom_g, lucltrin_g, lucsocin_g, emit_co2_g, emit_ch4_g, ch4WetSpec_g, wetfdyn_g, ch4WetDyn_g , &
+    ch4soills_g, afrleaf_g, afrstem_g, afrroot_g, lfstatus_g, rmlvegrow_g, anvegrow_g, &
     rmatctem_g)
 
-    deallocate(leaflitr_t ,tltrleaf_t ,tltrstem_t ,tltrroot_t ,ailcg_t ,ailcb_t ,rmatctem_t ,veghght_t , &
-    rootdpth_t ,roottemp_t ,slai_t ,afrroot_t ,afrleaf_t ,afrstem_t ,laimaxg_t ,stemmass_t , &
-    rootmass_t ,litrmass_t ,gleafmas_t ,bleafmas_t,soilcmas_t ,emit_co2_t ,emit_ch4_t ,smfuncveg_t )
+    deallocate(leaflitr_t, tltrleaf_t, tltrstem_t, tltrroot_t, ailcg_t, ailcb_t, rmatctem_t, veghght_t , &
+    rootdpth_t, roottemp_t, slai_t, afrroot_t, afrleaf_t, afrstem_t, laimaxg_t, stemmass_t , &
+    rootmass_t, litrmass_t, gleafmas_t, bleafmas_t, soilcmas_t, emit_co2_t, emit_ch4_t, smfuncveg_t)
 
   end subroutine ctem_daily_aw
   !> @}
@@ -2773,20 +2775,20 @@ contains
   !! The pointer to the monthly data structures (in ctem_statevars) keeps the data between calls.
   !! @author J. Melton
 
-  subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,realyr,nday,lastDOY)
+  subroutine ctem_monthly_aw(lonLocalIndex, latLocalIndex, nltest, nmtest, iday, realyr, nday, lastDOY)
 
     ! J. Melton Feb 2016.
 
     use class_statevars, only : class_rot
-    use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
-                              resetmonthend,ctem_mo, tracer
-    use classic_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed,iccp2,ignd
-    use outputManager, only : writeOutput1D,consecDays
+    use ctem_statevars, only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
+                              resetmonthend, ctem_mo, tracer
+    use classic_params, only : icc, iccp1, nmon, mmday, monthend, monthdays, seed, iccp2, ignd
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
@@ -2814,6 +2816,7 @@ contains
     real, pointer, dimension(:,:,:) :: fcancmxrow
     real, pointer, dimension(:,:,:) :: laimaxg_mo
     real, pointer, dimension(:,:,:) :: stemmass_mo
+    real, pointer, dimension(:,:,:) :: leafmass_mo
     real, pointer, dimension(:,:,:) :: rootmass_mo
     real, pointer, dimension(:,:,:) :: litrfallveg_mo
     real, pointer, dimension(:,:,:) :: humiftrsveg_mo
@@ -2853,6 +2856,7 @@ contains
     real, pointer, dimension(:,:,:) :: smfuncveg_mo
 
     real, pointer, dimension(:,:) :: laimaxg_mo_t
+    real, pointer, dimension(:,:) :: leafmass_mo_t
     real, pointer, dimension(:,:) :: stemmass_mo_t
     real, pointer, dimension(:,:) :: rootmass_mo_t
     real, pointer, dimension(:,:) :: litrfall_mo_t
@@ -2956,6 +2960,8 @@ contains
     real, pointer, dimension(:,:) :: ch4WetDynrow
     real, pointer, dimension(:,:) :: ch4soillsrow
     real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
+    real, pointer, dimension(:,:,:) :: gleafmassrow
+    real, pointer, dimension(:,:,:) :: bleafmassrow
     real, pointer, dimension(:,:,:) :: stemmassrow
     real, pointer, dimension(:,:,:) :: rootmassrow
     real, pointer, dimension(:,:,:) :: litrfallvegrow
@@ -2965,6 +2971,7 @@ contains
 
     real, pointer, dimension(:) :: laimaxg_mo_g
     real, pointer, dimension(:) :: stemmass_mo_g
+    real, pointer, dimension(:) :: leafmass_mo_g
     real, pointer, dimension(:) :: rootmass_mo_g
     ! COMBAK PERLAY
     real, pointer, dimension(:) :: litres_mo_g
@@ -3022,12 +3029,12 @@ contains
     real, pointer, dimension(:,:,:) :: tracerbLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerstemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerrootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     real, pointer, dimension(:,:,:,:) :: tracerlitrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:,:) :: tracersoilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
     ! local
-    integer :: i,m,j,nt,k
+    integer :: i, m, j, nt, k
     real :: barefrac
     real :: sumfare
     integer :: NDMONTH
@@ -3057,6 +3064,7 @@ contains
     fcancmxrow            => vrot%fcancmx
     laimaxg_mo            =>ctem_mo%laimaxg_mo
     stemmass_mo           =>ctem_mo%stemmass_mo
+    leafmass_mo           =>ctem_mo%leafmass_mo
     rootmass_mo           =>ctem_mo%rootmass_mo
     litrfallveg_mo        =>ctem_mo%litrfallveg_mo
     humiftrsveg_mo        =>ctem_mo%humiftrsveg_mo
@@ -3091,6 +3099,7 @@ contains
 
     laimaxg_mo_t          =>ctem_tile_mo%laimaxg_mo_t
     stemmass_mo_t         =>ctem_tile_mo%stemmass_mo_t
+    leafmass_mo_t         =>ctem_tile_mo%leafmass_mo_t
     rootmass_mo_t         =>ctem_tile_mo%rootmass_mo_t
     litrfall_mo_t         =>ctem_tile_mo%litrfall_mo_t
     humiftrs_mo_t         =>ctem_tile_mo%humiftrs_mo_t
@@ -3178,6 +3187,8 @@ contains
     litrmassrow       => vrot%litrmass
     soilcmasrow       => vrot%soilcmas
     vgbiomas_vegrow   => vrot%vgbiomas_veg
+    gleafmassrow      => vrot%gleafmas
+    bleafmassrow      => vrot%bleafmas
     stemmassrow       => vrot%stemmass
     rootmassrow       => vrot%rootmass
     uvaccrow_m        => vrot%uvaccrow_m
@@ -3196,6 +3207,7 @@ contains
 
     laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
     stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
+    leafmass_mo_g       =>ctem_grd_mo%leafmass_mo_g
     rootmass_mo_g       =>ctem_grd_mo%rootmass_mo_g
     litrmass_mo_g       =>ctem_grd_mo%litrmass_mo_g
     soilcmas_mo_g       =>ctem_grd_mo%soilcmas_mo_g
@@ -3254,186 +3266,189 @@ contains
     end do
 
     i = 1 ! offline nlat is always 1 so this array position is always 1.
-    do m = 1,nmtest
-      do j = 1,icc
+    do m = 1, nmtest
+      do j = 1, icc
 
         !> Accumulate monthly outputs at the per PFT level.
-        if (ailcgrow(i,m,j) > laimaxg_mo(i,m,j)) then
-          laimaxg_mo(i,m,j) = ailcgrow(i,m,j)
+        if (ailcgrow(i, m, j) > laimaxg_mo(i, m, j)) then
+          laimaxg_mo(i, m, j) = ailcgrow(i, m, j)
         end if
 
-        npp_mo(i,m,j) = npp_mo(i,m,j) + nppvegrow(i,m,j) * oneOverDPM
-        gpp_mo(i,m,j) = gpp_mo(i,m,j) + gppvegrow(i,m,j) * oneOverDPM
-        nep_mo(i,m,j) = nep_mo(i,m,j) + nepvegrow(i,m,j) * oneOverDPM
+        npp_mo(i, m, j) = npp_mo(i, m, j) + nppvegrow(i, m, j) * oneOverDPM
+        gpp_mo(i, m, j) = gpp_mo(i, m, j) + gppvegrow(i, m, j) * oneOverDPM
+        nep_mo(i, m, j) = nep_mo(i, m, j) + nepvegrow(i, m, j) * oneOverDPM
         ! NOTE: This NBP does not include LUC product pool contributions since they are
         ! not per PFT but rather per tile
-        nbp_mo(i,m,j) = nbp_mo(i,m,j) + nbpvegrow(i,m,j) * oneOverDPM
-        hetrores_mo(i,m,j) = hetrores_mo(i,m,j) + hetroresvegrow(i,m,j) * oneOverDPM
-        autores_mo(i,m,j) = autores_mo(i,m,j) + autoresvegrow(i,m,j) * oneOverDPM
+        nbp_mo(i, m, j) = nbp_mo(i, m, j) + nbpvegrow(i, m, j) * oneOverDPM
+        hetrores_mo(i, m, j) = hetrores_mo(i, m, j) + hetroresvegrow(i, m, j) * oneOverDPM
+        autores_mo(i, m, j) = autores_mo(i, m, j) + autoresvegrow(i, m, j) * oneOverDPM
         ! COMBAK PERLAY
-        litres_mo(i,m,j) = litres_mo(i,m,j) + litresvegrow(i,m,j) * oneOverDPM
-        soilcres_mo(i,m,j) = soilcres_mo(i,m,j) + soilcresvegrow(i,m,j) * oneOverDPM
+        litres_mo(i, m, j) = litres_mo(i, m, j) + litresvegrow(i, m, j) * oneOverDPM
+        soilcres_mo(i, m, j) = soilcres_mo(i, m, j) + soilcresvegrow(i, m, j) * oneOverDPM
         ! Let accumulate, not fluxes nor meant to be mean values.
-        humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j)
+        humiftrsveg_mo(i, m, j) = humiftrsveg_mo(i, m, j) + humiftrsvegrow(i, m, j)
         ! do k = 1, ignd
-        !   litres_mo(i,m,j,k) = litres_mo(i,m,j,k) + litresvegrow(i,m,j,k)*oneOverDPM
-        !   soilcres_mo(i,m,j,k) = soilcres_mo(i,m,j,k) + soilcresvegrow(i,m,j,k)*oneOverDPM
+        !   litres_mo(i, m, j, k) = litres_mo(i, m, j, k) + litresvegrow(i, m, j, k)*oneOverDPM
+        !   soilcres_mo(i, m, j, k) = soilcres_mo(i, m, j, k) + soilcresvegrow(i, m, j, k)*oneOverDPM
         !   ! Let accumulate, not fluxes nor meant to be mean values.
-        !   humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j,k)
+        !   humiftrsveg_mo(i, m, j) = humiftrsveg_mo(i, m, j) + humiftrsvegrow(i, m, j, k)
         ! end do
         ! COMBAK PERLAY
-        emit_co2_mo(i,m,j) = emit_co2_mo(i,m,j) + emit_co2row(i,m,j) * oneOverDPM
-        emit_co_mo(i,m,j) = emit_co_mo(i,m,j) + emit_corow(i,m,j) * oneOverDPM
-        emit_ch4_mo(i,m,j) = emit_ch4_mo(i,m,j) + emit_ch4row(i,m,j) * oneOverDPM
-        emit_nmhc_mo(i,m,j) = emit_nmhc_mo(i,m,j) + emit_nmhcrow(i,m,j) * oneOverDPM
-        emit_h2_mo(i,m,j) = emit_h2_mo(i,m,j) + emit_h2row(i,m,j) * oneOverDPM
-        emit_nox_mo(i,m,j) = emit_nox_mo(i,m,j) + emit_noxrow(i,m,j) * oneOverDPM
-        emit_n2o_mo(i,m,j) = emit_n2o_mo(i,m,j) + emit_n2orow(i,m,j) * oneOverDPM
-        emit_pm25_mo(i,m,j) = emit_pm25_mo(i,m,j) + emit_pm25row(i,m,j) * oneOverDPM
-        emit_tpm_mo(i,m,j) = emit_tpm_mo(i,m,j) + emit_tpmrow(i,m,j) * oneOverDPM
-        emit_tc_mo(i,m,j) = emit_tc_mo(i,m,j) + emit_tcrow(i,m,j) * oneOverDPM
-        emit_oc_mo(i,m,j) = emit_oc_mo(i,m,j) + emit_ocrow(i,m,j) * oneOverDPM
-        emit_bc_mo(i,m,j) = emit_bc_mo(i,m,j) + emit_bcrow(i,m,j) * oneOverDPM
-        bterm_mo(i,m,j) = bterm_mo(i,m,j) + btermrow(i,m,j) * oneOverDPM
-        mterm_mo(i,m,j) = mterm_mo(i,m,j) + mtermrow(i,m,j) * oneOverDPM
-        smfuncveg_mo(i,m,j) = smfuncveg_mo(i,m,j) + smfuncvegrow(i,m,j) * oneOverDPM
+        emit_co2_mo(i, m, j) = emit_co2_mo(i, m, j) + emit_co2row(i, m, j) * oneOverDPM
+        emit_co_mo(i, m, j) = emit_co_mo(i, m, j) + emit_corow(i, m, j) * oneOverDPM
+        emit_ch4_mo(i, m, j) = emit_ch4_mo(i, m, j) + emit_ch4row(i, m, j) * oneOverDPM
+        emit_nmhc_mo(i, m, j) = emit_nmhc_mo(i, m, j) + emit_nmhcrow(i, m, j) * oneOverDPM
+        emit_h2_mo(i, m, j) = emit_h2_mo(i, m, j) + emit_h2row(i, m, j) * oneOverDPM
+        emit_nox_mo(i, m, j) = emit_nox_mo(i, m, j) + emit_noxrow(i, m, j) * oneOverDPM
+        emit_n2o_mo(i, m, j) = emit_n2o_mo(i, m, j) + emit_n2orow(i, m, j) * oneOverDPM
+        emit_pm25_mo(i, m, j) = emit_pm25_mo(i, m, j) + emit_pm25row(i, m, j) * oneOverDPM
+        emit_tpm_mo(i, m, j) = emit_tpm_mo(i, m, j) + emit_tpmrow(i, m, j) * oneOverDPM
+        emit_tc_mo(i, m, j) = emit_tc_mo(i, m, j) + emit_tcrow(i, m, j) * oneOverDPM
+        emit_oc_mo(i, m, j) = emit_oc_mo(i, m, j) + emit_ocrow(i, m, j) * oneOverDPM
+        emit_bc_mo(i, m, j) = emit_bc_mo(i, m, j) + emit_bcrow(i, m, j) * oneOverDPM
+        bterm_mo(i, m, j) = bterm_mo(i, m, j) + btermrow(i, m, j) * oneOverDPM
+        mterm_mo(i, m, j) = mterm_mo(i, m, j) + mtermrow(i, m, j) * oneOverDPM
+        smfuncveg_mo(i, m, j) = smfuncveg_mo(i, m, j) + smfuncvegrow(i, m, j) * oneOverDPM
 
         ! Let accumulate, not fluxes nor meant to be mean values.
-        burnfrac_mo(i,m,j) = burnfrac_mo(i,m,j) + burnvegfrow(i,m,j)
-        litrfallveg_mo(i,m,j) = litrfallveg_mo(i,m,j) + litrfallvegrow(i,m,j)
+        burnfrac_mo(i, m, j) = burnfrac_mo(i, m, j) + burnvegfrow(i, m, j)
+        litrfallveg_mo(i, m, j) = litrfallveg_mo(i, m, j) + litrfallvegrow(i, m, j)
 
       end do ! j
 
       !> Also do the bare ground
-      nep_mo(i,m,iccp1) = nep_mo(i,m,iccp1) + nepvegrow(i,m,iccp1) * oneOverDPM
-      nbp_mo(i,m,iccp1) = nbp_mo(i,m,iccp1) + nbpvegrow(i,m,iccp1) * oneOverDPM
-      hetrores_mo(i,m,iccp1) = hetrores_mo(i,m,iccp1) + hetroresvegrow(i,m,iccp1) * oneOverDPM
+      nep_mo(i, m, iccp1) = nep_mo(i, m, iccp1) + nepvegrow(i, m, iccp1) * oneOverDPM
+      nbp_mo(i, m, iccp1) = nbp_mo(i, m, iccp1) + nbpvegrow(i, m, iccp1) * oneOverDPM
+      hetrores_mo(i, m, iccp1) = hetrores_mo(i, m, iccp1) + hetroresvegrow(i, m, iccp1) * oneOverDPM
       ! COMBAK PERLAY
-      litres_mo(i,m,iccp1) = litres_mo(i,m,iccp1) + litresvegrow(i,m,iccp1) * oneOverDPM
-      soilcres_mo(i,m,iccp1) = soilcres_mo(i,m,iccp1) &
-      + soilcresvegrow(i,m,iccp1) * oneOverDPM
+      litres_mo(i, m, iccp1) = litres_mo(i, m, iccp1) + litresvegrow(i, m, iccp1) * oneOverDPM
+      soilcres_mo(i, m, iccp1) = soilcres_mo(i, m, iccp1) &
+                                 + soilcresvegrow(i, m, iccp1) * oneOverDPM
       ! do k = 1, ignd
-      !   litres_mo(i,m,iccp1,k) = litres_mo(i,m,iccp1,k) + litresvegrow(i,m,iccp1,k) * oneOverDPM
-      !   soilcres_mo(i,m,iccp1,k) = soilcres_mo(i,m,iccp1,k) &
-      !                            + soilcresvegrow(i,m,iccp1,k) * oneOverDPM
+      !   litres_mo(i, m, iccp1, k) = litres_mo(i, m, iccp1, k) + litresvegrow(i, m, iccp1, k) * oneOverDPM
+      !   soilcres_mo(i, m, iccp1, k) = soilcres_mo(i, m, iccp1, k) &
+      !                            + soilcresvegrow(i, m, iccp1, k) * oneOverDPM
       ! end do
       ! COMBAK PERLAY
       !> Accumulate monthly outputs at the per tile level.
-      luc_emc_mo_t(i,m) = luc_emc_mo_t(i,m) + lucemcomrow(i,m) * oneOverDPM
-      lucsocin_mo_t(i,m) = lucsocin_mo_t(i,m) + lucsocinrow(i,m) * oneOverDPM
-      lucltrin_mo_t(i,m) = lucltrin_mo_t(i,m) + lucltrinrow(i,m) * oneOverDPM
-      ch4WetSpec_mo_t(i,m) = ch4WetSpec_mo_t(i,m) + ch4WetSpecrow(i,m) * oneOverDPM
-      wetfdyn_mo_t(i,m) = wetfdyn_mo_t(i,m) + wetfdynrow(i,m) * oneOverDPM
-      wetfpres_mo_t(i,m) = wetfpres_mo_t(i,m) + wetfrac_presrow(i,m) * oneOverDPM
-      ch4WetDyn_mo_t(i,m) = ch4WetDyn_mo_t(i,m) + ch4WetDynrow(i,m) * oneOverDPM
-      ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m) * oneOverDPM
-      lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m) * oneOverDPM
-      ! wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !> take mean wind speed and convert to km/h
+      luc_emc_mo_t(i, m) = luc_emc_mo_t(i, m) + lucemcomrow(i, m) * oneOverDPM
+      lucsocin_mo_t(i, m) = lucsocin_mo_t(i, m) + lucsocinrow(i, m) * oneOverDPM
+      lucltrin_mo_t(i, m) = lucltrin_mo_t(i, m) + lucltrinrow(i, m) * oneOverDPM
+      ch4WetSpec_mo_t(i, m) = ch4WetSpec_mo_t(i, m) + ch4WetSpecrow(i, m) * oneOverDPM
+      wetfdyn_mo_t(i, m) = wetfdyn_mo_t(i, m) + wetfdynrow(i, m) * oneOverDPM
+      wetfpres_mo_t(i, m) = wetfpres_mo_t(i, m) + wetfrac_presrow(i, m) * oneOverDPM
+      ch4WetDyn_mo_t(i, m) = ch4WetDyn_mo_t(i, m) + ch4WetDynrow(i, m) * oneOverDPM
+      ch4soills_mo_t(i, m) = ch4soills_mo_t(i, m) + ch4soillsrow(i, m) * oneOverDPM
+      lterm_mo_t(i, m) = lterm_mo_t(i, m) + ltermrow(i, m) * oneOverDPM
+      ! wind_mo_t(i, m) = wind_mo_t(i, m) + (sqrt(uvaccrow_m(i, m)**2.0 + vvaccrow_m(i, m)**2.0))*3.6 !> take mean wind speed and convert to km/h
 
       ! COMBAK PERLAY
       ! NOTE: LUC product pools are kept in layer 1.
-      fProductDecomp_mo_t(i,m) = fProductDecomp_mo_t(i,m) &
-      + (soilcresvegrow(i,m,iccp2) + litresvegrow(i,m,iccp2)) * oneOverDPM
-      ! fProductDecomp_mo_t(i,m) = fProductDecomp_mo_t(i,m) &
-      !                           + (soilcresvegrow(i,m,iccp2,1) + litresvegrow(i,m,iccp2,1)) * oneOverDPM
+      fProductDecomp_mo_t(i, m) = fProductDecomp_mo_t(i, m) &
+                                  + (soilcresvegrow(i, m, iccp2) + litresvegrow(i, m, iccp2)) * oneOverDPM
+      ! fProductDecomp_mo_t(i, m) = fProductDecomp_mo_t(i, m) &
+      !                           + (soilcresvegrow(i, m, iccp2, 1) + litresvegrow(i, m, iccp2, 1)) * oneOverDPM
       ! COMBAK PERLAY
 
     end do ! loop 863 ! m
 
-    do nt = 1,nmon
+    do nt = 1, nmon
 
       if (iday == mmday(nt)) then
 
         !> Do the mid-month variables (these are not accumulated, we just keep the mid month value for printing in the monthly file)
 
-        do m = 1,nmtest
-          do j = 1,icc
+        do m = 1, nmtest
+          do j = 1, icc
 
-            vgbiomas_mo(i,m,j) = vgbiomas_vegrow(i,m,j)
-            stemmass_mo(i,m,j) = stemmassrow(i,m,j)
-            rootmass_mo(i,m,j) = rootmassrow(i,m,j)
-            totcmass_mo(i,m,j) = vgbiomas_vegrow(i,m,j)
+            vgbiomas_mo(i, m, j) = vgbiomas_vegrow(i, m, j)
+            stemmass_mo(i, m, j) = stemmassrow(i, m, j)
+            leafmass_mo(i, m, j) = gleafmassrow(i, m, j) + bleafmassrow(i, m, j)
+            rootmass_mo(i, m, j) = rootmassrow(i, m, j)
+            totcmass_mo(i, m, j) = vgbiomas_vegrow(i, m, j)
             ! COMBAK PERLAY
-            litrmass_mo(i,m,j) = litrmassrow(i,m,j)
-            soilcmas_mo(i,m,j) = soilcmasrow(i,m,j)
-            totcmass_mo(i,m,j) = totcmass_mo(i,m,j) + litrmassrow(i,m,j) + soilcmasrow(i,m,j)
+            litrmass_mo(i, m, j) = litrmassrow(i, m, j)
+            soilcmas_mo(i, m, j) = soilcmasrow(i, m, j)
+            totcmass_mo(i, m, j) = totcmass_mo(i, m, j) + litrmassrow(i, m, j) + soilcmasrow(i, m, j)
             ! do k = 1, ignd
-            !   litrmass_mo(i,m,j,k) = litrmassrow(i,m,j,k)
-            !   soilcmas_mo(i,m,j,k) = soilcmasrow(i,m,j,k)
-            !   totcmass_mo(i,m,j) = totcmass_mo(i,m,j) + litrmassrow(i,m,j,k) + soilcmasrow(i,m,j,k)
+            !   litrmass_mo(i, m, j, k) = litrmassrow(i, m, j, k)
+            !   soilcmas_mo(i, m, j, k) = soilcmasrow(i, m, j, k)
+            !   totcmass_mo(i, m, j) = totcmass_mo(i, m, j) + litrmassrow(i, m, j, k) + soilcmasrow(i, m, j, k)
             ! end do
             ! COMBAK PERLAY
           end do ! loop 867
 
           !> Do the bare fraction too
           ! COMBAK PERLAY
-          litrmass_mo(i,m,iccp1) = litrmassrow(i,m,iccp1)
-          soilcmas_mo(i,m,iccp1) = soilcmasrow(i,m,iccp1)
-          totcmass_mo(i,m,iccp1) = totcmass_mo(i,m,iccp1) &
-                                  + soilcmasrow(i,m,iccp1) + litrmassrow(i,m,iccp1)
+          litrmass_mo(i, m, iccp1) = litrmassrow(i, m, iccp1)
+          soilcmas_mo(i, m, iccp1) = soilcmasrow(i, m, iccp1)
+          totcmass_mo(i, m, iccp1) = totcmass_mo(i, m, iccp1) &
+                                     + soilcmasrow(i, m, iccp1) + litrmassrow(i, m, iccp1)
           ! do k = 1, ignd
-          !   litrmass_mo(i,m,iccp1,k) = litrmassrow(i,m,iccp1,k)
-          !   soilcmas_mo(i,m,iccp1,k) = soilcmasrow(i,m,iccp1,k)
-          !   totcmass_mo(i,m,iccp1) = totcmass_mo(i,m,iccp1) &
-          !                           + soilcmasrow(i,m,iccp1,k) + litrmassrow(i,m,iccp1,k)
+          !   litrmass_mo(i, m, iccp1, k) = litrmassrow(i, m, iccp1, k)
+          !   soilcmas_mo(i, m, iccp1, k) = soilcmasrow(i, m, iccp1, k)
+          !   totcmass_mo(i, m, iccp1) = totcmass_mo(i, m, iccp1) &
+          !                           + soilcmasrow(i, m, iccp1, k) + litrmassrow(i, m, iccp1, k)
           ! end do
           ! COMBAK PERLAY
           barefrac = 1.0
 
           !> Now find the per tile values:
           do j = 1, icc
-            vgbiomas_mo_t(i,m) = vgbiomas_mo_t(i,m) + vgbiomas_mo(i,m,j) * fcancmxrow(i,m,j)
+            vgbiomas_mo_t(i, m) = vgbiomas_mo_t(i, m) + vgbiomas_mo(i, m, j) * fcancmxrow(i, m, j)
             ! COMBAK PERLAY
-            litrmass_mo_t(i,m) = litrmass_mo_t(i,m) + litrmass_mo(i,m,j) * fcancmxrow(i,m,j)
-            soilcmas_mo_t(i,m) = soilcmas_mo_t(i,m) + soilcmas_mo(i,m,j) * fcancmxrow(i,m,j)
+            litrmass_mo_t(i, m) = litrmass_mo_t(i, m) + litrmass_mo(i, m, j) * fcancmxrow(i, m, j)
+            soilcmas_mo_t(i, m) = soilcmas_mo_t(i, m) + soilcmas_mo(i, m, j) * fcancmxrow(i, m, j)
             ! do k = 1, ignd
-            !   litrmass_mo_t(i,m,k) = litrmass_mo_t(i,m,k) + litrmass_mo(i,m,j,k) * fcancmxrow(i,m,j)
-            !   soilcmas_mo_t(i,m,k) = soilcmas_mo_t(i,m,k) + soilcmas_mo(i,m,j,k) * fcancmxrow(i,m,j)
+            !   litrmass_mo_t(i, m, k) = litrmass_mo_t(i, m, k) + litrmass_mo(i, m, j, k) * fcancmxrow(i, m, j)
+            !   soilcmas_mo_t(i, m, k) = soilcmas_mo_t(i, m, k) + soilcmas_mo(i, m, j, k) * fcancmxrow(i, m, j)
             ! end do
             ! COMBAK PERLAY
-            stemmass_mo_t(i,m) = stemmass_mo_t(i,m) + stemmass_mo(i,m,j) * fcancmxrow(i,m,j)
-            rootmass_mo_t(i,m) = rootmass_mo_t(i,m) + rootmass_mo(i,m,j) * fcancmxrow(i,m,j)
-            totcmass_mo_t(i,m) = totcmass_mo_t(i,m) + totcmass_mo(i,m,j) * fcancmxrow(i,m,j)
-            barefrac = barefrac - fcancmxrow(i,m,j)
+            leafmass_mo_t(i, m) = leafmass_mo_t(i, m) + leafmass_mo(i, m, j) * fcancmxrow(i, m, j)
+            stemmass_mo_t(i, m) = stemmass_mo_t(i, m) + stemmass_mo(i, m, j) * fcancmxrow(i, m, j)
+            rootmass_mo_t(i, m) = rootmass_mo_t(i, m) + rootmass_mo(i, m, j) * fcancmxrow(i, m, j)
+            totcmass_mo_t(i, m) = totcmass_mo_t(i, m) + totcmass_mo(i, m, j) * fcancmxrow(i, m, j)
+            barefrac = barefrac - fcancmxrow(i, m, j)
           end do
 
           !> Also add in the bare fraction contributions.
           ! COMBAK PERLAY
-          litrmass_mo_t(i,m) = litrmass_mo_t(i,m) + litrmass_mo(i,m,iccp1) * barefrac
-          soilcmas_mo_t(i,m) = soilcmas_mo_t(i,m) + soilcmas_mo(i,m,iccp1) * barefrac
-          totcmass_mo_t(i,m) = totcmass_mo_t(i,m) &
-                            + (litrmass_mo(i,m,iccp1) + soilcmas_mo(i,m,iccp1)) * barefrac
+          litrmass_mo_t(i, m) = litrmass_mo_t(i, m) + litrmass_mo(i, m, iccp1) * barefrac
+          soilcmas_mo_t(i, m) = soilcmas_mo_t(i, m) + soilcmas_mo(i, m, iccp1) * barefrac
+          totcmass_mo_t(i, m) = totcmass_mo_t(i, m) &
+                                + (litrmass_mo(i, m, iccp1) + soilcmas_mo(i, m, iccp1)) * barefrac
           ! do k = 1, ignd
-          !   litrmass_mo_t(i,m,k) = litrmass_mo_t(i,m,k) + litrmass_mo(i,m,iccp1,k) * barefrac
-          !   soilcmas_mo_t(i,m,k) = soilcmas_mo_t(i,m,k) + soilcmas_mo(i,m,iccp1,k) * barefrac
-          !   totcmass_mo_t(i,m) = totcmass_mo_t(i,m) &
-          !                       + (litrmass_mo(i,m,iccp1,k) + soilcmas_mo(i,m,iccp1,k)) * barefrac
+          !   litrmass_mo_t(i, m, k) = litrmass_mo_t(i, m, k) + litrmass_mo(i, m, iccp1, k) * barefrac
+          !   soilcmas_mo_t(i, m, k) = soilcmas_mo_t(i, m, k) + soilcmas_mo(i, m, iccp1, k) * barefrac
+          !   totcmass_mo_t(i, m) = totcmass_mo_t(i, m) &
+          !                       + (litrmass_mo(i, m, iccp1, k) + soilcmas_mo(i, m, iccp1, k)) * barefrac
           ! end do
           ! COMBAK PERLAY
 
           !> Now find the gridcell level values:
-          vgbiomas_mo_g(i) = vgbiomas_mo_g(i) + vgbiomas_mo_t(i,m) * FAREROT(i,m)
+          vgbiomas_mo_g(i) = vgbiomas_mo_g(i) + vgbiomas_mo_t(i, m) * FAREROT(i, m)
           ! COMBAK PERLAY
-          litrmass_mo_g(i) = litrmass_mo_g(i) + litrmass_mo_t(i,m) * FAREROT(i,m)
-          soilcmas_mo_g(i) = soilcmas_mo_g(i) + soilcmas_mo_t(i,m) * FAREROT(i,m)
+          litrmass_mo_g(i) = litrmass_mo_g(i) + litrmass_mo_t(i, m) * FAREROT(i, m)
+          soilcmas_mo_g(i) = soilcmas_mo_g(i) + soilcmas_mo_t(i, m) * FAREROT(i, m)
           ! do k = 1, ignd
-          !   litrmass_mo_g(i,k) = litrmass_mo_g(i,k) + litrmass_mo_t(i,m,k) * FAREROT(i,m)
-          !   soilcmas_mo_g(i,k) = soilcmas_mo_g(i,k) + soilcmas_mo_t(i,m,k) * FAREROT(i,m)
+          !   litrmass_mo_g(i, k) = litrmass_mo_g(i, k) + litrmass_mo_t(i, m, k) * FAREROT(i, m)
+          !   soilcmas_mo_g(i, k) = soilcmas_mo_g(i, k) + soilcmas_mo_t(i, m, k) * FAREROT(i, m)
           ! end do
           ! COMBAK PERLAY
-          stemmass_mo_g(i) = stemmass_mo_g(i) + stemmass_mo_t(i,m) * FAREROT(i,m)
-          rootmass_mo_g(i) = rootmass_mo_g(i) + rootmass_mo_t(i,m) * FAREROT(i,m)
-          totcmass_mo_g(i) = totcmass_mo_g(i) + totcmass_mo_t(i,m) * FAREROT(i,m)
+          leafmass_mo_g(i) = leafmass_mo_g(i) + leafmass_mo_t(i, m) * FAREROT(i, m)
+          stemmass_mo_g(i) = stemmass_mo_g(i) + stemmass_mo_t(i, m) * FAREROT(i, m)
+          rootmass_mo_g(i) = rootmass_mo_g(i) + rootmass_mo_t(i, m) * FAREROT(i, m)
+          totcmass_mo_g(i) = totcmass_mo_g(i) + totcmass_mo_t(i, m) * FAREROT(i, m)
 
           ! Including the LUC product pools. They are per tile values and
           ! are assumed to occupy the whole tile. Only kept in layer 1.
           ! COMBAK PERLAY
           cProduct_mo_g(i) = cProduct_mo_g(i) &
-                           + (litrmassrow(i,m,iccp2) &
-                           + soilcmasrow(i,m,iccp2)) * FAREROT(i,m)
+                             + (litrmassrow(i, m, iccp2) &
+                             + soilcmasrow(i, m, iccp2)) * FAREROT(i, m)
           ! cProduct_mo_g(i) = cProduct_mo_g(i) &
-          !                    + (litrmassrow(i,m,iccp2,1) &
-          !                    + soilcmasrow(i,m,iccp2,1)) * FAREROT(i,m)
+          !                    + (litrmassrow(i, m, iccp2, 1) &
+          !                    + soilcmasrow(i, m, iccp2, 1)) * FAREROT(i, m)
           ! COMBAK PERLAY
 
         end do ! loop 866  ! nmtest loop.
@@ -3445,60 +3460,60 @@ contains
         !> Do the end of month variables
         ndmonth = (monthend(nt + 1) - monthend(nt)) * nday
 
-        do m = 1,nmtest
+        do m = 1, nmtest
 
           barefrac = 1.0
 
-          do j = 1,icc
+          do j = 1, icc
 
             !> Find the monthly outputs at the per tile level from the outputs at the per PFT level
-            npp_mo_t(i,m) = npp_mo_t(i,m) + npp_mo(i,m,j) * fcancmxrow(i,m,j)
-            gpp_mo_t(i,m) = gpp_mo_t(i,m) + gpp_mo(i,m,j) * fcancmxrow(i,m,j)
-            nep_mo_t(i,m) = nep_mo_t(i,m) + nep_mo(i,m,j) * fcancmxrow(i,m,j)
-            ! nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,j)*fcancmxrow(i,m,j)
-            hetrores_mo_t(i,m) = hetrores_mo_t(i,m) + hetrores_mo(i,m,j) * fcancmxrow(i,m,j)
-            autores_mo_t(i,m) = autores_mo_t(i,m) + autores_mo(i,m,j) * fcancmxrow(i,m,j)
+            npp_mo_t(i, m) = npp_mo_t(i, m) + npp_mo(i, m, j) * fcancmxrow(i, m, j)
+            gpp_mo_t(i, m) = gpp_mo_t(i, m) + gpp_mo(i, m, j) * fcancmxrow(i, m, j)
+            nep_mo_t(i, m) = nep_mo_t(i, m) + nep_mo(i, m, j) * fcancmxrow(i, m, j)
+            ! nbp_mo_t(i, m)=nbp_mo_t(i, m)+nbp_mo(i, m, j)*fcancmxrow(i, m, j)
+            hetrores_mo_t(i, m) = hetrores_mo_t(i, m) + hetrores_mo(i, m, j) * fcancmxrow(i, m, j)
+            autores_mo_t(i, m) = autores_mo_t(i, m) + autores_mo(i, m, j) * fcancmxrow(i, m, j)
             ! COMBAK PERLAY
-            litres_mo_t(i,m) = litres_mo_t(i,m) + litres_mo(i,m,j) * fcancmxrow(i,m,j)
-            soilcres_mo_t(i,m) = soilcres_mo_t(i,m) + soilcres_mo(i,m,j) * fcancmxrow(i,m,j)
+            litres_mo_t(i, m) = litres_mo_t(i, m) + litres_mo(i, m, j) * fcancmxrow(i, m, j)
+            soilcres_mo_t(i, m) = soilcres_mo_t(i, m) + soilcres_mo(i, m, j) * fcancmxrow(i, m, j)
             ! do k = 1, ignd
-            !   litres_mo_t(i,m,k) = litres_mo_t(i,m,k) + litres_mo(i,m,j,k) * fcancmxrow(i,m,j)
-            !   soilcres_mo_t(i,m,k) = soilcres_mo_t(i,m,k) + soilcres_mo(i,m,j,k) * fcancmxrow(i,m,j)
+            !   litres_mo_t(i, m, k) = litres_mo_t(i, m, k) + litres_mo(i, m, j, k) * fcancmxrow(i, m, j)
+            !   soilcres_mo_t(i, m, k) = soilcres_mo_t(i, m, k) + soilcres_mo(i, m, j, k) * fcancmxrow(i, m, j)
             ! end do
             ! COMBAK PERLAY
-            emit_co2_mo_t(i,m) = emit_co2_mo_t(i,m) + emit_co2_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_co_mo_t(i,m) = emit_co_mo_t(i,m) + emit_co_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_ch4_mo_t(i,m) = emit_ch4_mo_t(i,m) + emit_ch4_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_nmhc_mo_t(i,m) = emit_nmhc_mo_t(i,m) + emit_nmhc_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_h2_mo_t(i,m) = emit_h2_mo_t(i,m) + emit_h2_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_nox_mo_t(i,m) = emit_nox_mo_t(i,m) + emit_nox_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_n2o_mo_t(i,m) = emit_n2o_mo_t(i,m) + emit_n2o_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_pm25_mo_t(i,m) = emit_pm25_mo_t(i,m) + emit_pm25_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_tpm_mo_t(i,m) = emit_tpm_mo_t(i,m) + emit_tpm_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_tc_mo_t(i,m) = emit_tc_mo_t(i,m) + emit_tc_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_oc_mo_t(i,m) = emit_oc_mo_t(i,m) + emit_oc_mo(i,m,j) * fcancmxrow(i,m,j)
-            emit_bc_mo_t(i,m) = emit_bc_mo_t(i,m) + emit_bc_mo(i,m,j) * fcancmxrow(i,m,j)
-            bterm_mo_t(i,m) = bterm_mo_t(i,m) + bterm_mo(i,m,j) * fcancmxrow(i,m,j)
-            mterm_mo_t(i,m) = mterm_mo_t(i,m) + mterm_mo(i,m,j) * fcancmxrow(i,m,j)
-            smfuncveg_mo_t(i,m) = smfuncveg_mo_t(i,m) + smfuncveg_mo(i,m,j) * fcancmxrow(i,m,j)
-            burnfrac_mo_t(i,m) = burnfrac_mo_t(i,m) + burnfrac_mo(i,m,j) * fcancmxrow(i,m,j)
-            laimaxg_mo_t(i,m) = laimaxg_mo_t(i,m) + laimaxg_mo(i,m,j) * fcancmxrow(i,m,j)
-            litrfall_mo_t(i,m) = litrfall_mo_t(i,m) + litrfallveg_mo(i,m,j) * fcancmxrow(i,m,j)
-            humiftrs_mo_t(i,m) = humiftrs_mo_t(i,m) + humiftrsveg_mo(i,m,j) * fcancmxrow(i,m,j)
-            barefrac = barefrac - fcancmxrow(i,m,j)
+            emit_co2_mo_t(i, m) = emit_co2_mo_t(i, m) + emit_co2_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_co_mo_t(i, m) = emit_co_mo_t(i, m) + emit_co_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_ch4_mo_t(i, m) = emit_ch4_mo_t(i, m) + emit_ch4_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_nmhc_mo_t(i, m) = emit_nmhc_mo_t(i, m) + emit_nmhc_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_h2_mo_t(i, m) = emit_h2_mo_t(i, m) + emit_h2_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_nox_mo_t(i, m) = emit_nox_mo_t(i, m) + emit_nox_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_n2o_mo_t(i, m) = emit_n2o_mo_t(i, m) + emit_n2o_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_pm25_mo_t(i, m) = emit_pm25_mo_t(i, m) + emit_pm25_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_tpm_mo_t(i, m) = emit_tpm_mo_t(i, m) + emit_tpm_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_tc_mo_t(i, m) = emit_tc_mo_t(i, m) + emit_tc_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_oc_mo_t(i, m) = emit_oc_mo_t(i, m) + emit_oc_mo(i, m, j) * fcancmxrow(i, m, j)
+            emit_bc_mo_t(i, m) = emit_bc_mo_t(i, m) + emit_bc_mo(i, m, j) * fcancmxrow(i, m, j)
+            bterm_mo_t(i, m) = bterm_mo_t(i, m) + bterm_mo(i, m, j) * fcancmxrow(i, m, j)
+            mterm_mo_t(i, m) = mterm_mo_t(i, m) + mterm_mo(i, m, j) * fcancmxrow(i, m, j)
+            smfuncveg_mo_t(i, m) = smfuncveg_mo_t(i, m) + smfuncveg_mo(i, m, j) * fcancmxrow(i, m, j)
+            burnfrac_mo_t(i, m) = burnfrac_mo_t(i, m) + burnfrac_mo(i, m, j) * fcancmxrow(i, m, j)
+            laimaxg_mo_t(i, m) = laimaxg_mo_t(i, m) + laimaxg_mo(i, m, j) * fcancmxrow(i, m, j)
+            litrfall_mo_t(i, m) = litrfall_mo_t(i, m) + litrfallveg_mo(i, m, j) * fcancmxrow(i, m, j)
+            humiftrs_mo_t(i, m) = humiftrs_mo_t(i, m) + humiftrsveg_mo(i, m, j) * fcancmxrow(i, m, j)
+            barefrac = barefrac - fcancmxrow(i, m, j)
 
           end do ! j
 
-          nep_mo_t(i,m) = nep_mo_t(i,m) + nep_mo(i,m,iccp1) * barefrac
-          ! nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,iccp1)*barefrac
-          hetrores_mo_t(i,m) = hetrores_mo_t(i,m) + hetrores_mo(i,m,iccp1) * barefrac
-          humiftrs_mo_t(i,m) = humiftrs_mo_t(i,m) + humiftrsveg_mo(i,m,iccp1) * barefrac
+          nep_mo_t(i, m) = nep_mo_t(i, m) + nep_mo(i, m, iccp1) * barefrac
+          ! nbp_mo_t(i, m)=nbp_mo_t(i, m)+nbp_mo(i, m, iccp1)*barefrac
+          hetrores_mo_t(i, m) = hetrores_mo_t(i, m) + hetrores_mo(i, m, iccp1) * barefrac
+          humiftrs_mo_t(i, m) = humiftrs_mo_t(i, m) + humiftrsveg_mo(i, m, iccp1) * barefrac
           ! COMBAK PERLAY
-          litres_mo_t(i,m) = litres_mo_t(i,m) + litres_mo(i,m,iccp1) * barefrac
-          soilcres_mo_t(i,m) = soilcres_mo_t(i,m) + soilcres_mo(i,m,iccp1) * barefrac
+          litres_mo_t(i, m) = litres_mo_t(i, m) + litres_mo(i, m, iccp1) * barefrac
+          soilcres_mo_t(i, m) = soilcres_mo_t(i, m) + soilcres_mo(i, m, iccp1) * barefrac
           ! do k = 1, ignd
-          !   litres_mo_t(i,m,k) = litres_mo_t(i,m,k) + litres_mo(i,m,iccp1,k) * barefrac
-          !   soilcres_mo_t(i,m,k) = soilcres_mo_t(i,m,k) + soilcres_mo(i,m,iccp1,k) * barefrac
+          !   litres_mo_t(i, m, k) = litres_mo_t(i, m, k) + litres_mo(i, m, iccp1, k) * barefrac
+          !   soilcres_mo_t(i, m, k) = soilcres_mo_t(i, m, k) + soilcres_mo(i, m, iccp1, k) * barefrac
           ! end do
           ! COMBAK PERLAY
 
@@ -3506,53 +3521,53 @@ contains
           ! per PFT, they exist uniformly across a tile, so they are not inclued in the
           ! nbp_mo calculation. Instead we need to use the nbp, not nbpveg variable
           ! for per tile and per gridcell outputting.
-          nbp_mo_t(i,m) = nbprow(i,m)
+          nbp_mo_t(i, m) = nbprow(i, m)
 
           !> Find the monthly outputs at the per grid cell level from the outputs at the per tile level
-          npp_mo_g(i) = npp_mo_g(i) + npp_mo_t(i,m) * FAREROT(i,m)
-          gpp_mo_g(i) = gpp_mo_g(i) + gpp_mo_t(i,m) * FAREROT(i,m)
-          nep_mo_g(i) = nep_mo_g(i) + nep_mo_t(i,m) * FAREROT(i,m)
-          nbp_mo_g(i) = nbp_mo_g(i) + nbp_mo_t(i,m) * FAREROT(i,m)
-          hetrores_mo_g(i) = hetrores_mo_g(i) + hetrores_mo_t(i,m) * FAREROT(i,m)
-          autores_mo_g(i) = autores_mo_g(i) + autores_mo_t(i,m) * FAREROT(i,m)
+          npp_mo_g(i) = npp_mo_g(i) + npp_mo_t(i, m) * FAREROT(i, m)
+          gpp_mo_g(i) = gpp_mo_g(i) + gpp_mo_t(i, m) * FAREROT(i, m)
+          nep_mo_g(i) = nep_mo_g(i) + nep_mo_t(i, m) * FAREROT(i, m)
+          nbp_mo_g(i) = nbp_mo_g(i) + nbp_mo_t(i, m) * FAREROT(i, m)
+          hetrores_mo_g(i) = hetrores_mo_g(i) + hetrores_mo_t(i, m) * FAREROT(i, m)
+          autores_mo_g(i) = autores_mo_g(i) + autores_mo_t(i, m) * FAREROT(i, m)
           ! COMBAK PERLAY
-          litres_mo_g(i) = litres_mo_g(i) + litres_mo_t(i,m) * FAREROT(i,m)
-          soilcres_mo_g(i) = soilcres_mo_g(i) + soilcres_mo_t(i,m) * FAREROT(i,m)
+          litres_mo_g(i) = litres_mo_g(i) + litres_mo_t(i, m) * FAREROT(i, m)
+          soilcres_mo_g(i) = soilcres_mo_g(i) + soilcres_mo_t(i, m) * FAREROT(i, m)
           ! do k = 1, ignd
-          !   litres_mo_g(i,k) = litres_mo_g(i,k) + litres_mo_t(i,m,k) * FAREROT(i,m)
-          !   soilcres_mo_g(i,k) = soilcres_mo_g(i,k) + soilcres_mo_t(i,m,k) * FAREROT(i,m)
+          !   litres_mo_g(i, k) = litres_mo_g(i, k) + litres_mo_t(i, m, k) * FAREROT(i, m)
+          !   soilcres_mo_g(i, k) = soilcres_mo_g(i, k) + soilcres_mo_t(i, m, k) * FAREROT(i, m)
           ! end do
           ! COMBAK PERLAY
-          laimaxg_mo_g(i) = laimaxg_mo_g(i) + laimaxg_mo_t(i,m) * FAREROT(i,m)
-          emit_co2_mo_g(i) = emit_co2_mo_g(i) + emit_co2_mo_t(i,m) * FAREROT(i,m)
-          emit_co_mo_g(i) = emit_co_mo_g(i) + emit_co_mo_t(i,m) * FAREROT(i,m)
-          emit_ch4_mo_g(i) = emit_ch4_mo_g(i) + emit_ch4_mo_t(i,m) * FAREROT(i,m)
-          emit_nmhc_mo_g(i) = emit_nmhc_mo_g(i) + emit_nmhc_mo_t(i,m) * FAREROT(i,m)
-          emit_h2_mo_g(i) = emit_h2_mo_g(i) + emit_h2_mo_t(i,m) * FAREROT(i,m)
-          emit_nox_mo_g(i) = emit_nox_mo_g(i) + emit_nox_mo_t(i,m) * FAREROT(i,m)
-          emit_n2o_mo_g(i) = emit_n2o_mo_g(i) + emit_n2o_mo_t(i,m) * FAREROT(i,m)
-          emit_pm25_mo_g(i) = emit_pm25_mo_g(i) + emit_pm25_mo_t(i,m) * FAREROT(i,m)
-          emit_tpm_mo_g(i) = emit_tpm_mo_g(i) + emit_tpm_mo_t(i,m) * FAREROT(i,m)
-          emit_tc_mo_g(i) = emit_tc_mo_g(i) + emit_tc_mo_t(i,m) * FAREROT(i,m)
-          emit_oc_mo_g(i) = emit_oc_mo_g(i) + emit_oc_mo_t(i,m) * FAREROT(i,m)
-          emit_bc_mo_g(i) = emit_bc_mo_g(i) + emit_bc_mo_t(i,m) * FAREROT(i,m)
-          burnfrac_mo_g(i) = burnfrac_mo_g(i) + burnfrac_mo_t(i,m) * FAREROT(i,m)
-          luc_emc_mo_g(i) = luc_emc_mo_g(i) + luc_emc_mo_t(i,m) * FAREROT(i,m)
-          lucsocin_mo_g(i) = lucsocin_mo_g(i) + lucsocin_mo_t(i,m) * FAREROT(i,m)
-          lucltrin_mo_g(i) = lucltrin_mo_g(i) + lucltrin_mo_t(i,m) * FAREROT(i,m)
-          ch4WetSpec_mo_g(i) = ch4WetSpec_mo_g(i) + ch4WetSpec_mo_t(i,m) * FAREROT(i,m)
-          wetfdyn_mo_g(i) = wetfdyn_mo_g(i) + wetfdyn_mo_t(i,m) * FAREROT(i,m)
-          wetfpres_mo_g(i) = wetfpres_mo_g(i) + wetfpres_mo_t(i,m) * FAREROT(i,m)
-          ch4WetDyn_mo_g(i) = ch4WetDyn_mo_g(i) + ch4WetDyn_mo_t(i,m) * FAREROT(i,m)
-          ch4soills_mo_g(i) = ch4soills_mo_g(i) + ch4soills_mo_t(i,m) * FAREROT(i,m)
-          smfuncveg_mo_g(i) = smfuncveg_mo_g(i) + smfuncveg_mo_t(i,m) * FAREROT(i,m)
-          bterm_mo_g(i) = bterm_mo_g(i) + bterm_mo_t(i,m) * FAREROT(i,m)
-          lterm_mo_g(i) = lterm_mo_g(i) + lterm_mo_t(i,m) * FAREROT(i,m)
-          mterm_mo_g(i) = mterm_mo_g(i) + mterm_mo_t(i,m) * FAREROT(i,m)
-          litrfall_mo_g(i) = litrfall_mo_g(i) + litrfall_mo_t(i,m) * FAREROT(i,m)
-          humiftrs_mo_g(i) = humiftrs_mo_g(i) + humiftrs_mo_t(i,m) * FAREROT(i,m)
+          laimaxg_mo_g(i) = laimaxg_mo_g(i) + laimaxg_mo_t(i, m) * FAREROT(i, m)
+          emit_co2_mo_g(i) = emit_co2_mo_g(i) + emit_co2_mo_t(i, m) * FAREROT(i, m)
+          emit_co_mo_g(i) = emit_co_mo_g(i) + emit_co_mo_t(i, m) * FAREROT(i, m)
+          emit_ch4_mo_g(i) = emit_ch4_mo_g(i) + emit_ch4_mo_t(i, m) * FAREROT(i, m)
+          emit_nmhc_mo_g(i) = emit_nmhc_mo_g(i) + emit_nmhc_mo_t(i, m) * FAREROT(i, m)
+          emit_h2_mo_g(i) = emit_h2_mo_g(i) + emit_h2_mo_t(i, m) * FAREROT(i, m)
+          emit_nox_mo_g(i) = emit_nox_mo_g(i) + emit_nox_mo_t(i, m) * FAREROT(i, m)
+          emit_n2o_mo_g(i) = emit_n2o_mo_g(i) + emit_n2o_mo_t(i, m) * FAREROT(i, m)
+          emit_pm25_mo_g(i) = emit_pm25_mo_g(i) + emit_pm25_mo_t(i, m) * FAREROT(i, m)
+          emit_tpm_mo_g(i) = emit_tpm_mo_g(i) + emit_tpm_mo_t(i, m) * FAREROT(i, m)
+          emit_tc_mo_g(i) = emit_tc_mo_g(i) + emit_tc_mo_t(i, m) * FAREROT(i, m)
+          emit_oc_mo_g(i) = emit_oc_mo_g(i) + emit_oc_mo_t(i, m) * FAREROT(i, m)
+          emit_bc_mo_g(i) = emit_bc_mo_g(i) + emit_bc_mo_t(i, m) * FAREROT(i, m)
+          burnfrac_mo_g(i) = burnfrac_mo_g(i) + burnfrac_mo_t(i, m) * FAREROT(i, m)
+          luc_emc_mo_g(i) = luc_emc_mo_g(i) + luc_emc_mo_t(i, m) * FAREROT(i, m)
+          lucsocin_mo_g(i) = lucsocin_mo_g(i) + lucsocin_mo_t(i, m) * FAREROT(i, m)
+          lucltrin_mo_g(i) = lucltrin_mo_g(i) + lucltrin_mo_t(i, m) * FAREROT(i, m)
+          ch4WetSpec_mo_g(i) = ch4WetSpec_mo_g(i) + ch4WetSpec_mo_t(i, m) * FAREROT(i, m)
+          wetfdyn_mo_g(i) = wetfdyn_mo_g(i) + wetfdyn_mo_t(i, m) * FAREROT(i, m)
+          wetfpres_mo_g(i) = wetfpres_mo_g(i) + wetfpres_mo_t(i, m) * FAREROT(i, m)
+          ch4WetDyn_mo_g(i) = ch4WetDyn_mo_g(i) + ch4WetDyn_mo_t(i, m) * FAREROT(i, m)
+          ch4soills_mo_g(i) = ch4soills_mo_g(i) + ch4soills_mo_t(i, m) * FAREROT(i, m)
+          smfuncveg_mo_g(i) = smfuncveg_mo_g(i) + smfuncveg_mo_t(i, m) * FAREROT(i, m)
+          bterm_mo_g(i) = bterm_mo_g(i) + bterm_mo_t(i, m) * FAREROT(i, m)
+          lterm_mo_g(i) = lterm_mo_g(i) + lterm_mo_t(i, m) * FAREROT(i, m)
+          mterm_mo_g(i) = mterm_mo_g(i) + mterm_mo_t(i, m) * FAREROT(i, m)
+          litrfall_mo_g(i) = litrfall_mo_g(i) + litrfall_mo_t(i, m) * FAREROT(i, m)
+          humiftrs_mo_g(i) = humiftrs_mo_g(i) + humiftrs_mo_t(i, m) * FAREROT(i, m)
 
-          fProductDecomp_mo_g(i) = fProductDecomp_mo_g(i) + fProductDecomp_mo_t(i,m) * FAREROT(i,m)
+          fProductDecomp_mo_g(i) = fProductDecomp_mo_g(i) + fProductDecomp_mo_t(i, m) * FAREROT(i, m)
 
         end do ! loop 900
 
@@ -3563,25 +3578,26 @@ contains
         ! Take one day off so it is the last day of the month rather than the first day of the next month.
         timeStamp(1) = consecDays + monthend(imonth + 1) - 1
 
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo_g'     ,timeStamp,'npp',[npp_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo_g'     ,timeStamp,'gpp',[gpp_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo_g'     ,timeStamp,'nep',[nep_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo_g'     ,timeStamp,'nbp',[nbp_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo_g',timeStamp,'rh',[hetrores_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_g' ,timeStamp,'ra',[autores_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_g' ,timeStamp,'fVegLitter',[litrfall_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
-
-        ! COMBAK PERLAY
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[soilcmas_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[litres_mo_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[soilcres_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_mo_g'     ,timeStamp,'npp',[npp_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_mo_g'     ,timeStamp,'gpp',[gpp_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_mo_g'     ,timeStamp,'nep',[nep_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_mo_g'     ,timeStamp,'nbp',[nbp_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_mo_g',timeStamp,'rh',[hetrores_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_mo_g' ,timeStamp,'ra',[autores_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'litrfall_mo_g' ,timeStamp,'fVegLitter',[litrfall_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetDyn_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'leafmass_mo_g',timeStamp,'cLeaf',[leafmass_mo_g(i)])
+        
+        ! COMBAK PERLAY        
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[soilcmas_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[litres_mo_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[soilcres_mo_g(i)])
         ! Make the bulk litter and soil C pool and respiration temporary variables:
         ! allocate(bulkLitterCarbon(1))
         ! allocate(bulkSoilCarbon(1))
@@ -3591,10 +3607,10 @@ contains
         ! bulkSoilCarbon(1) = sum(soilcmas_mo_g(i,:))
         ! bulkLitterResp(1) = sum(litres_mo_g(i,:))
         ! bulkSoilResp(1) = sum(soilcres_mo_g(i,:))
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[bulkLitterCarbon])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[bulkSoilCarbon])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
-        ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[bulkSoilResp])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[bulkLitterCarbon])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[bulkSoilCarbon])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
+        ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[bulkSoilResp])
         ! deallocate(bulkLitterCarbon)
         ! deallocate(bulkSoilCarbon)
         ! deallocate(bulkLitterResp)
@@ -3602,39 +3618,39 @@ contains
         ! COMBAK PERLAY
 
         if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) then
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_mo_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_g' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetSpec_mo_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfpres_mo_g' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_g(i)])
         end if
 
-        do m = 1,nmtest
+        do m = 1, nmtest
           sumfare = 0.0
-          do j = 1,icc
-            sumfare = sumfare + fcancmxrow(i,m,j)
+          do j = 1, icc
+            sumfare = sumfare + fcancmxrow(i, m, j)
           end do ! j
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_mo_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc),1. - sumfare])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'fcancmxrow_mo_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i, m, 1:icc), 1. - sumfare])
         end do ! m
 
         if (dofire) then
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_g' ,timeStamp,'fFireCH4',[emit_ch4_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_mo_g' ,timeStamp,'fFireCH4',[emit_ch4_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)])
         end if
         if (lnduseon) then
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_mo_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_mo_g' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_g' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_mo_g' ,timeStamp,'fDeforestTotal', &
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'luc_emc_mo_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'lucltrin_mo_g' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'lucsocin_mo_g' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'luctot_mo_g' ,timeStamp,'fDeforestTotal', &
                              [lucsocin_mo_g(i) + lucltrin_mo_g(i) + luc_emc_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'fProductDecomp_mo_g' ,timeStamp,'fProductDecomp',[fProductDecomp_mo_g(i)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'cProduct_mo_g' ,timeStamp,'cProduct',[cProduct_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'fProductDecomp_mo_g' ,timeStamp,'fProductDecomp',[fProductDecomp_mo_g(i)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'cProduct_mo_g' ,timeStamp,'cProduct',[cProduct_mo_g(i)])
         end if
 
         if (PFTCompetition) then
           pftExist = 0.0
-          do j = 1,icc
-            if (pftexistrow(i,1,j)) pftExist(j) = 1.0
+          do j = 1, icc
+            if (pftexistrow(i, 1, j)) pftExist(j) = 1.0
           end do
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_mo_g' ,timeStamp,'landCoverExist',[pftExist]) ! flag only set up for one tile !
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'pftexistrow_mo_g' ,timeStamp,'landCoverExist',[pftExist]) ! flag only set up for one tile !
         end if
 
         if (doperpftoutput) then
@@ -3642,39 +3658,40 @@ contains
             print * ,'Per PFT and per tile outputs together not implemented yet'
           else
             m = 1
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo' ,timeStamp,'lai', [laimaxg_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo',timeStamp,'cVeg',[vgbiomas_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo'     ,timeStamp,'npp',[npp_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo'     ,timeStamp,'gpp',[gpp_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo'     ,timeStamp,'nep',[nep_mo(i,m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_mo' ,timeStamp,'lai', [laimaxg_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'leafmass_mo'  ,timeStamp,'cLeaf',[leafmass_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_mo',timeStamp,'cVeg',[vgbiomas_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_mo'     ,timeStamp,'npp',[npp_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_mo'     ,timeStamp,'gpp',[gpp_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_mo'     ,timeStamp,'nep',[nep_mo(i, m,:)])
             ! NOTE: This NBP does not include LUC product pool contributions since they are
             ! not per PFT but rather per tile
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo'     ,timeStamp,'nbp',[nbp_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo',timeStamp,'rh',[hetrores_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo' ,timeStamp,'ra',[autores_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,1:iccp1)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_mo'     ,timeStamp,'nbp',[nbp_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_mo',timeStamp,'rh',[hetrores_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_mo' ,timeStamp,'ra',[autores_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i, m, 1:iccp1)])
 
             ! COMBAK PERLAY
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[litrmass_mo(i,m,1:iccp1)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[soilcmas_mo(i,m,1:iccp1)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[litres_mo(i,m,1:iccp1)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[soilcres_mo(i,m,1:iccp1)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[litrmass_mo(i, m, 1:iccp1)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[soilcmas_mo(i, m, 1:iccp1)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[litres_mo(i, m, 1:iccp1)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[soilcres_mo(i, m, 1:iccp1)])
             ! Make the bulk litter and soil C pool and respiration temporary variables:
             ! allocate(bulkLitterCarbon(iccp1))
             ! allocate(bulkSoilCarbon(iccp1))
             ! allocate(bulkLitterResp(iccp1))
             ! allocate(bulkSoilResp(iccp1))
-            ! do k = 1,iccp1
-            !   bulkLitterCarbon(k) = sum(litrmass_mo(i,m,k,:))
-            !   bulkSoilCarbon(k) = sum(soilcmas_mo(i,m,k,:))
-            !   bulkLitterResp(k) = sum(litres_mo(i,m,k,:))
-            !   bulkSoilResp(k) = sum(soilcres_mo(i,m,k,:))
+            ! do k = 1, iccp1
+            !   bulkLitterCarbon(k) = sum(litrmass_mo(i, m, k,:))
+            !   bulkSoilCarbon(k) = sum(soilcmas_mo(i, m, k,:))
+            !   bulkLitterResp(k) = sum(litres_mo(i, m, k,:))
+            !   bulkSoilResp(k) = sum(soilcres_mo(i, m, k,:))
             ! end do
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[bulkLitterCarbon])
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[bulkSoilCarbon])
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[bulkLitterResp])
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[bulkSoilResp])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[bulkLitterCarbon])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[bulkSoilCarbon])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[bulkLitterResp])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[bulkSoilResp])
             ! deallocate(bulkLitterCarbon)
             ! deallocate(bulkSoilCarbon)
             ! deallocate(bulkLitterResp)
@@ -3682,17 +3699,17 @@ contains
             ! COMBAK PERLAY
 
             if (dofire .or. lnduseon) then
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo' ,timeStamp,'fFireCH4',[emit_ch4_mo(i,m,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo' ,timeStamp,'fFire',[emit_co2_mo(i,m,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo' ,timeStamp,'burntFractionAll',[burnfrac_mo(i,m,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_mo' ,timeStamp,'fFireCH4',[emit_ch4_mo(i, m,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_co2_mo' ,timeStamp,'fFire',[emit_co2_mo(i, m,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'burnfrac_mo' ,timeStamp,'burntFractionAll',[burnfrac_mo(i, m,:)])
             end if
 
             if (useTracer > 0) then
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerGLeafMass' ,timeStamp,'cLeafTracer',[tracerGLeafMassrot(i,m,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerStemMass' ,timeStamp,'cStemTracer',[tracerStemMassrot(i,m,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerRootMass' ,timeStamp,'cRootTracer',[tracerRootMassrot(i,m,:)])
-              ! call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerLitrMass' ,timeStamp,'cLitterTracer',[tracerLitrMassrot(i,m,:)])
-              ! call writeOutput1D(lonLocalIndex,latLocalIndex,'tracerSoilCMass' ,timeStamp,'cSoilTracer',[tracerSoilCMassrot(i,m,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'tracerGLeafMass' ,timeStamp,'cLeafTracer',[tracerGLeafMassrot(i, m,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'tracerStemMass' ,timeStamp,'cStemTracer',[tracerStemMassrot(i, m,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'tracerRootMass' ,timeStamp,'cRootTracer',[tracerRootMassrot(i, m,:)])
+              ! call writeOutput1D(lonLocalIndex, latLocalIndex,'tracerLitrMass' ,timeStamp,'cLitterTracer',[tracerLitrMassrot(i, m,:)])
+              ! call writeOutput1D(lonLocalIndex, latLocalIndex,'tracerSoilCMass' ,timeStamp,'cSoilTracer',[tracerSoilCMassrot(i, m,:)])
             end if
 
           end if
@@ -3700,39 +3717,41 @@ contains
 
         if (dopertileoutput) then
           if (nmtest > 1) then
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_t' ,timeStamp,'lai', [laimaxg_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_t',timeStamp,'cVeg',[vgbiomas_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo_t'     ,timeStamp,'npp',[npp_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo_t'     ,timeStamp,'gpp',[gpp_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo_t'     ,timeStamp,'nep',[nep_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo_t'     ,timeStamp,'nbp',[nbp_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo_t',timeStamp,'rh',[hetrores_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_t' ,timeStamp,'ra',[autores_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,1:iccp1)])
-
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_mo_t' ,timeStamp,'lai', [laimaxg_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_mo_t',timeStamp,'cVeg',[vgbiomas_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_mo_t'     ,timeStamp,'npp',[npp_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_mo_t'     ,timeStamp,'gpp',[gpp_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_mo_t'     ,timeStamp,'nep',[nep_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_mo_t'     ,timeStamp,'nbp',[nbp_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_mo_t',timeStamp,'rh',[hetrores_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_mo_t' ,timeStamp,'ra',[autores_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i, 1:iccp1)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'leafmass_mo_t',timeStamp,'cLeaf',[leafmass_mo_t(i,:)])
+            
             ! COMBAK PERLAY
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[litrmass_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[soilcmas_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[litres_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[soilcres_mo_t(i,:)])
+            
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[litrmass_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[soilcmas_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[litres_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[soilcres_mo_t(i,:)])
             ! Make the bulk litter and soil C pool and respiration temporary variables:
             ! allocate(bulkLitterCarbon(nmtest))
             ! allocate(bulkSoilCarbon(nmtest))
             ! allocate(bulkLitterResp(nmtest))
             ! allocate(bulkSoilResp(nmtest))
             !
-            ! do m = 1,nmtest
-            !   bulkLitterCarbon(m) = sum(litrmass_mo_t(i,m,:))
-            !   bulkSoilCarbon(m) = sum(soilcmas_mo_t(i,m,:))
-            !   bulkLitterResp(m) = sum(litres_mo_t(i,m,:))
-            !   bulkSoilResp(m) = sum(soilcres_mo_t(i,m,:))
+            ! do m = 1, nmtest
+            !   bulkLitterCarbon(m) = sum(litrmass_mo_t(i, m,:))
+            !   bulkSoilCarbon(m) = sum(soilcmas_mo_t(i, m,:))
+            !   bulkLitterResp(m) = sum(litres_mo_t(i, m,:))
+            !   bulkSoilResp(m) = sum(soilcres_mo_t(i, m,:))
             ! end do
             !
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[bulkLitterCarbon])
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[bulkSoilCarbon])
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
-            ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[bulkSoilResp])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[bulkLitterCarbon])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[bulkSoilCarbon])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
+            ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[bulkSoilResp])
             !
             ! deallocate(bulkLitterCarbon)
             ! deallocate(bulkSoilCarbon)
@@ -3740,33 +3759,33 @@ contains
             ! deallocate(bulkSoilResp)
             ! COMBAK PERLAY
 
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetDyn_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
 
             if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) then
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfpres_mo_t' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_t(i,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_mo_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfpres_mo_t' ,timeStamp,'wetlandFracPresc',[wetfpres_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetSpec_mo_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_mo_t(i,:)])
             end if
 
             if (dofire) then
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_t' ,timeStamp,'fFireCH4',[emit_ch4_mo_t(i,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_t' ,timeStamp,'fFire',[emit_co2_mo_t(i,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_t' ,timeStamp,'burntFractionAll',[burnfrac_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_mo_t' ,timeStamp,'fFireCH4',[emit_ch4_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_co2_mo_t' ,timeStamp,'fFire',[emit_co2_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'burnfrac_mo_t' ,timeStamp,'burntFractionAll',[burnfrac_mo_t(i,:)])
             end if
 
             if (lnduseon) then
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_mo_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_t(i,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_mo_t' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_t(i,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_t' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_t(i,:)])
-              call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_mo_t' ,timeStamp,'fDeforestTotal', &
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'luc_emc_mo_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'lucltrin_mo_t' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'lucsocin_mo_t' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_t(i,:)])
+              call writeOutput1D(lonLocalIndex, latLocalIndex,'luctot_mo_t' ,timeStamp,'fDeforestTotal', &
                                  [lucsocin_mo_t(i,:) + lucltrin_mo_t(i,:) + luc_emc_mo_t(i,:)])
             end if
           end if
         end if
 
         !> Reset all end of month accumulated arrays
-        call resetmonthend(nltest,nmtest)
+        call resetmonthend(nltest, nmtest)
 
       end if ! end of month
     end do ! loop 865 ! nmon
@@ -3783,18 +3802,18 @@ contains
   !! The pointer to the annual data structures (in ctem_statevars) keeps the data between calls.
   !! @author J. Melton
 
-  subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,realyr,nltest,nmtest,lastDOY)
+  subroutine ctem_annual_aw(lonLocalIndex, latLocalIndex, iday, realyr, nltest, nmtest, lastDOY)
 
     use class_statevars, only : class_rot
-    use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
+    use ctem_statevars, only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                   resetyearend, vgat
-    use classic_params, only : icc,iccp1,seed,iccp2,ignd, nlat, nmos
-    use outputManager, only : writeOutput1D,consecDays
+    use classic_params, only : icc, iccp1, seed, iccp2, ignd, nlat, nmos
+    use outputManager, only : writeOutput1D, consecDays
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonLocalIndex,latLocalIndex
+    integer, intent(in) :: lonLocalIndex, latLocalIndex
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
@@ -4003,7 +4022,7 @@ contains
     real, pointer, dimension(:) :: fProductDecomp_yr_g    !< Respiration of carbon from the LUC product pools (litter and soil C iccp2 position) \f$[kg C m^{-2} s^{-1}]\f$
 
     ! local
-    integer :: i,m,j,nt,k
+    integer :: i, m, j, nt, k
     real :: barefrac
     real :: sumfare
     real, dimension(1) :: timeStamp
@@ -4202,265 +4221,265 @@ contains
     !> Accumulate yearly outputs
     oneOverDPY = 1./real(lastDOY)
     i = 1 ! offline nlat is always 1 so this array position is always 1.
-    do m = 1,nmtest
-      do j = 1,icc
+    do m = 1, nmtest
+      do j = 1, icc
 
         !> Accumulate the variables at the per PFT level
 
-        if (ailcgrow(i,m,j) > laimaxg_yr(i,m,j)) then
-          laimaxg_yr(i,m,j) = ailcgrow(i,m,j)
+        if (ailcgrow(i, m, j) > laimaxg_yr(i, m, j)) then
+          laimaxg_yr(i, m, j) = ailcgrow(i, m, j)
         end if
 
-        npp_yr(i,m,j) = npp_yr(i,m,j) + nppvegrow(i,m,j) * oneOverDPY
-        gpp_yr(i,m,j) = gpp_yr(i,m,j) + gppvegrow(i,m,j) * oneOverDPY
-        nep_yr(i,m,j) = nep_yr(i,m,j) + nepvegrow(i,m,j) * oneOverDPY
+        npp_yr(i, m, j) = npp_yr(i, m, j) + nppvegrow(i, m, j) * oneOverDPY
+        gpp_yr(i, m, j) = gpp_yr(i, m, j) + gppvegrow(i, m, j) * oneOverDPY
+        nep_yr(i, m, j) = nep_yr(i, m, j) + nepvegrow(i, m, j) * oneOverDPY
         ! NOTE: This NBP does not include LUC product pool contributions since they are
         ! not per PFT but rather per tile
-        nbp_yr(i,m,j) = nbp_yr(i,m,j) + nbpvegrow(i,m,j) * oneOverDPY
-        emit_co2_yr(i,m,j) = emit_co2_yr(i,m,j) + emit_co2row(i,m,j) * oneOverDPY
-        emit_co_yr(i,m,j) = emit_co_yr(i,m,j) + emit_corow(i,m,j) * oneOverDPY
-        emit_ch4_yr(i,m,j) = emit_ch4_yr(i,m,j) + emit_ch4row(i,m,j) * oneOverDPY
-        emit_nmhc_yr(i,m,j) = emit_nmhc_yr(i,m,j) + emit_nmhcrow(i,m,j) * oneOverDPY
-        emit_h2_yr(i,m,j) = emit_h2_yr(i,m,j) + emit_h2row(i,m,j) * oneOverDPY
-        emit_nox_yr(i,m,j) = emit_nox_yr(i,m,j) + emit_noxrow(i,m,j) * oneOverDPY
-        emit_n2o_yr(i,m,j) = emit_n2o_yr(i,m,j) + emit_n2orow(i,m,j) * oneOverDPY
-        emit_pm25_yr(i,m,j) = emit_pm25_yr(i,m,j) + emit_pm25row(i,m,j) * oneOverDPY
-        emit_tpm_yr(i,m,j) = emit_tpm_yr(i,m,j) + emit_tpmrow(i,m,j) * oneOverDPY
-        emit_tc_yr(i,m,j) = emit_tc_yr(i,m,j) + emit_tcrow(i,m,j) * oneOverDPY
-        emit_oc_yr(i,m,j) = emit_oc_yr(i,m,j) + emit_ocrow(i,m,j) * oneOverDPY
-        emit_bc_yr(i,m,j) = emit_bc_yr(i,m,j) + emit_bcrow(i,m,j) * oneOverDPY
+        nbp_yr(i, m, j) = nbp_yr(i, m, j) + nbpvegrow(i, m, j) * oneOverDPY
+        emit_co2_yr(i, m, j) = emit_co2_yr(i, m, j) + emit_co2row(i, m, j) * oneOverDPY
+        emit_co_yr(i, m, j) = emit_co_yr(i, m, j) + emit_corow(i, m, j) * oneOverDPY
+        emit_ch4_yr(i, m, j) = emit_ch4_yr(i, m, j) + emit_ch4row(i, m, j) * oneOverDPY
+        emit_nmhc_yr(i, m, j) = emit_nmhc_yr(i, m, j) + emit_nmhcrow(i, m, j) * oneOverDPY
+        emit_h2_yr(i, m, j) = emit_h2_yr(i, m, j) + emit_h2row(i, m, j) * oneOverDPY
+        emit_nox_yr(i, m, j) = emit_nox_yr(i, m, j) + emit_noxrow(i, m, j) * oneOverDPY
+        emit_n2o_yr(i, m, j) = emit_n2o_yr(i, m, j) + emit_n2orow(i, m, j) * oneOverDPY
+        emit_pm25_yr(i, m, j) = emit_pm25_yr(i, m, j) + emit_pm25row(i, m, j) * oneOverDPY
+        emit_tpm_yr(i, m, j) = emit_tpm_yr(i, m, j) + emit_tpmrow(i, m, j) * oneOverDPY
+        emit_tc_yr(i, m, j) = emit_tc_yr(i, m, j) + emit_tcrow(i, m, j) * oneOverDPY
+        emit_oc_yr(i, m, j) = emit_oc_yr(i, m, j) + emit_ocrow(i, m, j) * oneOverDPY
+        emit_bc_yr(i, m, j) = emit_bc_yr(i, m, j) + emit_bcrow(i, m, j) * oneOverDPY
 
-        bterm_yr(i,m,j) = bterm_yr(i,m,j) + btermrow(i,m,j) * oneOverDPY
-        mterm_yr(i,m,j) = mterm_yr(i,m,j) + mtermrow(i,m,j) * oneOverDPY
-        smfuncveg_yr(i,m,j) = smfuncveg_yr(i,m,j) + smfuncvegrow(i,m,j) * oneOverDPY
-        hetrores_yr(i,m,j) = hetrores_yr(i,m,j) + hetroresvegrow(i,m,j) * oneOverDPY
-        autores_yr(i,m,j) = autores_yr(i,m,j) + autoresvegrow(i,m,j) * oneOverDPY
+        bterm_yr(i, m, j) = bterm_yr(i, m, j) + btermrow(i, m, j) * oneOverDPY
+        mterm_yr(i, m, j) = mterm_yr(i, m, j) + mtermrow(i, m, j) * oneOverDPY
+        smfuncveg_yr(i, m, j) = smfuncveg_yr(i, m, j) + smfuncvegrow(i, m, j) * oneOverDPY
+        hetrores_yr(i, m, j) = hetrores_yr(i, m, j) + hetroresvegrow(i, m, j) * oneOverDPY
+        autores_yr(i, m, j) = autores_yr(i, m, j) + autoresvegrow(i, m, j) * oneOverDPY
         ! COMBAK PERLAY
-        litres_yr(i,m,j) = litres_yr(i,m,j) + litresvegrow(i,m,j) * oneOverDPY
-        soilcres_yr(i,m,j) = soilcres_yr(i,m,j) + soilcresvegrow(i,m,j) * oneOverDPY
+        litres_yr(i, m, j) = litres_yr(i, m, j) + litresvegrow(i, m, j) * oneOverDPY
+        soilcres_yr(i, m, j) = soilcres_yr(i, m, j) + soilcresvegrow(i, m, j) * oneOverDPY
         ! do k = 1, ignd
-        !   litres_yr(i,m,j,k) = litres_yr(i,m,j,k) + litresvegrow(i,m,j,k) * oneOverDPY
-        !   soilcres_yr(i,m,j,k) = soilcres_yr(i,m,j,k) + soilcresvegrow(i,m,j,k) * oneOverDPY
+        !   litres_yr(i, m, j, k) = litres_yr(i, m, j, k) + litresvegrow(i, m, j, k) * oneOverDPY
+        !   soilcres_yr(i, m, j, k) = soilcres_yr(i, m, j, k) + soilcresvegrow(i, m, j, k) * oneOverDPY
         ! end do
         ! COMBAK PERLAY
         ! Let accumulate, not a flux or a mean value.
-        burnfrac_yr(i,m,j) = burnfrac_yr(i,m,j) + burnvegfrow(i,m,j)
+        burnfrac_yr(i, m, j) = burnfrac_yr(i, m, j) + burnvegfrow(i, m, j)
 
       end do ! loop 884
 
       !>   Also do the bare fraction amounts
-      hetrores_yr(i,m,iccp1) = hetrores_yr(i,m,iccp1) + hetroresvegrow(i,m,iccp1) * oneOverDPY
+      hetrores_yr(i, m, iccp1) = hetrores_yr(i, m, iccp1) + hetroresvegrow(i, m, iccp1) * oneOverDPY
       ! COMBAK PERLAY
-      litres_yr(i,m,iccp1) = litres_yr(i,m,iccp1) + litresvegrow(i,m,iccp1) * oneOverDPY
-      soilcres_yr(i,m,iccp1) = soilcres_yr(i,m,iccp1) &
-      + soilcresvegrow(i,m,iccp1) * oneOverDPY
+      litres_yr(i, m, iccp1) = litres_yr(i, m, iccp1) + litresvegrow(i, m, iccp1) * oneOverDPY
+      soilcres_yr(i, m, iccp1) = soilcres_yr(i, m, iccp1) &
+                                 + soilcresvegrow(i, m, iccp1) * oneOverDPY
       ! do k = 1, ignd
-      !   litres_yr(i,m,iccp1,k) = litres_yr(i,m,iccp1,k) + litresvegrow(i,m,iccp1,k) * oneOverDPY
-      !   soilcres_yr(i,m,iccp1,k) = soilcres_yr(i,m,iccp1,k) &
-      !                              + soilcresvegrow(i,m,iccp1,k) * oneOverDPY
+      !   litres_yr(i, m, iccp1, k) = litres_yr(i, m, iccp1, k) + litresvegrow(i, m, iccp1, k) * oneOverDPY
+      !   soilcres_yr(i, m, iccp1, k) = soilcres_yr(i, m, iccp1, k) &
+      !                              + soilcresvegrow(i, m, iccp1, k) * oneOverDPY
       ! end do
       ! COMBAK PERLAY
-      nep_yr(i,m,iccp1) = nep_yr(i,m,iccp1) + nepvegrow(i,m,iccp1) * oneOverDPY
-      nbp_yr(i,m,iccp1) = nbp_yr(i,m,iccp1) + nbpvegrow(i,m,iccp1) * oneOverDPY
+      nep_yr(i, m, iccp1) = nep_yr(i, m, iccp1) + nepvegrow(i, m, iccp1) * oneOverDPY
+      nbp_yr(i, m, iccp1) = nbp_yr(i, m, iccp1) + nbpvegrow(i, m, iccp1) * oneOverDPY
 
-      peatdep_yr_t(i,m) = peatdeprow(i,m)      ! YW September 04, 2015
+      peatdep_yr_t(i, m) = peatdeprow(i, m)      ! YW September 04, 2015
 
       !> Accumulate the variables at the per tile level
-      lterm_yr_t(i,m) = lterm_yr_t(i,m) + ltermrow(i,m) * oneOverDPY
-      wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m) + wetfdynrow(i,m) * oneOverDPY
-      luc_emc_yr_t(i,m) = luc_emc_yr_t(i,m) + lucemcomrow(i,m) * oneOverDPY
-      lucsocin_yr_t(i,m) = lucsocin_yr_t(i,m) + lucsocinrow(i,m) * oneOverDPY
-      lucltrin_yr_t(i,m) = lucltrin_yr_t(i,m) + lucltrinrow(i,m) * oneOverDPY
-      ch4WetSpec_yr_t(i,m) = ch4WetSpec_yr_t(i,m) + ch4WetSpecrow(i,m) * oneOverDPY
-      ch4WetDyn_yr_t(i,m) = ch4WetDyn_yr_t(i,m) + ch4WetDynrow(i,m) * oneOverDPY
-      ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m) + ch4soillsrow(i,m) * oneOverDPY
+      lterm_yr_t(i, m) = lterm_yr_t(i, m) + ltermrow(i, m) * oneOverDPY
+      wetfdyn_yr_t(i, m) = wetfdyn_yr_t(i, m) + wetfdynrow(i, m) * oneOverDPY
+      luc_emc_yr_t(i, m) = luc_emc_yr_t(i, m) + lucemcomrow(i, m) * oneOverDPY
+      lucsocin_yr_t(i, m) = lucsocin_yr_t(i, m) + lucsocinrow(i, m) * oneOverDPY
+      lucltrin_yr_t(i, m) = lucltrin_yr_t(i, m) + lucltrinrow(i, m) * oneOverDPY
+      ch4WetSpec_yr_t(i, m) = ch4WetSpec_yr_t(i, m) + ch4WetSpecrow(i, m) * oneOverDPY
+      ch4WetDyn_yr_t(i, m) = ch4WetDyn_yr_t(i, m) + ch4WetDynrow(i, m) * oneOverDPY
+      ch4soills_yr_t(i, m) = ch4soills_yr_t(i, m) + ch4soillsrow(i, m) * oneOverDPY
 
       ! COMBAK PERLAY
-      fProductDecomp_yr_t(i,m) = fProductDecomp_yr_t(i,m) &
-      + (soilcresvegrow(i,m,iccp2) &
-      + litresvegrow(i,m,iccp2)) * oneOverDPY
+      fProductDecomp_yr_t(i, m) = fProductDecomp_yr_t(i, m) &
+                                  + (soilcresvegrow(i, m, iccp2) &
+                                  + litresvegrow(i, m, iccp2)) * oneOverDPY
       ! NOTE: LUC product pools are only in layer 1.
-      ! fProductDecomp_yr_t(i,m) = fProductDecomp_yr_t(i,m) &
-      !                           + (soilcresvegrow(i,m,iccp2,1) &
-      !                           + litresvegrow(i,m,iccp2,1)) * oneOverDPY
+      ! fProductDecomp_yr_t(i, m) = fProductDecomp_yr_t(i, m) &
+      !                           + (soilcresvegrow(i, m, iccp2, 1) &
+      !                           + litresvegrow(i, m, iccp2, 1)) * oneOverDPY
       ! COMBAK PERLAY
       ! NOTE: NBP is a special case here. The LUC product pool contributions are not
       ! per PFT, they exist uniformly across a tile, so they are not included in the
       ! nbp_yr calculation. Instead we need to use the nbp, not nbpveg variable
       ! for per tile and per gridcell outputting.
-      nbp_yr_t(i,m) = nbp_yr_t(i,m) + nbprow(i,m) * oneOverDPY
+      nbp_yr_t(i, m) = nbp_yr_t(i, m) + nbprow(i, m) * oneOverDPY
 
     end do ! loop 883 ! m
 
     if (iday == lastDOY) then
       do m = 1, nmtest
-        do j = 1,icc
+        do j = 1, icc
 
           !> The pools are looked at just at the end of the year.
-          stemmass_yr(i,m,j) = stemmassrow(i,m,j)
-          rootmass_yr(i,m,j) = rootmassrow(i,m,j)
-          veghght_yr(i,m,j) = veghghtrow(i,m,j)
-          vgbiomas_yr(i,m,j) = vgbiomas_vegrow(i,m,j)
-          totcmass_yr(i,m,j) = vgbiomas_yr(i,m,j)
+          stemmass_yr(i, m, j) = stemmassrow(i, m, j)
+          rootmass_yr(i, m, j) = rootmassrow(i, m, j)
+          veghght_yr(i, m, j) = veghghtrow(i, m, j)
+          vgbiomas_yr(i, m, j) = vgbiomas_vegrow(i, m, j)
+          totcmass_yr(i, m, j) = vgbiomas_yr(i, m, j)
           ! COMBAK PERLAY
-          litrmass_yr(i,m,j) = litrmassrow(i,m,j)
-          soilcmas_yr(i,m,j) = soilcmasrow(i,m,j)
-          totcmass_yr(i,m,j) = totcmass_yr(i,m,j) + litrmass_yr(i,m,j) &
-                                                  + soilcmas_yr(i,m,j)
-          ! do k = 1,ignd
-          !   litrmass_yr(i,m,j,k) = litrmassrow(i,m,j,k)
-          !   soilcmas_yr(i,m,j,k) = soilcmasrow(i,m,j,k)
-          !   totcmass_yr(i,m,j) = totcmass_yr(i,m,j) + litrmass_yr(i,m,j,k) &
-          !                                           + soilcmas_yr(i,m,j,k)
+          litrmass_yr(i, m, j) = litrmassrow(i, m, j)
+          soilcmas_yr(i, m, j) = soilcmasrow(i, m, j)
+          totcmass_yr(i, m, j) = totcmass_yr(i, m, j) + litrmass_yr(i, m, j) &
+                                 + soilcmas_yr(i, m, j)
+          ! do k = 1, ignd
+          !   litrmass_yr(i, m, j, k) = litrmassrow(i, m, j, k)
+          !   soilcmas_yr(i, m, j, k) = soilcmasrow(i, m, j, k)
+          !   totcmass_yr(i, m, j) = totcmass_yr(i, m, j) + litrmass_yr(i, m, j, k) &
+          !                                           + soilcmas_yr(i, m, j, k)
           ! end do
           ! COMBAK PERLAY
         end do ! loop 925
 
-        peatdep_yr_g(i) = peatdep_yr_g(i) + peatdep_yr_t(i,m) * farerot(i,m)    ! YW September 04, 2015
+        peatdep_yr_g(i) = peatdep_yr_g(i) + peatdep_yr_t(i, m) * farerot(i, m)    ! YW September 04, 2015
 
         ! COMBAK PERLAY
-        do k = 1,ignd
-          litrmass_yr(i,m,iccp1) = litrmassrow(i,m,iccp1)
-          soilcmas_yr(i,m,iccp1) = soilcmasrow(i,m,iccp1)
-          totcmass_yr(i,m,iccp1) = totcmass_yr(i,m,iccp1) + litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
+        do k = 1, ignd
+          litrmass_yr(i, m, iccp1) = litrmassrow(i, m, iccp1)
+          soilcmas_yr(i, m, iccp1) = soilcmasrow(i, m, iccp1)
+          totcmass_yr(i, m, iccp1) = totcmass_yr(i, m, iccp1) + litrmassrow(i, m, iccp1) + soilcmasrow(i, m, iccp1)
         end do
-        ! do k = 1,ignd
-        !   litrmass_yr(i,m,iccp1,k) = litrmassrow(i,m,iccp1,k)
-        !   soilcmas_yr(i,m,iccp1,k) = soilcmasrow(i,m,iccp1,k)
-        !   totcmass_yr(i,m,iccp1) = totcmass_yr(i,m,iccp1) + litrmassrow(i,m,iccp1,k) + soilcmasrow(i,m,iccp1,k)
+        ! do k = 1, ignd
+        !   litrmass_yr(i, m, iccp1, k) = litrmassrow(i, m, iccp1, k)
+        !   soilcmas_yr(i, m, iccp1, k) = soilcmasrow(i, m, iccp1, k)
+        !   totcmass_yr(i, m, iccp1) = totcmass_yr(i, m, iccp1) + litrmassrow(i, m, iccp1, k) + soilcmasrow(i, m, iccp1, k)
         ! end do
         ! COMBAK PERLAY
         barefrac = 1.0
 
         !> Add values to the per tile vars
         ! NOTE: This implictly assumes that the fcancmx is only changing annually !
-        do j = 1,icc
+        do j = 1, icc
 
-          laimaxg_yr_t(i,m) = laimaxg_yr_t(i,m) + laimaxg_yr(i,m,j) * fcancmxrow(i,m,j)
-          stemmass_yr_t(i,m) = stemmass_yr_t(i,m) + stemmass_yr(i,m,j) * fcancmxrow(i,m,j)
-          rootmass_yr_t(i,m) = rootmass_yr_t(i,m) + rootmass_yr(i,m,j) * fcancmxrow(i,m,j)
-          vgbiomas_yr_t(i,m) = vgbiomas_yr_t(i,m) + vgbiomas_yr(i,m,j) * fcancmxrow(i,m,j)
-          totcmass_yr_t(i,m) = totcmass_yr_t(i,m) + totcmass_yr(i,m,j) * fcancmxrow(i,m,j)
-          npp_yr_t(i,m) = npp_yr_t(i,m) + npp_yr(i,m,j) * fcancmxrow(i,m,j)
-          gpp_yr_t(i,m) = gpp_yr_t(i,m) + gpp_yr(i,m,j) * fcancmxrow(i,m,j)
-          nep_yr_t(i,m) = nep_yr_t(i,m) + nep_yr(i,m,j) * fcancmxrow(i,m,j)
-          ! nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,j)*fcancmxrow(i,m,j)
-          emit_co2_yr_t(i,m) = emit_co2_yr_t(i,m) + emit_co2_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_co_yr_t(i,m) = emit_co_yr_t(i,m) + emit_co_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_ch4_yr_t(i,m) = emit_ch4_yr_t(i,m) + emit_ch4_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_nmhc_yr_t(i,m) = emit_nmhc_yr_t(i,m) + emit_nmhc_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_h2_yr_t(i,m) = emit_h2_yr_t(i,m) + emit_h2_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_nox_yr_t(i,m) = emit_nox_yr_t(i,m) + emit_nox_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_n2o_yr_t(i,m) = emit_n2o_yr_t(i,m) + emit_n2o_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_pm25_yr_t(i,m) = emit_pm25_yr_t(i,m) + emit_pm25_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_tpm_yr_t(i,m) = emit_tpm_yr_t(i,m) + emit_tpm_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_tc_yr_t(i,m) = emit_tc_yr_t(i,m) + emit_tc_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_oc_yr_t(i,m) = emit_oc_yr_t(i,m) + emit_oc_yr(i,m,j) * fcancmxrow(i,m,j)
-          emit_bc_yr_t(i,m) = emit_bc_yr_t(i,m) + emit_bc_yr(i,m,j) * fcancmxrow(i,m,j)
-          bterm_yr_t(i,m) = bterm_yr_t(i,m) + bterm_yr(i,m,j) * fcancmxrow(i,m,j)
-          mterm_yr_t(i,m) = mterm_yr_t(i,m) + mterm_yr(i,m,j) * fcancmxrow(i,m,j)
-          smfuncveg_yr_t(i,m) = smfuncveg_yr_t(i,m) + smfuncveg_yr(i,m,j) * fcancmxrow(i,m,j)
-          hetrores_yr_t(i,m) = hetrores_yr_t(i,m) + hetrores_yr(i,m,j) * fcancmxrow(i,m,j)
-          autores_yr_t(i,m) = autores_yr_t(i,m) + autores_yr(i,m,j) * fcancmxrow(i,m,j)
-          burnfrac_yr_t(i,m) = burnfrac_yr_t(i,m) + burnfrac_yr(i,m,j) * fcancmxrow(i,m,j)
-          veghght_yr_t(i,m) = veghght_yr_t(i,m) + veghght_yr(i,m,j) * fcancmxrow(i,m,j)
+          laimaxg_yr_t(i, m) = laimaxg_yr_t(i, m) + laimaxg_yr(i, m, j) * fcancmxrow(i, m, j)
+          stemmass_yr_t(i, m) = stemmass_yr_t(i, m) + stemmass_yr(i, m, j) * fcancmxrow(i, m, j)
+          rootmass_yr_t(i, m) = rootmass_yr_t(i, m) + rootmass_yr(i, m, j) * fcancmxrow(i, m, j)
+          vgbiomas_yr_t(i, m) = vgbiomas_yr_t(i, m) + vgbiomas_yr(i, m, j) * fcancmxrow(i, m, j)
+          totcmass_yr_t(i, m) = totcmass_yr_t(i, m) + totcmass_yr(i, m, j) * fcancmxrow(i, m, j)
+          npp_yr_t(i, m) = npp_yr_t(i, m) + npp_yr(i, m, j) * fcancmxrow(i, m, j)
+          gpp_yr_t(i, m) = gpp_yr_t(i, m) + gpp_yr(i, m, j) * fcancmxrow(i, m, j)
+          nep_yr_t(i, m) = nep_yr_t(i, m) + nep_yr(i, m, j) * fcancmxrow(i, m, j)
+          ! nbp_yr_t(i, m)=nbp_yr_t(i, m)+nbp_yr(i, m, j)*fcancmxrow(i, m, j)
+          emit_co2_yr_t(i, m) = emit_co2_yr_t(i, m) + emit_co2_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_co_yr_t(i, m) = emit_co_yr_t(i, m) + emit_co_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_ch4_yr_t(i, m) = emit_ch4_yr_t(i, m) + emit_ch4_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_nmhc_yr_t(i, m) = emit_nmhc_yr_t(i, m) + emit_nmhc_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_h2_yr_t(i, m) = emit_h2_yr_t(i, m) + emit_h2_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_nox_yr_t(i, m) = emit_nox_yr_t(i, m) + emit_nox_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_n2o_yr_t(i, m) = emit_n2o_yr_t(i, m) + emit_n2o_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_pm25_yr_t(i, m) = emit_pm25_yr_t(i, m) + emit_pm25_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_tpm_yr_t(i, m) = emit_tpm_yr_t(i, m) + emit_tpm_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_tc_yr_t(i, m) = emit_tc_yr_t(i, m) + emit_tc_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_oc_yr_t(i, m) = emit_oc_yr_t(i, m) + emit_oc_yr(i, m, j) * fcancmxrow(i, m, j)
+          emit_bc_yr_t(i, m) = emit_bc_yr_t(i, m) + emit_bc_yr(i, m, j) * fcancmxrow(i, m, j)
+          bterm_yr_t(i, m) = bterm_yr_t(i, m) + bterm_yr(i, m, j) * fcancmxrow(i, m, j)
+          mterm_yr_t(i, m) = mterm_yr_t(i, m) + mterm_yr(i, m, j) * fcancmxrow(i, m, j)
+          smfuncveg_yr_t(i, m) = smfuncveg_yr_t(i, m) + smfuncveg_yr(i, m, j) * fcancmxrow(i, m, j)
+          hetrores_yr_t(i, m) = hetrores_yr_t(i, m) + hetrores_yr(i, m, j) * fcancmxrow(i, m, j)
+          autores_yr_t(i, m) = autores_yr_t(i, m) + autores_yr(i, m, j) * fcancmxrow(i, m, j)
+          burnfrac_yr_t(i, m) = burnfrac_yr_t(i, m) + burnfrac_yr(i, m, j) * fcancmxrow(i, m, j)
+          veghght_yr_t(i, m) = veghght_yr_t(i, m) + veghght_yr(i, m, j) * fcancmxrow(i, m, j)
 
-          barefrac = barefrac - fcancmxrow(i,m,j)
+          barefrac = barefrac - fcancmxrow(i, m, j)
           ! COMBAK PERLAY
-          litrmass_yr_t(i,m) = litrmass_yr_t(i,m) + litrmass_yr(i,m,j) * fcancmxrow(i,m,j)
-          soilcmas_yr_t(i,m) = soilcmas_yr_t(i,m) + soilcmas_yr(i,m,j) * fcancmxrow(i,m,j)
-          litres_yr_t(i,m) = litres_yr_t(i,m) + litres_yr(i,m,j) * fcancmxrow(i,m,j)
-          soilcres_yr_t(i,m) = soilcres_yr_t(i,m) + soilcres_yr(i,m,j) * fcancmxrow(i,m,j)
+          litrmass_yr_t(i, m) = litrmass_yr_t(i, m) + litrmass_yr(i, m, j) * fcancmxrow(i, m, j)
+          soilcmas_yr_t(i, m) = soilcmas_yr_t(i, m) + soilcmas_yr(i, m, j) * fcancmxrow(i, m, j)
+          litres_yr_t(i, m) = litres_yr_t(i, m) + litres_yr(i, m, j) * fcancmxrow(i, m, j)
+          soilcres_yr_t(i, m) = soilcres_yr_t(i, m) + soilcres_yr(i, m, j) * fcancmxrow(i, m, j)
           ! do k = 1, ignd
-          !   litrmass_yr_t(i,m,k) = litrmass_yr_t(i,m,k) + litrmass_yr(i,m,j,k) * fcancmxrow(i,m,j)
-          !   soilcmas_yr_t(i,m,k) = soilcmas_yr_t(i,m,k) + soilcmas_yr(i,m,j,k) * fcancmxrow(i,m,j)
-          !   litres_yr_t(i,m,k) = litres_yr_t(i,m,k) + litres_yr(i,m,j,k) * fcancmxrow(i,m,j)
-          !   soilcres_yr_t(i,m,k) = soilcres_yr_t(i,m,k) + soilcres_yr(i,m,j,k) * fcancmxrow(i,m,j)
+          !   litrmass_yr_t(i, m, k) = litrmass_yr_t(i, m, k) + litrmass_yr(i, m, j, k) * fcancmxrow(i, m, j)
+          !   soilcmas_yr_t(i, m, k) = soilcmas_yr_t(i, m, k) + soilcmas_yr(i, m, j, k) * fcancmxrow(i, m, j)
+          !   litres_yr_t(i, m, k) = litres_yr_t(i, m, k) + litres_yr(i, m, j, k) * fcancmxrow(i, m, j)
+          !   soilcres_yr_t(i, m, k) = soilcres_yr_t(i, m, k) + soilcres_yr(i, m, j, k) * fcancmxrow(i, m, j)
           ! end do
           ! COMBAK PERLAY
 
         end do ! j
         ! COMBAK PERLAY
-        litrmass_yr_t(i,m) = litrmass_yr_t(i,m) + litrmass_yr(i,m,iccp1) * barefrac
-        soilcmas_yr_t(i,m) = soilcmas_yr_t(i,m) + soilcmas_yr(i,m,iccp1) * barefrac
-        litres_yr_t(i,m) = litres_yr_t(i,m) + litres_yr(i,m,iccp1) * barefrac
-        soilcres_yr_t(i,m) = soilcres_yr_t(i,m) + soilcres_yr(i,m,iccp1) * barefrac
-        totcmass_yr_t(i,m) = totcmass_yr_t(i,m) &
-                          + (litrmass_yr(i,m,iccp1) + soilcmas_yr(i,m,iccp1)) * barefrac
+        litrmass_yr_t(i, m) = litrmass_yr_t(i, m) + litrmass_yr(i, m, iccp1) * barefrac
+        soilcmas_yr_t(i, m) = soilcmas_yr_t(i, m) + soilcmas_yr(i, m, iccp1) * barefrac
+        litres_yr_t(i, m) = litres_yr_t(i, m) + litres_yr(i, m, iccp1) * barefrac
+        soilcres_yr_t(i, m) = soilcres_yr_t(i, m) + soilcres_yr(i, m, iccp1) * barefrac
+        totcmass_yr_t(i, m) = totcmass_yr_t(i, m) &
+                              + (litrmass_yr(i, m, iccp1) + soilcmas_yr(i, m, iccp1)) * barefrac
         ! do k = 1, ignd
-        !   litrmass_yr_t(i,m,k) = litrmass_yr_t(i,m,k) + litrmass_yr(i,m,iccp1,k) * barefrac
-        !   soilcmas_yr_t(i,m,k) = soilcmas_yr_t(i,m,k) + soilcmas_yr(i,m,iccp1,k) * barefrac
-        !   litres_yr_t(i,m,k) = litres_yr_t(i,m,k) + litres_yr(i,m,iccp1,k) * barefrac
-        !   soilcres_yr_t(i,m,k) = soilcres_yr_t(i,m,k) + soilcres_yr(i,m,iccp1,k) * barefrac
-        !   totcmass_yr_t(i,m) = totcmass_yr_t(i,m) &
-        !                     + (litrmass_yr(i,m,iccp1,k) + soilcmas_yr(i,m,iccp1,k)) * barefrac
+        !   litrmass_yr_t(i, m, k) = litrmass_yr_t(i, m, k) + litrmass_yr(i, m, iccp1, k) * barefrac
+        !   soilcmas_yr_t(i, m, k) = soilcmas_yr_t(i, m, k) + soilcmas_yr(i, m, iccp1, k) * barefrac
+        !   litres_yr_t(i, m, k) = litres_yr_t(i, m, k) + litres_yr(i, m, iccp1, k) * barefrac
+        !   soilcres_yr_t(i, m, k) = soilcres_yr_t(i, m, k) + soilcres_yr(i, m, iccp1, k) * barefrac
+        !   totcmass_yr_t(i, m) = totcmass_yr_t(i, m) &
+        !                     + (litrmass_yr(i, m, iccp1, k) + soilcmas_yr(i, m, iccp1, k)) * barefrac
         ! end do
         ! COMBAK PERLAY
-        hetrores_yr_t(i,m) = hetrores_yr_t(i,m) + hetrores_yr(i,m,iccp1) * barefrac
-        nep_yr_t(i,m) = nep_yr_t(i,m) + nep_yr(i,m,iccp1) * barefrac
-        ! nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,iccp1)*barefrac
+        hetrores_yr_t(i, m) = hetrores_yr_t(i, m) + hetrores_yr(i, m, iccp1) * barefrac
+        nep_yr_t(i, m) = nep_yr_t(i, m) + nep_yr(i, m, iccp1) * barefrac
+        ! nbp_yr_t(i, m)=nbp_yr_t(i, m)+nbp_yr(i, m, iccp1)*barefrac
 
         !> Add values to the per gridcell vars
-        laimaxg_yr_g(i) = laimaxg_yr_g(i) + laimaxg_yr_t(i,m) * FAREROT(i,m)
-        stemmass_yr_g(i) = stemmass_yr_g(i) + stemmass_yr_t(i,m) * FAREROT(i,m)
-        rootmass_yr_g(i) = rootmass_yr_g(i) + rootmass_yr_t(i,m) * FAREROT(i,m)
+        laimaxg_yr_g(i) = laimaxg_yr_g(i) + laimaxg_yr_t(i, m) * FAREROT(i, m)
+        stemmass_yr_g(i) = stemmass_yr_g(i) + stemmass_yr_t(i, m) * FAREROT(i, m)
+        rootmass_yr_g(i) = rootmass_yr_g(i) + rootmass_yr_t(i, m) * FAREROT(i, m)
         ! COMBAK PERLAY
-        litrmass_yr_g(i) = litrmass_yr_g(i) + litrmass_yr_t(i,m) * FAREROT(i,m)
-        soilcmas_yr_g(i) = soilcmas_yr_g(i) + soilcmas_yr_t(i,m) * FAREROT(i,m)
-        litres_yr_g(i) = litres_yr_g(i) + litres_yr_t(i,m) * FAREROT(i,m)
-        soilcres_yr_g(i) = soilcres_yr_g(i) + soilcres_yr_t(i,m) * FAREROT(i,m)
+        litrmass_yr_g(i) = litrmass_yr_g(i) + litrmass_yr_t(i, m) * FAREROT(i, m)
+        soilcmas_yr_g(i) = soilcmas_yr_g(i) + soilcmas_yr_t(i, m) * FAREROT(i, m)
+        litres_yr_g(i) = litres_yr_g(i) + litres_yr_t(i, m) * FAREROT(i, m)
+        soilcres_yr_g(i) = soilcres_yr_g(i) + soilcres_yr_t(i, m) * FAREROT(i, m)
         ! do k = 1, ignd
-        !   litrmass_yr_g(i,k) = litrmass_yr_g(i,k) + litrmass_yr_t(i,m,k) * FAREROT(i,m)
-        !   soilcmas_yr_g(i,k) = soilcmas_yr_g(i,k) + soilcmas_yr_t(i,m,k) * FAREROT(i,m)
-        !   litres_yr_g(i,k) = litres_yr_g(i,k) + litres_yr_t(i,m,k) * FAREROT(i,m)
-        !   soilcres_yr_g(i,k) = soilcres_yr_g(i,k) + soilcres_yr_t(i,m,k) * FAREROT(i,m)
+        !   litrmass_yr_g(i, k) = litrmass_yr_g(i, k) + litrmass_yr_t(i, m, k) * FAREROT(i, m)
+        !   soilcmas_yr_g(i, k) = soilcmas_yr_g(i, k) + soilcmas_yr_t(i, m, k) * FAREROT(i, m)
+        !   litres_yr_g(i, k) = litres_yr_g(i, k) + litres_yr_t(i, m, k) * FAREROT(i, m)
+        !   soilcres_yr_g(i, k) = soilcres_yr_g(i, k) + soilcres_yr_t(i, m, k) * FAREROT(i, m)
         ! end do
         ! COMBAK PERLAY
-        vgbiomas_yr_g(i) = vgbiomas_yr_g(i) + vgbiomas_yr_t(i,m) * FAREROT(i,m)
-        totcmass_yr_g(i) = totcmass_yr_g(i) + totcmass_yr_t(i,m) * FAREROT(i,m)
-        npp_yr_g(i) = npp_yr_g(i) + npp_yr_t(i,m) * FAREROT(i,m)
-        gpp_yr_g(i) = gpp_yr_g(i) + gpp_yr_t(i,m) * FAREROT(i,m)
-        nep_yr_g(i) = nep_yr_g(i) + nep_yr_t(i,m) * FAREROT(i,m)
-        nbp_yr_g(i) = nbp_yr_g(i) + nbp_yr_t(i,m) * FAREROT(i,m)
-        emit_co2_yr_g(i) = emit_co2_yr_g(i) + emit_co2_yr_t(i,m) * FAREROT(i,m)
-        emit_co_yr_g(i) = emit_co_yr_g(i) + emit_co_yr_t(i,m) * FAREROT(i,m)
-        emit_ch4_yr_g(i) = emit_ch4_yr_g(i) + emit_ch4_yr_t(i,m) * FAREROT(i,m)
-        emit_nmhc_yr_g(i) = emit_nmhc_yr_g(i) + emit_nmhc_yr_t(i,m) * FAREROT(i,m)
-        emit_h2_yr_g(i) = emit_h2_yr_g(i) + emit_h2_yr_t(i,m) * FAREROT(i,m)
-        emit_nox_yr_g(i) = emit_nox_yr_g(i) + emit_nox_yr_t(i,m) * FAREROT(i,m)
-        emit_n2o_yr_g(i) = emit_n2o_yr_g(i) + emit_n2o_yr_t(i,m) * FAREROT(i,m)
-        emit_pm25_yr_g(i) = emit_pm25_yr_g(i) + emit_pm25_yr_t(i,m) * FAREROT(i,m)
-        emit_tpm_yr_g(i) = emit_tpm_yr_g(i) + emit_tpm_yr_t(i,m) * FAREROT(i,m)
-        emit_tc_yr_g(i) = emit_tc_yr_g(i) + emit_tc_yr_t(i,m) * FAREROT(i,m)
-        emit_oc_yr_g(i) = emit_oc_yr_g(i) + emit_oc_yr_t(i,m) * FAREROT(i,m)
-        emit_bc_yr_g(i) = emit_bc_yr_g(i) + emit_bc_yr_t(i,m) * FAREROT(i,m)
-        hetrores_yr_g(i) = hetrores_yr_g(i) + hetrores_yr_t(i,m) * FAREROT(i,m)
-        autores_yr_g(i) = autores_yr_g(i) + autores_yr_t(i,m) * FAREROT(i,m)
-        burnfrac_yr_g(i) = burnfrac_yr_g(i) + burnfrac_yr_t(i,m) * FAREROT(i,m)
-        smfuncveg_yr_g(i) = smfuncveg_yr_g(i) + smfuncveg_yr_t(i,m) * FAREROT(i,m)
-        bterm_yr_g(i) = bterm_yr_g(i) + bterm_yr_t(i,m) * FAREROT(i,m)
-        lterm_yr_g(i) = lterm_yr_g(i) + lterm_yr_t(i,m) * FAREROT(i,m)
-        mterm_yr_g(i) = mterm_yr_g(i) + mterm_yr_t(i,m) * FAREROT(i,m)
-        luc_emc_yr_g(i) = luc_emc_yr_g(i) + luc_emc_yr_t(i,m) * FAREROT(i,m)
-        lucsocin_yr_g(i) = lucsocin_yr_g(i) + lucsocin_yr_t(i,m) * FAREROT(i,m)
-        lucltrin_yr_g(i) = lucltrin_yr_g(i) + lucltrin_yr_t(i,m) * FAREROT(i,m)
-        ch4WetSpec_yr_g(i) = ch4WetSpec_yr_g(i) + ch4WetSpec_yr_t(i,m) * FAREROT(i,m)
-        wetfdyn_yr_g(i) = wetfdyn_yr_g(i) + wetfdyn_yr_t(i,m) * FAREROT(i,m)
-        ch4WetDyn_yr_g(i) = ch4WetDyn_yr_g(i) + ch4WetDyn_yr_t(i,m) * FAREROT(i,m)
-        ch4soills_yr_g(i) = ch4soills_yr_g(i) + ch4soills_yr_t(i,m) * FAREROT(i,m)
-        veghght_yr_g(i) = veghght_yr_g(i) + veghght_yr_t(i,m) * FAREROT(i,m)
+        vgbiomas_yr_g(i) = vgbiomas_yr_g(i) + vgbiomas_yr_t(i, m) * FAREROT(i, m)
+        totcmass_yr_g(i) = totcmass_yr_g(i) + totcmass_yr_t(i, m) * FAREROT(i, m)
+        npp_yr_g(i) = npp_yr_g(i) + npp_yr_t(i, m) * FAREROT(i, m)
+        gpp_yr_g(i) = gpp_yr_g(i) + gpp_yr_t(i, m) * FAREROT(i, m)
+        nep_yr_g(i) = nep_yr_g(i) + nep_yr_t(i, m) * FAREROT(i, m)
+        nbp_yr_g(i) = nbp_yr_g(i) + nbp_yr_t(i, m) * FAREROT(i, m)
+        emit_co2_yr_g(i) = emit_co2_yr_g(i) + emit_co2_yr_t(i, m) * FAREROT(i, m)
+        emit_co_yr_g(i) = emit_co_yr_g(i) + emit_co_yr_t(i, m) * FAREROT(i, m)
+        emit_ch4_yr_g(i) = emit_ch4_yr_g(i) + emit_ch4_yr_t(i, m) * FAREROT(i, m)
+        emit_nmhc_yr_g(i) = emit_nmhc_yr_g(i) + emit_nmhc_yr_t(i, m) * FAREROT(i, m)
+        emit_h2_yr_g(i) = emit_h2_yr_g(i) + emit_h2_yr_t(i, m) * FAREROT(i, m)
+        emit_nox_yr_g(i) = emit_nox_yr_g(i) + emit_nox_yr_t(i, m) * FAREROT(i, m)
+        emit_n2o_yr_g(i) = emit_n2o_yr_g(i) + emit_n2o_yr_t(i, m) * FAREROT(i, m)
+        emit_pm25_yr_g(i) = emit_pm25_yr_g(i) + emit_pm25_yr_t(i, m) * FAREROT(i, m)
+        emit_tpm_yr_g(i) = emit_tpm_yr_g(i) + emit_tpm_yr_t(i, m) * FAREROT(i, m)
+        emit_tc_yr_g(i) = emit_tc_yr_g(i) + emit_tc_yr_t(i, m) * FAREROT(i, m)
+        emit_oc_yr_g(i) = emit_oc_yr_g(i) + emit_oc_yr_t(i, m) * FAREROT(i, m)
+        emit_bc_yr_g(i) = emit_bc_yr_g(i) + emit_bc_yr_t(i, m) * FAREROT(i, m)
+        hetrores_yr_g(i) = hetrores_yr_g(i) + hetrores_yr_t(i, m) * FAREROT(i, m)
+        autores_yr_g(i) = autores_yr_g(i) + autores_yr_t(i, m) * FAREROT(i, m)
+        burnfrac_yr_g(i) = burnfrac_yr_g(i) + burnfrac_yr_t(i, m) * FAREROT(i, m)
+        smfuncveg_yr_g(i) = smfuncveg_yr_g(i) + smfuncveg_yr_t(i, m) * FAREROT(i, m)
+        bterm_yr_g(i) = bterm_yr_g(i) + bterm_yr_t(i, m) * FAREROT(i, m)
+        lterm_yr_g(i) = lterm_yr_g(i) + lterm_yr_t(i, m) * FAREROT(i, m)
+        mterm_yr_g(i) = mterm_yr_g(i) + mterm_yr_t(i, m) * FAREROT(i, m)
+        luc_emc_yr_g(i) = luc_emc_yr_g(i) + luc_emc_yr_t(i, m) * FAREROT(i, m)
+        lucsocin_yr_g(i) = lucsocin_yr_g(i) + lucsocin_yr_t(i, m) * FAREROT(i, m)
+        lucltrin_yr_g(i) = lucltrin_yr_g(i) + lucltrin_yr_t(i, m) * FAREROT(i, m)
+        ch4WetSpec_yr_g(i) = ch4WetSpec_yr_g(i) + ch4WetSpec_yr_t(i, m) * FAREROT(i, m)
+        wetfdyn_yr_g(i) = wetfdyn_yr_g(i) + wetfdyn_yr_t(i, m) * FAREROT(i, m)
+        ch4WetDyn_yr_g(i) = ch4WetDyn_yr_g(i) + ch4WetDyn_yr_t(i, m) * FAREROT(i, m)
+        ch4soills_yr_g(i) = ch4soills_yr_g(i) + ch4soills_yr_t(i, m) * FAREROT(i, m)
+        veghght_yr_g(i) = veghght_yr_g(i) + veghght_yr_t(i, m) * FAREROT(i, m)
 
         ! Including the LUC product pools. They are per tile values and
         ! are assumed to occupy the whole tile.
         fProductDecomp_yr_g(i) = fProductDecomp_yr_g(i) &
-                         + fProductDecomp_yr_t(i,m) * FAREROT(i,m)
+                                 + fProductDecomp_yr_t(i, m) * FAREROT(i, m)
         ! COMBAK PERLAY
         cProduct_yr_g(i) = cProduct_yr_g(i) &
-                         + (litrmassrow(i,m,iccp2) &
-                         + soilcmasrow(i,m,iccp2)) * FAREROT(i,m)
+                           + (litrmassrow(i, m, iccp2) &
+                           + soilcmasrow(i, m, iccp2)) * FAREROT(i, m)
         ! cProduct_yr_g(i) = cProduct_yr_g(i) &
-        !                    + (litrmassrow(i,m,iccp2,1) &
-        !                    + soilcmasrow(i,m,iccp2,1)) * FAREROT(i,m)
+        !                    + (litrmassrow(i, m, iccp2, 1) &
+        !                    + soilcmasrow(i, m, iccp2, 1)) * FAREROT(i, m)
         ! COMBAK PERLAY
 
       end do ! loop 900 ! m
@@ -4471,26 +4490,26 @@ contains
       timeStamp = consecDays
 
       !> First write out the per gridcell values
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr_g',timeStamp,'cVeg',[vgbiomas_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr_g',timeStamp,'cStem',[stemmass_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr_g',timeStamp,'cRoot',[rootmass_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr_g',timeStamp,'cLand',[totcmass_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr_g'     ,timeStamp,'npp',[npp_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr_g'     ,timeStamp,'gpp',[gpp_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr_g'     ,timeStamp,'nep',[nep_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr_g'     ,timeStamp,'nbp',[nbp_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr_g',timeStamp,'rh',[hetrores_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr_g' ,timeStamp,'ra',[autores_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_yr_g',timeStamp,'cVeg',[vgbiomas_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'stemmass_yr_g',timeStamp,'cStem',[stemmass_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'rootmass_yr_g',timeStamp,'cRoot',[rootmass_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'totcmass_yr_g',timeStamp,'cLand',[totcmass_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_yr_g'     ,timeStamp,'npp',[npp_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_yr_g'     ,timeStamp,'gpp',[gpp_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_yr_g'     ,timeStamp,'nep',[nep_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_yr_g'     ,timeStamp,'nbp',[nbp_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_yr_g',timeStamp,'rh',[hetrores_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_yr_g' ,timeStamp,'ra',[autores_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
 
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_yr_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetDyn_yr_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
 
       ! COMBAK PERLAY
-      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrMassPerLay_yr_g',timeStamp,'cLitterperlay',[litrmass_yr_g(i,:)])
-      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilCMasPerLay_yr_g',timeStamp,'cSoilperlay',[soilcmas_yr_g(i,:)])
+      ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrMassPerLay_yr_g',timeStamp,'cLitterperlay',[litrmass_yr_g(i,:)])
+      ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilCMasPerLay_yr_g',timeStamp,'cSoilperlay',[soilcmas_yr_g(i,:)])
       !
       ! ! Make the bulk litter and soil C pool and respiration temporary variables:
       ! allocate(bulkLitterCarbon(1))
@@ -4501,62 +4520,62 @@ contains
       ! bulkSoilCarbon(1) = sum(soilcmas_yr_g(i,:))
       ! bulkLitterResp(1) = sum(litres_yr_g(i,:))
       ! bulkSoilResp(1) = sum(soilcres_yr_g(i,:))
-      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[bulkLitterCarbon])
-      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[bulkSoilCarbon])
-      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
-      ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[bulkSoilResp])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[litrmass_yr_g])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[soilcmas_yr_g])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g])
-      call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g])
+      ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[bulkLitterCarbon])
+      ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[bulkSoilCarbon])
+      ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[bulkLitterResp])
+      ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[bulkSoilResp])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[litrmass_yr_g])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[soilcmas_yr_g])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g])
+      call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g])
       ! deallocate(bulkLitterCarbon)
       ! deallocate(bulkSoilCarbon)
       ! deallocate(bulkLitterResp)
       ! deallocate(bulkSoilResp)
       ! COMBAK PERLAY
       if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) then
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetSpec_yr_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_g(i)])
       end if
 
       ! We only want to record the fraction of the PFTs that are actually in existance.
       if (PFTCompetition) then ! FLAG this needs to be tested !
-        do m = 1,nmtest
+        do m = 1, nmtest
           sumfare = 0.0
           fcancmxNoSeed = 0.0
           pftExist = 0.0
-          do j = 1,icc
-            if (pftexistrow(i,1,j)) then
+          do j = 1, icc
+            if (pftexistrow(i, 1, j)) then
               pftExist(j) = 1.0
-              sumfare = sumfare + fcancmxrow(i,m,j)
-              fcancmxNoSeed(j) = fcancmxrow(i,m,j)
+              sumfare = sumfare + fcancmxrow(i, m, j)
+              fcancmxNoSeed(j) = fcancmxrow(i, m, j)
             end if
           end do
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxNoSeed(1:icc), 1 - sumfare])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxNoSeed(1:icc), 1 - sumfare])
         end do
       else
-        do m = 1,nmtest
+        do m = 1, nmtest
           sumfare = 0.0
-          do j = 1,icc
-            sumfare = sumfare + fcancmxrow(i,m,j)
+          do j = 1, icc
+            sumfare = sumfare + fcancmxrow(i, m, j)
           end do ! j
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,m,1:icc), 1 - sumfare])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i, m, 1:icc), 1 - sumfare])
         end do ! m
       end if
 
       if (dofire .or. lnduseon) then
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr_g' ,timeStamp,'fFireCH4',[emit_ch4_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_yr_g' ,timeStamp,'fFireCH4',[emit_ch4_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)])
       end if
       if (lnduseon) then
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_g' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_yr_g' ,timeStamp,'fDeforestTotal', &
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'luc_emc_yr_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'lucltrin_yr_g' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'lucsocin_yr_g' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'luctot_yr_g' ,timeStamp,'fDeforestTotal', &
                            [lucsocin_yr_g(i) + lucltrin_yr_g(i) + luc_emc_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'fProductDecomp_yr_g' ,timeStamp,'fProductDecomp',[fProductDecomp_yr_g(i)])
-        call writeOutput1D(lonLocalIndex,latLocalIndex,'cProduct_yr_g' ,timeStamp,'cProduct',[cProduct_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'fProductDecomp_yr_g' ,timeStamp,'fProductDecomp',[fProductDecomp_yr_g(i)])
+        call writeOutput1D(lonLocalIndex, latLocalIndex,'cProduct_yr_g' ,timeStamp,'cProduct',[cProduct_yr_g(i)])
       end if
 
       if (doperpftoutput) then
@@ -4566,43 +4585,43 @@ contains
 
           m = 1 ! FLAG only implemented for composite mode, tiles == 1 !! !
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr',timeStamp,'cRoot',[rootmass_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr',timeStamp,'cLand',[totcmass_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr'     ,timeStamp,'npp',[npp_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr'     ,timeStamp,'nep',[nep_yr(i,m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'stemmass_yr',timeStamp,'cStem',[stemmass_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rootmass_yr',timeStamp,'cRoot',[rootmass_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'totcmass_yr',timeStamp,'cLand',[totcmass_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_yr'     ,timeStamp,'npp',[npp_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_yr'     ,timeStamp,'nep',[nep_yr(i, m,:)])
           ! NOTE: This NBP does not include LUC product pool contributions since they are
           ! not per PFT but rather per tile
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_yr',timeStamp,'rh',[hetrores_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i, m,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i, m,:)])
 
           ! COMBAK PERLAY
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,1:iccp1)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,1:iccp1)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,1:iccp1)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,1:iccp1)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i, m, 1:iccp1)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i, m, 1:iccp1)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i, m, 1:iccp1)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i, m, 1:iccp1)])
           ! ! Make the bulk litter and soil C pool and respiration temporary variables:
           ! allocate(bulkLitterCarbon(iccp1))
           ! allocate(bulkSoilCarbon(iccp1))
           ! allocate(bulkLitterResp(iccp1))
           ! allocate(bulkSoilResp(iccp1))
           !
-          ! do k = 1,iccp1
-          !   bulkLitterCarbon(k) = sum(litrmass_yr(i,m,k,:))
-          !   bulkSoilCarbon(k) = sum(soilcmas_yr(i,m,k,:))
-          !   bulkLitterResp(k) = sum(litres_yr(i,m,k,:))
-          !   bulkSoilResp(k) = sum(soilcres_yr(i,m,k,:))
+          ! do k = 1, iccp1
+          !   bulkLitterCarbon(k) = sum(litrmass_yr(i, m, k,:))
+          !   bulkSoilCarbon(k) = sum(soilcmas_yr(i, m, k,:))
+          !   bulkLitterResp(k) = sum(litres_yr(i, m, k,:))
+          !   bulkSoilResp(k) = sum(soilcres_yr(i, m, k,:))
           ! end do
           !
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[bulkLitterCarbon])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[bulkSoilCarbon])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[bulkLitterResp])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[bulkSoilResp])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[bulkLitterCarbon])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[bulkSoilCarbon])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[bulkLitterResp])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[bulkSoilResp])
           !
           ! deallocate(bulkLitterCarbon)
           ! deallocate(bulkSoilCarbon)
@@ -4611,9 +4630,9 @@ contains
           ! COMBAK PERLAY
 
           if (dofire .or. lnduseon) then
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr' ,timeStamp,'fFireCH4',[emit_ch4_yr(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_yr' ,timeStamp,'fFireCH4',[emit_ch4_yr(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i, m,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i, m,:)])
           end if
 
         end if
@@ -4626,44 +4645,44 @@ contains
         else
 
           !> Write out the per tile values
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_t' ,timeStamp,'lai', [laimaxg_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr_t',timeStamp,'cVeg',[vgbiomas_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr_t',timeStamp,'cStem',[stemmass_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr_t',timeStamp,'cRoot',[rootmass_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr_t',timeStamp,'cLand',[totcmass_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr_t'     ,timeStamp,'npp',[npp_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr_t'     ,timeStamp,'gpp',[gpp_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr_t'     ,timeStamp,'nep',[nep_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr_t'     ,timeStamp,'nbp',[nbp_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr_t',timeStamp,'rh',[hetrores_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr_t' ,timeStamp,'ra',[autores_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_yr_t' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_t' ,timeStamp,'wetlandFrac',[wetfdyn_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_t' ,timeStamp,'soilCH4cons',[ch4soills_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'laimaxg_yr_t' ,timeStamp,'lai', [laimaxg_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'vgbiomas_yr_t',timeStamp,'cVeg',[vgbiomas_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'stemmass_yr_t',timeStamp,'cStem',[stemmass_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'rootmass_yr_t',timeStamp,'cRoot',[rootmass_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'totcmass_yr_t',timeStamp,'cLand',[totcmass_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'npp_yr_t'     ,timeStamp,'npp',[npp_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'gpp_yr_t'     ,timeStamp,'gpp',[gpp_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'nep_yr_t'     ,timeStamp,'nep',[nep_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'nbp_yr_t'     ,timeStamp,'nbp',[nbp_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'hetrores_yr_t',timeStamp,'rh',[hetrores_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'autores_yr_t' ,timeStamp,'ra',[autores_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetDyn_yr_t' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'wetfdyn_yr_t' ,timeStamp,'wetlandFrac',[wetfdyn_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4soills_yr_t' ,timeStamp,'soilCH4cons',[ch4soills_yr_t(i,:)])
 
           ! COMBAK PERLAY
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[litrmass_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[soilcmas_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[litrmass_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[soilcmas_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
+          call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
           ! ! Make the bulk litter and soil C pool and respiration temporary variables:
           ! allocate(bulkLitterCarbon(nmtest))
           ! allocate(bulkSoilCarbon(nmtest))
           ! allocate(bulkLitterResp(nmtest))
           ! allocate(bulkSoilResp(nmtest))
           !
-          ! do m = 1,nmtest
-          !   bulkLitterCarbon(m) = sum(litrmass_yr_t(i,m,:))
-          !   bulkSoilCarbon(m) = sum(soilcmas_yr_t(i,m,:))
-          !   bulkLitterResp(m) = sum(litres_yr_t(i,m,:))
-          !   bulkSoilResp(m) = sum(soilcres_yr_t(i,m,:))
+          ! do m = 1, nmtest
+          !   bulkLitterCarbon(m) = sum(litrmass_yr_t(i, m,:))
+          !   bulkSoilCarbon(m) = sum(soilcmas_yr_t(i, m,:))
+          !   bulkLitterResp(m) = sum(litres_yr_t(i, m,:))
+          !   bulkSoilResp(m) = sum(soilcres_yr_t(i, m,:))
           ! end do
           !
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[bulkLitterCarbon])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[bulkSoilCarbon])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
-          ! call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[bulkSoilResp])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[bulkLitterCarbon])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[bulkSoilCarbon])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[bulkLitterResp])
+          ! call writeOutput1D(lonLocalIndex, latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[bulkSoilResp])
           !
           ! deallocate(bulkLitterCarbon)
           ! deallocate(bulkSoilCarbon)
@@ -4672,25 +4691,25 @@ contains
           ! COMBAK PERLAY
 
           if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) then
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'ch4WetSpec_yr_t' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_t(i,:)])
           end if
           if (dofire .or. lnduseon) then
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_yr_t' ,timeStamp,'fFireCH4',[emit_ch4_yr_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_ch4_yr_t' ,timeStamp,'fFireCH4',[emit_ch4_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)])
           end if
           if (lnduseon) then
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_yr_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_yr_t' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_yr_t' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'luctot_yr_t' ,timeStamp,'fDeforestTotal', &
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'luc_emc_yr_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'lucltrin_yr_t' ,timeStamp,'fDeforestToLitter',[lucltrin_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'lucsocin_yr_t' ,timeStamp,'fDeforestToSoil',[lucsocin_yr_t(i,:)])
+            call writeOutput1D(lonLocalIndex, latLocalIndex,'luctot_yr_t' ,timeStamp,'fDeforestTotal', &
                                [lucsocin_yr_t(i,:) + lucltrin_yr_t(i,:) + luc_emc_yr_t(i,:)])
           end if
         end if
       end if
 
       !> Reset all annual vars in preparation for next year
-      call resetyearend(nltest,nmtest)
+      call resetyearend(nltest, nmtest)
 
     end if ! if iday=365/366
 

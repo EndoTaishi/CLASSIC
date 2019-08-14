@@ -1,5 +1,4 @@
 !> \file
-!> FIXME
 !> @author
 !> Ed Wisernig ???
 !ignoreLint(1050) ! do not lint this file; too many string literals that can be damaged
@@ -40,15 +39,15 @@ module xmlparser
   !===============================================================================
 
   character(len=10), dimension(2,3), save, private :: entities = &
-    reshape( (/ '&    ', '&amp;', &
-    '>    ', '&gt; ',  &
-    '<    ', '&lt; ' /), (/2,3/) )
+                                                      reshape( (/ '&    ', '&amp;', &
+                                                      '>    ', '&gt; ',  &
+                                                      '<    ', '&lt; ' /), (/2,3/) )
 
-  !===============================================================================
-  ! Auxiliary routines - private
-  !===============================================================================
+                                                      !===============================================================================
+                                                      ! Auxiliary routines - private
+                                                      !===============================================================================
 
-  private               :: xml_compress_
+                                                      private               :: xml_compress_
   private               :: xml_put_open_tag_
   private               :: xml_put_element_
   private               :: xml_put_close_tag_
@@ -835,7 +834,7 @@ contains
   !===============================================================================
 
   subroutine xml_options( info, ignore_whitespace, no_data_truncation, &
-    report_lun, report_errors, report_details )
+                         report_lun, report_errors, report_details )
     implicit none
     type(XML_PARSE),  intent(inout)               :: info
     logical, intent(in), optional                 :: ignore_whitespace
@@ -876,8 +875,8 @@ contains
     type(XML_PARSE),  intent(in)               :: info
 
     xml_ok = info%eof .or. info%error .or. &
-        ( info%no_data_truncation .and.    &
-        ( info%too_many_attribs .or. info%too_many_data ) )
+             ( info%no_data_truncation .and.    &
+             ( info%too_many_attribs .or. info%too_many_data ) )
     xml_ok = .not. xml_ok
   end function xml_ok
 
@@ -895,8 +894,8 @@ contains
     type(XML_PARSE),  intent(in)               :: info
 
     xml_error = info%error .or. &
-        ( info%no_data_truncation .and.    &
-        ( info%too_many_attribs .or. info%too_many_data ) )
+                ( info%no_data_truncation .and.    &
+                ( info%too_many_attribs .or. info%too_many_data ) )
   end function xml_error
 
   !===============================================================================
@@ -921,10 +920,10 @@ contains
 
   integer function xml_find_attrib( attribs, no_attribs, name, value )
     implicit none
-    character(len=*), dimension(:,:)  :: attribs
-    integer                           :: no_attribs
-    character(len=*)                  :: name
-    character(len=*)                  :: value
+    character(len=*), dimension(:,:), intent(in)  :: attribs
+    integer, intent(in)                           :: no_attribs
+    character(len=*), intent(in)                  :: name
+    character(len=*), intent(out)                  :: value
 
     integer :: i
 
@@ -966,24 +965,24 @@ contains
 
     interface
       recursive subroutine startfunc( tag, attribs, error )
-        character(len=*)                  :: tag
-        character(len=*), dimension(:,:)  :: attribs
-        logical                           :: error
+        character(len=*), intent(in)                 :: tag
+        character(len=*), dimension(:,:), intent(in) :: attribs
+        logical, intent(in)                          :: error
       end subroutine
     end interface
 
     interface
       recursive subroutine datafunc( tag, data, error )
-        character(len=*)                  :: tag
-        character(len=*), dimension(:)    :: data
-        logical                           :: error
+        character(len=*), intent(in)               :: tag
+        character(len=*), dimension(:), intent(in) :: data
+        logical, intent(in)                        :: error
       end subroutine
     end interface
 
     interface
       recursive subroutine endfunc( tag, error )
-        character(len=*)                  :: tag
-        logical                           :: error
+        character(len=*), intent(in) :: tag
+        logical, intent(in)          :: error
       end subroutine
     end interface
 

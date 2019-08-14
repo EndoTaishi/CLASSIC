@@ -2,9 +2,9 @@
 !! Addresses freezing of water ponded on ground surface.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! Formerly TFREEZ
-                   GZERO,HMFG,HTCS,HTC,WTRS,WTRG,FI,QFREZ, &
-                   WSNOW,TA,TBAR,ISAND,IG,ILG,IL1,IL2,JL)
+subroutine pondedWaterFreeze(ZPOND, TPOND, ZSNOW, TSNOW, ALBSNO, RHOSNO, HCPSNO, & ! Formerly TFREEZ
+                             GZERO, HMFG, HTCS, HTC, WTRS, WTRG, FI, QFREZ, WSNOW, &
+                             TA, TBAR, ISAND, IG, ILG, IL1, IL2, JL)
   !
   !     * JAN 06/09 - D.VERSEGHY. SET QFREZ TO ZERO AFTER CALCULATION
   !     *                         OF HADD.
@@ -36,14 +36,14 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. FREEZING OF PONDED WATER.
   !
-  use classic_params, only : DELT,TFREZ,HCPW,HCPICE,RHOW, &
-                            RHOICE,CLHMLT
+  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
+                            RHOICE, CLHMLT
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: IG,ILG,IL1,IL2,JL
+  integer, intent(in) :: IG, ILG, IL1, IL2, JL
   integer             :: I
   !
   !     * INPUT/OUTPUT ARRAYS.
@@ -60,8 +60,8 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
   real, intent(inout) :: WTRS  (ILG)  !< Water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1}]\f$
   real, intent(inout) :: WTRG  (ILG)  !< Water transferred into or out of the soil \f$[kg m^{-2} s^{-1}]\f$
   !
-  real, intent(inout) :: HMFG  (ILG,IG) !< Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
-  real, intent(inout) :: HTC   (ILG,IG) !< Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ig)
+  real, intent(inout) :: HMFG  (ILG, IG) !< Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
+  real, intent(inout) :: HTC   (ILG, IG) !< Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ig)
   !
   !     * INPUT ARRAYS.
   !
@@ -69,13 +69,13 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
   real, intent(inout) :: QFREZ (ILG)    !< Energy sink for freezing of water at the ground surface \f$[W m^{-2}]\f$
   real, intent(in)    :: WSNOW (ILG)    !< Liquid water content of snow pack \f$[kg m^{-2}] (w_s)\f$
   real, intent(in)    :: TA    (ILG)    !< Air temperature [K]
-  real, intent(in)    :: TBAR  (ILG,IG) !< Temperature of soil layer \f$[C] (T_g)\f$
+  real, intent(in)    :: TBAR  (ILG, IG) !< Temperature of soil layer \f$[C] (T_g)\f$
   !
-  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: ZFREZ,HADD,HCOOL,HCONV,TTEST,TLIM,HEXCES
+  real :: ZFREZ, HADD, HCOOL, HCONV, TTEST, TLIM, HEXCES
   !
   !-----------------------------------------------------------------------
   !>
@@ -91,6 +91,7 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
   !! beginning and end of the subroutine:
   !!
   !! \f$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t\f$
+  !!
   !! \f$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t\f$
   !!
   !! where the C terms represent volumetric heat capacities, the T
@@ -100,9 +101,9 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
   !! fractional coverage of the subarea under consideration relative
   !! to the modelled area.
   !!
-  do I = IL1,IL2 ! loop 100
+  do I = IL1, IL2 ! loop 100
     if (FI(I) > 0. .and. ZPOND(I) > 0. .and. (TPOND(I) < 0. &
-    .or. QFREZ(I) < 0.)) then
+        .or. QFREZ(I) < 0.)) then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
                 DELT
       ZFREZ = 0.0
@@ -127,11 +128,11 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
       !!
       HCOOL = TPOND(I) * HCPW * ZPOND(I)
       HCONV = HCOOL + CLHMLT * RHOW * ZPOND(I)
-      HTC (I,1) = HTC (I,1) - FI(I) * HCPW * (TPOND(I) + TFREZ) * &
-      ZPOND(I) / DELT
+      HTC (I, 1) = HTC (I, 1) - FI(I) * HCPW * (TPOND(I) + TFREZ) * &
+                   ZPOND(I) / DELT
       if (HADD <= HCOOL) then
         TPOND(I) = TPOND(I) - HADD / (HCPW * ZPOND(I))
-        HTC(I,1) = HTC(I,1) + FI(I) * HADD / DELT
+        HTC(I, 1) = HTC(I, 1) + FI(I) * HADD / DELT
         !>
         !! If HADD > HCOOL but HADD \f$\leq\f$ HCONV, the available energy
         !! sink is sufficient to decrease the
@@ -151,16 +152,16 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
         HADD = HADD - HCOOL
         ZFREZ = HADD / (CLHMLT * RHOW)
         ZPOND(I) = ZPOND(I) - ZFREZ
-        HTC(I,1) = HTC(I,1) + FI(I) * HCOOL / DELT
+        HTC(I, 1) = HTC(I, 1) + FI(I) * HCOOL / DELT
         ZFREZ = ZFREZ * RHOW / RHOICE
         if (.not.(ZSNOW(I) > 0.0)) ALBSNO(I) = 0.50
         TSNOW(I) = TSNOW(I) * HCPSNO(I) * ZSNOW(I) / (HCPSNO(I) * ZSNOW(I) &
-        + HCPICE * ZFREZ)
+                   + HCPICE * ZFREZ)
         RHOSNO(I) = (RHOSNO(I) * ZSNOW(I) + RHOICE * ZFREZ) / (ZSNOW(I) &
-        + ZFREZ)
+                    + ZFREZ)
         ZSNOW(I) = ZSNOW(I) + ZFREZ
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-        (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         TPOND(I) = 0.0
         !>
         !! If HADD > HCONV, the available energy sink is sufficient
@@ -195,32 +196,32 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
       else
         HADD = HADD - HCONV
         ZFREZ = ZPOND(I) * RHOW / RHOICE
-        HTC(I,1) = HTC(I,1) + FI(I) * HCOOL / DELT
+        HTC(I, 1) = HTC(I, 1) + FI(I) * HCOOL / DELT
         TTEST = - HADD / (HCPICE * ZFREZ)
         if (ZSNOW(I) > 0.0) then
-          TLIM = MIN(TSNOW(I),TBAR(I,1))
+          TLIM = MIN(TSNOW(I), TBAR(I, 1))
         else
-          TLIM = MIN(TA(I) - TFREZ,TBAR(I,1))
+          TLIM = MIN(TA(I) - TFREZ, TBAR(I, 1))
         end if
-        TLIM = MIN(TLIM,0.0)
+        TLIM = MIN(TLIM, 0.0)
         if (TTEST < TLIM) then
           HEXCES = HADD + TLIM * HCPICE * ZFREZ
           GZERO(I) = GZERO(I) - HEXCES / DELT
-          HTC(I,1) = HTC(I,1) + FI(I) * (HADD - HEXCES) / DELT
+          HTC(I, 1) = HTC(I, 1) + FI(I) * (HADD - HEXCES) / DELT
           TSNOW(I) = (TSNOW(I) * HCPSNO(I) * ZSNOW(I) + &
-                       TLIM * HCPICE * ZFREZ) &
-                       / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
+                     TLIM * HCPICE * ZFREZ) &
+                     / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
         else
           TSNOW(I) = (TSNOW(I) * HCPSNO(I) * ZSNOW(I) + TTEST * HCPICE * &
-                        ZFREZ) / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
-          HTC(I,1) = HTC(I,1) + FI(I) * HADD / DELT
+                     ZFREZ) / (HCPSNO(I) * ZSNOW(I) + HCPICE * ZFREZ)
+          HTC(I, 1) = HTC(I, 1) + FI(I) * HADD / DELT
         end if
         if (.not.(ZSNOW(I) > 0.0)) ALBSNO(I) = 0.50
         RHOSNO(I) = (RHOSNO(I) * ZSNOW(I) + RHOICE * ZFREZ) / (ZSNOW(I) + &
-        ZFREZ)
+                    ZFREZ)
         ZSNOW(I) = ZSNOW(I) + ZFREZ
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
-        (RHOW * ZSNOW(I))
+                    (RHOW * ZSNOW(I))
         ZPOND(I) = 0.0
         TPOND(I) = 0.0
       end if
@@ -237,17 +238,17 @@ subroutine pondedWaterFreeze(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO, & ! F
       !! waterFlowNonInfiltrate is performed (the calculation is
       !! completed in subroutine TMCALC).
       !!
-      HTC (I,1) = HTC (I,1) + FI(I) * HCPW * (TPOND(I) + TFREZ) * &
-      ZPOND(I) / DELT
-      HMFG(I,1) = HMFG(I,1) - FI(I) * CLHMLT * RHOICE * ZFREZ / DELT
+      HTC (I, 1) = HTC (I, 1) + FI(I) * HCPW * (TPOND(I) + TFREZ) * &
+                   ZPOND(I) / DELT
+      HMFG(I, 1) = HMFG(I, 1) - FI(I) * CLHMLT * RHOICE * ZFREZ / DELT
       WTRS(I) = WTRS(I) + FI(I) * ZFREZ * RHOICE / DELT
       WTRG(I) = WTRG(I) - FI(I) * ZFREZ * RHOICE / DELT
       HTCS(I) = HTCS(I) + FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
-      DELT
+                DELT
     end if
-    if (FI(I) > 0. .and. ISAND(I,1) > - 4) then
-      HTC (I,1) = HTC (I,1) - FI(I) * HCPW * (TPOND(I) + TFREZ) * &
-                  ZPOND(I) / DELT
+    if (FI(I) > 0. .and. ISAND(I, 1) > - 4) then
+      HTC (I, 1) = HTC (I, 1) - FI(I) * HCPW * (TPOND(I) + TFREZ) * &
+                   ZPOND(I) / DELT
     end if
   end do ! loop 100
   !

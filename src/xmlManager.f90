@@ -5,9 +5,9 @@
 !> Ed Wisernig
 
 module xmlManager
-  use outputManager,  only : outputDescriptor, outputDescriptors, descriptorCount, &
+  use outputManager, only : outputDescriptor, outputDescriptors, descriptorCount, &
                                 variant, variants, variantCount, checkFileExists
-  use xmlParser,      only : xml_process
+  use xmlParser, only : xml_process
   implicit none
   public :: loadoutputDescriptor
   public :: startfunc
@@ -16,7 +16,7 @@ module xmlManager
   private :: charToLogical
   private :: charToInt
 
-  character(len = 80), dimension(2,10)      :: attribs
+  character(len = 80), dimension(2, 10)      :: attribs
   character(len = 400), dimension(100)      :: data
   logical                                 :: error, currentDormant = .true.
   character(len = 80)                       :: currentGroup, currentVariableName, variableSetType, variableSetDate, variableSetVersion
@@ -48,20 +48,20 @@ contains
   !> The startfunc function parses opening tags or start tags. It gets triggered for each and every opening tag of the XML document.
   subroutine startfunc(tag, attribs, error)
     implicit none
-    character(len =* )                    :: tag, attribs(:,:)
-    character(len = 40)                   :: attribute, dormant
+    character(len =* ), intent(in)      :: tag, attribs(:,:)
+    character(len = 40)                 :: attribute, dormant
     integer                             :: id
-    logical                             :: error
+    logical, intent(in)                 :: error
     type(outputDescriptor), allocatable :: tempDescriptors(:)
     type(variant), allocatable          :: tempVariants(:)
 
     ! Examine the tag
-    select case ( tag )
+    select case (tag)
       ! If the tag is <variableSet>, allocate the variable descriptors and the variants.
     case ( 'variableSet' )
       xmlVersion = 0
-      variableSetType = trim(attribs(2,1))
-      variableSetVersion = trim(attribs(2,2))
+      variableSetType = trim(attribs(2, 1))
+      variableSetVersion = trim(attribs(2, 2))
       if (variableSetVersion == '') then
         stop ("The input XML document doesn't feature the required version field of the < variableSet > node")
       else
@@ -69,22 +69,22 @@ contains
         if (xmlVersion < 1.2) stop ('Older XML document found, please upgrade to a more recent version')
       end if
 
-      variableSetDate = trim(attribs(2,3))
+      variableSetDate = trim(attribs(2, 3))
       allocate(outputDescriptors(0))
       allocate(variants(0))
       ! If the tag is <group>, remember the current group.
     case ( 'group' )
-      currentGroup = trim(attribs(2,1))
+      currentGroup = trim(attribs(2, 1))
       ! If the tag is <variable>, increment the descriptor count and allocate the temporary descriptors.
       ! Then, add a new descriptor to the array, by copying and extending the array, followed by setting some values.
     case ( 'variable' )
-      dormant = trim(attribs(2,3))
+      dormant = trim(attribs(2, 3))
       if (dormant == 'false') then
         descriptorCount = descriptorCount + 1
         allocate(tempDescriptors(descriptorCount))
         tempDescriptors(1 : descriptorCount - 1) = outputDescriptors(1 : descriptorCount - 1)
         call move_alloc(tempDescriptors, outputDescriptors)
-        attribute = attribs(2,2)
+        attribute = attribs(2, 2)
         outputDescriptors(descriptorCount)%includeBareGround = charToLogical(attribute)
         outputDescriptors(descriptorCount)%group = currentGroup
         currentDormant = .false.
@@ -105,14 +105,14 @@ contains
   !> The datafunc function parses the content of a tag.
   subroutine datafunc(tag, data, error)
     implicit none
-    character(len =* )               :: tag, data(:)
-    character(len = 400)             :: info
-    logical                        :: error
+    character(len =* ), intent(in) :: tag, data(:)
+    character(len = 400)           :: info
+    logical, intent(in)            :: error
 
     info = trim(data(1))
     ! Examine the tag and store the tag content in the descriptors array.
     if (.not. currentDormant) then
-      select case ( tag )
+      select case (tag)
       case ( 'shortName' )
         outputDescriptors(descriptorCount)%shortName = info
         currentVariableName = info
@@ -137,8 +137,8 @@ contains
   !> The endfunc function gets triggered when the closing XML element is encountered. E.g. if we wanted to deallocate at </variableSet>.
   subroutine endfunc(tag, error)
     implicit none
-    character(len =* )               :: tag
-    logical                        :: error
+    character(len =* ), intent(in)   :: tag
+    logical, intent(in)              :: error
     ! Place a select case (tag) in here if you need to do anything on a closing tag.
   end subroutine
 

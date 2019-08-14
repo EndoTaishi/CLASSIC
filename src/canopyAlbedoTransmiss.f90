@@ -3,14 +3,14 @@
 !! stomatal resistances.
 !! @author D. Verseghy, M. Lazare, P. Bartlett, R. Harvey, J. Melton
 !
-subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! Formerly CANALB
-                   TRVSCS,TRIRCS,RC,RCS, &
-                   ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB, &
-                   FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS, &
-                   AIL,PSIGND,FCLOUD,COSZS,QSWINV,VPD,TA, &
-                   ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC, &
-                   ILG,IL1,IL2,JL,IC,ICP1,IG,IALC, &
-                   CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC)
+subroutine canopyAlbedoTransmiss(ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN, & ! Formerly CANALB
+                                 TRVSCS, TRIRCS, RC, RCS, &
+                                 ALVSC, ALIRC, RSMIN, QA50, VPDA, VPDB, PSIGA, PSIGB, &
+                                 FC, FCS, FSNOW, FSNOWC, FSNOCS, FCAN, FCANS, PAI, PAIS, &
+                                 AIL, PSIGND, FCLOUD, COSZS, QSWINV, VPD, TA, &
+                                 ACVDAT, ACIDAT, ALVSGC, ALIRGC, ALVSSC, ALIRSC, &
+                                 ILG, IL1, IL2, JL, IC, ICP1, IG, IALC, &
+                                 CXTEFF, TRVS, TRIR, RCACC, RCG, RCV, RCT, GC)
 
   !     * Mar 28/17 - S.SUN Expand PFTs from 4 to 5 in CLASS
   !     *
@@ -63,15 +63,15 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     *                                  FOR MODEL VERSION GCM7.
   !     * AUG 12/91 - D.VERSEGHY. CANOPY ALBEDOS AND TRANSMISSIVITIES.
   !
-  use classic_params, only : CANEXT,DELT,ALVSWC,ALIRWC,CXTLRG, &
+  use classic_params, only : CANEXT, DELT, ALVSWC, ALIRWC, CXTLRG, &
                             classpfts
 
   implicit none
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ILG,IL1,IL2,JL,IC,ICP1,IG,IALC
-  integer :: I,J,IPTBAD,JPTBAD,JPTBDI
+  integer, intent(in) :: ILG, IL1, IL2, JL, IC, ICP1, IG, IALC
+  integer :: I, J, IPTBAD, JPTBAD, JPTBDI
   !
   !     * OUTPUT ARRAYS.
   !
@@ -93,42 +93,42 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !
   !     * 2-D INPUT ARRAYS.
   !
-  real, intent(in) :: ALVSC (ILG,ICP1) !< Background average visible albedo of
+  real, intent(in) :: ALVSC (ILG, ICP1) !< Background average visible albedo of
   !! vegetation category [ ]
-  real, intent(in) :: ALIRC (ILG,ICP1) !< Background average near-infrared albedo of
+  real, intent(in) :: ALIRC (ILG, ICP1) !< Background average near-infrared albedo of
   !! vegetation category [ ]
-  real, intent(in) :: RSMIN (ILG,IC)   !< Minimum stomatal resistance of vegetation
-  !! category \f$[s m^{-1}] (r_{s,min})\f$
-  real, intent(in) :: QA50  (ILG,IC)   !< Reference value of incoming shortwave
+  real, intent(in) :: RSMIN (ILG, IC)   !< Minimum stomatal resistance of vegetation
+  !! category \f$[s m^{-1}] (r_{s, min})\f$
+  real, intent(in) :: QA50  (ILG, IC)   !< Reference value of incoming shortwave
   !! radiation for vegetation category (used in
   !! stomatal resistance calculation) \f$[W m^{-2}] (K \downarrow_{1/2})\f$
-  real, intent(in) :: VPDA  (ILG,IC)   !< Vapour pressure deficit coefficient for
+  real, intent(in) :: VPDA  (ILG, IC)   !< Vapour pressure deficit coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) \f$[ ] (c_{v1})\f$
-  real, intent(in) :: VPDB  (ILG,IC)   !< Vapour pressure deficit coefficient for
+  real, intent(in) :: VPDB  (ILG, IC)   !< Vapour pressure deficit coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) \f$[ ] (c_{v2})\f$
-  real, intent(in) :: PSIGA (ILG,IC)   !< Soil moisture suction coefficient for
+  real, intent(in) :: PSIGA (ILG, IC)   !< Soil moisture suction coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) \f$[ ] (c_{\Psi 1})\f$
-  real, intent(in) :: PSIGB (ILG,IC)   !< Soil moisture suction coefficient for
+  real, intent(in) :: PSIGB (ILG, IC)   !< Soil moisture suction coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) \f$[ ] (c_{\Psi 2})\f$
-  real, intent(in) :: FCAN  (ILG,IC)   !< Fractional coverage of vegetation category
+  real, intent(in) :: FCAN  (ILG, IC)   !< Fractional coverage of vegetation category
   !! over bare ground \f$[ ] (X_i)\f$
-  real, intent(in) :: FCANS (ILG,IC)   !< Fractional coverage of vegetation category
+  real, intent(in) :: FCANS (ILG, IC)   !< Fractional coverage of vegetation category
   !! over snow [ ]
-  real, intent(in) :: PAI   (ILG,IC)   !< Plant area index of vegetation category
+  real, intent(in) :: PAI   (ILG, IC)   !< Plant area index of vegetation category
   !! over bare ground \f$[ ] (\Lambda_p)\f$
-  real, intent(in) :: PAIS  (ILG,IC)   !< Plant area index of vegetation category
+  real, intent(in) :: PAIS  (ILG, IC)   !< Plant area index of vegetation category
   !! over snow \f$[ ] (\Lambda_p)\f$
-  real, intent(in) :: ACVDAT(ILG,IC)   !< Optional user-specified value of canopy
+  real, intent(in) :: ACVDAT(ILG, IC)   !< Optional user-specified value of canopy
   !! visible albedo to override CLASS-calculated
   !! value [ ]
-  real, intent(in) :: ACIDAT(ILG,IC)   !< Optional user-specified value of canopy
+  real, intent(in) :: ACIDAT(ILG, IC)   !< Optional user-specified value of canopy
   !! near-infrared albedo to override CLASS-
   !! calculated value [ ]
-  real :: AIL   (ILG,IC)   !< Leaf area index of vegetation category over
+  real, intent(in) :: AIL   (ILG, IC)   !< Leaf area index of vegetation category over
   !! bare ground \f$[ ] (\Lambda)\f$
   !
   !     * 1-D INPUT ARRAYS.
@@ -155,16 +155,16 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !
   !     * WORK ARRAYS.
   !
-  real, intent(inout) :: CXTEFF(ILG,IC),           RCACC (ILG,IC), &
-      RCV   (ILG,IC),           RCG   (ILG,IC), &
-      RCT   (ILG),              GC    (ILG), &
-      TRVS  (ILG),              TRIR  (ILG)
+  real, intent(inout) :: CXTEFF(ILG, IC), RCACC (ILG, IC), &
+                         RCV   (ILG, IC), RCG   (ILG, IC), &
+                         RCT   (ILG), GC    (ILG), &
+                         TRVS  (ILG), TRIR  (ILG)
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: SVF,ALVSCX,ALIRCX,ALVSN,ALIRN,ALVSS,ALIRS, &
-      TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP,TRCLRV, &
-      TRCLDV,TRCLRT,TRCLDT
+  real :: SVF, ALVSCX, ALIRCX, ALVSN, ALIRN, ALVSS, ALIRS, &
+          TRTOT, EXPMAX1, EXPMAX2, EXPMAX3, TMP, TRCLRV, &
+          TRCLDV, TRCLRT, TRCLDT
   !
   !----------------------------------------------------------------------
   !>
@@ -188,7 +188,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !!
   !! In the clear-sky case, incoming shortwave radiation is dominated
   !! by the direct beam; thus, the transmissivity for clear skies
-  !! \f$\tau_{c,0}\f$ is evaluated by simply setting Z to \f$Z_s\f$, the solar zenith
+  !! \f$\tau_{c, 0}\f$ is evaluated by simply setting Z to \f$Z_s\f$, the solar zenith
   !! angle. An extensive search of the literature for values of
   !! epsilon appropriate to the four vegetation categories yielded the
   !! following results for the extinction coefficient:
@@ -214,11 +214,11 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !!
   !! \f$D(Z) = D(0) [(1 + 1.23cosZ)/2.23].\f$
   !!
-  !! Integration of the cloudy-sky transmissivity \f$tau_{c,cloudy}\f$ over
+  !! Integration of the cloudy-sky transmissivity \f$tau_{c, cloudy}\f$ over
   !! the sky hemisphere is performed using a simple weighting function
   !! proposed by Goudriaan (1988) \cite Gold1958-ng :
   !!
-  !! \f$\tau_{c,cloudy} = 0.3 \tau_c(Z=15^o) + 0.5 \tau_c(Z=45^o) + 0.2 \tau_c(Z=75^o)\f$
+  !! \f$\tau_{c, cloudy} = 0.3 \tau_c(Z=15^o) + 0.5 \tau_c(Z=45^o) + 0.2 \tau_c(Z=75^o)\f$
   !!
   !! The albedo \f$\alpha_c\f$ of a vegetation canopy is, like the
   !! transmissivity, dependent in principle on the zenith angle Z of
@@ -260,7 +260,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !!
   !
   !     * ASSIGN CONSTANT EXPONENTIATION TERMS: EXPMAX1=EXP(-0.4/0.9659),
-  !     * EXPMAX2=EXP(-0.4/0.7071),EXPMAX3=EXP(-0.4/0.2588)
+  !     * EXPMAX2=EXP(-0.4/0.7071), EXPMAX3=EXP(-0.4/0.2588)
   !
   EXPMAX1 = 0.6609  ! BDCS P?
   EXPMAX2 = 0.5680  ! BDCS P?
@@ -279,17 +279,17 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !
   !     * INITIALIZE WORK ARRAYS.
   !
-  do I = IL1,IL2 ! loop 50
+  do I = IL1, IL2 ! loop 50
     RCT(I) = 0.0
     GC(I) = 0.0
     RC(I) = 0.0
   end do ! loop 50
-  do J = 1,IC ! loop 100
-    do I = IL1,IL2
-      CXTEFF(I,J) = 0.0
-      RCACC(I,J) = 0.0
-      RCG(I,J) = 0.0
-      RCV(I,J) = 0.0
+  do J = 1, IC ! loop 100
+    do I = IL1, IL2
+      CXTEFF(I, J) = 0.0
+      RCACC(I, J) = 0.0
+      RCG(I, J) = 0.0
+      RCV(I, J) = 0.0
     end do
   end do ! loop 100
   !!
@@ -347,123 +347,123 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   do J = 1, IC
     select case (classpfts(J))
     case ('NdlTr') !-------------------------------------------------------
-      do I = IL1,IL2
-        if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
-          TRCLRV = EXP( - 0.4 * PAI(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  ! JM EDIT
+      do I = IL1, IL2 ! loop 150
+        if (COSZS(I) > 0. .and. FCAN(I, J) > 0.) then
+          TRCLRV = EXP( - 0.4 * PAI(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0, -0.4*PAI(I, J)/COSZS(I))  ! JM EDIT
           !              TRCLRV=EXP(TMP)
-          TRCLDV = 0.30 * EXP( - 0.4 * PAI(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &            ! BDCS P?
-          PAI(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAI(I,J) / 0.2588)
-          TRCLRT = EXP( - 0.3 * PAI(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    ! JM EDIT
+          TRCLDV = 0.30 * EXP( - 0.4 * PAI(I, J) / 0.9659) + 0.50 * EXP( - 0.4 * &            ! BDCS P?
+                   PAI(I, J) / 0.7071) + 0.20 * EXP( - 0.4 * PAI(I, J) / 0.2588)
+          TRCLRT = EXP( - 0.3 * PAI(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0,(-0.3*PAI(I, J)/COSZS(I)))    ! JM EDIT
           !              TRCLRT = EXP(TMP)
-          TRCLDT = 0.30 * EXP( - 0.3 * PAI(I,J) / 0.9659) + 0.50 * EXP( - 0.3 * &
-                PAI(I,J) / 0.7071) + 0.20 * EXP( - 0.3 * PAI(I,J) / 0.2588)
+          TRCLDT = 0.30 * EXP( - 0.3 * PAI(I, J) / 0.9659) + 0.50 * EXP( - 0.3 * &
+                   PAI(I, J) / 0.7071) + 0.20 * EXP( - 0.3 * PAI(I, J) / 0.2588)
           TRVS(I) = FCLOUD(I) * TRCLDV + (1.0 - FCLOUD(I)) * TRCLRV
           if (TRVS(I) > 0.0001) then
-            CXTEFF(I,J) = - LOG(TRVS(I)) / MAX(PAI(I,J),1.0E-5)
+            CXTEFF(I, J) = - LOG(TRVS(I)) / MAX(PAI(I, J), 1.0E-5)
           else
-            CXTEFF(I,J) = CXTLRG
+            CXTEFF(I, J) = CXTLRG
           end if
           TRTOT = FCLOUD(I) * TRCLDT + (1.0 - FCLOUD(I)) * TRCLRT
           TRIR(I) = 2. * TRTOT - TRVS(I)
-          TRVSCN(I) = TRVSCN(I) + FCAN(I,J) * TRVS(I)
-          TRIRCN(I) = TRIRCN(I) + FCAN(I,J) * TRIR(I)
+          TRVSCN(I) = TRVSCN(I) + FCAN(I, J) * TRVS(I)
+          TRIRCN(I) = TRIRCN(I) + FCAN(I, J) * TRIR(I)
 
-          SVF = EXP(CANEXT(J) * PAI(I,J))
+          SVF = EXP(CANEXT(J) * PAI(I, J))
           if (IALC == 0) then
-            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ALVSC(I,J)
-            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ALIRC(I,J)
+            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ALVSC(I, J)
+            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ALIRC(I, J)
             ALVSN = (1.0 - SVF) * ALVSCX + SVF * TRVS(I) * ALVSGC(I)
             ALIRN = (1.0 - SVF) * ALIRCX + SVF * TRIR(I) * ALIRGC(I)
           else
-            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ACVDAT(I,J)
-            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ACIDAT(I,J)
-            ALVSN = (1.0 - SVF) * ALVSCX + SVF * ACVDAT(I,J)
-            ALIRN = (1.0 - SVF) * ALIRCX + SVF * ACIDAT(I,J)
+            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ACVDAT(I, J)
+            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ACIDAT(I, J)
+            ALVSN = (1.0 - SVF) * ALVSCX + SVF * ACVDAT(I, J)
+            ALIRN = (1.0 - SVF) * ALIRCX + SVF * ACIDAT(I, J)
           end if
-          ALVSCN(I) = ALVSCN(I) + FCAN(I,J) * ALVSN
-          ALIRCN(I) = ALIRCN(I) + FCAN(I,J) * ALIRN
+          ALVSCN(I) = ALVSCN(I) + FCAN(I, J) * ALVSN
+          ALIRCN(I) = ALIRCN(I) + FCAN(I, J) * ALIRN
         end if
       end do ! loop 150
       !
     case ('BdlTr','BdlSh') !-------------------------------------------------------
-      do I = IL1,IL2
-        if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
-          TRCLRV = MIN(EXP( - 0.7 * PAI(I,J)),EXP( - 0.4 / COSZS(I)))
-          TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX1) &            ! BDCS P?
-                 + 0.50 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX2) &
-                 + 0.20 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX3)
-          TRCLRT = MIN(EXP( - 0.4 * PAI(I,J)),EXP( - 0.4 / COSZS(I)))
-          TRCLDT = 0.30 * MIN(EXP( - 0.4 * PAI(I,J)),EXPMAX1) + &
-                0.50 * MIN(EXP( - 0.4 * PAI(I,J)),EXPMAX2) + &
-                0.20 * MIN(EXP( - 0.4 * PAI(I,J)),EXPMAX3)
+      do I = IL1, IL2 ! loop 250
+        if (COSZS(I) > 0. .and. FCAN(I, J) > 0.) then
+          TRCLRV = MIN(EXP( - 0.7 * PAI(I, J)), EXP( - 0.4 / COSZS(I)))
+          TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAI(I, J)), EXPMAX1) &            ! BDCS P?
+                   + 0.50 * MIN(EXP( - 0.7 * PAI(I, J)), EXPMAX2) &
+                   + 0.20 * MIN(EXP( - 0.7 * PAI(I, J)), EXPMAX3)
+          TRCLRT = MIN(EXP( - 0.4 * PAI(I, J)), EXP( - 0.4 / COSZS(I)))
+          TRCLDT = 0.30 * MIN(EXP( - 0.4 * PAI(I, J)), EXPMAX1) + &
+                   0.50 * MIN(EXP( - 0.4 * PAI(I, J)), EXPMAX2) + &
+                   0.20 * MIN(EXP( - 0.4 * PAI(I, J)), EXPMAX3)
           TRVS(I) = FCLOUD(I) * TRCLDV + (1.0 - FCLOUD(I)) * TRCLRV
           if (TRVS(I) > 0.0001) then
-            CXTEFF(I,J) = - LOG(TRVS(I)) / MAX(PAI(I,J),1.0E-5)
+            CXTEFF(I, J) = - LOG(TRVS(I)) / MAX(PAI(I, J), 1.0E-5)
           else
-            CXTEFF(I,J) = CXTLRG
+            CXTEFF(I, J) = CXTLRG
           end if
           TRTOT = FCLOUD(I) * TRCLDT + (1.0 - FCLOUD(I)) * TRCLRT
           TRIR(I) = 2. * TRTOT - TRVS(I)
-          TRVSCN(I) = TRVSCN(I) + FCAN(I,J) * TRVS(I)
-          TRIRCN(I) = TRIRCN(I) + FCAN(I,J) * TRIR(I)
+          TRVSCN(I) = TRVSCN(I) + FCAN(I, J) * TRVS(I)
+          TRIRCN(I) = TRIRCN(I) + FCAN(I, J) * TRIR(I)
 
-          SVF = EXP(CANEXT(J) * PAI(I,J))
+          SVF = EXP(CANEXT(J) * PAI(I, J))
           if (IALC == 0) then
-            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ALVSC(I,J)
-            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ALIRC(I,J)
+            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ALVSC(I, J)
+            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ALIRC(I, J)
             ALVSN = (1.0 - SVF) * ALVSCX + SVF * TRVS(I) * ALVSGC(I)
             ALIRN = (1.0 - SVF) * ALIRCX + SVF * TRIR(I) * ALIRGC(I)
           else
-            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ACVDAT(I,J)
-            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ACIDAT(I,J)
-            ALVSN = (1.0 - SVF) * ALVSCX + SVF * ACVDAT(I,J)
-            ALIRN = (1.0 - SVF) * ALIRCX + SVF * ACIDAT(I,J)
+            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ACVDAT(I, J)
+            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ACIDAT(I, J)
+            ALVSN = (1.0 - SVF) * ALVSCX + SVF * ACVDAT(I, J)
+            ALIRN = (1.0 - SVF) * ALIRCX + SVF * ACIDAT(I, J)
           end if
-          ALVSCN(I) = ALVSCN(I) + FCAN(I,J) * ALVSN
-          ALIRCN(I) = ALIRCN(I) + FCAN(I,J) * ALIRN
+          ALVSCN(I) = ALVSCN(I) + FCAN(I, J) * ALVSN
+          ALIRCN(I) = ALIRCN(I) + FCAN(I, J) * ALIRN
         end if
       end do ! loop 250
       !
     case ('Crops', 'Grass') ! CROPS AND GRASS
-      do I = IL1,IL2
-        if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
-          TRCLRV = EXP( - 0.5 * PAI(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  ! JM EDIT
+      do I = IL1, IL2 ! loop 350
+        if (COSZS(I) > 0. .and. FCAN(I, J) > 0.) then
+          TRCLRV = EXP( - 0.5 * PAI(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0, -0.5*PAI(I, J)/COSZS(I))  ! JM EDIT
           !              TRCLRV=EXP(TMP)
-          TRCLDV = 0.30 * EXP( - 0.5 * PAI(I,J) / 0.9659) + 0.50 * EXP( - 0.5 * &
-                PAI(I,J) / 0.7071) + 0.20 * EXP( - 0.5 * PAI(I,J) / 0.2588)
-          TRCLRT = EXP( - 0.4 * PAI(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    ! JM EDIT
+          TRCLDV = 0.30 * EXP( - 0.5 * PAI(I, J) / 0.9659) + 0.50 * EXP( - 0.5 * &
+                   PAI(I, J) / 0.7071) + 0.20 * EXP( - 0.5 * PAI(I, J) / 0.2588)
+          TRCLRT = EXP( - 0.4 * PAI(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0,(-0.4*PAI(I, J)/COSZS(I)))    ! JM EDIT
           !              TRCLRT = EXP(TMP)
-          TRCLDT = 0.30 * EXP( - 0.4 * PAI(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &
-                PAI(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAI(I,J) / 0.2588)
+          TRCLDT = 0.30 * EXP( - 0.4 * PAI(I, J) / 0.9659) + 0.50 * EXP( - 0.4 * &
+                   PAI(I, J) / 0.7071) + 0.20 * EXP( - 0.4 * PAI(I, J) / 0.2588)
           TRVS(I) = FCLOUD(I) * TRCLDV + (1.0 - FCLOUD(I)) * TRCLRV
           if (TRVS(I) > 0.0001) then
-            CXTEFF(I,J) = - LOG(TRVS(I)) / MAX(PAI(I,J),1.0E-5)
+            CXTEFF(I, J) = - LOG(TRVS(I)) / MAX(PAI(I, J), 1.0E-5)
           else
-            CXTEFF(I,J) = CXTLRG
+            CXTEFF(I, J) = CXTLRG
           end if
           TRTOT = FCLOUD(I) * TRCLDT + (1.0 - FCLOUD(I)) * TRCLRT
           TRIR(I) = 2. * TRTOT - TRVS(I)
-          TRVSCN(I) = TRVSCN(I) + FCAN(I,J) * TRVS(I)
-          TRIRCN(I) = TRIRCN(I) + FCAN(I,J) * TRIR(I)
+          TRVSCN(I) = TRVSCN(I) + FCAN(I, J) * TRVS(I)
+          TRIRCN(I) = TRIRCN(I) + FCAN(I, J) * TRIR(I)
 
-          SVF = EXP(CANEXT(J) * PAI(I,J))
+          SVF = EXP(CANEXT(J) * PAI(I, J))
           if (IALC == 0) then
-            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ALVSC(I,J)
-            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ALIRC(I,J)
+            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ALVSC(I, J)
+            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ALIRC(I, J)
             ALVSN = (1.0 - SVF) * ALVSCX + SVF * TRVS(I) * ALVSGC(I)
             ALIRN = (1.0 - SVF) * ALIRCX + SVF * TRIR(I) * ALIRGC(I)
           else ! user-specified values read-in.
-            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ACVDAT(I,J)
-            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ACIDAT(I,J)
-            ALVSN = (1.0 - SVF) * ALVSCX + SVF * ACVDAT(I,J)
-            ALIRN = (1.0 - SVF) * ALIRCX + SVF * ACIDAT(I,J)
+            ALVSCX = FSNOWC(I) * ALVSWC + (1.0 - FSNOWC(I)) * ACVDAT(I, J)
+            ALIRCX = FSNOWC(I) * ALIRWC + (1.0 - FSNOWC(I)) * ACIDAT(I, J)
+            ALVSN = (1.0 - SVF) * ALVSCX + SVF * ACVDAT(I, J)
+            ALIRN = (1.0 - SVF) * ALIRCX + SVF * ACIDAT(I, J)
           end if
-          ALVSCN(I) = ALVSCN(I) + FCAN(I,J) * ALVSN
-          ALIRCN(I) = ALIRCN(I) + FCAN(I,J) * ALIRN
+          ALVSCN(I) = ALVSCN(I) + FCAN(I, J) * ALVSN
+          ALIRCN(I) = ALIRCN(I) + FCAN(I, J) * ALIRN
         end if
       end do ! loop 350
 
@@ -476,7 +476,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     * TOTAL ALBEDOS.
   !
   IPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 450
     if (FC(I) > 0. .and. COSZS(I) > 0.) then
       ALVSCN(I) = ALVSCN(I) / FC(I)
       ALIRCN(I) = ALIRCN(I) / FC(I)
@@ -486,15 +486,15 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   end do ! loop 450
   !
   if (IPTBAD /= 0) then
-    write(6,6100) IPTBAD,JL,ALVSCN(IPTBAD),ALIRCN(IPTBAD)
-6100 format('0AT (I,J) = (',I3,',',I3,'), ALVSCN,ALIRCN = ',2F10.5)
+    write(6, 6100) IPTBAD, JL, ALVSCN(IPTBAD), ALIRCN(IPTBAD)
+6100 format('0AT (I, J) = (',I3,',',I3,'), ALVSCN, ALIRCN = ',2F10.5)
     call errorHandler('canopyAlbedoTransmiss', - 2)
   end if
   !
   !     * TOTAL TRANSMISSIVITIES.
   !
   IPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 475
     if (FC(I) > 0. .and. COSZS(I) > 0.) then
       TRVSCN(I) = TRVSCN(I) / FC(I)
       TRIRCN(I) = TRIRCN(I) / FC(I)
@@ -506,125 +506,125 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   end do ! loop 475
   !
   if (IPTBAD /= 0) then
-    write(6,6300) IPTBAD,JL,TRVSCN(IPTBAD),TRIRCN(IPTBAD)
-6300 format('0AT (I,J) = (',I3,',',I3,'), TRVSCN,TRIRCN = ',2F10.5)
+    write(6, 6300) IPTBAD, JL, TRVSCN(IPTBAD), TRIRCN(IPTBAD)
+6300 format('0AT (I, J) = (',I3,',',I3,'), TRVSCN, TRIRCN = ',2F10.5)
     call errorHandler('canopyAlbedoTransmiss', - 3)
   end if
   !----------------------------------------------------------------------
   !     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER SNOW.
-  do J = 1,IC
+  do J = 1, IC
     select case (classpfts(J))
     case ('NdlTr') !-------------------------------------------------------
-      do I = IL1,IL2
-        if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
-          TRCLRV = EXP( - 0.4 * PAIS(I,J) / COSZS(I))   ! BDCS P?
-          !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  ! JM EDIT
+      do I = IL1, IL2 ! loop 500
+        if (COSZS(I) > 0. .and. FCANS(I, J) > 0.) then
+          TRCLRV = EXP( - 0.4 * PAIS(I, J) / COSZS(I))   ! BDCS P?
+          !              TMP=MAX(-50.0, -0.4*PAIS(I, J)/COSZS(I))  ! JM EDIT
           !              TRCLRV=EXP(TMP)
-          TRCLDV = 0.30 * EXP( - 0.4 * PAIS(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &
-                PAIS(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAIS(I,J) / 0.2588)   ! BDCS P?
-          TRCLRT = EXP( - 0.3 * PAIS(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    ! JM EDIT
+          TRCLDV = 0.30 * EXP( - 0.4 * PAIS(I, J) / 0.9659) + 0.50 * EXP( - 0.4 * &
+                   PAIS(I, J) / 0.7071) + 0.20 * EXP( - 0.4 * PAIS(I, J) / 0.2588)   ! BDCS P?
+          TRCLRT = EXP( - 0.3 * PAIS(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0,(-0.3*PAIS(I, J)/COSZS(I)))    ! JM EDIT
           !              TRCLRT = EXP(TMP)
-          TRCLDT = 0.30 * EXP( - 0.3 * PAIS(I,J) / 0.9659) + 0.50 * EXP( - 0.3 * &
-                PAIS(I,J) / 0.7071) + 0.20 * EXP( - 0.3 * PAIS(I,J) / 0.2588)
+          TRCLDT = 0.30 * EXP( - 0.3 * PAIS(I, J) / 0.9659) + 0.50 * EXP( - 0.3 * &
+                   PAIS(I, J) / 0.7071) + 0.20 * EXP( - 0.3 * PAIS(I, J) / 0.2588)
           TRVS(I) = FCLOUD(I) * TRCLDV + (1.0 - FCLOUD(I)) * TRCLRV
           TRTOT = FCLOUD(I) * TRCLDT + (1.0 - FCLOUD(I)) * TRCLRT
           TRIR(I) = 2. * TRTOT - TRVS(I)
-          TRVSCS(I) = TRVSCS(I) + FCANS(I,J) * TRVS(I)
-          TRIRCS(I) = TRIRCS(I) + FCANS(I,J) * TRIR(I)
+          TRVSCS(I) = TRVSCS(I) + FCANS(I, J) * TRVS(I)
+          TRIRCS(I) = TRIRCS(I) + FCANS(I, J) * TRIR(I)
           !          END IF
           !  500 CONTINUE
           !
-          !      do I=IL1,IL2
-          !          IF (COSZS(I)>0. .AND. FCANS(I,J)>0.)             THEN
+          !      do I=IL1, IL2
+          !          IF (COSZS(I)>0. .AND. FCANS(I, J)>0.)             THEN
           if (IALC == 0) then
-            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ALVSC(I,J)
-            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ALIRC(I,J)
+            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ALVSC(I, J)
+            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ALIRC(I, J)
           else
-            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ACVDAT(I,J)
-            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ACIDAT(I,J)
+            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ACVDAT(I, J)
+            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ACIDAT(I, J)
           end if
-          SVF = EXP(CANEXT(J) * PAIS(I,J))
+          SVF = EXP(CANEXT(J) * PAIS(I, J))
           ALVSS = (1.0 - SVF) * ALVSCX + SVF * TRVS(I) * ALVSSC(I)
           ALIRS = (1.0 - SVF) * ALIRCX + SVF * TRIR(I) * ALIRSC(I)
-          ALVSCS(I) = ALVSCS(I) + FCANS(I,J) * ALVSS
-          ALIRCS(I) = ALIRCS(I) + FCANS(I,J) * ALIRS
+          ALVSCS(I) = ALVSCS(I) + FCANS(I, J) * ALVSS
+          ALIRCS(I) = ALIRCS(I) + FCANS(I, J) * ALIRS
         end if
         !  550 CONTINUE
       end do ! loop 500
       !
     case ('BdlTr','BdlSh') !-------------------------------------------------------
-      do I = IL1,IL2
-        if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
-          TRCLRV = MIN(EXP( - 0.7 * PAIS(I,J)),EXP( - 0.4 / COSZS(I)))
-          TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAIS(I,J)),EXPMAX1) &
-               + 0.50 * MIN(EXP( - 0.7 * PAIS(I,J)),EXPMAX2) &
-               + 0.20 * MIN(EXP( - 0.7 * PAIS(I,J)),EXPMAX3)
-          TRCLRT = MIN(EXP( - 0.4 * PAIS(I,J)),EXP( - 0.4 / COSZS(I)))
-          TRCLDT = 0.30 * MIN(EXP( - 0.4 * PAIS(I,J)),EXPMAX1) + &
-                0.50 * MIN(EXP( - 0.4 * PAIS(I,J)),EXPMAX2) + &
-                0.20 * MIN(EXP( - 0.4 * PAIS(I,J)),EXPMAX3)
+      do I = IL1, IL2 ! loop 600
+        if (COSZS(I) > 0. .and. FCANS(I, J) > 0.) then
+          TRCLRV = MIN(EXP( - 0.7 * PAIS(I, J)), EXP( - 0.4 / COSZS(I)))
+          TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAIS(I, J)), EXPMAX1) &
+                   + 0.50 * MIN(EXP( - 0.7 * PAIS(I, J)), EXPMAX2) &
+                   + 0.20 * MIN(EXP( - 0.7 * PAIS(I, J)), EXPMAX3)
+          TRCLRT = MIN(EXP( - 0.4 * PAIS(I, J)), EXP( - 0.4 / COSZS(I)))
+          TRCLDT = 0.30 * MIN(EXP( - 0.4 * PAIS(I, J)), EXPMAX1) + &
+                   0.50 * MIN(EXP( - 0.4 * PAIS(I, J)), EXPMAX2) + &
+                   0.20 * MIN(EXP( - 0.4 * PAIS(I, J)), EXPMAX3)
           TRVS(I) = FCLOUD(I) * TRCLDV + (1.0 - FCLOUD(I)) * TRCLRV
           TRTOT = FCLOUD(I) * TRCLDT + (1.0 - FCLOUD(I)) * TRCLRT
           TRIR(I) = 2. * TRTOT - TRVS(I)
-          TRVSCS(I) = TRVSCS(I) + FCANS(I,J) * TRVS(I)
-          TRIRCS(I) = TRIRCS(I) + FCANS(I,J) * TRIR(I)
+          TRVSCS(I) = TRVSCS(I) + FCANS(I, J) * TRVS(I)
+          TRIRCS(I) = TRIRCS(I) + FCANS(I, J) * TRIR(I)
           !          END IF
           !  600 CONTINUE
           !
-          !      do I=IL1,IL2
-          !          IF (COSZS(I)>0. .AND. FCANS(I,J)>0.)             THEN
+          !      do I=IL1, IL2
+          !          IF (COSZS(I)>0. .AND. FCANS(I, J)>0.)             THEN
           if (IALC == 0) then
-            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ALVSC(I,J)
-            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ALIRC(I,J)
+            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ALVSC(I, J)
+            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ALIRC(I, J)
           else
-            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ACVDAT(I,J)
-            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ACIDAT(I,J)
+            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ACVDAT(I, J)
+            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ACIDAT(I, J)
           end if
-          SVF = EXP(CANEXT(J) * PAIS(I,J))
+          SVF = EXP(CANEXT(J) * PAIS(I, J))
           ALVSS = (1.0 - SVF) * ALVSCX + SVF * TRVS(I) * ALVSSC(I)
           ALIRS = (1.0 - SVF) * ALIRCX + SVF * TRIR(I) * ALIRSC(I)
-          ALVSCS(I) = ALVSCS(I) + FCANS(I,J) * ALVSS
-          ALIRCS(I) = ALIRCS(I) + FCANS(I,J) * ALIRS
+          ALVSCS(I) = ALVSCS(I) + FCANS(I, J) * ALVSS
+          ALIRCS(I) = ALIRCS(I) + FCANS(I, J) * ALIRS
         end if
         !  650 CONTINUE
       end do ! loop 600
       !
     case ('Crops', 'Grass')  ! CROPS AND GRASS.
-      do I = IL1,IL2
-        if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
-          TRCLRV = EXP( - 0.5 * PAIS(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  ! JM EDIT
+      do I = IL1, IL2 ! loop 700
+        if (COSZS(I) > 0. .and. FCANS(I, J) > 0.) then
+          TRCLRV = EXP( - 0.5 * PAIS(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0, -0.5*PAIS(I, J)/COSZS(I))  ! JM EDIT
           !              TRCLRV=EXP(TMP)
-          TRCLDV = 0.30 * EXP( - 0.5 * PAIS(I,J) / 0.9659) + 0.50 * EXP( - 0.5 * &
-                PAIS(I,J) / 0.7071) + 0.20 * EXP( - 0.5 * PAIS(I,J) / 0.2588)
-          TRCLRT = EXP( - 0.4 * PAIS(I,J) / COSZS(I))
-          !              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    ! JM EDIT
+          TRCLDV = 0.30 * EXP( - 0.5 * PAIS(I, J) / 0.9659) + 0.50 * EXP( - 0.5 * &
+                   PAIS(I, J) / 0.7071) + 0.20 * EXP( - 0.5 * PAIS(I, J) / 0.2588)
+          TRCLRT = EXP( - 0.4 * PAIS(I, J) / COSZS(I))
+          !              TMP=MAX(-50.0,(-0.4*PAIS(I, J)/COSZS(I)))    ! JM EDIT
           !              TRCLRT = EXP(TMP)
-          TRCLDT = 0.30 * EXP( - 0.4 * PAIS(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &
-                PAIS(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAIS(I,J) / 0.2588)
+          TRCLDT = 0.30 * EXP( - 0.4 * PAIS(I, J) / 0.9659) + 0.50 * EXP( - 0.4 * &
+                   PAIS(I, J) / 0.7071) + 0.20 * EXP( - 0.4 * PAIS(I, J) / 0.2588)
           TRVS(I) = FCLOUD(I) * TRCLDV + (1.0 - FCLOUD(I)) * TRCLRV
           TRTOT = FCLOUD(I) * TRCLDT + (1.0 - FCLOUD(I)) * TRCLRT
           TRIR(I) = 2. * TRTOT - TRVS(I)
-          TRVSCS(I) = TRVSCS(I) + FCANS(I,J) * TRVS(I)
-          TRIRCS(I) = TRIRCS(I) + FCANS(I,J) * TRIR(I)
+          TRVSCS(I) = TRVSCS(I) + FCANS(I, J) * TRVS(I)
+          TRIRCS(I) = TRIRCS(I) + FCANS(I, J) * TRIR(I)
           !          END IF
           !  700 CONTINUE
 
-          !      do I=IL1,IL2
-          !          IF (COSZS(I)>0. .AND. FCANS(I,J)>0.)             THEN
+          !      do I=IL1, IL2
+          !          IF (COSZS(I)>0. .AND. FCANS(I, J)>0.)             THEN
           if (IALC == 0) then
-            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ALVSC(I,J)
-            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ALIRC(I,J)
+            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ALVSC(I, J)
+            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ALIRC(I, J)
           else
-            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ACVDAT(I,J)
-            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ACIDAT(I,J)
+            ALVSCX = FSNOCS(I) * ALVSWC + (1.0 - FSNOCS(I)) * ACVDAT(I, J)
+            ALIRCX = FSNOCS(I) * ALIRWC + (1.0 - FSNOCS(I)) * ACIDAT(I, J)
           end if
-          SVF = EXP(CANEXT(J) * PAIS(I,J))
+          SVF = EXP(CANEXT(J) * PAIS(I, J))
           ALVSS = (1.0 - SVF) * ALVSCX + SVF * TRVS(I) * ALVSSC(I)
           ALIRS = (1.0 - SVF) * ALIRCX + SVF * TRIR(I) * ALIRSC(I)
-          ALVSCS(I) = ALVSCS(I) + FCANS(I,J) * ALVSS
-          ALIRCS(I) = ALIRCS(I) + FCANS(I,J) * ALIRS
+          ALVSCS(I) = ALVSCS(I) + FCANS(I, J) * ALVSS
+          ALIRCS(I) = ALIRCS(I) + FCANS(I, J) * ALIRS
         end if
         !  750 CONTINUE
       end do ! loop 700
@@ -638,7 +638,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     * TOTAL ALBEDOS AND CONSISTENCY CHECKS.
   !
   IPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 775
     if (FCS(I) > 0. .and. COSZS(I) > 0.) then
       ALVSCS(I) = ALVSCS(I) / FCS(I)
       ALIRCS(I) = ALIRCS(I) / FCS(I)
@@ -651,7 +651,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !
   IPTBAD = 0
   JPTBAD = 0
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 800
     if (FCS(I) > 0. .and. COSZS(I) > 0.) then
       TRVSCS(I) = TRVSCS(I) / FCS(I)
       TRIRCS(I) = TRIRCS(I) / FCS(I)
@@ -679,53 +679,53 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   end do ! loop 800
   !
   if (IPTBAD /= 0) then
-    write(6,6400) IPTBAD,JL,TRVSCS(IPTBAD),TRIRCS(IPTBAD)
-6400 format('0AT (I,J) = (',I3,',',I3,'), TRVSCS,TRIRCS = ',2F10.5)
+    write(6, 6400) IPTBAD, JL, TRVSCS(IPTBAD), TRIRCS(IPTBAD)
+6400 format('0AT (I, J) = (',I3,',',I3,'), TRVSCS, TRIRCS = ',2F10.5)
     call errorHandler('canopyAlbedoTransmiss', - 5)
   end if
   !
   if (IPTBAD /= 0) then
-    write(6,6200) IPTBAD,JL,ALVSCS(IPTBAD),ALIRCS(IPTBAD)
-6200 format('0AT (I,J) = (',I3,',',I3,'), ALVSCS,ALIRCS = ',2F10.5)
+    write(6, 6200) IPTBAD, JL, ALVSCS(IPTBAD), ALIRCS(IPTBAD)
+6200 format('0AT (I, J) = (',I3,',',I3,'), ALVSCS, ALIRCS = ',2F10.5)
     call errorHandler('canopyAlbedoTransmiss', - 6)
   end if
   !
   if (JPTBAD /= 0) then
-    write(6,6500) JPTBDI,JL,JPTBAD
-6500 format('0AT (I,J) = (',I3,',',I3,'), JPTBAD =  ',I5)
+    write(6, 6500) JPTBDI, JL, JPTBAD
+6500 format('0AT (I, J) = (',I3,',',I3,'), JPTBAD =  ',I5)
     call errorHandler('canopyAlbedoTransmiss', - 7)
   end if
   !-----------------------------------------------------------------------
   !>
   !! In the final section, the stomatal resistance \f$r_c\f$ of the
   !! vegetation canopy is determined. Based on the analysis of Schulze
-  !! et al. (1995), the unstressed stomatal resistance \f$r_{c,u}\f$ for a
+  !! et al. (1995), the unstressed stomatal resistance \f$r_{c, u}\f$ for a
   !! given vegetation category can be calculated as a function of the
   !! incoming visible shortwave radiation \f$K\downarrow\f$:
   !!
-  !! \f$r_{c,u} = r_{s,min} \kappa_e / ln[{K\downarrow + K\downarrow_{1/2} / \kappa_e} / { K\downarrow exp(-\kappa_e \Lambda ) + K\downarrow_{1/2} / \kappa_e }]\f$
+  !! \f$r_{c, u} = r_{s, min} \kappa_e / ln[{K\downarrow + K\downarrow_{1/2} / \kappa_e} / { K\downarrow exp(-\kappa_e \Lambda) + K\downarrow_{1/2} / \kappa_e }]\f$
   !!
-  !! where \f$r_{s,min}\f$ is the minimum stomatal resistance for the
+  !! where \f$r_{s, min}\f$ is the minimum stomatal resistance for the
   !! vegetation category, \f$\kappa_e\f$ is the extinction coeffient for
   !! visible radiation (CXTEFF above), \f$\Lambda\f$ is the leaf area index, and
-  !! \f$K\downarrow_{1/2}\f$ is the value of \f$K\downarrow\f$ at which \f$r_{c,u} = 2 r_{s,min}.\f$
+  !! \f$K\downarrow_{1/2}\f$ is the value of \f$K\downarrow\f$ at which \f$r_{c, u} = 2 r_{s, min}.\f$
   !!
   !! Suboptimum environmental conditions for transpiration may lead to
   !! stresses on the plant, causing the stomatal resistance to be
   !! greater than its unstressed value. The effects of these stresses
   !! are modelled by defining functions of the air temperature \f$T_a\f$, the
   !! air vapour pressure deficit \f$\Delta e\f$, and the soil moisture suction
-  !! \f$\Psi_s\f$. These functions are used to derive \f$r_{c,i}\f$ of each
-  !! vegetation category on the basis of \f$r_{c,u,i}\f$:
+  !! \f$\Psi_s\f$. These functions are used to derive \f$r_{c, i}\f$ of each
+  !! vegetation category on the basis of \f$r_{c, u, i}\f$:
   !!
-  !! \f$r_{c,i} = f(T_a) f( \Delta_e ) f( \Psi_s ) * r_{c,u,i}\f$
+  !! \f$r_{c, i} = f(T_a) f( \Delta_e) f( \Psi_s) * r_{c, u, i}\f$
   !!
   !! The air temperature function \f$f(T_a)\f$ has a value of 1 for
   !! temperatures between \f$5^o C\f$ and \f$40^o C\f$, and an
   !! arbitrary large value of 250 for temperatures less than \f$-5^o C\f$
   !! and greater than \f$50^o C\f$. Between these points it
   !! varies in a linear fashion. For the vapour pressure deficit
-  !! function \f$f( \Delta e )\f$, two alternate forms are provided, after Oren et
+  !! function \f$f( \Delta e)\f$, two alternate forms are provided, after Oren et
   !! al. (1999) and Wu et al. (2000) respectively:
   !!
   !! \f$f( \Delta e) = [( \Delta e/10.0)^{cv2}]/c_{v1}\f$ and
@@ -735,7 +735,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !! category. If \f$c_{v2}\f$ is greater than zero, the first form is used
   !! if not, the second form is used. The soil moisture suction
   !! function \f$f(\Psi_s)\f$ is expressed, following Choudhury and Idso
-  !! (1985) \cite Choudhury1985-mm and Fisher et al. (1981) \cite Fisher1981-xf , as:
+  !! (1985) \cite Choudhury1985-mm and Fisher et al. (1981) \cite Fisher1981-xf, as:
   !!
   !! \f$f(\Psi_s) = 1 + (\Psi_s / c_{\Psi 1})^{c \Psi 2}\f$
   !!
@@ -749,15 +749,15 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !! the aggregated resistance for the subarea of canopy over bare
   !! ground is obtained as an average of inverses:
   !!
-  !! \f$X/r_c = \Sigma (X_i / r_{c,i})\f$
+  !! \f$X/r_c = \Sigma (X_i / r_{c, i})\f$
   !!
   !! The calculations described above pertaining to stomatal
   !! resistances are performed in loops 850, 900 and 950. In the 850
   !! loop, \f$f(T_a)\f$ is evaluated. In the 900 loop, for each vegetation
-  !! category in turn, \f$f(\Delta e)\f$, \f$f(\Psi_s)\f$ and \f$r_{c,i}\f$ are determined. \f$r_{c,i}\f$
+  !! category in turn, \f$f(\Delta e)\f$, \f$f(\Psi_s)\f$ and \f$r_{c, i}\f$ are determined. \f$r_{c, i}\f$
   !! is assigned upper and lower limits of 5000 and 10 \f$s m^{-1}\f$
   !! respectively, and the accumulated stomatal resistance for the
-  !! canopy is incremented by \f$X_i / r_{c,i}\f$. In loop 950, if the incoming
+  !! canopy is incremented by \f$X_i / r_{c, i}\f$. In loop 950, if the incoming
   !! visible radiation is small, the stomatal resistances are likewise
   !! set to a large number. Otherwise, the stomatal resistance of
   !! vegetation over snow is set to a large number, and the
@@ -768,7 +768,7 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
   !     * BULK STOMATAL RESISTANCES FOR CANOPY OVERLYING SNOW AND CANOPY
   !     * OVERLYING BARE SOIL.
   !
-  do I = IL1,IL2 ! loop 850
+  do I = IL1, IL2 ! loop 850
     if ((FCS(I) + FC(I)) > 0.0) then
       if (TA(I) <= 268.15) then  ! BDCS P?
         RCT(I) = 250.   ! BDCS P?
@@ -786,40 +786,40 @@ subroutine canopyAlbedoTransmiss(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN, & ! 
     end if
   end do ! loop 850
   !
-  do J = 1,IC
-    do I = IL1,IL2
-      if (FCAN(I,J) > 0.) then
-        if (VPD(I) > 0. .and. VPDA(I,J) > 0.0) then
-          if (ABS(VPDB(I,J)) > 1.0E-5) then
-            RCV(I,J) = MAX(1.,((VPD(I) / 10.) ** VPDB(I,J)) / &
-                            VPDA(I,J))
+  do J = 1, IC ! loop 900
+    do I = IL1, IL2
+      if (FCAN(I, J) > 0.) then
+        if (VPD(I) > 0. .and. VPDA(I, J) > 0.0) then
+          if (ABS(VPDB(I, J)) > 1.0E-5) then
+            RCV(I, J) = MAX(1.,((VPD(I) / 10.) ** VPDB(I, J)) / &
+                        VPDA(I, J))
           else
-            RCV(I,J) = 1. / EXP( - VPDA(I,J) * VPD(I) / 10.)
+            RCV(I, J) = 1. / EXP( - VPDA(I, J) * VPD(I) / 10.)
           end if
         else
-          RCV(I,J) = 1.0
+          RCV(I, J) = 1.0
         end if
-        if (PSIGA(I,J) > 0.0) then
-          RCG(I,J) = 1. + (PSIGND(I) / PSIGA(I,J)) ** PSIGB(I,J)
+        if (PSIGA(I, J) > 0.0) then
+          RCG(I, J) = 1. + (PSIGND(I) / PSIGA(I, J)) ** PSIGB(I, J)
         else
-          RCG(I,J) = 1.0
+          RCG(I, J) = 1.0
         end if
         if (QSWINV(I) > 0.01 .and. COSZS(I) > 0. .and. &
-        CXTEFF(I,J) > 1.0E-5 .and. RCG(I,J) < 1.0E5) then
-          RCACC(I,J) = MIN(CXTEFF(I,J) * RSMIN(I,J) / LOG((QSWINV(I) + &
-            QA50(I,J) / CXTEFF(I,J)) / (QSWINV(I) * EXP( - CXTEFF(I,J) * &
-            PAI(I,J)) + QA50(I,J) / CXTEFF(I,J))) * RCV(I,J) * RCG(I,J) * &
-            RCT(I),5000.)
-          RCACC(I,J) = MAX(RCACC(I,J),10.0)
+            CXTEFF(I, J) > 1.0E-5 .and. RCG(I, J) < 1.0E5) then
+          RCACC(I, J) = MIN(CXTEFF(I, J) * RSMIN(I, J) / LOG((QSWINV(I) + &
+                        QA50(I, J) / CXTEFF(I, J)) / (QSWINV(I) * EXP( - CXTEFF(I, J) * &
+                        PAI(I, J)) + QA50(I, J) / CXTEFF(I, J))) * RCV(I, J) * RCG(I, J) * &
+                        RCT(I), 5000.)
+          RCACC(I, J) = MAX(RCACC(I, J), 10.0)
         else
-          RCACC(I,J) = 5000.
+          RCACC(I, J) = 5000.
         end if
-        RC(I) = RC(I) + FCAN(I,J) / RCACC(I,J)
+        RC(I) = RC(I) + FCAN(I, J) / RCACC(I, J)
       end if
     end do
   end do ! loop 900
   !
-  do I = IL1,IL2
+  do I = IL1, IL2 ! loop 950
     if ((FCS(I) + FC(I)) > 0.) then
       if (QSWINV(I) < 2.0) then
         RCS(I) = 5000.0

@@ -1,5 +1,7 @@
-!> Contains the physics variable type structures.
+!> \file
+!! Contains the physics variable type structures.
 !! @author J. Melton
+!!
 !! 1. class_rot - CLASS's 'rot' and 'row' vars
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs
@@ -9,7 +11,7 @@ module class_statevars
 
   ! J. Melton Nov 2016
 
-  use classic_params,  only : ican, icp1, NBS
+  use classic_params, only : ican, icp1, NBS
 
   implicit none
 
@@ -493,7 +495,7 @@ module class_statevars
     real, allocatable, dimension(:) :: wtableROW !<
     integer, allocatable, dimension(:) :: altotcntr_d     !< Used to count the number of time steps with the sun above the horizon
 
-    ! These will be allocated the dimension: 'nlat,nmos'
+    ! These will be allocated the dimension: 'nlat, nmos'
 
     integer, allocatable, dimension(:,:) :: IGDRROT !<
     integer, allocatable, dimension(:,:) :: MIDROT  !< Mosaic tile type identifier (1 for land surface, 0 for inland lake)
@@ -606,7 +608,7 @@ module class_statevars
     real, allocatable, dimension(:,:) :: maxAnnualActLyrROT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     real, allocatable, dimension(:,:) :: actLyrThisYrROT !< Annual active layer depth maximum starting from summer solstice for the present year (m)
 
-    ! There will be allocated the dimension: 'nlat,nmos,ignd'
+    ! There will be allocated the dimension: 'nlat, nmos, ignd'
     integer, allocatable, dimension(:,:,:) :: ISNDROT !< Sand content flag, used to delineate non-soils.
     real, allocatable, dimension(:,:,:) :: TBARROT !< Temperature of soil layers [K]
     real, allocatable, dimension(:,:,:) :: THICROT !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -631,16 +633,16 @@ module class_statevars
     real, allocatable, dimension(:,:,:) :: GFLXROT !<
     real, allocatable, dimension(:,:,:) :: HMFGROT !<
     real, allocatable, dimension(:,:,:) :: HTCROT  !<
-    real, allocatable, dimension(:,:,:) :: QFCROT  !<
+    real, allocatable, dimension(:,:,:) :: QFCROT  !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
 
-    ! allocated with nlat,nmos,ignd:
+    ! allocated with nlat, nmos, ignd:
     real, allocatable, dimension(:,:,:) :: TBARACC_M        !< Temperature of soil layers [K] (accumulated for means)
     real, allocatable, dimension(:,:,:) :: THLQACC_M        !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
     real, allocatable, dimension(:,:,:) :: THICACC_M        !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
     real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !< Temperature of soil layers [K] (accumulated for CTEM)
 
 
-    ! These will be allocated the dimension: 'nlat,nmos,ican'
+    ! These will be allocated the dimension: 'nlat, nmos, ican'
     real, allocatable, dimension(:,:,:) :: ACIDROT !<
     real, allocatable, dimension(:,:,:) :: ACVDROT !<
     real, allocatable, dimension(:,:,:) :: CMASROT !<
@@ -656,22 +658,22 @@ module class_statevars
     real, allocatable, dimension(:,:,:) :: VPDAROT !<
     real, allocatable, dimension(:,:,:) :: VPDBROT !<
 
-    ! These will be allocated the dimension: 'nlat,nmos,icp1'
+    ! These will be allocated the dimension: 'nlat, nmos, icp1'
     real, allocatable, dimension(:,:,:) :: ALICROT !<
     real, allocatable, dimension(:,:,:) :: ALVCROT !<
     real, allocatable, dimension(:,:,:) :: FCANROT !<
     real, allocatable, dimension(:,:,:) :: LNZ0ROT !<
 
-    ! These will be allocated the dimension: 'nlat,nmos,nbs'
+    ! These will be allocated the dimension: 'nlat, nmos, nbs'
     real, allocatable, dimension(:,:,:)  :: SALBROT  !<
     real, allocatable, dimension(:,:,:)  :: CSALROT  !<
 
-    ! These will be allocated the dimension: 'nlat,nbs'
+    ! These will be allocated the dimension: 'nlat, nbs'
     real, allocatable, dimension(:,:) :: FSDBROL  !<
     real, allocatable, dimension(:,:) :: FSFBROL  !<
     real, allocatable, dimension(:,:) :: FSSBROL  !<
 
-    ! These will be allocated the dimension: 'nlat,ignd'
+    ! These will be allocated the dimension: 'nlat, ignd'
 
     real, allocatable, dimension(:,:) :: TBARROW !< Temperature of soil layers [K]
     real, allocatable, dimension(:,:) :: THALROW !< Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -680,15 +682,15 @@ module class_statevars
     real, allocatable, dimension(:,:) :: GFLXROW !<
     real, allocatable, dimension(:,:) :: HMFGROW !<
     real, allocatable, dimension(:,:) :: HTCROW  !<
-    real, allocatable, dimension(:,:) :: QFCROW  !<
+    real, allocatable, dimension(:,:) :: QFCROW  !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
 
-    ! These will be allocated the dimension: 'nlat,nmos,6,50'
+    ! These will be allocated the dimension: 'nlat, nmos, 6, 50'
     integer, allocatable, dimension(:,:,:,:) :: ITCTROT !<
 
-    ! These will be allocated the dimension: 'nlat,nmos,4'
+    ! These will be allocated the dimension: 'nlat, nmos, 4'
     real, allocatable, dimension(:,:,:)  :: TSFSROT !<
 
-    ! allocated with nlat,nmos:
+    ! allocated with nlat, nmos:
     real, allocatable, dimension(:,:) :: PREACC_M              !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:,:) :: GTACC_M               !< Diagnosed effective surface black-body temperature [K]
     real, allocatable, dimension(:,:) :: QEVPACC_M             !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
@@ -757,7 +759,7 @@ module class_statevars
     real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
     integer, allocatable, dimension(:) :: altotcntr_m !< Used to count the number of time steps with the sun above the horizon
 
-    ! allocated with nlat,ignd:
+    ! allocated with nlat, ignd:
     real, allocatable, dimension(:,:) :: TBARACC_MO !< Temperature of soil layers [K] (accumulated for means)
     real, allocatable, dimension(:,:) :: THLQACC_MO !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
     real, allocatable, dimension(:,:) :: THICACC_MO !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
@@ -799,7 +801,7 @@ contains
 
   subroutine alloc_class_vars()
 
-    use classic_params, only : ican, nbs, icp1, nlat,nmos,ignd, ilg
+    use classic_params, only : ican, nbs, icp1, nlat, nmos, ignd, ilg
 
     implicit none
 
@@ -1065,83 +1067,83 @@ contains
          class_gat% ZBOT   (ignd))
 
     ! These will be allocated the dimension: 'ilg, ignd'
-    allocate(class_gat% ISNDGAT (ilg,ignd), &
-         class_gat% TBARGAT (ilg,ignd), &
-         class_gat% THICGAT (ilg,ignd), &
-         class_gat% THLQGAT (ilg,ignd), &
-         class_gat% BIGAT   (ilg,ignd), &
-         class_gat% DLZWGAT (ilg,ignd), &
-         class_gat% GRKSGAT (ilg,ignd), &
-         class_gat% HCPSGAT (ilg,ignd), &
-         class_gat% PSISGAT (ilg,ignd), &
-         class_gat% PSIWGAT (ilg,ignd), &
-         class_gat% TCSGAT  (ilg,ignd), &
-         class_gat% THFCGAT (ilg,ignd), &
-         class_gat% THMGAT  (ilg,ignd), &
-         class_gat% THPGAT  (ilg,ignd), &
-         class_gat% THRGAT  (ilg,ignd), &
-         class_gat% THRAGAT (ilg,ignd), &
-         class_gat% ZBTWGAT (ilg,ignd), &
-         class_gat% THLWGAT (ilg,ignd), &
-         class_gat% GFLXGAT (ilg,ignd), &
-         class_gat% HMFGGAT (ilg,ignd), &
-         class_gat% HTCGAT  (ilg,ignd), &
-         class_gat% QFCGAT  (ilg,ignd), &
-         class_gat% TBARC  (ilg,ignd), &
-         class_gat% TBARG  (ilg,ignd), &
-         class_gat% TBARCS (ilg,ignd), &
-         class_gat% TBARGS (ilg,ignd), &
-         class_gat% THLIQC (ilg,ignd), &
-         class_gat% THLIQG (ilg,ignd), &
-         class_gat% THICEC (ilg,ignd), &
-         class_gat% THICEG (ilg,ignd), &
-         class_gat% FROOT  (ilg,ignd), &
-         class_gat% HCPC   (ilg,ignd), &
-         class_gat% HCPG   (ilg,ignd), &
-         class_gat% FROOTS (ilg,ignd), &
-         class_gat% TCTOPC (ilg,ignd), &
-         class_gat% TCBOTC (ilg,ignd), &
-         class_gat% TCTOPG (ilg,ignd), &
-         class_gat% TCBOTG (ilg,ignd))
+    allocate(class_gat% ISNDGAT (ilg, ignd), &
+         class_gat% TBARGAT (ilg, ignd), &
+         class_gat% THICGAT (ilg, ignd), &
+         class_gat% THLQGAT (ilg, ignd), &
+         class_gat% BIGAT   (ilg, ignd), &
+         class_gat% DLZWGAT (ilg, ignd), &
+         class_gat% GRKSGAT (ilg, ignd), &
+         class_gat% HCPSGAT (ilg, ignd), &
+         class_gat% PSISGAT (ilg, ignd), &
+         class_gat% PSIWGAT (ilg, ignd), &
+         class_gat% TCSGAT  (ilg, ignd), &
+         class_gat% THFCGAT (ilg, ignd), &
+         class_gat% THMGAT  (ilg, ignd), &
+         class_gat% THPGAT  (ilg, ignd), &
+         class_gat% THRGAT  (ilg, ignd), &
+         class_gat% THRAGAT (ilg, ignd), &
+         class_gat% ZBTWGAT (ilg, ignd), &
+         class_gat% THLWGAT (ilg, ignd), &
+         class_gat% GFLXGAT (ilg, ignd), &
+         class_gat% HMFGGAT (ilg, ignd), &
+         class_gat% HTCGAT  (ilg, ignd), &
+         class_gat% QFCGAT  (ilg, ignd), &
+         class_gat% TBARC  (ilg, ignd), &
+         class_gat% TBARG  (ilg, ignd), &
+         class_gat% TBARCS (ilg, ignd), &
+         class_gat% TBARGS (ilg, ignd), &
+         class_gat% THLIQC (ilg, ignd), &
+         class_gat% THLIQG (ilg, ignd), &
+         class_gat% THICEC (ilg, ignd), &
+         class_gat% THICEG (ilg, ignd), &
+         class_gat% FROOT  (ilg, ignd), &
+         class_gat% HCPC   (ilg, ignd), &
+         class_gat% HCPG   (ilg, ignd), &
+         class_gat% FROOTS (ilg, ignd), &
+         class_gat% TCTOPC (ilg, ignd), &
+         class_gat% TCBOTC (ilg, ignd), &
+         class_gat% TCTOPG (ilg, ignd), &
+         class_gat% TCBOTG (ilg, ignd))
 
     ! These will be allocated the dimension: 'ilg, ican'
-    allocate(class_gat% ACIDGAT (ilg,ican), &
-         class_gat% ACVDGAT (ilg,ican), &
-         class_gat% CMASGAT (ilg,ican), &
-         class_gat% HGTDGAT (ilg,ican), &
-         class_gat% PAIDGAT (ilg,ican), &
-         class_gat% PAMNGAT (ilg,ican), &
-         class_gat% PAMXGAT (ilg,ican), &
-         class_gat% PSGAGAT (ilg,ican), &
-         class_gat% PSGBGAT (ilg,ican), &
-         class_gat% QA50GAT (ilg,ican), &
-         class_gat% ROOTGAT (ilg,ican), &
-         class_gat% RSMNGAT (ilg,ican), &
-         class_gat% VPDAGAT (ilg,ican), &
-         class_gat% VPDBGAT (ilg,ican))
+    allocate(class_gat% ACIDGAT (ilg, ican), &
+         class_gat% ACVDGAT (ilg, ican), &
+         class_gat% CMASGAT (ilg, ican), &
+         class_gat% HGTDGAT (ilg, ican), &
+         class_gat% PAIDGAT (ilg, ican), &
+         class_gat% PAMNGAT (ilg, ican), &
+         class_gat% PAMXGAT (ilg, ican), &
+         class_gat% PSGAGAT (ilg, ican), &
+         class_gat% PSGBGAT (ilg, ican), &
+         class_gat% QA50GAT (ilg, ican), &
+         class_gat% ROOTGAT (ilg, ican), &
+         class_gat% RSMNGAT (ilg, ican), &
+         class_gat% VPDAGAT (ilg, ican), &
+         class_gat% VPDBGAT (ilg, ican))
 
 
     ! These will be allocated the dimension: 'ilg, icp1'
-    allocate(class_gat% ALICGAT (ilg,icp1), &
-             class_gat% ALVCGAT (ilg,icp1), &
-             class_gat% FCANGAT (ilg,icp1), &
-             class_gat% LNZ0GAT (ilg,icp1))
+    allocate(class_gat% ALICGAT (ilg, icp1), &
+             class_gat% ALVCGAT (ilg, icp1), &
+             class_gat% FCANGAT (ilg, icp1), &
+             class_gat% LNZ0GAT (ilg, icp1))
 
     ! These will be allocated the dimension: 'ilg, nbs'
-    allocate(class_gat% FSDBGAT (ilg,nbs), &
-             class_gat% FSFBGAT (ilg,nbs), &
-             class_gat% FSSBGAT (ilg,nbs), &
-             class_gat% SALBGAT (ilg,nbs), &
-             class_gat% CSALGAT (ilg,nbs), &
-             class_gat% ALTG    (ilg,nbs), &
-             class_gat% ALSNO   (ilg,nbs), &
-             class_gat% TRSNOWG (ilg,nbs))
+    allocate(class_gat% FSDBGAT (ilg, nbs), &
+             class_gat% FSFBGAT (ilg, nbs), &
+             class_gat% FSSBGAT (ilg, nbs), &
+             class_gat% SALBGAT (ilg, nbs), &
+             class_gat% CSALGAT (ilg, nbs), &
+             class_gat% ALTG    (ilg, nbs), &
+             class_gat% ALSNO   (ilg, nbs), &
+             class_gat% TRSNOWG (ilg, nbs))
 
     ! These will be allocated the dimension: 'ilg, 4'
-    allocate(class_gat% TSFSGAT (ilg,4))
+    allocate(class_gat% TSFSGAT (ilg, 4))
 
     ! These will be allocated the dimension: 'ilg, 6, 50'
-    allocate(class_gat% ITCTGAT (ilg,6,50))
+    allocate(class_gat% ITCTGAT (ilg, 6, 50))
 
     ! -----------------------------------------------------------
     ! Now allocate the class_rot structure:
@@ -1290,11 +1292,11 @@ contains
          class_out%CANOPYEVAP (nlat), &
          class_out%altotcntr_m (nlat), &
 
-    ! allocated with nlat,ignd:
-    class_out%TBARACC_MO (nlat,ignd), &
-         class_out%THLQACC_MO (nlat,ignd), &
-         class_out%THICACC_MO (nlat,ignd), &
-         class_out%MRSOL_MO (nlat,ignd), &
+    ! allocated with nlat, ignd:
+    class_out%TBARACC_MO (nlat, ignd), &
+         class_out%THLQACC_MO (nlat, ignd), &
+         class_out%THICACC_MO (nlat, ignd), &
+         class_out%MRSOL_MO (nlat, ignd), &
 
     class_out%ALVSACC_YR (nlat), &
          class_out%ALIRACC_YR (nlat), &
@@ -1318,225 +1320,225 @@ contains
          class_out%altotcntr_yr (nlat))
 
 
-    ! These will be allocated the dimension: 'nlat,nmos'
+    ! These will be allocated the dimension: 'nlat, nmos'
 
-    allocate(class_rot% IGDRROT (nlat,nmos), &
-         class_rot% MIDROT  (nlat,nmos), &
-         class_rot% ALBSROT (nlat,nmos), &
-         class_rot% CMAIROT (nlat,nmos), &
-         class_rot% GROROT  (nlat,nmos), &
-         class_rot% QACROT  (nlat,nmos), &
-         class_rot% RCANROT (nlat,nmos), &
-         class_rot% RHOSROT (nlat,nmos), &
-         class_rot% SCANROT (nlat,nmos), &
-         class_rot% SNOROT  (nlat,nmos), &
-         class_rot% TACROT  (nlat,nmos), &
-         class_rot% TBASROT (nlat,nmos), &
-         class_rot% TCANROT (nlat,nmos), &
-         class_rot% TPNDROT (nlat,nmos), &
-         class_rot% TSNOROT (nlat,nmos), &
-         class_rot% WSNOROT (nlat,nmos), &
-         class_rot% ZPNDROT (nlat,nmos), &
-         class_rot% REFROT  (nlat,nmos), &
-         class_rot% BCSNROT (nlat,nmos), &
-         class_rot% AGIDROT (nlat,nmos), &
-         class_rot% AGVDROT (nlat,nmos), &
-         class_rot% ALGDROT (nlat,nmos), &
-         class_rot% ALGWROT (nlat,nmos), &
-         class_rot% ASIDROT (nlat,nmos), &
-         class_rot% ASVDROT (nlat,nmos), &
-         class_rot% DRNROT  (nlat,nmos), &
-         class_rot% FAREROT (nlat,nmos), &
-         class_rot% GRKFROT (nlat,nmos), &
-         class_rot% WFCIROT (nlat,nmos), &
-         class_rot% WFSFROT (nlat,nmos), &
-         class_rot% XSLPROT (nlat,nmos), &
-         class_rot% ZPLGROT (nlat,nmos), &
-         class_rot% ZPLSROT (nlat,nmos), &
-         class_rot% ZSNLROT (nlat,nmos), &
-         class_rot% ZSNOROT  (nlat,nmos), &
-         class_rot% ALGWVROT (nlat,nmos), &
-         class_rot% ALGWNROT (nlat,nmos), &
-         class_rot% ALGDVROT (nlat,nmos), &
-         class_rot% ALGDNROT (nlat,nmos), &
-         class_rot% EMISROT  (nlat,nmos), &
-         class_rot% ALIRROT (nlat,nmos), &
-         class_rot% ALVSROT (nlat,nmos), &
-         class_rot% CDHROT  (nlat,nmos), &
-         class_rot% CDMROT  (nlat,nmos), &
-         class_rot% DRROT   (nlat,nmos), &
-         class_rot% EFROT   (nlat,nmos), &
-         class_rot% FLGGROT (nlat,nmos), &
-         class_rot% FLGSROT (nlat,nmos), &
-         class_rot% FLGVROT (nlat,nmos), &
-         class_rot% FSGGROT (nlat,nmos), &
-         class_rot% FSGSROT (nlat,nmos), &
-         class_rot% FSGVROT (nlat,nmos), &
-         class_rot% FSNOROT (nlat,nmos), &
-         class_rot% GAROT   (nlat,nmos), &
-         class_rot% GTROT   (nlat,nmos), &
-         class_rot% HBLROT  (nlat,nmos), &
-         class_rot% HEVCROT (nlat,nmos), &
-         class_rot% HEVGROT (nlat,nmos), &
-         class_rot% HEVSROT (nlat,nmos), &
-         class_rot% HFSROT  (nlat,nmos), &
-         class_rot% HFSCROT (nlat,nmos), &
-         class_rot% HFSGROT (nlat,nmos), &
-         class_rot% HFSSROT (nlat,nmos), &
-         class_rot% HMFCROT (nlat,nmos), &
-         class_rot% HMFNROT (nlat,nmos), &
-         class_rot% HTCCROT (nlat,nmos), &
-         class_rot% SDEPROT (nlat,nmos), &
-         class_rot% SOCIROT (nlat,nmos), &
-         class_rot% HTCSROT (nlat,nmos), &
-         class_rot% ILMOROT (nlat,nmos), &
-         class_rot% PCFCROT (nlat,nmos), &
-         class_rot% PCLCROT (nlat,nmos), &
-         class_rot% PCPGROT (nlat,nmos), &
-         class_rot% PCPNROT (nlat,nmos), &
-         class_rot% PETROT  (nlat,nmos), &
-         class_rot% QEVPROT (nlat,nmos), &
-         class_rot% QFCFROT (nlat,nmos), &
-         class_rot% QFCLROT (nlat,nmos), &
-         class_rot% QFGROT  (nlat,nmos), &
-         class_rot% QFNROT  (nlat,nmos), &
-         class_rot% QFSROT  (nlat,nmos), &
-         class_rot% QFXROT  (nlat,nmos), &
-         class_rot% QGROT   (nlat,nmos), &
-         class_rot% ROFROT  (nlat,nmos), &
-         class_rot% ROFBROT (nlat,nmos), &
-         class_rot% ROFCROT (nlat,nmos), &
-         class_rot% ROFNROT (nlat,nmos), &
-         class_rot% ROFOROT (nlat,nmos), &
-         class_rot% ROFSROT (nlat,nmos), &
-         class_rot% ROVGROT (nlat,nmos), &
-         class_rot% SFCQROT (nlat,nmos), &
-         class_rot% SFCTROT (nlat,nmos), &
-         class_rot% SFCUROT (nlat,nmos), &
-         class_rot% SFCVROT (nlat,nmos), &
-         class_rot% TFXROT  (nlat,nmos), &
-         class_rot% TROBROT (nlat,nmos), &
-         class_rot% TROFROT (nlat,nmos), &
-         class_rot% TROOROT (nlat,nmos), &
-         class_rot% TROSROT (nlat,nmos), &
-         class_rot% UEROT   (nlat,nmos), &
-         class_rot% WTABROT (nlat,nmos), &
-         class_rot% WTRCROT (nlat,nmos), &
-         class_rot% WTRGROT (nlat,nmos), &
-         class_rot% WTRSROT (nlat,nmos), &
-         class_rot% SFRHROT (nlat,nmos), &
-         class_rot% wtableROT(nlat,nmos), &
-         class_rot% ACTLYR(nlat,nmos), &
-         class_rot% maxAnnualActLyrROT(nlat,nmos), &
-         class_rot% actLyrThisYrROT(nlat,nmos), &
-         class_rot% FTABLE(nlat,nmos), &
-         class_rot%PREACC_M(nlat,nmos), &
-         class_rot%GTACC_M (nlat,nmos), &
-         class_rot%QEVPACC_M (nlat,nmos), &
-         class_rot%HFSACC_M(nlat,nmos), &
-         class_rot%HMFNACC_M (nlat,nmos), &
-         class_rot%ROFACC_M(nlat,nmos), &
-         class_rot%SNOACC_M(nlat,nmos), &
-         class_rot%OVRACC_M(nlat,nmos), &
-         class_rot%WTBLACC_M(nlat,nmos), &
-         class_rot%ALVSACC_M(nlat,nmos), &
-         class_rot%ALIRACC_M(nlat,nmos), &
-         class_rot%RHOSACC_M(nlat,nmos), &
-         class_rot%TSNOACC_M(nlat,nmos), &
-         class_rot%WSNOACC_M(nlat,nmos), &
-         class_rot%TCANACC_M(nlat,nmos), &
-         class_rot%RCANACC_M(nlat,nmos), &
-         class_rot%SCANACC_M(nlat,nmos), &
-         class_rot%ALTOTACC_M(nlat,nmos), &
-         class_rot%ALSNOACC_M(nlat,nmos), &
-         class_rot%GROACC_M(nlat,nmos), &
-         class_rot%FSINACC_M (nlat,nmos), &
-         class_rot%FLINACC_M(nlat,nmos), &
-         class_rot%TAACC_M (nlat,nmos), &
-         class_rot%UVACC_M (nlat,nmos), &
-         class_rot%PRESACC_M (nlat,nmos), &
-         class_rot%QAACC_M (nlat,nmos), &
-         class_rot%EVAPACC_M (nlat,nmos), &
-         class_rot%FLUTACC_M(nlat,nmos))
+    allocate(class_rot% IGDRROT (nlat, nmos), &
+         class_rot% MIDROT  (nlat, nmos), &
+         class_rot% ALBSROT (nlat, nmos), &
+         class_rot% CMAIROT (nlat, nmos), &
+         class_rot% GROROT  (nlat, nmos), &
+         class_rot% QACROT  (nlat, nmos), &
+         class_rot% RCANROT (nlat, nmos), &
+         class_rot% RHOSROT (nlat, nmos), &
+         class_rot% SCANROT (nlat, nmos), &
+         class_rot% SNOROT  (nlat, nmos), &
+         class_rot% TACROT  (nlat, nmos), &
+         class_rot% TBASROT (nlat, nmos), &
+         class_rot% TCANROT (nlat, nmos), &
+         class_rot% TPNDROT (nlat, nmos), &
+         class_rot% TSNOROT (nlat, nmos), &
+         class_rot% WSNOROT (nlat, nmos), &
+         class_rot% ZPNDROT (nlat, nmos), &
+         class_rot% REFROT  (nlat, nmos), &
+         class_rot% BCSNROT (nlat, nmos), &
+         class_rot% AGIDROT (nlat, nmos), &
+         class_rot% AGVDROT (nlat, nmos), &
+         class_rot% ALGDROT (nlat, nmos), &
+         class_rot% ALGWROT (nlat, nmos), &
+         class_rot% ASIDROT (nlat, nmos), &
+         class_rot% ASVDROT (nlat, nmos), &
+         class_rot% DRNROT  (nlat, nmos), &
+         class_rot% FAREROT (nlat, nmos), &
+         class_rot% GRKFROT (nlat, nmos), &
+         class_rot% WFCIROT (nlat, nmos), &
+         class_rot% WFSFROT (nlat, nmos), &
+         class_rot% XSLPROT (nlat, nmos), &
+         class_rot% ZPLGROT (nlat, nmos), &
+         class_rot% ZPLSROT (nlat, nmos), &
+         class_rot% ZSNLROT (nlat, nmos), &
+         class_rot% ZSNOROT  (nlat, nmos), &
+         class_rot% ALGWVROT (nlat, nmos), &
+         class_rot% ALGWNROT (nlat, nmos), &
+         class_rot% ALGDVROT (nlat, nmos), &
+         class_rot% ALGDNROT (nlat, nmos), &
+         class_rot% EMISROT  (nlat, nmos), &
+         class_rot% ALIRROT (nlat, nmos), &
+         class_rot% ALVSROT (nlat, nmos), &
+         class_rot% CDHROT  (nlat, nmos), &
+         class_rot% CDMROT  (nlat, nmos), &
+         class_rot% DRROT   (nlat, nmos), &
+         class_rot% EFROT   (nlat, nmos), &
+         class_rot% FLGGROT (nlat, nmos), &
+         class_rot% FLGSROT (nlat, nmos), &
+         class_rot% FLGVROT (nlat, nmos), &
+         class_rot% FSGGROT (nlat, nmos), &
+         class_rot% FSGSROT (nlat, nmos), &
+         class_rot% FSGVROT (nlat, nmos), &
+         class_rot% FSNOROT (nlat, nmos), &
+         class_rot% GAROT   (nlat, nmos), &
+         class_rot% GTROT   (nlat, nmos), &
+         class_rot% HBLROT  (nlat, nmos), &
+         class_rot% HEVCROT (nlat, nmos), &
+         class_rot% HEVGROT (nlat, nmos), &
+         class_rot% HEVSROT (nlat, nmos), &
+         class_rot% HFSROT  (nlat, nmos), &
+         class_rot% HFSCROT (nlat, nmos), &
+         class_rot% HFSGROT (nlat, nmos), &
+         class_rot% HFSSROT (nlat, nmos), &
+         class_rot% HMFCROT (nlat, nmos), &
+         class_rot% HMFNROT (nlat, nmos), &
+         class_rot% HTCCROT (nlat, nmos), &
+         class_rot% SDEPROT (nlat, nmos), &
+         class_rot% SOCIROT (nlat, nmos), &
+         class_rot% HTCSROT (nlat, nmos), &
+         class_rot% ILMOROT (nlat, nmos), &
+         class_rot% PCFCROT (nlat, nmos), &
+         class_rot% PCLCROT (nlat, nmos), &
+         class_rot% PCPGROT (nlat, nmos), &
+         class_rot% PCPNROT (nlat, nmos), &
+         class_rot% PETROT  (nlat, nmos), &
+         class_rot% QEVPROT (nlat, nmos), &
+         class_rot% QFCFROT (nlat, nmos), &
+         class_rot% QFCLROT (nlat, nmos), &
+         class_rot% QFGROT  (nlat, nmos), &
+         class_rot% QFNROT  (nlat, nmos), &
+         class_rot% QFSROT  (nlat, nmos), &
+         class_rot% QFXROT  (nlat, nmos), &
+         class_rot% QGROT   (nlat, nmos), &
+         class_rot% ROFROT  (nlat, nmos), &
+         class_rot% ROFBROT (nlat, nmos), &
+         class_rot% ROFCROT (nlat, nmos), &
+         class_rot% ROFNROT (nlat, nmos), &
+         class_rot% ROFOROT (nlat, nmos), &
+         class_rot% ROFSROT (nlat, nmos), &
+         class_rot% ROVGROT (nlat, nmos), &
+         class_rot% SFCQROT (nlat, nmos), &
+         class_rot% SFCTROT (nlat, nmos), &
+         class_rot% SFCUROT (nlat, nmos), &
+         class_rot% SFCVROT (nlat, nmos), &
+         class_rot% TFXROT  (nlat, nmos), &
+         class_rot% TROBROT (nlat, nmos), &
+         class_rot% TROFROT (nlat, nmos), &
+         class_rot% TROOROT (nlat, nmos), &
+         class_rot% TROSROT (nlat, nmos), &
+         class_rot% UEROT   (nlat, nmos), &
+         class_rot% WTABROT (nlat, nmos), &
+         class_rot% WTRCROT (nlat, nmos), &
+         class_rot% WTRGROT (nlat, nmos), &
+         class_rot% WTRSROT (nlat, nmos), &
+         class_rot% SFRHROT (nlat, nmos), &
+         class_rot% wtableROT(nlat, nmos), &
+         class_rot% ACTLYR(nlat, nmos), &
+         class_rot% maxAnnualActLyrROT(nlat, nmos), &
+         class_rot% actLyrThisYrROT(nlat, nmos), &
+         class_rot% FTABLE(nlat, nmos), &
+         class_rot%PREACC_M(nlat, nmos), &
+         class_rot%GTACC_M (nlat, nmos), &
+         class_rot%QEVPACC_M (nlat, nmos), &
+         class_rot%HFSACC_M(nlat, nmos), &
+         class_rot%HMFNACC_M (nlat, nmos), &
+         class_rot%ROFACC_M(nlat, nmos), &
+         class_rot%SNOACC_M(nlat, nmos), &
+         class_rot%OVRACC_M(nlat, nmos), &
+         class_rot%WTBLACC_M(nlat, nmos), &
+         class_rot%ALVSACC_M(nlat, nmos), &
+         class_rot%ALIRACC_M(nlat, nmos), &
+         class_rot%RHOSACC_M(nlat, nmos), &
+         class_rot%TSNOACC_M(nlat, nmos), &
+         class_rot%WSNOACC_M(nlat, nmos), &
+         class_rot%TCANACC_M(nlat, nmos), &
+         class_rot%RCANACC_M(nlat, nmos), &
+         class_rot%SCANACC_M(nlat, nmos), &
+         class_rot%ALTOTACC_M(nlat, nmos), &
+         class_rot%ALSNOACC_M(nlat, nmos), &
+         class_rot%GROACC_M(nlat, nmos), &
+         class_rot%FSINACC_M (nlat, nmos), &
+         class_rot%FLINACC_M(nlat, nmos), &
+         class_rot%TAACC_M (nlat, nmos), &
+         class_rot%UVACC_M (nlat, nmos), &
+         class_rot%PRESACC_M (nlat, nmos), &
+         class_rot%QAACC_M (nlat, nmos), &
+         class_rot%EVAPACC_M (nlat, nmos), &
+         class_rot%FLUTACC_M(nlat, nmos))
 
-    ! There will be allocated the dimension: 'nlat,nmos,ignd'
-    allocate(class_rot% ISNDROT (nlat,nmos,ignd), &
-         class_rot% TBARROT (nlat,nmos,ignd), &
-         class_rot% THICROT (nlat,nmos,ignd), &
-         class_rot% THLQROT (nlat,nmos,ignd), &
-         class_rot% BIROT   (nlat,nmos,ignd), &
-         class_rot% DLZWROT (nlat,nmos,ignd), &
-         class_rot% GRKSROT (nlat,nmos,ignd), &
-         class_rot% HCPSROT (nlat,nmos,ignd), &
-         class_rot% SANDROT (nlat,nmos,ignd), &
-         class_rot% CLAYROT (nlat,nmos,ignd), &
-         class_rot% ORGMROT (nlat,nmos,ignd), &
-         class_rot% PSISROT (nlat,nmos,ignd), &
-         class_rot% PSIWROT (nlat,nmos,ignd), &
-         class_rot% TCSROT  (nlat,nmos,ignd), &
-         class_rot% THFCROT (nlat,nmos,ignd), &
-         class_rot% THMROT  (nlat,nmos,ignd), &
-         class_rot% THPROT  (nlat,nmos,ignd), &
-         class_rot% THRROT  (nlat,nmos,ignd), &
-         class_rot% THRAROT (nlat,nmos,ignd), &
-         class_rot% ZBTWROT (nlat,nmos,ignd), &
-         class_rot% THLWROT (nlat,nmos,ignd), &
-         class_rot% GFLXROT (nlat,nmos,ignd), &
-         class_rot% HMFGROT (nlat,nmos,ignd), &
-         class_rot% HTCROT  (nlat,nmos,ignd), &
-         class_rot% QFCROT  (nlat,nmos,ignd), &
-         class_rot%TBARACC_M(nlat,nmos,ignd), &
-         class_rot%THLQACC_M(nlat,nmos,ignd), &
-         class_rot%THICACC_M(nlat,nmos,ignd), &
-         class_rot%tbaraccrow_m(nlat,nmos,ignd))
+    ! There will be allocated the dimension: 'nlat, nmos, ignd'
+    allocate(class_rot% ISNDROT (nlat, nmos, ignd), &
+         class_rot% TBARROT (nlat, nmos, ignd), &
+         class_rot% THICROT (nlat, nmos, ignd), &
+         class_rot% THLQROT (nlat, nmos, ignd), &
+         class_rot% BIROT   (nlat, nmos, ignd), &
+         class_rot% DLZWROT (nlat, nmos, ignd), &
+         class_rot% GRKSROT (nlat, nmos, ignd), &
+         class_rot% HCPSROT (nlat, nmos, ignd), &
+         class_rot% SANDROT (nlat, nmos, ignd), &
+         class_rot% CLAYROT (nlat, nmos, ignd), &
+         class_rot% ORGMROT (nlat, nmos, ignd), &
+         class_rot% PSISROT (nlat, nmos, ignd), &
+         class_rot% PSIWROT (nlat, nmos, ignd), &
+         class_rot% TCSROT  (nlat, nmos, ignd), &
+         class_rot% THFCROT (nlat, nmos, ignd), &
+         class_rot% THMROT  (nlat, nmos, ignd), &
+         class_rot% THPROT  (nlat, nmos, ignd), &
+         class_rot% THRROT  (nlat, nmos, ignd), &
+         class_rot% THRAROT (nlat, nmos, ignd), &
+         class_rot% ZBTWROT (nlat, nmos, ignd), &
+         class_rot% THLWROT (nlat, nmos, ignd), &
+         class_rot% GFLXROT (nlat, nmos, ignd), &
+         class_rot% HMFGROT (nlat, nmos, ignd), &
+         class_rot% HTCROT  (nlat, nmos, ignd), &
+         class_rot% QFCROT  (nlat, nmos, ignd), &
+         class_rot%TBARACC_M(nlat, nmos, ignd), &
+         class_rot%THLQACC_M(nlat, nmos, ignd), &
+         class_rot%THICACC_M(nlat, nmos, ignd), &
+         class_rot%tbaraccrow_m(nlat, nmos, ignd))
 
-    ! These will be allocated the dimension: 'nlat,nmos,ican'
-    allocate(class_rot% ACIDROT (nlat,nmos,ican), &
-         class_rot% ACVDROT (nlat,nmos,ican), &
-         class_rot% CMASROT (nlat,nmos,ican), &
-         class_rot% HGTDROT (nlat,nmos,ican), &
-         class_rot% PAIDROT (nlat,nmos,ican), &
-         class_rot% PAMNROT (nlat,nmos,ican), &
-         class_rot% PAMXROT (nlat,nmos,ican), &
-         class_rot% PSGAROT (nlat,nmos,ican), &
-         class_rot% PSGBROT (nlat,nmos,ican), &
-         class_rot% QA50ROT (nlat,nmos,ican), &
-         class_rot% ROOTROT (nlat,nmos,ican), &
-         class_rot% RSMNROT (nlat,nmos,ican), &
-         class_rot% VPDAROT (nlat,nmos,ican), &
-         class_rot% VPDBROT (nlat,nmos,ican))
+    ! These will be allocated the dimension: 'nlat, nmos, ican'
+    allocate(class_rot% ACIDROT (nlat, nmos, ican), &
+         class_rot% ACVDROT (nlat, nmos, ican), &
+         class_rot% CMASROT (nlat, nmos, ican), &
+         class_rot% HGTDROT (nlat, nmos, ican), &
+         class_rot% PAIDROT (nlat, nmos, ican), &
+         class_rot% PAMNROT (nlat, nmos, ican), &
+         class_rot% PAMXROT (nlat, nmos, ican), &
+         class_rot% PSGAROT (nlat, nmos, ican), &
+         class_rot% PSGBROT (nlat, nmos, ican), &
+         class_rot% QA50ROT (nlat, nmos, ican), &
+         class_rot% ROOTROT (nlat, nmos, ican), &
+         class_rot% RSMNROT (nlat, nmos, ican), &
+         class_rot% VPDAROT (nlat, nmos, ican), &
+         class_rot% VPDBROT (nlat, nmos, ican))
 
-    ! These will be allocated the dimension: 'nlat,nmos,icp1'
-    allocate(class_rot% ALICROT (nlat,nmos,icp1), &
-         class_rot% ALVCROT (nlat,nmos,icp1), &
-         class_rot% FCANROT (nlat,nmos,icp1), &
-         class_rot% LNZ0ROT (nlat,nmos,icp1))
+    ! These will be allocated the dimension: 'nlat, nmos, icp1'
+    allocate(class_rot% ALICROT (nlat, nmos, icp1), &
+         class_rot% ALVCROT (nlat, nmos, icp1), &
+         class_rot% FCANROT (nlat, nmos, icp1), &
+         class_rot% LNZ0ROT (nlat, nmos, icp1))
 
-    ! These will be allocated the dimension: 'nlat,nmos,nbs'
-    allocate(class_rot% SALBROT  (nlat,nmos,nbs), &
-         class_rot% CSALROT  (nlat,nmos,nbs))
+    ! These will be allocated the dimension: 'nlat, nmos, nbs'
+    allocate(class_rot% SALBROT  (nlat, nmos, nbs), &
+         class_rot% CSALROT  (nlat, nmos, nbs))
 
-    ! These will be allocated the dimension: 'nlat,nbs'
-    allocate(class_rot% FSDBROL  (nlat,nbs), &
-         class_rot% FSFBROL  (nlat,nbs), &
-         class_rot% FSSBROL  (nlat,nbs))
+    ! These will be allocated the dimension: 'nlat, nbs'
+    allocate(class_rot% FSDBROL  (nlat, nbs), &
+         class_rot% FSFBROL  (nlat, nbs), &
+         class_rot% FSSBROL  (nlat, nbs))
 
-    ! These will be allocated the dimension: 'nlat,ignd'
+    ! These will be allocated the dimension: 'nlat, ignd'
 
-    allocate(class_rot% TBARROW (nlat,ignd), &
-         class_rot% THALROW (nlat,ignd), &
-         class_rot% THICROW (nlat,ignd), &
-         class_rot% THLQROW (nlat,ignd), &
-         class_rot% GFLXROW (nlat,ignd), &
-         class_rot% HMFGROW (nlat,ignd), &
-         class_rot% HTCROW  (nlat,ignd), &
-         class_rot% QFCROW  (nlat,ignd))
+    allocate(class_rot% TBARROW (nlat, ignd), &
+         class_rot% THALROW (nlat, ignd), &
+         class_rot% THICROW (nlat, ignd), &
+         class_rot% THLQROW (nlat, ignd), &
+         class_rot% GFLXROW (nlat, ignd), &
+         class_rot% HMFGROW (nlat, ignd), &
+         class_rot% HTCROW  (nlat, ignd), &
+         class_rot% QFCROW  (nlat, ignd))
 
-    ! These will be allocated the dimension: 'nlat,nmos,6,50'
-    allocate(class_rot% ITCTROT (nlat,nmos,6,50))
+    ! These will be allocated the dimension: 'nlat, nmos, 6, 50'
+    allocate(class_rot% ITCTROT (nlat, nmos, 6, 50))
 
-    ! These will be allocated the dimension: 'nlat,nmos,4'
-    allocate(class_rot% TSFSROT (nlat,nmos,4))
+    ! These will be allocated the dimension: 'nlat, nmos, 4'
+    allocate(class_rot% TSFSROT (nlat, nmos, 4))
 
   end subroutine alloc_class_vars
   !> @}
@@ -1554,9 +1556,9 @@ contains
 
     integer, intent(in) :: nltest
 
-    integer :: i,j
+    integer :: i, j
 
-    do i = 1,nltest
+    do i = 1, nltest
       class_out%ALVSACC_MO(I) = 0.
       class_out%ALIRACC_MO(I) = 0.
       class_out%FLUTACC_MO(I) = 0.
@@ -1584,11 +1586,11 @@ contains
       class_out%altotcntr_m(i) = 0
       class_out%MRSO_MO(i) = 0.
 
-      do J = 1,IGND
-        class_out%TBARACC_MO(I,J) = 0.
-        class_out%THLQACC_MO(I,J) = 0.
-        class_out%THICACC_MO(I,J) = 0.
-        class_out%MRSOL_MO(i,j) = 0.
+      do J = 1, IGND
+        class_out%TBARACC_MO(I, J) = 0.
+        class_out%THLQACC_MO(I, J) = 0.
+        class_out%THICACC_MO(I, J) = 0.
+        class_out%MRSOL_MO(i, j) = 0.
       end do
     end do
 
@@ -1608,7 +1610,7 @@ contains
 
     integer :: i
 
-    do i = 1,nltest
+    do i = 1, nltest
       class_out%ALVSACC_YR(I) = 0.
       class_out%ALIRACC_YR(I) = 0.
       class_out%FLUTACC_YR(I) = 0.
@@ -1640,7 +1642,7 @@ contains
   !! @{
   !> Resets the CLASS (physics) aggregation variables in preparation for the next period
 
-  subroutine resetAccVars(nltest,nmtest)
+  subroutine resetAccVars(nltest, nmtest)
 
     use classic_params, only : ignd
 
@@ -1649,48 +1651,48 @@ contains
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
 
-    integer :: i,m,j
+    integer :: i, m, j
 
-    do I = 1,NLTEST
+    do I = 1, NLTEST
 
       class_rot%altotcntr_d(i) = 0
 
-      do M = 1,NMTEST
+      do M = 1, NMTEST
 
-        class_rot%PREACC_M(i,m) = 0.
-        class_rot%GTACC_M(i,m) = 0.
-        class_rot%QEVPACC_M(i,m) = 0.
-        class_rot%HFSACC_M(i,m) = 0.
-        class_rot%HMFNACC_M(i,m) = 0.
-        class_rot%ROFACC_M(i,m) = 0.
-        class_rot%SNOACC_M(i,m) = 0.
-        class_rot%OVRACC_M(i,m) = 0.
-        class_rot%WTBLACC_M(i,m) = 0.
-        class_rot%ALVSACC_M(i,m) = 0.
-        class_rot%ALIRACC_M(i,m) = 0.
-        class_rot%RHOSACC_M(i,m) = 0.
-        class_rot%TSNOACC_M(i,m) = 0.
-        class_rot%WSNOACC_M(i,m) = 0.
-        class_rot%TCANACC_M(i,m) = 0.
-        class_rot%RCANACC_M(i,m) = 0.
-        class_rot%SCANACC_M(i,m) = 0.
-        class_rot%GROACC_M(i,m) = 0.
-        class_rot%FSINACC_M(i,m) = 0.
-        class_rot%FLINACC_M(i,m) = 0.
-        class_rot%TAACC_M(i,m) = 0.
-        class_rot%UVACC_M(i,m) = 0.
-        class_rot%PRESACC_M(i,m) = 0.
-        class_rot%QAACC_M(i,m) = 0.
-        class_rot%ALTOTACC_M(i,m) = 0.
-        class_rot%ALSNOACC_M(i,m) = 0.
-        class_rot%EVAPACC_M(i,m) = 0.
-        class_rot%FLUTACC_M(i,m) = 0.
+        class_rot%PREACC_M(i, m) = 0.
+        class_rot%GTACC_M(i, m) = 0.
+        class_rot%QEVPACC_M(i, m) = 0.
+        class_rot%HFSACC_M(i, m) = 0.
+        class_rot%HMFNACC_M(i, m) = 0.
+        class_rot%ROFACC_M(i, m) = 0.
+        class_rot%SNOACC_M(i, m) = 0.
+        class_rot%OVRACC_M(i, m) = 0.
+        class_rot%WTBLACC_M(i, m) = 0.
+        class_rot%ALVSACC_M(i, m) = 0.
+        class_rot%ALIRACC_M(i, m) = 0.
+        class_rot%RHOSACC_M(i, m) = 0.
+        class_rot%TSNOACC_M(i, m) = 0.
+        class_rot%WSNOACC_M(i, m) = 0.
+        class_rot%TCANACC_M(i, m) = 0.
+        class_rot%RCANACC_M(i, m) = 0.
+        class_rot%SCANACC_M(i, m) = 0.
+        class_rot%GROACC_M(i, m) = 0.
+        class_rot%FSINACC_M(i, m) = 0.
+        class_rot%FLINACC_M(i, m) = 0.
+        class_rot%TAACC_M(i, m) = 0.
+        class_rot%UVACC_M(i, m) = 0.
+        class_rot%PRESACC_M(i, m) = 0.
+        class_rot%QAACC_M(i, m) = 0.
+        class_rot%ALTOTACC_M(i, m) = 0.
+        class_rot%ALSNOACC_M(i, m) = 0.
+        class_rot%EVAPACC_M(i, m) = 0.
+        class_rot%FLUTACC_M(i, m) = 0.
 
-        do J = 1,IGND
-          class_rot%TBARACC_M(I,M,J) = 0.
-          class_rot%THLQACC_M(I,M,J) = 0.
-          class_rot%THICACC_M(I,M,J) = 0.
-          class_rot%tbaraccrow_m(i,m,j)  = 0.0
+        do J = 1, IGND
+          class_rot%TBARACC_M(I, M, J) = 0.
+          class_rot%THLQACC_M(I, M, J) = 0.
+          class_rot%THICACC_M(I, M, J) = 0.
+          class_rot%tbaraccrow_m(i, m, j)  = 0.0
 
         end do
       end do
@@ -1703,20 +1705,20 @@ contains
   !! @{
   !> Initialization of diagnostic variables split out of classGather for consistency with gcm applications.
 
-  subroutine initDiagnosticVars(nml,ilg)
+  subroutine initDiagnosticVars(nml, ilg)
 
     use classic_params, only : ignd
 
     implicit none
 
-    integer, intent(in) :: nml,ilg
+    integer, intent(in) :: nml, ilg
 
-    integer :: k,m,l
+    integer :: k, m, l
 
     !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF classGather
     !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
 
-    do K = 1,ILG
+    do K = 1, ILG ! loop 330
       class_gat%CDHGAT (K) = 0.0
       class_gat%CDMGAT (K) = 0.0
       class_gat%HFSGAT (K) = 0.0
@@ -1777,19 +1779,19 @@ contains
       class_gat%DRGAT  (K) = 0.0
     end do ! loop 330
 
-    do L = 1,IGND
-      do K = 1,ILG
-        class_gat%HMFGGAT(K,L) = 0.0
-        class_gat%HTCGAT (K,L) = 0.0
-        class_gat%QFCGAT (K,L) = 0.0
-        class_gat%GFLXGAT(K,L) = 0.0
+    do L = 1, IGND ! loop 334
+      do K = 1, ILG ! loop 332
+        class_gat%HMFGGAT(K, L) = 0.0
+        class_gat%HTCGAT (K, L) = 0.0
+        class_gat%QFCGAT (K, L) = 0.0
+        class_gat%GFLXGAT(K, L) = 0.0
       end do ! loop 332
     end do ! loop 334
 
-    do M = 1,50
-      do L = 1,6
-        do K = 1,NML
-          class_gat%ITCTGAT(K,L,M) = 0
+    do M = 1, 50 ! loop 340
+      do L = 1, 6 ! loop 338
+        do K = 1, NML ! loop 336
+          class_gat%ITCTGAT(K, L, M) = 0
         end do ! loop 336
       end do ! loop 338
     end do ! loop 340
@@ -1809,9 +1811,9 @@ contains
 
     integer, intent(in) :: nml
 
-    integer :: j,i
+    integer :: j, i
 
-    do I = 1,nml
+    do I = 1, nml ! loop 525
       class_rot%CDHROW(I) = 0.
       class_rot%CDMROW(I) = 0.
       class_rot%HFSROW(I) = 0.
@@ -1885,15 +1887,15 @@ contains
 
       ! G12GRD(I)= 0.       ! YW March 27, 2015
       ! G23GRD(I)= 0.       ! YW March 27, 2015
-      do J = 1,IGND
-        class_rot%HMFGROW(I,J) = 0.
-        class_rot%HTCROW(I,J) = 0.
-        class_rot%QFCROW(I,J) = 0.
-        class_rot%GFLXROW(I,J) = 0.
-        class_rot%TBARROW(I,J) = 0.
-        class_rot%THALROW(I,J) = 0.
-        class_rot%THICROW(I,J) = 0.
-        class_rot%THLQROW(I,J) = 0.
+      do J = 1, IGND ! loop 500
+        class_rot%HMFGROW(I, J) = 0.
+        class_rot%HTCROW(I, J) = 0.
+        class_rot%QFCROW(I, J) = 0.
+        class_rot%GFLXROW(I, J) = 0.
+        class_rot%TBARROW(I, J) = 0.
+        class_rot%THALROW(I, J) = 0.
+        class_rot%THICROW(I, J) = 0.
+        class_rot%THLQROW(I, J) = 0.
       end do ! loop 500
     end do ! loop 525
 

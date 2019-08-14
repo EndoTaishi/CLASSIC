@@ -1,36 +1,36 @@
 !> \file
 !! Utility to determine location of closest value in an array
 !      * June 18/2019 - M. Fortier
-!      *   - Significantly refactored the code, removing the GOTO statement
-!      * MAY 12/2004 - L.SOLHEIM
+!      *   - significantly refactored the code, removing the goto statement
+!      * May 12/2004 - L. Solheim
 !      *
-!>     * GIVEN A MONOTONIC VECTOR V OF LENGTH N AND A VALUE X,
-!!     * RETURN THE INDEX MVIDX SUCH THAT X IS BETWEEN
-!!     * V(MVIDX) AND V(MVIDX+1).
+!>     * Given a monotonic vector v of length n and a value x,
+!!     * return the index mvidx such that x is between
+!!     * v(mvidx) and v(mvidx+1).
 !!     *
-!!     * V MUST BE MONOTONIC, EITHER INCREASING OF DECREASING.
-!!     * THERE IS NO CHECK ON WHETHER OR NOT THIS VECTOR IS
-!!     * MONOTONIC.
+!!     * v must be monotonic, either increasing of decreasing.
+!!     * there is no check on whether or not this vector is
+!!     * monotonic.
 !!     *
-!!     * THIS FUNCTION RETURNS 1 OR N-1 IF X IS OUT OF RANGE.
+!!     * This function returns 1 or n-1 if x is out of range.
 !!     *
-!!     * INPUT:
+!!     * input:
 !!     *
-!!     *   REAL    V(N) ...MONITONIC VECTOR (INCREASING OR DECREASING)
-!!     *   INTEGER N    ...SIZE OF V
-!!     *   REAL    X    ...SINGLE REAL VALUE
+!!     *   real    :: v(n) ...monitonic vector (increasing or decreasing)
+!!     *   integer :: n    ...size of v
+!!     *   real    :: x    ...single real :: value
 !!     *
-!!     * OUTPUT:
+!!     * output:
 !!     *
-!!     *   V(MVIDX) .LE/>= X <=/>= V(MVIDX+1)
+!!     *   v(mvidx) .le/>= x <=/>= v(mvidx+1)
 !!
-integer function MVIDX(V,N,X)
+integer function MVIDX(V, N, X)
   !-----------------------------------------------------------------------
   implicit none
 
-  real :: X,V(N)
-  integer :: N
-  integer :: JL,JM,JU
+  real, intent(in) :: X, V(N)
+  integer, intent(in) :: N
+  integer :: JL, JM, JU
   !-----------------------------------------------------------------------
 
   if (X == V(1)) then

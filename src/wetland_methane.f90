@@ -17,7 +17,7 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   !      9  June. 2010 - this subroutine calculates methane flux
   !     Brian Amiro      from wetlands of a grid cell (i.e. land only)
 
-  use classic_params,        only : wtdryres, ratioch4,lat_thrshld1, &
+  use classic_params, only : wtdryres, ratioch4, lat_thrshld1, &
                                lat_thrshld2, soilw_thrshN, soilw_thrshE, &
                                soilw_thrshS, ignd
 
@@ -30,9 +30,9 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   real, dimension(ilg), intent(in) :: ta          !< air temperature, k
   real, dimension(ilg), intent(in) :: wetfrac     !< prescribed fraction of wetlands in a grid cell
   real, dimension(ilg), intent(in) :: currlat     !< centre latitude of grid cells in degrees
-  real, dimension(ilg,8), intent(in) :: slopefrac !< Fraction of gridcell flatter than slope thresholds (0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-  real, dimension(ilg,ignd), intent(in) :: thliqg !< liquid soil moisture content (fraction)
-  real, dimension(ilg,ignd), intent(in) :: sand   !< percentage sand in soil layers
+  real, dimension(ilg, 8), intent(in) :: slopefrac !< Fraction of gridcell flatter than slope thresholds (0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
+  real, dimension(ilg, ignd), intent(in) :: thliqg !< liquid soil moisture content (fraction)
+  real, dimension(ilg, ignd), intent(in) :: sand   !< percentage sand in soil layers
   real, dimension(ilg), intent(out) :: ch4WetSpec    !< methane flux from wetlands calculated using hetrores in umol ch4/m2.s
   real, dimension(ilg), intent(out) :: wetfdyn    !< dynamic gridcell wetland fraction determined using  slope and soil moisture
   real, dimension(ilg), intent(out) :: ch4WetDyn    !< methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s
@@ -71,15 +71,15 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
   !>
   !> Estimate the methane flux from wetlands for each grid cell scaling by the wetland fraction in a grid cell
 
-  ! Set up the latitude bounds based on the paramters read in from the namelist file.
-  ! If soil wetness meets a latitude specific threshold then the slope based wetland
-  ! fraction is wet and is an actual wetland, else not. As well the ratio of upland to
-  ! wetland respiration is assumed to be latitidionally varying. This is intended to
-  ! reflect the differnt wetland types in the tropics (floodplain types) vs. those in
-  ! higher latitudes (peatlands). This is a very coarse approximation and should be
-  ! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
-  ! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
-  ! they are simply multiplicative.
+  !> Set up the latitude bounds based on the parameters read in from the namelist file.
+  !! If soil wetness meets a latitude specific threshold then the slope based wetland
+  !! fraction is wet and is an actual wetland, else not. As well the ratio of upland to
+  !! wetland respiration is assumed to be latitidionally varying. This is intended to
+  !! reflect the differnt wetland types in the tropics (floodplain types) vs. those in
+  !! higher latitudes (peatlands). This is a very coarse approximation and should be
+  !! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
+  !! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
+  !! they are simply multiplicative.
 
   do i = il1, il2
 
@@ -93,7 +93,7 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
       mid_mois_lim = soilw_thrshE(2)
       ! upp_mois_lim = soilw_thrshE(3)
       upvslow = wtdryres(2)
-    else ! S. Hemi,  everything else below lat_thrshld2
+    else ! S. Hemi, everything else below lat_thrshld2
       low_mois_lim = soilw_thrshS(1)
       mid_mois_lim = soilw_thrshS(2)
       ! upp_mois_lim = soilw_thrshS(3)
@@ -109,8 +109,8 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
     !> Next dynamically find the wetland locations and determine their methane emissions
     !>
 
-    porosity = ( - 0.126 * sand(i,1) + 48.9) / 100.0 ! top soil layer porosity
-    soil_wetness = (thliqg(i,1) / porosity)
+    porosity = ( - 0.126 * sand(i, 1) + 48.9) / 100.0 ! top soil layer porosity
+    soil_wetness = (thliqg(i, 1) / porosity)
     soil_wetness = max(0.0, min(soil_wetness, 1.0))
 
 
@@ -119,7 +119,7 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
     x1 = low_mois_lim * (1. - alpha) + mid_mois_lim * alpha
     x2 = 1.
     y1 = 0.
-    y2 = slopefrac(i,5)
+    y2 = slopefrac(i, 5)
     slope = (y2 - y1) / (x2 - x1)
     intercept = slope * x1 * ( - 1)
 

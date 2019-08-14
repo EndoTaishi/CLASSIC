@@ -20,28 +20,43 @@ In the CLASSIC offline driver, a gather-scatter operation is included in the dri
 ## Development history of CLASS {#devHistory}
 
 \f[
-\begin{tabular}{ | l | l || l | }
-1.0 & April 1989 & Basic thermal and hydrological model of snow and soil. \\
-2.0 & August 1991 & Addition of vegetation thermal and hydrological model. \\
-2.1 & May 1993 & Full vectorization of code to enable efficienr running on vector supercomputers. \\
-2.2 & April 1994 & Augmentation of diagnostic calculations; incorporation of in-line comments throughout; development \\
-    &            & of a parallel stand-alone version of the model for use with field data. \\
-2.3 & December 1994 & Revisions to diagnostic calculations; new near-surface atmospheric stability functions. \\
-2.4 & August 1995 & Complete set of water budget diagnostic calculations; parametrizations of organic soils and \\
-    &            &rock soils; allowance for inhomegeneity between soil layers; incorporation of variable \\
-    & & surface detention capacity. \\
-2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\
-2.6 & August 1997 & Revisions to surface stability function calculations. \\
-2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic properties based on textural
-composition; modified surface temperature iteration scheme. \\
-3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\
-3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; improved treatment of snow sublimation and interception; transition to Fortran 90 and single precision variables. \\
-3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation transmission in vegetation. \\
-3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets; water and energy balance checks for each time step; modifications to soil hydraulic conductivity calculations. \\
-3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of water stored on vegetation. \\
-3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; reworked calculation of baseflow. \\
-3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model (CTEM). \\
-3.6.1 & December 2016 & New treatment of bare soil albedo; new optional four-band snow albedo formulation; fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on snow depth. \\
-3.6.2 & July 2019 & CLASS is formerly incorporated into the Canadian Land Surface Scheme including Biogeochemical Cycles (CLASSIC). \\
-\end{tabular}
+\begin{array}{ | c | c | l | }
+1.0 & \text{April 1989} & \text{Basic thermal and hydrological model of snow and soil.} \\
+2.0 & \text{August 1991} & \text{Addition of vegetation thermal and hydrological model.} \\
+2.1 & \text{May 1993} & \text{Full vectorization of code to enable efficienr running on vector supercomputers.} \\
+2.2 & \text{April 1994} & \text{Augmentation of diagnostic calculations; incorporation of in-line comments throughout;} \\
+    & & \text{development of a parallel stand-alone version of the model for use with field data.} \\
+2.3 & \text{December 1994} & \text{Revisions to diagnostic calculations; new near-surface atmospheric stability functions.} \\
+2.4 & \text{August 1995} & \text{Complete set of water budget diagnostic calculations; parametrizations of organic soils} \\
+    & & \text{and rock soils; allowance for inhomegeneity between soil layers; incorporation of variable} \\
+    & & \text{surface detention capacity.} \\
+2.5 & \text{January 1996} & \text{Completion of energy budget diagnostic calculations.} \\
+2.6 & \text{August 1997} & \text{Revisions to surface stability function calculations.} \\
+2.7 & \text{December 1997} & \text{Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic} \\
+    & & \text{properties based on textural composition; modified surface temperature iteration scheme.} \\
+3.0 & \text{December 2002} & \text{Improved treatment of soil evaporation; complete treatment of organic soils; new canopy} \\
+    & & \text{conductance formulation; preliminary routines for lateral movement of soil water; enhanced} \\
+    & & \text{snow density and snow interception; improved turbulent transfer from vegetation; mosaic} \\
+    & & \text{formulation.} \\
+3.1 & \text{April 2005} & \text{Faster surface temperature iteration scheme; refinements to leaf boundary resistance} \\
+    & & \text{formulation; improved treatment of snow sublimation and interception; transition to} \\
+    & & \text{Fortran 90 and single precision variables.} \\
+3.2 & \text{May 2006} & \text{Option for multiple soil layers at depth; additional liquid water content of snow pack;} \\
+    & & \text{revised radiation transmission in vegetation.} \\
+3.3 & \text{December 2006} & \text{Separate temperature profile curve fit for snow and soil; multiple-layer option for ice} \\
+    & & \text{sheets; water and energy balance checks for each time step; modifications to soil hydraulic} \\
+    & & \text{conductivity calculations.} \\
+3.4 & \text{April 2008} & \text{Streamline and clean up code; updated soil thermal conductivity calculations; revisions to} \\
+    & & \text{handling of water stored on vegetation.} \\
+3.5 & \text{December 2010} & \text{Updated field capacity calculation; revised treatment of water on canopy; reworked} \\
+    & & \text{calculation of baseflow.} \\
+3.6 & \text{December 2011} & \text{Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new} \\
+    & & \text{snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model} \\
+    & & \text{(CTEM).} \\
+3.6.1 & \text{December 2016} & \text{New treatment of bare soil albedo; new optional four-band snow albedo formulation;} \\
+    & & \text{fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on} \\
+    & & \text{snow depth.} \\
+3.6.2 & \text{July 2019} & \text{CLASS is formerly incorporated into the Canadian Land Surface Scheme including} \\
+    & & \text{Biogeochemical Cycles (CLASSIC).} \\
+\end{array}
 \f]
