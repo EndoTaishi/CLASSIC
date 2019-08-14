@@ -1,7 +1,8 @@
 !> \file
 !! Initializes subarea variables and calculate various
 !! parameters for surface energy budget calculations.
-!! @author D. Verseghy, M. Lazare, A. Wu, Y. Delage, J. P. Paquin, R. Harvey
+!! @author D. Verseghy, M. Lazare, A. Wu, Y. Delage, J. P. Paquin, 
+!! R. Harvey, J. Melton, G. Meyer, E. Humphreys
 !
 subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! Formerly TPREP
                             TBARCS, TBARGS, HCPC, HCPG, TCTOPC, TCBOTC, &
@@ -28,6 +29,8 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! Fo
                             FVEG, TCSATU, TCSATF, FTEMP, FTEMPX, FVAP, &
                             FVAPX, RIB, RIBX)
   !
+  !     * Aug 21/19 - G. Meyer, E. Humphreys, J. Melton.  Change calculation of
+  !     *                         CEVAP to Merlin et al. (2011)
   !     * JUN 21/13 - M.LAZARE.   PASS IN AND INITIALIZE TO ZERO "GSNOW".
   !     * NOV 24/11 - R.HARVEY.   NEW SNOW THERMAL CONDUCTIVITY FROM
   !     *                         STURM ET AL. (1997).
@@ -426,27 +429,26 @@ subroutine energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! Fo
   !! liquid water content of the first soil layer is effectively equal
   !! to the minimum water content THLMIN, IEVAP and CEVAP are set to
   !! zero. If the liquid water content of the first soil layer is
-  !! greater than the field capacity THFC, IEVAP and CEVAP are set to
+  !! greater than the soil porosity (THPOR), IEVAP and CEVAP are set to
   !! unity. Otherwise, IEVAP is set to 1 and CEVAP (or \f$\beta\f$ as it is
   !! typically symbolized in the literature) is calculated using a
-  !! relation presented by Lee and Pielke (1992):
+  !! relation presented by Merlin et al. (2011) \cite Merlin2011-xy:
   !!
-  !! \f$\beta = 0.25 [1 – cos(\theta_l \pi / \theta_{fc})]^2\f$
+  !! \f$\beta = 0.25 [1 – cos(\theta_l \pi / \theta_{p})]^2\f$
   !!
   !! where \f$\theta_l\f$ is the liquid water content of the first soil layer
-  !! and \f$\theta_{fc}\f$ is its field capacity.
+  !! and \f$\theta_{p}\f$ is its porosity. We follow Merlin et al. in using a 
+  !! 'P' value (their terminology for exponent term) of 2.
   !!
   do I = IL1, IL2 ! loop 200
     if (THLIQG(I, 1) < (THLMIN(I, 1) + 0.001)) then
       IEVAP(I) = 0
       CEVAP(I) = 0.0
-    !else if (THLIQG(I,1) > THFC(I,1)) then !TEST
   else if (THLIQG(I,1) > THPOR(I,1)) then
       IEVAP(I) = 1
       CEVAP(I) = 1.0
     else
       IEVAP(I) = 1
-      !CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I,1) / THFC(I,1))) ** 2
       CEVAP(I) = 0.25 * (1.0 - COS(3.14159 * THLIQG(I,1) / THPOR(I,1))) ** 2
     end if
   end do ! loop 200
