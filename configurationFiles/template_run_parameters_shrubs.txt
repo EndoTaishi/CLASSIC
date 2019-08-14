@@ -1284,11 +1284,11 @@ kn(13:15) = 0.50, 0.50, 0.00,
       smscale(13:15) = 0.0, 0.0, 0.0,
 
     ! max. photosynthetic rate, mol co2 m^-2 s^-1 values are mainly derived
-    ! from \cite kattge20090c0 which doesn't include c4. also see \cite alton2017-pd
+    ! from \cite alton2017-pd which doesn't include c4. 
       vmax(1:3)   = 42.0e-06, 47.0e-06, 0.00e-06,
       vmax(4:6)   = 35.0e-06, 57.0e-06, 40.0e-06,
       vmax(7:9)   = 55.0e-06, 40.0e-06, 0.00e-06,
-      vmax(10:12) = 75.0e-06, 15.0e-06, 40.0E-06,
+      vmax(10:12) = 55.0e-06, 15.0e-06, 40.0E-06,
       vmax(13:15) = 60.0E-06, 50.0E-06, 0.00e-06,
 
     ! no. of iterations for calculating intercellular co2 concentration
