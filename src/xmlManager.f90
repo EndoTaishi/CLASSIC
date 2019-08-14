@@ -93,11 +93,13 @@ contains
       end if
       ! If the tag is <variant>, then similar to the above section, extend the array and append a new variant.
     case ('variant')
-      variantCount = variantCount + 1
-      allocate(tempVariants(variantCount))
-      tempVariants(1 : variantCount - 1) = variants(1 : variantCount - 1)
-      call move_alloc(tempVariants, variants)
-      variants(variantCount)%shortName = currentVariableName
+      if (dormant == 'false') then      
+        variantCount = variantCount + 1
+        allocate(tempVariants(variantCount))
+        tempVariants(1 : variantCount - 1) = variants(1 : variantCount - 1)
+        call move_alloc(tempVariants, variants)
+        variants(variantCount)%shortName = currentVariableName
+      end if
     end select
   end subroutine
 
