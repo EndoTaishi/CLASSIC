@@ -62,7 +62,7 @@ output_directory=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/ct
 # *** NB: This script checks all input files (as specified in the job options file).
 #         Files that are not needed for the run must either be commented out or specified as an empty string.
 
-job_options_file=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/input_files/job_options_ctem_off.txt
+job_options_file=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/input_files/job_options_ctem_compete.txt
 
 cdir=$( pwd )
 
@@ -196,7 +196,7 @@ output_directory=$new_out
 #         as for input files.
 
 flag=false
-
+sed -i "/runparams_file/s|'.*'|'$cdir/configurationFiles/template_run_parameters.txt'| ; /xmlFile/s|'.*'|'$cdir/configurationFiles/outputVariableDescriptors.xml'|" $job_options_file
 for file_var in $(compgen -v | grep -G '[Ff]ile')
 do
   infile=$(eval echo \$$file_var)

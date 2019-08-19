@@ -196,7 +196,7 @@ output_directory=$new_out
 #         as for input files.
 
 flag=false
-
+sed -i "/runparams_file/s|'.*'|'$cdir/configurationFiles/template_run_parameters.txt'| ; /xmlFile/s|'.*'|'$cdir/configurationFiles/outputVariableDescriptors.xml'|" $job_options_file
 for file_var in $(compgen -v | grep -G '[Ff]ile')
 do
   infile=$(eval echo \$$file_var)
