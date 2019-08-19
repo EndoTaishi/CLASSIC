@@ -4,10 +4,10 @@
 !! result of throughfall and unloading.
 !! @author D. Verseghy, M. Lazare, S. Fassnacht, E. Chan, P. Bartlett
 !
-subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP, & ! Formerly CANADD
-                              HTCC, ROFC, ROVG, PCPN, PCPG, FI, FSVF, &
-                              CWLCAP, CWFCAP, CMASS, RHOSNI, TSURX, RDRIP, SDRIP, &
-                              ILG, IL1, IL2, JL)
+subroutine canopyInterception (IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP, & ! Formerly CANADD
+                               HTCC, ROFC, ROVG, PCPN, PCPG, FI, FSVF, &
+                               CWLCAP, CWFCAP, CMASS, RHOSNI, TSURX, RDRIP, SDRIP, &
+                               ILG, IL1, IL2, JL)
 
   !     * NOV 22/06 - E.CHAN/D.VERSEGHY. UNCONDITIONALLY SET TR AND TS.
   !     * JAN 05/05 - P.BARTLETT. CORRECT/REFINE SNOW INTERCEPTION
@@ -32,7 +32,7 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
   !     *                         ADJUST CANOPY TEMPERATURE AND HEAT
   !     *                         CAPACITY.
   !
-  use classic_params, only : DELT, TFREZ, SPHW, SPHICE, SPHVEG, RHOW
+  use classicParams,       only : DELT, TFREZ, SPHW, SPHICE, SPHVEG, RHOW
 
   implicit none
   !
@@ -43,40 +43,40 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
   !
   !     * INPUT/OUTPUT ARRAYS.
   !
-  real, intent(inout) :: R     (ILG)  !< Rainfall rate over subarea in question \f$[m s^{-1}]\f$
-  real, intent(inout) :: TR    (ILG)  !< Temperature of rainfall [C]
-  real, intent(inout) :: S     (ILG)  !< Snowfall rate over subarea in question \f$[m s^{-1}]\f$
-  real, intent(inout) :: TS    (ILG)  !< Temperature of snowfall [C]
+  real, intent(inout) :: R(ILG)  !< Rainfall rate over subarea in question \f$[m s^{-1}]\f$
+  real, intent(inout) :: TR(ILG)  !< Temperature of rainfall [C]
+  real, intent(inout) :: S(ILG)  !< Snowfall rate over subarea in question \f$[m s^{-1}]\f$
+  real, intent(inout) :: TS(ILG)  !< Temperature of snowfall [C]
   real, intent(inout) :: RAICAN(ILG)  !< Intercepted liquid water stored on the canopy
-  !! \f$[kg m^{-2}] (W_{l, c})\f$
+  !! \f$[kg m^{-2}] (W_{l,c})\f$
   real, intent(inout) :: SNOCAN(ILG)  !< Intercepted frozen water stored on the canopy
-  !! \f$[kg m^{-2}] (W_{f, c})\f$
-  real, intent(inout) :: TCAN  (ILG)  !< Temperature of vegetation canopy \f$[K] (T_c)\f$
-  real, intent(inout) :: CHCAP (ILG)  !< Heat capacity of vegetation canopy \f$[J m^{-2} K^{-1}] (C_c)\f$
-  real, intent(inout) :: HTCC  (ILG)  !< Internal energy change of canopy due to changes
+  !! \f$[kg m^{-2}] (W_{f,c})\f$
+  real, intent(inout) :: TCAN(ILG)  !< Temperature of vegetation canopy \f$[K] (T_c)\f$
+  real, intent(inout) :: CHCAP(ILG)  !< Heat capacity of vegetation canopy \f$[J m^{-2} K^{-1}] (C_c)\f$
+  real, intent(inout) :: HTCC(ILG)  !< Internal energy change of canopy due to changes
   !! in temperature and/or mass \f$[W m^{-2}] (I_c)\f$
-  real, intent(inout) :: ROFC  (ILG)  !< Liquid/frozen water runoff from vegetation \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(inout) :: ROVG  (ILG)  !< Liquid/frozen water runoff from vegetation to
+  real, intent(inout) :: ROFC(ILG)  !< Liquid/frozen water runoff from vegetation \f$[kg m^{-2} s^{-1}]\f$
+  real, intent(inout) :: ROVG(ILG)  !< Liquid/frozen water runoff from vegetation to
   !! ground surface \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(inout) :: PCPN  (ILG)  !< Precipitation incident on snow pack \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(inout) :: PCPG  (ILG)  !< Precipitation incident on ground \f$[kg m^{-2} s^{-1}]\f$
+  real, intent(inout) :: PCPN(ILG)  !< Precipitation incident on snow pack \f$[kg m^{-2} s^{-1}]\f$
+  real, intent(inout) :: PCPG(ILG)  !< Precipitation incident on ground \f$[kg m^{-2} s^{-1}]\f$
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: FI    (ILG)  !< Fractional coverage of subarea in question on
+  real, intent(in) :: FI(ILG)  !< Fractional coverage of subarea in question on
   !! modelled area \f$[ ] (X_i)\f$
-  real, intent(in) :: FSVF  (ILG)  !< Sky view factor of surface under vegetation canopy [ ]
+  real, intent(in) :: FSVF(ILG)  !< Sky view factor of surface under vegetation canopy [ ]
   real, intent(in) :: CWLCAP(ILG)  !< Interception storage capacity of vegetation for
   !! liquid water \f$[kg m^{-2}]\f$
   real, intent(in) :: CWFCAP(ILG)  !< Interception storage capacity of vegetation for
-  !! frozen water \f$[kg m^{-2}] (W_{f, max})\f$
-  real, intent(in) :: CMASS (ILG)  !< Mass of vegetation canopy \f$[kg m^{-2}]\f$
+  !! frozen water \f$[kg m^{-2}] (W_{f,max})\f$
+  real, intent(in) :: CMASS(ILG)  !< Mass of vegetation canopy \f$[kg m^{-2}]\f$
   real, intent(in) :: RHOSNI(ILG)  !< Density of fresh snow \f$[kg m^{-3}]\f$
-  real, intent(in) :: TSURX (ILG)  !< Ground or snow surface temperature of subarea [K]
+  real, intent(in) :: TSURX(ILG)  !< Ground or snow surface temperature of subarea [K]
   !
   !     * INTERNAL WORK ARRAYS.
   !
-  real, intent(inout) :: RDRIP (ILG), SDRIP (ILG)
+  real, intent(inout) :: RDRIP(ILG), SDRIP(ILG)
   !
   !     * TEMPORARY VARIABLES.
   !
@@ -89,18 +89,18 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
   !> or snowfall rates over the modelled area are greater than zero,
   !> or if the intercepted liquid water RAICAN or frozen water SNOCAN
   !> is greater than zero (to allow for unloading). The throughfall of
-  !> rainfall or snowfall incident on the canopy, RTHRU or STHRU, is
-  !> calculated from FSVF, the canopy gap fraction or sky view factor.
+  !> rainfall or snowfall incident on the canopy,RTHRU or STHRU,is
+  !> calculated from FSVF,the canopy gap fraction or sky view factor.
   !> The remaining rainfall or snowfall is assigned to interception,
   !> as RINT and SINT. The resulting temperature of liquid water on
-  !> the canopy, TRCAN, is calculated as a weighted average of RAICAN
-  !> at the canopy temperature TCAN, and RINT at the rainfall
+  !> the canopy,TRCAN,is calculated as a weighted average of RAICAN
+  !> at the canopy temperature TCAN,and RINT at the rainfall
   !> temperature TR. The resulting temperature of frozen water on the
-  !> canopy, TSCAN, is calculated as a weighted average of SNOCAN at
-  !> the canopy temperature TCAN, and SINT at the snowfall temperature
+  !> canopy,TSCAN,is calculated as a weighted average of SNOCAN at
+  !> the canopy temperature TCAN,and SINT at the snowfall temperature
   !> TS.
   !>
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     RDRIP(I) = 0.0
     SDRIP(I) = 0.0
     if (FI(I) > 0. .and. (R(I) > 0. .or. S(I) > 0. .or. &
@@ -123,16 +123,16 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
       !>
       !> Calculations are now done to ascertain whether the total
       !> liquid water on the canopy exceeds the liquid water
-      !> interception capacity CWLCAP. If such is the case, this
-      !> excess is assigned to RDRIP, water dripping off the
+      !> interception capacity CWLCAP. If such is the case,this
+      !> excess is assigned to RDRIP,water dripping off the
       !> canopy. The rainfall rate reaching the surface under the
-      !> canopy is calculated as RDRIP + RTHRU, and the
+      !> canopy is calculated as RDRIP + RTHRU,and the
       !> temperature of this water flux is calculated as a
-      !> weighted average of RDRIP at a temperature of TRCAN, and
+      !> weighted average of RDRIP at a temperature of TRCAN,and
       !> RTHRU at the original rainfall temperature TR. The
       !> remaining intercepted water becomes CWLCAP. Otherwise,
       !> the rainfall rate reaching the surface under the canopy
-      !> is set to RTHRU, and the liquid water on the canopy
+      !> is set to RTHRU,and the liquid water on the canopy
       !> RAICAN is augmented by RINT.
       !>
       RWXCES = RINT + RAICAN(I) - CWLCAP(I)
@@ -153,42 +153,42 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
       !
       !>
       !> Interception and unloading of snow on the canopy is calculated using a more complex :: method. The
-      !> amount of snow intercepted during a snowfall event over a time step, \f$\Delta W_{f, i}\f$ , or SLOAD, is obtained from
-      !> the initial intercepted snow amount \f$W_{f, c}\f$ and the interception capacity \f$W_{f, max}\f$ , following Hedstrom and
-      !> Pomeroy (1998), as:
+      !> amount of snow intercepted during a snowfall event over a time step, \f$\Delta W_{f,i}\f$ , or SLOAD,is obtained from
+      !> the initial intercepted snow amount \f$W_{f,c}\f$ and the interception capacity \f$W_{f,max}\f$ , following Hedstrom and
+      !> Pomeroy (1998),as:
       !>
-      !> \f$\Delta W_{f, i} = (W_{f, max} – W_{f, c} ) [1 – exp(-S_{int} /W_{f, max} )]\f$
+      !> \f$\Delta W_{f,i} = (W_{f,max} – W_{f,c} ) [1 – exp(-S_{int} /W_{f,max} )]\f$
       !>
       !> where \f$S_{int}\f$ is the amount of snow incident on the canopy
       !> during the time step. The amount of snow not stored by
-      !> interception, SWXCES, is calculated as SINT – SLOAD.
-      !> Between and during precipitation events, snow is unloaded
+      !> interception,SWXCES,is calculated as SINT – SLOAD.
+      !> Between and during precipitation events,snow is unloaded
       !> from the canopy through wind gusts and snow
       !> densification. These effects of these processes are
       !> estimated using an empirical exponential relationship for
-      !> the snow unloading rate \f$W_{f, u}\f$ or SNUNLD, again following
+      !> the snow unloading rate \f$W_{f,u}\f$ or SNUNLD,again following
       !> Hedstrom and Pomeroy (1998):
       !>
-      !> \f$W_{f, u} = {W_{f, c} + \Delta W_{f, i} } exp (-U \Delta t)\f$
+      !> \f$W_{f,u} = {W_{f,c} + \Delta W_{f,i} } exp (-U \Delta t)\f$
       !>
-      !> where U is a snow unloading coefficient, assigned a value
+      !> where U is a snow unloading coefficient,assigned a value
       !> of \f$0.1 d^{-1}\f$ or \f$1.157 * 10^{-6} s{-1}\f$. The sum of SWXCES and
-      !> SNUNLD is assigned to SDRIP, the snow or frozen water
+      !> SNUNLD is assigned to SDRIP,the snow or frozen water
       !> falling off the canopy. The snowfall rate reaching the
       !> surface under the canopy is calculated as SDRIP + STHRU,
       !> and the temperature of this water flux is calculated as
       !> a weighted average of SDRIP at a temperature of TSCAN,
       !> and STHRU at the original snowfall temperature TS. The
       !> frozen water stored on the canopy is recalculated as
-      !> SNOCAN + SINT – SWXCES - SNUNLD. Otherwise, the snowfall
+      !> SNOCAN + SINT – SWXCES - SNUNLD. Otherwise,the snowfall
       !> rate reaching the surface under the canopy is set to
-      !> STHRU, and SNOCAN is augmented by SINT.
+      !> STHRU,and SNOCAN is augmented by SINT.
       !>
       SLOAD = (CWFCAP(I) - SNOCAN(I)) * (1.0 - EXP( - SINT / CWFCAP(I)))
       SWXCES = SINT - SLOAD
       SNUNLD = (SLOAD + SNOCAN(I)) * (1.0 - EXP( - 1.157E-6 * DELT))  ! BDCS P?
       if (SWXCES > 0. .or. SNUNLD > 0.) then
-        SDRIP(I) = (MAX(SWXCES, 0.0) + SNUNLD) / (DELT * RHOSNI(I))
+        SDRIP(I) = (MAX(SWXCES,0.0) + SNUNLD) / (DELT * RHOSNI(I))
         if ((SDRIP(I) + STHRU) > 0.) then
           TS(I) = (SDRIP(I) * TSCAN + STHRU * TS(I)) / &
                   (SDRIP(I) + STHRU)
@@ -196,21 +196,21 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
           TS(I) = 0.0
         end if
         S(I) = SDRIP(I) + STHRU
-        SNOCAN(I) = SNOCAN(I) + SINT - MAX(SWXCES, 0.0) - SNUNLD
+        SNOCAN(I) = SNOCAN(I) + SINT - MAX(SWXCES,0.0) - SNUNLD
       else
         S(I) = STHRU
         SNOCAN(I) = SNOCAN(I) + SINT
       end if
       !
       !>
-      !> In the final section of the subroutine, the initial heat
+      !> In the final section of the subroutine,the initial heat
       !> capacity and temperature of the canopy are saved in
       !> temporary variables. The new canopy heat capacity is
       !> calculated as a weighted average over the specific heats
       !> of the liquid and frozen water stored on the canopy and
       !> the canopy mass. The canopy temperature is calculated as
       !> a weighted average over the stored liquid and frozen
-      !> water at the updated temperatures TRCAN and TSCAN, and
+      !> water at the updated temperatures TRCAN and TSCAN,and
       !> the vegetation mass at the original temperature TCAN.
       !> Then the change in internal energy \f$I_c\f$ of the vegetation
       !> canopy as a result of the water movement above is
@@ -220,21 +220,21 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
       !> \Delta I_c = X_i \Delta [C_c T_c ] / \Delta t
       !> \f]
       !> where \f$C_c\f$ represents the canopy heat capacity, \f$T_c\f$ the
-      !> canopy temperature, \f$\Delta t\f$ the length of the time step, and
+      !> canopy temperature, \f$\Delta t\f$ the length of the time step,and
       !> \f$X_i\f$ the fractional coverage of the subarea under
       !> consideration relative to the modelled area.
       !>
-      !> Finally, the rainfall and snowfall temperatures are
+      !> Finally,the rainfall and snowfall temperatures are
       !> converted to degrees C. (In the absence of precipitation,
       !> both are set equal to the surface temperature of the
       !> subarea to avoid floating point errors in later
       !> subroutines.) For subareas with a snow cover
-      !> (IWATER = 2), the water running off the canopy and the
+      !> (IWATER = 2),the water running off the canopy and the
       !> precipitation incident on the snow pack are updated using
       !> RDRIP and SDRIP. For subareas without snow cover
-      !> (IWATER = 1), the water running off the canopy is updated
-      !> using RDRIP and SDRIP, the precipitation incident on the
-      !> snow pack is augmented by SDRIP, and the precipitation
+      !> (IWATER = 1),the water running off the canopy is updated
+      !> using RDRIP and SDRIP,the precipitation incident on the
+      !> snow pack is augmented by SDRIP,and the precipitation
       !> incident on bare ground is augmented by RDRIP.
       !>
       CHCAPI  = CHCAP(I)
@@ -247,12 +247,12 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
       if (R(I) > 0.0) then
         TR(I) = TR(I) - TFREZ
       else
-        TR(I) = MAX(TSURX(I) - TFREZ, 0.0)
+        TR(I) = MAX(TSURX(I) - TFREZ,0.0)
       end if
       if (S(I) > 0.0) then
         TS(I) = TS(I) - TFREZ
       else
-        TS(I) = MIN(TSURX(I) - TFREZ, 0.0)
+        TS(I) = MIN(TSURX(I) - TFREZ,0.0)
       end if
       if (IWATER == 2) then
         ROFC(I) = ROFC(I) + FI(I) * (RDRIP(I) * RHOW + SDRIP(I) * &
@@ -272,4 +272,4 @@ subroutine canopyInterception(IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP,
   end do ! loop 100
   !
   return
-end
+end subroutine canopyInterception

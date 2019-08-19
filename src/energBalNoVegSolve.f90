@@ -3,22 +3,22 @@
 !! subareas.
 !! @author D. Verseghy, M. Lazare, A. Wu, P. Bartlett, Y. Delage, J. Cole, R. Brown, J. Melton, Y. Wu
 !
-subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
-                              QSWNET, QLWOUT, QTRANS, QSENS, QEVAP, EVAP, &
-                              TZERO, QZERO, GZERO, QMELT, CDH, CDM, RIB, CFLUX, &
-                              FTEMP, FVAP, ILMO, UE, H, &
-                              QLWIN, TPOTA, QA, VA, PADRY, RHOAIR, &
-                              ALVISG, ALNIRG, CRIB, CPHCH, CEVAP, TVIRTA, &
-                              ZOSCLH, ZOSCLM, ZRSLFH, ZRSLFM, ZOH, ZOM, FCOR, &
-                              GCONST, GCOEFF, TSTART, PCPR, TRSNOWG, FSSB, ALSNO, &
-                              THLIQ, THLMIN, DELZW, RHOSNO, ZSNOW, ZPOND, &
-                              IWATER, IEVAP, ITERCT, ISAND, &
-                              ISLFD, ITG, ILG, IG, IL1, IL2, JL, NBS, ISNOALB, &
-                              TSTEP, TVIRTS, EVBETA, Q0SAT, RESID, &
-                              DCFLXM, CFLUXM, WZERO, TRTOP, A, B, &
-                              LZZ0, LZZ0T, FM, FH, ITER, NITER, JEVAP, KF, &
-                              ipeatland, co2conc, pressg, coszs, Cmossmas, &
-                              dmoss, anmoss, rmlmoss, iday, daylength, pdd)
+subroutine energBalNoVegSolve (ISNOW, FI, & ! Formerly TSOLVE
+                               QSWNET, QLWOUT, QTRANS, QSENS, QEVAP, EVAP, &
+                               TZERO, QZERO, GZERO, QMELT, CDH, CDM, RIB, CFLUX, &
+                               FTEMP, FVAP, ILMO, UE, H, &
+                               QLWIN, TPOTA, QA, VA, PADRY, RHOAIR, &
+                               ALVISG, ALNIRG, CRIB, CPHCH, CEVAP, TVIRTA, &
+                               ZOSCLH, ZOSCLM, ZRSLFH, ZRSLFM, ZOH, ZOM, FCOR, &
+                               GCONST, GCOEFF, TSTART, PCPR, TRSNOWG, FSSB, ALSNO, &
+                               THLIQ, THLMIN, DELZW, RHOSNO, ZSNOW, ZPOND, &
+                               IWATER, IEVAP, ITERCT, ISAND, &
+                               ISLFD, ITG, ILG, IG, IL1, IL2, JL, NBS, ISNOALB, &
+                               TSTEP, TVIRTS, EVBETA, Q0SAT, RESID, &
+                               DCFLXM, CFLUXM, WZERO, TRTOP, A, B, &
+                               LZZ0, LZZ0T, FM, FH, ITER, NITER, JEVAP, KF, &
+                               ipeatland, co2conc, pressg, coszs, Cmossmas, &
+                               dmoss, anmoss, rmlmoss, iday, daylength, pdd)
   !
   !     * OCT 30/16 - J. MELTON. Finish implementation of peatland code by
   !                              Yuanqiao Wu.
@@ -109,8 +109,8 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   !     * APR 11/89 - D.VERSEGHY. ITERATIVE SURFACE TEMPERATURE
   !     *                         CALCULATIONS FOR SNOW/SOIL.
   !
-  use classic_params, only : DELT, TFREZ, SBC, SPHAIR, RHOW, BETA
-  use peatlands_mod, only : mosspht
+  use classicParams, only : DELT, TFREZ, SBC, SPHAIR, RHOW, BETA
+  use peatlandsMod,  only : mossPht
 
   implicit none
 
@@ -121,7 +121,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   integer :: I, IB
   integer, intent(in) :: ISNOALB !< Switch to model snow albedo in two or more wavelength bands
   !
-  integer :: NUMIT, NIT, IBAD, ITERMX
+  integer :: NUMIT,NIT,IBAD,ITERMX
   !
   !     * OUTPUT ARRAYS.
   !
@@ -159,7 +159,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   real, intent(in) :: QLWIN (ILG)  !< Downwelling longwave radiation at bottom of
   !< atmosphere \f$[W m^{-2}]\f$
   real, intent(in) :: TPOTA (ILG)  !< Potential temperature of air at reference
-  !< height \f$[K] (T_{a, pot})\f$
+  !< height \f$[K] (T_{a,pot})\f$
   real, intent(in) :: QA    (ILG)  !< Specific humidity at reference height \f$[kg kg^{-1}] (q_a)\f$
   real, intent(in) :: VA    (ILG)  !< Wind speed at reference height \f$[m s^{-1}] (v_a)\f$
   real, intent(in) :: PADRY (ILG)  !< Partial pressure of dry air \f$[Pa] (p_{dry})\f$
@@ -194,22 +194,22 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   real, intent(in) :: RHOSNO(ILG)  !< Density of snow  \f$[kg m^{-3}]\f$
   real, intent(in) :: ZSNOW(ILG)   !< Depth of snow pack  [m]  \f$(z_s)\f$
 
-  real, intent(in) :: THLIQ(ILG, IG)    !< Volumetric liquid water content of soil layers \f$[m^{3} m^{-3}]\f$
-  real, intent(in) :: THLMIN(ILG, IG)   !< Residual soil liquid water content remaining after freezing or evaporation  \f$[m^{3} m^{-3}]\f$
-  real, intent(in) :: DELZW(ILG, IG)    !< Permeable thickness of soil layer  [m]
-  real, intent(in) :: TRSNOWG(ILG, NBS) !< Short-wave transmissivity of snow pack over bare ground  [  ]
-  real, intent(in) :: ALSNO(ILG, NBS)   !< Albedo of snow in each modelled wavelength band  [  ]
-  real, intent(in) :: FSSB(ILG, NBS)    !< Total solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
-  real, intent(inout) :: TRTOP(ILG, NBS)   !<
+  real, intent(in) :: THLIQ(ILG,IG)    !< Volumetric liquid water content of soil layers \f$[m^{3} m^{-3}]\f$
+  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content remaining after freezing or evaporation  \f$[m^{3} m^{-3}]\f$
+  real, intent(in) :: DELZW(ILG,IG)    !< Permeable thickness of soil layer  [m]
+  real, intent(in) :: TRSNOWG(ILG,NBS) !< Short-wave transmissivity of snow pack over bare ground  [  ]
+  real, intent(in) :: ALSNO(ILG,NBS)   !< Albedo of snow in each modelled wavelength band  [  ]
+  real, intent(in) :: FSSB(ILG,NBS)    !< Total solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
+  real, intent(inout) :: TRTOP(ILG,NBS)   !<
 
   !
   integer, intent(in) :: IWATER(ILG)  !< Flag indicating condition of surface
   !< (dry, water-covered or snow-covered)
   integer, intent(inout) :: IEVAP (ILG)  !< Flag indicating whether surface
   !< evaporation is occurring or not
-  integer, intent(inout) :: ITERCT(ILG, 6, 50) !< Counter of number of iterations required to
+  integer, intent(inout) :: ITERCT(ILG,6,50) !< Counter of number of iterations required to
   !< solve energy balance for four subareas
-  integer, intent(in) :: ISAND(ILG, IG)    !< Sand content flag
+  integer, intent(in) :: ISAND(ILG,IG)    !< Sand content flag
 
   integer, intent(in)  :: ipeatland(ilg)
   integer, intent(in) :: iday
@@ -252,7 +252,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   if (ITG < 2) then
     ITERMX = 50
   else
-    ITERMX = 12      ! was 5 YW March 27, 2015
+    ITERMX = 12      ! was 5 YW March 27,2015
   end if
   !
   !      IF (ISNOW==0) THEN
@@ -263,7 +263,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   EZERO = 0.0
   !
 
-  do I = IL1, IL2
+  do I = IL1,IL2
     QSWNET(I) = 0.0
     QTRANS(I) = 0.0
     if (ipeatland(i) > 0) then
@@ -306,20 +306,20 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   !! surface plus the total available water in the first soil layer.
   !!
   if (ISNOW == 0) then ! Use usual snow-free bare soil formulation
-    do I = IL1, IL2
+    do I = IL1,IL2
       if (FI(I) > 0.) then
-        TRTOP(I, 1) = 0.
-        QSWNV(i) = FSSB(I, 1) * (1.0 - ALVISG(I)) ! YW QSWNV to QSWNV(i)
+        TRTOP(I,1) = 0.
+        QSWNV(i) = FSSB(I,1) * (1.0 - ALVISG(I)) ! YW QSWNV to QSWNV(i)
         if (ISNOALB == 0) then
-          QSWNI = FSSB(I, 2) * (1.0 - ALNIRG(I))
+          QSWNI = FSSB(I,2) * (1.0 - ALNIRG(I))
         else if (ISNOALB == 1) then
           QSWNI = 0.0
-          do IB = 2, NBS
-            QSWNI = QSWNI + FSSB(I, IB) * (1.0 - ALNIRG(I))
+          do IB = 2,NBS
+            QSWNI = QSWNI + FSSB(I,IB) * (1.0 - ALNIRG(I))
           end do ! IB
         end if
         QSWNET(I) = QSWNV(i) + QSWNI
-        QTRANS(I) = QSWNET(I) * TRTOP(I, 1)
+        QTRANS(I) = QSWNET(I) * TRTOP(I,1)
         QSWNET(I) = QSWNET(I) - QTRANS(I)
       end if
     end do ! I
@@ -327,32 +327,32 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   else
 
     if (ISNOALB == 0) then ! Use the existing snow albedo and transmission
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FI(I) > 0.) then
-          TRTOP(I, 1) = TRSNOWG(I, 1)
-          QSWNV(i) = FSSB(I, 1) * (1.0 - ALSNO(I, 1))  ! YW QSWNV to QSWNV(i)
-          QSWNI = FSSB(I, 2) * (1.0 - ALSNO(I, 2))
+          TRTOP(I,1) = TRSNOWG(I,1)
+          QSWNV(i) = FSSB(I,1) * (1.0 - ALSNO(I,1))  ! YW QSWNV to QSWNV(i)
+          QSWNI = FSSB(I,2) * (1.0 - ALSNO(I,2))
           QSWNET(I) = QSWNV(i) + QSWNI
-          QTRANS(I) = QSWNET(I) * TRTOP(I, 1)
+          QTRANS(I) = QSWNET(I) * TRTOP(I,1)
           QSWNET(I) = QSWNET(I) - QTRANS(I)
         end if
       end do ! I
     else if (ISNOALB == 1) then ! Use the band-by-band snow albedo and transmission
-      do I = IL1, IL2
+      do I = IL1,IL2
         QTRANS(I) = 0.0
         QSWNET(I) = 0.0
       end do ! I
-      do IB = 1, NBS
-        do I = IL1, IL2
+      do IB = 1,NBS
+        do I = IL1,IL2
           if (FI(I) > 0.) then
-            TRTOP(I, IB) = TRSNOWG(I, IB)
-            QSWNV(i) = FSSB(I, IB) * (1.0 - ALSNO(I, IB))
-            QSWNET(I) = QSWNET(I) + FSSB(I, IB) * (1.0 - ALSNO(I, IB))
-            QTRANS(I) = QTRANS(I) + QSWNV(i) * TRTOP(I, IB)
+            TRTOP(I,IB) = TRSNOWG(I,IB)
+            QSWNV(i) = FSSB(I,IB) * (1.0 - ALSNO(I,IB))
+            QSWNET(I) = QSWNET(I) + FSSB(I,IB) * (1.0 - ALSNO(I,IB))
+            QTRANS(I) = QTRANS(I) + QSWNV(i) * TRTOP(I,IB)
           end if
         end do ! I
       end do ! IB
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FI(I) > 0.) then
           QSWNET(I) = QSWNET(I) - QTRANS(I)
         end if
@@ -360,7 +360,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     end if ! ISNOALB
   end if ! ISNOW
   !
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (FI(I) > 0.) then
       TZERO(I) = TSTART(I)
       TSTEP(I) = 1.0
@@ -376,15 +376,15 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
         EVPMAX(I) = RHOSNO(I) * ZSNOW(I) / DELT
       else
         KF(I) = 6
-        EVPMAX(I) = RHOW * (ZPOND(I) + (THLIQ(I, 1) - THLMIN(I, 1)) * &
-                    DELZW(I, 1)) / DELT
+        EVPMAX(I) = RHOW * (ZPOND(I) + (THLIQ(I,1) - THLMIN(I,1)) * &
+                    DELZW(I,1)) / DELT
       end if
     end if
   end do ! loop 50
 
   !    Do moss photosynthesis:
   !!      moss subroutine finds ground evaporation rate and photosynthesis--\
-  call mosspht(il1, il2, iday, qswnv, thliq, co2conc, tstart, zsnow, & ! EC Jan 302017.
+  call mossPht(il1, il2, iday, qswnv, thliq, co2conc, tstart, zsnow, & ! EC Jan 302017.
                pressg, Cmossmas, dmoss, anmoss, rmlmoss, &
                cevapmoss, ievapmoss, ipeatland, daylength, pdd)
 
@@ -396,8 +396,8 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   !! found) and NUMIT (indicating that there are still locations at
   !! the end of the current iteration step for which the surface
   !! temperature has not yet been found) are set to zero. Loop 150 is
-  !! then performed over the set of modelled areas. If ITER=1, NIT is
-  !! incremented by one, and the initial value of the surface transfer
+  !! then performed over the set of modelled areas. If ITER=1,NIT is
+  !! incremented by one,and the initial value of the surface transfer
   !! coefficient CFLUXM for this iteration pass is set to its value
   !! from the previous pass. The virtual temperature at the surface,
   !! \f$T(0)_v\f$, is obtained using the standard expression (see
@@ -432,12 +432,12 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   !! \f$e_{sat} = 611.0 exp[21.874 (T – T_f)/(T – 7.66)]     T < T_f\f$
   !!
   !! where \f$T_f\f$ is the freezing point. If there is a snow cover or
-  !! ponded water present on the surface (IWATER > 0), the surface
+  !! ponded water present on the surface (IWATER > 0),the surface
   !! evaporation efficiency EVBETA is set to 1 and q(0) is set to
-  !! \f$q(0)_{sat}\f$. Otherwise EVBETA is set to CEVAP, the value obtained in
-  !! subroutine energyBudgetPrep on the basis of ambient conditions, and q(0) is
+  !! \f$q(0)_{sat}\f$. Otherwise EVBETA is set to CEVAP,the value obtained in
+  !! subroutine energyBudgetPrep on the basis of ambient conditions,and q(0) is
   !! calculated as above. If \f$q(0) > q_a\f$ and the evaporation flag IEVAP
-  !! has been set to zero, EVBETA is reset to zero and q(0) is reset
+  !! has been set to zero,EVBETA is reset to zero and q(0) is reset
   !! to \f$q_a\f$. Finally, \f$T(0)_v\f$ is determined using the equation above.
   !
   !     * ITERATION SECTION.
@@ -449,7 +449,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   !
   NUMIT = 0
   NIT = 0
-  do I = IL1, IL2 ! loop 150
+  do I = IL1,IL2 ! loop 150
     if (FI(I) > 0. .and. ITER(I) == 1) then
       NIT = NIT + 1
       CFLUXM(I) = CFLUX(I)
@@ -486,13 +486,13 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   end do ! loop 150
   !
   !>
-  !! If NIT > 0, a subroutine is called to evaluate the stability-
+  !! If NIT > 0,a subroutine is called to evaluate the stability-
   !! corrected surface drag coefficients for heat and momentum. The
   !! subroutine selection is made on the basis of the flag ISLFD. If
-  !! ISLFD=1, indicating that the calculations are to be consistent
-  !! with CCCma conventions, subroutine DRCOEF is called; if ISLFD=2,
+  !! ISLFD=1,indicating that the calculations are to be consistent
+  !! with CCCma conventions,subroutine DRCOEF is called; if ISLFD=2,
   !! indicating that the calculations are to be consistent with RPN
-  !! conventions, subroutine FLXSURFZ is called.
+  !! conventions,subroutine FLXSURFZ is called.
   !!
   if (NIT > 0) then
     !
@@ -500,9 +500,9 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !     * OTHER RELATED QUANTITIES.
     !
     if (ISLFD < 2) then
-      call DRCOEF (CDM, CDH, RIB, CFLUX, QZERO, QA, ZOSCLM, ZOSCLH, &
-                   CRIB, TVIRTS, TVIRTA, VA, FI, ITER, &
-                   ILG, IL1, IL2)
+      call DRCOEF(CDM, CDH, RIB, CFLUX, QZERO, QA, ZOSCLM, ZOSCLH, &
+                  CRIB, TVIRTS, TVIRTA, VA, FI, ITER, &
+                  ILG, IL1, IL2)
     else
       call FLXSURFZ(CDM, CDH, CFLUX, RIB, FTEMP, FVAP, ILMO, &
                     UE, FCOR, TPOTA, QA, ZRSLFM, ZRSLFH, VA, &
@@ -513,14 +513,14 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !     * REMAINING CALCULATIONS.
     !
     !>
-    !! In loop 175, the terms of the surface energy balance are
+    !! In loop 175,the terms of the surface energy balance are
     !! evaluated. The energy balance equation is written as:
     !!
     !! \f$K_* + L_* - Q_H – Q_E – G(0) = 0\f$
     !!
     !! where \f$K_*\f$ is the net shortwave radiation, \f$L_*\f$ is the net longwave
     !! radiation, \f$Q_H\f$ is the sensible heat flux, \f$Q_E\f$ is the latent
-    !! heat flux, and G(0) is the conduction into the surface. \f$K_*\f$ was
+    !! heat flux,and G(0) is the conduction into the surface. \f$K_*\f$ was
     !! evaluated earlier in loop 50. \f$L_*\f$ is obtained as the difference
     !! between the downwelling radiation \f$L \downarrow\f$ and the upwelling
     !! radiation \f$L \uparrow\f$, which in turn is determined using the Stefan-
@@ -529,21 +529,21 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !! \f$L \uparrow = \sigma T(0)^4\f$
     !!
     !! where \f$\sigma\f$ is the Stefan-Boltzmann constant. (It is assumed that
-    !! natural surfaces, because of their radiative complexity, act as
-    !! effective black bodies, so that their emissivity can be taken
+    !! natural surfaces,because of their radiative complexity,act as
+    !! effective black bodies,so that their emissivity can be taken
     !! to be 1.) The sensible heat flux is given by
     !!
-    !! \f$Q_H = [\rho_a c_p C_{DH} v_a + \epsilon_0] [T(0) – T_{a, pot}]\f$
+    !! \f$Q_H = [\rho_a c_p C_{DH} v_a + \epsilon_0] [T(0) – T_{a,pot}]\f$
     !!
     !! where \f$\rho_a\f$ is the density of the air, \f$c_p\f$ is its specific
-    !! heat, \f$C_{DH}\f$ is the surface drag coefficient for heat, and \f$v_a\f$ and
-    !! \f$T_{a, pot}\f$ are the wind speed and potential temperature respectively
+    !! heat, \f$C_{DH}\f$ is the surface drag coefficient for heat,and \f$v_a\f$ and
+    !! \f$T_{a,pot}\f$ are the wind speed and potential temperature respectively
     !! at the reference height. (Note in the code that the variable
-    !! CFLUX, evaluated in subroutine DRCOEF or FLXSURFZ, represents
+    !! CFLUX,evaluated in subroutine DRCOEF or FLXSURFZ,represents
     !! the product of \f$C_{DH}\f$ and \f$v_a\f$.) The windless transfer coefficient
-    !! \f$\epsilon_0\f$, evaluated at the beginning of the subroutine, is
-    !! used only under stable conditions, i.e. if \f$T(0) < T_{a, pot}\f$. The
-    !! evaporation rate at the surface, E(0), is calculated as
+    !! \f$\epsilon_0\f$, evaluated at the beginning of the subroutine,is
+    !! used only under stable conditions,i.e. if \f$T(0) < T_{a,pot}\f$. The
+    !! evaporation rate at the surface,E(0),is calculated as
     !!
     !! \f$E(0) = \rho_a C_{DH} v_a [Q(0) – q_a]\f$
     !!
@@ -554,30 +554,30 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !! determined as a linear function of T(0) (see documentation for
     !! subroutines soilHeatFluxPrep and snowHeatCond). It can be seen that each of the
     !! terms of the surface energy balance is a function of a single
-    !! unknown, T(0) or TZERO. The residual RESID of the energy balance is now
+    !! unknown,T(0) or TZERO. The residual RESID of the energy balance is now
     !! evaluated on the basis of the current estimation for TZERO. If
     !! the absolute value of RESID is less than \f$5.0 W m^{-2}\f$, or if the
     !! absolute value of the iteration step TSTEP most recently used
-    !! is less than 0.01 K, the surface temperature is deemed to have
+    !! is less than 0.01 K,the surface temperature is deemed to have
     !! been found and ITER is set to 0. If the iteration counter NITER
-    !! is equal to the maximum number and ITER is still 1, ITER is set
+    !! is equal to the maximum number and ITER is still 1,ITER is set
     !! to -1.
     !!
-    !! In the following section, the iteration sequence is moved ahead a step. If ITG = 1, then if NIT > 0 and if
-    !! ITER for the array element in question is 1, the calculations for the bisection method of solution are
-    !! performed. If NITER = 1 (indicating that this is the first step in the iteration), then if RESID > 0
-    !! (indicating that the current value for TZERO had undershot the correct value), TZERO is incremented
-    !! by 1 K; otherwise it is decremented by 1 K. If this is not the first step in the iteration, then if RESID >0
+    !! In the following section,the iteration sequence is moved ahead a step. If ITG = 1,then if NIT > 0 and if
+    !! ITER for the array element in question is 1,the calculations for the bisection method of solution are
+    !! performed. If NITER = 1 (indicating that this is the first step in the iteration),then if RESID > 0
+    !! (indicating that the current value for TZERO had undershot the correct value),TZERO is incremented
+    !! by 1 K; otherwise it is decremented by 1 K. If this is not the first step in the iteration,then if RESID >0
     !! and TSTEP < 0 (indicating that TZERO has undershot the correct value and the last temperature
     !! increment had been a negative one) or if RESID < 0 and TSTEP > 0 (indicating that TZERO has
-    !! overshot the correct value and the last temperature increment had been a positive one), TSTEP is divided
+    !! overshot the correct value and the last temperature increment had been a positive one),TSTEP is divided
     !! in half and its sign changed. TSTEP is then added to TZERO. The iteration counter NITER and the
     !! flag NUMIT are each incremented by one. The next loop contains an optional set of print statements
-    !! that are executed if ITER=-1, that is if a solution for the surface temperature has not been found within
-    !! the prescribed maximum number of iteration steps. Finally, if NUMIT > 0, the iteration cycle is repeated
+    !! that are executed if ITER=-1,that is if a solution for the surface temperature has not been found within
+    !! the prescribed maximum number of iteration steps. Finally,if NUMIT > 0,the iteration cycle is repeated
     !! from line 100 on.
     !!
-    do I = IL1, IL2
+    do I = IL1,IL2
       if (FI(I) > 0. .and. ITER(I) == 1) then
         QLWOUT(I) = SBC * TZERO(I) * TZERO(I) * TZERO(I) * TZERO(I)
         if (TZERO(I) < TPOTA(I)) then
@@ -601,32 +601,32 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   end if
   !
   !>
-  !! If ITG = 2, then if NIT > 0 and if ITER for the array element in
-  !! question is 1, the calculations for the Newton-Raphson method of
-  !! iteration are performed. In this approach, the value \f$x_{n+1}\f$ used at
+  !! If ITG = 2,then if NIT > 0 and if ITER for the array element in
+  !! question is 1,the calculations for the Newton-Raphson method of
+  !! iteration are performed. In this approach,the value \f$x_{n+1}\f$ used at
   !! each iteration step is obtained from the value \f$x_n\f$ at the previous
   !! step as follows:
   !!
   !! \f$x_{n+1} = x_n – f(x_n)/f'(x_n)\f$
   !!
   !! Identifying \f$x_n\f$ with TZERO and \f$f(x_n)\f$ with the surface energy
-  !! balance equation, it can be seen that the second term on the
+  !! balance equation,it can be seen that the second term on the
   !! right-hand side corresponds to TSTEP; the numerator is equal to
   !! RESID and the denominator to the first derivative of the energy
-  !! balance equation evaluated at TZERO, which in turn is equal to
+  !! balance equation evaluated at TZERO,which in turn is equal to
   !! the sum of the derivatives of the individual terms:
   !!
   !! \f$d( L \uparrow)/dT = -4 \sigma T(0)^3\f$
   !!
-  !! \f$d(Q_H)/dT = \rho_a c_p {C_{DH} v_a + [T(0) – T_{a, pot}] d(C_{DH} v_a)/dT}\f$
+  !! \f$d(Q_H)/dT = \rho_a c_p {C_{DH} v_a + [T(0) – T_{a,pot}] d(C_{DH} v_a)/dT}\f$
   !!
   !! \f$d(Q_E)/dT = L_v \rho_a{C_{DH} v_a dq(0)/dT+ [q(0) – q_a] d(C_{DH} v_a)/dT}\f$
   !!
   !! and dG(0)/dT is equal to the coefficient multiplying TZERO in the
   !! equation for G(0). (\f$L_v\f$ is the latent heat of vaporization at the
   !! surface.) At the end of the calculations the iteration counter
-  !! NITER and the flag NUMIT are each incremented by one, and upon
-  !! exiting the loop, if NUMIT > 0, the iteration cycle is repeated
+  !! NITER and the flag NUMIT are each incremented by one,and upon
+  !! exiting the loop,if NUMIT > 0,the iteration cycle is repeated
   !! from line 100 on.
   !!
   if (ITG < 2) then
@@ -634,7 +634,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !     * OPTION #1: BISECTION ITERATION METHOD.
     !
     if (NIT > 0) then
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FI(I) > 0. .and. ITER(I) == 1) then
           if (NITER(I) == 1) then
             if (RESID(I) > 0.0) then
@@ -658,10 +658,10 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
       end do ! loop 180
     end if
     !
-    !     do I=IL1, IL2
+    !     do I=IL1,IL2
     !         IF (FI(I)>0. .AND. ITER(I)==-1)                      THEN
-    !             WRITE(6, 6250) I, JL, RESID(I), TZERO(I), RIB(I)
-    ! 6250         FORMAT('0GROUND ITERATION LIMIT',3X, 2I3, 3(F8.2, E12.4))
+    !             WRITE(6,6250) I,JL,RESID(I),TZERO(I),RIB(I)
+    ! 6250         FORMAT('0GROUND ITERATION LIMIT',3X,2I3,3(F8.2,E12.4))
     !         END IF
     ! 185 CONTINUE
     !
@@ -672,13 +672,13 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !     * OPTION #2: NEWTON-RAPHSON ITERATION METHOD.
     !
     if (NIT > 0) then
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FI(I) > 0. .and. ITER(I) == 1) then
           if (NITER(I) > 1) then
             DCFLUX = (CFLUX(I) - CFLUXM(I)) / &
-                     SIGN(MAX(.001, ABS(TSTEP(I))), TSTEP(I))
+                     SIGN(MAX(.001,ABS(TSTEP(I))),TSTEP(I))
             if (ABS(TVIRTA(I) - TVIRTS(I)) < 0.4) &
-                DCFLUX = MAX(DCFLUX, 0.8 * DCFLXM(I))
+                DCFLUX = MAX(DCFLUX,0.8 * DCFLXM(I))
             DCFLXM(I) = DCFLUX
           else
             DCFLUX = 0.
@@ -700,7 +700,7 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !
     if (NUMIT > 0) GO TO 100
     !>
-    !! After the iteration has been completed, NUMIT is reset to zero
+    !! After the iteration has been completed,NUMIT is reset to zero
     !! and a check is carried out to ascertain whether convergence has
     !! not been reached (i.e. whether ITER = -1) for any location. In
     !! such cases it is assumed that conditions of near-neutral
@@ -709,24 +709,24 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !! the virtual potential temperature of the air. If
     !! RESID > \f$50 W m^{-2}\f$, TZERO is set to this trial value. The values of
     !! q(0) and the components of the surface energy balance are
-    !! recalculated as above, except that \f$Q_H\f$ and \f$Q_E\f$ are assumed as
+    !! recalculated as above,except that \f$Q_H\f$ and \f$Q_E\f$ are assumed as
     !! a first approximation to be zero. RESID is determined on this
-    !! basis. If RESID is positive, it is assigned to \f$Q_E\f$; otherwise
+    !! basis. If RESID is positive,it is assigned to \f$Q_E\f$; otherwise
     !! RESID is divided equally between \f$Q_H\f$ and \f$Q_E\f$, except in the
-    !! case of an absolutely dry surface, in which case \f$Q_E\f$ is set to
-    !! zero and \f$Q_H\f$ to RESID. RESID is reset to zero, E(0) is obtained
+    !! case of an absolutely dry surface,in which case \f$Q_E\f$ is set to
+    !! zero and \f$Q_H\f$ to RESID. RESID is reset to zero,E(0) is obtained
     !! from \f$Q_E\f$, and \f$T(0)_v\f$ is recalculated. The flag JEVAP for the
-    !! location is set to 1, and NUMIT is incremented by 1. If NUMIT > 0
-    !! at the end of this loop, DRCOEF or FLXSURF are called again, and
+    !! location is set to 1,and NUMIT is incremented by 1. If NUMIT > 0
+    !! at the end of this loop,DRCOEF or FLXSURF are called again,and
     !! their calculations are performed for any location where JEVAP is
-    !! 1, to ensure consistency with the new surface temperature and
+    !! 1,to ensure consistency with the new surface temperature and
     !! humidity.
     !!
     !
-    !     * IF CONVERGENCE HAS NOT BEEN REACHED, CALCULATE TEMPERATURE AND
+    !     * IF CONVERGENCE HAS NOT BEEN REACHED,CALCULATE TEMPERATURE AND
     !     * FLUXES ASSUMING NEUTRAL STABILITY.
     !
-    do I = IL1, IL2
+    do I = IL1,IL2
       NUMIT = 0
       JEVAP(I) = 0
       if (FI(I) > 0. .and. ITER(I) == - 1) then
@@ -765,9 +765,9 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !
     if (NUMIT > 0) then
       if (ISLFD < 2) then
-        call DRCOEF (CDM, CDH, RIB, CFLUX, QZERO, QA, ZOSCLM, ZOSCLH, &
-                     CRIB, TVIRTS, TVIRTA, VA, FI, JEVAP, &
-                     ILG, IL1, IL2)
+        call DRCOEF(CDM, CDH, RIB, CFLUX, QZERO, QA, ZOSCLM, ZOSCLH, &
+                    CRIB, TVIRTS, TVIRTA, VA, FI, JEVAP, &
+                    ILG, IL1, IL2)
       else
         call FLXSURFZ(CDM, CDH, CFLUX, RIB, FTEMP, FVAP, ILMO, &
                       UE, FCOR, TPOTA, QA, ZRSLFM, ZRSLFH, VA, &
@@ -779,15 +779,15 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   end if
   !>
   !! At this point a check is performed for unphysical values of the
-  !! surface temperature, i.e. for values greater than 100 C or less
-  !! than -250 C. If such values are encountered, an error message is
+  !! surface temperature,i.e. for values greater than 100 C or less
+  !! than -250 C. If such values are encountered,an error message is
   !! printed and a call to abort is carried out.
   !!
   !
   !     * CHECK FOR BAD ITERATION TEMPERATURES.
   !
   IBAD = 0
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (FI(I) > 0. .and. (TZERO(I) < 123.16 .or. &
         TZERO(I) > 373.16)) then
       IBAD = I
@@ -795,38 +795,38 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
   end do ! loop 200
   !
   if (IBAD /= 0) then
-    write(6, 6275) IBAD, JL, TZERO(IBAD), NITER(IBAD), ISNOW
-6275 format('0BAD ITERATION TEMPERATURE',3X, 2I3, F16.2, 2I4)
-    write(6, 6280) QSWNET(IBAD), QLWIN(IBAD), QSENS(IBAD), &
-         QEVAP(IBAD), GZERO(IBAD), CFLUX(IBAD), RIB(IBAD)
-6280 format(2X, 7F12.4)
+    write(6,6275) IBAD,JL,TZERO(IBAD),NITER(IBAD),ISNOW
+6275 format('0BAD ITERATION TEMPERATURE',3X,2I3,F16.2,2I4)
+    write(6,6280) QSWNET(IBAD),QLWIN(IBAD),QSENS(IBAD), &
+         QEVAP(IBAD),GZERO(IBAD),CFLUX(IBAD),RIB(IBAD)
+6280 format(2X,7F12.4)
     call errorHandler('energBalNoVegSolve', - 1)
   end if
   !>
-  !! Finally, a check is performed to ensure that TZERO is not less
+  !! Finally,a check is performed to ensure that TZERO is not less
   !! than 0 C if ponded water is present on the surface (IWATER = 1)
   !! or greater than 0 C if snow is present on the surface
-  !! (IWATER = 2), or greater than zero if the surface is an ice sheet
-  !! (ISAND = -4). If any of these cases is true, TZERO is reset to
-  !! the freezing point, and q(0) and \f$T(0)_v\f$ are recalculated. DRCOEF
-  !! or FLXSURFZ are called, and their calculations are performed for
+  !! (IWATER = 2),or greater than zero if the surface is an ice sheet
+  !! (ISAND = -4). If any of these cases is true,TZERO is reset to
+  !! the freezing point,and q(0) and \f$T(0)_v\f$ are recalculated. DRCOEF
+  !! or FLXSURFZ are called,and their calculations are performed for
   !! all locations meeting these criteria. The components of the
   !! surface energy balance are recalculated; the residual amount is
   !! assigned to the energy associated with phase change of water at
-  !! the surface, QMELT, and RESID is set to zero. If QMELT < 0, i.e.
-  !! if there is freezing taking place, the evaporation flux QEVAP is
+  !! the surface,QMELT,and RESID is set to zero. If QMELT < 0,i.e.
+  !! if there is freezing taking place,the evaporation flux QEVAP is
   !! added to it and then reset to zero (since if ponded water is
-  !! freezing, it is unavailable for evaporation).
+  !! freezing,it is unavailable for evaporation).
   !!
   !
   !     * POST-ITERATION CLEAN-UP.
   !
   NIT = 0
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (FI(I) > 0.) then
       if (((IWATER(I) == 1 .and. TZERO(I) < TFREZ) .or. &
           (IWATER(I) == 2 .and. TZERO(I) > TFREZ)) .or. &
-          (ISAND(I, 1) == - 4 .and. TZERO(I) > TFREZ)) then
+          (ISAND(I,1) == - 4 .and. TZERO(I) > TFREZ)) then
         TZERO(I) = TFREZ
         WZERO(I) = 0.622 * 611.0 / PADRY(I)
         QZERO(I) = WZERO(I) / (1.0 + WZERO(I))
@@ -845,9 +845,9 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     !       * OTHER RELATED QUANTITIES.
     !
     if (ISLFD < 2) then
-      call DRCOEF (CDM, CDH, RIB, CFLUX, QZERO, QA, ZOSCLM, ZOSCLH, &
-                   CRIB, TVIRTS, TVIRTA, VA, FI, ITER, &
-                   ILG, IL1, IL2)
+      call DRCOEF(CDM, CDH, RIB, CFLUX, QZERO, QA, ZOSCLM, ZOSCLH, &
+                  CRIB, TVIRTS, TVIRTA, VA, FI, ITER, &
+                  ILG, IL1, IL2)
     else
       call FLXSURFZ(CDM, CDH, CFLUX, RIB, FTEMP, FVAP, ILMO, &
                     UE, FCOR, TPOTA, QA, ZRSLFM, ZRSLFH, VA, &
@@ -856,23 +856,23 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
     end if
   end if
   !>
-  !! In the last half of the loop, some final adjustments are made to
-  !! a few variables. If the evaporation flux is vanishingly small, it
+  !! In the last half of the loop,some final adjustments are made to
+  !! a few variables. If the evaporation flux is vanishingly small,it
   !! is added to RESID and reset to zero. If an anomalous case has
   !! arisen in which QMELT < 0 over a snow-covered surface or
-  !! QMELT > 0 over a snow-free surface, QMELT is added to the heat
+  !! QMELT > 0 over a snow-free surface,QMELT is added to the heat
   !! flux into the surface and then reset to zero. Any remaining
   !! residual flux is added to \f$Q_H\f$. The shortwave radiation transmitted
   !! into the surface is added back to the net shortwave radiation for
   !! diagnostic purposes. The surface vapour flux is converted into
-  !! units of \f$m s^{-1}\f$. Lastly, the iteration counter ITERCT is updated
+  !! units of \f$m s^{-1}\f$. Lastly,the iteration counter ITERCT is updated
   !! for the level corresponding to the subarea type and the value of
   !! NITER.
   !!
   !
   !     * REMAINING CALCULATIONS.
   !
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (FI(I) > 0. .and. ITER(I) == 1) then
       QLWOUT(I) = SBC * TZERO(I) * TZERO(I) * TZERO(I) * TZERO(I)
       if (TZERO(I) < TPOTA(I)) then
@@ -912,9 +912,9 @@ subroutine energBalNoVegSolve(ISNOW, FI, & ! Formerly TSOLVE
       QSENS(I) = QSENS(I) + RESID(I)
       QSWNET(I) = QSWNET(I) + QTRANS(I)
       EVAP(I) = EVAP(I) / RHOW
-      ITERCT(I, KF(I), NITER(I)) = ITERCT(I, KF(I), NITER(I)) + 1
+      ITERCT(I,KF(I),NITER(I)) = ITERCT(I,KF(I),NITER(I)) + 1
     end if
   end do ! loop 350
   !
   return
-end
+end subroutine energBalNoVegSolve

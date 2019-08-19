@@ -1,28 +1,28 @@
 !> \file
 !> Parses command line arguments to program and reads in joboptions file.
-module readjobopts
+module readJobOpts
 
   implicit none
 
-  public :: read_from_job_options
+  public :: readFromJobOptions
   public :: parsecoords
 
 contains
 
   ! ---------------------------------------------------
-  !> \ingroup readjobopts_read_from_job_options
+  !> \ingroup readJobOpts_readFromJobOptions
   !! @{
   !> Reads from the joboptions file, assigns the model switches, and determines the geographic domain
   !! of the simulation. All switches are described in the configurationFiles/template_job_options_file.txt file
-  !! and also the user manual (housed in type ctem_switches in ctem_statevars.f90.
+  !! and also the user manual (housed in type ctem_switches in ctemStateVars.f90.
   !> @author Joe Melton
 
-  subroutine read_from_job_options
+  subroutine readFromJobOptions
 
     use outputManager, only : myDomain
-    use ctem_statevars, only : c_switch
-    use classic_params, only : runParamsFile, PFTCompetitionSwitch, &
-                                   zbldJobOpt, zrfhJobOpt, zrfmJobOpt
+    use ctemStateVars, only : c_switch
+    use classicParams, only : runParamsFile, PFTCompetitionSwitch, &
+                              zbldJobOpt, zrfhJobOpt, zrfmJobOpt
 
     implicit none
 
@@ -300,23 +300,23 @@ contains
       write( * , * )'  e.g. 90/105/30/45'
       write( * , * )' '
       write( * , * )' ** If you are running a projected grid you must'
-      write( * , * )' use the grid cell indices, not coordinates !** '
+      write( * , * )' use the grid cell indices,not coordinates !** '
       write( * , * )' '
       stop
     end if
 
-    !> Argument 1 is the jobfile, which is openned and the namelist is read
-    call getarg(1, jobfile)
+    !> Argument 1 is the jobfile,which is openned and the namelist is read
+    call getarg(1,jobfile)
 
-    open(10, file = jobfile, action = 'read',status = 'old')
+    open(10,file = jobfile,action = 'read',status = 'old')
 
-    read(10, nml = joboptions)
+    read(10,nml = joboptions)
 
     close(10)
 
     !> Parse the 2nd argument to get the domain that the simulation should be run over
-    call getarg(2, argbuff)
-    call parsecoords(argbuff, myDomain%domainBounds)
+    call getarg(2,argbuff)
+    call parsecoords(argbuff,myDomain%domainBounds)
 
     ! Assign some vars that are passed out
     runParamsFile = runparams_file
@@ -325,16 +325,16 @@ contains
     zrfhJobOpt = ZRFH
     zrfmJobOpt = ZRFM
 
-  end subroutine read_from_job_options
+  end subroutine readFromJobOptions
   !! @}
   ! ----------------------------------------------------------------------------------
 
-  !> \ingroup readjobopts_parsecoords
+  !> \ingroup readJobOpts_parsecoords
   !! @{
   !> Parses a coordinate string
   !> @author Joe Melton
 
-  subroutine parsecoords(coordstring, val)
+  subroutine parsecoords (coordstring, val)
 
     implicit none
 
@@ -347,7 +347,7 @@ contains
     integer :: lasti = 1
     integer :: part  = 1
 
-    do i = 1, len_trim(coordstring)
+    do i = 1,len_trim(coordstring)
       if (coordstring(i:i) == '/') then
         cval(part) = coordstring(lasti:i - 1)
         lasti = i + 1
@@ -368,8 +368,8 @@ contains
   end subroutine parsecoords
   !! @}
 
-  !> \namespace readjobopts
+  !> \namespace readJobOpts
   !> Parses command line arguments to program and reads in joboptions file.
 
   !> \file
-end module readjobopts
+end module readJobOpts

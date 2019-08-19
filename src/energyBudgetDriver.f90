@@ -182,8 +182,8 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * NOV 05/93 - M.LAZARE.   ADD NEW DIAGNOSTIC OUTPUT FIELD: DRAG.
   !     * JUL 27/93 - D.VERSEGHY/M.LAZARE. PREVIOUS VERSION energyBudgetDriverO.
   !
-  use classic_params, only : DELT, TFREZ, GRAV, SBC, VKC, VMIN, HCPICE, &
-                            HCPW, SPHAIR, RHOW, RHOICE
+  use classicParams,      only : DELT, TFREZ, GRAV, SBC, VKC, VMIN, HCPICE, &
+                                 HCPW, SPHAIR, RHOW, RHOICE
 
   implicit none
   !
@@ -250,7 +250,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: G23CS (ILG) !< Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
   real, intent(out) :: G23G  (ILG) !< Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
   real, intent(out) :: G23GS (ILG) !< Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
-  real, intent(out) :: GT    (ILG) !< Diagnosed effective surface black-body temperature \f$[K] (T_{0, eff} )\f$
+  real, intent(out) :: GT    (ILG) !< Diagnosed effective surface black-body temperature \f$[K] (T_{0,eff} )\f$
   real, intent(out) :: GTBS  (ILG) !< Surface temperature for CCCma black carbon scheme  [K]
   real, intent(out) :: GSNOW (ILG) !< Heat conduction into surface of snow pack  \f$[W m^{-2} ]\f$
   real, intent(out) :: GZEROC(ILG) !< Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
@@ -259,8 +259,8 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: GZROGS(ILG) !< Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
 
   real, intent(out) :: HBL   (ILG)    !< Height of the atmospheric boundary layer [m]
-  real, intent(out) :: HCPC  (ILG, IG) !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1} ]\f$
-  real, intent(out) :: HCPG  (ILG, IG) !< Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{-1} ]\f$
+  real, intent(out) :: HCPC  (ILG,IG) !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1} ]\f$
+  real, intent(out) :: HCPG  (ILG,IG) !< Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{-1} ]\f$
   real, intent(out) :: HEVC  (ILG)    !< Diagnosed latent heat flux on vegetation canopy \f$[W m^{-2} ]\f$
   real, intent(out) :: HEVG  (ILG)    !< Diagnosed latent heat flux at soil surface \f$[W m^{-2} ]\f$
   real, intent(out) :: HEVS  (ILG)    !< Diagnosed latent heat flux at snow surface \f$[W m^{-2} ]\f$
@@ -269,7 +269,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: HFSS  (ILG)    !< Diagnosed sensible heat flux at snow surface \f$[W m^{-2} ]\f$
   real, intent(out) :: HMFC  (ILG)    !< Diagnosed energy associated with phase change of water on vegetation \f$[W m^{-2} ]\f$
   real, intent(out) :: HMFN  (ILG)    !< Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
-  real, intent(out) :: HTC   (ILG, IG) !< Diagnosed internal energy change of soil layer due to conduction
+  real, intent(out) :: HTC   (ILG,IG) !< Diagnosed internal energy change of soil layer due to conduction
   !< and/or change in mass \f$[W m^{-2} ]\f$
   real, intent(out) :: HTCC  (ILG)    !< Diagnosed internal energy change of vegetation canopy due to conduction
   !< and/or change in mass \f$[W m^{-2} ]\f$
@@ -277,7 +277,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !< and/or change in mass \f$[W m^{-2} ]\f$
 
   real, intent(out) :: ILMO  (ILG)         !< Inverse of Monin-Obukhov roughness length \f$(m^{-1} ]\f$
-  integer :: ITERCT(ILG, 6, 50) !< Counter of number of iterations required to solve surface energy balance
+  integer :: ITERCT(ILG,6,50) !< Counter of number of iterations required to solve surface energy balance
   !< for the elements of the four subareas
 
   real, intent(out) :: QAC   (ILG) !< Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ]\f$
@@ -308,28 +308,28 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: SV    (ILG) !< Diagnosed anemometer-level meridional wind \f$[m s^{-1} ]\f$
 
   real, intent(out) :: TAC   (ILG)    !< Temperature of air within vegetation canopy [K]
-  real, intent(out) :: TBARC (ILG, IG) !< Subarea temperatures of soil layers [C]
-  real, intent(out) :: TBARCS(ILG, IG) !< Subarea temperatures of soil layers [C]
-  real, intent(out) :: TBARG (ILG, IG) !< Subarea temperatures of soil layers [C]
-  real, intent(out) :: TBARGS(ILG, IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out) :: TBARC (ILG,IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out) :: TBARCS(ILG,IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out) :: TBARG (ILG,IG) !< Subarea temperatures of soil layers [C]
+  real, intent(out) :: TBARGS(ILG,IG) !< Subarea temperatures of soil layers [C]
   real, intent(out) :: TCANO (ILG)    !< Temperature of canopy over ground [K]
   real, intent(out) :: TCANS (ILG)    !< Temperature of canopy over snow [K]
-  real, intent(out) :: TCBOTC(ILG, IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
-  real, intent(out) :: TCBOTG(ILG, IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
-  real, intent(out) :: TCTOPC(ILG, IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
-  real, intent(out) :: TCTOPG(ILG, IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+  real, intent(out) :: TCBOTC(ILG,IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
+  real, intent(out) :: TCBOTG(ILG,IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
+  real, intent(out) :: TCTOPC(ILG,IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+  real, intent(out) :: TCTOPG(ILG,IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
   real, intent(out) :: TCSNOW(ILG)    !< Thermal conductivity of snow  \f$[W m^{-1} K^{-1} ]\f$
-  real, intent(out) :: TFLUX (ILG)    !< Product of surface drag coefficient, wind speed and surface-air
+  real, intent(out) :: TFLUX (ILG)    !< Product of surface drag coefficient,wind speed and surface-air
   !< temperature difference \f$[K m s^{-1} ]\f$
-  real, intent(out) :: THICEC(ILG, IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
-  real, intent(out) :: THICEG(ILG, IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
-  real, intent(out) :: THLIQC(ILG, IG) !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
-  real, intent(out) :: THLIQG(ILG, IG) !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
+  real, intent(out) :: THICEC(ILG,IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
+  real, intent(out) :: THICEG(ILG,IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
+  real, intent(out) :: THLIQC(ILG,IG) !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
+  real, intent(out) :: THLIQG(ILG,IG) !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
   real, intent(out) :: TPONDC(ILG)    !< Subarea temperature of surface ponded water [C]
   real, intent(out) :: TPONDG(ILG)    !< Subarea temperature of surface ponded water [C]
   real, intent(out) :: TPNDCS(ILG)    !< Subarea temperature of surface ponded water [C]
   real, intent(out) :: TPNDGS(ILG)    !< Subarea temperature of surface ponded water [C]
-  real, intent(out) :: TSFSAV(ILG, 4)  !< Ground surface temperature over subarea [K]
+  real, intent(out) :: TSFSAV(ILG,4)  !< Ground surface temperature over subarea [K]
   real, intent(out) :: TSNOCS(ILG)    !< Temperature of snow pack under vegetation [K]
   real, intent(out) :: TSNOGS(ILG)    !< Temperature of snow pack in bare areas [K]
 
@@ -367,7 +367,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(in) :: FSVFS (ILG) !< Sky view factor for snow under canopy [ ]
   real, intent(in) :: PRESSG(ILG) !< Surface atmospheric pressure [Pa]
   real, intent(in) :: VMOD  (ILG) !< Wind speed at reference height \f$[m s^{-1} ]\f$
-  real, intent(in) :: ALSNO(ILG, NBS) !< Albedo of snow in each modelled wavelength band  [  ]
+  real, intent(in) :: ALSNO(ILG,NBS) !< Albedo of snow in each modelled wavelength band  [  ]
   real, intent(in) :: ALVSCN(ILG) !< Visible/near-IR albedo of vegetation over bare ground [ ]
   real, intent(in) :: ALIRCN(ILG) !< Visible/near-IR albedo of vegetation over bare ground [ ]
   real, intent(in) :: ALVSG (ILG) !< Visible/near-IR albedo of open bare ground [ ]
@@ -409,54 +409,54 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(in) :: TSNOW (ILG) !< Snowpack temperature [K]
   real, intent(in) :: ZSNOW (ILG) !< Depth of snow pack [m]
   real, intent(in) :: TRSNOWC(ILG)!< Transmissivity of snow under vegetation to shortwave radiation  [  ]
-  real, intent(in) :: TRSNOWG(ILG, NBS) !< Transmissivity of snow in bare areas to shortwave radiation  [  ]
+  real, intent(in) :: TRSNOWG(ILG,NBS) !< Transmissivity of snow in bare areas to shortwave radiation  [  ]
   real, intent(in) :: RHOSNO(ILG) !< Density of snow \f$[kg m^{-3} ]\f$
   real, intent(in) :: WSNOW (ILG) !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
   real, intent(in) :: RADJ  (ILG) !< Latitude of grid cell (positive north of equator) [rad] \f$(\varphi)\f$
   real, intent(in) :: PCPR  (ILG) !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
-  real, intent(in) :: FSSB(ILG, NBS)  !< Total solar radiation in each modelled wavelength band  \f$[W m^{-2} ]\f$
-  real, intent(in) :: TBAR  (ILG, IG) !< Temperature of soil layers [K]
-  real, intent(inout) :: THLIQ (ILG, IG) !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
-  real, intent(inout) :: THICE (ILG, IG) !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+  real, intent(in) :: FSSB(ILG,NBS)  !< Total solar radiation in each modelled wavelength band  \f$[W m^{-2} ]\f$
+  real, intent(in) :: TBAR  (ILG,IG) !< Temperature of soil layers [K]
+  real, intent(inout) :: THLIQ (ILG,IG) !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+  real, intent(inout) :: THICE (ILG,IG) !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
   !
   !     * SOIL PROPERTY ARRAYS.
   !
-  real, intent(in) :: THPOR (ILG, IG) !< Pore volume in soil layer \f$[m^3 m^{-3} ]\f$
-  real, intent(in) :: THLRET(ILG, IG) !< Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
-  real, intent(in) :: THLMIN(ILG, IG) !< Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
-  real, intent(in) :: THFC  (ILG, IG) !< Field capacity \f$[m^3 m^{-3} ]\f$
-  real, intent(in) :: THLW  (ILG, IG) !< Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
-  real, intent(in) :: HCPS  (ILG, IG) !< Heat capacity of soil material \f$[J m^{-3} K^{-1} ]\f$
-  real, intent(in) :: TCS   (ILG, IG) !< Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
+  real, intent(in) :: THPOR (ILG,IG) !< Pore volume in soil layer \f$[m^3 m^{-3} ]\f$
+  real, intent(in) :: THLRET(ILG,IG) !< Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
+  real, intent(in) :: THLMIN(ILG,IG) !< Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
+  real, intent(in) :: THFC  (ILG,IG) !< Field capacity \f$[m^3 m^{-3} ]\f$
+  real, intent(in) :: THLW  (ILG,IG) !< Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
+  real, intent(in) :: HCPS  (ILG,IG) !< Heat capacity of soil material \f$[J m^{-3} K^{-1} ]\f$
+  real, intent(in) :: TCS   (ILG,IG) !< Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
   real, intent(in) :: DELZ  (IG)     !< Overall thickness of soil layer [m]
-  real, intent(in) :: DELZW (ILG, IG) !< Permeable thickness of soil layer [m]
-  real, intent(in) :: ZBOTW (ILG, IG) !< Depth to permeable bottom of soil layer [m]
-  real, intent(in) :: FROOT (ILG, IG) !< Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
-  real, intent(in) :: FROOTS(ILG, IG) !< Fraction of total transpiration contributed by soil layer over snow-covered subarea  [  ]
+  real, intent(in) :: DELZW (ILG,IG) !< Permeable thickness of soil layer [m]
+  real, intent(in) :: ZBOTW (ILG,IG) !< Depth to permeable bottom of soil layer [m]
+  real, intent(in) :: FROOT (ILG,IG) !< Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
+  real, intent(in) :: FROOTS(ILG,IG) !< Fraction of total transpiration contributed by soil layer over snow-covered subarea  [  ]
   !
-  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
   !
   !     * CTEM-RELATED I/O FIELDS.
   !
 
-  real, intent(in) :: AILCG(ILG, ICTEM)   !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
-  real, intent(in) :: AILCGS(ILG, ICTEM)  !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
-  real, intent(in) :: FCANC(ILG, ICTEM)   !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
-  real, intent(in) :: FCANCS(ILG, ICTEM)  !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
+  real, intent(in) :: AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
+  real, intent(in) :: AILCGS(ILG,ICTEM)  !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
+  real, intent(in) :: FCANC(ILG,ICTEM)   !< FRACTIONAL COVERAGE OF 8 CARBON PFTs,CANOPY OVER GROUND
+  real, intent(in) :: FCANCS(ILG,ICTEM)  !< FRACTIONAL COVERAGE OF 8 CARBON PFTs,CANOPY OVER SNOW
   real, intent(in) :: CO2CONC(ILG)       !< ATMOS. CO2 CONC. IN PPM
-  real, intent(in) :: CO2I1CG(ILG, ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-  real, intent(in) :: CO2I1CS(ILG, ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
-  real, intent(in) :: CO2I2CG(ILG, ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-  real, intent(in) :: CO2I2CS(ILG, ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
+  real, intent(in) :: CO2I1CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+  real, intent(in) :: CO2I1CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
+  real, intent(in) :: CO2I2CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+  real, intent(in) :: CO2I2CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
   real, intent(in) :: COSZS(ILG)         !< COSINE OF SUN'S ZENITH ANGLE
   real, intent(in) :: XDIFFUS(ILG)       !< FRACTION OF DIFFUSED RADIATION
-  real, intent(in) :: SLAI(ILG, ICTEM)    !< STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
-  real, intent(in) :: RMATCTEM(ILG, ICTEM, IG) !< FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's 8 PFTs
-  real, intent(in) :: FCANCMX(ILG, ICTEM) !< MAX. FRACTIONAL COVERAGE OF CTEM PFTs
-  real, intent(inout) :: ANCSVEG(ILG, ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
-  real, intent(inout) :: ANCGVEG(ILG, ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
-  real, intent(inout) :: RMLCSVEG(ILG, ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
-  real, intent(inout) :: RMLCGVEG(ILG, ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
+  real, intent(in) :: SLAI(ILG,ICTEM)    !< STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
+  real, intent(in) :: RMATCTEM(ILG,ICTEM,IG) !< FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's 8 PFTs
+  real, intent(in) :: FCANCMX(ILG,ICTEM) !< MAX. FRACTIONAL COVERAGE OF CTEM PFTs
+  real, intent(inout) :: ANCSVEG(ILG,ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+  real, intent(inout) :: ANCGVEG(ILG,ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
+  real, intent(inout) :: RMLCSVEG(ILG,ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+  real, intent(inout) :: RMLCGVEG(ILG,ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
 
   real, intent(in) :: CFLUXCG(ILG)
   real, intent(in) :: CFLUXCS(ILG)
@@ -466,7 +466,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(in) :: DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
   real, intent(in) :: DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
 
-  integer, intent(in) :: L2MAX, NOL2PFTS(IC)
+  integer, intent(in) :: L2MAX,NOL2PFTS(IC)
   !
   !     * INTERNAL WORK ARRAYS FOR THIS ROUTINE.
   !
@@ -512,9 +512,9 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
           QSGADD(ILG), CFLX  (ILG), &
           FTEMPX(ILG), FVAPX (ILG), RIBX  (ILG)
   !
-  integer              :: ITER  (ILG), NITER (ILG), JEVAP (ILG), &
-                          KF    (ILG), KF1   (ILG), KF2   (ILG), &
-                          IEVAPC(ILG)
+  integer  :: ITER  (ILG), NITER (ILG), JEVAP (ILG), &
+              KF    (ILG), KF1   (ILG), KF2   (ILG), &
+              IEVAPC(ILG)
   !
   !    Peatland variables
   integer, intent(in) :: ipeatland(ilg), iday
@@ -533,12 +533,12 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * CALCULATION OF ATMOSPHERIC INPUT FIELDS REQUIRED BY CLASS FROM
   !     * VARIABLES SUPPLIED BY GCM.
   !
-  !> First, two parameters are calculated for later use in the energyBudgetDriver subroutines: the corrected wind speed \f$v_a\f$ ,
+  !> First,two parameters are calculated for later use in the energyBudgetDriver subroutines: the corrected wind speed \f$v_a\f$ ,
   !! and the Coriolis parameter \f$f_{cor}\f$ (describing the effect of the earth’s rotation on the movement of air
   !! according to the reference frame of the earth’s surface). The wind speed correction is applied because it
-  !! is assumed that air is never completely still, so \f$v_a\f$ is specified as the maximum of VMOD and a limiting
+  !! is assumed that air is never completely still,so \f$v_a\f$ is specified as the maximum of VMOD and a limiting
   !! lower value of \f$0.1 m s^{-1}\f$ . The Coriolis parameter is calculated from the angular velocity \f$\Omega\f$ of the earth’s
-  !! rotation (7.29 x 10 -5 radians/s), and the latitude \f$\varphi\f$:
+  !! rotation (7.29 x 10 -5 radians/s),and the latitude \f$\varphi\f$:
   !! \f$f_{cor} = 2 \Omega sin \varphi\f$
   !!
   !! The packing and unpacking of binary files may cause small shifts in the values of variables at certain
@@ -700,8 +700,8 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !! efficiency parameter EVAPB is calculated as the ratio of the actual evapotranspiration to the potential
   !! evapotranspiration.
   !!
-  do I = IL1, IL2 ! loop 50
-    VA(I) = MAX(VMIN, VMOD(I))
+  do I = IL1,IL2 ! loop 50
+    VA(I) = MAX(VMIN,VMOD(I))
     FCOR(I) = 2.0 * 7.29E-5 * SIN(RADJ(I))
     !
     !     * CHECK DEPTH OF PONDED WATER FOR UNPHYSICAL VALUES.
@@ -713,28 +713,28 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * CHECK LIQUID AND FROZEN SOIL MOISTURE CONTENTS FOR SMALL
   !     * ABERRATIONS CAUSED BY PACKING/UNPACKING.
   !
-  do J = 1, IG ! loop 60
-    do I = IL1, IL2
-      if (ISAND(I, 1) > - 4) then
-        HTC(I, J) = HTC(I, J) - TBAR(I, J) * (HCPW * THLIQ(I, J) + &
-                    HCPICE * THICE(I, J)) * DELZW(I, J) / DELT
-        WTRG(I) = WTRG(I) - (RHOW * THLIQ(I, J) + RHOICE * THICE(I, J)) * &
-                  DELZW(I, J) / DELT
-        if (THLIQ(I, J) < THLMIN(I, J)) &
-            THLIQ(I, J) = THLMIN(I, J)
-        if (THICE(I, J) < 0.0) THICE(I, J) = 0.0
-        THTOT = THLIQ(I, J) + THICE(I, J) * RHOICE / RHOW
-        if (THTOT > THPOR(I, J)) then
-          THLIQ(I, J) = MAX(THLIQ(I, J) * THPOR(I, J) / &
-                        THTOT, THLMIN(I, J))
-          THICE(I, J) = (THPOR(I, J) - THLIQ(I, J)) * &
-                        RHOW / RHOICE
-          if (THICE(I, J) < 0.0) THICE(I, J) = 0.0
+  do J = 1,IG ! loop 60
+    do I = IL1,IL2
+      if (ISAND(I,1) > - 4) then
+        HTC(I,J) = HTC(I,J) - TBAR(I,J) * (HCPW * THLIQ(I,J) + &
+                   HCPICE * THICE(I,J)) * DELZW(I,J) / DELT
+        WTRG(I) = WTRG(I) - (RHOW * THLIQ(I,J) + RHOICE * THICE(I,J)) * &
+                  DELZW(I,J) / DELT
+        if (THLIQ(I,J) < THLMIN(I,J)) &
+            THLIQ(I,J) = THLMIN(I,J)
+        if (THICE(I,J) < 0.0) THICE(I,J) = 0.0
+        THTOT = THLIQ(I,J) + THICE(I,J) * RHOICE / RHOW
+        if (THTOT > THPOR(I,J)) then
+          THLIQ(I,J) = MAX(THLIQ(I,J) * THPOR(I,J) / &
+                       THTOT,THLMIN(I,J))
+          THICE(I,J) = (THPOR(I,J) - THLIQ(I,J)) * &
+                       RHOW / RHOICE
+          if (THICE(I,J) < 0.0) THICE(I,J) = 0.0
         end if
-        HTC(I, J) = HTC(I, J) + TBAR(I, J) * (HCPW * THLIQ(I, J) + &
-                    HCPICE * THICE(I, J)) * DELZW(I, J) / DELT
-        WTRG(I) = WTRG(I) + (RHOW * THLIQ(I, J) + RHOICE * THICE(I, J)) * &
-                  DELZW(I, J) / DELT
+        HTC(I,J) = HTC(I,J) + TBAR(I,J) * (HCPW * THLIQ(I,J) + &
+                   HCPICE * THICE(I,J)) * DELZW(I,J) / DELT
+        WTRG(I) = WTRG(I) + (RHOW * THLIQ(I,J) + RHOICE * THICE(I,J)) * &
+                  DELZW(I,J) / DELT
       end if
     end do
   end do ! loop 60
@@ -744,7 +744,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !       * INITIALIZE VARIABLES ESTIMATED BY THE PHOTOSYNTHESIS SUBROUTINE
     !       * CALLED FROM WITHIN energBalVegSolve. Also those of moss for peatlands.
     !
-    do I = IL1, IL2 ! loop 65
+    do I = IL1,IL2 ! loop 65
       ancsmoss(i) = 0.0
       angsmoss(i) = 0.0
       ancmoss(i)  = 0.0
@@ -754,41 +754,41 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       rmlcmoss(i)  = 0.0
       rmlgmoss(i)  = 0.0
 
-      do J = 1, ICTEM
-        ANCSVEG(I, J) = 0.0
-        ANCGVEG(I, J) = 0.0
-        RMLCSVEG(I, J) = 0.0
-        RMLCGVEG(I, J) = 0.0
+      do J = 1,ICTEM
+        ANCSVEG(I,J) = 0.0
+        ANCGVEG(I,J) = 0.0
+        RMLCSVEG(I,J) = 0.0
+        RMLCGVEG(I,J) = 0.0
       end do
     end do ! loop 65
   end if
   !
   !     * PREPARATION.
   !
-  call  energyBudgetPrep     (THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! Formerly TPREP
-                              TBARCS, TBARGS, HCPC, HCPG, TCTOPC, TCBOTC, &
-                              TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
-                              TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
-                              TCANS, CEVAP, IEVAP, TBAR1P, WTABLE, ZERO, &
-                              EVAPC, EVAPCG, EVAPG, EVAPCS, EVPCSG, EVAPGS, &
-                              GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
-                              QMELTC, QMELTG, EVAP, GSNOW, &
-                              TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
-                              QEVAPC, QEVAPG, TACCO, QACCO, TACCS, QACCS, &
-                              ILMOX, UEX, HBLX, &
-                              ILMO, UE, HBL, &
-                              ST, SU, SV, SQ, SRH, &
-                              CDH, CDM, QSENS, QEVAP, QLWAVG, &
-                              FSGV, FSGS, FSGG, FLGV, FLGS, FLGG, &
-                              HFSC, HFSS, HFSG, HEVC, HEVS, HEVG, &
-                              HMFC, HMFN, QFCF, QFCL, EVPPOT, ACOND, &
-                              DRAG, THLIQ, THICE, TBAR, ZPOND, TPOND, &
-                              THPOR, THLMIN, THLRET, THFC, HCPS, TCS, &
-                              TA, RHOSNO, TSNOW, ZSNOW, WSNOW, TCAN, &
-                              FC, FCS, DELZ, DELZW, ZBOTW, &
-                              ISAND, ILG, IL1, IL2, JL, IG, &
-                              FVEG, TCSATU, TCSATF, FTEMP, FTEMPX, FVAP, &
-                              FVAPX, RIB, RIBX)
+  call  energyBudgetPrep(THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! Formerly TPREP
+                         TBARCS, TBARGS, HCPC, HCPG, TCTOPC, TCBOTC, &
+                         TCTOPG, TCBOTG, HCPSCS, HCPSGS, TCSNOW, TSNOCS, &
+                         TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, TCANO, &
+                         TCANS, CEVAP, IEVAP, TBAR1P, WTABLE, ZERO, &
+                         EVAPC, EVAPCG, EVAPG, EVAPCS, EVPCSG, EVAPGS, &
+                         GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS, &
+                         QMELTC, QMELTG, EVAP, GSNOW, &
+                         TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, &
+                         QEVAPC, QEVAPG, TACCO, QACCO, TACCS, QACCS, &
+                         ILMOX, UEX, HBLX, &
+                         ILMO, UE, HBL, &
+                         ST, SU, SV, SQ, SRH, &
+                         CDH, CDM, QSENS, QEVAP, QLWAVG, &
+                         FSGV, FSGS, FSGG, FLGV, FLGS, FLGG, &
+                         HFSC, HFSS, HFSG, HEVC, HEVS, HEVG, &
+                         HMFC, HMFN, QFCF, QFCL, EVPPOT, ACOND, &
+                         DRAG, THLIQ, THICE, TBAR, ZPOND, TPOND, &
+                         THPOR, THLMIN, THLRET, THFC, HCPS, TCS, &
+                         TA, RHOSNO, TSNOW, ZSNOW, WSNOW, TCAN, &
+                         FC, FCS, DELZ, DELZW, ZBOTW, &
+                         ISAND, ILG, IL1, IL2, JL, IG, &
+                         FVEG, TCSATU, TCSATF, FTEMP, FTEMPX, FVAP, &
+                         FVAPX, RIB, RIBX)
   !
   !     * DEFINE NUMBER OF PIXELS OF EACH LAND SURFACE SUBAREA
   !     * (CANOPY-COVERED, CANOPY-AND-SNOW-COVERED, BARE SOIL, AND
@@ -801,18 +801,18 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   NLANDGS = 0
   NLANDI = 0
 
-  do I = IL1, IL2 ! loop 70
+  do I = IL1,IL2 ! loop 70
     if (FC (I) > 0.)            NLANDC = NLANDC + 1
     if (FCS(I) > 0.)            NLANDCS = NLANDCS + 1
     if (FG (I) > 0.)            NLANDG = NLANDG + 1
     if (FGS(I) > 0.)            NLANDGS = NLANDGS + 1
-    if (ISAND(I, 1) == - 4)        NLANDI = NLANDI + 1
+    if (ISAND(I,1) == - 4)        NLANDI = NLANDI + 1
   end do ! loop 70
   !
   !     * CALCULATIONS FOR CANOPY OVER SNOW.
   !
   if (NLANDCS > 0) then
-    do I = IL1, IL2 ! loop 100
+    do I = IL1,IL2 ! loop 100
       if (FCS(I) > 0.) then
         ZOM(I) = EXP(ZOMLCS(I))
         ZOH(I) = EXP(ZOELCS(I))
@@ -899,20 +899,20 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !     * DIAGNOSTICS.
     !
     if (ISLFD == 0) then
-      do I = IL1, IL2 ! loop 150
+      do I = IL1,IL2 ! loop 150
         if (FCS(I) > 0.) then
           FACTM = ZDSLM(I) + ZOM(I)
           FACTH = ZDSLH(I) + ZOM(I)
           RATIOM = SQRT(CDMX(I)) * LOG(FACTM / ZOM(I)) / VKC
-          RATIOM = MIN(RATIOM, 1.)
+          RATIOM = MIN(RATIOM,1.)
           RATIOH = SQRT(CDMX(I)) * LOG(FACTH / ZOH(I)) / VKC
-          RATIOH = MIN(RATIOH, 1.)
+          RATIOH = MIN(RATIOH,1.)
           if (RIBX(I) < 0.) then
             RATIOH = RATIOH * CDHX(I) / CDMX(I)
             RATIOH = MIN(RATIOH,(FACTH / ZRSLDH(I)) ** (1. / 3.))
           end if
-          STT(I) = TACCS(I) - (MIN(RATIOH, 1.)) * (TACCS(I) - TA(I))
-          SQT(I) = QACCS(I) - (MIN(RATIOH, 1.)) * (QACCS(I) - QA(I))
+          STT(I) = TACCS(I) - (MIN(RATIOH,1.)) * (TACCS(I) - TA(I))
+          SQT(I) = QACCS(I) - (MIN(RATIOH,1.)) * (QACCS(I) - QA(I))
           SUT(I) = RATIOM * UWIND(I)
           SVT(I) = RATIOM * VWIND(I)
         end if
@@ -920,7 +920,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FCS, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FCS(I) > 0.) then
           ST (I) = ST (I) + FCS(I) * STT(I)
           SQ (I) = SQ (I) + FCS(I) * SQT(I)
@@ -938,7 +938,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FCS, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FCS(I) > 0.) then
           ST (I) = ST (I) + FCS(I) * STT(I)
           SQ (I) = SQ (I) + FCS(I) * SQT(I)
@@ -953,7 +953,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
                     ZDSLM, ZDSLH, RADJ, FCS, IL1, IL2, JL)
     end if
     !
-    do I = IL1, IL2 ! loop 175
+    do I = IL1,IL2 ! loop 175
       if (FCS(I) > 0.) then
         if (TACCS(I) >= TFREZ) then
           CA = 17.269
@@ -973,7 +973,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HBL(I)  = HBL(I) + FCS(I) * HBLX(I)
         CDH (I) = CDH(I) + FCS(I) * CDHX(I)
         CDM (I) = CDM(I) + FCS(I) * CDMX(I)
-        TSFSAV(I, 1) = TSURX(I)
+        TSFSAV(I,1) = TSURX(I)
         QG(I) = QG(I) + FCS(I) * QACCS(I)
         QSENS(I) = QSENS(I) + FCS(I) * QSENSX(I)
         QEVAP(I) = QEVAP(I) + FCS(I) * QEVAPX(I)
@@ -996,10 +996,10 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HMFC(I) = HMFC(I) + FCS(I) * QPHCHC(I)
         HTCS(I) = HTCS(I) + FCS(I) * ( - GZROCS(I) + &
                   QTRANS(I))
-        HTC(I, 1) = HTC(I, 1) + FCS(I) * (GZROCS(I) - QTRANS(I) - &
-                    G12CS(I))
-        HTC(I, 2) = HTC(I, 2) + FCS(I) * (G12CS(I) - G23CS(I))
-        HTC(I, 3) = HTC(I, 3) + FCS(I) * G23CS(I)
+        HTC(I,1) = HTC(I,1) + FCS(I) * (GZROCS(I) - QTRANS(I) - &
+                   G12CS(I))
+        HTC(I,2) = HTC(I,2) + FCS(I) * (G12CS(I) - G23CS(I))
+        HTC(I,3) = HTC(I,3) + FCS(I) * G23CS(I)
         FTEMP(I) = FTEMP(I) + FCS(I) * FTEMPX(I)
         FVAP (I) = FVAP (I) + FCS(I) * FVAPX (I)
         RIB  (I) = RIB  (I) + FCS(I) * RIBX  (I)
@@ -1011,7 +1011,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * CALCULATIONS FOR SNOW-COVERED GROUND.
   !
   if (NLANDGS > 0) then
-    do I = IL1, IL2 ! loop 200
+    do I = IL1,IL2 ! loop 200
       if (FGS(I) > 0.) then
         ZOM(I) = EXP(ZOMLNS(I))
         ZOH(I) = EXP(ZOELNS(I))
@@ -1081,20 +1081,20 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !     * DIAGNOSTICS.
     !
     if (ISLFD == 0) then
-      do I = IL1, IL2 ! loop 250
+      do I = IL1,IL2 ! loop 250
         if (FGS(I) > 0.) then
           FACTM = ZDSLM(I) + ZOM(I)
           FACTH = ZDSLH(I) + ZOM(I)
           RATIOM = SQRT(CDMX(I)) * LOG(FACTM / ZOM(I)) / VKC
-          RATIOM = MIN(RATIOM, 1.)
+          RATIOM = MIN(RATIOM,1.)
           RATIOH = SQRT(CDMX(I)) * LOG(FACTH / ZOH(I)) / VKC
-          RATIOH = MIN(RATIOH, 1.)
+          RATIOH = MIN(RATIOH,1.)
           if (RIBX(I) < 0.) then
             RATIOH = RATIOH * CDHX(I) / CDMX(I)
             RATIOH = MIN(RATIOH,(FACTH / ZRSLDH(I)) ** (1. / 3.))
           end if
-          STT(I) = TSURX(I) - (MIN(RATIOH, 1.)) * (TSURX(I) - TA(I))
-          SQT(I) = QSURX(I) - (MIN(RATIOH, 1.)) * (QSURX(I) - QA(I))
+          STT(I) = TSURX(I) - (MIN(RATIOH,1.)) * (TSURX(I) - TA(I))
+          SQT(I) = QSURX(I) - (MIN(RATIOH,1.)) * (QSURX(I) - QA(I))
           SUT(I) = RATIOM * UWIND(I)
           SVT(I) = RATIOM * VWIND(I)
         end if
@@ -1102,7 +1102,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FGS, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FGS(I) > 0.) then
           ST (I) = ST (I) + FGS(I) * STT(I)
           SQ (I) = SQ (I) + FGS(I) * SQT(I)
@@ -1120,7 +1120,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FGS, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FGS(I) > 0.) then
           ST (I) = ST (I) + FGS(I) * STT(I)
           SQ (I) = SQ (I) + FGS(I) * SQT(I)
@@ -1135,7 +1135,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
                     ZDSLM, ZDSLH, RADJ, FGS, IL1, IL2, JL)
     end if
     !
-    do I = IL1, IL2 ! loop 275
+    do I = IL1,IL2 ! loop 275
       if (FGS(I) > 0.) then
         EVPPOT(I) = EVPPOT(I) + FGS(I) * RHOAIR(I) * CFLUX(I) * &
                     (Q0SAT(I) - QA(I))
@@ -1145,7 +1145,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HBL(I)  = HBL(I) + FGS(I) * HBLX(I)
         CDH (I) = CDH(I) + FGS(I) * CDHX(I)
         CDM (I) = CDM(I) + FGS(I) * CDMX(I)
-        TSFSAV(I, 2) = TSURX(I)
+        TSFSAV(I,2) = TSURX(I)
         QG(I) = QG(I) + FGS(I) * QSURX(I)
         QSENS(I) = QSENS(I) + FGS(I) * QSENSX(I)
         QEVAP(I) = QEVAP(I) + FGS(I) * QEVAPX(I)
@@ -1157,10 +1157,10 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HEVS(I) = HEVS(I) + FGS(I) * QEVAPX(I)
         HTCS(I) = HTCS(I) + FGS(I) * ( - GZROGS(I) + &
                   QTRANS(I))
-        HTC(I, 1) = HTC(I, 1) + FGS(I) * (GZROGS(I) - QTRANS(I) - &
-                    G12GS(I))
-        HTC(I, 2) = HTC(I, 2) + FGS(I) * (G12GS(I) - G23GS(I))
-        HTC(I, 3) = HTC(I, 3) + FGS(I) * G23GS(I)
+        HTC(I,1) = HTC(I,1) + FGS(I) * (GZROGS(I) - QTRANS(I) - &
+                   G12GS(I))
+        HTC(I,2) = HTC(I,2) + FGS(I) * (G12GS(I) - G23GS(I))
+        HTC(I,3) = HTC(I,3) + FGS(I) * G23GS(I)
         FTEMP(I) = FTEMP(I) + FGS(I) * FTEMPX(I)
         FVAP (I) = FVAP (I) + FGS(I) * FVAPX (I)
         RIB  (I) = RIB  (I) + FGS(I) * RIBX  (I)
@@ -1172,7 +1172,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * CALCULATIONS FOR CANOPY OVER BARE GROUND.
   !
   if (NLANDC > 0) then
-    do I = IL1, IL2 ! loop 300
+    do I = IL1,IL2 ! loop 300
       if (FC(I) > 0.) then
         ZOM(I) = EXP(ZOMLNC(I))
         ZOH(I) = EXP(ZOELNC(I))
@@ -1252,20 +1252,20 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !     * DIAGNOSTICS.
     !
     if (ISLFD == 0) then
-      do I = IL1, IL2 ! loop 350
+      do I = IL1,IL2 ! loop 350
         if (FC(I) > 0.) then
           FACTM = ZDSLM(I) + ZOM(I)
           FACTH = ZDSLH(I) + ZOM(I)
           RATIOM = SQRT(CDMX(I)) * LOG(FACTM / ZOM(I)) / VKC
-          RATIOM = MIN(RATIOM, 1.)
+          RATIOM = MIN(RATIOM,1.)
           RATIOH = SQRT(CDMX(I)) * LOG(FACTH / ZOH(I)) / VKC
-          RATIOH = MIN(RATIOH, 1.)
+          RATIOH = MIN(RATIOH,1.)
           if (RIBX(I) < 0.) then
             RATIOH = RATIOH * CDHX(I) / CDMX(I)
             RATIOH = MIN(RATIOH,(FACTH / ZRSLDH(I)) ** (1. / 3.))
           end if
-          STT(I) = TACCO(I) - (MIN(RATIOH, 1.)) * (TACCO(I) - TA(I))
-          SQT(I) = QACCO(I) - (MIN(RATIOH, 1.)) * (QACCO(I) - QA(I))
+          STT(I) = TACCO(I) - (MIN(RATIOH,1.)) * (TACCO(I) - TA(I))
+          SQT(I) = QACCO(I) - (MIN(RATIOH,1.)) * (QACCO(I) - QA(I))
           SUT(I) = RATIOM * UWIND(I)
           SVT(I) = RATIOM * VWIND(I)
         end if
@@ -1273,7 +1273,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FC, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FC(I) > 0.) then
           ST (I) = ST (I) + FC(I) * STT(I)
           SQ (I) = SQ (I) + FC(I) * SQT(I)
@@ -1290,7 +1290,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FC, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FC(I) > 0.) then
           ST (I) = ST (I) + FC(I) * STT(I)
           SQ (I) = SQ (I) + FC(I) * SQT(I)
@@ -1305,7 +1305,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
                     ZDSLM, ZDSLH, RADJ, FC, IL1, IL2, JL)
     end if
     !
-    do I = IL1, IL2 ! loop 375
+    do I = IL1,IL2 ! loop 375
       if (FC(I) > 0.) then
         if (TACCO(I) >= TFREZ) then
           CA = 17.269
@@ -1325,7 +1325,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HBL(I)  = HBL(I) + FC(I) * HBLX(I)
         CDH (I) = CDH(I) + FC(I) * CDHX(I)
         CDM (I) = CDM(I) + FC(I) * CDMX(I)
-        TSFSAV(I, 3) = TSURX(I)
+        TSFSAV(I,3) = TSURX(I)
         QG(I) = QG(I) + FC(I) * QACCO(I)
         QSENS(I) = QSENS(I) + FC(I) * QSENSX(I)
         QEVAP(I) = QEVAP(I) + FC(I) * QEVAPX(I)
@@ -1345,9 +1345,9 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HEVC(I) = HEVC(I) + FC(I) * QEVAPC(I)
         HEVG(I) = HEVG(I) + FC(I) * QEVAPG(I)
         HMFC(I) = HMFC(I) + FC(I) * QPHCHC(I)
-        HTC(I, 1) = HTC(I, 1) + FC(I) * ( - G12C(I))
-        HTC(I, 2) = HTC(I, 2) + FC(I) * (G12C(I) - G23C(I))
-        HTC(I, 3) = HTC(I, 3) + FC(I) * G23C(I)
+        HTC(I,1) = HTC(I,1) + FC(I) * ( - G12C(I))
+        HTC(I,2) = HTC(I,2) + FC(I) * (G12C(I) - G23C(I))
+        HTC(I,3) = HTC(I,3) + FC(I) * G23C(I)
         FTEMP(I) = FTEMP(I) + FC(I) * FTEMPX(I)
         FVAP (I) = FVAP (I) + FC(I) * FVAPX (I)
         RIB  (I) = RIB  (I) + FC(I) * RIBX   (I)
@@ -1358,7 +1358,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * CALCULATIONS FOR BARE GROUND.
   !
   if (NLANDG > 0) then
-    do I = IL1, IL2 ! loop 400
+    do I = IL1,IL2 ! loop 400
       if (FG(I) > 0.) then
         ZOM(I) = EXP(ZOMLNG(I))
         ZOH(I) = EXP(ZOELNG(I))
@@ -1420,20 +1420,20 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !     * DIAGNOSTICS.
     !
     if (ISLFD == 0) then
-      do I = IL1, IL2 ! loop 450
+      do I = IL1,IL2 ! loop 450
         if (FG(I) > 0.) then
           FACTM = ZDSLM(I) + ZOM(I)
           FACTH = ZDSLH(I) + ZOM(I)
           RATIOM = SQRT(CDMX(I)) * LOG(FACTM / ZOM(I)) / VKC
-          RATIOM = MIN(RATIOM, 1.)
+          RATIOM = MIN(RATIOM,1.)
           RATIOH = SQRT(CDMX(I)) * LOG(FACTH / ZOH(I)) / VKC
-          RATIOH = MIN(RATIOH, 1.)
+          RATIOH = MIN(RATIOH,1.)
           if (RIBX(I) < 0.) then
             RATIOH = RATIOH * CDHX(I) / CDMX(I)
             RATIOH = MIN(RATIOH,(FACTH / ZRSLDH(I)) ** (1. / 3.))
           end if
-          STT(I) = TSURX(I) - (MIN(RATIOH, 1.)) * (TSURX(I) - TA(I))
-          SQT(I) = QSURX(I) - (MIN(RATIOH, 1.)) * (QSURX(I) - QA(I))
+          STT(I) = TSURX(I) - (MIN(RATIOH,1.)) * (TSURX(I) - TA(I))
+          SQT(I) = QSURX(I) - (MIN(RATIOH,1.)) * (QSURX(I) - QA(I))
           SUT(I) = RATIOM * UWIND(I)
           SVT(I) = RATIOM * VWIND(I)
         end if
@@ -1441,7 +1441,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FG, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FG(I) > 0.) then
           ST (I) = ST (I) + FG(I) * STT(I)
           SQ (I) = SQ (I) + FG(I) * SQT(I)
@@ -1461,7 +1461,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       !
       call screenRelativeHumidity(SHT, STT, SQT, PRESSG, FG, ILG, IL1, IL2) ! Formerly SCREENRH
       !
-      do I = IL1, IL2
+      do I = IL1,IL2
         if (FG(I) > 0.) then
           ST (I) = ST (I) + FG(I) * STT(I)
           SQ (I) = SQ (I) + FG(I) * SQT(I)
@@ -1479,7 +1479,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
                     ZDSLM, ZDSLH, RADJ, FG, IL1, IL2, JL)
     end if
     !
-    do I = IL1, IL2 ! loop 475
+    do I = IL1,IL2 ! loop 475
       if (FG(I) > 0.) then
         EVPPOT(I) = EVPPOT(I) + FG(I) * RHOAIR(I) * CFLUX(I) * &
                     (Q0SAT(I) - QA(I))
@@ -1489,7 +1489,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         HBL(I)  = HBL(I) + FG(I) * HBLX(I)
         CDH (I) = CDH(I) + FG(I) * CDHX(I)
         CDM (I) = CDM(I) + FG(I) * CDMX(I)
-        TSFSAV(I, 4) = TSURX(I)
+        TSFSAV(I,4) = TSURX(I)
         GTBS(I) = TSURX(I)
         QG(I) = QG(I) + FG(I) * QSURX(I)
         QSENS(I) = QSENS(I) + FG(I) * QSENSX(I)
@@ -1499,9 +1499,9 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
         FLGG(I) = FLGG(I) + FG(I) * (QLWIN(I) - QLWX(I))
         HFSG(I) = HFSG(I) + FG(I) * QSENSX(I)
         HEVG(I) = HEVG(I) + FG(I) * QEVAPX(I)
-        HTC(I, 1) = HTC(I, 1) + FG(I) * ( - G12G(I))
-        HTC(I, 2) = HTC(I, 2) + FG(I) * (G12G(I) - G23G(I))
-        HTC(I, 3) = HTC(I, 3) + FG(I) * G23G(I)
+        HTC(I,1) = HTC(I,1) + FG(I) * ( - G12G(I))
+        HTC(I,2) = HTC(I,2) + FG(I) * (G12G(I) - G23G(I))
+        HTC(I,3) = HTC(I,3) + FG(I) * G23G(I)
         FTEMP(I) = FTEMP(I) + FG(I) * FTEMPX(I)
         FVAP (I) = FVAP (I) + FG(I) * FVAPX (I)
         RIB  (I) = RIB  (I) + FG(I) * RIBX  (I)
@@ -1511,7 +1511,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !
   !     * ADDITIONAL DIAGNOSTIC VARIABLES.
   !
-  do I = IL1, IL2 ! loop 500
+  do I = IL1,IL2 ! loop 500
     GT(I) = (QLWAVG(I) / SBC) ** 0.25
     TFLUX(I) = - QSENS(I) / (RHOAIR(I) * SPHAIR)
     EVAP(I) = EVAP(I) + RHOW * &
@@ -1532,4 +1532,4 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   end do ! loop 500
 
   return
-end
+end subroutine energyBudgetDriver

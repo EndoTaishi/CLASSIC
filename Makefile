@@ -26,23 +26,23 @@
 #   - All executable names are labelled with the mode appended.
 
 # Object files
-OBJ = fileIOModule.o classic_params.o ctem_statevars.o class_statevars.o peatlands_mod.o \
+OBJ = fileIOModule.o classicParams.o ctemStateVars.o classStateVars.o peatlandsMod.o \
 	generalUtils.o ctemUtilities.o calcLandSurfParams.o groundAlbedo.o mvidx.o fourBandAlbedo.o \
-	SNOW_ALBVAL.o SNOW_TRANVAL.o snowAlbedoTransmiss.o soilHeatFluxPrep.o waterInfiltrateUnsat.o checksum.o \
+	SNOW_ALBVAL.o SNOW_TRANVAL.o snowAlbedoTransmiss.o soilHeatFluxPrep.o waterInfiltrateUnsat.o \
 	canopyInterception.o waterFlowNonInfiltrate.o snowAging.o  energyBudgetPrep.o waterInfiltrateSat.o canopyAlbedoTransmiss.o \
-	classGather.o waterFlowInfiltrate.o snowSublimation.o energBalVegSolve.o waterCalcPrep.o wetland_methane.o \
+	classGatherScatter.o waterFlowInfiltrate.o snowSublimation.o energBalVegSolve.o waterCalcPrep.o methaneProcesses.o \
 	ctemGatherScatter.o applyAllometry.o photosynCanopyConduct.o canopyWaterUpdate.o \
-	atmosphericVarsCalc.o canopyPhaseChange.o iceSheetBalance.o waterUnderCanopy.o energBalNoVegSolve.o errorHandler.o classGrowthIndex.o classScatter.o \
-	DIASURFZ.o screenRelativeHumidity.o pondedWaterFreeze.o snowTempUpdate.o checkWaterBudget.o energyBudgetDriver.o DRCOEF.o SLDIAG.o TMCALC.o snowHeatCond.o \
-	radiationDriver.o waterBudgetDriver.o FLXSURFZ.o snowInfiltrateRipen.o snowMelt.o soilWaterPhaseChg.o soilProperties.o energyWaterBalanceCheck.o classGatherPrep.o snowAddNew.o \
+	atmosphericVarsCalc.o canopyPhaseChange.o iceSheetBalance.o waterUnderCanopy.o energBalNoVegSolve.o errorHandler.o classGrowthIndex.o \
+	DIASURFZ.o screenRelativeHumidity.o pondedWaterFreeze.o snowTempUpdate.o checkWaterBudget.o energyBudgetDriver.o DRCOEF.o SLDIAG.o waterUpdates.o snowHeatCond.o \
+	radiationDriver.o waterBudgetDriver.o FLXSURFZ.o snowInfiltrateRipen.o snowMelt.o soilWaterPhaseChg.o soilProperties.o energyWaterBalanceCheck.o snowAddNew.o \
 	soilHeatFluxCleanup.o waterBaseflow.o  balanceCarbon.o autotrophicRespiration.o phenolgy.o  \
-	turnover.o mortality.o disturb.o competition_mod.o landuse_change_mod.o soil_ch4uptake.o \
-	allocateCarbon.o heterotrophicRespiration.o tracer.o ctemDriver.o outputManager.o \
-	prepareOutputs.o  model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o \
+	turnover.o mortality.o disturb.o competitionMod.o landuseChangeMod.o \
+	allocateCarbon.o heterotrophicRespirationMod.o tracer.o ctemDriver.o outputManager.o \
+	prepareOutputs.o  modelStateDrivers.o readFromJobOptions.o metModule.o main.o xmlParser.o \
 	xmlManager.o CLASSIC.o
 	# COMBAK PERLAY
-	#allocateCarbon.o heterotrophicRespiration.o soilC_processes.o tracer.o ctemDriver.o outputManager.o \
-	prepareOutputs.o  model_state_drivers.o read_from_job_options.o metModule.o main.o xmlParser.o \
+	#allocateCarbon.o heterotrophicRespiration.o soilCProcesses.o tracer.o ctemDriver.o outputManager.o \
+	prepareOutputs.o  modelStateDrivers.o readFromJobOptions.o metModule.o main.o xmlParser.o \
 	xmlManager.o CLASSIC.o
 	# COMBAK PERLAY
 

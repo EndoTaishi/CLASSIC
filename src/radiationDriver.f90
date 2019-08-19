@@ -3,39 +3,39 @@
 !! surface parameters.
 !! @author D. Verseghy, M. Lazare, J. Cole, Y. Wu, J. Melton
 !!
-subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
-                           ALVSG, ALIRG, ALVSCS, ALIRCS, ALVSSN, ALIRSN, &
-                           ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN, &
-                           TRVSCS, TRIRCS, FSVF, FSVFS, &
-                           RAICAN, RAICNS, SNOCAN, SNOCNS, FRAINC, FSNOWC, &
-                           FRAICS, FSNOCS, DISP, DISPS, ZOMLNC, ZOMLCS, &
-                           ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, &
-                           CHCAP, CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP, &
-                           CWLCPS, CWFCPS, RC, RCS, RBCOEF, FROOT, &
-                           FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW, &
-                           WSNOW, ALVS, ALIR, HTCC, HTCS, HTC, &
-                           ALTG, ALSNO, TRSNOWC, TRSNOWG, &
-                           WTRC, WTRS, WTRG, CMAI, FSNOW, &
-                           FCANMX, ZOLN, ALVSC, ALIRC, PAIMAX, PAIMIN, &
-                           CWGTMX, ZRTMAX, RSMIN, QA50, VPDA, VPDB, &
-                           PSIGA, PSIGB, PAIDAT, HGTDAT, ACVDAT, ACIDAT, &
-                           ASVDAT, ASIDAT, AGVDAT, AGIDAT, &
-                           ALGWV, ALGWN, ALGDV, ALGDN, &
-                           THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN, &
-                           GROWTH, SNO, TSNOW, RHOSNO, ALBSNO, ZBLEND, &
-                           Z0ORO, SNOLIM, ZPLMG0, ZPLMS0, &
-                           FCLOUD, TA, VPD, RHOAIR, COSZS, &
-                           FSDB, FSFB, REFSNO, BCSNO, &
-                           QSWINV, RADJ, DLON, RHOSNI, DELZ, DELZW, &
-                           ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, &
-                           HCPS, ISAND, &
-                           FCANCMX, ICTEM, ctem_on, RMATC, ZOLNC, CMASVEGC, &
-                           AILC, PAIC, NOL2PFTS, SLAIC, &
-                           AILCG, AILCGS, FCANC, FCANCS, &
-                           IDAY, ILG, IL1, IL2, NBS, &
-                           JL, N, IC, ICP1, IG, IDISP, IZREF, &
-                           IWF, IPAI, IHGT, IALC, IALS, IALG, &
-                           ISNOALB, ALVSCTM, ALIRCTM, ipeatland)
+subroutine radiationDriver (FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
+                            ALVSG, ALIRG, ALVSCS, ALIRCS, ALVSSN, ALIRSN, &
+                            ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN, &
+                            TRVSCS, TRIRCS, FSVF, FSVFS, &
+                            RAICAN, RAICNS, SNOCAN, SNOCNS, FRAINC, FSNOWC, &
+                            FRAICS, FSNOCS, DISP, DISPS, ZOMLNC, ZOMLCS, &
+                            ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, &
+                            CHCAP, CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP, &
+                            CWLCPS, CWFCPS, RC, RCS, RBCOEF, FROOT, &
+                            FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW, &
+                            WSNOW, ALVS, ALIR, HTCC, HTCS, HTC, &
+                            ALTG, ALSNO, TRSNOWC, TRSNOWG, &
+                            WTRC, WTRS, WTRG, CMAI, FSNOW, &
+                            FCANMX, ZOLN, ALVSC, ALIRC, PAIMAX, PAIMIN, &
+                            CWGTMX, ZRTMAX, RSMIN, QA50, VPDA, VPDB, &
+                            PSIGA, PSIGB, PAIDAT, HGTDAT, ACVDAT, ACIDAT, &
+                            ASVDAT, ASIDAT, AGVDAT, AGIDAT, &
+                            ALGWV, ALGWN, ALGDV, ALGDN, &
+                            THLIQ, THICE, TBAR, RCAN, SNCAN, TCAN, &
+                            GROWTH, SNO, TSNOW, RHOSNO, ALBSNO, ZBLEND, &
+                            Z0ORO, SNOLIM, ZPLMG0, ZPLMS0, &
+                            FCLOUD, TA, VPD, RHOAIR, COSZS, &
+                            FSDB, FSFB, REFSNO, BCSNO, &
+                            QSWINV, RADJ, DLON, RHOSNI, DELZ, DELZW, &
+                            ZBOTW, THPOR, THLMIN, PSISAT, BI, PSIWLT, &
+                            HCPS, ISAND, &
+                            FCANCMX, ICTEM, ctem_on, RMATC, ZOLNC, CMASVEGC, &
+                            AILC, PAIC, NOL2PFTS, SLAIC, &
+                            AILCG, AILCGS, FCANC, FCANCS, &
+                            IDAY, ILG, IL1, IL2, NBS, &
+                            JL, N, IC, ICP1, IG, IDISP, IZREF, &
+                            IWF, IPAI, IHGT, IALC, IALS, IALG, &
+                            ISNOALB, ALVSCTM, ALIRCTM, ipeatland)
 
   !     * OCT  3/16 - J.Melton    Implementing Yuanqiao Wu's peatland code, added
   !                               ipeatland
@@ -227,67 +227,67 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   real, intent(out) :: CMAI  (ILG)  !< Aggregated mass of vegetation canopy \f$[kg m^{-2}]\f$
   real, intent(out) :: FSNOW (ILG)  !< Diagnosed fractional snow coverage [ ]
   !
-  real, intent(out) :: FROOT (ILG, IG)   !< Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
-  real, intent(out) :: FROOTS(ILG, IG)   !< Fraction of total transpiration contributed
+  real, intent(out) :: FROOT (ILG,IG)   !< Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
+  real, intent(out) :: FROOTS(ILG,IG)   !< Fraction of total transpiration contributed
   !! by snow-covered subarea [ ]
-  real, intent(out) :: HTC   (ILG, IG)   !< Diagnosed internal energy change of soil
+  real, intent(out) :: HTC   (ILG,IG)   !< Diagnosed internal energy change of soil
   !! layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
 
-  real, intent(out) :: TRSNOWG(ILG, NBS) !< Short-wave transmissivity of snow pack in bare areas  [  ]
-  real, intent(out) :: ALTG(ILG, NBS)    !< Total albedo in each modelled wavelength band  [  ]
-  real, intent(out) :: ALSNO(ILG, NBS)   !< Albedo of snow in each modelled wavelength band  [  ]
+  real, intent(out) :: TRSNOWG(ILG,NBS) !< Short-wave transmissivity of snow pack in bare areas  [  ]
+  real, intent(out) :: ALTG(ILG,NBS)    !< Total albedo in each modelled wavelength band  [  ]
+  real, intent(out) :: ALSNO(ILG,NBS)   !< Albedo of snow in each modelled wavelength band  [  ]
   !
   !     * INPUT ARRAYS DEPENDENT ON LONGITUDE.
   !
-  real, intent(in) :: FCANMX(ILG, ICP1) !< Maximum fractional coverage of modelled
+  real, intent(in) :: FCANMX(ILG,ICP1) !< Maximum fractional coverage of modelled
   !! area by vegetation category [ ]
-  real, intent(in) :: ZOLN  (ILG, ICP1) !< Natural logarithm of maximum roughness
+  real, intent(in) :: ZOLN  (ILG,ICP1) !< Natural logarithm of maximum roughness
   !! length of vegetation category [ ]
-  real, intent(inout) :: ALVSC (ILG, ICP1) !< Background average visible albedo of
+  real, intent(inout) :: ALVSC (ILG,ICP1) !< Background average visible albedo of
   !! vegetation category [ ]
-  real, intent(inout) :: ALIRC (ILG, ICP1) !< Background average near-infrared albedo of
+  real, intent(inout) :: ALIRC (ILG,ICP1) !< Background average near-infrared albedo of
   !! vegetation category [ ]
-  real, intent(in) :: PAIMAX(ILG, IC)   !< Maximum plant area index of vegetation
+  real, intent(in) :: PAIMAX(ILG,IC)   !< Maximum plant area index of vegetation
   !! category [ ]
-  real, intent(in) :: PAIMIN(ILG, IC)   !< Minimum plant area index of vegetation
+  real, intent(in) :: PAIMIN(ILG,IC)   !< Minimum plant area index of vegetation
   !! category [ ]
-  real, intent(in) :: CWGTMX(ILG, IC)   !< Maximum canopy mass for vegetation category \f$[kg m^{-2}]\f$
-  real, intent(in) :: ZRTMAX(ILG, IC)   !< Maximum rooting depth of vegetation
+  real, intent(in) :: CWGTMX(ILG,IC)   !< Maximum canopy mass for vegetation category \f$[kg m^{-2}]\f$
+  real, intent(in) :: ZRTMAX(ILG,IC)   !< Maximum rooting depth of vegetation
   !! category [m]
-  real, intent(in) :: RSMIN (ILG, IC)   !< Minimum stomatal resistance of vegetation
+  real, intent(in) :: RSMIN (ILG,IC)   !< Minimum stomatal resistance of vegetation
   !! category \f$[s m^{-1}]\f$
-  real, intent(in) :: QA50  (ILG, IC)   !< Reference value of incoming shortwave
+  real, intent(in) :: QA50  (ILG,IC)   !< Reference value of incoming shortwave
   !! radiation for vegetation category (used in
   !! stomatal resistance calculation) \f$[W m^{-2}]\f$
-  real, intent(in) :: VPDA  (ILG, IC)   !< Vapour pressure deficit coefficient for
+  real, intent(in) :: VPDA  (ILG,IC)   !< Vapour pressure deficit coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) [ ]
-  real, intent(in) :: VPDB  (ILG, IC)   !< Vapour pressure deficit coefficient for
+  real, intent(in) :: VPDB  (ILG,IC)   !< Vapour pressure deficit coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) [ ]
-  real, intent(in) :: PSIGA (ILG, IC)   !< Soil moisture suction coefficient for
+  real, intent(in) :: PSIGA (ILG,IC)   !< Soil moisture suction coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) [ ]
-  real, intent(in) :: PSIGB (ILG, IC)   !< Soil moisture suction coefficient for
+  real, intent(in) :: PSIGB (ILG,IC)   !< Soil moisture suction coefficient for
   !! vegetation category (used in stomatal
   !! resistance calculation) [ ]
-  real, intent(in) :: PAIDAT(ILG, IC)   !< Optional user-specified value of plant area
+  real, intent(in) :: PAIDAT(ILG,IC)   !< Optional user-specified value of plant area
   !! indices of vegetation categories to
   !! override CLASS-calculated values [ ]
-  real, intent(in) :: HGTDAT(ILG, IC)   !< Optional user-specified values of height of
+  real, intent(in) :: HGTDAT(ILG,IC)   !< Optional user-specified values of height of
   !! vegetation categories to override CLASS-
   !! calculated values [m]
-  real, intent(in) :: ACVDAT(ILG, IC)   !< Optional user-specified value of canopy
+  real, intent(in) :: ACVDAT(ILG,IC)   !< Optional user-specified value of canopy
   !! visible albedo to override CLASS-calculated
   !! value [ ]
-  real, intent(in) :: ACIDAT(ILG, IC)   !< Optional user-specified value of canopy
+  real, intent(in) :: ACIDAT(ILG,IC)   !< Optional user-specified value of canopy
   !! near-infrared albedo to override CLASS-
   !! calculated value [ ]
-  real, intent(in) :: THLIQ (ILG, IG)   !< Volumetric liquid water content of soil
+  real, intent(in) :: THLIQ (ILG,IG)   !< Volumetric liquid water content of soil
   !! layers \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THICE (ILG, IG)   !< Volumetric frozen water content of soil
+  real, intent(in) :: THICE (ILG,IG)   !< Volumetric frozen water content of soil
   !! layers \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: TBAR  (ILG, IG)   !< Temperature of soil layers [K]
+  real, intent(in) :: TBAR  (ILG,IG)   !< Temperature of soil layers [K]
   !
   real, intent(in) :: ASVDAT(ILG)  !< Optional user-specified value of snow visible
   !! albedo to override CLASS-calculated value [ ]
@@ -321,7 +321,7 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   real, intent(in) :: ZBLEND(ILG)  !< Atmospheric blending height for surface
   !! roughness length averaging [m]
   real, intent(in) :: SNOLIM(ILG)  !< Limiting snow depth below which coverage is
-  !! < 100% \f$[m] (z_{s, lim})\f$
+  !! < 100% \f$[m] (z_{s,lim})\f$
   real, intent(in) :: ZPLMG0(ILG)  !< Maximum water ponding depth for snow-free
   !! subareas (user-specified when running MESH code) [m]
   real, intent(in) :: ZPLMS0(ILG)  !< Maximum water ponding depth for snow-covered
@@ -329,23 +329,23 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   real, intent(in) :: RADJ  (ILG)  !< Latitude of grid cell (positive north of equator) [rad]
   real, intent(in) :: REFSNO(ILG)  !< Snow grain size (for ISNOALB=1 option)  [m]
   real, intent(in) :: BCSNO(ILG)   !< Black carbon mixing ratio (for ISNOALB=1 option)  \f$[kg m^{-3}]\f$
-  real, intent(in) :: FSDB(ILG, NBS) !< Direct solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
-  real, intent(in) :: FSFB(ILG, NBS) !< Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
+  real, intent(in) :: FSDB(ILG,NBS) !< Direct solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
+  real, intent(in) :: FSFB(ILG,NBS) !< Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
   !
   !    * SOIL PROPERTY ARRAYS.
   !
-  real, intent(in) :: DELZW (ILG, IG)   !< Permeable thickness of soil layer [m]
+  real, intent(in) :: DELZW (ILG,IG)   !< Permeable thickness of soil layer [m]
   real, intent(in) :: DELZ  (IG)       !< Soil layer thickness [m]
-  real, intent(in) :: ZBOTW (ILG, IG)   !< Depth to permeable bottom of soil layer [m]
-  real, intent(in) :: THPOR (ILG, IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THLMIN(ILG, IG)   !< Residual soil liquid water content
+  real, intent(in) :: ZBOTW (ILG,IG)   !< Depth to permeable bottom of soil layer [m]
+  real, intent(in) :: THPOR (ILG,IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content
   !! remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: PSISAT(ILG, IG)   !< Soil moisture suction at saturation [m]
-  real, intent(in) :: BI    (ILG, IG)   !< Clapp and Hornberger empirical "b" parameter [ ]
-  real, intent(in) :: PSIWLT(ILG, IG)   !< Soil moisture suction at wilting point [m]
-  real, intent(in) :: HCPS  (ILG, IG)   !< Volumetric heat capacity of soil particles \f$[J m^{-3}]\f$
+  real, intent(in) :: PSISAT(ILG,IG)   !< Soil moisture suction at saturation [m]
+  real, intent(in) :: BI    (ILG,IG)   !< Clapp and Hornberger empirical "b" parameter [ ]
+  real, intent(in) :: PSIWLT(ILG,IG)   !< Soil moisture suction at wilting point [m]
+  real, intent(in) :: HCPS  (ILG,IG)   !< Volumetric heat capacity of soil particles \f$[J m^{-3}]\f$
   !
-  integer, intent(in)   :: ISAND (ILG, IG)  !< Sand content flag
+  integer, intent(in)   :: ISAND (ILG,IG)  !< Sand content flag
   !
   !     * CTEM-RELATED FIELDS.
 
@@ -359,25 +359,25 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   !     * FCANCS - FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
   !     * SEE BIO2STR SUBROUTINE FOR DEFINITION OF OTHER CTEM VARIABLES
   !
-  real, intent(in) :: FCANCMX(ILG, ICTEM), RMATC(ILG, IC, IG), &
-                      AILC  (ILG, IC), PAIC (ILG, IC), &
-                      AILCG (ILG, ICTEM), AILCGS(ILG, ICTEM), &
-                      FCANC(ILG, ICTEM), FCANCS(ILG, ICTEM), &
-                      ZOLNC(ILG, IC), CMASVEGC(ILG, IC), &
-                      SLAIC(ILG, IC), ALVSCTM(ILG, IC), &
-                      ALIRCTM(ILG, IC)
+  real, intent(in) :: FCANCMX(ILG,ICTEM), RMATC(ILG,IC,IG), &
+                      AILC(ILG,IC), PAIC(ILG,IC), &
+                      AILCG(ILG,ICTEM), AILCGS(ILG,ICTEM), &
+                      FCANC(ILG,ICTEM), FCANCS(ILG,ICTEM), &
+                      ZOLNC(ILG,IC), CMASVEGC(ILG,IC), &
+                      SLAIC(ILG,IC), ALVSCTM(ILG,IC), &
+                      ALIRCTM(ILG,IC)
 
   integer, intent(in) :: ICTEM, NOL2PFTS(IC)
 
   logical, intent(in) :: ctem_on
-  integer, intent(in)  :: ipeatland(ilg) !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+  integer, intent(in)  :: ipeatland(ilg) !< Peatland flag: 0 = not a peatland,1= bog,2 = fen
   !
   !     * INTERNAL WORK ARRAYS FOR THIS AND ASSOCIATED SUBROUTINES.
   !
-  real :: RMAT (ILG, IC, IG), H     (ILG, IC), HS    (ILG, IC), &
-          PAI   (ILG, IC), PAIS  (ILG, IC), FCAN  (ILG, IC), &
-          FCANS (ILG, IC), CXTEFF(ILG, IC), AIL   (ILG, IC), &
-          RCACC (ILG, IC), RCG   (ILG, IC), RCV   (ILG, IC)
+  real :: RMAT(ILG,IC,IG), H(ILG,IC),      HS(ILG,IC), &
+          PAI(ILG,IC),     PAIS(ILG,IC),   FCAN(ILG,IC), &
+          FCANS(ILG,IC),   CXTEFF(ILG,IC), AIL(ILG,IC), &
+          RCACC(ILG,IC),   RCG(ILG,IC),    RCV(ILG,IC)
   !
   real :: PSIGND(ILG), CWCPAV(ILG), FRTOTS(ILG), &
           GROWA (ILG), GROWN (ILG), GROWB (ILG), &
@@ -387,32 +387,32 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   !
   !------------------------------------------------------------------
   !>
-  !! In the first loop, the depth of snow \f$z_s\f$ is calculated from the
+  !! In the first loop,the depth of snow \f$z_s\f$ is calculated from the
   !! snow mass \f$W_s\f$ and density \f$\varrho_s\f$ as:
   !! \f$ z_s = W_s / \varrho_s. \f$
   !!
   !! If the calculated value of \f$z_s\f$ is less than the limiting snow
-  !! depth \f$z_{s, lim}\f$, the snow cover is deemed to be discontinuous. The
+  !! depth \f$z_{s,lim}\f$, the snow cover is deemed to be discontinuous. The
   !! fractional snow coverage \f$X_s\f$ of the modelled area is evaluated
   !! as
-  !! \f$ X_s = z_s / z_{s, lim} \f$
-  !! and the snow depth is reset to \f$z_{s, lim}\f$. The water content of the
+  !! \f$ X_s = z_s / z_{s,lim} \f$
+  !! and the snow depth is reset to \f$z_{s,lim}\f$. The water content of the
   !! snow pack is corrected according to the new snow fractional area.
   !!
-  !! The subarea albedo and transmissivity arrays (for canopy, bare
-  !! ground, canopy over snow and snow over bare ground) are next
-  !! initialized to zero, and the four radiationDriver subsidiary subroutines
+  !! The subarea albedo and transmissivity arrays (for canopy,bare
+  !! ground,canopy over snow and snow over bare ground) are next
+  !! initialized to zero,and the four radiationDriver subsidiary subroutines
   !! are called in turn: calcLandSurfParams to evaluate various model parameters
-  !! for the four subareas, groundAlbedo to calculate the ground surface albedo,
-  !! snowAlbedoTransmiss to calculate the snow albedo and transmissivity, and canopyAlbedoTransmiss
-  !! to calculate the canopy albedo, transmissivity and stomatal resistance.
-  !! Finally, the overall visible, near-infrared and total albedos for the
+  !! for the four subareas,groundAlbedo to calculate the ground surface albedo,
+  !! snowAlbedoTransmiss to calculate the snow albedo and transmissivity,and canopyAlbedoTransmiss
+  !! to calculate the canopy albedo,transmissivity and stomatal resistance.
+  !! Finally,the overall visible,near-infrared and total albedos for the
   !! modelled area are determined as weighted averages over the four subareas.
   !!
   !     * CALCULATION OF SNOW DEPTH ZSNOW AND FRACTIONAL SNOW COVER
   !     * FSNOW; INITIALIZATION OF COMPUTATIONAL ARRAYS.
   !
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (SNO(I) > 0.0) then
       ZSNOW(I) = SNO(I) / RHOSNO(I)
       if (ZSNOW(I) >= (SNOLIM(I) - 0.00001)) then
@@ -445,21 +445,21 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
     ALIRSC(I) = 0.0
     TRSNOWC(I) = 0.0
 
-    TRSNOWG(I, 1:NBS) = 0.0
-    ALTG(I, 1:NBS)    = 0.0
-    ALSNO(I, 1:NBS)   = 0.0
+    TRSNOWG(I,1:NBS) = 0.0
+    ALTG(I,1:NBS)    = 0.0
+    ALSNO(I,1:NBS)   = 0.0
 
   end do ! loop 100
   !
   ! ===================== CTEM =====================================\
-  !     IF USING DYNAMIC VEGETATION COMPONENT OF CTEM, REPLACE ALBEDOS
+  !     IF USING DYNAMIC VEGETATION COMPONENT OF CTEM,REPLACE ALBEDOS
   !     THAT ARE BASED ON CTEM.
 
   if (ctem_on) then
-    do J = 1, IC
-      do I = IL1, IL2
-        ALVSC(I, J) = ALVSCTM(I, J)
-        ALIRC(I, J) = ALIRCTM(I, J)
+    do J = 1,IC
+      do I = IL1,IL2
+        ALVSC(I,J) = ALVSCTM(I,J)
+        ALIRC(I,J) = ALIRCTM(I,J)
       end do
     end do
   end if
@@ -467,33 +467,33 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   !
   !     * PREPARATION.
   !
-  call calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & ! Formerly called APREP
-                           FRAINC, FSNOWC, FRAICS, FSNOCS, RAICAN, RAICNS, SNOCAN, &
-                           SNOCNS, DISP, DISPS, ZOMLNC, ZOMLCS, ZOELNC, ZOELCS, &
-                           ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, CHCAP, CHCAPS, CMASSC, &
-                           CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, &
-                           ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, &
-                           FROOT, FROOTS, &
-                           WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS, PSIGND, &
-                           FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX, &
-                           PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, &
-                           TCAN, GROWTH, ZSNOW, TSNOW, FSNOW, RHOSNO, SNO, Z0ORO, &
-                           ZBLEND, ZPLMG0, ZPLMS0, &
-                           TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ, DELZW, ZBOTW, &
-                           THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS, ISAND, &
-                           ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP, IZREF, IWF, &
-                           IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA, GROWN, GROWB, &
-                           RRESID, SRESID, FRTOT, FRTOTS, &
-                           FCANCMX, ICTEM, ctem_on, RMATC, &
-                           AILC, PAIC, AILCG, NOL2PFTS, &
-                           AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC, SLAIC, &
-                           ipeatland)
+  call calcLandSurfParams(FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & ! Formerly called APREP
+                          FRAINC, FSNOWC, FRAICS, FSNOCS, RAICAN, RAICNS, SNOCAN, &
+                          SNOCNS, DISP, DISPS, ZOMLNC, ZOMLCS, ZOELNC, ZOELCS, &
+                          ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, CHCAP, CHCAPS, CMASSC, &
+                          CMASCS, CWLCAP, CWFCAP, CWLCPS, CWFCPS, RBCOEF, &
+                          ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, HTCC, HTCS, HTC, &
+                          FROOT, FROOTS, &
+                          WTRC, WTRS, WTRG, CMAI, PAI, PAIS, AIL, FCAN, FCANS, PSIGND, &
+                          FCANMX, ZOLN, PAIMAX, PAIMIN, CWGTMX, ZRTMAX, &
+                          PAIDAT, HGTDAT, THLIQ, THICE, TBAR, RCAN, SNCAN, &
+                          TCAN, GROWTH, ZSNOW, TSNOW, FSNOW, RHOSNO, SNO, Z0ORO, &
+                          ZBLEND, ZPLMG0, ZPLMS0, &
+                          TA, RHOAIR, RADJ, DLON, RHOSNI, DELZ, DELZW, ZBOTW, &
+                          THPOR, THLMIN, PSISAT, BI, PSIWLT, HCPS, ISAND, &
+                          ILG, IL1, IL2, JL, IC, ICP1, IG, IDAY, IDISP, IZREF, IWF, &
+                          IPAI, IHGT, RMAT, H, HS, CWCPAV, GROWA, GROWN, GROWB, &
+                          RRESID, SRESID, FRTOT, FRTOTS, &
+                          FCANCMX, ICTEM, ctem_on, RMATC, &
+                          AILC, PAIC, AILCG, NOL2PFTS, &
+                          AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC, SLAIC, &
+                          ipeatland)
   !
   !     * BARE SOIL ALBEDOS.
   !
   call groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
                     ALGWV, ALGWN, ALGDV, ALGDN, &
-                    THLIQ, FSNOW, ALVSC(1, ICP1), ALIRC(1, ICP1), &
+                    THLIQ, FSNOW, ALVSC(1,ICP1), ALIRC(1,ICP1), &
                     FCANMX(1, ICP1), AGVDAT, AGIDAT, FG, ISAND, &
                     ILG, IG, IL1, IL2, JL, IALG)
 
@@ -520,7 +520,7 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   !
   !     * EFFECTIVE WHOLE-SURFACE VISIBLE AND NEAR-IR ALBEDOS.
   !
-  do I = IL1, IL2
+  do I = IL1,IL2
     ALVS(I) = FC(I) * ALVSCN(I) + FG(I) * ALVSG(I) + FCS(I) * ALVSCS(I) + &
               FGS(I) * ALVSSN(I)
     ALIR(I) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
@@ -528,23 +528,23 @@ subroutine radiationDriver(FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASSA
   end do ! loop 500
   !
   if (ISNOALB == 0) then
-    do I = IL1, IL2
-      ALTG(I, 1) = ALVS(I)
-      ALTG(I, 2) = ALIR(I)
-      ALTG(I, 3) = ALIR(I)
-      ALTG(I, 4) = ALIR(I)
+    do I = IL1,IL2
+      ALTG(I,1) = ALVS(I)
+      ALTG(I,2) = ALIR(I)
+      ALTG(I,3) = ALIR(I)
+      ALTG(I,4) = ALIR(I)
     end do ! I
   else if (ISNOALB == 1) then
-    do I = IL1, IL2
-      ALTG(I, 1) = FC(I) * ALVSCN(I) + FG(I) * ALVSG(I) + FCS(I) * ALVSCS(I) + &
-                   FGS(I) * ALSNO(I, 1)
-      ALTG(I, 2) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
-                   FGS(I) * ALSNO(I, 2)
-      ALTG(I, 3) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
-                   FGS(I) * ALSNO(I, 3)
-      ALTG(I, 4) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
-                   FGS(I) * ALSNO(I, 4)
+    do I = IL1,IL2
+      ALTG(I,1) = FC(I) * ALVSCN(I) + FG(I) * ALVSG(I) + FCS(I) * ALVSCS(I) + &
+                  FGS(I) * ALSNO(I,1)
+      ALTG(I,2) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
+                  FGS(I) * ALSNO(I,2)
+      ALTG(I,3) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
+                  FGS(I) * ALSNO(I,3)
+      ALTG(I,4) = FC(I) * ALIRCN(I) + FG(I) * ALIRG(I) + FCS(I) * ALIRCS(I) + &
+                  FGS(I) * ALSNO(I,4)
     end do ! I
   end if ! ISNOALB
   return
-end subroutine
+end subroutine radiationDriver

@@ -6,7 +6,7 @@
 !ignoreLint(1000)
 module outputManager
 
-  use ctem_statevars, only : c_switch
+  use ctemStateVars, only : c_switch
 
   implicit none
 
@@ -30,8 +30,8 @@ module outputManager
     real, dimension(:), allocatable     :: lonLandCell, latLandCell     !< Long/Lat values of only the land cells in our model domain
     integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   !< Indexes of only the land cells in our model domain for our resolution
     real, dimension(:), allocatable     :: allLonValues, allLatValues   !< All long/Lat values in our model domain (including ocean/non-land)
-    integer, dimension(:), allocatable  :: lonLocalIndex,latLocalIndex  !< The index for only the region that is being simulated
-    real, dimension(:), allocatable     :: latUnique,lonUnique          !< The index for only the region that is being simulated with each value only once
+    integer, dimension(:), allocatable  :: lonLocalIndex, latLocalIndex  !< The index for only the region that is being simulated
+    real, dimension(:), allocatable     :: latUnique, lonUnique          !< The index for only the region that is being simulated with each value only once
     integer                             :: LandCellCount    !> number of land cells that the model will run over
     real, dimension(4) :: domainBounds                      !> Corners of the domain to be simulated (netcdfs)
     integer :: srtx                                         !> starting index for this simulation for longitudes
@@ -112,7 +112,7 @@ contains
   !> \ingroup output_generateNetCDFFile
   !> @{
   !> Generates a new (netcdf) variable
-  subroutine generateNetCDFFile(nameInCode, timeFreq, outputForm, units, descriptorLabel)
+  subroutine generateNetCDFFile (nameInCode, timeFreq, outputForm, units, descriptorLabel)
 
     implicit none
 
@@ -162,7 +162,7 @@ contains
   !> \ingroup output_checkFileExists
   !> @{
   !> Checks if file exists
-  logical function checkFileExists(filename)
+  logical function checkFileExists (filename)
     implicit none
 
     character( * ), intent(in) :: filename
@@ -177,7 +177,7 @@ contains
   !> \ingroup output_addVariable
   !> @{
   !> Adds the new variable to the list of variables (see the type "netcdfVars")
-  integer function addVariable(key, filename)
+  integer function addVariable (key, filename)
     use fileIOModule
     implicit none
     character( * ), intent(in)    :: key, filename
@@ -199,7 +199,7 @@ contains
   !> \ingroup output_validGroup
   !> @{
   !> Determines if the current variable matches the project configuration
-  logical function validGroup(descriptor,outputForm)
+  logical function validGroup (descriptor,outputForm)
 
     implicit none
 
@@ -247,7 +247,7 @@ contains
   !> \ingroup output_validTime
   !> @{
   !> Determines whether the current variable matches the project configuration
-  logical function validTime(timeFreq, descriptor)
+  logical function validTime (timeFreq, descriptor)
 
     implicit none
 
@@ -276,7 +276,7 @@ contains
   !> \ingroup output_generateFilename
   !> @{
   !> Generates the filename for the current variable
-  character(350) function generateFilename(outputForm, descriptor)
+  character(350) function generateFilename (outputForm, descriptor)
 
     implicit none
 
@@ -303,7 +303,7 @@ contains
   !> \ingroup output_getDescriptor
   !> @{
   !> Retrieves a variable descriptor based on a given key (e.g. shortName)
-  type (outputDescriptor) function getDescriptor(key)
+  type (outputDescriptor) function getDescriptor (key)
 
     implicit none
 
@@ -325,7 +325,7 @@ contains
   !> \ingroup output_getIdByKey
   !> @{
   !> Finds the id of the variable with the following key
-  integer function getIdByKey(key)
+  integer function getIdByKey (key)
 
     implicit none
     character( * ), intent(in)   :: key
@@ -345,11 +345,11 @@ contains
   !> \ingroup output_createNetCDF
   !> @{
   !> Creates the output netcdf files
-  subroutine createNetCDF(fileName, id, outputForm, descriptor, timeFreq, units, nameInCode)
+  subroutine createNetCDF (fileName, id, outputForm, descriptor, timeFreq, units, nameInCode)
 
     use fileIOModule
-    use ctem_statevars,     only : c_switch
-    use classic_params,        only : ignd,icc,nmos,iccp1
+    use ctemStateVars,     only : c_switch
+    use classicParams,        only : ignd,icc,nmos,iccp1
 
     implicit none
 
@@ -568,12 +568,12 @@ contains
   !> Determines the time vector for this run. This implictly
   !! assumes that leap year meteorological forcing is used for runs with metLoop = 1, otherwise
   !! the timing of the leap years will be off in the output files.
-  subroutine determineTime(timeFreq)
+  subroutine determineTime (timeFreq)
 
     use fileIOModule
-    use ctem_statevars,     only : c_switch
+    use ctemStateVars,     only : c_switch
     use generalUtils,       only : findLeapYears
-    use classic_params,        only : monthend,DELT
+    use classicParams,        only : monthend,DELT
 
     implicit none
 
@@ -770,7 +770,7 @@ contains
   !> \ingroup output_writeOutput1D
   !> @{
   !> Write model outputs to already created netcdf files
-  subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
+  subroutine writeOutput1D (lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
 
     use fileIOModule
 
@@ -844,7 +844,7 @@ contains
   !> \ingroup output_checkForTime
   !> @{
   !> Find if a time period is already in the timeIndex of the file
-  integer function checkForTime(timeIndex,timeWritten,timeStamp)
+  integer function checkForTime (timeIndex,timeWritten,timeStamp)
 
     implicit none
 
@@ -867,7 +867,7 @@ contains
   !> \ingroup output_closeNCFiles
   !> @{
   !> Close all output netcdfs or just a select file
-  subroutine closeNCFiles(incid)
+  subroutine closeNCFiles (incid)
 
     use fileIOModule
 
@@ -890,7 +890,7 @@ contains
 
   !> \ingroup output_identityVector
   !> @{
-  pure function identityVector(n) result(res)
+  pure function identityVector (n) result(res)
     implicit none
     integer, allocatable :: res(:)
     integer, intent(in) :: n

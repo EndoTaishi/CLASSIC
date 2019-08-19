@@ -3,20 +3,20 @@
 !! under conditions of infiltration.
 !! @author D. Verseghy, M. Lazare, Y. Delage, R. Soulis, J. Melton
 !
-subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Formerly GRINFL
-                               RUNOFF, TRUNOF, ZFAV, LZFAV, THLINV, QFG, &
-                               WLOST, FI, EVAP, R, TR, TPOND, ZPOND, DT, &
-                               ZMAT, WMOVE, TMOVE, THLIQX, THICEX, TBARWX, &
-                               DELZX, ZBOTX, FDT, TFDT, PSIF, THLINF, GRKINF, &
-                               THLMAX, THTEST, ZRMDR, FDUMMY, TDUMMY, THLDUM, &
-                               THIDUM, TDUMW, TRMDR, ZF, FMAX, TUSED, RDUMMY, &
-                               ZERO, WEXCES, FDTBND, WADD, TADD, WADJ, TIMPND, &
-                               DZF, DTFLOW, THLNLZ, THLQLZ, DZDISP, WDISP, WABS, &
-                               THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, &
-                               THLRAT, THFC, DELZW, ZBOTW, XDRAIN, DELZ, ISAND, &
-                               IGRN, IGRD, IFILL, IZERO, LZF, NINF, IFIND, ITER, &
-                               NEND, ISIMP, IGDR, &
-                               IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
+subroutine waterFlowInfiltrate (IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Formerly GRINFL
+                                RUNOFF, TRUNOF, ZFAV, LZFAV, THLINV, QFG, &
+                                WLOST, FI, EVAP, R, TR, TPOND, ZPOND, DT, &
+                                ZMAT, WMOVE, TMOVE, THLIQX, THICEX, TBARWX, &
+                                DELZX, ZBOTX, FDT, TFDT, PSIF, THLINF, GRKINF, &
+                                THLMAX, THTEST, ZRMDR, FDUMMY, TDUMMY, THLDUM, &
+                                THIDUM, TDUMW, TRMDR, ZF, FMAX, TUSED, RDUMMY, &
+                                ZERO, WEXCES, FDTBND, WADD, TADD, WADJ, TIMPND, &
+                                DZF, DTFLOW, THLNLZ, THLQLZ, DZDISP, WDISP, WABS, &
+                                THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, &
+                                THLRAT, THFC, DELZW, ZBOTW, XDRAIN, DELZ, ISAND, &
+                                IGRN, IGRD, IFILL, IZERO, LZF, NINF, IFIND, ITER, &
+                                NEND, ISIMP, IGDR, &
+                                IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
   !
   !     * JAN 10/17 - J. Melton   Fix below no longer needed. Removed.
   !     * JUL 06/12 - D.VERSEGHY. FIX FOR EVAPORATION OVER ROCK.
@@ -69,7 +69,7 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !     *                         PONDED WATER OR RAINFALL OCCURRING
   !     *                         WITHIN CURRENT TIMESTEP).
   !
-  use classic_params, only : DELT
+  use classicParams, only : DELT
 
   implicit none
   !
@@ -81,11 +81,11 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !
   !     * INPUT/OUTPUT FIELDS.
   !
-  real, intent(inout) :: THLIQ (ILG, IG)   !< Volumetric liquid water content of soil
+  real, intent(inout) :: THLIQ (ILG,IG)   !< Volumetric liquid water content of soil
   !< layer \f$[m^3 m^{-3}] (\theta_l)\f$
-  real, intent(inout) :: THICE (ILG, IG)   !< Volumetric frozen water content of soil
+  real, intent(inout) :: THICE (ILG,IG)   !< Volumetric frozen water content of soil
   !< layer \f$[m^3 m^{-3}] (\theta_i)\f$
-  real, intent(inout) :: TBARW (ILG, IG)   !< Temperature of water in soil layer [C]
+  real, intent(inout) :: TBARW (ILG,IG)   !< Temperature of water in soil layer [C]
   !
   real, intent(in) :: BASFLW(ILG)  !< Base flow from bottom of soil column [m]
   real, intent(in) :: TBASFL(ILG)  !< Temperature of base flow from bottom of
@@ -112,20 +112,20 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !
   !     * WORK FIELDS (FOR ALL CALLED ROUTINES AS WELL).
   !
-  real, intent(in) :: ZMAT  (ILG, IGP2, IGP1)
+  real, intent(in) :: ZMAT  (ILG,IGP2,IGP1)
   !
-  real, intent(inout) :: WMOVE (ILG, IGP2), TMOVE (ILG, IGP2)
-  real :: GRKSATF(ILG, IG), THPORF(ILG, IG)
+  real, intent(inout) :: WMOVE (ILG,IGP2), TMOVE(ILG,IGP2)
+  real :: GRKSATF(ILG,IG), THPORF(ILG,IG)
   !
-  real, intent(inout) :: THLIQX(ILG, IGP1), THICEX(ILG, IGP1), TBARWX(ILG, IGP1), &
-                         DELZX (ILG, IGP1), ZBOTX (ILG, IGP1), FDT   (ILG, IGP1), &
-                         TFDT  (ILG, IGP1), PSIF  (ILG, IGP1), THLINF(ILG, IGP1), &
-                         GRKINF(ILG, IGP1), THLMAX(ILG, IG), THTEST(ILG, IG), &
-                         ZRMDR (ILG, IGP1), FDUMMY(ILG, IGP1), TDUMMY(ILG, IGP1), &
-                         THLDUM(ILG, IG), THIDUM(ILG, IG), TDUMW (ILG, IG), RDUMMY(ILG), &
-                         TRMDR(ILG), ZF(ILG)
+  real, intent(inout) :: THLIQX(ILG,IGP1), THICEX(ILG,IGP1), TBARWX(ILG,IGP1), &
+                         DELZX (ILG,IGP1), ZBOTX (ILG,IGP1), FDT   (ILG,IGP1), &
+                         TFDT  (ILG,IGP1), PSIF  (ILG,IGP1), THLINF(ILG,IGP1), &
+                         GRKINF(ILG,IGP1), THLMAX(ILG,IG),   THTEST(ILG,IG), &
+                         ZRMDR (ILG,IGP1), FDUMMY(ILG,IGP1), TDUMMY(ILG,IGP1), &
+                         THLDUM(ILG,IG),   THIDUM(ILG,IG),   TDUMW (ILG,IG), &
+                         RDUMMY(ILG),      TRMDR(ILG),       ZF(ILG)
   !
-  real, intent(in) ::    FMAX  (ILG), TUSED (ILG), &
+  real, intent(in) :: FMAX  (ILG), TUSED (ILG), &
                       ZERO  (ILG), WEXCES(ILG), FDTBND(ILG), &
                       WADD  (ILG), TADD  (ILG), WADJ  (ILG), TIMPND(ILG), &
                       DZF   (ILG), DTFLOW(ILG), THLNLZ(ILG), THLQLZ(ILG), &
@@ -133,21 +133,21 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !
   !     * SOIL INFORMATION ARRAYS.
   !
-  real, intent(in) :: THPOR (ILG, IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
-  real, intent(in) :: THLRET(ILG, IG)   !< Liquid water retention capacity for organic
-  !< soil \f$[m^3 m^{-3}] (\theta_{l, ret})\f$
-  real, intent(in) :: THLMIN(ILG, IG)   !< Residual soil liquid water content
+  real, intent(in) :: THPOR (ILG,IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
+  real, intent(in) :: THLRET(ILG,IG)   !< Liquid water retention capacity for organic
+  !< soil \f$[m^3 m^{-3}] (\theta_{l,ret})\f$
+  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content
   !< remaining after freezing or evaporation
-  !< \f$[m^3 m^{-3}] (theta_{l, min})\f$
-  real, intent(in) :: BI    (ILG, IG)   !< Clapp and Hornberger empirical "b" parameter [ ] (b)
-  real, intent(in) :: PSISAT(ILG, IG)   !< Soil moisture suction at saturation \f$[m] (\Psi_{sat})\f$
-  real, intent(in) :: GRKSAT(ILG, IG)   !< Hydraulic conductivity of soil at
+  !< \f$[m^3 m^{-3}] (theta_{l,min})\f$
+  real, intent(in) :: BI    (ILG,IG)   !< Clapp and Hornberger empirical "b" parameter [ ] (b)
+  real, intent(in) :: PSISAT(ILG,IG)   !< Soil moisture suction at saturation \f$[m] (\Psi_{sat})\f$
+  real, intent(in) :: GRKSAT(ILG,IG)   !< Hydraulic conductivity of soil at
   !< saturation \f$[m s^{-1}] (K_{sat})\f$
-  real, intent(in) :: THLRAT(ILG, IG)   !< Fractional saturation of soil behind the
+  real, intent(in) :: THLRAT(ILG,IG)   !< Fractional saturation of soil behind the
   !< wetting front \f$[ ] (f_{inf})\f$
-  real, intent(in) :: THFC  (ILG, IG)   !< Field capacity \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: DELZW (ILG, IG)   !< Permeable depth of soil layer \f$[m] (\Delta z_{g, w})\f$
-  real, intent(in) :: ZBOTW (ILG, IG)   !< Depth to permeable bottom of soil layer [m]
+  real, intent(in) :: THFC  (ILG,IG)   !< Field capacity \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: DELZW (ILG,IG)   !< Permeable depth of soil layer \f$[m] (\Delta z_{g,w})\f$
+  real, intent(in) :: ZBOTW (ILG,IG)   !< Depth to permeable bottom of soil layer [m]
   real, intent(in) :: XDRAIN(ILG)      !< Drainage index for water flow at bottom of soil profile [ ]
   real, intent(in) :: DELZ(IG)         !< Overall thickness of soil layer [m]
   !
@@ -157,14 +157,14 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !
   !     * VARIOUS INTEGER ARRAYS.
   !
-  integer, intent(in)    :: ISAND (ILG, IG) !< Sand content flag
-  integer, intent(inout) :: IGRN(ILG)    !< Flag to indicate whether calculations in this subroutine are to be done
-  integer, intent(in)    :: IGRD  (ILG)    !< Flag to indicate whether calculations in subroutine waterFlowNonInfiltrate are to be done
+  integer, intent(in)    :: ISAND(ILG,IG) !< Sand content flag
+  integer, intent(inout) :: IGRN (ILG)    !< Flag to indicate whether calculations in this subroutine are to be done
+  integer, intent(in)    :: IGRD (ILG)    !< Flag to indicate whether calculations in subroutine waterFlowNonInfiltrate are to be done
   integer, intent(in)    :: IZERO(ILG), IFIND(ILG), &
                             ITER (ILG), NEND (ILG), ISIMP (ILG)
 
   integer, intent(inout) :: IFILL(ILG), LZF(ILG), NINF(ILG)
-  integer, intent(in)    :: IGDR  (ILG)    !< Index of soil layer in which bedrock is encountered
+  integer, intent(in)    :: IGDR (ILG)    !< Index of soil layer in which bedrock is encountered
   !
   !-----------------------------------------------------------------------
 
@@ -180,9 +180,9 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !! greater than zero or that ponded water exists on the surface. If
   !! any of these conditions is not met, IGRN is set to zero.
   !!
-  do I = IL1, IL2 ! loop 75
+  do I = IL1,IL2 ! loop 75
     if (FI(I) > 0. .and. &
-        ISAND(I, 1) > - 4 .and. DT(I) > 0. .and. &
+        ISAND(I,1) > - 4 .and. DT(I) > 0. .and. &
         (R(I) > 0. .or. ZPOND(I) > 0.)) then
       IGRN(I) = 1
       RDUMMY(I) = 0.
@@ -239,31 +239,31 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !! the hydraulic conductivity at saturation, \f$\theta_p\f$ is the pore
   !! volume and b is an empirical coefficient.
   !!
-  do J = 1, IG ! loop 100
-    do I = IL1, IL2
+  do J = 1,IG ! loop 100
+    do I = IL1,IL2
       if (IGRN(I) > 0) then
-        THLIQX(I, J) = THLIQ(I, J)
-        THICEX(I, J) = THICE(I, J)
-        TBARWX(I, J) = TBARW(I, J)
-        DELZX(I, J) = DELZW(I, J)
-        ZBOTX(I, J) = ZBOTW(I, J)
-        FDT (I, J) = 0.0
-        TFDT(I, J) = 0.0
-        if (ISAND(I, J) > - 3) then
-          GRKSATF(I, J) = GRKSAT(I, J) * (1.0 - MAX(0.0, MIN(1.0, &
-                          THICE(I, J) / THPOR(I, J)))) ** 2
-          THPORF(I, J) = MAX((THPOR(I, J) - THICE(I, J) - 0.00001), &
-                         THLIQ(I, J), THLMIN(I, J))
-          THLINF(I, J) = MAX(THLIQ(I, J), THLMIN(I, J), &
-                         THLRAT(I, J) * (THPOR(I, J) - &
-                         THICE(I, J) - 0.00001))
-          GRKINF(I, J) = GRKSATF(I, J) * (THLINF(I, J) / THPORF(I, J)) &
-                         ** (2. * BI(I, J) + 3.)
+        THLIQX(I,J) = THLIQ(I,J)
+        THICEX(I,J) = THICE(I,J)
+        TBARWX(I,J) = TBARW(I,J)
+        DELZX(I,J) = DELZW(I,J)
+        ZBOTX(I,J) = ZBOTW(I,J)
+        FDT (I,J) = 0.0
+        TFDT(I,J) = 0.0
+        if (ISAND(I,J) > - 3) then
+          GRKSATF(I,J) = GRKSAT(I,J) * (1.0 - MAX(0.0,MIN(1.0, &
+                         THICE(I,J) / THPOR(I,J)))) ** 2
+          THPORF(I,J) = MAX((THPOR(I,J) - THICE(I,J) - 0.00001), &
+                        THLIQ(I,J),THLMIN(I,J))
+          THLINF(I,J) = MAX(THLIQ(I,J),THLMIN(I,J), &
+                        THLRAT(I,J) * (THPOR(I,J) - &
+                        THICE(I,J) - 0.00001))
+          GRKINF(I,J) = GRKSATF(I,J) * (THLINF(I,J) / THPORF(I,J)) &
+                        ** (2. * BI(I,J) + 3.)
         else
-          GRKSATF(I, J) = 0.0
-          THPORF(I, J) = 0.0
-          THLINF(I, J) = 0.0
-          GRKINF(I, J) = 0.0
+          GRKSATF(I,J) = 0.0
+          THPORF(I,J) = 0.0
+          THLINF(I,J) = 0.0
+          GRKINF(I,J) = 0.0
         end if
       end if
     end do
@@ -281,26 +281,26 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !! takes a value of 0 if the soil is underlain by an impermeable
   !! layer (as in a bog), and a value of 1 otherwise.
   !!
-  do I = IL1, IL2 ! loop 150
+  do I = IL1,IL2 ! loop 150
     if (IGRN(I) > 0) then
-      if (DELZW(I, IG) < DELZ(IG)) then
-        THLIQX(I, IG + 1) = 0.0
-        THICEX(I, IG + 1) = 0.0
-        TBARWX(I, IG + 1) = 0.0
-        DELZX(I, IG + 1) = 0.0
-        THLINF(I, IG + 1) = 0.0
-        GRKINF(I, IG + 1) = 0.0
+      if (DELZW(I,IG) < DELZ(IG)) then
+        THLIQX(I,IG + 1) = 0.0
+        THICEX(I,IG + 1) = 0.0
+        TBARWX(I,IG + 1) = 0.0
+        DELZX(I,IG + 1) = 0.0
+        THLINF(I,IG + 1) = 0.0
+        GRKINF(I,IG + 1) = 0.0
       else
-        THLIQX(I, IG + 1) = THLIQX(I, IG)
-        THICEX(I, IG + 1) = THICEX(I, IG)
-        TBARWX(I, IG + 1) = TBARWX(I, IG)
-        DELZX(I, IG + 1) = 999999.
-        THLINF(I, IG + 1) = THLINF(I, IG)
-        GRKINF(I, IG + 1) = GRKINF(I, IG) * XDRAIN(I)
+        THLIQX(I,IG + 1) = THLIQX(I,IG)
+        THICEX(I,IG + 1) = THICEX(I,IG)
+        TBARWX(I,IG + 1) = TBARWX(I,IG)
+        DELZX(I,IG + 1) = 999999.
+        THLINF(I,IG + 1) = THLINF(I,IG)
+        GRKINF(I,IG + 1) = GRKINF(I,IG) * XDRAIN(I)
       end if
-      ZBOTX (I, IG + 1) = ZBOTX(I, IG) + DELZX(I, IG + 1)
-      FDT   (I, IG + 1) = 0.0
-      TFDT  (I, IG + 1) = 0.0
+      ZBOTX (I,IG + 1) = ZBOTX(I,IG) + DELZX(I,IG + 1)
+      FDT   (I,IG + 1) = 0.0
+      TFDT  (I,IG + 1) = 0.0
     end if
   end do ! loop 150
   !
@@ -321,45 +321,45 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !!
   !! where \f$\Psi_{sat}\f$ is the soil moisture suction at saturation.
   !!
-  do J = 1, IG ! loop 200
-    do I = IL1, IL2
+  do J = 1,IG ! loop 200
+    do I = IL1,IL2
       if (IGRN(I) > 0) then
-        if (THPOR(I, J) > 0.0001) then
-          PSIINF = MAX(PSISAT(I, J) * (THLINF(I, J) / THPORF(I, J)) ** &
-                   ( - BI(I, J)), PSISAT(I, J))
-          GRK = MIN(GRKSATF(I, J) * (THLIQ(I, J) / THPORF(I, J)) ** &
-                (2. * BI(I, J) + 3.), GRKSATF(I, J))
-          PSI = MAX(PSISAT(I, J) * (THLIQ(I, J) / THPORF(I, J)) ** &
-                ( - BI(I, J)), PSISAT(I, J))
+        if (THPOR(I,J) > 0.0001) then
+          PSIINF = MAX(PSISAT(I,J) * (THLINF(I,J) / THPORF(I,J)) ** &
+                   ( - BI(I,J)),PSISAT(I,J))
+          GRK = MIN(GRKSATF(I,J) * (THLIQ(I,J) / THPORF(I,J)) ** &
+                (2. * BI(I,J) + 3.),GRKSATF(I,J))
+          PSI = MAX(PSISAT(I,J) * (THLIQ(I,J) / THPORF(I,J)) ** &
+                ( - BI(I,J)),PSISAT(I,J))
         else
-          PSIINF = PSISAT(I, J)
-          GRK = GRKSATF(I, J)
-          PSI = PSISAT(I, J)
+          PSIINF = PSISAT(I,J)
+          GRK = GRKSATF(I,J)
+          PSI = PSISAT(I,J)
         end if
-        if (THLINF(I, J) > THLIQ(I, J)) then
-          PSIF (I, J) = MAX(BI(I, J) * (GRKINF(I, J) * PSIINF - GRK * PSI) / &
-                        (GRKINF(I, J) * (BI(I, J) + 3.)), 0.0)
+        if (THLINF(I,J) > THLIQ(I,J)) then
+          PSIF (I,J) = MAX(BI(I,J) * (GRKINF(I,J) * PSIINF - GRK * PSI) / &
+                       (GRKINF(I,J) * (BI(I,J) + 3.)),0.0)
         else
-          PSIF (I, J) = 0.0
+          PSIF (I,J) = 0.0
         end if
       end if
     end do
   end do ! loop 200
 
-  do I = IL1, IL2 ! loop 250
+  do I = IL1,IL2 ! loop 250
     if (IGRN(I) > 0) then
-      PSIF (I, IG + 1) = PSIF (I, IG)
+      PSIF (I,IG + 1) = PSIF (I,IG)
       TRMDR(I) = DELT
     else
       TRMDR(I) = 0.
     end if
   end do ! loop 250
 
-  do J = 1, IGP2 ! loop 300
-    do I = IL1, IL2
+  do J = 1,IGP2 ! loop 300
+    do I = IL1,IL2
       if (IGRN(I) > 0) then
-        WMOVE(I, J) = 0.0
-        TMOVE(I, J) = 0.0
+        WMOVE(I,J) = 0.0
+        TMOVE(I,J) = 0.0
       end if
     end do
   end do ! loop 300
@@ -388,25 +388,25 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
   !! TMOVE. The counter NINF is set to the number of soil layers
   !! behind and including the one with the wetting front, plus 2.
   !!
-  do I = IL1, IL2 ! loop 400
+  do I = IL1,IL2 ! loop 400
     if (IGRN(I) > 0) then
       IFILL(I) = 1
       ZF(I) = 0.0
       LZF(I) = 1
-      if (ZPOND(I) > 0. .or. GRKINF(I, 1) < 1.0E-12) then
+      if (ZPOND(I) > 0. .or. GRKINF(I,1) < 1.0E-12) then
         NINF(I) = 2
-        TMOVE(I, 2) = TBARWX(I, 1)
+        TMOVE(I,2) = TBARWX(I,1)
         IFILL(I) = 0
       end if
-      do J = 1, IG ! loop 350
-        if (THLIQ(I, J) >= (THLINF(I, J) - 1.0E-6) .and. &
-            THLIQ(I, J) > 0.0001 .and. LZF(I) == J) then
-          ZF(I) = ZBOTW(I, J)
+      do J = 1,IG ! loop 350
+        if (THLIQ(I,J) >= (THLINF(I,J) - 1.0E-6) .and. &
+            THLIQ(I,J) > 0.0001 .and. LZF(I) == J) then
+          ZF(I) = ZBOTW(I,J)
           LZF(I) = J + 1
           NINF(I) = J + 2
-          WMOVE(I, J + 1) = THLIQ(I, J) * DELZW(I, J)
-          TMOVE(I, J + 1) = TBARWX(I, J)
-          TMOVE(I, J + 2) = TBARWX(I, J + 1)
+          WMOVE(I,J + 1) = THLIQ(I,J) * DELZW(I,J)
+          TMOVE(I,J + 1) = TBARWX(I,J)
+          TMOVE(I,J + 2) = TBARWX(I,J + 1)
           IFILL(I) = 0
         end if
       end do ! loop 350
@@ -465,22 +465,22 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
                      THFC, DELZW, ISAND, IGRN, IGRD, IGDR, IZERO, &
                      IVEG, IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
   !
-  do J = 1, IG ! loop 800
-    do I = IL1, IL2
+  do J = 1,IG ! loop 800
+    do I = IL1,IL2
       if (IGRN(I) > 0) then
-        THLIQ(I, J) = THLIQX(I, J)
-        THICE(I, J) = THICEX(I, J)
-        TBARW(I, J) = TBARWX(I, J)
+        THLIQ(I,J) = THLIQX(I,J)
+        THICE(I,J) = THICEX(I,J)
+        TBARW(I,J) = TBARWX(I,J)
       end if
     end do
   end do ! loop 800
   !
-  do I = IL1, IL2 ! loop 850
+  do I = IL1,IL2 ! loop 850
     if (IGRN(I) > 0 .and. LZF(I) < IG + 1) then
-      ZFAV(I) = (ZF(I) + MAX(ZBOTW(I, LZF(I)) - DELZW(I, LZF(I)), 0.0)) / &
+      ZFAV(I) = (ZF(I) + MAX(ZBOTW(I,LZF(I)) - DELZW(I,LZF(I)),0.0)) / &
                 2.0
       LZFAV(I) = LZF(I)
-      THLINV(I) = THLINF(I, LZF(I))
+      THLINV(I) = THLINF(I,LZF(I))
     else
       ZFAV(I) = 0.0
       LZFAV(I) = 0
@@ -496,8 +496,7 @@ subroutine waterFlowInfiltrate(IVEG, THLIQ, THICE, TBARW, BASFLW, TBASFL, & ! Fo
                               TBASFL, RUNOFF, TRUNOF, QFG, WLOST, FI, EVAP, ZERO, ZERO, &
                               TRMDR, WEXCES, THLMAX, THTEST, THPOR, THLRET, THLMIN, &
                               BI, PSISAT, GRKSAT, THFC, DELZW, XDRAIN, ISAND, IZERO, &
-                              IZERO, IGRD, IGDR, &
-                              IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
+                              IZERO, IGRD, IGDR, IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
   !
   return
-end
+end subroutine waterFlowInfiltrate

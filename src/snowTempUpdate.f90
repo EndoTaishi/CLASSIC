@@ -3,11 +3,11 @@
 !! energy budget calculations.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPOST
-                          GZERO, TSNBOT, HTCS, HMFN, &
-                          GCONSTS, GCOEFFS, GCONST, GCOEFF, TBAR, &
-                          TSURF, ZSNOW, TCSNOW, HCPSNO, QTRANS, &
-                          FI, DELZ, ILG, IL1, IL2, JL, IG)
+subroutine snowTempUpdate (GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPOST
+                           GZERO, TSNBOT, HTCS, HMFN, &
+                           GCONSTS, GCOEFFS, GCONST, GCOEFF, TBAR, &
+                           TSURF, ZSNOW, TCSNOW, HCPSNO, QTRANS, &
+                           FI, DELZ, ILG, IL1, IL2, JL, IG)
   !
   !     * AUG 16/06 - D.VERSEGHY. MAJOR REVISION TO IMPLEMENT THERMAL
   !     *                         SEPARATION OF SNOW AND SOIL.
@@ -49,7 +49,7 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
   !     *                         OF FIRST SOIL LAYER; CONVERT LAYER
   !     *                         TEMPERATURES TO DEGREES C.
   !
-  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, HCPSOL, &
+  use classicParams, only : DELT, TFREZ, HCPW, HCPICE, HCPSOL, &
                                   HCPOM, HCPSND, HCPCLY, RHOW, &
                                   RHOICE, CLHMLT
 
@@ -62,46 +62,46 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
   !
   !     * OUTPUT ARRAYS.
   !
-  real, intent(inout) :: GZERO (ILG)  !< Heat conduction into soil surface \f$[W m^{-2}] (G(\Delta z_s))\f$
-  real, intent(inout) :: TSNBOT(ILG)  !< Temperature at bottom of snow pack [K]
+  real,intent(inout) :: GZERO (ILG)  !< Heat conduction into soil surface \f$[W m^{-2}] (G(\Delta z_s))\f$
+  real,intent(inout) :: TSNBOT(ILG)  !< Temperature at bottom of snow pack [K]
   !
   !     * INPUT/OUTPUT ARRAYS.
   !
-  real, intent(inout) :: GSNOW (ILG)  !< Heat conduction into surface of snow pack \f$[W m^{-2}] (G(0))\f$
-  real, intent(inout) :: TSNOW (ILG)  !< Snowpack temperature \f$[K/C] (T_s)\f$
-  real, intent(inout) :: WSNOW (ILG)  !< Liquid water content of snow pack \f$[kg m^{-2}] (w_s)\f$
-  real, intent(inout) :: RHOSNO(ILG)  !< Density of snow \f$[kg m^{-3}] (\rho_s)\f$
-  real, intent(inout) :: QMELTG(ILG)  !< Available energy to be applied to melting of snow \f$[W m^{-2}]\f$
-  real, intent(inout) :: HTCS  (ILG)  !< Internal energy change of snow pack due to
+  real,intent(inout) :: GSNOW (ILG)  !< Heat conduction into surface of snow pack \f$[W m^{-2}] (G(0))\f$
+  real,intent(inout) :: TSNOW (ILG)  !< Snowpack temperature \f$[K/C] (T_s)\f$
+  real,intent(inout) :: WSNOW (ILG)  !< Liquid water content of snow pack \f$[kg m^{-2}] (w_s)\f$
+  real,intent(inout) :: RHOSNO(ILG)  !< Density of snow \f$[kg m^{-3}] (\rho_s)\f$
+  real,intent(inout) :: QMELTG(ILG)  !< Available energy to be applied to melting of snow \f$[W m^{-2}]\f$
+  real,intent(inout) :: HTCS  (ILG)  !< Internal energy change of snow pack due to
   !< conduction and/or change in mass \f$[W m^{-2}] (I_s)\f$
-  real, intent(inout) :: HMFN  (ILG)  !< Energy associated with phase change of water in
+  real,intent(inout) :: HMFN  (ILG)  !< Energy associated with phase change of water in
   !< snow pack \f$[W m^{-2}]\f$
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: TSURF (ILG)  !< Snow surface temperature [K]
-  real, intent(in) :: ZSNOW (ILG)  !< Depth of snow pack \f$[m] (\Delta z_s)\f$
-  real, intent(in) :: TCSNOW(ILG)  !< Thermal conductivity of snow \f$[W m^{-1} K^{-1}]\f$
-  real, intent(inout) :: HCPSNO(ILG)  !< Heat capacity of snow \f$[J m^{-3} K^1] (C_s)\f$
-  real, intent(in) :: QTRANS(ILG)  !< Shortwave radiation transmitted through the
+  real,intent(in) :: TSURF (ILG)  !< Snow surface temperature [K]
+  real,intent(in) :: ZSNOW (ILG)  !< Depth of snow pack \f$[m] (\Delta z_s)\f$
+  real,intent(in) :: TCSNOW(ILG)  !< Thermal conductivity of snow \f$[W m^{-1} K^{-1}]\f$
+  real,intent(inout) :: HCPSNO(ILG)  !< Heat capacity of snow \f$[J m^{-3} K^1] (C_s)\f$
+  real,intent(in) :: QTRANS(ILG)  !< Shortwave radiation transmitted through the
   !< snow pack \f$[W m^{-2}]\f$
-  real, intent(in) :: GCONST(ILG)  !< Intercept used in equation relating snow
+  real,intent(in) :: GCONST(ILG)  !< Intercept used in equation relating snow
   !< surface heat flux to snow surface temperature \f$[W m^{-2}]\f$
-  real, intent(in) :: GCOEFF(ILG)  !< Multiplier used in equation relating snow
+  real,intent(in) :: GCOEFF(ILG)  !< Multiplier used in equation relating snow
   !< surface heat flux to snow surface temperature \f$[W m^{-2} K^{-1}]\f$
-  real, intent(in) :: FI    (ILG)  !< Fractional coverage of subarea in question on
+  real,intent(in) :: FI    (ILG)  !< Fractional coverage of subarea in question on
   !< modelled area \f$[ ] (X_i)\f$
-  real, intent(in) :: GCONSTS(ILG) !< Intercept used in equation relating snow
+  real,intent(in) :: GCONSTS(ILG) !< Intercept used in equation relating snow
   !< surface heat flux to snow surface temperature \f$[W m^{-2}]\f$
-  real, intent(in) :: GCOEFFS(ILG) !< Multiplier used in equation relating snow
+  real,intent(in) :: GCOEFFS(ILG) !< Multiplier used in equation relating snow
   !< surface heat flux to snow surface temperature \f$[W m^{-2} K^{-1}]\f$
-  real, intent(in) :: TBAR(ILG, IG) !< Temperatures of soil layers, averaged over
+  real,intent(in) :: TBAR(ILG,IG) !< Temperatures of soil layers,averaged over
   !< modelled area [K]
-  real, intent(in) :: DELZ  (IG)   !< Overall thickness of soil layer [m]
+  real,intent(in) :: DELZ  (IG)   !< Overall thickness of soil layer [m]
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: GSNOLD, HADD, HCONV, WFREZ
+  real :: GSNOLD,HADD,HCONV,WFREZ
   !
   !-----------------------------------------------------------------------
   !
@@ -133,14 +133,14 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
   !! the shortwave radiation transmitted through the snow pack,
   !! QTRANS, is added to GZERO.
   !!
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0.) then
       GSNOLD = GCOEFFS(I) * TSURF(I) + GCONSTS(I)
-      TSNBOT(I) = (ZSNOW(I) * TSNOW(I) + DELZ(1) * TBAR(I, 1)) / &
+      TSNBOT(I) = (ZSNOW(I) * TSNOW(I) + DELZ(1) * TBAR(I,1)) / &
                   (ZSNOW(I) + DELZ(1))
-      !              TSNBOT(I)=0.90*TSNOW(I)+0.10*TBAR(I, 1)
+      !              TSNBOT(I)=0.90*TSNOW(I)+0.10*TBAR(I,1)
       !              TSNBOT(I)=TSURF(I)-GSNOLD*ZSNOW(I)/(2.0*TCSNOW(I))
-      TSNBOT(I) = MIN(TSNBOT(I), TFREZ)
+      TSNBOT(I) = MIN(TSNBOT(I),TFREZ)
       GZERO(I) = GCOEFF(I) * TSNBOT(I) + GCONST(I)
       if (QMELTG(I) < 0.) then
         GSNOW(I) = GSNOW(I) + QMELTG(I)
@@ -191,7 +191,7 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
   !! the diagnostic variables HMFN describing phase changes of water
   !! in the snow pack, and the change in internal energy HTCS.
   !!
-  do I = IL1, IL2 ! loop 200
+  do I = IL1,IL2 ! loop 200
     if (FI(I) > 0. .and. TSNOW(I) < 0. .and. WSNOW(I) > 0.) &
         then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * ZSNOW(I) / &
@@ -201,7 +201,7 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
       if (HADD <= HCONV) then
         WFREZ = HADD / CLHMLT
         HADD = 0.0
-        WSNOW(I) = MAX(0.0, WSNOW(I) - WFREZ)
+        WSNOW(I) = MAX(0.0,WSNOW(I) - WFREZ)
         TSNOW(I) = 0.0
         RHOSNO(I) = RHOSNO(I) + WFREZ / ZSNOW(I)
         HCPSNO(I) = HCPICE * RHOSNO(I) / RHOICE + HCPW * WSNOW(I) / &
@@ -222,4 +222,4 @@ subroutine snowTempUpdate(GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSPO
   end do ! loop 200
   !
   return
-end
+end subroutine snowTempUpdate

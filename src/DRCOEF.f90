@@ -3,9 +3,9 @@
 !! This work has been described in \cite Abdella1996-em.
 !! @author K. Abdella, N. Macfarlane, M. Lazare, D. Verseghy, E. Chan
 !
-subroutine DRCOEF(CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
-                  CRIB, TVIRTG, TVIRTA, VA, FI, ITER, &
-                  ILG, IL1, IL2)
+subroutine DRCOEF (CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
+                   CRIB, TVIRTG, TVIRTA, VA, FI, ITER, &
+                   ILG, IL1, IL2)
   !
   !     * NOV 04/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * SEP 10/02 - K.ABDELLA.  BUGFIX IN CALCULATION OF "OLS" (2 PLACES).
@@ -42,24 +42,24 @@ subroutine DRCOEF(CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
   !     *                         THIS IS PREVIOUS VERSION "DRCOEFX".
   !     * K. ABDELLA/M. LAZARE. - NOV 30/94.
   !
-  use classic_params, only : GRAV, VKC
+  use classicParams, only : GRAV, VKC
 
   implicit none
 
   !     * INTEGER CONSTANTS.
   integer, intent(in) :: ILG, IL1, IL2
-  integer :: JL, I
+  integer :: I
 
   !     * OUTPUT ARRAYS.
   real, intent(out)   :: CDM    (ILG) !< STABILITY-DEPENDENT DRAG COEFFICIENT FOR MOMENTUM.
   real, intent(inout) :: CDH    (ILG) !< STABILITY-DEPENDENT DRAG COEFFICIENT FOR HEAT.
   real, intent(inout) :: RIB    (ILG) !< BULK RICHARDSON NUMBER.
-  real, intent(out) :: CFLUX  (ILG) !< CD * MOD(V), BOUNDED BY FREE-CONVECTIVE LIMIT.
+  real, intent(out) :: CFLUX  (ILG) !< CD * MOD(V),BOUNDED BY FREE-CONVECTIVE LIMIT.
 
   !     * INPUT ARRAYS.
   real, intent(in) :: ZOMIN  (ILG) !< ROUGHNESS HEIGHTS FOR MOMENTUM/HEAT NORMALIZED BY REFERENCE HEIGHT.
   real, intent(in) :: ZOHIN  (ILG) !< ROUGHNESS HEIGHTS FOR MOMENTUM/HEAT NORMALIZED BY REFERENCE HEIGHT.
-  real, intent(in) :: CRIB   (ILG) !< -RGAS*SLTHKEF/(VA**2), WHERE SLTHKEF=-LOG(MAX(SGJ(ILEV), SHJ(ILEV)))
+  real, intent(in) :: CRIB   (ILG) !< -RGAS*SLTHKEF/(VA**2),WHERE SLTHKEF=-LOG(MAX(SGJ(ILEV),SHJ(ILEV)))
   real, intent(in) :: TVIRTG (ILG) !< "SURFACE" VIRTUAL TEMPERATURE.
   real, intent(in) :: TVIRTA (ILG) !< LOWEST LEVEL VIRTUAL TEMPERATURE.
   real, intent(in) :: VA     (ILG) !< AMPLITUDE OF LOWEST LEVEL WIND.
@@ -70,7 +70,7 @@ subroutine DRCOEF(CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
   integer, intent(in) :: ITER(ILG) !< INDEX ARRAY INDICATING IF POINT IS UNDERGOING FURTHER ITERATION OR NOT.
 
   !     * WORK ARRAYS.
-  !> ZOM/ZOH: WORK ARRAYS USED FOR SCALING ZOMIN/ZOHIN ON STABLE SIDE, AS PART OF CALCULATION.
+  !> ZOM/ZOH: WORK ARRAYS USED FOR SCALING ZOMIN/ZOHIN ON STABLE SIDE,AS PART OF CALCULATION.
   real :: ZOM    (ILG)
   real :: ZOH    (ILG)
 
@@ -86,12 +86,12 @@ subroutine DRCOEF(CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
   BETA = 1.2
   PR = 1.
   !
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0. .and. ITER(I) == 1) then
       RIB(I) = CRIB(I) * (TVIRTG(I) - TVIRTA(I))
       if (RIB(I) >= 0.0) then
         ZLEV = - CRIB(I) * TVIRTA(I) * (VA(I) ** 2) / GRAV
-        ZS = MAX(10.,5. * MAX(ZOMIN(I) * ZLEV, ZOHIN(I) * ZLEV))
+        ZS = MAX(10.,5. * MAX(ZOMIN(I) * ZLEV,ZOHIN(I) * ZLEV))
         ZS = ZLEV * (1. + RIB(I)) / (1. + (ZLEV / ZS) * RIB(I))
         ZOM(I) = ZOMIN(I) * ZLEV / ZS
         ZOH(I) = ZOHIN(I) * ZLEV / ZS
@@ -103,8 +103,8 @@ subroutine DRCOEF(CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
       ZOLN = LOG(ZOH(I))
       ZMLN = LOG(ZOM(I))
       if (RIB(I) < 0.0) then
-        CPR = MAX(ZOLN / ZMLN, 0.74)
-        CPR = MIN(CPR, 1.0)
+        CPR = MAX(ZOLN / ZMLN,0.74)
+        CPR = MIN(CPR,1.0)
         ZI = 1000.0
         OLSF = BETA ** 3 * ZI * VKC ** 2 / ZMLN ** 3
         OLFACT = 1.7 * (LOG(1. + ZOM(I) / ZOH(I))) ** 0.5 + 0.9
@@ -191,9 +191,9 @@ subroutine DRCOEF(CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
       else
         CLIMIT = 0.
       end if
-      CFLUX(I) = MAX(CDH(I) * WSPEED, CLIMIT)
+      CFLUX(I) = MAX(CDH(I) * WSPEED,CLIMIT)
     end if
   end do ! loop 100
 
   return
-end
+end subroutine DRCOEF

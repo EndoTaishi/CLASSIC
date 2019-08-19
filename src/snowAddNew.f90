@@ -1,8 +1,8 @@
 !> \file
 !! Adds snow incident on the ground surface to the snow pack.
 !
-subroutine snowAddNew(ALBSNO, TSNOW, RHOSNO, ZSNOW, HCPSNO, HTCS, & ! Formerly SNOADD
-                      FI, S, TS, RHOSNI, WSNOW, ILG, IL1, IL2, JL)
+subroutine snowAddNew (ALBSNO, TSNOW, RHOSNO, ZSNOW, HCPSNO, HTCS, & ! Formerly SNOADD
+                       FI, S, TS, RHOSNI, WSNOW, ILG, IL1, IL2, JL)
   !
   !     * NOV 17/11 - M.LAZARE.   CHANGE SNOW ALBEDO REFRESHMENT
   !     *                         THRESHOLD (SNOWFALL IN CURRENT
@@ -27,7 +27,7 @@ subroutine snowAddNew(ALBSNO, TSNOW, RHOSNO, ZSNOW, HCPSNO, HTCS, & ! Formerly S
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. ACCUMULATION OF SNOW ON GROUND.
   !
-  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, RHOICE
+  use classicParams, only : DELT, TFREZ, HCPW, HCPICE, RHOW, RHOICE
 
   implicit none
   !
@@ -59,7 +59,7 @@ subroutine snowAddNew(ALBSNO, TSNOW, RHOSNO, ZSNOW, HCPSNO, HTCS, & ! Formerly S
   real :: SNOFAL, HCPSNP
   !
 
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0. .and. S(I) > 0.) then
       HTCS  (I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
                   ZSNOW(I) / DELT
@@ -85,7 +85,7 @@ subroutine snowAddNew(ALBSNO, TSNOW, RHOSNO, ZSNOW, HCPSNO, HTCS, & ! Formerly S
   end do ! loop 100
   !
   return
-end
+end subroutine snowAddNew
 !> \file
 !!
 !! @author D. Verseghy, M. Lazare, R. Harvey

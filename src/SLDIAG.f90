@@ -2,8 +2,8 @@
 !! Calculates near surface output variables
 !! @author Y. Delage, D. Verseghy, M. Lazare, J. Melton
 !
-subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
-                  Z0M, Z0E, F, ZA, ZU, ZT, ILG, IL1, IL2, JL)
+subroutine SLDIAG (SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
+                   Z0M, Z0E, F, ZA, ZU, ZT, ILG, IL1, IL2, JL)
 
   !     * JUN 23/14 - M.LAZARE.   New version for gcm18+:
   !     *                         - Bugfix to calculation of
@@ -23,7 +23,7 @@ subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
   !     * NOV 04/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * JUL 19/96 - Y. DELAGE.
   !     ------------------------------------
-  use classic_params, only : GRAV, VKC, VMIN
+  use classicParams, only : GRAV, VKC, VMIN
 
   implicit none
   !
@@ -75,12 +75,12 @@ subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
   PIE(X) = 2.0 * LOG(1.0 + X ** 2)
 
   PR = 1.0
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (F(I) > 0.) then
 
       !     * CALCULATION OF SURFACE FLUXES AND MONIN-OBUKHOV LENGTH
 
-      WSPD = MAX(VMIN, SQRT(UA(I) ** 2 + VA(I) ** 2))
+      WSPD = MAX(VMIN,SQRT(UA(I) ** 2 + VA(I) ** 2))
       CM = SQRT(CDM(I))
       US = CM * WSPD
 
@@ -110,7 +110,7 @@ subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
               + PSM(Z0M(I) / L)) * RATIO
         TTA = T0(I) + TS / VKC * PR * (LOG(ZA(I) / Z0E(I)) - PSE(ZA(I) / L) + &
               PSE(Z0E(I) / L))
-        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)), 1.E-4), TTA - T0(I))
+        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)),1.E-4),TTA - T0(I))
         CE = (LOG((ZT(I) + Z0M(I)) / Z0E(I)) - PSE((ZT(I) + Z0M(I)) / L) &
              + PSE(Z0E(I) / L)) * RATIO * PR / VKC
 
@@ -125,7 +125,7 @@ subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
 
         TTA = T0(I) + TS / VKC * PR * (LOG(ZA(I) / Z0E(I)) - PIE(Y(ZA(I) / L)) + &
               PIE(Y(Z0E(I) / L)))
-        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)), 1.E-4), TTA - T0(I))
+        RATIO = (TA(I) - T0(I)) / SIGN(MAX(ABS(TTA - T0(I)),1.E-4),TTA - T0(I))
         CE = (LOG((ZT(I) + Z0M(I)) / Z0E(I)) - PIE(Y((ZT(I) + Z0M(I)) / L)) &
              + PIE(Y(Z0E(I) / L))) * RATIO * PR / VKC
 
@@ -139,4 +139,4 @@ subroutine SLDIAG(SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &
   end do ! loop 100
 
   return
-end
+end subroutine SLDIAG

@@ -3,8 +3,8 @@
 !! the vegetation canopy.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine waterUnderCanopy(IWATER, R, TR, S, TS, RHOSNI, EVAPG, QFN, QFG, & ! Formerly SUBCAN
-                            PCPN, PCPG, FI, ILG, IL1, IL2, JL)
+subroutine waterUnderCanopy (IWATER, R, TR, S, TS, RHOSNI, EVAPG, QFN, QFG, & ! Formerly SUBCAN
+                             PCPN, PCPG, FI, ILG, IL1, IL2, JL)
   !
   !     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * JUL 21/04 - D.VERSEGHY. NEW LOWER LIMITS ON RADD AND SADD,
@@ -29,7 +29,7 @@ subroutine waterUnderCanopy(IWATER, R, TR, S, TS, RHOSNI, EVAPG, QFN, QFG, & ! F
   !     *                         FLUXES TOGETHER WITH PRECIPITATION
   !     *                         REACHING GROUND.
   !
-  use classic_params, only : RHOW
+  use classicParams, only : RHOW
 
   implicit none
   !
@@ -66,7 +66,7 @@ subroutine waterUnderCanopy(IWATER, R, TR, S, TS, RHOSNI, EVAPG, QFN, QFG, & ! F
   !! and calculates the resulting overall evaporation or deposition
   !! rates.
   !!
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     !>
     !! For IWATER = 2 (snow on the ground under the canopy), the
     !! water vapour flux EVAPG at the ground
@@ -142,7 +142,7 @@ subroutine waterUnderCanopy(IWATER, R, TR, S, TS, RHOSNI, EVAPG, QFN, QFG, & ! F
   !! precipitation flux PCPN and added to the ground
   !! precipitation flux PCPG.
   !!
-  do I = IL1, IL2 ! loop 200
+  do I = IL1,IL2 ! loop 200
     if (FI(I) > 0. .and. IWATER == 1) then
       if (R(I) > 0. .or. EVAPG(I) < 0.) then
         RADD = R(I) - EVAPG(I)
@@ -183,4 +183,4 @@ subroutine waterUnderCanopy(IWATER, R, TR, S, TS, RHOSNI, EVAPG, QFN, QFG, & ! F
   end do ! loop 200
   !
   return
-end
+end subroutine waterUnderCanopy

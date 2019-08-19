@@ -106,10 +106,7 @@ class FortranRules(object):
 
         # Clean up arguments inside function calls)
         (r'(^[^!"\'=\n]*\()\s+(\w)', r'\1\2', 'Unnecessary space in function call'),
-        (r'(\w|\)),(\w)', r'\1, \2', 'Spacing between arguments'),
-        (r'(\w|\)), \s+(\w)', r'\1, \2', 'Spacing between arguments'),
-        (r'(\w|\))\s+,\s*(\w)', r'\1, \2', 'Spacing between arguments'),
-        (r'(\w)\s+\)', r'\1)', 'Spacing between arguments'),
+        (r'(\w)\s+\)', r'\1)', 'Spacing after arguments'),
 
         # Kind should be parametrized
         (r'\(kind\s*=\s*\d\s*\)', None, 'You should use "sp" or "dp" instead'),

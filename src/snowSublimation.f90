@@ -1,9 +1,9 @@
 !> \file
 !> Sublimation calculations for the snow pack on the ground.
 !
-subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, & ! Formerly SNOVAP
-                           WLOST, TRUNOF, RUNOFF, TOVRFL, OVRFLW, &
-                           FI, R, S, RHOSNI, WSNOW, ILG, IL1, IL2, JL)
+subroutine snowSublimation (RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, & ! Formerly SNOVAP
+                            WLOST, TRUNOF, RUNOFF, TOVRFL, OVRFLW, &
+                            FI, R, S, RHOSNI, WSNOW, ILG, IL1, IL2, JL)
   !
   !     * AUG 25/11 - D.VERSEGHY. CORRECT CALCULATION OF TRUNOF
   !     *                         AND TOVRFL.
@@ -33,7 +33,7 @@ subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, &
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. SUBLIMATION FROM SNOWPACK.
   !
-  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
+  use classicParams, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
                              RHOICE, CLHMLT, CLHVAP
 
   implicit none
@@ -73,7 +73,7 @@ subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, &
   real :: ZADD, ZLOST, ZREM
   !
   !-----------------------------------------------------------------------
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0. .and. (S(I) < 1.0E-11 .or. R(I) < 1.0E-11) &
         .and. ZSNOW(I) > 0.) then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
@@ -119,7 +119,7 @@ subroutine snowSublimation(RHOSNO, ZSNOW, HCPSNO, TSNOW, EVAP, QFN, QFG, HTCS, &
     end if
   end do ! loop 100
   return
-end
+end subroutine snowSublimation
 !> \file
 !!
 !! @author D. Verseghy, M. Lazare

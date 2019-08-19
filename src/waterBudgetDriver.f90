@@ -2,35 +2,35 @@
 !! Calls subroutines to perform surface water budget calculations
 !! @author D. Verseghy, P. Bartlett, M. Lazare
 !
-subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly CLASSW
-                             RUNOFF, TRUNOF, SNO, TSNOW, RHOSNO, ALBSNO, &
-                             WSNOW, ZPOND, TPOND, GROWTH, TBASE, GFLUX, &
-                             PCFC, PCLC, PCPN, PCPG, QFCF, QFCL, &
-                             QFN, QFG, QFC, HMFC, HMFG, HMFN, &
-                             HTCC, HTCS, HTC, ROFC, ROFN, ROVG, &
-                             WTRS, WTRG, OVRFLW, SUBFLW, BASFLW, &
-                             TOVRFL, TSUBFL, TBASFL, EVAP, QFLUX, RHOAIR, &
-                             TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, &
-                             THICEC, THICEG, HCPC, HCPG, RPCP, TRPCP, &
-                             SPCP, TSPCP, PCPR, TA, RHOSNI, GGEO, &
-                             FC, FG, FCS, FGS, TPONDC, TPONDG, &
-                             TPNDCS, TPNDGS, EVAPC, EVAPCG, EVAPG, EVAPCS, &
-                             EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG, &
-                             RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF, FSVFS, &
-                             CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO, &
-                             TCANS, CHCAP, CHCAPS, CMASSC, CMASCS, ZSNOW, &
-                             GZEROC, GZEROG, GZROCS, GZROGS, G12C, G12G, &
-                             G12CS, G12GS, G23C, G23G, G23CS, G23GS, &
-                             TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
-                             ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSAV, &
-                             TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT, FROOTS, &
-                             THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, &
-                             THLRAT, THFC, XDRAIN, HCPS, DELZ, &
-                             DELZW, ZBOTW, XSLOPE, GRKFAC, WFSURF, WFCINT, &
-                             ISAND, IGDR, &
-                             IWF, ILG, IL1, IL2, N, &
-                             JL, IC, IG, IGP1, IGP2, &
-                             NLANDCS, NLANDGS, NLANDC, NLANDG, NLANDI)
+subroutine waterBudgetDriver (THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly CLASSW
+                              RUNOFF, TRUNOF, SNO, TSNOW, RHOSNO, ALBSNO, &
+                              WSNOW, ZPOND, TPOND, GROWTH, TBASE, GFLUX, &
+                              PCFC, PCLC, PCPN, PCPG, QFCF, QFCL, &
+                              QFN, QFG, QFC, HMFC, HMFG, HMFN, &
+                              HTCC, HTCS, HTC, ROFC, ROFN, ROVG, &
+                              WTRS, WTRG, OVRFLW, SUBFLW, BASFLW, &
+                              TOVRFL, TSUBFL, TBASFL, EVAP, QFLUX, RHOAIR, &
+                              TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, &
+                              THICEC, THICEG, HCPC, HCPG, RPCP, TRPCP, &
+                              SPCP, TSPCP, PCPR, TA, RHOSNI, GGEO, &
+                              FC, FG, FCS, FGS, TPONDC, TPONDG, &
+                              TPNDCS, TPNDGS, EVAPC, EVAPCG, EVAPG, EVAPCS, &
+                              EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG, &
+                              RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF, FSVFS, &
+                              CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO, &
+                              TCANS, CHCAP, CHCAPS, CMASSC, CMASCS, ZSNOW, &
+                              GZEROC, GZEROG, GZROCS, GZROGS, G12C, G12G, &
+                              G12CS, G12GS, G23C, G23G, G23CS, G23GS, &
+                              TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS, &
+                              ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSAV, &
+                              TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT, FROOTS, &
+                              THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, &
+                              THLRAT, THFC, XDRAIN, HCPS, DELZ, &
+                              DELZW, ZBOTW, XSLOPE, GRKFAC, WFSURF, WFCINT, &
+                              ISAND, IGDR, &
+                              IWF, ILG, IL1, IL2, N, &
+                              JL, IC, IG, IGP1, IGP2, &
+                              NLANDCS, NLANDGS, NLANDC, NLANDG, NLANDI)
   !
   !     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
   !     *                         AREAS WITH AND WITHOUT SNOW.
@@ -103,15 +103,15 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !     *                         WITH REVISIONS TO DIAGNOSTICS.
   !     *                         ALLOW SPECIFICATION OF LIMITING POND
   !     *                         DEPTH "PNDLIM" (PARALLEL CHANGES MADE
-  !     *                         SIMULTANEOUSLY IN TMCALC).
+  !     *                         SIMULTANEOUSLY IN waterUpdates).
   !     * DEC 16/94 - D.VERSEGHY. TWO NEW DIAGNOSTIC FIELDS.
   !     * NOV 18/93 - D.VERSEGHY. LOCAL VERSION WITH INTERNAL WORK ARRAYS
   !     *                         HARD-CODED FOR USE ON PCS.
   !     * NOV 01/93 - D.VERSEGHY. CLASS - VERSION 2.2.
   !     *                         REVISIONS ASSOCIATED WITH NEW VERSION
-  !     *                         OF TMCALC.
+  !     *                         OF waterUpdates.
   !     * JUL 30/93 - D.VERSEGHY/M.LAZARE. NUMEROUS NEW DIAGNOSTIC FIELDS.
-  !     * MAY 06/93 - D.VERSEGHY/M.LAZARE. CORRECT BUG IN CALL TO TMCALC
+  !     * MAY 06/93 - D.VERSEGHY/M.LAZARE. CORRECT BUG IN CALL TO waterUpdates
   !     *                                  FOR CANOPY-SNOW CASE, WHERE
   !     *                                  SHOULD BE PASSING "HCPCS"
   !     *                                  INSTEAD OF "HCPGS".
@@ -121,7 +121,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !                               CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. LAND SURFACE WATER BUDGET CALCULATIONS.
   !
-  use classic_params, only : DELT, TFREZ, HCPW, HCPSND, SPHW, SPHICE, RHOW
+  use classicParams, only : DELT, TFREZ, HCPW, HCPSND, SPHW, SPHICE, RHOW
 
   implicit none
 
@@ -138,10 +138,10 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !
   !     * MAIN OUTPUT FIELDS.
   !
-  real, intent(inout) :: THLIQ (ILG, IG)   !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
-  real, intent(out) :: THICE (ILG, IG)   !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3}]\f$
-  real, intent(inout) :: TBAR  (ILG, IG)   !< Temperature of soil layers [K]
-  real, intent(out) :: GFLUX (ILG, IG)   !< Heat flux at interfaces between soil layers \f$[W m^{-2}]\f$
+  real, intent(inout) :: THLIQ (ILG,IG)   !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(out) :: THICE (ILG,IG)   !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(inout) :: TBAR  (ILG,IG)   !< Temperature of soil layers [K]
+  real, intent(out) :: GFLUX (ILG,IG)   !< Heat flux at interfaces between soil layers \f$[W m^{-2}]\f$
   !
   real, intent(inout) :: TCAN  (ILG)  !< Vegetation canopy temperature [K]
   real, intent(inout) :: RCAN  (ILG)  !< Intercepted liquid water stored on canopy \f$[kg m^{-2}]\f$
@@ -200,16 +200,16 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   real, intent(in) :: TSUBFL(ILG)  !< Temperature of interflow from sides of soil column [K]
   real, intent(in) :: TBASFL(ILG)  !< Temperature of base flow from bottom of soil column [K]
   real, intent(inout) :: EVAP  (ILG)  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(inout) :: QFLUX (ILG)  !< Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1}]\f$
+  real, intent(inout) :: QFLUX (ILG)  !< Product of surface drag coefficient,wind speed and surface-air specific humidity difference \f$[m s^{-1}]\f$
   real, intent(in) :: RHOAIR (ILG) !< Density of air \f$[kg m^{-3}]\f$
   !
-  real, intent(in) :: QFC  (ILG, IG) !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(in) :: HMFG (ILG, IG) !< Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
-  real, intent(inout) :: HTC  (ILG, IG) !< Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
+  real, intent(in) :: QFC  (ILG,IG) !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
+  real, intent(in) :: HMFG (ILG,IG) !< Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
+  real, intent(inout) :: HTC  (ILG,IG) !< Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
   !
   !     * I/O FIELDS PASSED THROUGH CLASS.
   !
-  !(In composite definitions, suffix C or CO = vegetation over
+  !(In composite definitions,suffix C or CO = vegetation over
   ! ground; G or GO = bare ground; CS = vegetation over snow cover
   ! GS = bare snow cover.)
   !
@@ -220,24 +220,24 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   real, intent(in) :: PCPR  (ILG)  !< Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
   real, intent(in) :: TA    (ILG)  !< Air temperature at reference height [K]
   !
-  real, intent(in) :: TBARC(ILG, IG) !< Subarea temperatures of soil layers [C]
-  real, intent(in) :: TBARG(ILG, IG) !< Subarea temperatures of soil layers [C]
-  real, intent(in) :: TBARCS(ILG, IG) !< Subarea temperatures of soil layers [C]
-  real, intent(in) :: TBARGS(ILG, IG) !< Subarea temperatures of soil layers [C]
+  real, intent(in) :: TBARC(ILG,IG) !< Subarea temperatures of soil layers [C]
+  real, intent(in) :: TBARG(ILG,IG) !< Subarea temperatures of soil layers [C]
+  real, intent(in) :: TBARCS(ILG,IG) !< Subarea temperatures of soil layers [C]
+  real, intent(in) :: TBARGS(ILG,IG) !< Subarea temperatures of soil layers [C]
   !
-  real, intent(in) :: THLIQC(ILG, IG)   !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THLIQG(ILG, IG)   !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THICEC(ILG, IG)   !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THICEG(ILG, IG)   !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: HCPC  (ILG, IG)   !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}]\f$
-  real, intent(in) :: HCPG  (ILG, IG)   !< Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{-1}]\f$
-  real, intent(in) :: TCTOPC(ILG, IG)   !< Thermal conductivity of soil at top of layer (vegetation over ground) \f$[W m^{-1} K^{-1}]\f$
-  real, intent(in) :: TCBOTC(ILG, IG)   !< Thermal conductivity of soil at bottom of layer (vegetation over ground) \f$[W m^{-1} K^{-1}]\f$
-  real, intent(in) :: TCTOPG(ILG, IG)   !< Thermal conductivity of soil at top of layer (bare ground) \f$[W m^{-1} K^{-1}]\f$
-  real, intent(in) :: TCBOTG(ILG, IG)   !< Thermal conductivity of soil at bottom of layer (bare ground) \f$[W m^{-1} K^{-1}]\f$
-  real, intent(in) :: FROOT (ILG, IG)   !< Fraction of total transpiration contributed by soil layer over snow-free subarea [ ]
-  real, intent(in) :: FROOTS (ILG, IG)  !< Fraction of total transpiration contributed by soil layer over snow-covered subarea [ ]
-  real, intent(in) :: TSFSAV(ILG, 4)    !< Ground surface temperature over subarea [K]
+  real, intent(in) :: THLIQC(ILG,IG)   !< Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THLIQG(ILG,IG)   !< Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THICEC(ILG,IG)   !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THICEG(ILG,IG)   !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: HCPC  (ILG,IG)   !< Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in) :: HCPG  (ILG,IG)   !< Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in) :: TCTOPC(ILG,IG)   !< Thermal conductivity of soil at top of layer (vegetation over ground) \f$[W m^{-1} K^{-1}]\f$
+  real, intent(in) :: TCBOTC(ILG,IG)   !< Thermal conductivity of soil at bottom of layer (vegetation over ground) \f$[W m^{-1} K^{-1}]\f$
+  real, intent(in) :: TCTOPG(ILG,IG)   !< Thermal conductivity of soil at top of layer (bare ground) \f$[W m^{-1} K^{-1}]\f$
+  real, intent(in) :: TCBOTG(ILG,IG)   !< Thermal conductivity of soil at bottom of layer (bare ground) \f$[W m^{-1} K^{-1}]\f$
+  real, intent(in) :: FROOT (ILG,IG)   !< Fraction of total transpiration contributed by soil layer over snow-free subarea [ ]
+  real, intent(in) :: FROOTS (ILG,IG)  !< Fraction of total transpiration contributed by soil layer over snow-covered subarea [ ]
+  real, intent(in) :: TSFSAV(ILG,4)    !< Ground surface temperature over subarea [K]
   !
   real, intent(in) :: FC    (ILG) !< Subarea fractional coverage of modelled area [ ]
   real, intent(in) :: FG    (ILG) !< Subarea fractional coverage of modelled area [ ]
@@ -306,19 +306,19 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !
   !     * SOIL PROPERTY ARRAYS.
   !
-  real, intent(in) :: THPOR (ILG, IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: THLRET(ILG, IG)   !< Liquid water retention capacity for organic soil [m3 m-3 ]
-  real, intent(in) :: THLMIN(ILG, IG)   !< Residual soil liquid water content
+  real, intent(in) :: THPOR (ILG,IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THLRET(ILG,IG)   !< Liquid water retention capacity for organic soil [m3 m-3 ]
+  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content
   !< remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: BI    (ILG, IG)   !< Clapp and Hornberger empirical "b" parameter [ ]
-  real, intent(in) :: GRKSAT(ILG, IG)   !< Saturated hydraulic conductivity of soil layer \f$[m s^{-1}]\f$
-  real, intent(in) :: PSISAT(ILG, IG)   !< Soil moisture suction at saturation [m]
-  real, intent(in) :: THLRAT(ILG, IG)   !< Fractional saturation of soil behind the wetting front [ ]
-  real, intent(in) :: THFC  (ILG, IG)   !< Field capacity \f$[m^3 m^{-3}]\f$
-  real, intent(in) :: HCPS  (ILG, IG)   !< Heat capacity of soil material \f$[J m^{-3} K^{-1}]\f$
-  real, intent(in) :: DELZW (ILG, IG)   !< Overall thickness of soil layer [m]
-  real :: DELZZ (ILG, IG)   !< Permeable thickness of soil layer [m]
-  real, intent(in) :: ZBOTW (ILG, IG)   !< Depth to permeable bottom of soil layer [m]
+  real, intent(in) :: BI    (ILG,IG)   !< Clapp and Hornberger empirical "b" parameter [ ]
+  real, intent(in) :: GRKSAT(ILG,IG)   !< Saturated hydraulic conductivity of soil layer \f$[m s^{-1}]\f$
+  real, intent(in) :: PSISAT(ILG,IG)   !< Soil moisture suction at saturation [m]
+  real, intent(in) :: THLRAT(ILG,IG)   !< Fractional saturation of soil behind the wetting front [ ]
+  real, intent(in) :: THFC  (ILG,IG)   !< Field capacity \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: HCPS  (ILG,IG)   !< Heat capacity of soil material \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in) :: DELZW (ILG,IG)   !< Overall thickness of soil layer [m]
+  real :: DELZZ (ILG,IG)   !< Permeable thickness of soil layer [m]
+  real, intent(in) :: ZBOTW (ILG,IG)   !< Depth to permeable bottom of soil layer [m]
   real, intent(in) :: XDRAIN(ILG)      !< Drainage index at bottom of soil profile [ ]
   real, intent(in) :: XSLOPE(ILG)      !< Surface slope (used when running MESH code) [degrees]
   real, intent(in) :: GRKFAC(ILG)      !< WATROF parameter used when running MESH code [ ]
@@ -326,17 +326,17 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   real, intent(in) :: WFCINT(ILG)      !< WATROF parameter used when running MESH code [ ]
   real, intent(in) :: DELZ  (IG)       !< Overall thickness of soil layer [m]
   !
-  integer, intent(in) :: ISAND(ILG, IG) !< Sand content flag
+  integer, intent(in) :: ISAND(ILG,IG) !< Sand content flag
   integer, intent(in) :: IGDR  (ILG)   !< Index of soil layer in which bedrock is encountered
   !
   !     * INTERNAL WORK ARRAYS USED THROUGHOUT waterBudgetDriver.
   !
-  real :: TBARWC(ILG, IG), TBARWG(ILG, IG), TBRWCS(ILG, IG), TBRWGS(ILG, IG), &
-          THLQCO(ILG, IG), THLQGO(ILG, IG), THLQCS(ILG, IG), THLQGS(ILG, IG), &
-          THICCO(ILG, IG), THICGO(ILG, IG), THICCS(ILG, IG), THICGS(ILG, IG), &
-          HCPCO (ILG, IG), HCPGO (ILG, IG), HCPCS (ILG, IG), HCPGS (ILG, IG), &
-          GRKSC (ILG, IG), GRKSG (ILG, IG), GRKSCS(ILG, IG), GRKSGS(ILG, IG), &
-          GFLXC (ILG, IG), GFLXG (ILG, IG), GFLXCS(ILG, IG), GFLXGS(ILG, IG)
+  real :: TBARWC(ILG,IG), TBARWG(ILG,IG), TBRWCS(ILG,IG), TBRWGS(ILG,IG), &
+          THLQCO(ILG,IG), THLQGO(ILG,IG), THLQCS(ILG,IG), THLQGS(ILG,IG), &
+          THICCO(ILG,IG), THICGO(ILG,IG), THICCS(ILG,IG), THICGS(ILG,IG), &
+          HCPCO (ILG,IG), HCPGO (ILG,IG), HCPCS (ILG,IG), HCPGS (ILG,IG), &
+          GRKSC (ILG,IG), GRKSG (ILG,IG), GRKSCS(ILG,IG), GRKSGS(ILG,IG), &
+          GFLXC (ILG,IG), GFLXG (ILG,IG), GFLXCS(ILG,IG), GFLXGS(ILG,IG)
   !
   real :: SPCC  (ILG), SPCG  (ILG), SPCCS (ILG), SPCGS (ILG), &
           TSPCC (ILG), TSPCG (ILG), TSPCCS(ILG), TSPCGS(ILG), &
@@ -359,27 +359,27 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
           DT    (ILG), ZERO  (ILG), RALB  (ILG), ZFAV  (ILG), &
           THLINV(ILG)
   !
-  integer             :: LZFAV (ILG)
+  integer :: LZFAV (ILG)
   !
   !     * INTERNAL WORK ARRAYS FOR waterCalcPrep AND canopyInterception.
   !
-  real :: RADD  (ILG), SADD  (ILG)
+  real :: RADD(ILG), SADD(ILG)
   !
   !     * INTERNAL WORK FIELDS FOR waterFlowInfiltrate/waterFlowNonInfiltrate (AND THEIR CALLED
-  !     * ROUTINES (I.E. waterInfiltrateUnsat, waterInfiltrateSat, waterBaseflow) AND iceSheetBalance.
+  !     * ROUTINES (I.E. waterInfiltrateUnsat,waterInfiltrateSat,waterBaseflow) AND iceSheetBalance.
   !
-  real :: ZMAT  (ILG, IGP2, IGP1)
+  real :: ZMAT(ILG,IGP2,IGP1)
   !
-  real :: WMOVE (ILG, IGP2), TMOVE (ILG, IGP2)
+  real :: WMOVE(ILG,IGP2),  TMOVE (ILG,IGP2)
   !
-  real :: THLIQX(ILG, IGP1), THICEX(ILG, IGP1), TBARWX(ILG, IGP1), &
-          DELZX (ILG, IGP1), ZBOTX (ILG, IGP1), FDT   (ILG, IGP1), &
-          TFDT  (ILG, IGP1), PSIF  (ILG, IGP1), THLINF(ILG, IGP1), &
-          GRKINF(ILG, IGP1), FDUMMY(ILG, IGP1), TDUMMY(ILG, IGP1), &
-          ZRMDR (ILG, IGP1)
+  real :: THLIQX(ILG,IGP1), THICEX(ILG,IGP1), TBARWX(ILG,IGP1), &
+          DELZX (ILG,IGP1), ZBOTX (ILG,IGP1), FDT   (ILG,IGP1), &
+          TFDT  (ILG,IGP1), PSIF  (ILG,IGP1), THLINF(ILG,IGP1), &
+          GRKINF(ILG,IGP1), FDUMMY(ILG,IGP1), TDUMMY(ILG,IGP1), &
+          ZRMDR (ILG,IGP1)
   !
-  real :: THLMAX(ILG, IG), THTEST(ILG, IG), THLDUM(ILG, IG), &
-          THIDUM(ILG, IG), TDUMW (ILG, IG)
+  real :: THLMAX(ILG,IG), THTEST(ILG,IG), THLDUM(ILG,IG), &
+          THIDUM(ILG,IG), TDUMW (ILG,IG)
   !
   real :: TRMDR (ILG), ZF    (ILG), FMAX  (ILG), TUSED (ILG), &
           RDUMMY(ILG), WEXCES(ILG), FDTBND(ILG), WADD  (ILG), &
@@ -387,10 +387,10 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
           DTFLOW(ILG), THLNLZ(ILG), THLQLZ(ILG), DZDISP(ILG), &
           WDISP (ILG), WABS  (ILG), ZMOVE (ILG), TBOT  (ILG)
   !
-  integer              :: IGRN  (ILG), IGRD  (ILG), IZERO (ILG), &
-                          IFILL (ILG), LZF   (ILG), NINF  (ILG), &
-                          IFIND (ILG), ITER  (ILG), NEND  (ILG), &
-                          ISIMP (ILG), ICONT (ILG)
+  integer :: IGRN  (ILG), IGRD  (ILG), IZERO (ILG), &
+             IFILL (ILG), LZF   (ILG), NINF  (ILG), &
+             IFIND (ILG), ITER  (ILG), NEND  (ILG), &
+             ISIMP (ILG), ICONT (ILG)
   !
   !     * INTERNAL WORK ARRAYS FOR canopyWaterUpdate AND snowAging.
   !
@@ -400,12 +400,12 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !
   !     * INTERNAL WORK ARRAYS FOR WATROF.
   !
-  real :: THCRIT(ILG, IG), DODRN (ILG), DOVER (ILG), &
-          DIDRN (ILG, IG), DIDRNMX(ILG, IG)
+  real :: THCRIT(ILG,IG), DODRN (ILG), DOVER (ILG), &
+          DIDRN (ILG,IG), DIDRNMX(ILG,IG)
   !
   !     * INTERNAL WORK ARRAYS FOR checkWaterBudget.
   !
-  real :: BAL   (ILG)
+  real :: BAL(ILG)
   !
   !     * INTERNAL SCALARS.
   !
@@ -424,22 +424,22 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !! \f[
   !! \begin{array} { | l | l | c | }
   !! \hline
-  !! \text{canopyWaterUpdate}  & \text{Evaporation/sublimation of water from vegetation canopy}        &   \text{CS, C}    \\ \hline
-  !! \text{canopyInterception}  & \text{Addition of rainfall/snowfall to canopy; throughfall and drip}  &   \text{CS, C}    \\ \hline
-  !! \text{canopyPhaseChange}  & \text{Freezing/thawing of liquid/frozen water on canopy}              &   \text{CS, C}    \\ \hline
-  !! \text{waterUnderCanopy}  & \text{Precipitaiton and condensation under canopy}                    &   \text{CS, C}    \\ \hline
-  !! \text{soilWaterPhaseChg}  & \text{Freezing/thawing of liquid/frozen water in soil}                & \text{CS, GS, C, G} \\ \hline
-  !! \text{snowSublimation}  & \text{Sublimaiton from snow pack}                                     & \text{CS, GS, C, G} \\ \hline
-  !! \text{pondedWaterFreeze}  & \text{Freezing of ponded water on soil}                               & \text{CS, GS, C, G} \\ \hline
-  !! \text{snowMelt}   & \text{Melting of snow pack}                                           &   \text{CS, GS}   \\ \hline
-  !! \text{snowAddNew}  & \text{Accumulation of snow on ground}                                 & \text{CS, GS, C, G} \\ \hline
-  !! \text{snowInfiltrateRipen}  & \text{Infiltration of rain into snow pack}                            &   \text{CS, GS}   \\ \hline
-  !! \text{iceSheetBalance}  & \text{Energy and water budget of ice sheets}                          &   \text{GS, G}    \\ \hline
-  !! \text{waterFlowInfiltrate}  & \text{Infiltraiton of water into soil}                                & \text{CS, GS, C, G} \\ \hline
-  !! \text{waterFlowNonInfiltrate}  & \text{Soil water movement in response to gravity and suction forces}  & \text{CS, GS, C, G} \\ \hline
-  !! \text{TMCALC}  & \text{Step ahead soil layer temperatures, check for freezing/thawing} & \text{CS, GS, C, G} \\ \hline
-  !! \text{checkWaterBudget}  & \text{Check subarea moisture balances for closure}                    & \text{CS, GS, C, G} \\ \hline
-  !! \text{snowAging} & \text{Temporal variation of snow albedo and density}                  &   \text{CS, GS}   \\ \hline
+  !! \text{canopyWaterUpdate}  & \text{Evaporation/sublimation of water from vegetation canopy}        &   \text{CS,C}    \\ \hline
+  !! \text{canopyInterception}  & \text{Addition of rainfall/snowfall to canopy; throughfall and drip}  &   \text{CS,C}    \\ \hline
+  !! \text{canopyPhaseChange}  & \text{Freezing/thawing of liquid/frozen water on canopy}              &   \text{CS,C}    \\ \hline
+  !! \text{waterUnderCanopy}  & \text{Precipitaiton and condensation under canopy}                    &   \text{CS,C}    \\ \hline
+  !! \text{soilWaterPhaseChg}  & \text{Freezing/thawing of liquid/frozen water in soil}                & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowSublimation}  & \text{Sublimaiton from snow pack}                                     & \text{CS,GS,C,G} \\ \hline
+  !! \text{pondedWaterFreeze}  & \text{Freezing of ponded water on soil}                               & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowMelt}   & \text{Melting of snow pack}                                           &   \text{CS,GS}   \\ \hline
+  !! \text{snowAddNew}  & \text{Accumulation of snow on ground}                                 & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowInfiltrateRipen}  & \text{Infiltration of rain into snow pack}                            &   \text{CS,GS}   \\ \hline
+  !! \text{iceSheetBalance}  & \text{Energy and water budget of ice sheets}                          &   \text{GS,G}    \\ \hline
+  !! \text{waterFlowInfiltrate}  & \text{Infiltraiton of water into soil}                                & \text{CS,GS,C,G} \\ \hline
+  !! \text{waterFlowNonInfiltrate}  & \text{Soil water movement in response to gravity and suction forces}  & \text{CS,GS,C,G} \\ \hline
+  !! \text{waterUpdates}  & \text{Step ahead soil layer temperatures,check for freezing/thawing} & \text{CS,GS,C,G} \\ \hline
+  !! \text{checkWaterBudget}  & \text{Check subarea moisture balances for closure}                    & \text{CS,GS,C,G} \\ \hline
+  !! \text{snowAging} & \text{Temporal variation of snow albedo and density}                  &   \text{CS,GS}   \\ \hline
   !! \end{array}
   !! \f]
   !     * PREPARATION.
@@ -533,13 +533,13 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
                                 BI, PSISAT, GRKSCS, THFC, DELZW, XDRAIN, ISAND, &
                                 IZERO, IGRN, IGRD, IGDR, &
                                 IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
-    call TMCALC(TBARCS, THLQCS, THICCS, HCPCS, TPNDCS, ZPNDCS, &
-                TSNOCS, ZSNOCS, ALBSCS, RHOSCS, HCPSCS, TBASCS, &
-                OVRFLW, TOVRFL, RUNFCS, TRNFCS, HMFG, HTC, HTCS, &
-                WTRS, WTRG, FCS, TBRWCS, GZROCS, G12CS, &
-                G23CS, GGEO, TA, WSNOCS, TCTOPC, TCBOTC, GFLXCS, &
-                ZPLMCS, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
-                ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
+    call waterUpdates(TBARCS, THLQCS, THICCS, HCPCS, TPNDCS, ZPNDCS, & ! Formerly TMCALC
+                      TSNOCS, ZSNOCS, ALBSCS, RHOSCS, HCPSCS, TBASCS, &
+                      OVRFLW, TOVRFL, RUNFCS, TRNFCS, HMFG, HTC, HTCS, &
+                      WTRS, WTRG, FCS, TBRWCS, GZROCS, G12CS, &
+                      G23CS, GGEO, TA, WSNOCS, TCTOPC, TCBOTC, GFLXCS, &
+                      ZPLMCS, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
+                      ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
     call checkWaterBudget(1, PCPR, EVPICS, RUNFCS, WLSTCS, RAICNS, SNOCNS, & ! Formerly CHKWAT
                           RACS, SNCS, ZPNDCS, ZPOND, THLQCS, THICCS, &
                           THLIQC, THICEC, ZSNOCS, RHOSCS, XSNOCS, SNO, &
@@ -601,13 +601,13 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
                                 BI, PSISAT, GRKSGS, THFC, DELZW, XDRAIN, ISAND, &
                                 IZERO, IGRN, IGRD, IGDR, &
                                 IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
-    call TMCALC(TBARGS, THLQGS, THICGS, HCPGS, TPNDGS, ZPNDGS, &
-                TSNOGS, ZSNOGS, ALBSGS, RHOSGS, HCPSGS, TBASGS, &
-                OVRFLW, TOVRFL, RUNFGS, TRNFGS, HMFG, HTC, HTCS, &
-                WTRS, WTRG, FGS, TBRWGS, GZROGS, G12GS, &
-                G23GS, GGEO, TA, WSNOGS, TCTOPG, TCBOTG, GFLXGS, &
-                ZPLMGS, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
-                ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
+    call waterUpdates(TBARGS, THLQGS, THICGS, HCPGS, TPNDGS, ZPNDGS, & ! Formerly TMCALC
+                      TSNOGS, ZSNOGS, ALBSGS, RHOSGS, HCPSGS, TBASGS, &
+                      OVRFLW, TOVRFL, RUNFGS, TRNFGS, HMFG, HTC, HTCS, &
+                      WTRS, WTRG, FGS, TBRWGS, GZROGS, G12GS, &
+                      G23GS, GGEO, TA, WSNOGS, TCTOPG, TCBOTG, GFLXGS, &
+                      ZPLMGS, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
+                      ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
     call checkWaterBudget(2, PCPR, EVPIGS, RUNFGS, WLSTGS, RAICNS, SNOCNS, &
                           RACS, SNCS, ZPNDGS, ZPOND, THLQGS, THICGS, &
                           THLIQG, THICEG, ZSNOGS, RHOSGS, XSNOGS, SNO, &
@@ -629,7 +629,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
     call canopyInterception(1, RPCC, TRPCC, SPCC, TSPCC, RAICAN, SNOCAN, & ! Formerly CANADD
                             TCANO, CHCAP, HTCC, ROFC, ROVG, PCPN, PCPG, &
                             FC, FSVF, CWLCAP, CWFCAP, CMASSC, RHOSNI, &
-                            TSFSAV(1, 3), RADD, SADD, ILG, IL1, IL2, JL)
+                            TSFSAV(1,3), RADD, SADD, ILG, IL1, IL2, JL)
     call canopyPhaseChange(TCANO, RAICAN, SNOCAN, RDUMMY, RDUMMY, CHCAP, & ! Formerly CWCALC
                            HMFC, HTCC, FC, CMASSC, ILG, IL1, IL2, JL)
     call waterUnderCanopy(1, RPCC, TRPCC, SPCC, TSPCC, RHOSNI, EVAPCG, & ! Formerly SUBCAN
@@ -668,13 +668,13 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
                                 BI, PSISAT, GRKSC, THFC, DELZW, XDRAIN, ISAND, &
                                 IZERO, IGRN, IGRD, IGDR, &
                                 IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
-    call TMCALC(TBARC, THLQCO, THICCO, HCPCO, TPONDC, ZPONDC, &
-                TSNOWC, ZSNOWC, ALBSC, RHOSC, HCPSC, TBASC, &
-                OVRFLW, TOVRFL, RUNFC, TRUNFC, HMFG, HTC, HTCS, &
-                WTRS, WTRG, FC, TBARWC, GZEROC, G12C, &
-                G23C, GGEO, TA, ZERO, TCTOPC, TCBOTC, GFLXC, &
-                ZPLIMC, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
-                ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
+    call waterUpdates(TBARC, THLQCO, THICCO, HCPCO, TPONDC, ZPONDC, & ! Formerly TMCALC
+                      TSNOWC, ZSNOWC, ALBSC, RHOSC, HCPSC, TBASC, &
+                      OVRFLW, TOVRFL, RUNFC, TRUNFC, HMFG, HTC, HTCS, &
+                      WTRS, WTRG, FC, TBARWC, GZEROC, G12C, &
+                      G23C, GGEO, TA, ZERO, TCTOPC, TCBOTC, GFLXC, &
+                      ZPLIMC, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
+                      ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
     call checkWaterBudget(3, PCPR, EVPIC, RUNFC, WLOSTC, RAICAN, SNOCAN, & ! Formerly CHKWAT
                           RAC, SNC, ZPONDC, ZPOND, THLQCO, THICCO, &
                           THLIQC, THICEC, ZSNOWC, RHOSC, XSNOWC, SNO, &
@@ -729,13 +729,13 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
                                 BI, PSISAT, GRKSG, THFC, DELZW, XDRAIN, ISAND, &
                                 IZERO, IGRN, IGRD, IGDR, &
                                 IG, IGP1, IGP2, ILG, IL1, IL2, JL, N)
-    call TMCALC(TBARG, THLQGO, THICGO, HCPGO, TPONDG, ZPONDG, &
-                TSNOWG, ZSNOWG, ALBSG, RHOSG, HCPSG, TBASG, &
-                OVRFLW, TOVRFL, RUNFG, TRUNFG, HMFG, HTC, HTCS, &
-                WTRS, WTRG, FG, TBARWG, GZEROG, G12G, &
-                G23G, GGEO, TA, ZERO, TCTOPG, TCBOTG, GFLXG, &
-                ZPLIMG, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
-                ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
+    call waterUpdates(TBARG, THLQGO, THICGO, HCPGO, TPONDG, ZPONDG, & ! Formerly TMCALC
+                      TSNOWG, ZSNOWG, ALBSG, RHOSG, HCPSG, TBASG, &
+                      OVRFLW, TOVRFL, RUNFG, TRUNFG, HMFG, HTC, HTCS, &
+                      WTRS, WTRG, FG, TBARWG, GZEROG, G12G, &
+                      G23G, GGEO, TA, ZERO, TCTOPG, TCBOTG, GFLXG, &
+                      ZPLIMG, THPOR, THLMIN, HCPS, DELZW, DELZZ, DELZ, &
+                      ISAND, IWF, IG, ILG, IL1, IL2, JL, N)
     call checkWaterBudget(4, PCPR, EVPIG, RUNFG, WLOSTG, RAICAN, SNOCAN, & ! Formerly CHKWAT
                           RAC, SNC, ZPONDG, ZPOND, THLQGO, THICGO, &
                           THLIQG, THICEG, ZSNOWG, RHOSG, XSNOWG, SNO, &
@@ -788,7 +788,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   JPTBAD = 0
   KPTBAD = 0
   LPTBAD = 0
-  do I = IL1, IL2
+  do I = IL1,IL2
     TBASE (I) = FCS(I) * (TBASCS(I) + TFREZ) + &
                 FGS(I) * (TBASGS(I) + TFREZ) + &
                 FC (I) * (TBASC (I) + TFREZ) + &
@@ -861,7 +861,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
         TRUNOF(I) = (TRUNOF(I) * RUNOFF(I) + TPOND(I) * RHOW * &
                     ZPOND(I) / DELT) / (RUNOFF(I) + RHOW * ZPOND(I) / DELT)
         RUNOFF(I) = RUNOFF(I) + RHOW * ZPOND(I) / DELT
-        HTC(I, 1) = HTC(I, 1) - TPOND(I) * HCPW * ZPOND(I) / DELT
+        HTC(I,1) = HTC(I,1) - TPOND(I) * HCPW * ZPOND(I) / DELT
         TPOND(I) = TFREZ
         ZPOND(I) = 0.0
       end if
@@ -906,7 +906,7 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !! Finally, the three abort flags set thus far are checked, and
   !! calls to abort are performed if they are greater than zero.
   !!
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (ZSNOCS(I) > 0. .or. ZSNOGS(I) > 0. .or. &
         ZSNOWC(I) > 0. .or. ZSNOWG(I) > 0.) then
       if (ZSNOCS(I) > 0. .or. ZSNOGS(I) > 0.) then
@@ -998,19 +998,19 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   end do ! loop 650
   !
   if (JPTBAD /= 0) then
-    write(6, 6625) JPTBAD, JL, TCAN(JPTBAD)
-6625 format('0AT (I, J) = (',I3,',',I3,'), TCAN = ',F10.5)
+    write(6,6625) JPTBAD,JL,TCAN(JPTBAD)
+6625 format('0AT (I,J) = (',I3,',',I3,'),TCAN = ',F10.5)
     call errorHandler('waterBudgetDriver2', - 2)
   end if
   !
   if (KPTBAD /= 0) then
-    write(6, 6626) KPTBAD, JL, TSNOW(KPTBAD)
-6626 format('0AT (I, J) = (',I3,',',I3,'), TSNOW = ',F10.5)
+    write(6,6626) KPTBAD,JL,TSNOW(KPTBAD)
+6626 format('0AT (I,J) = (',I3,',',I3,'),TSNOW = ',F10.5)
     call errorHandler('waterBudgetDriver2', - 3)
   end if
   !
   if (LPTBAD /= 0) then
-    write(6, 6626) LPTBAD, JL, TSNOW(LPTBAD)
+    write(6,6626) LPTBAD,JL,TSNOW(LPTBAD)
     call errorHandler('waterBudgetDriver2', - 4)
   end if
   !
@@ -1035,66 +1035,66 @@ subroutine waterBudgetDriver(THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerly
   !! abort is performed if the flag is greater than zero.
   !!
   IPTBAD = 0
-  do J = 1, IG ! loop 700
-    do I = IL1, IL2
-      if (IG == 3 .and. J == IG .and. ISAND(I, 1) > - 4) then
-        TBAR(I, J) = ((FCS(I) * (TBARCS(I, J) + TFREZ) * HCPCS(I, J) + &
-                     FGS(I) * (TBARGS(I, J) + TFREZ) * HCPGS(I, J) + &
-                     FC (I) * (TBARC (I, J) + TFREZ) * HCPCO(I, J) + &
-                     FG (I) * (TBARG (I, J) + TFREZ) * HCPGO(I, J)) * &
-                     DELZW(I, J) + TBASE(I) * HCPSND * &
-                     (DELZ(J) - DELZW(I, J))) / &
-                     ((FCS(I) * HCPCS(I, J) + FGS(I) * HCPGS(I, J) + &
-                     FC (I) * HCPCO(I, J) + FG (I) * HCPGO(I, J)) * &
-                     DELZW(I, J) + HCPSND * (DELZ(J) - DELZW(I, J)))
+  do J = 1,IG ! loop 700
+    do I = IL1,IL2
+      if (IG == 3 .and. J == IG .and. ISAND(I,1) > - 4) then
+        TBAR(I,J) = ((FCS(I) * (TBARCS(I,J) + TFREZ) * HCPCS(I,J) + &
+                    FGS(I) * (TBARGS(I,J) + TFREZ) * HCPGS(I,J) + &
+                    FC (I) * (TBARC (I,J) + TFREZ) * HCPCO(I,J) + &
+                    FG (I) * (TBARG (I,J) + TFREZ) * HCPGO(I,J)) * &
+                    DELZW(I,J) + TBASE(I) * HCPSND * &
+                    (DELZ(J) - DELZW(I,J))) / &
+                    ((FCS(I) * HCPCS(I,J) + FGS(I) * HCPGS(I,J) + &
+                    FC (I) * HCPCO(I,J) + FG (I) * HCPGO(I,J)) * &
+                    DELZW(I,J) + HCPSND * (DELZ(J) - DELZW(I,J)))
       else
-        TBAR(I, J) = (FCS(I) * (TBARCS(I, J) + TFREZ) * (DELZW(I, J) * &
-                     HCPCS(I, J) + (DELZ(J) - DELZW(I, J)) * HCPSND) + &
-                     FGS(I) * (TBARGS(I, J) + TFREZ) * (DELZW(I, J) * &
-                     HCPGS(I, J) + (DELZ(J) - DELZW(I, J)) * HCPSND) + &
-                     FC (I) * (TBARC (I, J) + TFREZ) * (DELZW(I, J) * &
-                     HCPCO(I, J) + (DELZ(J) - DELZW(I, J)) * HCPSND) + &
-                     FG (I) * (TBARG (I, J) + TFREZ) * (DELZW(I, J) * &
-                     HCPGO(I, J) + (DELZ(J) - DELZW(I, J)) * HCPSND)) / &
-                     (FCS(I) * (DELZW(I, J) * HCPCS(I, J) + &
-                     (DELZ(J) - DELZW(I, J)) * HCPSND) + &
-                     FGS(I) * (DELZW(I, J) * HCPGS(I, J) + &
-                     (DELZ(J) - DELZW(I, J)) * HCPSND) + &
-                     FC (I) * (DELZW(I, J) * HCPCO(I, J) + &
-                     (DELZ(J) - DELZW(I, J)) * HCPSND) + &
-                     FG (I) * (DELZW(I, J) * HCPGO(I, J) + &
-                     (DELZ(J) - DELZW(I, J)) * HCPSND))
+        TBAR(I,J) = (FCS(I) * (TBARCS(I,J) + TFREZ) * (DELZW(I,J) * &
+                    HCPCS(I,J) + (DELZ(J) - DELZW(I,J)) * HCPSND) + &
+                    FGS(I) * (TBARGS(I,J) + TFREZ) * (DELZW(I,J) * &
+                    HCPGS(I,J) + (DELZ(J) - DELZW(I,J)) * HCPSND) + &
+                    FC (I) * (TBARC (I,J) + TFREZ) * (DELZW(I,J) * &
+                    HCPCO(I,J) + (DELZ(J) - DELZW(I,J)) * HCPSND) + &
+                    FG (I) * (TBARG (I,J) + TFREZ) * (DELZW(I,J) * &
+                    HCPGO(I,J) + (DELZ(J) - DELZW(I,J)) * HCPSND)) / &
+                    (FCS(I) * (DELZW(I,J) * HCPCS(I,J) + &
+                    (DELZ(J) - DELZW(I,J)) * HCPSND) + &
+                    FGS(I) * (DELZW(I,J) * HCPGS(I,J) + &
+                    (DELZ(J) - DELZW(I,J)) * HCPSND) + &
+                    FC (I) * (DELZW(I,J) * HCPCO(I,J) + &
+                    (DELZ(J) - DELZW(I,J)) * HCPSND) + &
+                    FG (I) * (DELZW(I,J) * HCPGO(I,J) + &
+                    (DELZ(J) - DELZW(I,J)) * HCPSND))
       end if
-      THLIQ(I, J) = FCS(I) * THLQCS(I, J) + FGS(I) * THLQGS(I, J) + &
-                    FC (I) * THLQCO(I, J) + FG (I) * THLQGO(I, J)
-      THICE(I, J) = FCS(I) * THICCS(I, J) + FGS(I) * THICGS(I, J) + &
-                    FC (I) * THICCO(I, J) + FG (I) * THICGO(I, J)
-      GFLUX(I, J) = FCS(I) * GFLXCS(I, J) + FGS(I) * GFLXGS(I, J) + &
-                    FC (I) * GFLXC (I, J) + FG (I) * GFLXG (I, J)
+      THLIQ(I,J) = FCS(I) * THLQCS(I,J) + FGS(I) * THLQGS(I,J) + &
+                   FC (I) * THLQCO(I,J) + FG (I) * THLQGO(I,J)
+      THICE(I,J) = FCS(I) * THICCS(I,J) + FGS(I) * THICGS(I,J) + &
+                   FC (I) * THICCO(I,J) + FG (I) * THICGO(I,J)
+      GFLUX(I,J) = FCS(I) * GFLXCS(I,J) + FGS(I) * GFLXGS(I,J) + &
+                   FC (I) * GFLXC (I,J) + FG (I) * GFLXG (I,J)
       !     ipy test
-      !          IF (THLIQ(I, J)>THFC(I, J))                               THEN
-      !              BASFLW(I)=BASFLW(I)+(THLIQ(I, J)-THFC(I, J))*DELZW(I, J)*
+      !          IF (THLIQ(I,J)>THFC(I,J))                               THEN
+      !              BASFLW(I)=BASFLW(I)+(THLIQ(I,J)-THFC(I,J))*DELZW(I,J)*
       !     1            RHOW/DELT
-      !              RUNOFF(I)=RUNOFF(I)+(THLIQ(I, J)-THFC(I, J))*DELZW(I, J)*
+      !              RUNOFF(I)=RUNOFF(I)+(THLIQ(I,J)-THFC(I,J))*DELZW(I,J)*
       !     1            RHOW/DELT
-      !              HTC(I, J)=HTC(I, J)-TBAR(I, J)*(THLIQ(I, J)-THFC(I, J))*
-      !     1            HCPW*DELZW(I, J)/DELT
-      !              THLIQ(I, J)=THFC(I, J)
+      !              HTC(I,J)=HTC(I,J)-TBAR(I,J)*(THLIQ(I,J)-THFC(I,J))*
+      !     1            HCPW*DELZW(I,J)/DELT
+      !              THLIQ(I,J)=THFC(I,J)
       !          END IF
-      if (TBAR(I, 1) < 173.16 .or. TBAR(I, 1) > 373.16) IPTBAD = I
+      if (TBAR(I,1) < 173.16 .or. TBAR(I,1) > 373.16) IPTBAD = I
     end do
   end do ! loop 700
   !
   if (IPTBAD /= 0) then
-    write(6, 6600) IPTBAD, JL, TBAR(IPTBAD, 1)
-6600 format('0AT (I, J) = (',I3,',',I3,'), TBAR(1) = ',F10.5)
+    write(6,6600) IPTBAD,JL,TBAR(IPTBAD,1)
+6600 format('0AT (I,J) = (',I3,',',I3,'),TBAR(1) = ',F10.5)
     call errorHandler('waterBudgetDriver2', - 1)
   end if
   !
   !> Finally, subroutine classGrowthIndex is called to update the vegetation
   !! growth index.
   !!
-  call classGrowthIndex(GROWTH, TBAR, TA, FC, FCS, ILG, IG, IL1, IL2, JL) ! Formerly CGROW
+  call classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly CGROW
   !
   return
-end
+end subroutine waterBudgetDriver

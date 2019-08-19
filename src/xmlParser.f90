@@ -83,7 +83,7 @@ contains
   !    int         Integer value to be added
   !===============================================================================
 
-  subroutine xml_report_details_int_( text, int )
+  subroutine xml_report_details_int_ ( text, int )
     implicit none
     character(len=*), intent(in)     :: text
     integer,          intent(in)     :: int
@@ -105,7 +105,7 @@ contains
   !    string      String to be added
   !===============================================================================
 
-  subroutine xml_report_details_string_( text, string )
+  subroutine xml_report_details_string_ ( text, string )
     implicit none
     character(len=*), intent(in)     :: text
     character(len=*), intent(in)     :: string
@@ -128,7 +128,7 @@ contains
   !    lineno      Line number in the file
   !===============================================================================
 
-  subroutine xml_report_errors_int_( text, int, lineno )
+  subroutine xml_report_errors_int_ ( text, int, lineno )
     implicit none
     character(len=*),  intent(in)     :: text
     integer,           intent(in)     :: int
@@ -158,7 +158,7 @@ contains
   !    lineno      Line number in the file
   !===============================================================================
 
-  subroutine xml_report_errors_string_( text, string, lineno )
+  subroutine xml_report_errors_string_ ( text, string, lineno )
     implicit none
     character(len=*),  intent(in)     :: text
     character(len=*),  intent(in)     :: string
@@ -190,7 +190,7 @@ contains
   !    this module
   !===============================================================================
 
-  subroutine xml_report_errors_extern_( info, text )
+  subroutine xml_report_errors_extern_ ( info, text )
     implicit none
     type(XML_PARSE),   intent(in)     :: info
     character(len=*),  intent(in)     :: text
@@ -214,7 +214,7 @@ contains
   !    mustread    The file will be read (.true.) or written (.false.)
   !===============================================================================
 
-  subroutine xml_open( info, fname, mustread )
+  subroutine xml_open (info, fname, mustread)
     implicit none
     character(len=*), intent(in)     :: fname
     logical,          intent(in)     :: mustread
@@ -299,7 +299,7 @@ contains
   !    info        Structure holding information on the XML-file
   !===============================================================================
 
-  subroutine xml_close( info )
+  subroutine xml_close (info)
     implicit none
     type(XML_PARSE),  intent(inout)    :: info
 
@@ -326,7 +326,7 @@ contains
   !    no_data     Number of lines of character data
   !===============================================================================
 
-  subroutine xml_get( info, tag, endtag, attribs, no_attribs, data, no_data )
+  subroutine xml_get (info, tag, endtag, attribs, no_attribs, data, no_data)
     implicit none
     type(XML_PARSE),  intent(inout)               :: info
     character(len=*), intent(out)                 :: tag
@@ -586,7 +586,7 @@ contains
   !                close - just the closing tag
   !===============================================================================
 
-  subroutine xml_put(info, tag, attribs, no_attribs, data, no_data, type)
+  subroutine xml_put (info, tag, attribs, no_attribs, data, no_data, type)
     implicit none
     type(XML_PARSE),  intent(inout)               :: info
     character(len=*), intent(in)                  :: tag
@@ -621,7 +621,7 @@ contains
   !    no_data     Number of lines of character data
   !===============================================================================
 
-  subroutine xml_put_open_tag_(info, tag, attribs, no_attribs)
+  subroutine xml_put_open_tag_ (info, tag, attribs, no_attribs)
     implicit none
     type(XML_PARSE),  intent(inout)               :: info
     character(len=*), intent(in)                  :: tag
@@ -657,7 +657,7 @@ contains
   !    no_data     Number of lines of character data
   !===============================================================================
 
-  subroutine xml_put_element_(info, tag, attribs, no_attribs, data, no_data)
+  subroutine xml_put_element_ (info, tag, attribs, no_attribs, data, no_data)
     implicit none
     type(XML_PARSE),  intent(inout)               :: info
     character(len=*), intent(in)                  :: tag
@@ -728,7 +728,7 @@ contains
   !    no_data     Number of lines of character data
   !===============================================================================
 
-  subroutine xml_put_close_tag_(info, tag)
+  subroutine xml_put_close_tag_ (info, tag)
     implicit none
 
     type(XML_PARSE),  intent(inout) :: info
@@ -749,7 +749,7 @@ contains
   !    no_data     (Nett) number of lines of character data
   !===============================================================================
 
-  subroutine xml_compress_( data, no_data )
+  subroutine xml_compress_ (data, no_data)
     implicit none
     character(len=*), intent(inout), dimension(:)    :: data
     integer,          intent(inout)                  :: no_data
@@ -789,7 +789,7 @@ contains
   !    no_data     (Nett) number of lines of character data
   !===============================================================================
 
-  subroutine xml_replace_entities_( data, no_data )
+  subroutine xml_replace_entities_ (data, no_data)
     implicit none
     character(len=*), intent(inout), dimension(:)    :: data
     integer,          intent(inout)                  :: no_data
@@ -833,8 +833,8 @@ contains
   !    report_details      Write messages about all kinds of actions or not
   !===============================================================================
 
-  subroutine xml_options( info, ignore_whitespace, no_data_truncation, &
-                         report_lun, report_errors, report_details )
+  subroutine xml_options (info, ignore_whitespace, no_data_truncation, &
+                          report_lun, report_errors, report_details)
     implicit none
     type(XML_PARSE),  intent(inout)               :: info
     logical, intent(in), optional                 :: ignore_whitespace
@@ -870,7 +870,7 @@ contains
   !    .true. if there was no error, .false. otherwise
   !===============================================================================
 
-  logical function xml_ok( info )
+  logical function xml_ok (info)
     implicit none
     type(XML_PARSE),  intent(in)               :: info
 
@@ -889,7 +889,7 @@ contains
   !    .true. if there was an error, .false. if there was none
   !===============================================================================
 
-  logical function xml_error( info )
+  logical function xml_error (info)
     implicit none
     type(XML_PARSE),  intent(in)               :: info
 
@@ -907,7 +907,7 @@ contains
   !    .true. if data were truncated, .false. otherwise
   !===============================================================================
 
-  logical function xml_data_trunc( info )
+  logical function xml_data_trunc (info)
     implicit none
     type(XML_PARSE),  intent(in)               :: info
 
@@ -918,7 +918,7 @@ contains
   ! XML_FIND_ATTRIB
   !===============================================================================
 
-  integer function xml_find_attrib( attribs, no_attribs, name, value )
+  integer function xml_find_attrib (attribs, no_attribs, name, value)
     implicit none
     character(len=*), dimension(:,:), intent(in)  :: attribs
     integer, intent(in)                           :: no_attribs
@@ -955,7 +955,7 @@ contains
   !    (common with XSD schemas). This extends to the auxiliary routines.
   !===============================================================================
 
-  recursive subroutine xml_process( filename, attribs, data, startfunc, datafunc, endfunc, lunrep, error )
+  recursive subroutine xml_process (filename, attribs, data, startfunc, datafunc, endfunc, lunrep, error)
     implicit none
     character(len=*)                  :: filename
     character(len=*), dimension(:,:)  :: attribs
@@ -964,7 +964,7 @@ contains
     logical                           :: error
 
     interface
-      recursive subroutine startfunc( tag, attribs, error )
+      recursive subroutine startfunc (tag, attribs, error)
         character(len=*), intent(in)                 :: tag
         character(len=*), dimension(:,:), intent(in) :: attribs
         logical, intent(in)                          :: error
@@ -972,7 +972,7 @@ contains
     end interface
 
     interface
-      recursive subroutine datafunc( tag, data, error )
+      recursive subroutine datafunc (tag, data, error)
         character(len=*), intent(in)               :: tag
         character(len=*), dimension(:), intent(in) :: data
         logical, intent(in)                        :: error
@@ -980,7 +980,7 @@ contains
     end interface
 
     interface
-      recursive subroutine endfunc( tag, error )
+      recursive subroutine endfunc (tag, error)
         character(len=*), intent(in) :: tag
         logical, intent(in)          :: error
       end subroutine
@@ -992,12 +992,12 @@ contains
     integer                                       :: noattribs
     integer                                       :: nodata
 
-    call xml_options( info, report_lun = lunrep, report_details = .false. )
-    call xml_open( info, filename, .true. )
+    call xml_options(info, report_lun = lunrep, report_details = .false.)
+    call xml_open(info, filename, .true.)
 
     error = .false.
     do
-      call xml_get( info, tag, endtag, attribs, noattribs, data, nodata )
+      call xml_get(info, tag, endtag, attribs, noattribs, data, nodata)
       if ( .not. xml_ok(info) ) then
         exit
       end if
@@ -1009,19 +1009,19 @@ contains
       end if
 
       if ( .not. endtag .or. noattribs /= 0 ) then
-        call startfunc( tag, attribs(:,1:noattribs), error )
+        call startfunc(tag, attribs(:,1:noattribs), error)
         if ( error ) exit
 
-        call datafunc( tag, data(1:nodata), error )
+        call datafunc(tag, data(1:nodata), error)
         if ( error ) exit
       end if
 
       if ( endtag ) then
-        call endfunc( tag, error )
+        call endfunc(tag, error)
         if ( error ) exit
       end if
     end do
-    call xml_close( info )
+    call xml_close(info)
   end subroutine xml_process
 
   !===============================================================================
@@ -1032,7 +1032,7 @@ contains
   !    line        Line of character data to modify
   !===============================================================================
 
-  subroutine xml_remove_tabs_(line)
+  subroutine xml_remove_tabs_ (line)
     implicit none
     character(len=*), intent(inout) :: line
 

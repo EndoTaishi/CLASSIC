@@ -24,7 +24,7 @@
 !!     *
 !!     *   v(mvidx) .le/>= x <=/>= v(mvidx+1)
 !!
-integer function MVIDX(V, N, X)
+integer function MVIDX (V, N, X)
   !-----------------------------------------------------------------------
   implicit none
 
@@ -52,4 +52,4 @@ integer function MVIDX(V, N, X)
   end do
   MVIDX = JL
   return
-end
+end function MVIDX

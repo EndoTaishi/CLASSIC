@@ -3,14 +3,14 @@
 !! normal turnover of leaves and cold and drought stress; crop harvest; and
 !! for grasses green leaves are converted into brown
 !!
-subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
-                    thliq, THLW, THFC, ta, & ! In
-                    anveg, iday, radl, roottemp, & ! In
-                    rmatctem, stemmass, rootmass, sort, & ! In
-                    fcancmx, isand, useTracer, & ! In
-                    lfstatus, pandays, colddays, gleafmas, &
-                    bleafmas, tracerGLeafMass, tracerBLeafMass, &  ! In/Out
-                    flhrloss, leaflitr, tracerLeafLitr) ! Out
+subroutine phenolgy (il1, il2, ilg, leapnow, tbar, thice, & ! In
+                     thliq, THLW, THFC, ta, & ! In
+                     anveg, iday, radl, roottemp, & ! In
+                     rmatctem, stemmass, rootmass, sort, & ! In
+                     fcancmx, isand, useTracer, & ! In
+                     lfstatus, pandays, colddays, gleafmas, &
+                     bleafmas, tracerGLeafMass, tracerBLeafMass, &  ! In/Out
+                     flhrloss, leaflitr, tracerLeafLitr) ! Out
   !
   !               Canadian Terrestrial Ecosystem Model (CTEM)
   !               Phenology, Leaf Turnover & Mortality Subroutine
@@ -25,7 +25,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !     14  Jan 2016  - There was a bit of hardwired code for 3 soil layers, that has been
   !                     fixed to allow >3.
 
-  !     17  Jan 2014  - Moved parameters to global file (classic_params.f90)
+  !     17  Jan 2014  - Moved parameters to global file (classicParams.f90)
   !     J. Melton
   !
   !     22  Jul 2013  - Add in module for parameters
@@ -40,14 +40,14 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !                     stress. crop harvest is also modelled in this
   !                     subroutine, and for grasses green leaves are
   !                     converted into brown.
-  use classic_params, only : kn, pi, zero, kappa, eta, lfespany, &
-                                fracbofg, specsla, ignd, icc, &
-                                ican, cdlsrtmx, drlsrtmx, drgta, &
+  use classicParams,    only : kn, pi, zero, kappa, eta, lfespany, &
+                               fracbofg, specsla, ignd, icc, &
+                               ican, cdlsrtmx, drlsrtmx, drgta, &
                                colda, lwrthrsh, dayschk, coldlmt, &
                                coldthrs, harvthrs, flhrspan, &
                                thrprcnt, roothrsh, ctempfts, nlat, nmos, &
-                                 nol2pfts
-  use generalUtils, only : findDaylength
+                               nol2pfts
+  use generalUtils,     only : findDaylength
 
   implicit none
 
@@ -55,7 +55,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   integer, intent(in) :: il1                 !< il1=1
   integer, intent(in) :: il2                 !< il2=ilg
   integer, intent(in) :: iday                !< day of year
-  integer, intent(in) :: isand(ilg, ignd) !<
+  integer, intent(in) :: isand(ilg,ignd) !<
   logical, intent(in) :: leapnow             !< true if this year is a leap year. Only used if the switch 'leap' is true.
   integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
   !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
@@ -63,60 +63,60 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
   !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
   integer, intent(in) :: sort(icc)           !< index for correspondence between 9 pfts and the 12 values in parameters vectors
-  real, intent(in) :: ta(ilg)                !< air temperature, k
-  real, intent(in) :: tbar(ilg, ignd)         !< soil temperature, k
-  real, intent(in) :: thliq(ilg, ignd)        !< liquid soil moisture content in soil layers
-  real, intent(in) :: thice(ilg, ignd)        !< frozen  soil moisture content in soil layers
-  real, intent(in) :: anveg(ilg, icc)         !< net photosynthesis rate of ctem's pfts, umol co2/m2.s
-  real, intent(in) :: roottemp(ilg, icc)      !< root temperature, which is a function of soil temperature of course, k.
-  real, intent(in) :: rmatctem(ilg, icc, ignd) !< fraction of roots in each soil layer for each pft
-  real, intent(in) :: stemmass(ilg, icc)      !< stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  real, intent(in) :: rootmass(ilg, icc)      !< root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-  real, intent(in) :: fcancmx(ilg, icc)       !< max. fractional coverage of ctem's 9 pfts, but this can be modified
-  !< by land-use change, and competition between pfts
-  real, intent(in) :: THFC(ilg, ignd)      !< field capacity soil moisture content both calculated in allocate subroutine
-  real, intent(in) :: THLW(ilg, ignd)       !< wilting point soil moisture content
+  real, intent(in) :: ta(ilg)                !< air temperature,k
+  real, intent(in) :: tbar(ilg,ignd)         !< soil temperature,k
+  real, intent(in) :: thliq(ilg,ignd)        !< liquid soil moisture content in soil layers
+  real, intent(in) :: thice(ilg,ignd)        !< frozen  soil moisture content in soil layers
+  real, intent(in) :: anveg(ilg,icc)         !< net photosynthesis rate of ctem's pfts,umol co2/m2.s
+  real, intent(in) :: roottemp(ilg,icc)      !< root temperature,which is a function of soil temperature of course,k.
+  real, intent(in) :: rmatctem(ilg,icc,ignd) !< fraction of roots in each soil layer for each pft
+  real, intent(in) :: stemmass(ilg,icc)      !< stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  real, intent(in) :: rootmass(ilg,icc)      !< root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+  real, intent(in) :: fcancmx(ilg,icc)       !< max. fractional coverage of ctem's 9 pfts,but this can be modified
+  !< by land-use change,and competition between pfts
+  real, intent(in) :: THFC(ilg,ignd)      !< field capacity soil moisture content both calculated in allocate subroutine
+  real, intent(in) :: THLW(ilg,ignd)       !< wilting point soil moisture content
   real, intent(in) :: radl(ilg)              !< latitude in radians
-  real, intent(inout) :: gleafmas(ilg, icc)      !< green or live leaf mass in \f$kg c/m\f$
-  real, intent(inout) :: bleafmas(ilg, icc)      !< brown or dead leaf mass in \f$kg c/m\f$
-  real, intent(inout) :: tracerGLeafMass(ilg, icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
-  real, intent(inout) :: tracerBLeafMass(ilg, icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
-  integer, intent(inout) :: pandays(ilg, icc)    !< counter for positive net photosynthesis (an) days for initiating leaf onset
-  integer, intent(inout) :: lfstatus(ilg, icc)   !< integer :: indicating leaf status or mode
-  !< 1 - max. growth or onset, when all npp is allocated to leaves
-  !< 2 - normal growth, when npp is allocated to leaves, stem, and root
-  !< 3 - fall for dcd trees/harvest for crops, when allocation to leaves is zero.
+  real, intent(inout) :: gleafmas(ilg,icc)      !< green or live leaf mass in \f$kg c/m\f$
+  real, intent(inout) :: bleafmas(ilg,icc)      !< brown or dead leaf mass in \f$kg c/m\f$
+  real, intent(inout) :: tracerGLeafMass(ilg,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  real, intent(inout) :: tracerBLeafMass(ilg,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
+  integer, intent(inout) :: pandays(ilg,icc)    !< counter for positive net photosynthesis (an) days for initiating leaf onset
+  integer, intent(inout) :: lfstatus(ilg,icc)   !< integer :: indicating leaf status or mode
+  !< 1 - max. growth or onset,when all npp is allocated to leaves
+  !< 2 - normal growth,when npp is allocated to leaves,stem,and root
+  !< 3 - fall for dcd trees/harvest for crops,when allocation to leaves is zero.
   !< 4 - no leaves
 
-  integer, intent(inout) :: colddays(ilg, 2)     !< cold days counter for tracking days below a certain temperature threshold
+  integer, intent(inout) :: colddays(ilg,2)     !< cold days counter for tracking days below a certain temperature threshold
   !< for ndl dcd and crop pfts.
-  real, intent(out) :: flhrloss(ilg, icc)      !< fall & harvest loss for bdl dcd plants and crops, respectively, \f$kg c/m^2\f$.
-  real, intent(out) :: leaflitr(ilg, icc)      !< leaf litter generated by normal turnover, cold and drought stress,
+  real, intent(out) :: flhrloss(ilg,icc)      !< fall & harvest loss for bdl dcd plants and crops,respectively, \f$kg c/m^2\f$.
+  real, intent(out) :: leaflitr(ilg,icc)      !< leaf litter generated by normal turnover,cold and drought stress,
   !< and leaf fall/harvest, \f$kg c/m^2\f$
-  real, intent(out) :: tracerLeafLitr(ilg, icc)  !< leaf litter generated by normal turnover, cold and drought stress,
+  real, intent(out) :: tracerLeafLitr(ilg,icc)  !< leaf litter generated by normal turnover,cold and drought stress,
   !< and leaf fall/harvest, \f$tracer C units/m^2\f$
 
   real :: day                    !<
   real :: daylngth(ilg)          !<
-  real :: nrmlloss(ilg, icc)      !< leaf loss due to normal turnover
-  real :: tracerNrmlLoss(ilg, icc)!< Tracer leaf loss due to normal turnover
-  real :: betadrgt(ilg, ignd)     !< (1 - drought stress)
-  real :: drgtstrs(ilg, icc)      !< drought stress term
-  real :: drgtlsrt(ilg, icc)      !< drought loss rate
-  real :: drgtloss(ilg, icc)      !< leaf loss due to drought stress
-  real :: tracerDrgtLoss(ilg, icc)!< Tracer leaf loss due to drought stress
-  real :: coldloss(ilg, icc)      !< leaf loss due to cold stress
-  real :: tracerColdLoss(ilg, icc)!< Tracer leaf loss due to cold stress
-  real :: coldstrs(ilg, icc)      !< cold stress term
-  real :: coldlsrt(ilg, icc)      !< cold loss rate
-  real :: tracerFlHrLoss(ilg, icc)!< Tracer fall & harvest loss for bdl dcd plants and crops, respectively, \f$kg c/m^2\f$.
-  real :: lfthrs(ilg, icc)        !< threshold lai for finding leaf status
+  real :: nrmlloss(ilg,icc)      !< leaf loss due to normal turnover
+  real :: tracerNrmlLoss(ilg,icc)!< Tracer leaf loss due to normal turnover
+  real :: betadrgt(ilg,ignd)     !< (1 - drought stress)
+  real :: drgtstrs(ilg,icc)      !< drought stress term
+  real :: drgtlsrt(ilg,icc)      !< drought loss rate
+  real :: drgtloss(ilg,icc)      !< leaf loss due to drought stress
+  real :: tracerDrgtLoss(ilg,icc)!< Tracer leaf loss due to drought stress
+  real :: coldloss(ilg,icc)      !< leaf loss due to cold stress
+  real :: tracerColdLoss(ilg,icc)!< Tracer leaf loss due to cold stress
+  real :: coldstrs(ilg,icc)      !< cold stress term
+  real :: coldlsrt(ilg,icc)      !< cold loss rate
+  real :: tracerFlHrLoss(ilg,icc)!< Tracer fall & harvest loss for bdl dcd plants and crops,respectively, \f$kg c/m^2\f$.
+  real :: lfthrs(ilg,icc)        !< threshold lai for finding leaf status
   character(8) :: pftkind
   integer :: i, j, k, m, n
-  integer :: chkmode(ilg, icc)    !< indicator for making sure that leaf status is updated
+  integer :: chkmode(ilg,icc)    !< indicator for making sure that leaf status is updated
   real :: sla(icc)               !< specific leaf area
-  real :: ailcg(ilg, icc)         !< green lai
-  real :: ailcb(ilg, icc)         !< brown lai
+  real :: ailcg(ilg,icc)         !< green lai
+  real :: ailcb(ilg,icc)         !< brown lai
   real :: frac                   !< temp var.
 
   ! Initialize required arrays to zero
@@ -145,34 +145,34 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !------------------------------------------------------------------
 
   !> Convert green leaf mass into leaf area index using specific leaf
-  !! area \f$(sla, m^2 /kg c)\f$ estimated using leaf life span. see bio2str
+  !! area \f$(sla,m^2 /kg c)\f$ estimated using leaf life span. see bio2str
   !! subroutine for more details.
-  do j = 1, icc
+  do j = 1,icc
 
     sla(j) = 25.0 * (lfespany(sort(j)) ** ( - 0.50))
     if (specsla(sort(j)) > zero) sla(j) = specsla(sort(j))
 
     n = sort(j)
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        ailcg(i, j) = sla(j) * gleafmas(i, j)
-        ailcb(i, j) = sla(j) * bleafmas(i, j) * fracbofg
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        ailcg(i,j) = sla(j) * gleafmas(i,j)
+        ailcb(i,j) = sla(j) * bleafmas(i,j) * fracbofg
 
         !> also find threshold lai as a function of stem+root biomass
         !! which is used to determine leaf status
-        lfthrs(i, j) = ((stemmass(i, j) + rootmass(i, j)) / eta(n)) ** (1.0 / kappa(n))
-        lfthrs(i, j) = (thrprcnt(n) / 100.0) * sla(j) * lfthrs(i, j)
+        lfthrs(i,j) = ((stemmass(i,j) + rootmass(i,j)) / eta(n)) ** (1.0 / kappa(n))
+        lfthrs(i,j) = (thrprcnt(n) / 100.0) * sla(j) * lfthrs(i,j)
 
         !> using green leaf area index (ailcg) determine the leaf status for
-        !! each pft. loops 190 and 200 thus initialize lfstatus, if this
+        !! each pft. loops 190 and 200 thus initialize lfstatus,if this
         !! this information is not passed specifically as an initialization quantity.
-        if (lfstatus(i, j) == 0) then
-          if (ailcg(i, j) <= zero) then
-            lfstatus(i, j) = 4                      ! no leaves
-          else if (ailcg(i, j) > lfthrs(i, j)) then
-            lfstatus(i, j) = 2                      ! normal growth
+        if (lfstatus(i,j) == 0) then
+          if (ailcg(i,j) <= zero) then
+            lfstatus(i,j) = 4                      ! no leaves
+          else if (ailcg(i,j) > lfthrs(i,j)) then
+            lfstatus(i,j) = 2                      ! normal growth
           else
-            lfstatus(i, j) = 4                   ! treat this as no leaves
+            lfstatus(i,j) = 4                   ! treat this as no leaves
           end if                                  ! so that we start growing
         end if                                   ! if possible
       end if ! fcancmx
@@ -186,18 +186,18 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !! we start with the "no leaves" mode
   !! ----------------------------------
   !!
-  !! add one to pandays(i, j) if daily an is positive, otherwise set it to zero.
-  do j = 1, icc
+  !! add one to pandays(i,j) if daily an is positive,otherwise set it to zero.
+  do j = 1,icc
     n = sort(j)
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        if (anveg(i, j) > zero) then
-          pandays(i, j) = pandays(i, j) + 1
-          if (pandays(i, j) > dayschk(n)) then
-            pandays(i, j) = dayschk(n)
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        if (anveg(i,j) > zero) then
+          pandays(i,j) = pandays(i,j) + 1
+          if (pandays(i,j) > dayschk(n)) then
+            pandays(i,j) = dayschk(n)
           end if
         else
-          pandays(i, j) = 0
+          pandays(i,j) = 0
         end if
       end if
     end do ! loop 230
@@ -205,18 +205,18 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
 
   !> if in "no leaves" mode check if an has been positive over last
   !! dayschk(j) days to move into "max. growth" mode. if not we stay
-  !! in "no leaves" mode. also set the chkmode(i, j) switch to 1.
-  do j = 1, icc
+  !! in "no leaves" mode. also set the chkmode(i,j) switch to 1.
+  do j = 1,icc
     n = sort(j)
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        if (chkmode(i, j) == 0 .and. lfstatus(i, j) == 4) then
-          if (pandays(i, j) >= dayschk(n)) then
-            lfstatus(i, j) = 1        ! switch to "max. growth" mode
-            chkmode(i, j) = 1         ! mode checked, no more checks further down
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        if (chkmode(i,j) == 0 .and. lfstatus(i,j) == 4) then
+          if (pandays(i,j) >= dayschk(n)) then
+            lfstatus(i,j) = 1        ! switch to "max. growth" mode
+            chkmode(i,j) = 1         ! mode checked,no more checks further down
           else
-            lfstatus(i, j) = 4        ! stay in "no leaves" mode
-            chkmode(i, j) = 1         ! mode checked, no more checks further down
+            lfstatus(i,j) = 4        ! stay in "no leaves" mode
+            chkmode(i,j) = 1         ! mode checked,no more checks further down
           end if
         end if
       end if
@@ -226,25 +226,25 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !> find day length using day of year and latitude. this is to be used for
   !! initiating leaf offset for broad leaf dcd trees.
   day = real(iday)
-  do i = il1, il2
-    daylngth(i) = findDaylength(day, radl(i))
+  do i = il1,il2
+    daylngth(i) = findDaylength(day,radl(i))
   end do
 
-  !! similar to the way we count no. of days when an is positive, we
+  !! similar to the way we count no. of days when an is positive,we
   !! find no. of days when temperature is below -5 c. we need this to
   !! determine if we go into "leaf fall" mode for needle leaf dcd trees.
   !!
   !! also estimate no. of days below 8 c. we use these days to decide
   !! if its cold enough to harvest crops.
-  do k = 1, 2
-    do i = il1, il2
+  do k = 1,2
+    do i = il1,il2
       if (ta(i) < (coldthrs(k) + 273.16)) then
-        colddays(i, k) = colddays(i, k) + 1
-        if (colddays(i, k) > coldlmt(k)) then
-          colddays(i, k) = coldlmt(k)
+        colddays(i,k) = colddays(i,k) + 1
+        if (colddays(i,k) > coldlmt(k)) then
+          colddays(i,k) = coldlmt(k)
         end if
       else
-        colddays(i, k) = 0
+        colddays(i,k) = 0
       end if
     end do ! loop 290
   end do ! loop 280
@@ -252,54 +252,54 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !> Even if pandays criteria has been satisfied do not go into max. growth
   !! mode if environmental conditions are such that they will force leaf
   !! fall or harvest mode.
-  do i = il1, il2
-    do j = 1, icc
-      if (fcancmx(i, j) > 0.0) then
-        if (lfstatus(i, j) == 1 .and. chkmode(i, j) == 1) then
+  do i = il1,il2
+    do j = 1,icc
+      if (fcancmx(i,j) > 0.0) then
+        if (lfstatus(i,j) == 1 .and. chkmode(i,j) == 1) then
           pftkind = ctempfts(j)
           select case (pftkind)
 
           case ('NdlDcdTr') ! Needle leaf deciduous tree
 
-            if (ta(i) < (coldthrs(1) + 273.16)) lfstatus(i, j) = 4
+            if (ta(i) < (coldthrs(1) + 273.16)) lfstatus(i,j) = 4
 
           case ('BdlDCoTr') ! Broadleaf deciduous cold tree
 
-            if (roottemp(i, j) < (roothrsh + 273.16) .or. &
+            if (roottemp(i,j) < (roothrsh + 273.16) .or. &
                 (daylngth(i) < 11.0 .and. &
-                roottemp(i, j) < (11.15 + 273.16))) lfstatus(i, j) = 4
+                roottemp(i,j) < (11.15 + 273.16))) lfstatus(i,j) = 4
 
           case ('BdlDDrTr') ! Broadleaf deciduous drought dry tree
 
-            if (roottemp(i, j) < (roothrsh + 273.16) .or. &
+            if (roottemp(i,j) < (roothrsh + 273.16) .or. &
                 (daylngth(i) < 11.0 .and. &
-                roottemp(i, j) < (11.15 + 273.16))) lfstatus(i, j) = 4
+                roottemp(i,j) < (11.15 + 273.16))) lfstatus(i,j) = 4
 
           case ('CropC3  ')
 
-            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i, j) = 4
+            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i,j) = 4
 
           case ('CropC4  ')
 
-            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i, j) = 4
+            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i,j) = 4
 
           case ('BdlDCoSh') ! Broadleaf deciduous shrub
 
-            !           if (roottemp(i, j)<(roothrsh+273.16).or.
-            !     &    (daylngth(i)<11.0.and.roottemp(i, j)<(11.15+273.16))) then
-            if (ta(i) < (coldthrs(1) + 273.16)) lfstatus(i, j) = 4
+            !           if (roottemp(i,j)<(roothrsh+273.16).or.
+            !     &    (daylngth(i)<11.0.and.roottemp(i,j)<(11.15+273.16))) then
+            if (ta(i) < (coldthrs(1) + 273.16)) lfstatus(i,j) = 4
 
           case ('GrassC3 ')
 
-            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i, j) = 4
+            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i,j) = 4
 
           case ('GrassC4 ')
 
-            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i, j) = 4
+            if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i,j) = 4
 
           case ('NdlEvgTr','BdlEvgTr')
 
-            ! Evergreen, leave unchanged.
+            ! Evergreen,leave unchanged.
 
           case default
 
@@ -315,25 +315,25 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !> if in "max growth" mode
   !! ------------------------
   !!
-  !! if mode hasn't been checked and we are in "max. growth" mode, then
+  !! if mode hasn't been checked and we are in "max. growth" mode,then
   !! check if we are above pft-dependent lai threshold. if lai is more
-  !! then this threshold we move into "normal growth" mode, otherwise
+  !! then this threshold we move into "normal growth" mode,otherwise
   !! we stay in "max growth" mode so that leaves can grow at their
   !! max. climate-dependent rate
-  do j = 1, icc
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        if (chkmode(i, j) == 0 .and. lfstatus(i, j) == 1) then
-          if (ailcg(i, j) >= lfthrs(i, j)) then
-            lfstatus(i, j) = 2        ! switch to "normal growth" mode
-            chkmode(i, j) = 1
-          else if (ailcg(i, j) <= zero) then
-            lfstatus(i, j) = 4        ! switch to "no leaves" mode
-            chkmode(i, j) = 1
-            pandays(i, j) = 0
+  do j = 1,icc
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        if (chkmode(i,j) == 0 .and. lfstatus(i,j) == 1) then
+          if (ailcg(i,j) >= lfthrs(i,j)) then
+            lfstatus(i,j) = 2        ! switch to "normal growth" mode
+            chkmode(i,j) = 1
+          else if (ailcg(i,j) <= zero) then
+            lfstatus(i,j) = 4        ! switch to "no leaves" mode
+            chkmode(i,j) = 1
+            pandays(i,j) = 0
           else
-            lfstatus(i, j) = 1        ! stay in "max. growth" mode
-            chkmode(i, j) = 1
+            lfstatus(i,j) = 1        ! stay in "max. growth" mode
+            chkmode(i,j) = 1
           end if
 
           !> for dcd trees we also need to go into "leaf fall" mode
@@ -342,45 +342,45 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
           select case (pftkind)
           case ('NdlDcdTr')
 
-            if (ailcg(i, j) < lfthrs(i, j) .and. colddays(i, 1) >= coldlmt(1) .and. &
-                ailcg(i, j) > zero) then
-              lfstatus(i, j) = 3
-              chkmode(i, j) = 1
+            if (ailcg(i,j) < lfthrs(i,j) .and. colddays(i,1) >= coldlmt(1) .and. &
+                ailcg(i,j) > zero) then
+              lfstatus(i,j) = 3
+              chkmode(i,j) = 1
             end if
 
           case ('BdlDCoTr')
 
-            if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) & ! FLAG put 11.15 in param !
-                .or. roottemp(i, j) < (roothrsh + 273.16))) then
-              lfstatus(i, j) = 3
-              chkmode(i, j) = 1
-              flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(2))
-              if (useTracer > 0) tracerFlHrLoss(i, j) = tracerGLeafMass(i, j) * (1.0 / flhrspan(2))
+            if (ailcg(i,j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i,j) < (11.15 + 273.16)) & ! FLAG put 11.15 in param !
+                .or. roottemp(i,j) < (roothrsh + 273.16))) then
+              lfstatus(i,j) = 3
+              chkmode(i,j) = 1
+              flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(2))
+              if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(2))
 
             end if
 
           case ('BdlDDrTr')
 
-            if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) &
-                .or. roottemp(i, j) < (roothrsh + 273.16))) then
-              lfstatus(i, j) = 3        ! go into "leaf fall" mode
-              chkmode(i, j) = 1
+            if (ailcg(i,j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i,j) < (11.15 + 273.16)) &
+                .or. roottemp(i,j) < (roothrsh + 273.16))) then
+              lfstatus(i,j) = 3        ! go into "leaf fall" mode
+              chkmode(i,j) = 1
             end if
 
           case ('BdlDCoSh') ! Shrub
 
-            if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) & ! FLAG param to move out.
-                .or. roottemp(i, j) < (roothrsh + 273.16))) then
-              lfstatus(i, j) = 3        ! go into "leaf fall" mode
-              chkmode(i, j) = 1
-              flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(2))
-              if (useTracer > 0) tracerFlHrLoss(i, j) = tracerGLeafMass(i, j) * (1.0 / flhrspan(2))
+            if (ailcg(i,j) > zero .and. ((daylngth(i) < 11.0 .and. roottemp(i,j) < (11.15 + 273.16)) & ! FLAG param to move out.
+                .or. roottemp(i,j) < (roothrsh + 273.16))) then
+              lfstatus(i,j) = 3        ! go into "leaf fall" mode
+              chkmode(i,j) = 1
+              flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(2))
+              if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(2))
 
             end if
 
           case ('NdlEvgTr' , 'BdlEvgTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
 
-            ! Evergreen, crop or grass so do nothing.
+            ! Evergreen,crop or grass so do nothing.
 
           case default
 
@@ -396,79 +396,79 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !! if in "normal growth" mode then go through every pft individually
   !! and follow set of rules to determine if we go into "fall/harvest" mode
   !!
-  do i =  il1, il2
-    do j = 1, icc
-      if (fcancmx(i, j) > 0.0) then
-        if (chkmode(i, j) == 0 .and. lfstatus(i, j) == 2) then
+  do i =  il1,il2
+    do j = 1,icc
+      if (fcancmx(i,j) > 0.0) then
+        if (chkmode(i,j) == 0 .and. lfstatus(i,j) == 2) then
           pftkind = ctempfts(j)
           select case (pftkind)
 
           case ('NdlEvgTr') ! needle leaf evg tree
 
-            if (ailcg(i, j) < lfthrs(i, j) .and. ailcg(i, j) > zero) then
-              lfstatus(i, j) = 1         ! go back to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) < lfthrs(i,j) .and. ailcg(i,j) > zero) then
+              lfstatus(i,j) = 1         ! go back to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('NdlDcdTr') ! Needle leaf deciduous tree
 
-            if (ailcg(i, j) < lfthrs(i, j) .and. colddays(i, 1) > coldlmt(1) &
-                .and. ailcg(i, j) > zero) then
-              lfstatus(i, j) = 3         ! go into "leaf fall" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) < lfthrs(i,j) .and. colddays(i,1) > coldlmt(1) &
+                .and. ailcg(i,j) > zero) then
+              lfstatus(i,j) = 3         ! go into "leaf fall" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('BdlEvgTr') ! broad leaf evg tree
 
-            if (ailcg(i, j) < lfthrs(i, j) .and. ailcg(i, j) > zero) then
-              lfstatus(i, j) = 1         ! go back to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) < lfthrs(i,j) .and. ailcg(i,j) > zero) then
+              lfstatus(i,j) = 1         ! go back to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('BdlDCoTr') ! Broadleaf deciduous cold tree
 
             ! we use daylength and roottemp to initiate leaf offset
-            if (ailcg(i, j) > zero .and. ((daylngth(i) < 11.0 .and. &
-                roottemp(i, j) < (11.15 + 273.16)) .or. &
-                roottemp(i, 4) < (roothrsh + 273.16))) then
-              lfstatus(i, j) = 3         ! go into "leaf fall" mode
-              chkmode(i, j) = 1
-              flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(2))
-              if (useTracer > 0) tracerFlHrLoss(i, j) = tracerGLeafMass(i, j) * (1.0 / flhrspan(2))
+            if (ailcg(i,j) > zero .and. ((daylngth(i) < 11.0 .and. &
+                roottemp(i,j) < (11.15 + 273.16)) .or. &
+                roottemp(i,4) < (roothrsh + 273.16))) then
+              lfstatus(i,j) = 3         ! go into "leaf fall" mode
+              chkmode(i,j) = 1
+              flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(2))
+              if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(2))
 
-            else if (ailcg(i, j) > zero .and. ailcg(i, j) < lfthrs(i, j)) then
-              lfstatus(i, j) = 1         ! switch to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
-              flhrloss(i, j) = 0.0
-              if (useTracer > 0) tracerFlHrLoss(i, j) = 0.
+            else if (ailcg(i,j) > zero .and. ailcg(i,j) < lfthrs(i,j)) then
+              lfstatus(i,j) = 1         ! switch to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
+              flhrloss(i,j) = 0.0
+              if (useTracer > 0) tracerFlHrLoss(i,j) = 0.
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('BdlDDrTr') ! Broadleaf deciduous drought dry tree
@@ -477,21 +477,21 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
             !! for the pathological cases of dry dcd trees being further
             !! away from the equator then we can imagine. other wise leaf
             !! loss will occur due to drought anyway.
-            if (ailcg(i, j) > zero .and. &
-                ((daylngth(i) < 11.0 .and. roottemp(i, j) < (11.15 + 273.16)) .or. &
-                roottemp(i, j) < (roothrsh + 273.16))) then
-              lfstatus(i, j) = 3         ! go into "leaf fall" mode
-              chkmode(i, j) =  1
-            else if (ailcg(i, j) > zero .and. ailcg(i, j) < lfthrs(i, j)) then
-              lfstatus(i, j) = 1         ! switch to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) > zero .and. &
+                ((daylngth(i) < 11.0 .and. roottemp(i,j) < (11.15 + 273.16)) .or. &
+                roottemp(i,j) < (roothrsh + 273.16))) then
+              lfstatus(i,j) = 3         ! go into "leaf fall" mode
+              chkmode(i,j) =  1
+            else if (ailcg(i,j) > zero .and. ailcg(i,j) < lfthrs(i,j)) then
+              lfstatus(i,j) = 1         ! switch to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('CropC3  ','CropC4  ') ! Crops
@@ -499,88 +499,88 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
             !! "normal growth" to "fall/harvest" transition for crops is based on
             !! specified lai. we harvest if lai of crops reaches a threshold.
             !! if lai doesn't reach this threshold (say due to a bad year)
-            !! we harvest anyway if it starts getting cold, otherwise we don't harvest.
+            !! we harvest anyway if it starts getting cold,otherwise we don't harvest.
             n = sort(j)
-            if (ailcg(i, j) >= harvthrs(n)) then
-              lfstatus(i, j) = 3        ! go into "harvest" mode
-              chkmode(i, j) = 1
-              flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(1))
-              if (useTracer > 0) tracerFlHrLoss(i, j) = tracerGLeafMass(i, j) * (1.0 / flhrspan(1))
+            if (ailcg(i,j) >= harvthrs(n)) then
+              lfstatus(i,j) = 3        ! go into "harvest" mode
+              chkmode(i,j) = 1
+              flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(1))
+              if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(1))
 
-            else if (ailcg(i, j) > zero .and. colddays(i, 2) >= coldlmt(2)) then
-              lfstatus(i, j) = 3        ! go into "harvest" mode
-              chkmode(i, j) = 1          ! regardless of lai
-              flhrloss(i, j) = gleafmas(i, j) * (1.0 / flhrspan(1))
-              if (useTracer > 0) tracerFlHrLoss(i, j) = tracerGLeafMass(i, j) * (1.0 / flhrspan(1))
+            else if (ailcg(i,j) > zero .and. colddays(i,2) >= coldlmt(2)) then
+              lfstatus(i,j) = 3        ! go into "harvest" mode
+              chkmode(i,j) = 1          ! regardless of lai
+              flhrloss(i,j) = gleafmas(i,j) * (1.0 / flhrspan(1))
+              if (useTracer > 0) tracerFlHrLoss(i,j) = tracerGLeafMass(i,j) * (1.0 / flhrspan(1))
 
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4        ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
-              flhrloss(i, j) = 0.0
-              if (useTracer > 0) tracerFlHrLoss(i, j) = 0.
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4        ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
+              flhrloss(i,j) = 0.0
+              if (useTracer > 0) tracerFlHrLoss(i,j) = 0.
 
             else
-              lfstatus(i, j) = 2        ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2        ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('GrassC3 ','GrassC4 ') ! Grasses
 
             !! "normal growth" to "max. growth" transition for grasses
-            if (ailcg(i, j) < lfthrs(i, j) .and. ailcg(i, j) > zero) then
-              lfstatus(i, j) = 1        ! switch back to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4        ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) < lfthrs(i,j) .and. ailcg(i,j) > zero) then
+              lfstatus(i,j) = 1        ! switch back to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4        ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2        ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2        ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
-          case ('BdlEvgSh') ! EVG-SHRUB, treated the same as needel leaf EVG
+          case ('BdlEvgSh') ! EVG-SHRUB,treated the same as needel leaf EVG
 
-            if (ailcg(i, j) > lfthrs(i, j) .and. ailcg(i, j) > zero) then
-              lfstatus(i, j) = 1         ! go back to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) > lfthrs(i,j) .and. ailcg(i,j) > zero) then
+              lfstatus(i,j) = 1         ! go back to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('BdlDCoSh') ! DCD-SHRUB     treated the same as needle leaf dcd
 
-            if (ailcg(i, j) < lfthrs(i, j) .and. colddays(i, 1) >= coldlmt(1) .and. &
-                ailcg(i, j) > zero) then
-              lfstatus(i, j) = 3         ! go into "leaf fall" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4         ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) < lfthrs(i,j) .and. colddays(i,1) >= coldlmt(1) .and. &
+                ailcg(i,j) > zero) then
+              lfstatus(i,j) = 3         ! go into "leaf fall" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4         ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2         ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2         ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case ('Sedge   ') ! Sedges
 
-            if (ailcg(i, j) < lfthrs(i, j) .and. ailcg(i, j) > zero) then
-              lfstatus(i, j) = 1        ! switch back to "max. growth" mode
-              chkmode(i, j) = 1
-            else if (ailcg(i, j) <= zero) then
-              lfstatus(i, j) = 4        ! switch to "no leaves" mode
-              chkmode(i, j) = 1
-              pandays(i, j) = 0
+            if (ailcg(i,j) < lfthrs(i,j) .and. ailcg(i,j) > zero) then
+              lfstatus(i,j) = 1        ! switch back to "max. growth" mode
+              chkmode(i,j) = 1
+            else if (ailcg(i,j) <= zero) then
+              lfstatus(i,j) = 4        ! switch to "no leaves" mode
+              chkmode(i,j) = 1
+              pandays(i,j) = 0
             else
-              lfstatus(i, j) = 2        ! stay in "normal growth" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 2        ! stay in "normal growth" mode
+              chkmode(i,j) = 1
             end if
 
           case default
@@ -598,61 +598,61 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   !> If in "fall/harvest" mode
   !! --------------------------
   !!
-  !! grasses and evg trees do not come into this mode, because they want
+  !! grasses and evg trees do not come into this mode,because they want
   !! to stay green if possible. this mode is activated for dcd plants and
   !! crops. once in this mode dcd trees loose their leaves and crops are
   !! harvested. ndl dcd trees keep loosing their leaves at rate determined
-  !! by cold stress, bdl dcd trees loose their leaves at a specified
-  !! rate, and crops are harvested over a period of  15 days. dcd trees
+  !! by cold stress,bdl dcd trees loose their leaves at a specified
+  !! rate,and crops are harvested over a period of  15 days. dcd trees
   !! and crops stay in "leaf fall/harvest" model until all green leaves
-  !! are gone at which time they switch into "no leaves" mode, and then
+  !! are gone at which time they switch into "no leaves" mode,and then
   !! wait for the climate to become favourable to go into "max. growth" mode
-  do i = il1, il2
-    do j = 1, icc
+  do i = il1,il2
+    do j = 1,icc
       pftkind = ctempfts(j)
       select case (pftkind)
 
       case ('NdlDcdTr','BdlDCoTr','BdlDDrTr','BdlDCoSh','CropC3  ','CropC4  ') ! All deciduous PFTs
 
-        if (fcancmx(i, j) > 0.0 .and. chkmode(i, j) == 0 .and. lfstatus(i, j) == 3) then
-          if (ailcg(i, j) <= 0.01) then
-            lfstatus(i, j) = 4            ! go into "no leaves" mode
-            chkmode(i, j) = 1
-            pandays(i, j) = 0
-            flhrloss(i, j) = 0.0
-            if (useTracer > 0) tracerFlHrLoss(i, j) = 0.
+        if (fcancmx(i,j) > 0.0 .and. chkmode(i,j) == 0 .and. lfstatus(i,j) == 3) then
+          if (ailcg(i,j) <= 0.01) then
+            lfstatus(i,j) = 4            ! go into "no leaves" mode
+            chkmode(i,j) = 1
+            pandays(i,j) = 0
+            flhrloss(i,j) = 0.0
+            if (useTracer > 0) tracerFlHrLoss(i,j) = 0.
 
           else
             if (pftkind == 'NdlDcdTr' .or. pftkind == 'BdlDCoSh') then !
-              if (pandays(i, j) >= dayschk(j) .and. ta(i) > (coldthrs(1) + 273.16)) then
-                if (ailcg(i, j) < lfthrs(i, j)) then
-                  lfstatus(i, j) = 1      ! go into "max. growth" mode
-                  chkmode(i, j) = 1
+              if (pandays(i,j) >= dayschk(j) .and. ta(i) > (coldthrs(1) + 273.16)) then
+                if (ailcg(i,j) < lfthrs(i,j)) then
+                  lfstatus(i,j) = 1      ! go into "max. growth" mode
+                  chkmode(i,j) = 1
                 else
-                  lfstatus(i, j) = 2      ! go into "normal growth" mode
-                  chkmode(i, j) = 1
+                  lfstatus(i,j) = 2      ! go into "normal growth" mode
+                  chkmode(i,j) = 1
                 end if
               else
-                lfstatus(i, j) = 3        ! stay in "fall/harvest" mode
-                chkmode(i, j) = 1
+                lfstatus(i,j) = 3        ! stay in "fall/harvest" mode
+                chkmode(i,j) = 1
               end if
             else if (pftkind == 'BdlDCoTr' .or. pftkind == 'BdlDDrTr') then
-              if ((pandays(i, j) >= dayschk(j)) .and. ((roottemp(i, 4) > (roothrsh + 273.16)) .and. &
+              if ((pandays(i,j) >= dayschk(j)) .and. ((roottemp(i,4) > (roothrsh + 273.16)) .and. &
                   (daylngth(i) > 11.0))) then
-                if (ailcg(i, j) < lfthrs(i, j)) then
-                  lfstatus(i, j) = 1      ! go into "max. growth" mode
-                  chkmode(i, j) = 1
+                if (ailcg(i,j) < lfthrs(i,j)) then
+                  lfstatus(i,j) = 1      ! go into "max. growth" mode
+                  chkmode(i,j) = 1
                 else
-                  lfstatus(i, j) = 2      ! go into "normal growth" mode
-                  chkmode(i, j) = 1
+                  lfstatus(i,j) = 2      ! go into "normal growth" mode
+                  chkmode(i,j) = 1
                 end if
               else
-                lfstatus(i, j) = 3        ! stay in "fall/harvest" mode
-                chkmode(i, j) = 1
+                lfstatus(i,j) = 3        ! stay in "fall/harvest" mode
+                chkmode(i,j) = 1
               end if
             else if (pftkind == 'CropC3  ' .or. pftkind == 'CropC4  ') then  ! Crops
-              lfstatus(i, j) = 3          ! stay in "fall/harvest" mode
-              chkmode(i, j) = 1
+              lfstatus(i,j) = 3          ! stay in "fall/harvest" mode
+              chkmode(i,j) = 1
             end if ! pftkind
           end if ! ailcg
         end if ! fcancmax etc.
@@ -671,12 +671,12 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
   end do ! loop 410
 
   !> Check that leaf status of all vegetation types in all grid cells has been updated
-  do j = 1, icc
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        if (chkmode(i, j) == 0) then
-          write(6, 2000) i, j
-2000      format(' at (i) = (',i3,'), pft = ',i2,' lfstatus not updated')
+  do j = 1,icc
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        if (chkmode(i,j) == 0) then
+          write(6,2000) i,j
+2000      format(' at (i) = (',i3,'),pft = ',i2,' lfstatus not updated')
           call errorHandler('phenolgy', - 5)
         end if
       end if
@@ -685,152 +685,152 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
 
   !------------------------------------------------------------------
 
-  !> Having decided leaf status for every pft, we now calculate normal
-  !! leaf turnover, cold and drought stress mortality, and for bdl dcd
+  !> Having decided leaf status for every pft,we now calculate normal
+  !! leaf turnover,cold and drought stress mortality,and for bdl dcd
   !! plants we also calculate specified loss rate if they are in "leaf fall"
-  !! mode, and for crops we calculate harvest loss, if they are in "harvest" mode.
+  !! mode,and for crops we calculate harvest loss,if they are in "harvest" mode.
   !!
   !! all these loss calculations will yield leaf litter in \f$kg c/m^2\f$ for the given day for all pfts
 
   ! Normal leaf turn over
-  do j = 1, icc
+  do j = 1,icc
     n = sort(j)
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
         if (leapnow) then
-          nrmlloss(i, j) = gleafmas(i, j) * (1.0 - exp( - 1.0 / (366.0 * lfespany(n))))
-          if (useTracer > 0) tracerNrmlLoss(i, j) = tracerGLeafMass(i, j) * (1.0 - exp( - 1.0 / (366.0 * lfespany(n))))
+          nrmlloss(i,j) = gleafmas(i,j) * (1.0 - exp( - 1.0 / (366.0 * lfespany(n))))
+          if (useTracer > 0) tracerNrmlLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp( - 1.0 / (366.0 * lfespany(n))))
         else
-          nrmlloss(i, j) = gleafmas(i, j) * (1.0 - exp( - 1.0 / (365.0 * lfespany(n))))
-          if (useTracer > 0) tracerNrmlLoss(i, j) = tracerGLeafMass(i, j) * (1.0 - exp( - 1.0 / (365.0 * lfespany(n))))
+          nrmlloss(i,j) = gleafmas(i,j) * (1.0 - exp( - 1.0 / (365.0 * lfespany(n))))
+          if (useTracer > 0) tracerNrmlLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp( - 1.0 / (365.0 * lfespany(n))))
         end if
       end if   ! fcancmx
     end do ! loop 430
   end do ! loop 420
 
   !> For drought stress related mortality we need field capacity and wilting point soil
-  !! moisture contents, which we calculated in allocate subroutine
-  do j = 1, ignd
-    do i = il1, il2
-      if (isand(i, j) /= - 3) then
+  !! moisture contents,which we calculated in allocate subroutine
+  do j = 1,ignd
+    do i = il1,il2
+      if (isand(i,j) /= - 3) then
         ! for non-bedrock estimate (1-drought stress)
         ! (bedrock keeps the initialization value of 0)
-        if (thliq(i, j) <= THLW(i, j)) then
-          betadrgt(i, j) = 0.0
-        else if (thliq(i, j) > (THLW(i, j) - thice(i, j)) .and. (thliq(i, j) < (THFC(i, j) - thice(i, j)))) then
-          betadrgt(i, j) = thliq(i, j) - THLW(i, j) - thice(i, j)
-          betadrgt(i, j) = betadrgt(i, j) / (THFC(i, j) - thice(i, j) - THLW(i, j))
+        if (thliq(i,j) <= THLW(i,j)) then
+          betadrgt(i,j) = 0.0
+        else if (thliq(i,j) > (THLW(i,j) - thice(i,j)) .and. (thliq(i,j) < (THFC(i,j) - thice(i,j)))) then
+          betadrgt(i,j) = thliq(i,j) - THLW(i,j) - thice(i,j)
+          betadrgt(i,j) = betadrgt(i,j) / (THFC(i,j) - thice(i,j) - THLW(i,j))
         else
-          betadrgt(i, j) = 1.0
+          betadrgt(i,j) = 1.0
         end if
-        betadrgt(i, j) = max(0.0, min(1.0, betadrgt(i, j)))
+        betadrgt(i,j) = max(0.0,min(1.0,betadrgt(i,j)))
       end if
     end do ! loop 460
   end do ! loop 450
 
   !> Estimate drought stress term averaged over the rooting depth for each pft
-  do j = 1, icc
+  do j = 1,icc
     n = sort(j)
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        drgtstrs(i, j) =  sum((1.0 - betadrgt(i,:)) * rmatctem(i, j,:))
-        drgtstrs(i, j) = drgtstrs(i, j) / sum(rmatctem(i, j,:))
-        !    ---------YW May 04, 2015 ---------------------------------------/
-        !          drgtstrs(i, j)=max(0.0, min(1.0, drgtstrs(i, j))) ! FLAG why is this commented out? JM Nov 2016.
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        drgtstrs(i,j) =  sum((1.0 - betadrgt(i,:)) * rmatctem(i,j,:))
+        drgtstrs(i,j) = drgtstrs(i,j) / sum(rmatctem(i,j,:))
+        !    ---------YW May 04,2015 ---------------------------------------/
+        !          drgtstrs(i,j)=max(0.0,min(1.0,drgtstrs(i,j))) ! FLAG why is this commented out? JM Nov 2016.
 
         !> Using this drought stress term and our two vegetation-dependent
         !! parameters we find leaf loss rate associated with drought
 
         ! drought related leaf loss rate
-        drgtlsrt(i, j) = drlsrtmx(n) * drgtstrs(i, j) ** drgta(n)
+        drgtlsrt(i,j) = drlsrtmx(n) * drgtstrs(i,j) ** drgta(n)
 
         !> Estimate leaf loss in \f$kg c/m^2\f$ due to drought stress
-        drgtloss(i, j) = gleafmas(i, j) * (1.0 - exp( - drgtlsrt(i, j)))
+        drgtloss(i,j) = gleafmas(i,j) * (1.0 - exp( - drgtlsrt(i,j)))
 
-        if (useTracer > 0) tracerDrgtLoss(i, j) = tracerGLeafMass(i, j) * (1.0 - exp( - drgtlsrt(i, j)))
+        if (useTracer > 0) tracerDrgtLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp( - drgtlsrt(i,j)))
 
         !> Similar to drgtstrs we find coldstrs for each pft. we assume that
         !! max. cold stress related leaf loss occurs when temperature is 5 c
         !! or more below pft's threshold
         if (ta(i) <= (lwrthrsh(n) - 5.0 + 273.16)) then
-          coldstrs(i, j) = 1.0
+          coldstrs(i,j) = 1.0
         else if (ta(i) > (lwrthrsh(n) - 5.0 + 273.16) .and. &
                      ta(i) < (lwrthrsh(n) + 273.16)) then
-          coldstrs(i, j) = 1.0 - ((ta(i) - (lwrthrsh(n) - 5.0 + 273.16)) / 5.0)
+          coldstrs(i,j) = 1.0 - ((ta(i) - (lwrthrsh(n) - 5.0 + 273.16)) / 5.0)
         else
-          coldstrs(i, j) = 0.0
+          coldstrs(i,j) = 0.0
         end if
-        coldstrs(i, j) = max(0.0, min(1.0, coldstrs(i, j)))
+        coldstrs(i,j) = max(0.0,min(1.0,coldstrs(i,j)))
 
         !> Using this cold stress term and our two vegetation-dependent
         !> parameters we find leaf loss rate associated with cold
         !> cold related leaf loss rate
-        coldlsrt(i, j) = cdlsrtmx(n) * coldstrs(i, j) ** colda(n)
+        coldlsrt(i,j) = cdlsrtmx(n) * coldstrs(i,j) ** colda(n)
 
         !> estimate leaf loss in \f$kg c/m^2\f$ due to cold stress
-        coldloss(i, j) = gleafmas(i, j) * (1.0 - exp( - coldlsrt(i, j)))
+        coldloss(i,j) = gleafmas(i,j) * (1.0 - exp( - coldlsrt(i,j)))
 
-        if (useTracer > 0) tracerColdLoss(i, j) = tracerGLeafMass(i, j) * (1.0 - exp( - coldlsrt(i, j)))
+        if (useTracer > 0) tracerColdLoss(i,j) = tracerGLeafMass(i,j) * (1.0 - exp( - coldlsrt(i,j)))
 
       end if
     end do ! loop 490
   end do ! loop 480
 
   !> Now that we have all types of leaf losses (due to normal turnover,
-  !! cold and drought stress, and fall/harvest) we take the losses
+  !! cold and drought stress,and fall/harvest) we take the losses
   !! for grasses and use those to turn live green grass into dead
   !! brown grass. we then find the leaf litter from the brown grass
   !! which will then go into the litter pool.
-  do j = 1, icc
+  do j = 1,icc
     pftkind = ctempfts(j)
     select case (pftkind)
 
     case ('GrassC3 ','GrassC4 ','Sedge   ')
 
       n = sort(j)
-      do i = il1, il2
-        if (fcancmx(i, j) > 0.0) then
-          gleafmas(i, j) = gleafmas(i, j) - nrmlloss(i, j) - drgtloss(i, j) - coldloss(i, j)
+      do i = il1,il2
+        if (fcancmx(i,j) > 0.0) then
+          gleafmas(i,j) = gleafmas(i,j) - nrmlloss(i,j) - drgtloss(i,j) - coldloss(i,j)
 
-          if (useTracer > 0) tracerGLeafMass(i, j) = tracerGLeafMass(i, j) - tracerNrmlLoss(i, j) &
-              - tracerDrgtLoss(i, j) - tracerColdLoss(i, j)
+          if (useTracer > 0) tracerGLeafMass(i,j) = tracerGLeafMass(i,j) - tracerNrmlLoss(i,j) &
+              - tracerDrgtLoss(i,j) - tracerColdLoss(i,j)
 
-          if (gleafmas(i, j) < 0.0) then
+          if (gleafmas(i,j) < 0.0) then
 
-            bleafmas(i, j) = bleafmas(i, j) + nrmlloss(i, j) + drgtloss(i, j) + coldloss(i, j) + gleafmas(i, j)
-            gleafmas(i, j) = 0.0
+            bleafmas(i,j) = bleafmas(i,j) + nrmlloss(i,j) + drgtloss(i,j) + coldloss(i,j) + gleafmas(i,j)
+            gleafmas(i,j) = 0.0
 
             if (useTracer > 0) then
-              tracerBLeafMass(i, j) = tracerBLeafMass(i, j) + tracerNrmlLoss(i, j) &
-                                      + tracerDrgtLoss(i, j) &
-                                      + tracerColdLoss(i, j) + tracerGLeafMass(i, j)
-              tracerGLeafMass(i, j) = 0.
+              tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + tracerNrmlLoss(i,j) &
+                                     + tracerDrgtLoss(i,j) &
+                                     + tracerColdLoss(i,j) + tracerGLeafMass(i,j)
+              tracerGLeafMass(i,j) = 0.
             end if
 
           else
-            bleafmas(i, j) = bleafmas(i, j) + nrmlloss(i, j) + drgtloss(i, j) + coldloss(i, j)
-            if (useTracer > 0) tracerBLeafMass(i, j) = tracerBLeafMass(i, j) + tracerNrmlLoss(i, j) &
-                + tracerDrgtLoss(i, j) + tracerColdLoss(i, j)
+            bleafmas(i,j) = bleafmas(i,j) + nrmlloss(i,j) + drgtloss(i,j) + coldloss(i,j)
+            if (useTracer > 0) tracerBLeafMass(i,j) = tracerBLeafMass(i,j) + tracerNrmlLoss(i,j) &
+                + tracerDrgtLoss(i,j) + tracerColdLoss(i,j)
           end if
 
-          nrmlloss(i, j) = 0.0
-          drgtloss(i, j) = 0.0
-          coldloss(i, j) = 0.0
+          nrmlloss(i,j) = 0.0
+          drgtloss(i,j) = 0.0
+          coldloss(i,j) = 0.0
 
           if (useTracer > 0) then
-            tracerNrmlLoss(i, j) = 0.
-            tracerDrgtLoss(i, j) = 0.
-            tracerColdLoss(i, j) = 0.
+            tracerNrmlLoss(i,j) = 0.
+            tracerDrgtLoss(i,j) = 0.
+            tracerColdLoss(i,j) = 0.
           end if
 
           !> we assume life span of brown grass is 10% that of green grass
           !! but this is an adjustable parameter.
           if (leapnow) then
-            nrmlloss(i, j) = bleafmas(i, j) * (1.0 - exp( - 1.0 / (0.10 * 366.0 * lfespany(n))))
-            if (useTracer > 0) tracerNrmlLoss(i, j) = tracerBLeafMass(i, j) * (1.0 - exp( - 1.0 / (0.10 * 366.0 * lfespany(n))))
+            nrmlloss(i,j) = bleafmas(i,j) * (1.0 - exp( - 1.0 / (0.10 * 366.0 * lfespany(n))))
+            if (useTracer > 0) tracerNrmlLoss(i,j) = tracerBLeafMass(i,j) * (1.0 - exp( - 1.0 / (0.10 * 366.0 * lfespany(n))))
           else
-            nrmlloss(i, j) = bleafmas(i, j) * (1.0 - exp( - 1.0 / (0.10 * 365.0 * lfespany(n))))
-            if (useTracer > 0) tracerNrmlLoss(i, j) = tracerBLeafMass(i, j) * (1.0 - exp( - 1.0 / (0.10 * 365.0 * lfespany(n))))
+            nrmlloss(i,j) = bleafmas(i,j) * (1.0 - exp( - 1.0 / (0.10 * 365.0 * lfespany(n))))
+            if (useTracer > 0) tracerNrmlLoss(i,j) = tracerBLeafMass(i,j) * (1.0 - exp( - 1.0 / (0.10 * 365.0 * lfespany(n))))
           end if
         end if
       end do
@@ -848,16 +848,16 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
     end select
   end do ! loop 620
 
-  !> combine nrmlloss, drgtloss, and coldloss together to get total
-  !! leaf litter generated, which is what we use to update gleafmass,
-  !! except for grasses, for which we have already updated gleafmass.
-  do j = 1, icc
-    do i = il1, il2
-      if (fcancmx(i, j) > 0.0) then
-        leaflitr(i, j) = nrmlloss(i, j) + drgtloss(i, j) &
-                         + coldloss(i, j) + flhrloss(i, j)
-        if (useTracer > 0) tracerLeafLitr(i, j) = tracerNrmlLoss(i, j) &
-            + tracerDrgtLoss(i, j) + tracerColdLoss(i, j) + tracerFlHrLoss(i, j)
+  !> combine nrmlloss,drgtloss,and coldloss together to get total
+  !! leaf litter generated,which is what we use to update gleafmass,
+  !! except for grasses,for which we have already updated gleafmass.
+  do j = 1,icc
+    do i = il1,il2
+      if (fcancmx(i,j) > 0.0) then
+        leaflitr(i,j) = nrmlloss(i,j) + drgtloss(i,j) &
+                        + coldloss(i,j) + flhrloss(i,j)
+        if (useTracer > 0) tracerLeafLitr(i,j) = tracerNrmlLoss(i,j) &
+            + tracerDrgtLoss(i,j) + tracerColdLoss(i,j) + tracerFlHrLoss(i,j)
 
       end if
     end do ! loop 660
@@ -867,7 +867,7 @@ subroutine phenolgy(il1, il2, ilg, leapnow, tbar, thice, & ! In
 
 end subroutine phenolgy
 !> \file
-!! @author V. Arora, J. Melton
+!! @author V. Arora,J. Melton
 !!
 !! The leaf phenology parametrization used in CTEM v. 1.0 is described in detail by \cite Arora2005-6b1 . Changes between
 !! version 1.0 and 2.0 are limited to parameter values and the parametrization is briefly described here. There are four
@@ -900,20 +900,20 @@ end subroutine phenolgy
 !! {LAI}_{thrs} = L_f [ {SLA} (\frac{C_S + C_R}{\eta} ) ^ {1/\kappa} ].
 !! \f]
 !!
-!! The PFT-specific \f$L_f\f$ term (see also classic_params.f90) calculates \f${LAI}_{thrs}\f$ to be typically between
+!! The PFT-specific \f$L_f\f$ term (see also classicParams.f90) calculates \f${LAI}_{thrs}\f$ to be typically between
 !! 40 and 50 % of the maximum LAI that a given amount of stem and root biomass can support (based on the terms in the square
 !! brackets and Eq. (\f$\ref{propwoody}\f$). \f$SLA\f$ is the specific leaf area (Eq.\f$ \ref{sla}\f$).  This rule for transition
 !! from a maximum to a normal growth state is also used for evergreen tree PFTs and grass PFTs. Similar to
-!! \f${LAI}_{thrs}\f$, the LAI of virtual leaves is \f$7.5\,{\%}\f$ of the maximum LAI a given amount of root
-!! and stem biomass can support for tree and crop PFTsand \f$2.5\,{\%}\f$ for grass PFTs. In
-!! addition, the LAI of virtual leaves is constrained to be, at least, \f$0.3\,m^2\,m^{-2}\f$
-!! for tree PFTs and \f$0.2\,m^2\,m^{-2}\f$ for crop and grass PFTs.
+!! \f${LAI}_{thrs}\f$, the LAI of virtual leaves is \f$7.5\, {\%}\f$ of the maximum LAI a given amount of root
+!! and stem biomass can support for tree and crop PFTsand \f$2.5\, {\%}\f$ for grass PFTs. In
+!! addition, the LAI of virtual leaves is constrained to be, at least, \f$0.3\, m^2\, m^{-2}\f$
+!! for tree PFTs and \f$0.2\, m^2\, m^{-2}\f$ for crop and grass PFTs.
 !!
 !! The transition from the normal growth state to the leaf fall state is triggered by unfavourable environmental conditions
 !! and shorter day length. Broadleaf deciduous trees transition to the leaf fall state when either: (i) day length is less
-!! than \f$11\,h\f$ and the rooting zone temperature drops below \f$11.15\,C\f$ or (ii) when the rooting zone temperature
-!! drops below \f$8\,C\f$ regardless of the day length. Needleleaf deciduous tress begin leaf fall after seven consecutive
-!! days with daily mean air temperature below \f$-5\,C\f$. Leaf fall occurs over a period of 15 days. In the leaf fall
+!! than \f$11\, h\f$ and the rooting zone temperature drops below \f$11.15\, C\f$ or (ii) when the rooting zone temperature
+!! drops below \f$8\, C\f$ regardless of the day length. Needleleaf deciduous tress begin leaf fall after seven consecutive
+!! days with daily mean air temperature below \f$-5\, C\f$. Leaf fall occurs over a period of 15 days. In the leaf fall
 !! state, the vegetation continues carbon allocation to its root and stem components, but not to leaves (\f$a_{fL} = 0\f$,
 !! \f$a_{fS} + a_{fR} = 1\f$). Evergreen trees and grasses do not enter the leaf fall state and neither do the
 !! broadleaf drought deciduous trees. The implication for the latter PFT is that if the climate changes and the
@@ -929,30 +929,30 @@ end subroutine phenolgy
 !! both of which contribute to seasonality of LAI. For example, the leaf loss associated with drought and reduced
 !! photosynthesis during the dry season are the principal causes of the seasonality of LAI for the broadleaf drought deciduous tree PFT.
 !!
-!! The conversion of leaf carbon to leaf litter (\f$D_L\f$, \f$kg\,C\,m^{-2}\,day^{-1}\f$) is expressed as
+!! The conversion of leaf carbon to leaf litter (\f$D_L\f$, \f$kg\, C\, m^{-2}\, day^{-1}\f$) is expressed as
 !!
-!! \f[ D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\f]
+!! \f[ D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})], \f]
 !!
 !! where (\f$\Omega_{N, C, D}\f$, \f$day^{-1}\f$) are the leaf loss rates associated with normal turnover of leaves and
 !! the cold and drought stress. The rate of normal turnover of leaves is governed by PFT-specific leaf lifespan
-!! (\f$\tau_L\f$, \f$yr\f$) as \f$\Omega_N= 1/365 \tau_L\f$ (see also classic_params.f90}
+!! (\f$\tau_L\f$, \f$yr\f$) as \f$\Omega_N= 1/365 \tau_L\f$ (see also classicParams.f90}
 !! for PFT specific values of \f$\tau_L\f$).  The leaf loss rate associated with cold stress
 !! (\f$\Omega_C\f$) is calculated as
 !!
 !! \f[ \label{gamma_cold} \Omega_C = \Omega_{C, max}L_{cold}^3, \f]
 !!
-!! where \f$\Omega_{C, max}\f$ (\f$day^{-1}\f$, see also classic_params.f90) is the maximum cold stress loss rate.
+!! where \f$\Omega_{C, max}\f$ (\f$day^{-1}\f$, see also classicParams.f90) is the maximum cold stress loss rate.
 !! \f$L_{cold}\f$ is a scalar that varies between 0 and 1 as
 !!
 !! \f[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} -
 !! 5\right) \\ 1 - \frac{T_a - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf}
-!! > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \f]
+!! > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} , \\ \end{cases} \f]
 !!
 !! where \f$T_{cold}^{leaf}\f$ is a PFT-specific temperature threshold below which a PFT experiences damage
-!! to its leaves promoting leaf loss (see also classic_params.f90) and \f$T_a\f$ is the daily mean air
+!! to its leaves promoting leaf loss (see also classicParams.f90) and \f$T_a\f$ is the daily mean air
 !! temperature (\f$C\f$).  The leaf loss rate due to drought stress is calculated in a similar manner
 !!
-!! \f[ \label{gamma_dry} \Omega_{D} = \Omega_{D, max}\,(1-\phi_{root})^3, \f]
+!! \f[ \label{gamma_dry} \Omega_{D} = \Omega_{D, max}\, (1-\phi_{root})^3, \f]
 !!
-!! where \f$\Omega_{D, max}\f$ (\f$day^{-1}\f$, see also classic_params.f90) is the maximum drought
+!! where \f$\Omega_{D, max}\f$ (\f$day^{-1}\f$, see also classicParams.f90) is the maximum drought
 !! stress loss rate and \f$\phi_{root}\f$ (Eq. \ref{degsoilsat}) is the degree of soil saturation in the rooting zone.

@@ -3,10 +3,10 @@
 !! energy budget calculations.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, & ! Formerly TNPOST
-                               GCOEFF, TBAR, TCTOP, TCBOT, HCP, ZPOND, TSURF, &
-                               TBASE, TBAR1P, A1, A2, B1, B2, C2, FI, IWATER, &
-                               ISAND, DELZ, DELZW, ILG, IL1, IL2, JL, IG)
+subroutine soilHeatFluxCleanup (TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, & ! Formerly TNPOST
+                                GCOEFF, TBAR, TCTOP, TCBOT, HCP, ZPOND, TSURF, &
+                                TBASE, TBAR1P, A1, A2, B1, B2, C2, FI, IWATER, &
+                                ISAND, DELZ, DELZW, ILG, IL1, IL2, JL, IG)
   !
   !     * NOV 01/06 - D.VERSEGHY. ALLOW PONDING ON ICE SHEETS.
   !     * OCT 04/05 - D.VERSEGHY. MODIFY 300 LOOP FOR CASES WHERE IG>3.
@@ -37,7 +37,7 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
   !     *                         MELTING/FREEZING; CONVERT SOIL LAYER
   !     *                         TEMPERATURES TO DEGREES C.
   !
-  use classic_params, only : TFREZ, HCPW, HCPSND
+  use classicParams, only : TFREZ, HCPW, HCPSND
 
   implicit none
   !
@@ -48,7 +48,7 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
   !
   !     * OUTPUT ARRAYS.
   !
-  real, intent(out) :: TBARPR(ILG, IG) !< Temperatures of soil layers for subarea [C]
+  real, intent(out) :: TBARPR(ILG,IG) !< Temperatures of soil layers for subarea [C]
   !
   real, intent(inout) :: G12   (ILG)    !< Heat conduction between first and second soil layers \f$[W m^{-2}] (G(\Delta z))\f$
   real, intent(out) :: G23   (ILG)    !< Heat conduction between second and third soil layers \f$[W m^{-2}]\f$
@@ -61,11 +61,11 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: TBAR  (ILG, IG) !< Temperatures of soil layers, averaged over modelled area [K]
-  real, intent(in) :: TCTOP (ILG, IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1}] (\lambda)\f$
-  real, intent(in) :: TCBOT (ILG, IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1}] (\lambda)\f$
-  real, intent(in) :: HCP   (ILG, IG) !< Heat capacity of soil layer \f$[J m^{-3} K^{-1}]\f$
-  real, intent(in) :: DELZW (ILG, IG) !< Permeable thickness of soil layer [m]
+  real, intent(in) :: TBAR  (ILG,IG) !< Temperatures of soil layers,averaged over modelled area [K]
+  real, intent(in) :: TCTOP (ILG,IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1}] (\lambda)\f$
+  real, intent(in) :: TCBOT (ILG,IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1}] (\lambda)\f$
+  real, intent(in) :: HCP   (ILG,IG) !< Heat capacity of soil layer \f$[J m^{-3} K^{-1}]\f$
+  real, intent(in) :: DELZW (ILG,IG) !< Permeable thickness of soil layer [m]
   !
   real, intent(in) :: ZPOND (ILG)    !< Depth of ponded water on surface \f$[m] (\Delta z_p)\f$
   real, intent(in) :: TSURF (ILG)    !< Ground surface temperature [K]
@@ -83,13 +83,13 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
   !< surface heat flux to surface temperature \f$[W m^{-2} K^{-1}]\f$
   !
   integer, intent(in) :: IWATER(ILG) !< Flag indicating condition of surface (dry, water-covered or snow-covered)
-  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
   !
   real, intent(in) :: DELZ  (IG)     !< Overall thickness of soil layer \f$[m] (\Delta z)\f$
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: GZROLD, DELZ1
+  real :: GZROLD,DELZ1
   !
   !-----------------------------------------------------------------------
   !
@@ -150,26 +150,26 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
   !! (IWATER = 0), QFREZG is added to the heat flux into the ground,
   !! GZERO, and then reset to zero.
   !!
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0.) then
       GZROLD = GCOEFF(I) * TSURF(I) + GCONST(I)
       G12(I) = (TSURF(I) - TBAR1P(I) - A1(I) * GZROLD) / B1(I)
-      G23(I) = (TSURF(I) - TBAR(I, 2) - A2(I) * GZROLD - B2(I) * G12(I)) / &
+      G23(I) = (TSURF(I) - TBAR(I,2) - A2(I) * GZROLD - B2(I) * G12(I)) / &
                C2(I)
       if (ZPOND(I) > 0.) then
         DELZ1 = DELZ(1) + ZPOND(I)
-        TPOND(I) = (GZROLD / TCTOP(I, 1) - G12(I) / TCBOT(I, 1)) * &
+        TPOND(I) = (GZROLD / TCTOP(I,1) - G12(I) / TCBOT(I,1)) * &
                    (ZPOND(I) * ZPOND(I) - DELZ1 * DELZ1) / (6.0 * DELZ1) - &
-                   GZROLD * (ZPOND(I) - DELZ1) / (2.0 * TCTOP(I, 1)) + &
+                   GZROLD * (ZPOND(I) - DELZ1) / (2.0 * TCTOP(I,1)) + &
                    TBAR1P(I) - TFREZ
-        TBARPR(I, 1) = ((HCP(I, 1) * DELZW(I, 1) + HCPSND * (DELZ(1) - &
-                       DELZW(I, 1)) + HCPW * ZPOND(I)) * TBAR1P(I) - &
-                       HCPW * ZPOND(I) * (TPOND(I) + TFREZ)) / &
-                       (HCP(I, 1) * DELZW(I, 1) + HCPSND * (DELZ(1) - &
-                       DELZW(I, 1))) - TFREZ
+        TBARPR(I,1) = ((HCP(I,1) * DELZW(I,1) + HCPSND * (DELZ(1) - &
+                      DELZW(I,1)) + HCPW * ZPOND(I)) * TBAR1P(I) - &
+                      HCPW * ZPOND(I) * (TPOND(I) + TFREZ)) / &
+                      (HCP(I,1) * DELZW(I,1) + HCPSND * (DELZ(1) - &
+                      DELZW(I,1))) - TFREZ
       else
         TPOND(I) = 0.
-        TBARPR(I, 1) = TBAR(I, 1) - TFREZ
+        TBARPR(I,1) = TBAR(I,1) - TFREZ
       end if
       !
       if ((IWATER(I) == 1 .and. QFREZG(I) > 0.) .or. &
@@ -194,22 +194,22 @@ subroutine soilHeatFluxCleanup(TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, &
   !! disaggregation of TBARPR from TBAR and TBASE is carried out on
   !! this basis. TBARPR for this layer is also converted to C.
   !!
-  do I = IL1, IL2 ! loop 200
+  do I = IL1,IL2 ! loop 200
     if (FI(I) > 0.) then
-      TBARPR(I, 2) = TBAR(I, 2) - TFREZ
-      if (DELZW(I, 3) > 0.0 .and. DELZW(I, 3) < DELZ(3) &
+      TBARPR(I,2) = TBAR(I,2) - TFREZ
+      if (DELZW(I,3) > 0.0 .and. DELZW(I,3) < DELZ(3) &
           .and. IG == 3) then
-        TBARPR(I, 3) = (TBAR(I, 3) * (HCP(I, 3) * DELZW(I, 3) + &
-                       HCPSND * (DELZ(3) - DELZW(I, 3))) - TBASE(I) * &
-                       HCPSND * (DELZ(3) - DELZW(I, 3))) / (HCP(I, 3) * &
-                       DELZW(I, 3)) - TFREZ
+        TBARPR(I,3) = (TBAR(I,3) * (HCP(I,3) * DELZW(I,3) + &
+                      HCPSND * (DELZ(3) - DELZW(I,3))) - TBASE(I) * &
+                      HCPSND * (DELZ(3) - DELZW(I,3))) / (HCP(I,3) * &
+                      DELZW(I,3)) - TFREZ
       else
-        do J = 3, IG ! loop 150
-          TBARPR(I, J) = TBAR(I, J) - TFREZ
+        do J = 3,IG ! loop 150
+          TBARPR(I,J) = TBAR(I,J) - TFREZ
         end do ! loop 150
       end if
     end if
   end do ! loop 200
   !
   return
-end
+end subroutine soilHeatFluxCleanup

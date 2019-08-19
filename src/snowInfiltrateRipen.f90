@@ -3,8 +3,8 @@
 !! pack, and snow ripening.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowInfiltrateRipen(R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! Formerly SNINFL
-                               HTCS, HMFN, PCPG, ROFN, FI, ILG, IL1, IL2, JL)
+subroutine snowInfiltrateRipen (R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! Formerly SNINFL
+                                HTCS, HMFN, PCPG, ROFN, FI, ILG, IL1, IL2, JL)
   !
   !     * DEC 23/09 - D.VERSEGHY. RESET WSNOW TO ZERO WHEN SNOW
   !     *                         PACK DISAPPEARS.
@@ -25,7 +25,7 @@ subroutine snowInfiltrateRipen(R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! F
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. RAIN INFILTRATION INTO SNOWPACK.
   !
-  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
+  use classicParams, only : DELT, TFREZ, HCPW, HCPICE, RHOW, &
                             RHOICE, CLHMLT, WSNCAP
 
   implicit none
@@ -76,7 +76,7 @@ subroutine snowInfiltrateRipen(R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! F
   !! time step, and \f$X_i\f$ the fractional coverage of the subarea under
   !! consideration relative to the modelled area.
   !!
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0. .and. R(I) > 0. .and. ZSNOW(I) > 0.) &
         then
       HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
@@ -267,4 +267,4 @@ subroutine snowInfiltrateRipen(R, TR, ZSNOW, TSNOW, RHOSNO, HCPSNO, WSNOW, & ! F
   end do ! loop 100
   !
   return
-end
+end subroutine snowInfiltrateRipen

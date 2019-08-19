@@ -37,7 +37,7 @@ contains
     !     07  May 2003  - this subroutine calculates the litter generated
     !     V. Arora        from stem and root turnover
 
-    use classic_params, only : icc, ican, kk, zero, stemlife, &
+    use classicParams, only : icc, ican, kk, zero, stemlife, &
                                 rootlife, stmhrspn, classpfts, &
                                 nol2pfts, reindexPFTs
 
@@ -46,7 +46,7 @@ contains
     integer, intent(in) :: ilg !<
     integer, intent(in) :: il1 !< il1=1
     integer, intent(in) :: il2 !< il2=ilg
-    integer, intent(in) :: lfstatus(ilg, icc) !< leaf status. an integer :: indicating if leaves are in "max.
+    integer, intent(in) :: lfstatus(ilg,icc) !< leaf status. an integer :: indicating if leaves are in "max.
     !< growth", "normal growth", "fall/harvest", or "no leaves" mode. see phenolgy subroutine for more details.
     integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
     !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
@@ -55,21 +55,21 @@ contains
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
     logical, intent(in) :: leapnow     !< true if this year is a leap year. Only used if the switch 'leap' is true.
     integer, intent(in) :: sort(icc)      !< index for correspondence between ctem pfts and size of parameter vectors
-    real, intent(in) :: stemmass(ilg, icc) !< stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
-    real, intent(in) :: rootmass(ilg, icc) !< root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+    real, intent(in) :: stemmass(ilg,icc) !< stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+    real, intent(in) :: rootmass(ilg,icc) !< root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
     real, intent(in) :: tracerStemMass(:,:)  !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(in) :: tracerRootMass(:,:)  !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    real, intent(in) :: ailcg(ilg, icc)    !< green or live lai
-    real, intent(in) :: fcancmx(ilg, icc)  !< max. fractional coverage of CTEM pfts, but this can be modified by
-    !! land-use change, and competition between pfts
-    real, intent(inout) :: rothrlos(ilg, icc) !< root death for crops. when in "harvest" mode for crops, root is assumed
+    real, intent(in) :: ailcg(ilg,icc)    !< green or live lai
+    real, intent(in) :: fcancmx(ilg,icc)  !< max. fractional coverage of CTEM pfts, but this can be modified by
+    !! land-use change,and competition between pfts
+    real, intent(inout) :: rothrlos(ilg,icc) !< root death for crops. when in "harvest" mode for crops, root is assumed
     !! to die in a similar way as stem is harvested.
-    real, intent(inout) :: stmhrlos(ilg, icc) !< stem harvest loss for crops. when in "harvest" mode for crops, stem is
+    real, intent(inout) :: stmhrlos(ilg,icc) !< stem harvest loss for crops. when in "harvest" mode for crops, stem is
     !! also assumed to be harvested and this generates litter.
-    real, intent(out) :: stemlitr(ilg, icc) !< stem litter \f$(kg C/m^2)\f$
-    real, intent(out) :: rootlitr(ilg, icc) !< root litter \f$(kg C/m^2)\f$
-    real, intent(out) :: tracerStemLitr(ilg, icc) !< Tracer stem litter \f$tracer C units/m^2\f$
-    real, intent(out) :: tracerRootLitr(ilg, icc) !< Tracer root litter \f$tracer C units/m^2\f$
+    real, intent(out) :: stemlitr(ilg,icc) !< stem litter \f$(kg C/m^2)\f$
+    real, intent(out) :: rootlitr(ilg,icc) !< root litter \f$(kg C/m^2)\f$
+    real, intent(out) :: tracerStemLitr(ilg,icc) !< Tracer stem litter \f$tracer C units/m^2\f$
+    real, intent(out) :: tracerRootLitr(ilg,icc) !< Tracer root litter \f$tracer C units/m^2\f$
 
     integer :: i, j, k, n, m
     real :: nrmlsmlr(ilg, icc) ! stem litter from normal turnover
@@ -86,24 +86,24 @@ contains
 
     !> Calculate normal stem and root litter using the amount of stem and
     !! root biomass and their turnover time scales.
-    do j = 1, icc
+    do j = 1,icc
       n = sort(j)
-      do i = il1, il2
-        if (fcancmx(i, j) > 0.0) then
+      do i = il1,il2
+        if (fcancmx(i,j) > 0.0) then
 
           if (stemlife(n) > zero) then
             if (leapnow) then
-              nrmlsmlr(i, j) = stemmass(i, j) * (1.0 - exp( - 1.0 / (366.0 * stemlife(n))))
+              nrmlsmlr(i,j) = stemmass(i,j) * (1.0 - exp( - 1.0 / (366.0 * stemlife(n))))
             else
-              nrmlsmlr(i, j) = stemmass(i, j) * (1.0 - exp( - 1.0 / (365.0 * stemlife(n))))
+              nrmlsmlr(i,j) = stemmass(i,j) * (1.0 - exp( - 1.0 / (365.0 * stemlife(n))))
             end if
           end if
 
           if (rootlife(n) > zero) then
             if (leapnow) then
-              nrmlrtlr(i, j) = rootmass(i, j) * (1.0 - exp( - 1.0 / (366.0 * rootlife(n))))
+              nrmlrtlr(i,j) = rootmass(i,j) * (1.0 - exp( - 1.0 / (366.0 * rootlife(n))))
             else
-              nrmlrtlr(i, j) = rootmass(i, j) * (1.0 - exp( - 1.0 / (365.0 * rootlife(n))))
+              nrmlrtlr(i,j) = rootmass(i,j) * (1.0 - exp( - 1.0 / (365.0 * rootlife(n))))
             end if
           end if
         end if
@@ -113,26 +113,26 @@ contains
     !> If crops are in harvest mode then we start harvesting stem as well.
     !! If stem has already been harvested then we set the stem harvest
     !! loss equal to zero. the roots of the crop die in a similar way.
-    do j = 1, ican
-      do m = reindexPFTs(j, 1), reindexPFTs(j, 2)
-        do i = il1, il2
-          if (fcancmx(i, m) > 0.0) then
+    do j = 1,ican
+      do m = reindexPFTs(j,1),reindexPFTs(j,2)
+        do i = il1,il2
+          if (fcancmx(i,m) > 0.0) then
             select case (classpfts(j))
 
             case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh')
 
-              stmhrlos(i, m) = 0.0
-              rothrlos(i, m) = 0.0
+              stmhrlos(i,m) = 0.0
+              rothrlos(i,m) = 0.0
 
             case ('Crops')
 
-              if (lfstatus(i, m) == 3) then
-                if (stmhrlos(i, m) <= zero .and. stemmass(i, m) > zero) stmhrlos(i, m) = stemmass(i, m) * (1.0 / stmhrspn)
-                if (rothrlos(i, m) <= zero .and. rootmass(i, m) > zero) rothrlos(i, m) = rootmass(i, m) * (1.0 / stmhrspn)
+              if (lfstatus(i,m) == 3) then
+                if (stmhrlos(i,m) <= zero .and. stemmass(i,m) > zero) stmhrlos(i,m) = stemmass(i,m) * (1.0 / stmhrspn)
+                if (rothrlos(i,m) <= zero .and. rootmass(i,m) > zero) rothrlos(i,m) = rootmass(i,m) * (1.0 / stmhrspn)
               end if
 
-              if (stemmass(i, m) <= zero .or. lfstatus(i, m) == 1 .or. lfstatus(i, m) == 2) stmhrlos(i, m) = 0.0
-              if (rootmass(i, m) <= zero .or. lfstatus(i, m) == 1 .or. lfstatus(i, m) == 2) rothrlos(i, m) = 0.0
+              if (stemmass(i,m) <= zero .or. lfstatus(i,m) == 1 .or. lfstatus(i,m) == 2) stmhrlos(i,m) = 0.0
+              if (rootmass(i,m) <= zero .or. lfstatus(i,m) == 1 .or. lfstatus(i,m) == 2) rothrlos(i,m) = 0.0
 
             case default
 
@@ -147,20 +147,20 @@ contains
 
     !> add stem and root litter from all sources
     !>
-    do j = 1, icc ! loop 350
-      do i = il1, il2 ! loop 360
-        if (fcancmx(i, j) > 0.0) then
-          stemlitr(i, j) = nrmlsmlr(i, j) + stmhrlos(i, j)
-          rootlitr(i, j) = nrmlrtlr(i, j) + rothrlos(i, j)
+    do j = 1,icc ! loop 350
+      do i = il1,il2 ! loop 360
+        if (fcancmx(i,j) > 0.0) then
+          stemlitr(i,j) = nrmlsmlr(i,j) + stmhrlos(i,j)
+          rootlitr(i,j) = nrmlrtlr(i,j) + rothrlos(i,j)
           if (useTracer > 0) then
-            if (stemmass(i, j) > 0.) then
-              frac = tracerStemMass(i, j) / stemmass(i, j)
-              tracerStemLitr(i, j) = stemlitr(i, j) * frac
+            if (stemmass(i,j) > 0.) then
+              frac = tracerStemMass(i,j) / stemmass(i,j)
+              tracerStemLitr(i,j) = stemlitr(i,j) * frac
             end if
 
-            if (rootmass(i, j) > 0.) then
-              frac = tracerRootMass(i, j) / rootmass(i, j)
-              tracerRootLitr(i, j) = rootlitr(i, j) * frac
+            if (rootmass(i,j) > 0.) then
+              frac = tracerRootMass(i,j) / rootmass(i,j)
+              tracerRootLitr(i,j) = rootlitr(i,j) * frac
             end if
 
           end if
@@ -181,22 +181,22 @@ contains
   !! calculated in the turnover subroutine. Also add the reproduction
   !!  carbon directly to the litter pool.
   !> @author Vivek Arora and Joe Melton
-  subroutine updatePoolsTurnover(il1, il2, ilg, reprocost, rmatctem, useTracer, tracerReproCost, & ! In
-                                 stemmass, rootmass, litrmass, rootlitr, & ! In/Out
-                                 gleafmas, bleafmas, leaflitr, stemlitr, & ! In/Out
-                                 tracerGLeafMass, tracerBLeafMass, tracerLitrMass, & ! In/Out
-                                 tracerRootMass, tracerStemMass, & ! In/Out
-                                 tracerLeafLitr, tracerStemLitr, tracerRootLitr) ! In/Out
+  subroutine updatePoolsTurnover (il1, il2, ilg, reprocost, rmatctem, useTracer, tracerReproCost, & ! In
+                                  stemmass, rootmass, litrmass, rootlitr, & ! In/Out
+                                  gleafmas, bleafmas, leaflitr, stemlitr, & ! In/Out
+                                  tracerGLeafMass, tracerBLeafMass, tracerLitrMass, & ! In/Out
+                                  tracerRootMass, tracerStemMass, & ! In/Out
+                                  tracerLeafLitr, tracerStemLitr, tracerRootLitr) ! In/Out
 
-    use classic_params, only : ican, nol2pfts, classpfts, deltat, icc, ignd, reindexPFTs
+    use classicParams, only : ican, nol2pfts, classpfts, deltat, icc, ignd, reindexPFTs
 
     implicit none
 
     integer, intent(in) :: il1             !< il1=1
     integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
     integer, intent(in) :: ilg             !< no. of grid cells/tiles in latitude circle
-    real, intent(in) :: reprocost(:,:)     !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    real, intent(in) :: tracerReproCost(:,:)  !< Tracer cost of making reproductive tissues, only non-zero when
+    real, intent(in) :: reprocost(:,:)     !< Cost of making reproductive tissues,only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(in) :: tracerReproCost(:,:)  !< Tracer cost of making reproductive tissues,only non-zero when
     !! NPP is positive (\f$tracer C units m^{-2} s^{-1}\f$)
     real, intent(in)    :: rmatctem(:,:,:) !< fraction of roots for each of ctem's 9 pfts in each soil layer
     integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
@@ -218,8 +218,8 @@ contains
     real, intent(inout) :: stemlitr(:,:)   !< stem litter \f$(kg C/m^2)\f$
     real, intent(inout) :: tracerStemLitr(:,:) !< Tracer stem litter \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerRootLitr(:,:) !< Tracer root litter \f$tracer C units/m^2\f$
-    real, intent(inout) :: tracerLeafLitr(ilg, icc)  !< Tracer leaf litter generated by normal turnover, cold
-    !< and drought stress, and leaf fall/harvest,\f$tracer C units/m^2\f$
+    real, intent(inout) :: tracerLeafLitr(ilg,icc)  !< Tracer leaf litter generated by normal turnover,cold
+    !< and drought stress,and leaf fall/harvest,\f$tracer C units/m^2\f$
     real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerStemMass(:,:)       !< Tracer mass in the stem for each of the CTEM pfts, \f$tracer C units/m^2\f$
@@ -231,36 +231,36 @@ contains
 
     ! ------------------------------
 
-    do j = 1, ican ! loop 700
-      do m = reindexPFTs(j, 1), reindexPFTs(j, 2)
-        do i = il1, il2
+    do j = 1,ican ! loop 700
+      do m = reindexPFTs(j,1),reindexPFTs(j,2)
+        do i = il1,il2
           select case (classpfts(j))
 
-          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh') ! tree, crops and shrub
+          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh') ! tree,crops and shrub
 
-            gleafmas(i, m) = gleafmas(i, m) - leaflitr(i, m)
-            if (useTracer > 0) tracerGLeafMass(i, m) = tracerGLeafMass(i, m) - tracerLeafLitr(i, m)
+            gleafmas(i,m) = gleafmas(i,m) - leaflitr(i,m)
+            if (useTracer > 0) tracerGLeafMass(i,m) = tracerGLeafMass(i,m) - tracerLeafLitr(i,m)
 
-            if (gleafmas(i, m) < 0.0) then
-              leaflitr(i, m) = leaflitr(i, m) + gleafmas(i, m)
-              gleafmas(i, m) = 0.0
+            if (gleafmas(i,m) < 0.0) then
+              leaflitr(i,m) = leaflitr(i,m) + gleafmas(i,m)
+              gleafmas(i,m) = 0.0
               if (useTracer > 0) then
-                tracerLeafLitr(i, m) = tracerLeafLitr(i, m) + tracerGLeafMass(i, m)
-                tracerGLeafMass(i, m) = 0.0
+                tracerLeafLitr(i,m) = tracerLeafLitr(i,m) + tracerGLeafMass(i,m)
+                tracerGLeafMass(i,m) = 0.0
               end if
             end if
 
           case ('Grass')
 
-            bleafmas(i, m) = bleafmas(i, m) - leaflitr(i, m)
-            if (useTracer > 0) tracerBLeafMass(i, m) = tracerBLeafMass(i, m) - tracerLeafLitr(i, m)
+            bleafmas(i,m) = bleafmas(i,m) - leaflitr(i,m)
+            if (useTracer > 0) tracerBLeafMass(i,m) = tracerBLeafMass(i,m) - tracerLeafLitr(i,m)
 
-            if (bleafmas(i, m) < 0.0) then
-              leaflitr(i, m) = leaflitr(i, m) + bleafmas(i, m)
-              bleafmas(i, m) = 0.0
+            if (bleafmas(i,m) < 0.0) then
+              leaflitr(i,m) = leaflitr(i,m) + bleafmas(i,m)
+              bleafmas(i,m) = 0.0
               if (useTracer > 0) then
-                tracerLeafLitr(i, m) = tracerLeafLitr(i, m) + tracerBLeafMass(i, m)
-                tracerBLeafMass(i, m) = 0.0
+                tracerLeafLitr(i,m) = tracerLeafLitr(i,m) + tracerBLeafMass(i,m)
+                tracerBLeafMass(i,m) = 0.0
               end if
             end if
 
@@ -275,29 +275,29 @@ contains
     end do ! loop 700
 
     !> Update stem and root biomass for litter deductions
-    do j = 1, icc ! loop 780
-      do i = il1, il2 ! loop 790
-        stemmass(i, j) = stemmass(i, j) - stemlitr(i, j)
-        if (useTracer > 0) tracerStemMass(i, j) = tracerStemMass(i, j) - tracerStemLitr(i, j)
+    do j = 1,icc ! loop 780
+      do i = il1,il2 ! loop 790
+        stemmass(i,j) = stemmass(i,j) - stemlitr(i,j)
+        if (useTracer > 0) tracerStemMass(i,j) = tracerStemMass(i,j) - tracerStemLitr(i,j)
 
-        if (stemmass(i, j) < 0.0) then
-          stemlitr(i, j) = stemlitr(i, j) + stemmass(i, j)
-          stemmass(i, j) = 0.0
+        if (stemmass(i,j) < 0.0) then
+          stemlitr(i,j) = stemlitr(i,j) + stemmass(i,j)
+          stemmass(i,j) = 0.0
           if (useTracer > 0) then
-            tracerStemLitr(i, j) = tracerStemLitr(i, j) + tracerStemMass(i, j)
-            tracerStemMass(i, j) = 0.0
+            tracerStemLitr(i,j) = tracerStemLitr(i,j) + tracerStemMass(i,j)
+            tracerStemMass(i,j) = 0.0
           end if
         end if
 
-        rootmass(i, j) = rootmass(i, j) - rootlitr(i, j)
-        if (useTracer > 0) tracerRootMass(i, j) = tracerRootMass(i, j) - tracerRootLitr(i, j)
+        rootmass(i,j) = rootmass(i,j) - rootlitr(i,j)
+        if (useTracer > 0) tracerRootMass(i,j) = tracerRootMass(i,j) - tracerRootLitr(i,j)
 
-        if (rootmass(i, j) < 0.0) then
-          rootlitr(i, j) = rootlitr(i, j) + rootmass(i, j)
-          rootmass(i, j) = 0.0
+        if (rootmass(i,j) < 0.0) then
+          rootlitr(i,j) = rootlitr(i,j) + rootmass(i,j)
+          rootmass(i,j) = 0.0
           if (useTracer > 0) then
-            tracerRootLitr(i, j) = tracerRootLitr(i, j) + tracerRootMass(i, j)
-            tracerRootMass(i, j) = 0.0
+            tracerRootLitr(i,j) = tracerRootLitr(i,j) + tracerRootMass(i,j)
+            tracerRootMass(i,j) = 0.0
           end if
         end if
 
@@ -307,30 +307,30 @@ contains
     !> Update litter pool with leaf litter calculated in the phenology
     !! subroutine and stem and root litter calculated in the turnover
     !! subroutine. Also add the reproduction carbon directly to the litter pool
-    do i = il1, il2 ! loop 800
-      do j = 1, icc ! loop 805
+    do i = il1,il2 ! loop 800
+      do j = 1,icc ! loop 805
         ! COMBAK PERLAY
-        litrmass(i, j) = litrmass(i, j) + leaflitr(i, j) + stemlitr(i, j) &
-                         + rootlitr(i, j) &
-                         + reprocost(i, j) * deltat / 963.62
+        litrmass(i,j) = litrmass(i,j) + leaflitr(i,j) + stemlitr(i,j) &
+                        + rootlitr(i,j) &
+                        + reprocost(i,j) * deltat / 963.62
 
-        !       do k = 1, ignd
+        !       do k = 1,ignd
         !         if (k == 1) then
         !           ! The first layer gets the leaf and stem litter as well as the reprocost,
         !           ! which is assumed to be cones/seeds. The root litter is given in proportion
         !           ! to the root distribution
-        !           litrmass(i, j, k) = litrmass(i, j, k) + leaflitr(i, j) + stemlitr(i, j) &
-        !                             + rootlitr(i, j) * rmatctem(i, j, k) &
-        !                             + reprocost(i, j) * deltat / 963.62
+        !           litrmass(i,j,k) = litrmass(i,j,k) + leaflitr(i,j) + stemlitr(i,j) &
+        !                             + rootlitr(i,j) * rmatctem(i,j,k) &
+        !                             + reprocost(i,j) * deltat / 963.62
         !
-        !           if (useTracer > 0) tracerLitrMass(i, j, k) = tracerLitrMass(i, j, k) + tracerLeafLitr(i, j) + tracerStemLitr(i, j) &
-        !                               + tracerRootLitr(i, j) * rmatctem(i, j, k) &
-        !                               + tracerReproCost(i, j) * deltat / 963.62
-        !         else ! the lower soil layers get the roots, in the proportion that they
+        !           if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerLeafLitr(i,j) + tracerStemLitr(i,j) &
+        !                               + tracerRootLitr(i,j) * rmatctem(i,j,k) &
+        !                               + tracerReproCost(i,j) * deltat / 963.62
+        !         else ! the lower soil layers get the roots,in the proportion that they
         !              ! are in the unfrozen soil column.
-        !           litrmass(i, j, k)=litrmass(i, j, k) + rootlitr(i, j) * rmatctem(i, j, k)
+        !           litrmass(i,j,k)=litrmass(i,j,k) + rootlitr(i,j) * rmatctem(i,j,k)
         !
-        !           if (useTracer > 0) tracerLitrMass(i, j, k) = tracerLitrMass(i, j, k) + tracerRootLitr(i, j) * rmatctem(i, j, k)
+        !           if (useTracer > 0) tracerLitrMass(i,j,k) = tracerLitrMass(i,j,k) + tracerRootLitr(i,j) * rmatctem(i,j,k)
         !         end if
         !
         ! 810     continue
@@ -345,13 +345,13 @@ contains
   !> \namespace turnover
   !!
   !! The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes.
-  !! The litter generation (\f$kg\,C\,m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem
+  !! The litter generation (\f$kg\, C\, m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem
   !! (\f$D_\mathrm{S}\f$) and root (\f$D_\mathrm{R}\f$) components is calculated based on the
   !! amount of biomass in the respective components (\f$C_\mathrm{S},
-  !! C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales
-  !! (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classic_params.f90) as
+  !! C_\mathrm{R}\f$; \f$kg\, C\, m^{-2}\f$) and their respective turnover timescales
+  !! (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also classicParams.f90) as
   !!
-  !! \f[ D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad
+  !! \f[ D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\, \tau_{i}}\right)\right], \quad
   !! i = S, R.\f]
   !!
   !! Litter contributions are either put in the first soil layer (leaf and stem litter) whereas

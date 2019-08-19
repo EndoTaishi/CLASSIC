@@ -2,9 +2,9 @@
 !! Addresses melting of the snow pack.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine snowMelt(ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
-                    HMFN, HTCS, HTC, FI, HCPSNO, RHOSNO, WSNOW, &
-                    ISAND, IG, ILG, IL1, IL2, JL)
+subroutine snowMelt (ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
+                     HMFN, HTCS, HTC, FI, HCPSNO, RHOSNO, WSNOW, &
+                     ISAND, IG, ILG, IL1, IL2, JL)
   !
   !     * APR 22/16 - D.VERSEGHY. BUG FIX IN CALCULATION OF HTCS.
   !     * JAN 06/09 - D.VERSEGHY/M.LAZARE. SPLIT 100 LOOP INTO TWO.
@@ -29,7 +29,7 @@ subroutine snowMelt(ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
   !     *                         CLASS VERSION 2.0 (WITH CANOPY).
   !     * APR 11/89 - D.VERSEGHY. MELTING OF SNOWPACK.
   !
-  use classic_params, only : DELT, TFREZ, HCPW, HCPICE, &
+  use classicParams, only : DELT, TFREZ, HCPW, HCPICE, &
                             RHOW, RHOICE, CLHMLT
 
   implicit none
@@ -41,7 +41,7 @@ subroutine snowMelt(ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
   !
   !     * INPUT/OUTPUT ARRAYS.
   !
-  real, intent(inout) :: HTC (ILG, IG) !< Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
+  real, intent(inout) :: HTC (ILG,IG) !< Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
   real, intent(inout) :: ZSNOW (ILG)  !< Depth of snow pack [m]
   real, intent(inout) :: TSNOW (ILG)  !< Temperature of the snow pack [C]
   real, intent(inout) :: QMELT (ILG)  !< Energy available for melting of snow \f$[W m^{-2}]\f$
@@ -58,7 +58,7 @@ subroutine snowMelt(ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
   real, intent(inout) :: HCPSNO(ILG)  !< Heat capacity of snow pack \f$[J m^{-3} K^{-1}]\f$
   real, intent(in) :: RHOSNO(ILG)  !< Density of snow pack \f$[kg m^{-3}]\f$
   real, intent(inout) :: WSNOW (ILG)  !< Liquid water content of snow pack \f$[kg m^{-2}]\f$
-  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
   !
   !     * TEMPORARY VARIABLES.
   !
@@ -101,7 +101,7 @@ subroutine snowMelt(ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
   !! is corrected for the amount of heat that was used to warm the
   !! snow pack to 0 C.
   !!
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0.) then
       if (QMELT(I) > 0. .and. ZSNOW(I) > 0.) then
         HTCS(I) = HTCS(I) - FI(I) * HCPSNO(I) * (TSNOW(I) + TFREZ) * &
@@ -163,16 +163,16 @@ subroutine snowMelt(ZSNOW, TSNOW, QMELT, R, TR, GZERO, RALB, & ! Formrly TMELT
   !! snow and soil respectively are corrected. The flag variable RALB
   !! is evaluated as above.
   !!
-  do I = IL1, IL2 ! loop 200
+  do I = IL1,IL2 ! loop 200
     if (FI(I) > 0.) then
-      if (QMELT(I) > 0. .and. ISAND(I, 1) > - 4) then
+      if (QMELT(I) > 0. .and. ISAND(I,1) > - 4) then
         GZERO(I) = GZERO(I) + QMELT(I)
         HTCS (I) = HTCS(I) - FI(I) * QMELT(I)
-        HTC(I, 1) = HTC(I, 1) + FI(I) * QMELT(I)
+        HTC(I,1) = HTC(I,1) + FI(I) * QMELT(I)
       end if
       RALB(I) = R(I)
     end if
   end do ! loop 200
   !
   return
-end
+end subroutine snowMelt

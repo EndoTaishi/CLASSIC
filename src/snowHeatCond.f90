@@ -1,9 +1,9 @@
 !> \file
 !! Calculate coefficients for solution of snow pack heat conduction.
 !
-subroutine snowHeatCond(GCOEFFS, GCONSTS, CPHCHG, IWATER, & ! Formerly TSPREP
-                        FI, ZSNOW, TSNOW, TCSNOW, &
-                        ILG, IL1, IL2, JL)
+subroutine snowHeatCond (GCOEFFS, GCONSTS, CPHCHG, IWATER, & ! Formerly TSPREP
+                         FI, ZSNOW, TSNOW, TCSNOW, &
+                         ILG, IL1, IL2, JL)
   !
   !     * AUG 16/06 - D.VERSEGHY. MAJOR REVISION TO IMPLEMENT THERMAL
   !     *                         SEPARATION OF SNOW AND SOIL.
@@ -40,7 +40,7 @@ subroutine snowHeatCond(GCOEFFS, GCONSTS, CPHCHG, IWATER, & ! Formerly TSPREP
   !     *                         AND THE STARTING TEMPERATURE FOR THE
   !     *                         ITERATION IN "energBalVegSolve"/"energBalNoVegSolve".
   !
-  use classic_params, only : CLHMLT, CLHVAP
+  use classicParams, only : CLHMLT, CLHVAP
 
   implicit none
   !
@@ -71,7 +71,7 @@ subroutine snowHeatCond(GCOEFFS, GCONSTS, CPHCHG, IWATER, & ! Formerly TSPREP
   !
   !     * CALCULATE COEFFICIENTS.
   !
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (FI(I) > 0.) then
       GCOEFFS(I) = 3.0 * TCSNOW(I) / ZSNOW(I)
       GCONSTS(I) = - 3.0 * TCSNOW(I) * TSNOW(I) / ZSNOW(I)
@@ -81,7 +81,7 @@ subroutine snowHeatCond(GCOEFFS, GCONSTS, CPHCHG, IWATER, & ! Formerly TSPREP
   end do ! loop 100
   !
   return
-end
+end subroutine snowHeatCond
 !> \file
 !!
 !! @author D. Verseghy, M. Lazare

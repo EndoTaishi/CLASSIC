@@ -4,20 +4,20 @@
 !! @author Y. Delage, G. Pellerin, B. Bilodeau, R. Sarrazin, G. Pellerin, D. Verseghy,
 !! M. Mackay, F. Seglenieks, P.Bartlett, E.Chan, B.Dugas, J.Melton
 !
-subroutine DIASURFZ(UZ, VZ, TZ, QZ, NI, U, V, TG, QG, Z0, Z0T, ILMO, ZA, &
-                    H, UE, FTEMP, FVAP, ZU, ZT, LAT, F, IL1, IL2, JL)
+subroutine DIASURFZ (UZ, VZ, TZ, QZ, NI, U, V, TG, QG, Z0, Z0T, ILMO, ZA, &
+                     H, UE, FTEMP, FVAP, ZU, ZT, LAT, F, IL1, IL2, JL)
 
-  use classic_params, only : AS, ASX, CI, BETA, FACTN, HMIN, ANGMAX, &
+  use classicParams, only : AS, ASX, CI, BETA, FACTN, HMIN, ANGMAX, &
                             GRAV, SPHAIR, VKC
 
   implicit none
 
   integer, intent(in) :: NI, JL
-  real, intent(in) :: ZT(NI), ZU(NI)
+  real, intent(in)    :: ZT(NI), ZU(NI)
   real, intent(inout) :: UZ(NI), VZ(NI), TZ(NI), QZ(NI)
-  real, intent(in) :: ZA(NI), U(NI), V(NI)
-  real, intent(in) :: TG(NI), QG(NI), UE(NI), FTEMP(NI), FVAP(NI)
-  real, intent(in) :: ILMO(NI), Z0T(NI), Z0(NI), H(NI), F(NI)
+  real, intent(in)    :: ZA(NI), U(NI), V(NI)
+  real, intent(in)    :: TG(NI), QG(NI), UE(NI), FTEMP(NI), FVAP(NI)
+  real, intent(in)    :: ILMO(NI), Z0T(NI), Z0(NI), H(NI), F(NI)
   real :: LAT(NI)
   ! Author
   !          Yves Delage  (Aug1990)
@@ -87,7 +87,7 @@ subroutine DIASURFZ(UZ, VZ, TZ, QZ, NI, U, V, TG, QG, Z0, Z0T, ILMO, ZA, &
 
   RAC3 = SQRT(3.)
 
-  do J = IL1, IL2
+  do J = IL1,IL2
     if (F(J) > 0.0) then
 
       LZZ0T = LOG((ZT(J) + Z0(J)) / Z0T(J))
@@ -98,21 +98,21 @@ subroutine DIASURFZ(UZ, VZ, TZ, QZ, NI, U, V, TG, QG, Z0, Z0T, ILMO, ZA, &
         !
         hi = 0.
         ! CDIR IEXPAND
-        fh = fhi(ZT(J) + Z0(J), Z0T(j), LZZ0T, ILMO(J), YY, YY0)
+        fh = fhi(ZT(J) + Z0(J),Z0T(j),LZZ0T,ILMO(J),YY,YY0)
         ! CDIR IEXPAND
-        fm = fmi(ZU(J) + Z0(J), Z0 (J), LZZ0, ILMO(J), XX, XX0)
+        fm = fmi(ZU(J) + Z0(J),Z0 (J),LZZ0,ILMO(J),XX,XX0)
       else
         !---------------------------------------------------------------------
         !                        STABLE CASE
-        hi = 1.0 / MAX(HMIN, H(J),(ZA(J) + 10.0 * Z0(J)) * factn, factn / &
+        hi = 1.0 / MAX(HMIN,H(J),(ZA(J) + 10.0 * Z0(J)) * factn,factn / &
              (4.0 * AS * BETA * ilmo(j)))
         ! CDIR IEXPAND
-        fh = BETA * (LZZ0T + min( psi(ZT(J) + Z0(J), HI, ILMO(J)) &
-             - psi(Z0T(J), HI, ILMO(J)), &
+        fh = BETA * (LZZ0T + min( psi(ZT(J) + Z0(J),HI,ILMO(J)) &
+             - psi(Z0T(J),HI,ILMO(J)), &
              ASX * ILMO(J) * (ZT(J) + Z0(J) - Z0T(J))))
         ! CDIR IEXPAND
-        fm = LZZ0 + min( psi(zu(J) + Z0(J), HI, ILMO(J)) &
-             - psi(Z0(J), HI, ILMO(J)), &
+        fm = LZZ0 + min( psi(zu(J) + Z0(J),HI,ILMO(J)) &
+             - psi(Z0(J),HI,ILMO(J)), &
              ASX * ILMO(J) * ZU(J))
       end if
       !---------------------------------------------------------------------
@@ -127,7 +127,7 @@ subroutine DIASURFZ(UZ, VZ, TZ, QZ, NI, U, V, TG, QG, Z0, Z0T, ILMO, ZA, &
 
       ! CALCULATE WIND DIRECTION CHANGE FROM TOP OF SURFACE LAYER
       DANG = (ZA(J) - ZU(J)) * HI * ANGMAX * SIN(LAT(J))
-      ANGI = ATAN2(V(J), SIGN(ABS(U(J)) + 1.e-05, U(J)))
+      ANGI = ATAN2(V(J),SIGN(ABS(U(J)) + 1.e-05,U(J)))
       if (ILMO(J) > 0.) then
         ANG = ANGI + DANG
       else
@@ -203,4 +203,4 @@ contains
     !
     return
   end function PSI
-end subroutine
+end subroutine DIASURFZ

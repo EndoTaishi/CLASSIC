@@ -12,14 +12,14 @@ These tables link CLASS and CTEM filenames prior to the code refactoring to the 
 | CHKWAT.f     | checkWaterBudget.f90   |
 | CLASSA.f     | radiationDriver.f90    |
 | CLASSB.f     | soilProperties.f90     |
-| CLASSG.f     | classGather.f90        |
+| CLASSG.f     | classGather - classGatherScatter.f90|
 | CLASSI.f     | atmosphericVarsCalc.f90|
-| CLASSS.f     | classScatter.f90       |
+| CLASSS.f     | classScatter - classGatherScatter.f90|
 | CLASST.f     | energyBudgetDriver.f90 |
 | CLASSW.f     | waterBudgetDriver.f90  |
 | CLASSZ.f     | energyWaterBalanceCheck.f90|
 | CWCALC.f     | canopyPhaseChange.f90  |
-| GATPREP.f    | classGatherPrep.f90    |
+| GATPREP.f    | classGatherPrep - classGatherScatter.f90|
 | GRALB.f      | groundAlbedo.f90       |
 | GRDRAN.f     | waterFlowNonInfiltrate.f90|
 | GRINFL.f     | waterFlowInfiltrate.f90|
@@ -34,7 +34,7 @@ These tables link CLASS and CTEM filenames prior to the code refactoring to the 
 | SUBCAN.f     | waterUnderCanopy.f90   |
 | TFREEZ.f     | pondedWaterFreeze.f90  |
 | TMELT.f      | snowMelt.f90           |
-| TMCALC.f     |                        |
+| TMCALC.f     | waterUpdates.f90       |
 | TNPOST.f     | soilHeatFluxCleanup.f90|
 | TNPREP.f     | soilHeatFluxPrep.f90   |
 | TPREP.f      | energyBudgetPrep.f90   |
@@ -64,6 +64,5 @@ These tables link CLASS and CTEM filenames prior to the code refactoring to the 
 | mainres.f   | autotrophicRespiration.f90   |
 | mortality.f | mortality.f90  |
 | phenolgy.f   | phenolgy.f90  |
-
-
-
+| soil_ch4uptake | soilCH4Uptake - methaneProcesses.f90|
+| wetland_methane.f90 | wetlandMethane - methaneProcesses.f90|

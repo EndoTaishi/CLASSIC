@@ -1,6 +1,6 @@
 !> \file
 !> Central module for all soil C processes involving movement of soil C up or down in soil column
-module soilC_processes
+module soilCProcesses
 
   ! J. Melton. May 30 2016
 
@@ -14,7 +14,7 @@ contains
 
   !=============================================================================================================
 
-  !> \ingroup soilC_processes_turbation
+  !> \ingroup soilCProcesses_turbation
   !! Simulation of soil C movement due to turbation processes (presently only cryo).
   !!
   !! Modelled simply as a diffusion process.
@@ -22,10 +22,10 @@ contains
   !> @author Joe Melton
   !! @{
 
-  subroutine turbation(il1, il2, delzw, zbotw, isand, actlyr, spinfast, & ! In
-                       litter, soilC) ! In/Out
+  subroutine turbation (il1, il2, delzw, zbotw, isand, actlyr, spinfast, & ! In
+                        litter, soilC) ! In/Out
 
-    use classic_params, only : icc, ilg, ignd, iccp2, iccp1, zero, tolrance, deltat, &
+    use classicParams, only : icc, ilg, ignd, iccp2, iccp1, zero, tolrance, deltat, &
                                 cryodiffus, biodiffus, kterm
 
     implicit none
@@ -68,19 +68,19 @@ contains
     real :: amount                                      !< temp var
     real :: botthick                                    !< temp var
     real :: diffus                                      !< diffusion coefficient used (either cryodiffus or biodiffus)
-    real :: initLitter(ilg, iccp2, ignd)                  !< Initial litter pool
-    real :: initSoilC(ilg, iccp2, ignd)                   !< Initial soil C pool
+    real :: initLitter(ilg,iccp2,ignd)                  !< Initial litter pool
+    real :: initSoilC(ilg,iccp2,ignd)                   !< Initial soil C pool
     !----
 
     initLitter = litter
     initSoilC = soilC
 
-    do i = il1, il2
+    do i = il1,il2
 
-      !> First, find the bottom of the permeable soil column by looking at the isand flags.
+      !> First,find the bottom of the permeable soil column by looking at the isand flags.
       botlyr = 0
-      do l = 1, ignd
-        if (isand(i, l) == - 3 .or. isand(i, l) == - 4) exit
+      do l = 1,ignd
+        if (isand(i,l) == - 3 .or. isand(i,l) == - 4) exit
         botlyr = l
       end do
 
@@ -90,7 +90,7 @@ contains
 
         botlyr = botlyr + 2 !> increment two more for our boundary conditions.
 
-        !> Next, allocate the vectors for the tridiagional solver.
+        !> Next,allocate the vectors for the tridiagional solver.
         allocate(avect(botlyr))
         allocate(bvect(botlyr))
         allocate(cvect(botlyr))
@@ -101,12 +101,12 @@ contains
         allocate(depthinter(botlyr))
         allocate(effectiveD(botlyr))
 
-        do j = 1, iccp1     !> We assume that the LUC pools do not migrate from the first soil layer so
+        do j = 1,iccp1     !> We assume that the LUC pools do not migrate from the first soil layer so
           !! we don't include them in our calculations (we don't calculate over position iccp2).
 
-          !> At the start, store the size of the present pool for later comparison
-          psoilc = sum(soilC(i, j,:))
-          plit   = sum(litter(i, j,:))
+          !> At the start,store the size of the present pool for later comparison
+          psoilc = sum(soilC(i,j,:))
+          plit   = sum(litter(i,j,:))
 
           if (psoilc > zero) then !> and only do turbation for PFTs with some soil C. (assume soil C is always ~> lit).
             !> Next set up the tridiagional solver soil and litter C. In this the first interface is
@@ -120,20 +120,20 @@ contains
 
             ! Put the soil C/litter into the soilcinter/littinter array where
             ! position 1 is the soil surface and position botlyr is the bedrock bottom.
-            soilcinter(2:botlyr - 1) = soilC(i, j, 1:botlyr - 2)
-            littinter(2:botlyr - 1)  = litter(i, j, 1:botlyr - 2)
-            depthinter(2:botlyr - 1) = zbotw(i, 1:botlyr - 2)
+            soilcinter(2:botlyr - 1) = soilC(i,j,1:botlyr - 2)
+            littinter(2:botlyr - 1)  = litter(i,j,1:botlyr - 2)
+            depthinter(2:botlyr - 1) = zbotw(i,1:botlyr - 2)
 
-            ! The final interface is at the bottom of the soil column and the bedrock, so the soilC/litter is 0 there.
+            ! The final interface is at the bottom of the soil column and the bedrock,so the soilC/litter is 0 there.
             soilcinter(botlyr) = 0.
             littinter(botlyr) = 0.
 
             ! Check for special case where the soil is permeable all the way to the bottom
             ! so botlyr = ignd. In that case botlyr is now greater than ignd.
             if (botlyr <= ignd) then
-              botthick = zbotw(i, botlyr)
+              botthick = zbotw(i,botlyr)
             else
-              botthick = zbotw(i, ignd)
+              botthick = zbotw(i,ignd)
             end if
 
             depthinter(botlyr) = botthick
@@ -153,13 +153,13 @@ contains
             end if
 
 
-            do l = 1, botlyr
+            do l = 1,botlyr
               if (depthinter(l) < actlyr(i)) then ! shallow so vigorous cryoturb.
                 effectiveD(l) = diffus * real(spinfast)
               else if (depthinter(l) > actlyr(i) .and. depthinter(l) < kactlyr) then ! linear reduction in diffusion coef.
                 effectiveD(l) = diffus * (1. - (depthinter(l) - actlyr(i)) &
                                 / ((kterm - 1.) * actlyr(i))) * real(spinfast)
-              else ! too deep, no cryoturbation assumed
+              else ! too deep,no cryoturbation assumed
                 effectiveD(l) = 0.
               end if
             end do
@@ -175,7 +175,7 @@ contains
             rvect_lt(1) = 0.
 
             ! soil layers
-            do l = 2, botlyr - 1
+            do l = 2,botlyr - 1
 
               dzm = depthinter(l) - depthinter(l - 1)
 
@@ -197,28 +197,28 @@ contains
             rvect_sc(botlyr) = 0
             rvect_lt(botlyr) = 0.
 
-            !> Once set up, call tridiagonal solver for the soil C mass:
-            call tridiag(avect, bvect, cvect, rvect_sc, soilcinter)
+            !> Once set up,call tridiagonal solver for the soil C mass:
+            call tridiag(avect,bvect,cvect,rvect_sc,soilcinter)
 
             !> Next call tridiagonal solver for the litter mass:
-            call tridiag(avect, bvect, cvect, rvect_lt, littinter)
+            call tridiag(avect,bvect,cvect,rvect_lt,littinter)
 
-            !> Lastly, put the soil C/litter back into their arrays
-            soilC(i, j, 1:botlyr - 2) = soilcinter(2:botlyr - 1)
-            litter(i, j, 1:botlyr - 2) = littinter(2:botlyr - 1)
+            !> Lastly,put the soil C/litter back into their arrays
+            soilC(i,j,1:botlyr - 2) = soilcinter(2:botlyr - 1)
+            litter(i,j,1:botlyr - 2) = littinter(2:botlyr - 1)
 
             !> We also ensure we have conservation of C by comparing the total C
             !! before and after the diffusion and distributing/removing
             !! any excess/deficit over the layers we operated on.
-            asoilc = sum(soilC(i, j,:))
-            alit   = sum(litter(i, j,:))
+            asoilc = sum(soilC(i,j,:))
+            alit   = sum(litter(i,j,:))
 
-            !> (positive amount means we lost some C, negative we gained.)
+            !> (positive amount means we lost some C,negative we gained.)
             amount = psoilc - asoilc
-            soilC(i, j, 1:botlyr - 2) = soilC(i, j, 1:botlyr - 2) + amount/real(botlyr - 2)
+            soilC(i,j,1:botlyr - 2) = soilC(i,j,1:botlyr - 2) + amount/real(botlyr - 2)
 
             amount = plit - alit
-            litter(i, j, 1:botlyr - 2) = litter(i, j, 1:botlyr - 2) + amount/real(botlyr - 2)
+            litter(i,j,1:botlyr - 2) = litter(i,j,1:botlyr - 2) + amount/real(botlyr - 2)
 
           end if ! test if any soil c present
         end do ! icc
@@ -240,7 +240,7 @@ contains
 
   end subroutine turbation
   !! @}
-  !> \ingroup soilC_processes_tridiag
+  !> \ingroup soilCProcesses_tridiag
   !! Subroutine to solve triadiagonal system of equations
   !!
   !! Solves for a vector u of size N the tridiagonal linear set using given by equation 2.4.1 in
@@ -249,7 +249,7 @@ contains
   !! in the first and last elements, respectively.
   !!
   !! @author Joe Melton
-  subroutine tridiag(a, b, c, r, u)
+  subroutine tridiag (a, b, c, r, u)
 
     ! Subroutine to solve triadiagonal system of equations
     ! Solves for a vector u of size N the tridiagonal linear set using given by equation 2.4.1 in
@@ -284,7 +284,7 @@ contains
 
     ! decomposition and forward substitution
 
-    do k = 2, n
+    do k = 2,n
 
       gam(k) = c(k - 1) / bet
 
@@ -296,15 +296,15 @@ contains
 
     ! backsubstitution
 
-    do k = n - 1, 1, - 1
+    do k = n - 1,1, - 1
       u(k) = u(k) - gam(k + 1) * u(k + 1)
     end do
 
   end subroutine tridiag
   !! @}
-  !> \namespace soilC_processes
+  !> \namespace soilCProcesses
   !! Central module for all soil C processes involving movement of soil C up or down in soil column.
   !!
 
-end module soilC_processes
+end module soilCProcesses
 !> \file

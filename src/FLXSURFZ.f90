@@ -3,13 +3,13 @@
 !! FLXSURFZ is a variant of FLXSURF3 that permits to input
 !! wind and temperature (humidity) at different levels
 !! @author Y. Delage, G. Pellerin, B. Bilodeau, M. Desgagne, R. Sarrazin, C. Girard, D. Verseghy, V. Fortin, J. P. Paquin, R. Harvey, J. Melton
-subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
-                    UE, FCOR, TA, QA, ZU, ZT, VA, &
-                    TG, QG, H, Z0, Z0T, &
-                    LZZ0, LZZ0T, FM, FH, N, IL1, IL2, FI, ITER, JL)
+subroutine FLXSURFZ (CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
+                     UE, FCOR, TA, QA, ZU, ZT, VA, &
+                     TG, QG, H, Z0, Z0T, &
+                     LZZ0, LZZ0T, FM, FH, N, IL1, IL2, FI, ITER, JL)
 
-  use classic_params, only : AS, CI, BS, BETA, FACTN, HMIN, DELTA, GRAV, &
-                            VKC, ASX
+  use classicParams,  only : AS, CI, BS, BETA, FACTN, HMIN, DELTA, GRAV, &
+                             VKC, ASX
 
   implicit none
 
@@ -55,7 +55,7 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   !                               - Correction of the log-linear profile
   !                               - Double precision for rib calculations
   !                               - VAMIN is now retreived from CLASSD3
-  ! 020      J. Melton            - Made some reals coded as ints, explicitly real
+  ! 020      J. Melton            - Made some reals coded as ints,explicitly real
   !
   ! Object
   !          to calculate surface layer transfer coefficients and fluxes
@@ -96,24 +96,24 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   !
   !     DIVERSES CONSTANTES PHYSIQUES
   !
-  integer, intent(in) :: IL1, IL2, ITER(N), JL
+  integer, intent(in) :: IL1,IL2,ITER(N),JL
   real, intent(out) :: CDH(N)
   real, intent(in) :: FI(N)
 
 
   integer :: J
-  integer :: IT, ITMAX
-  real :: HMAX, CORMIN, EPSLN
-  real :: RAC3, CM, CT, ZP
-  real :: F, G, DG
-  real :: HI, HE, HS, unsl
-  real * 8 :: DTHV, TVA, TVS
-  real :: HL, U
-  real :: CS, XX, XX0, YY, YY0
-  real :: ZB, DD, ILMOX
-  real :: DF, ZZ, betsasx
-  real :: aa, bb, cc
-  save HMAX, CORMIN, EPSLN
+  integer :: IT,ITMAX
+  real :: HMAX,CORMIN,EPSLN
+  real :: RAC3,CM,CT,ZP
+  real :: F,G,DG
+  real :: HI,HE,HS,unsl
+  real * 8 :: DTHV,TVA,TVS
+  real :: HL,U
+  real :: CS,XX,XX0,YY,YY0
+  real :: ZB,DD,ILMOX
+  real :: DF,ZZ,betsasx
+  real :: aa,bb,cc
+  save HMAX,CORMIN,EPSLN
   save ITMAX
   real, save :: VMODMIN = - 1.0
   !
@@ -121,7 +121,7 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   !     COMMON /CLASSD3/VAMIN
   data VAMIN / 1.0 /
   !
-  data CORMIN, HMAX / 0.7E-4, 1500.0 /
+  data CORMIN,HMAX / 0.7E-4,1500.0 /
   data ITMAX / 3 /
   data EPSLN / 1.0e-05 /
   !
@@ -132,58 +132,58 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   if (VMODMIN < 0.0) VMODMIN = SQRT(VAMIN)
   betsasx = 1. / asx
   !
-  do J = IL1, IL2
+  do J = IL1,IL2
     if (FI(J) > 0. .and. ITER(J) == 1) then
       !
       !  CALCULATE THE RICHARDSON NUMBER
       ZP = ZU(J) ** 2 / (ZT(J) + Z0(J) - Z0T(J))
-      u = max(vmodmin, va(j))
+      u = max(vmodmin,va(j))
       tva = (1.d0 + DELTA * QA(J)) * TA(J)
       tvs = (1.d0 + DELTA * QG(J)) * TG(J)
       dthv = tva - tvs
       RIB(J) = GRAV / (tvs + 0.5 * dthv) * ZP * dthv / (u * u)
-      if (rib(j) >= 0.0) rib(j) = max(rib(j), EPSLN)
+      if (rib(j) >= 0.0) rib(j) = max(rib(j),EPSLN)
       if (rib(j) < 0.0) rib(j) = min(rib(j), - EPSLN)
       !
       !  FIRST APPROXIMATION TO ILMO
       LZZ0(J) = LOG(Z0(J) + ZU(J)) - LOG(Z0(J))
       LZZ0T(J) = LOG(ZT(J) + Z0(J)) - LOG(Z0T(J))
       if (RIB(J) > 0.) then
-        FM(J) = LZZ0(J) + CS * RIB(J) / max(2.0 * z0(j), 1.0)
+        FM(J) = LZZ0(J) + CS * RIB(J) / max(2.0 * z0(j),1.0)
         FH(J) = BETA * (LZZ0T(J) + CS * RIB(J)) / &
-                max(sqrt(z0(j) * z0t(j)), 1.0)
+                max(sqrt(z0(j) * z0t(j)),1.0)
         ILMO(J) = RIB(J) * FM(J) * FM(J) / (ZP * FH(J))
-        F = MAX(ABS(FCOR(J)), CORMIN)
+        F = MAX(ABS(FCOR(J)),CORMIN)
         H(J) = BS * sqrt(VKC * u / (ILMO(J) * F * fm(j)))
       else
-        FM(J) = LZZ0(J) - min(0.7 + log(1.0 - rib(j)), LZZ0(J) - 1.0)
-        FH(J) = BETA * (LZZ0T(J) - min(0.7 + log(1.0 - rib(j)), LZZ0T(J) - 1.0))
+        FM(J) = LZZ0(J) - min(0.7 + log(1.0 - rib(j)),LZZ0(J) - 1.0)
+        FH(J) = BETA * (LZZ0T(J) - min(0.7 + log(1.0 - rib(j)),LZZ0T(J) - 1.0))
       end if
       ILMO(J) = RIB(J) * FM(J) * FM(J) / (ZP * FH(J))
     end if
   end do
 
   ! - - - - - - - - -  BEGINNING OF ITERATION LOOP - - - - - - - - - - -
-  do IT = 1, ITMAX ! loop 35
-    do J = IL1, IL2
+  do IT = 1,ITMAX ! loop 35
+    do J = IL1,IL2
       if (FI(J) > 0. .and. ITER(J) == 1) then
-        u = max(vmodmin, va(j))
+        u = max(vmodmin,va(j))
         ZP = ZU(J) ** 2 / (ZT(J) + Z0(J) - Z0T(J))
         if (RIB(J) > 0.) then
           !----------------------------------------------------------------------
           !  STABLE CASE
-          ILMO(J) = max(EPSLN, ILMO(J))
+          ILMO(J) = max(EPSLN,ILMO(J))
           hl = (ZU(J) + 10.0 * Z0(J)) * FACTN
-          F = MAX(ABS(FCOR(J)), CORMIN)
+          F = MAX(ABS(FCOR(J)),CORMIN)
           hs = BS * sqrt(VKC * u / (ILMO(J) * F * fm(j)))
-          H(J) = MAX(HMIN, hs, hl, factn / (4.0 * AS * BETA * ILMO(J)))
+          H(J) = MAX(HMIN,hs,hl,factn / (4.0 * AS * BETA * ILMO(J)))
           HI = 1.0 / H(J)
           unsl = ILMO(J)
           ! CDIR IEXPAND
-          fm(J) = LZZ0(J) + psi(ZU(J) + Z0(J), hi, unsl) - psi(Z0(J), hi, unsl)
+          fm(J) = LZZ0(J) + psi(ZU(J) + Z0(J),hi,unsl) - psi(Z0(J),hi,unsl)
           ! CDIR IEXPAND
-          fh(J) = BETA * (LZZ0T(J) + psi(ZT(J) + Z0(J), hi, unsl) &
-                  - psi(Z0T(J), hi, unsl))
+          fh(J) = BETA * (LZZ0T(J) + psi(ZT(J) + Z0(J),hi,unsl) &
+                  - psi(Z0T(J),hi,unsl))
           DG = - ZP * FH(J) / (FM(J) * FM(J)) * (1.0 + beta * (DF(ZT(J) + Z0(J)) &
                - DF(Z0T(J))) / (2.0 * FH(J)) - (DF(ZU(J) + Z0(J)) &
                - DF(Z0(J))) / FM(J))
@@ -192,9 +192,9 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
         else
           ILMO(J) = MIN(0.,ILMO(J))
           ! CDIR IEXPAND
-          FM(J) = fmi(zu(j) + z0(j), z0 (j), lzz0 (j), ilmo(j), xx, xx0)
+          FM(J) = fmi(zu(j) + z0(j),z0 (j),lzz0 (j),ilmo(j),xx,xx0)
           ! CDIR IEXPAND
-          FH(J) = fhi(zt(j) + z0(j), z0t(j), lzz0t(j), ilmo(j), yy, yy0)
+          FH(J) = fhi(zt(j) + z0(j),z0t(j),lzz0t(j),ilmo(j),yy,yy0)
           DG = - ZP * FH(J) / (FM(J) * FM(J)) * (1.0 + beta / FH(J) * (1.0 / YY - 1.0 / YY0) &
                - 2.0 / FM(J) * (1.0 / XX - 1.0 / XX0))
         end if
@@ -207,9 +207,9 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
     end do
   end do ! loop 35
   ! - - - - - -  - - - END OF ITERATION LOOP - - - - - - - - - - - - - -
-  do J = IL1, IL2
+  do J = IL1,IL2
     if (FI(J) > 0. .and. ITER(J) == 1) then
-      u = max(vmodmin, va(j))
+      u = max(vmodmin,va(j))
       if (asx < as) then
         !----------------------------------------------------------------------
         !  CALCULATE ILMO AND STABILITY FUNCTIONS FROM LOG-LINEAR PROFILE
@@ -247,12 +247,12 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
       CDH(J) = CM * CT
       if (rib(j) > 0.0) then
         !             cas stable
-        H(J) = MIN(H(J), hmax)
+        H(J) = MIN(H(J),hmax)
       else
         !             cas instable
-        F = MAX(ABS(FCOR(J)), CORMIN)
-        he = max(HMIN, 0.3 * UE(J) / F)
-        H(J) = MIN(he, hmax)
+        F = MAX(ABS(FCOR(J)),CORMIN)
+        he = max(HMIN,0.3 * UE(J) / F)
+        H(J) = MIN(he,hmax)
       end if
       FTEMP(J) = - CTU(J) * (TA(J) - TG(J))
       FVAP(J) = - CTU(J) * (QA(J) - QG(J))
@@ -262,7 +262,7 @@ subroutine FLXSURFZ(CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
 contains
 
   !   The following code is taken from the RPN/CMC physics library file
-  !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk, v
+  !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk,v
 
   !   Internal function FMI
   !   Stability function for momentum in the unstable regime (ilmo<0)
@@ -321,4 +321,4 @@ contains
     !
     return
   end function PSI
-end
+end subroutine FLXSURFZ

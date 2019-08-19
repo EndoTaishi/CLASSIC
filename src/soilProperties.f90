@@ -4,11 +4,11 @@
 !! Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
 !! @author D. Verseghy, M. Lazare, V. Fortin, Y. Wu, J. Melton
 !!
-subroutine soilProperties(THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerly CLASSB
-                          THLRAT, HCPS, TCS, THFC, THLW, PSIWLT, &
-                          DELZW, ZBOTW, ALGWV, ALGWN, ALGDV, ALGDN, &
-                          SAND, CLAY, ORGM, SOCI, DELZ, ZBOT, SDEPTH, &
-                          ISAND, IGDR, NL, NM, IL1, IL2, IM, IG, ipeatland)
+subroutine soilProperties (THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerly CLASSB
+                           THLRAT, HCPS, TCS, THFC, THLW, PSIWLT, &
+                           DELZW, ZBOTW, ALGWV, ALGWN, ALGDV, ALGDN, &
+                           SAND, CLAY, ORGM, SOCI, DELZ, ZBOT, SDEPTH, &
+                           ISAND, IGDR, NL, NM, IL1, IL2, IM, IG, ipeatland)
   !
   !     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY,
   !                               Change to TCCLAY for consistency with rest of model.
@@ -80,7 +80,7 @@ subroutine soilProperties(THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerl
   !     *                         SAND, CLAY AND ORGANIC MATTER
   !     *                         CONTENT.
   !
-  use classic_params, only : thpmoss, thrmoss, thmmoss, bmoss, psismoss, &
+  use classicParams, only : thpmoss, thrmoss, thmmoss, bmoss, psismoss, &
                              grksmoss, hcpmoss, THPORG, THRORG, THMORG, BORG, &
                              PSISORG, GRKSORG, TCICE, TCSAND, TCCLAY, TCOM, &
                              RHOSOL, RHOOM, HCPICE, HCPOM, HCPSND, HCPCLY, &
@@ -96,38 +96,38 @@ subroutine soilProperties(THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerl
   !
   !     * OUTPUT ARRAYS.
   !
-  real, intent(out) :: THPOR (NL, NM, IG) !< Pore volume \f$[m^3 m^{-3} ] ( \theta_p)\f$
-  real, intent(out) :: THLRET(NL, NM, IG) !< Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
-  real, intent(out) :: THLMIN(NL, NM, IG) !< Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
-  real, intent(out) :: BI    (NL, NM, IG) !< Clapp and Hornberger empirical parameter [ ] (b)
-  real, intent(out) :: PSISAT(NL, NM, IG) !< Soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
-  real, intent(out) :: GRKSAT(NL, NM, IG) !< Hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
-  real, intent(out) :: THLRAT(NL, NM, IG) !< Fractional saturation of soil at half the saturated hydraulic conductivity [ ] \f$(f_{inf} )\f$
-  real, intent(out) :: HCPS  (NL, NM, IG) !< Volumetric heat capacity of soil matter \f$[J m^{-3} K^{-1} ] (C_g)\f$
-  real, intent(out) :: TCS   (NL, NM, IG) !< Thermal conductivity of soil \f$[W m^{-1} K^{-1} ] (\tau_g)\f$
-  real, intent(out) :: THFC  (NL, NM, IG) !< Field capacity \f$[m^3 m^{-3} ] (\theta_{fc} )\f$
-  real, intent(out) :: THLW  (NL, NM, IG) !< Soil water content at wilting point, \f$[m^3 m^{-3} ] (\theta_{wilt})\f$
-  real, intent(out) :: PSIWLT(NL, NM, IG) !< Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
-  real, intent(out) :: DELZW (NL, NM, IG) !< Thickness of permeable part of soil layer [m]
-  real, intent(out) :: ZBOTW (NL, NM, IG) !< Depth of bottom of permeable part of soil layer [m]
-  real, intent(out) :: ALGWV (NL, NM)    !< Visible albedo of wet soil for modelled area  [  ]
-  real, intent(out) :: ALGWN (NL, NM)    !< Near-IR albedo of wet soil for modelled area  [  ]
-  real, intent(out) :: ALGDV (NL, NM)    !< Visible albedo of dry soil for modelled area  [  ]
-  real, intent(out) :: ALGDN (NL, NM)    !< Near-IR albedo of dry soil for modelled area  [  ]
+  real, intent(out) :: THPOR (NL,NM,IG) !< Pore volume \f$[m^3 m^{-3} ] ( \theta_p)\f$
+  real, intent(out) :: THLRET(NL,NM,IG) !< Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+  real, intent(out) :: THLMIN(NL,NM,IG) !< Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+  real, intent(out) :: BI    (NL,NM,IG) !< Clapp and Hornberger empirical parameter [ ] (b)
+  real, intent(out) :: PSISAT(NL,NM,IG) !< Soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+  real, intent(out) :: GRKSAT(NL,NM,IG) !< Hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
+  real, intent(out) :: THLRAT(NL,NM,IG) !< Fractional saturation of soil at half the saturated hydraulic conductivity [ ] \f$(f_{inf} )\f$
+  real, intent(out) :: HCPS  (NL,NM,IG) !< Volumetric heat capacity of soil matter \f$[J m^{-3} K^{-1} ] (C_g)\f$
+  real, intent(out) :: TCS   (NL,NM,IG) !< Thermal conductivity of soil \f$[W m^{-1} K^{-1} ] (\tau_g)\f$
+  real, intent(out) :: THFC  (NL,NM,IG) !< Field capacity \f$[m^3 m^{-3} ] (\theta_{fc} )\f$
+  real, intent(out) :: THLW  (NL,NM,IG) !< Soil water content at wilting point, \f$[m^3 m^{-3} ] (\theta_{wilt})\f$
+  real, intent(out) :: PSIWLT(NL,NM,IG) !< Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
+  real, intent(out) :: DELZW (NL,NM,IG) !< Thickness of permeable part of soil layer [m]
+  real, intent(out) :: ZBOTW (NL,NM,IG) !< Depth of bottom of permeable part of soil layer [m]
+  real, intent(out) :: ALGWV (NL,NM)    !< Visible albedo of wet soil for modelled area  [  ]
+  real, intent(out) :: ALGWN (NL,NM)    !< Near-IR albedo of wet soil for modelled area  [  ]
+  real, intent(out) :: ALGDV (NL,NM)    !< Visible albedo of dry soil for modelled area  [  ]
+  real, intent(out) :: ALGDN (NL,NM)    !< Near-IR albedo of dry soil for modelled area  [  ]
   !
-  integer, intent(inout) :: ISAND (NL, NM, IG) !< Sand content flag
-  integer, intent(inout) :: IGDR  (NL, NM) !< Index of soil layer in which bedrock is encountered
+  integer, intent(inout) :: ISAND (NL,NM,IG) !< Sand content flag
+  integer, intent(inout) :: IGDR  (NL,NM) !< Index of soil layer in which bedrock is encountered
   !
   !     * INPUT ARRAYS.
   !
-  integer, intent(in) :: ipeatland(nl, nm)  !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
-  real, intent(in) :: SAND  (NL, NM, IG) !< Percent sand content of soil layer [percent] \f$(X_{sand} )\f$
-  real, intent(in) :: CLAY  (NL, NM, IG) !< Percent clay content of soil layer [percent] \f$(X_{clay} )\f$
-  real, intent(in) :: ORGM  (NL, NM, IG) !< Percent organic matter content of soil layer [percent]
+  integer, intent(in) :: ipeatland(nl,nm)  !< Peatland flag: 0 = not a peatland,1= bog,2 = fen
+  real, intent(in) :: SAND  (NL,NM,IG) !< Percent sand content of soil layer [percent] \f$(X_{sand} )\f$
+  real, intent(in) :: CLAY  (NL,NM,IG) !< Percent clay content of soil layer [percent] \f$(X_{clay} )\f$
+  real, intent(in) :: ORGM  (NL,NM,IG) !< Percent organic matter content of soil layer [percent]
   real, intent(in) :: DELZ  (IG)       !< Thickness of soil layer [m]
   real, intent(in) :: ZBOT  (IG)       !< Depth of bottom of soil layer [m]
-  real, intent(in) :: SDEPTH(NL, NM)    !< Permeable depth of soil column (depth to bedrock) [m] \f$(z_b)\f$
-  real, intent(in) :: SOCI  (NL, NM)    !< Soil colour index
+  real, intent(in) :: SDEPTH(NL,NM)    !< Permeable depth of soil column (depth to bedrock) [m] \f$(z_b)\f$
+  real, intent(in) :: SOCI  (NL,NM)    !< Soil colour index
   !
   !     * TEMPORARY VARIABLES.
   !
@@ -142,17 +142,17 @@ subroutine soilProperties(THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerl
   !! branches of code to execute.
   !!
 
-  do M = 1, IM ! loop 50
-    do I = IL1, IL2
-      IGDR(I, M) = 1
+  do M = 1,IM ! loop 50
+    do I = IL1,IL2
+      IGDR(I,M) = 1
     end do
   end do ! loop 50
   !
-  do J = 1, IG ! loop 100
-    do M = 1, IM
-      do I = IL1, IL2
-        ISAND (I, M, J) = NINT(SAND(I, M, J))
-        if (ISAND(I, M, J) > - 3) IGDR(I, M) = J
+  do J = 1,IG ! loop 100
+    do M = 1,IM
+      do I = IL1,IL2
+        ISAND (I,M,J) = NINT(SAND(I,M,J))
+        if (ISAND(I,M,J) > - 3) IGDR(I,M) = J
       end do
     end do
   end do ! loop 100
@@ -173,34 +173,34 @@ subroutine soilProperties(THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerl
   !! Oleson et al. (2010) \cite Oleson2010-c88.
   !!
 
-  do M = 1, IM ! loop 200
-    do I = IL1, IL2
-      do J = 1, IG ! loop 150
-        if (ISAND(I, M, 1) == - 4) then
-          DELZW(I, M, J) = DELZ(J)
-          ISAND(I, M, J) = - 4
-        else if (ISAND(I, M, J) == - 3) then
-          DELZW(I, M, J) = 0.0
-        else if (SDEPTH(I, M) >= ZBOT(J)) then
-          DELZW(I, M, J) = DELZ(J)
-        else if (SDEPTH(I, M) < (ZBOT(J) - DELZ(J) + 0.025)) then
-          DELZW(I, M, J) = 0.0
-          ISAND(I, M, J) = - 3
+  do M = 1,IM ! loop 200
+    do I = IL1,IL2
+      do J = 1,IG ! loop 150
+        if (ISAND(I,M,1) == - 4) then
+          DELZW(I,M,J) = DELZ(J)
+          ISAND(I,M,J) = - 4
+        else if (ISAND(I,M,J) == - 3) then
+          DELZW(I,M,J) = 0.0
+        else if (SDEPTH(I,M) >= ZBOT(J)) then
+          DELZW(I,M,J) = DELZ(J)
+        else if (SDEPTH(I,M) < (ZBOT(J) - DELZ(J) + 0.025)) then
+          DELZW(I,M,J) = 0.0
+          ISAND(I,M,J) = - 3
         else
-          DELZW(I, M, J) = MAX(0.05,(SDEPTH(I, M) - (ZBOT(J) - DELZ(J))))
+          DELZW(I,M,J) = MAX(0.05,(SDEPTH(I,M) - (ZBOT(J) - DELZ(J))))
         end if
-        ZBOTW(I, M, J) = MAX(0.0, ZBOT(J) - DELZ(J)) + DELZW(I, M, J)
+        ZBOTW(I,M,J) = MAX(0.0,ZBOT(J) - DELZ(J)) + DELZW(I,M,J)
       end do ! loop 150
-      if (SAND(I, M, 1) >= - 3.5) then
-        ALGWV(I, M) = ALWV(NINT(SOCI(I, M)))
-        ALGWN(I, M) = ALWN(NINT(SOCI(I, M)))
-        ALGDV(I, M) = ALDV(NINT(SOCI(I, M)))
-        ALGDN(I, M) = ALDN(NINT(SOCI(I, M)))
+      if (SAND(I,M,1) >= - 3.5) then
+        ALGWV(I,M) = ALWV(NINT(SOCI(I,M)))
+        ALGWN(I,M) = ALWN(NINT(SOCI(I,M)))
+        ALGDV(I,M) = ALDV(NINT(SOCI(I,M)))
+        ALGDN(I,M) = ALDN(NINT(SOCI(I,M)))
       else
-        ALGWV(I, M) = 0.0
-        ALGWN(I, M) = 0.0
-        ALGDV(I, M) = 0.0
-        ALGDN(I, M) = 0.0
+        ALGWV(I,M) = 0.0
+        ALGWN(I,M) = 0.0
+        ALGDV(I,M) = 0.0
+        ALGDN(I,M) = 0.0
       end if
     end do
   end do ! loop 200
@@ -315,89 +315,89 @@ subroutine soilProperties(THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Formerl
           THLRAT(I,M,J) = 0.5 ** (1.0 / (2.0 * BI(I,M,J) + 3.0))
           HCPS(I,M,J) = HCPOM
           TCS(I,M,J) = TCOM
-          
+
           ! If tile is a peatland, then set up as such.
           ! this setup assumes that the soil has 10 cm
           ! layers in the top 1 meter.
           ! FLAG: We should consider here that we don't
           ! necessarily want the entire soil column as
           ! peat so should also include the peat depth ! JM Oct 2016.
-          if (ipeatland(i, m) > 0) then ! Peatland flag, 1= bog, 2 = fen
+          if (ipeatland(i,m) > 0) then ! Peatland flag,1= bog,2 = fen
             if (j == 1) then ! First layer is moss
-              thpor(i, m, j)  = thpmoss
-              thlret(i, m, j) = thrmoss
-              thlmin(i, m, j) = thmmoss
-              bi(i, m, j)     = bmoss
-              psisat(i, m, j) = psismoss
-              grksat(i, m, j) = grksmoss
-              hcps(i, m, j) = hcpmoss
-              tcs(i, m, j) = tcom
+              thpor(i,m,j)  = thpmoss
+              thlret(i,m,j) = thrmoss
+              thlmin(i,m,j) = thmmoss
+              bi(i,m,j)     = bmoss
+              psisat(i,m,j) = psismoss
+              grksat(i,m,j) = grksmoss
+              hcps(i,m,j) = hcpmoss
+              tcs(i,m,j) = tcom
             else if (j == 2) then ! Next treated as soil and is fibric peat
-              thpor(i, m, j)  = thporg(1)
-              thlret(i, m, j) = throrg(1)
-              thlmin(i, m, j) = thmorg(1)
-              bi(i, m, j)     = borg(1)
-              psisat(i, m, j) = psisorg(1)
-              grksat(i, m, j) = grksorg(1)
+              thpor(i,m,j)  = thporg(1)
+              thlret(i,m,j) = throrg(1)
+              thlmin(i,m,j) = thmorg(1)
+              bi(i,m,j)     = borg(1)
+              psisat(i,m,j) = psisorg(1)
+              grksat(i,m,j) = grksorg(1)
             else if (j >= 3 .and. j <= 5) then ! These layers are considered hemic peat
-              thpor(i, m, j)  = thporg(2)
-              thlret(i, m, j) = throrg(2)
-              thlmin(i, m, j) = thmorg(2)
-              bi(i, m, j)     = borg(2)
-              psisat(i, m, j) = psisorg(2)
-              grksat(i, m, j) = grksorg(2)
+              thpor(i,m,j)  = thporg(2)
+              thlret(i,m,j) = throrg(2)
+              thlmin(i,m,j) = thmorg(2)
+              bi(i,m,j)     = borg(2)
+              psisat(i,m,j) = psisorg(2)
+              grksat(i,m,j) = grksorg(2)
             else ! Remainder are sapric peat
-              thpor(i, m, j)  = thporg(3)
-              thlret(i, m, j) = throrg(3)
-              thlmin(i, m, j) = thmorg(3)
-              bi(i, m, j)     = borg(3)
-              psisat(i, m, j) = psisorg(3)
-              grksat(i, m, j) = grksorg(3)
+              thpor(i,m,j)  = thporg(3)
+              thlret(i,m,j) = throrg(3)
+              thlmin(i,m,j) = thmorg(3)
+              bi(i,m,j)     = borg(3)
+              psisat(i,m,j) = psisorg(3)
+              grksat(i,m,j) = grksorg(3)
             end if
-            thlrat(i, m, j) = 0.5 ** (1.0 / (2.0 * bi(i, m, j) + 3.0))
+            thlrat(i,m,j) = 0.5 ** (1.0 / (2.0 * bi(i,m,j) + 3.0))
           end if
-          THFC(I, M, J) = THLRET(I, M, J)
-          THLW(I, M, J) = THLMIN(I, M, J)
-          PSIWLT(I, M, J) = PSISAT(I, M, J) * (THLMIN(I, M, J) / &
-                            THPOR(I, M, J)) ** ( - BI(I, M, J))
+          THFC(I,M,J) = THLRET(I,M,J)
+          THLW(I,M,J) = THLMIN(I,M,J)
+          PSIWLT(I,M,J) = PSISAT(I,M,J) * (THLMIN(I,M,J) / &
+                          THPOR(I,M,J)) ** ( - BI(I,M,J))
 
-        else if (SAND(I, M, J) >= 0.) then
-          THPOR (I, M, J) = ( - 0.126 * SAND(I, M, J) + 48.9) / 100.0
-          THLRET(I, M, J) = 0.04
-          THLMIN(I, M, J) = 0.04
-          BI    (I, M, J) = 0.159 * CLAY(I, M, J) + 2.91
-          PSISAT(I, M, J) = 0.01 * EXP( - 0.0302 * SAND(I, M, J) + 4.33)
-          GRKSAT(I, M, J) = 7.0556E-6 * (EXP(0.0352 * SAND(I, M, J) - 2.035))
-          THLRAT(I, M, J) = 0.5 ** (1.0 / (2.0 * BI(I, M, J) + 3.0))
-          VSAND = SAND(I, M, J) / (RHOSOL * 100.0)
-          VORG = ORGM(I, M, J) / (RHOOM * 100.0)
-          VFINE = (100.0 - SAND(I, M, J) - ORGM(I, M, J)) / (RHOSOL * 100.0)
+        else if (SAND(I,M,J) >= 0.) then
+          THPOR (I,M,J) = ( - 0.126 * SAND(I,M,J) + 48.9) / 100.0
+          THLRET(I,M,J) = 0.04
+          THLMIN(I,M,J) = 0.04
+          BI    (I,M,J) = 0.159 * CLAY(I,M,J) + 2.91
+          PSISAT(I,M,J) = 0.01 * EXP( - 0.0302 * SAND(I,M,J) + 4.33)
+          GRKSAT(I,M,J) = 7.0556E-6 * (EXP(0.0352 * SAND(I,M,J) - 2.035))
+          THLRAT(I,M,J) = 0.5 ** (1.0 / (2.0 * BI(I,M,J) + 3.0))
+          VSAND = SAND(I,M,J) / (RHOSOL * 100.0)
+          VORG = ORGM(I,M,J) / (RHOOM * 100.0)
+          VFINE = (100.0 - SAND(I,M,J) - ORGM(I,M,J)) / (RHOSOL * 100.0)
           VTOT = VSAND + VFINE + VORG
-          THSAND = (1.0 - THPOR(I, M, J)) * VSAND / VTOT
-          THORG = (1.0 - THPOR(I, M, J)) * VORG / VTOT
-          THFINE = 1.0 - THPOR(I, M, J) - THSAND - THORG
-          HCPS(I, M, J) = (HCPSND * THSAND + HCPCLY * THFINE + &
-                          HCPOM * THORG) / (1.0 - THPOR(I, M, J))
-          TCS(I, M, J) = (TCSAND * THSAND + TCOM * THORG + &
-                         TCCLAY * THFINE) / (1.0 - THPOR(I, M, J))
-          if (J /= IGDR(I, M)) then
-            THFC(I, M, J) = THPOR(I, M, J) * (1.157E-9 / GRKSAT(I, M, J)) ** &
-                            (1.0 / (2.0 * BI(I, M, J) + 3.0))
+          THSAND = (1.0 - THPOR(I,M,J)) * VSAND / VTOT
+          THORG = (1.0 - THPOR(I,M,J)) * VORG / VTOT
+          THFINE = 1.0 - THPOR(I,M,J) - THSAND - THORG
+          HCPS(I,M,J) = (HCPSND * THSAND + HCPCLY * THFINE + &
+                        HCPOM * THORG) / (1.0 - THPOR(I,M,J))
+          TCS(I,M,J) = (TCSAND * THSAND + TCOM * THORG + &
+                       TCCLAY * THFINE) / (1.0 - THPOR(I,M,J))
+          if (J /= IGDR(I,M)) then
+            THFC(I,M,J) = THPOR(I,M,J) * (1.157E-9 / GRKSAT(I,M,J)) ** &
+                          (1.0 / (2.0 * BI(I,M,J) + 3.0))
           else
-            AEXP = (BI(I, M, J) - 1.0) / BI(I, M, J)
-            ABC = (3.0 * BI(I, M, J) + 2.0) ** AEXP - &
-                  (2.0 * BI(I, M, J) + 2.0) ** AEXP
-            THFC(I, M, J) = (ABC * THPOR(I, M, J) / (BI(I, M, J) - 1.0)) * &
-                            (PSISAT(I, M, J) * BI(I, M, J) / SDEPTH(I, M)) ** &
-                            (1.0 / BI(I, M, J))
+            AEXP = (BI(I,M,J) - 1.0) / BI(I,M,J)
+            ABC = (3.0 * BI(I,M,J) + 2.0) ** AEXP - &
+                  (2.0 * BI(I,M,J) + 2.0) ** AEXP
+            THFC(I,M,J) = (ABC * THPOR(I,M,J) / (BI(I,M,J) - 1.0)) * &
+                          (PSISAT(I,M,J) * BI(I,M,J) / SDEPTH(I,M)) ** &
+                          (1.0 / BI(I,M,J))
           end if
           PSIWLT(I,M,J) = 150.0
           THLW(I,M,J) = THPOR(I,M,J) * (PSIWLT(I,M,J) / PSISAT(I,M,J)) ** &
-          ( - 1.0 / BI(I,M,J))
+                        ( - 1.0 / BI(I,M,J))
         end if
       end do
     end do
   end do ! loop 300
   !
   return
-end subroutine
+end subroutine soilProperties

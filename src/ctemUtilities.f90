@@ -18,9 +18,9 @@ contains
   !> array of values in the parameter vectors (e.g. for 9 CTEM, the array is of
   !> size 12)
   !! @author V.Arora, J. Melton
-  function genSortIndex()
+  function genSortIndex ()
 
-    use classic_params, only : ican, l2max, icc, nol2pfts
+    use classicParams, only : ican, l2max, icc, nol2pfts
 
     implicit none
 
@@ -29,8 +29,8 @@ contains
     integer :: icount, j, m, n
 
     icount = 0
-    do j = 1, ican
-      do m = 1, nol2pfts(j)
+    do j = 1,ican
+      do m = 1,nol2pfts(j)
         n = (j - 1) * l2max + m
         icount = icount + 1
         genSortIndex(icount) = n
@@ -45,10 +45,10 @@ contains
   !! @{
   !> Prepare the CTEM input (physics) variables at the end of the day.
   !! @author V.Arora, J. Melton
-  subroutine dayEndCTEMPreparation(nml, nday)
+  subroutine dayEndCTEMPreparation (nml, nday)
 
-    use classic_params, only : icc, ignd
-    use ctem_statevars, only : vgat, ctem_tile
+    use classicParams, only : icc, ignd
+    use ctemStateVars, only : vgat, ctem_tile
 
     implicit none
 
@@ -100,7 +100,7 @@ contains
     vvaccgat_t        => ctem_tile%vvaccgat_t
 
 
-    do i = 1, nml
+    do i = 1,nml
 
       ! net radiation and precipitation estimates for ctem's bioclim
 
@@ -123,20 +123,20 @@ contains
       fsnowacc_t(i) = fsnowacc_t(i)/real(nday)
       taaccgat_t(i) = taaccgat_t(i)/real(nday)
 
-      do j = 1, ignd
-        tbaraccgat_t(i, j) = tbaraccgat_t(i, j)/real(nday)
-        thliqacc_t(i, j) = thliqacc_t(i, j)/real(nday)
-        thiceacc_t(i, j) = thiceacc_t(i, j)/real(nday)
+      do j = 1,ignd
+        tbaraccgat_t(i,j) = tbaraccgat_t(i,j)/real(nday)
+        thliqacc_t(i,j) = thliqacc_t(i,j)/real(nday)
+        thiceacc_t(i,j) = thiceacc_t(i,j)/real(nday)
       end do ! loop 831
 
-      do j = 1, icc
-        ancgvgac_t(i, j) = ancgvgac_t(i, j)/real(nday)
-        rmlcgvga_t(i, j) = rmlcgvga_t(i, j)/real(nday)
+      do j = 1,icc
+        ancgvgac_t(i,j) = ancgvgac_t(i,j)/real(nday)
+        rmlcgvga_t(i,j) = rmlcgvga_t(i,j)/real(nday)
       end do ! loop 832
 
       !     -daily average moss C fluxes for ctem.f-------------------\
-      !     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
-      !     stem biomass = 1.65 kg/m2 in hummock, 0.77 kg/m2 in lawn (Bragazza et al.2004)
+      !     Capitulum biomass = 0.22 kg/m2 in hummock,0.1 kg/m2 in lawn
+      !     stem biomass = 1.65 kg/m2 in hummock,0.77 kg/m2 in lawn (Bragazza et al.2004)
       !     the ratio between stem and capitulum = 7.5 and 7.7
       if (ipeatlandgat(i) > 0) then
         anmossac_t(i) = anmossac_t(i)/real(nday)
@@ -153,11 +153,11 @@ contains
   !! @{
   !> Accumulate the CTEM input (physics) variables at the end of each physics timestep
   !! @author V.Arora, J. Melton
-  subroutine accumulateForCTEM(nml)
+  subroutine accumulateForCTEM (nml)
 
-    use classic_params, only : icc, ignd, DELT, SBC
-    use class_statevars, only : class_gat, class_rot
-    use ctem_statevars, only : vgat, ctem_tile
+    use classicParams,  only : icc, ignd, DELT, SBC
+    use classStateVars, only : class_gat, class_rot
+    use ctemStateVars,  only : vgat, ctem_tile
 
     implicit none
 
@@ -281,7 +281,7 @@ contains
     rmlmossgat       => vgat%rmlmoss
     gppmossgat       => vgat%gppmoss
 
-    do i = 1, nml
+    do i = 1,nml
 
       fsinacc_gat(i) = fsinacc_gat(i) + FSSROW(1) ! FLAG ! Do this offline only (since all tiles are the same in a gridcell and we run
       ! only one gridcell at a time. JM Feb 42016.
@@ -299,15 +299,15 @@ contains
         altotcount_ctm = altotcount_ctm + 1
       end if
 
-      do j = 1, ignd
-        tbaraccgat_t(i, j) = tbaraccgat_t(i, j) + tbargat(i, j)
-        thliqacc_t(i, j) = thliqacc_t(i, j) + THLQGAT(i, j)
-        thiceacc_t(i, j) = thiceacc_t(i, j) + THICGAT(i, j)
+      do j = 1,ignd
+        tbaraccgat_t(i,j) = tbaraccgat_t(i,j) + tbargat(i,j)
+        thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j)
+        thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j)
       end do ! loop 710
 
-      do j = 1, icc
-        ancgvgac_t(i, j) = ancgvgac_t(i, j) + (1. - fsnogat(i)) * ancgveggat(i, j) + fsnogat(i) * ancsveggat(i, j)
-        rmlcgvga_t(i, j) = rmlcgvga_t(i, j) + (1. - fsnogat(i)) * rmlcgveggat(i, j) + fsnogat(i) * rmlcsveggat(i, j)
+      do j = 1,icc
+        ancgvgac_t(i,j) = ancgvgac_t(i,j) + (1. - fsnogat(i)) * ancgveggat(i,j) + fsnogat(i) * ancsveggat(i,j)
+        rmlcgvga_t(i,j) = rmlcgvga_t(i,j) + (1. - fsnogat(i)) * rmlcgveggat(i,j) + fsnogat(i) * rmlcsveggat(i,j)
       end do ! loop 713
 
       !    -accumulate moss C fluxes to tile level then daily----
@@ -332,13 +332,13 @@ contains
   !> Find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
   !! Also initialize additional variables which are used by CTEM (biogeochemical processes).
   !! @author V.Arora, J. Melton
-  subroutine ctemInit(nltest, nmtest)
+  subroutine ctemInit (nltest, nmtest)
 
-    use classic_params, only : icc, ilg, ignd, iccp1
-    use ctem_statevars, only : vrot, ctem_tile, vgat
-    use class_statevars, only : class_rot
-    use generalUtils, only : findDaylength
-    use peatlands_mod, only : peatStorage
+    use classicParams,  only : icc, ilg, ignd, iccp1
+    use ctemStateVars,  only : vrot, ctem_tile, vgat
+    use classStateVars, only : class_rot
+    use generalUtils,   only : findDaylength
+    use peatlandsMod,   only : peatStorage
 
     implicit none
 
@@ -471,56 +471,56 @@ contains
     rothrlosrow(:,:,:) = 0.0     ! root death for crops
     tymaxlairow(:,:,:) = 0.0
 
-    do i = 1, nltest ! loop 115
-      do m = 1, nmtest
-        do j = 1, icc
-          vgbiomasrow(i, m) = vgbiomasrow(i, m) + fcancmxrow(i, m, j) * &
-                              (gleafmasrow(i, m, j) + stemmassrow(i, m, j) + &
-                              rootmassrow(i, m, j) + bleafmasrow(i, m, j))
+    do i = 1,nltest ! loop 115
+      do m = 1,nmtest
+        do j = 1,icc
+          vgbiomasrow(i,m) = vgbiomasrow(i,m) + fcancmxrow(i,m,j) * &
+                             (gleafmasrow(i,m,j) + stemmassrow(i,m,j) + &
+                             rootmassrow(i,m,j) + bleafmasrow(i,m,j))
           ! COMBAK PERLAY
-          gavgltmsrow(i, m) = gavgltmsrow(i, m) + fcancmxrow(i, m, j) * &
-                              litrmassrow(i, m, j)
-          gavgscmsrow(i, m) = gavgscmsrow(i, m) + fcancmxrow(i, m, j) * &
-                              soilcmasrow(i, m, j)
-          ! do k = 1, ignd
-          !   gavgltmsrow(i, m)=gavgltmsrow(i, m)+fcancmxrow(i, m, j)* &
-          !       &                       litrmassrow(i, m, j, k)
-          !   gavgscmsrow(i, m)=gavgscmsrow(i, m)+fcancmxrow(i, m, j)* &
-          !       &         soilcmasrow(i, m, j, k)
+          gavgltmsrow(i,m) = gavgltmsrow(i,m) + fcancmxrow(i,m,j) * &
+                             litrmassrow(i,m,j)
+          gavgscmsrow(i,m) = gavgscmsrow(i,m) + fcancmxrow(i,m,j) * &
+                             soilcmasrow(i,m,j)
+          ! do k = 1,ignd
+          !   gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)* &
+          !       &                       litrmassrow(i,m,j,k)
+          !   gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)* &
+          !       &         soilcmasrow(i,m,j,k)
           ! end do ! ignd
           ! COMBAK PERLAY
-          grwtheffrow(i, m, j) = 100.0   ! set growth efficiency to some large number
+          grwtheffrow(i,m,j) = 100.0   ! set growth efficiency to some large number
           ! so that no growth related mortality occurs in
           ! first year
-          lystmmasrow(i, m, j) = stemmassrow(i, m, j)
-          lyrotmasrow(i, m, j) = rootmassrow(i, m, j)
+          lystmmasrow(i,m,j) = stemmassrow(i,m,j)
+          lyrotmasrow(i,m,j) = rootmassrow(i,m,j)
 
         end do ! loop 116
       end do
     end do ! loop 115
 
-    do i = 1, nltest ! loop 117
-      do m = 1, nmtest
-        if (ipeatlandrow(i, m) == 0) then ! NON-peatland tile
+    do i = 1,nltest ! loop 117
+      do m = 1,nmtest
+        if (ipeatlandrow(i,m) == 0) then ! NON-peatland tile
           ! COMBAK PERLAY
-          gavgltmsrow(i, m) = gavgltmsrow(i, m) + (1.0 - sum(fcanrot(i, m,:))) * litrmassrow(i, m, iccp1)
-          gavgscmsrow(i, m) = gavgscmsrow(i, m) + (1.0 - sum(fcanrot(i, m,:))) * soilcmasrow(i, m, iccp1)
-          ! do k = 1, ignd
-          !   gavgltmsrow(i, m)=gavgltmsrow(i, m)+ (1.0-sum(fcanrot(i, m,:)))*litrmassrow(i, m, iccp1, k)
-          !   gavgscmsrow(i, m)=gavgscmsrow(i, m)+ (1.0-sum(fcanrot(i, m,:)))*soilcmasrow(i, m, iccp1, k)
+          gavgltmsrow(i,m) = gavgltmsrow(i,m) + (1.0 - sum(fcanrot(i,m,:))) * litrmassrow(i,m,iccp1)
+          gavgscmsrow(i,m) = gavgscmsrow(i,m) + (1.0 - sum(fcanrot(i,m,:))) * soilcmasrow(i,m,iccp1)
+          ! do k = 1,ignd
+          !   gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-sum(fcanrot(i,m,:)))*litrmassrow(i,m,iccp1,k)
+          !   gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-sum(fcanrot(i,m,:)))*soilcmasrow(i,m,iccp1,k)
           ! end do
           ! COMBAK PERLAY
         else ! peatland tile
-          gavgltmsrow(i, m) = gavgltmsrow(i, m) + litrmsmossrow(i, m)
-          peatdeprow(i, m) = sdeprot(i, m) ! the peatdepth is set to the soil depth
+          gavgltmsrow(i,m) = gavgltmsrow(i,m) + litrmsmossrow(i,m)
+          peatdeprow(i,m) = sdeprot(i,m) ! the peatdepth is set to the soil depth
 
           ! The soil carbon on the peatland tiles is assigned based on depth. This
-          ! is the same relation as found in hetres_peat subroutine.
-          gavgscmsrow(i, m) = peatStorage(peatdeprow(i, m))
-          ! gavgscmsrow(i, m) = 0.487*(4056.6*peatdeprow(i, m)**2+ &
-          !             72067.0*peatdeprow(i, m))/1000
+          ! is the same relation as found in hetresPeat subroutine.
+          gavgscmsrow(i,m) = peatStorage(peatdeprow(i,m))
+          ! gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+ &
+          !             72067.0*peatdeprow(i,m))/1000
 
-          vgbiomasrow(i, m) = vgbiomasrow(i, m) + Cmossmasrow(i, m)
+          vgbiomasrow(i,m) = vgbiomasrow(i,m) + Cmossmasrow(i,m)
         end if
       end do
     end do ! loop 117
@@ -531,14 +531,14 @@ contains
     rmlmossac_t = 0.0
     gppmossac_t = 0.0
 
-    !    ----------------------------YW March 25, 2015 --------------------/
+    !    ----------------------------YW March 25,2015 --------------------/
 
-    ! Lastly, find the maximum daylength at this location for day 172 = June 21st - summer solstice.
-    do i = 1, nltest
+    ! Lastly,find the maximum daylength at this location for day 172 = June 21st - summer solstice.
+    do i = 1,nltest
       if (radjrow(i) > 0.) then
-        dayl_maxrow(i) = findDaylength(172.0, radjrow(i)) ! following rest of code, radjrow is always given index of 1 offline.
+        dayl_maxrow(i) = findDaylength(172.0,radjrow(i)) ! following rest of code,radjrow is always given index of 1 offline.
       else ! S. Hemi so do N.Hemi winter solstice Dec 21
-        dayl_maxrow(i) = findDaylength(355.0, radjrow(i)) ! following rest of code, radjrow is always given index of 1 offline.
+        dayl_maxrow(i) = findDaylength(355.0,radjrow(i)) ! following rest of code,radjrow is always given index of 1 offline.
       end if
     end do
 

@@ -2,11 +2,11 @@
 !! Calculates visible and near-IR ground albedos.
 !! @author D. Verseghy, M. Lazare
 !
-subroutine groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
-                        ALGWV, ALGWN, ALGDV, ALGDN, &
-                        THLIQ, FSNOW, ALVSU, ALIRU, FCMXU, &
-                        AGVDAT, AGIDAT, FG, ISAND, &
-                        ILG, IG, IL1, IL2, JL, IALG)
+subroutine groundAlbedo (ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
+                         ALGWV, ALGWN, ALGDV, ALGDN, &
+                         THLIQ, FSNOW, ALVSU, ALIRU, FCMXU, &
+                         AGVDAT, AGIDAT, FG, ISAND, &
+                         ILG, IG, IL1, IL2, JL, IALG)
   !
   !     * DEC 15/16 - D.VERSEGHY. ASSIGN ROCK ALBEDO USING SOIL COLOUR
   !     *                         INDEX INSTEAD OF VIA LOOKUP TABLE.
@@ -54,7 +54,7 @@ subroutine groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
   !     *                         WETNESS. (SET TO ICE ALBEDOS OVER
   !     *                         CONTINENTAL ICE SHEETS.)
   !
-  use classic_params, only : ALVSI, ALIRI, ALVSO, ALIRO
+  use classicParams, only : ALVSI, ALIRI, ALVSO, ALIRO
 
   implicit none
   !
@@ -76,7 +76,7 @@ subroutine groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
   real, intent(in) :: ALGWN (ILG)    !< Near-infrared albedo of wet soil for modelled area  \f$[ ] (alpha_{g, NIR, wet})\f$
   real, intent(in) :: ALGDV (ILG)    !< Visible albedo of dry soil for modelled area \f$[ ] (alpha_{g, VIS, dry})\f$
   real, intent(in) :: ALGDN (ILG)    !< Near-infrared albedo of dry soil for modelled area  \f$[ ] (alpha_{g, NIR, dry})\f$
-  real, intent(in) :: THLIQ (ILG, IG) !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+  real, intent(in) :: THLIQ (ILG,IG) !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
   real, intent(in) :: ALVSU (ILG)    !< Visible albedo of urban part of modelled area \f$[ ] (alpha_{u, VIS})\f$
   real, intent(in) :: ALIRU (ILG)    !< Near-IR albedo of urban part of modelled area \f$[ ] (alpha_{u, NIR})\f$
   real, intent(in) :: FCMXU (ILG)    !< Fractional coverage of urban part of modelled area \f$[ ] (X_u)\f$
@@ -153,21 +153,21 @@ subroutine groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
   !! (this approach is under review).
   !!
   IPTBAD = 0
-  do I = IL1, IL2
+  do I = IL1,IL2
     if (IALG == 0) then
-      if (ISAND(I, 1) >= 0) then
+      if (ISAND(I,1) >= 0) then
         FURB = FCMXU(I) * (1.0 - FSNOW(I))
 
-        if (THLIQ(I, 1) >= 0.26) then
+        if (THLIQ(I,1) >= 0.26) then
           ALVSG(I) = ALGWV(I)
           ALIRG(I) = ALGWN(I)
-        else if (THLIQ(I, 1) <= 0.22) then
+        else if (THLIQ(I,1) <= 0.22) then
           ALVSG(I) = ALGDV(I)
           ALIRG(I) = ALGDN(I)
         else
-          ALVSG(I) = THLIQ(I, 1) * (ALGWV(I) - ALGDV(I)) / 0.04 + &
+          ALVSG(I) = THLIQ(I,1) * (ALGWV(I) - ALGDV(I)) / 0.04 + &
                      ALGDV(I) - 5.50 * (ALGWV(I) - ALGDV(I))
-          ALIRG(I) = THLIQ(I, 1) * (ALGWN(I) - ALGDN(I)) / 0.04 + &
+          ALIRG(I) = THLIQ(I,1) * (ALGWN(I) - ALGDN(I)) / 0.04 + &
                      ALGDN(I) - 5.50 * (ALGWN(I) - ALGDN(I))
         end if
         !
@@ -178,13 +178,13 @@ subroutine groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
         if (ALVSG(I) > 1.0 .or. ALVSG(I) < 0.0) IPTBAD = I
         if (ALIRG(I) > 1.0 .or. ALIRG(I) < 0.0) IPTBAD = I
 
-      else if (ISAND(I, 1) == - 4) then
+      else if (ISAND(I,1) == - 4) then
         ALVSG(I) = ALVSI
         ALIRG(I) = ALIRI
-      else if (ISAND(I, 1) == - 3) then
+      else if (ISAND(I,1) == - 3) then
         ALVSG(I) = ALGDV(I)
         ALIRG(I) = ALGDN(I)
-      else if (ISAND(I, 1) == - 2) then
+      else if (ISAND(I,1) == - 2) then
         ALVSG(I) = ALVSO
         ALIRG(I) = ALIRO
       end if
@@ -197,10 +197,10 @@ subroutine groundAlbedo(ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB
   end do ! loop 100
   !
   if (IPTBAD /= 0) then
-    write(6, 6100) IPTBAD, JL, ALVSG(IPTBAD), ALIRG(IPTBAD)
-6100 format('0AT (I, J) = (',I3,',',I3,'), ALVSG, ALIRG = ',2F10.5)
+    write(6,6100) IPTBAD,JL,ALVSG(IPTBAD),ALIRG(IPTBAD)
+6100 format('0AT (I,J) = (',I3,',',I3,'),ALVSG,ALIRG = ',2F10.5)
     call errorHandler('groundAlbedo', - 1)
   end if
 
   return
-end
+end subroutine groundAlbedo

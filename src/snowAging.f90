@@ -1,9 +1,9 @@
 !> \file
 !! Calculate decrease in snow albedo and increase in density due to aging.
 !
-subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
-                     FI, S, RMELT, WSNOW, RHOMAX, ISAND, &
-                     ILG, IG, IL1, IL2, JL)
+subroutine snowAging (ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
+                      FI, S, RMELT, WSNOW, RHOMAX, ISAND, &
+                      ILG, IG, IL1, IL2, JL)
   !
   !     * APR 17/14 - D.VERSEGHY. MAKE SNOW ALBEDO REFRESHMENT VALUE
   !     *                         CONSISTENT WITH snowAddNew.
@@ -42,7 +42,7 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
   !     *                         SNOW ALBEDO LIMITS FOR DRY AND
   !     *                         MELTING SNOW.)
   !
-  use classic_params, only : DELT, HCPW, HCPICE, RHOW, RHOICE
+  use classicParams, only : DELT, HCPW, HCPICE, RHOW, RHOICE
 
   implicit none
   !
@@ -66,7 +66,7 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
   real, intent(in) :: RMELT (ILG)  !< Melt rate at top of snow pack \f$[m s^{-1}]\f$
   real, intent(in) :: WSNOW (ILG)  !< Liquid water content of snow pack \f$[kg m^{-2}]\f$
   !
-  integer, intent(in) :: ISAND (ILG, IG) !< Sand content flag
+  integer, intent(in) :: ISAND (ILG,IG) !< Sand content flag
   !
   !     * WORK ARRAY.
   !
@@ -74,12 +74,12 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: TIMFAC, RHOOLD
+  real :: TIMFAC,RHOOLD
   !
   !----------------------------------------------------------------------
 
   IPTBAD = 0
-  do I = IL1, IL2 ! loop 100
+  do I = IL1,IL2 ! loop 100
     if (ZSNOW(I) > 0. .and. &
         FI  (I) > 0. .and. S(I) * DELT < 1.0E-4) then
       if (ALBSNO(I) > 0.5001 .and. (RMELT(I) > 1.0E-7 .or. &
@@ -117,13 +117,13 @@ subroutine snowAging(ALBSNO, RHOSNO, ZSNOW, HCPSNO, TSNOW, & ! Formerly SNOALBW
   end do ! loop 100
   !
   if (IPTBAD /= 0) then
-    write(6, 6100) IPTBAD, JL, ALBSNO(IPTBAD)
-6100 format('0AT (I, J) = (',I3,',',I3,'), ALBSNO = ',F10.5)
+    write(6,6100) IPTBAD,JL,ALBSNO(IPTBAD)
+6100 format('0AT (I,J) = (',I3,',',I3,'),ALBSNO = ',F10.5)
     call errorHandler('snowAging', - 1)
   end if
   !
   return
-end
+end subroutine snowAging
 !> \file
 !!
 !! @author D. Verseghy, M. Lazare, R. Brown, F. Seglenieks, Y. Delange, R. Harvey

@@ -16,20 +16,20 @@ module xmlManager
   private :: charToLogical
   private :: charToInt
 
-  character(len = 80), dimension(2, 10)      :: attribs
+  character(len = 80), dimension(2,10)      :: attribs
   character(len = 400), dimension(100)      :: data
-  logical                                 :: error, currentDormant = .true.
+  logical                                   :: error, currentDormant = .true.
   character(len = 80)                       :: currentGroup, currentVariableName, variableSetType, variableSetDate, variableSetVersion
-  real                                    :: xmlVersion
+  real                                      :: xmlVersion
 
 contains
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The loadoutputDescriptor function parses the XML file using the startfunc, datafunc and endfunc for starting tags, data tags and end tags, respectively.
-  subroutine loadoutputDescriptor()
-    use ctem_statevars, only : c_switch
+  subroutine loadoutputDescriptor
+    use ctemStateVars, only : c_switch
     implicit none
-    character(:), pointer    :: xmlFile
-    logical                  :: fileExists
+    character(:),pointer :: xmlFile
+    logical              :: fileExists
     xmlFile         => c_switch%xmlFile
     ! Check if the xmlFile exists:
     ! Now make sure the file was properly created
@@ -46,7 +46,7 @@ contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The startfunc function parses opening tags or start tags. It gets triggered for each and every opening tag of the XML document.
-  subroutine startfunc(tag, attribs, error)
+  subroutine startfunc (tag, attribs, error)
     implicit none
     character(len =* ), intent(in)      :: tag, attribs(:,:)
     character(len = 40)                 :: attribute, dormant
@@ -60,8 +60,8 @@ contains
       ! If the tag is <variableSet>, allocate the variable descriptors and the variants.
     case ( 'variableSet' )
       xmlVersion = 0
-      variableSetType = trim(attribs(2, 1))
-      variableSetVersion = trim(attribs(2, 2))
+      variableSetType = trim(attribs(2,1))
+      variableSetVersion = trim(attribs(2,2))
       if (variableSetVersion == '') then
         stop ("The input XML document doesn't feature the required version field of the < variableSet > node")
       else
@@ -69,35 +69,35 @@ contains
         if (xmlVersion < 1.2) stop ('Older XML document found, please upgrade to a more recent version')
       end if
 
-      variableSetDate = trim(attribs(2, 3))
+      variableSetDate = trim(attribs(2,3))
       allocate(outputDescriptors(0))
       allocate(variants(0))
       ! If the tag is <group>, remember the current group.
     case ( 'group' )
-      currentGroup = trim(attribs(2, 1))
+      currentGroup = trim(attribs(2,1))
       ! If the tag is <variable>, increment the descriptor count and allocate the temporary descriptors.
-      ! Then, add a new descriptor to the array, by copying and extending the array, followed by setting some values.
+      ! Then,add a new descriptor to the array,by copying and extending the array,followed by setting some values.
     case ( 'variable' )
-      dormant = trim(attribs(2, 3))
+      dormant = trim(attribs(2,3))
       if (dormant == 'false') then
         descriptorCount = descriptorCount + 1
         allocate(tempDescriptors(descriptorCount))
         tempDescriptors(1 : descriptorCount - 1) = outputDescriptors(1 : descriptorCount - 1)
-        call move_alloc(tempDescriptors, outputDescriptors)
-        attribute = attribs(2, 2)
+        call move_alloc(tempDescriptors,outputDescriptors)
+        attribute = attribs(2,2)
         outputDescriptors(descriptorCount)%includeBareGround = charToLogical(attribute)
         outputDescriptors(descriptorCount)%group = currentGroup
         currentDormant = .false.
       else
         currentDormant = .true.
       end if
-      ! If the tag is <variant>, then similar to the above section, extend the array and append a new variant.
+      ! If the tag is <variant>, then similar to the above section,extend the array and append a new variant.
     case ('variant')
-      if (dormant == 'false') then      
+      if (dormant == 'false') then
         variantCount = variantCount + 1
         allocate(tempVariants(variantCount))
         tempVariants(1 : variantCount - 1) = variants(1 : variantCount - 1)
-        call move_alloc(tempVariants, variants)
+        call move_alloc(tempVariants,variants)
         variants(variantCount)%shortName = currentVariableName
       end if
     end select
@@ -105,7 +105,7 @@ contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The datafunc function parses the content of a tag.
-  subroutine datafunc(tag, data, error)
+  subroutine datafunc (tag, data, error)
     implicit none
     character(len =* ), intent(in) :: tag, data(:)
     character(len = 400)           :: info
@@ -137,7 +137,7 @@ contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The endfunc function gets triggered when the closing XML element is encountered. E.g. if we wanted to deallocate at </variableSet>.
-  subroutine endfunc(tag, error)
+  subroutine endfunc (tag, error)
     implicit none
     character(len =* ), intent(in)   :: tag
     logical, intent(in)              :: error
@@ -146,7 +146,7 @@ contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The charToLogical function returns the logical value of a given char input
-  logical function charToLogical(input)
+  logical function charToLogical (input)
     implicit none
     character(len =* ), intent(in)    :: input    !< Char input
     if (input == "true") then
@@ -158,7 +158,7 @@ contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The charToInt function returns the integer :: value of a given char input
-  integer function charToInt(input)
+  integer function charToInt (input)
     implicit none
     character(len =* ), intent(in)    :: input    !< Char input
     read(input, * ) charToInt
@@ -166,9 +166,9 @@ contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
   !> The charToInt function returns the integer :: value of a given char input
-  real function charToReal(input)
+  real function charToReal (input)
     implicit none
-    character(len =* ), intent(in)    :: input    !< Char input
+    character(len =* ), intent(in) :: input    !< Char input
     read(input, * ) charToReal
   end function charToReal
   !> \file
