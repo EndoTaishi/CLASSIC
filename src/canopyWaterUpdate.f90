@@ -106,14 +106,14 @@ subroutine canopyWaterUpdate (EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSN
   ! C-----------------------------------------------------------------------
   !>
   !! The calculated fluxes of liquid and frozen water from the canopy
-  !! to the overlying air,obtained as outputs of waterCalcPrep,are applied
+  !! to the overlying air, obtained as outputs of waterCalcPrep, are applied
   !! to the liquid and frozen intercepted water stores on the
-  !! vegetation canopy,and to the liquid and frozen moisture stores
+  !! vegetation canopy, and to the liquid and frozen moisture stores
   !! at the surface and in the soil. Since there may not be sufficient
   !! water in one or more of these stores to sustain the calculated
-  !! rate over the whole time step,a hierarchy of operations is
+  !! rate over the whole time step, a hierarchy of operations is
   !! followed as described below. The change of internal energy HTC in
-  !! the canopy,snow and soil layers as a result of these processes
+  !! the canopy, snow and soil layers as a result of these processes
   !! is calculated as the difference in HTC between the beginning and
   !! end of the subroutine:
   !! \f[
@@ -123,13 +123,13 @@ subroutine canopyWaterUpdate (EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSN
   !! \f]
   !! where the C terms represent volumetric heat capacities and the T
   !! terms temperatures of the canopy and snow pack, \f$\Delta t\f$ is the
-  !! length of the time step, \f$z_s\f$ the snow depth,and \f$X_i\f$ the fractional
+  !! length of the time step, \f$z_s\f$ the snow depth, and \f$X_i\f$ the fractional
   !! coverage of the subarea under consideration relative to the
-  !! modelled area. For the soil layers,since only the liquid water
-  !! content is affected by these calculations,the change in internal
+  !! modelled area. For the soil layers, since only the liquid water
+  !! content is affected by these calculations, the change in internal
   !! energy of each layer is calculated from the change in liquid
   !! water content \f$\theta_l\f$ as:
-  !! \f[ \Delta I_g = X_i C_w \Delta z_{g,w} \Delta (T_g \theta_l)/ \Delta t \f]
+  !! \f[ \Delta I_g = X_i C_w \Delta z_{g, w} \Delta (T_g \theta_l)/ \Delta t \f]
   !!
 
 
@@ -160,27 +160,27 @@ subroutine canopyWaterUpdate (EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSN
   !>
   !! Sublimation is addressed first. The predicted mass of sublimated
   !! water SLOST is calculated and compared to the frozen water in the
-  !! canopy interception store,SNOCAN. If SLOST \f$\leq\f$ SNOCAN,all of the
-  !! sublimated water is subtracted from SNOCAN. If not,the excess
-  !! sublimation is calculated as SLOST-SNOCAN,QFCF is corrected for
-  !! the canopy sublimation difference,and SNOCAN is set to zero.
-  !! Next,the new value of SLOST is compared to the snowpack mass,
-  !! calculated as ZSNOW*RHOSNO. If SLOST \f$\leq\f$ ZSNOW*RHOSNO,all of the
-  !! remaining sublimated water is taken from the snow pack,and QFN
-  !! is modified to reflect this loss. Otherwise,the excess
-  !! sublimation is calculated as SLOST - ZSNOW*RHOSNO,QFN is
-  !! adjusted accordingly,and ZSNOW is set to zero. There now remain
+  !! canopy interception store, SNOCAN. If SLOST \f$\leq\f$ SNOCAN, all of the
+  !! sublimated water is subtracted from SNOCAN. If not, the excess
+  !! sublimation is calculated as SLOST-SNOCAN, QFCF is corrected for
+  !! the canopy sublimation difference, and SNOCAN is set to zero.
+  !! Next, the new value of SLOST is compared to the snowpack mass,
+  !! calculated as ZSNOW*RHOSNO. If SLOST \f$\leq\f$ ZSNOW*RHOSNO, all of the
+  !! remaining sublimated water is taken from the snow pack, and QFN
+  !! is modified to reflect this loss. Otherwise, the excess
+  !! sublimation is calculated as SLOST - ZSNOW*RHOSNO, QFN is
+  !! adjusted accordingly, and ZSNOW is set to zero. There now remain
   !! no further frozen moisture stores from which sublimated water can
-  !! be taken (frozen water in the soil is assumed to be immobile),so
+  !! be taken (frozen water in the soil is assumed to be immobile), so
   !! the remaining energy that had been assigned to sublimation is
-  !! assigned to canopy evaporation instead,and QFCL is duly
-  !! recalculated. This means,however,that a small imbalance will
+  !! assigned to canopy evaporation instead, and QFCL is duly
+  !! recalculated. This means, however, that a small imbalance will
   !! arise in the water budget owing to the difference between the
   !! latent heats of sublimation and evaporation. This imbalance is
   !! assigned to the housekeeping variable WLOST.
   !
   !     * SUBLIMATION CASE.  IF SNOW ON CANOPY IS INSUFFICIENT TO SUPPLY
-  !     * DEMAND,RESIDUAL IS TAKEN FIRST FROM SNOW UNDERLYING CANOPY AND
+  !     * DEMAND, RESIDUAL IS TAKEN FIRST FROM SNOW UNDERLYING CANOPY AND
   !     * THEN FROM LIQUID WATER ON CANOPY.
   !
   do I = IL1,IL2 ! loop 200
@@ -217,19 +217,19 @@ subroutine canopyWaterUpdate (EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSN
   !! transpiration and there is none associated with evaporation. The
   !! predicted mass of evaporated water RLOST is calculated and
   !! compared to the liquid water in the canopy interception store,
-  !! RAICAN. If RLOST \f$\leq\f$ RAICAN,all of the evaporated water is
-  !! subtracted from RAICAN. If not,the excess evaporation is
-  !! calculated as RLOST - RAICAN,and QFCL is corrected for the
+  !! RAICAN. If RLOST \f$\leq\f$ RAICAN, all of the evaporated water is
+  !! subtracted from RAICAN. If not, the excess evaporation is
+  !! calculated as RLOST - RAICAN, and QFCL is corrected for the
   !! canopy evaporation difference. This excess evaporation is now
   !! treated as transpiration. An initial check is done by referring
-  !! to the diagnostic flag IROOT,which was set to 1 at the beginning
+  !! to the diagnostic flag IROOT, which was set to 1 at the beginning
   !! of the subroutine if there was water available for transpiration
-  !! in any of the soil layers. If IROOT is zero,no transpiration can
+  !! in any of the soil layers. If IROOT is zero, no transpiration can
   !! occur and the excess evaporation is stored in the temporary
   !! variable EVLOST.
   !
   !     * EVAPORATION.  IF WATER ON CANOPY IS INSUFFICIENT TO SUPPLY
-  !     * DEMAND,ASSIGN RESIDUAL TO TRANSPIRATION.
+  !     * DEMAND, ASSIGN RESIDUAL TO TRANSPIRATION.
   !
   do I = IL1,IL2 ! loop 300
     if (FI(I) > 0. .and. EVAP(I) > 0.) then
@@ -248,17 +248,17 @@ subroutine canopyWaterUpdate (EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSN
     end if
   end do ! loop 300
   !>
-  !! The next loop is performed if IROOT=1,i.e. if transpiration is
-  !! possible. For each soil layer,the volumetric water content that
-  !! is removed by transpiration,THTRAN,is calculated from RLOST
+  !! The next loop is performed if IROOT=1, i.e. if transpiration is
+  !! possible. For each soil layer, the volumetric water content that
+  !! is removed by transpiration, THTRAN, is calculated from RLOST
   !! (converted to a volumetric content by dividing by the density of
-  !! water and the permeable thickness of the soil layer),and the
+  !! water and the permeable thickness of the soil layer), and the
   !! fractional contribution of the soil layer FROOT. If there is
-  !! enough liquid water in the soil layer to supply THTRAN,the
+  !! enough liquid water in the soil layer to supply THTRAN, the
   !! diagnostic transpiration flux QFC for the layer is updated using
-  !! THTRAN,and the liquid water content of the layer is updated as
-  !! THLIQ-THTRAN. If not,QFC is updated using the available water in
-  !! the soil layer,THLIQ is set to THLMIN,and the residual
+  !! THTRAN, and the liquid water content of the layer is updated as
+  !! THLIQ-THTRAN. If not, QFC is updated using the available water in
+  !! the soil layer, THLIQ is set to THLMIN, and the residual
   !! untranspired water is added to EVLOST.
   !
   !     * TRANSPIRATION.
@@ -290,8 +290,8 @@ subroutine canopyWaterUpdate (EVAP, SUBL, RAICAN, SNOCAN, TCAN, THLIQ, TBAR, ZSN
     end do
   end do ! loop 400
   !>
-  !! In the final cleanup,the canopy heat capacity is recalculated,
-  !! the contents of EVLOST are added to WLOST,and the remaining
+  !! In the final cleanup, the canopy heat capacity is recalculated,
+  !! the contents of EVLOST are added to WLOST, and the remaining
   !! internal energy calculations are completed.
   !
   !     * CLEANUP.

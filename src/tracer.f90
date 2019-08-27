@@ -3,6 +3,7 @@
 !! tracer.
 !! @author Joe Melton
 !!
+
 module tracerModule
 
   implicit none
@@ -20,7 +21,7 @@ module tracerModule
 
 contains
 
-  !> \ingroup tracer_prepTracer
+  !> \ingroup tracermodule
   !! @{
   !> Tracks C flow through the system.
   !! No fractionation effects are applied in this subroutine.
@@ -74,7 +75,7 @@ contains
     real, pointer :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, pointer :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
-    real, intent(in) :: tracerCO2(:)           !< Tracer CO2 value read in from tracerCO2File,units vary (simple: ppm,14C \f$\Delta ^{14}C\f$)
+    real, intent(in) :: tracerCO2(:)           !< Tracer CO2 value read in from tracerCO2File, units vary (simple: ppm, 14C \f$\Delta ^{14}C\f$)
     real, pointer :: gleafmas(:,:)     !< Green leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: bleafmas(:,:)     !< Brown leaf mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: stemmass(:,:)     !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
@@ -146,7 +147,7 @@ contains
   end subroutine prepTracer
   !! @}
   ! -------------------------------------------------------
-  !> \ingroup tracer_decay14C
+  !> \ingroup tracermodule
   !! @{
   !> Calculates the decay of \f$^{14}C\f$ in the tracer pools.
   !!
@@ -219,7 +220,7 @@ contains
   end subroutine decay14C
   !! @}
   ! -------------------------------------------------------
-  !> \ingroup tracer_fractionate13C
+  !> \ingroup tracermodule
   !! @{ 13C tracer -- NOT IMPLEMENTED YET.
   subroutine fractionate13C
 
@@ -232,7 +233,7 @@ contains
   end subroutine fractionate13C
   !! @}
   ! -------------------------------------------------------
-  !> \ingroup tracer_convertTracerUnits
+  !> \ingroup tracermodule
   !! @{
   !> Converts the units of the tracers, depending on the tracer
   !! being simulated.
@@ -270,9 +271,9 @@ contains
 
     implicit none
 
-    real, dimension(nlat,nmos)      :: convertTracerUnits
-    real, dimension(:,:),intent(in) :: tracerco2conc
-    integer, pointer                :: useTracer !< useTracer = 0, the tracer code is not used.
+    real, dimension(nlat,nmos)       :: convertTracerUnits
+    real, dimension(:,:), intent(in) :: tracerco2conc
+    integer, pointer                 :: useTracer !< useTracer = 0, the tracer code is not used.
     ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the
     !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
@@ -289,7 +290,7 @@ contains
 
     else if (useTracer == 1) then
 
-      ! Simple tracer,no conversion of units needed.
+      ! Simple tracer, no conversion of units needed.
       convertTracerUnits = tracerco2conc
 
     else if (useTracer == 2) then
@@ -299,15 +300,15 @@ contains
 
     else if (useTracer == 3) then
 
-      print * ,'convertTracerUnits: Error,13C not implemented (useTracer == 3 used)'
-      call errorHandler('tracer',2)
+      print * ,'convertTracerUnits: Error, 13C not implemented (useTracer == 3 used)'
+      call errorHandler('tracer', 2)
 
     end if
 
   end function convertTracerUnits
   !! @}
   ! -------------------------------------------------------
-  !> \ingroup tracer_checkTracerBalance
+  !> \ingroup tracermodule
   !! @{
   !> Checks for balance between the tracer pools and the
   !! model normal C pools. The subroutine is called when
@@ -339,8 +340,8 @@ contains
     real, pointer :: stemmass(:,:)     !< Stem mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     real, pointer :: rootmass(:,:)     !< Root mass for each of the CTEM PFTs, \f$kg c/m^2\f$
     ! COMBAK PERLAY
-    ! real,pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
-    ! real,pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    ! real, pointer :: litrmass(:,:,:)   !< Litter mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
+    ! real, pointer :: soilcmas(:,:,:)   !< Soil carbon mass for each of the CTEM PFTs + bare + LUC product pools, \f$kg c/m^2\f$
     integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used.
     ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the
     !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
@@ -369,11 +370,11 @@ contains
     ! ---------
 
     if (useTracer /= 1) then
-      print * ,'ERROR ! checkTracerBalance: useTracer must == 1 for this check,you have:',useTracer
+      print * ,'ERROR ! checkTracerBalance: useTracer must == 1 for this check, you have:',useTracer
       print * ,'Either turn off checkTracerBalance (doTracerBalance == .false.) or set useTracer == 1'
       print * ,'Ending run.'
       print * ,' *** ^^^ *** ^^^ *** ^^^ *** ^^^ *** ^^^ *** ^^^ '
-      call errorHandler('checkTracerBalance',1)
+      call errorHandler('checkTracerBalance', 1)
     end if
 
     do i = il1,il2
@@ -436,7 +437,7 @@ contains
   end subroutine checkTracerBalance
   !! @}
   ! -------------------------------------------------------
-  !> \namespace tracer
+  !> \namespace tracermodule
   !!
   !! Contains all relevant subroutines for the model tracer.
   !!

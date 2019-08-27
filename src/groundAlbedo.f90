@@ -1,5 +1,5 @@
 !> \file
-!! Calculates visible and near-IR ground albedos.
+!> Calculates visible and near-IR ground albedos.
 !! @author D. Verseghy, M. Lazare
 !
 subroutine groundAlbedo (ALVSG, ALIRG, ALVSGC, ALIRGC, & ! Formerly GRALB

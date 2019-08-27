@@ -128,7 +128,7 @@ class WhitespaceChecker(object):
                 return True
             else:
                 # is there an !ignoreLint(x) directive?
-                lineSkip = re.match(r'^\s*!ignoreLint\((\d+)\)ff', line, re.IGNORECASE)
+                lineSkip = re.match(r'^\s*!ignoreLint\((\d+)\)', line, re.IGNORECASE)
                 if lineSkip:
                     self.ignoreLines = int(lineSkip.group(1))
                     self.fixedlines.append(line)

@@ -25,24 +25,24 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
                                NOL2PFTS, AILCGS, FCANCS, FCANC, ZOLNC, CMASVEGC, &
                                SLAIC, ipeatland)
 
-  !     * JAN 2019 - J. Melton    Remove common block parameters,use classicParams instead.
+  !     * JAN 2019 - J. Melton    Remove common block parameters, use classicParams instead.
   !     * Nov 2018 - J. Melton/S.Sun  Allow >4 original PFTs. Revert change of JAN 05/16 as the XLEAF
   !                               bug makes this unneccesary.
   !     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
   !     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
   !
-  !     * JAN 14/16 - J.MELTON    IN LOOP 450,MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
+  !     * JAN 14/16 - J.MELTON    IN LOOP 450, MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
   !                               ALSO REMOVED SOME HARDCODED CTEM CODE FOR MORE FLEXIBLE FORMS
   !     * JAN 05/16 - J.MELTON.   TREE PFTS NOW HAVE A MINIMUM PAI OF 1 (LIKE
   !     *                         CROPS AND GRASSES) TO PREVENT WILD CANOPY TEMPERATURE
   !     *                         VALUES WHEN THE CANOPY IS SMALL.
-  !     * AUG 04/15 - D.VERSEGHY. SPLIT FROOT INTO TWO ARRAYS,FOR CANOPY
+  !     * AUG 04/15 - D.VERSEGHY. SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
   !     *                         AREAS WITH AND WITHOUT SNOW.
   !     * SEP 05/12 - J.MELTON.   CHANGED IDAY
   !                               CONVERSION FROM FLOAT TO real, REINTEGRATED
   !                               CTEM
   !     * NOV 15/11 - M.LAZARE.   CTEM ADDED. CALCULATIONS ARE DIFFERENT
-  !     *                         IN SEVERAL AREAS,UNDER CONTROL OF
+  !     *                         IN SEVERAL AREAS, UNDER CONTROL OF
   !     *                         "ICTEMMOD" SWITCH (ICTEMMOD=0 REVERTS
   !     *                         BACK TO APREP4 FORMULATION). THIS
   !     *                         INCLUDES NEW INPUT "PAIC".
@@ -50,7 +50,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     *                         CALCULATION OVER ORGANIC SOILS THE SAME
   !     *                         AS OVER MINERAL SOILS (LOOP 175).
   !     * DEC 23/09 - D.VERSEGHY. IN LIMITING PONDING DEPTH CALCULATIONS,
-  !     *                         IDENTIFY PEATLANDS WHERE ISAND(I,2)=-2
+  !     *                         IDENTIFY PEATLANDS WHERE ISAND(I, 2)=-2
   !     * JAN 06/09 - D.VERSEGHY. REINTRODUCE CHECKS ON FRACTIONAL AREAS.
   !     * MAR 25/08 - D.VERSEGHY. DISTINGUISH BETWEEN LEAF AREA INDEX
   !     *                         AND PLANT AREA INDEX.
@@ -68,7 +68,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     *                         OROGRAPHY TO ROUGHNESS LENGTH.
   !     * JAN 12/05 - P.BARTLETT/D.VERSEGHY. DETERMINE SEPARATE CANOPY
   !     *                         WATER INTERCEPTION CAPACITIES FOR
-  !     *                         RAIN AND SNOW,AND NEW FRACTIONAL
+  !     *                         RAIN AND SNOW, AND NEW FRACTIONAL
   !     *                         CANOPY COVERAGE OF INTERCEPTED RAIN
   !     *                         AND SNOW; DEFINE NEW PARAMETER RBCOEF
   !     *                         FOR RBINV CALCULATION IN energBalVegSolve.
@@ -81,7 +81,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     *                         CANOPY MOISTURE TO SOIL LAYERS.
   !     * DEC 05/02 - Y.DELAGE/D.VERSEGHY. ADD PARTS OF CANOPY AIR MASS TO
   !     *                         CANOPY MASS ONLY IF IDISP=0 OR IZREF=2.
-  !     *                         ALSO,REPLACE LOGARITHMIC AVERAGING OF
+  !     *                         ALSO, REPLACE LOGARITHMIC AVERAGING OF
   !     *                         ROUGHNESS HEIGHTS WITH BLENDING HEIGHT
   !     *                         AVERAGING.
   !     * JUL 31/02 - D.VERSEGHY. MOVE CALCULATION OF PSIGND AND FULL
@@ -121,7 +121,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     *                         COMPLETION OF ENERGY BALANCE
   !     *                         DIAGNOSTICS.
   !     *                         ALSO CORRECT BUG IN CALCULATION OF
-  !     *                         DEGLON,AND USE IDISP TO DETERMINE
+  !     *                         DEGLON, AND USE IDISP TO DETERMINE
   !     *                         METHOD OF CALCULATING DISP AND DISPS.
   !     * AUG 30/95 - D.VERSEGHY. CLASS - VERSION 2.4.
   !     *                         VARIABLE SURFACE DETENTION CAPACITY
@@ -136,7 +136,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     * MAY 06/93 - M.LAZARE/D.VERSEGHY. CLASS - VERSION 2.1.
   !     *                                  USE NEW "CANEXT" CANOPY
   !     *                                  EXTINCTION ARRAY TO DEFINE
-  !     *                                  SKY-VIEW FACTORS. ALSO,CORRECT
+  !     *                                  SKY-VIEW FACTORS. ALSO, CORRECT
   !     *                                  MINOR BUG WHERE HAD "IF (IN<=9)..."
   !     *                                  INSTEAD OF "IF (IN>9)...".
   !     * DEC 12/92 - M.LAZARE.   MODIFIED FOR MULTIPLE LATITUDES.
@@ -359,27 +359,27 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
   DAY = real(IDAY)
   !
-  !     * FOR CTEM,CROP GROWTH IS BUILT IN,SO GROWA=1.
+  !     * FOR CTEM, CROP GROWTH IS BUILT IN, SO GROWA=1.
   !
   if (.not. ctem_on) then
     !>
-    !! In the 120 loop,the growth index for crops,GROWA,is calculated (if CLASS is not being run coupled to
-    !! CTEM). This is done by referring to the three-dimensional array GROWYR,which contains values
-    !! corresponding to the four Julian days of the year on which crops are planted,on which they reach
-    !! maturity,on which harvesting begins,and on which the harvest is complete,for each ten-degree latitude
-    !! half-circle in each hemisphere. These are generic,average dates,approximated using information gleaned
-    !! from annual UN FAO (Food and Agriculture Organization) reports. (In the tropics,it is assumed that
-    !! areas classified as agricultural are constantly under cultivation,so all four values are set to zero.)
+    !! In the 120 loop, the growth index for crops, GROWA, is calculated (if CLASS is not being run coupled to
+    !! CTEM). This is done by referring to the three-dimensional array GROWYR, which contains values
+    !! corresponding to the four Julian days of the year on which crops are planted, on which they reach
+    !! maturity, on which harvesting begins, and on which the harvest is complete, for each ten-degree latitude
+    !! half-circle in each hemisphere. These are generic, average dates, approximated using information gleaned
+    !! from annual UN FAO (Food and Agriculture Organization) reports. (In the tropics, it is assumed that
+    !! areas classified as agricultural are constantly under cultivation, so all four values are set to zero.)
     !!
-    !! First,the latitude of the modelled area is converted from a value in radians to a value from 1 to 18,IN,
+    !! First, the latitude of the modelled area is converted from a value in radians to a value from 1 to 18, IN,
     !! corresponding to the index of the latitude circle (1 for latitudes \f$80-90^o S\f$, 18 for latitudes \f$80-90^o N\f$). Then
-    !! the hemisphere index,NL,is set to 1 for the Eastern Hemisphere,and 2 for the Western Hemisphere. If
-    !! the planting date for the modelled area is zero (indicating a location in the tropics),GROWA is set to 1.
-    !! Otherwise,GROWA is set to 1 if the day of the year lies between the maturity date and the start of the
-    !! harvest,and to zero if the day of the year lies between the end of the harvest and the planting date. For
-    !! dates in between,the value of GROWA is interpolated between 0 and 1. Checks are performed at the
+    !! the hemisphere index, NL, is set to 1 for the Eastern Hemisphere, and 2 for the Western Hemisphere. If
+    !! the planting date for the modelled area is zero (indicating a location in the tropics), GROWA is set to 1.
+    !! Otherwise, GROWA is set to 1 if the day of the year lies between the maturity date and the start of the
+    !! harvest, and to zero if the day of the year lies between the end of the harvest and the planting date. For
+    !! dates in between, the value of GROWA is interpolated between 0 and 1. Checks are performed at the
     !! end to ensure that GROWA is not less than 0 or greater than 1. If the calculated value of GROWA is
-    !! vanishingly small,it is set to zero.
+    !! vanishingly small, it is set to zero.
     !!
     do I = IL1,IL2 ! loop 120
       IN = INT( (RADJ(I) + PI / 2.0) * 18.0 / PI) + 1
@@ -418,24 +418,24 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     end do
   end if
   !
-  !     * DETERMINE GROWTH INDICES FOR NEEDLELEAF TREES,BROADLEAF
-  !     * TREES AND GRASS (VEGETATION TYPES 1,2 AND 4); CALCULATE
-  !     * VEGETATION HEIGHT,CORRECTED FOR GROWTH STAGE FOR CROPS
+  !     * DETERMINE GROWTH INDICES FOR NEEDLELEAF TREES, BROADLEAF
+  !     * TREES AND GRASS (VEGETATION TYPES 1, 2 AND 4); CALCULATE
+  !     * VEGETATION HEIGHT, CORRECTED FOR GROWTH STAGE FOR CROPS
   !     * AND FOR SNOW COVER FOR CROPS AND GRASS; CALCULATE CURRENT
   !     * LEAF AREA INDEX FOR FOUR VEGETATION TYPES.
   !
 
   !>
-  !! In the 150 loop the other three growth indices are evaluated,as well as the vegetation heights and plant
+  !! In the 150 loop the other three growth indices are evaluated, as well as the vegetation heights and plant
   !! area indices for the four vegetation categories over snow-covered and snow-free ground. The
-  !! background growth index for trees,GROWTH,is evaluated separately in subroutine classGrowthIndex. It varies
-  !! from a value of 0 for dormant or leafless periods to 1 for fully-leafed periods,with a sixty-day transition
-  !! between the two. When senescence begins,it is set instantaneously to -1 and thereafter increases over a
+  !! background growth index for trees, GROWTH, is evaluated separately in subroutine classGrowthIndex. It varies
+  !! from a value of 0 for dormant or leafless periods to 1 for fully-leafed periods, with a sixty-day transition
+  !! between the two. When senescence begins, it is set instantaneously to -1 and thereafter increases over a
   !! sixty-day period back to 0. (The onset of spring budburst and fall senescence are triggered by near-zero
-  !! values of the air temperature and the first soil layer temperature.) For needleleaf trees,the growth index
-  !! GROWN is simply set to the absolute value of GROWTH. For broadleaf trees,the transition period is
-  !! assumed to last thirty days instead of sixty,and so the growth index GROWB is set to the absolute value
-  !! of double the value of GROWTH,with upper and lower limits of 1 and 0. Finally,the growth index of
+  !! values of the air temperature and the first soil layer temperature.) For needleleaf trees, the growth index
+  !! GROWN is simply set to the absolute value of GROWTH. For broadleaf trees, the transition period is
+  !! assumed to last thirty days instead of sixty, and so the growth index GROWB is set to the absolute value
+  !! of double the value of GROWTH, with upper and lower limits of 1 and 0. Finally, the growth index of
   !! grasses is set to 1 all year round.
   !!
   do I = IL1,IL2 ! loop 150
@@ -456,19 +456,19 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     end if
 
     !>
-    !! A branch in the code occurs next,depending on the value of the flag IHGT. If IHGT=0,the values of
-    !! vegetation height calculated by CLASS are to be used. For trees and grass,the vegetation height under
-    !! snow-free conditions is assumed to be constant year-round,and is calculated as 10 times the exponential
-    !! of ZOLN,the logarithm of the maximum vegetation roughness length. For crops,this maximum height
-    !! is multiplied by GROWA. If IHGT=1,vegetation heights specified by the user are utilized instead. This
+    !! A branch in the code occurs next, depending on the value of the flag IHGT. If IHGT=0, the values of
+    !! vegetation height calculated by CLASS are to be used. For trees and grass, the vegetation height under
+    !! snow-free conditions is assumed to be constant year-round, and is calculated as 10 times the exponential
+    !! of ZOLN, the logarithm of the maximum vegetation roughness length. For crops, this maximum height
+    !! is multiplied by GROWA. If IHGT=1, vegetation heights specified by the user are utilized instead. This
     !! height H for each of the four vegetation categories is used to calculate the height HS over snow-covered
-    !! areas. For needleleaf and broadleaf trees,HS is set to H. For crops and grass,HS is calculated by
-    !! subtracting the snow depth ZSNOW from H,to account for the burying of short vegetation by snow.
+    !! areas. For needleleaf and broadleaf trees, HS is set to H. For crops and grass, HS is calculated by
+    !! subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
     !!
     if (IHGT == 0) then ! Vegetation height from CLASS
       do J = 1,IC
         select case (classpfts(J))
-        case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh')  ! <tree,grass,and shrub
+        case ('NdlTr' , 'BdlTr', 'Grass', 'BdlSh')  ! <tree, grass, and shrub
           H(I,J) = 10.0 * EXP(ZOLN(I,J))
         case ('Crops') ! <Crops
           H(I,J) = 10.0 * EXP(ZOLN(I,J)) * GROWA(I)
@@ -486,7 +486,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     !> Now account for burying under snow:
     do J = 1,IC
       select case (classpfts(J))
-      case ('NdlTr' , 'BdlTr', 'BdlSh')   ! tree,shrub (shrub with no bending or burying here)
+      case ('NdlTr' , 'BdlTr', 'BdlSh')   ! tree, shrub (shrub with no bending or burying here)
         HS(I,J) = H(I,J)
       case ('Crops','Grass') ! Crops,Grass
         HS(I,J) = MAX(H(I,J) - ZSNOW(I),1.0E-3)
@@ -496,16 +496,16 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
       end select
     end do
     !>
-    !! If CLASS is being run uncoupled to CTEM,a second branch now occurs,depending on the value of the
-    !! flag IPAI. If IPAI=0,the values of plant area index calculated by CLASS are to be used. For all four
-    !! vegetation categories,the plant area index over snow-free ground,PAI,is determined by interpolating
-    !! between the annual maximum and minimum plant area indices using the growth index. If IPAI=1,plant
-    !! area index values specified by the user are utilized instead. For trees,the plant area index over snow-
-    !! covered ground,PAIS,is set to PAI. For crops and grass,if H>0,PAIS is set to PAI scaled by the ratio
-    !! of HS/H; otherwise,it is set to zero. Lastly,the leaf area indices for the four vegetation categories over
-    !! snow-free ground,AIL,are determined from the PAI values. For needleleaf trees,AIL is estimated as
+    !! If CLASS is being run uncoupled to CTEM, a second branch now occurs, depending on the value of the
+    !! flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS are to be used. For all four
+    !! vegetation categories, the plant area index over snow-free ground, PAI, is determined by interpolating
+    !! between the annual maximum and minimum plant area indices using the growth index. If IPAI=1, plant
+    !! area index values specified by the user are utilized instead. For trees, the plant area index over snow-
+    !! covered ground, PAIS, is set to PAI. For crops and grass, if H>0, PAIS is set to PAI scaled by the ratio
+    !! of HS/H; otherwise, it is set to zero. Lastly, the leaf area indices for the four vegetation categories over
+    !! snow-free ground, AIL, are determined from the PAI values. For needleleaf trees, AIL is estimated as
     !! 0.90 PAI; for broadleaf trees it is estimated as the excess PAI over the annual minimum value. For crops
-    !! and grass AIL is assumed to be equal to PAI. (If CLASS is being run coupled to CTEM,the CTEM-
+    !! and grass AIL is assumed to be equal to PAI. (If CLASS is being run coupled to CTEM, the CTEM-
     !! generated values of PAI and AIL are used instead.)
     !!
     if (IPAI == 0) then
@@ -583,7 +583,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     end if ! CTEM on/off
 
     !         ESTIMATE GREEN LAI FOR CANOPY OVER SNOW FRACTION FOR CTEM's
-    !         9 PFTs,JUST LIKE CLASS DOES.
+    !         9 PFTs, JUST LIKE CLASS DOES.
     !
     if (ctem_on) then
       do J = 1,ICTEM
@@ -600,7 +600,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
             AILCGS(I,J) = 0.0
           end if
         case default
-          ! Error checking,if no known CTEM PFT given,bail.
+          ! Error checking, if no known CTEM PFT given, bail.
           print * ,'calcLandSurfParams says: Unknown CTEM pft => ',ctempfts(j)
           call errorHandler('calcLandSurfParams', - 6)
         end select
@@ -613,7 +613,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     * GRASS IF LAI FALLS BELOW A SET THRESHOLD VALUE DUE TO
   !     * GROWTH STAGE OR SNOW COVER; RESET LAI TO THE THRESHOLD
   !     * VALUE; CALCULATE RESULTANT GRID CELL COVERAGE BY CANOPY,
-  !     * BARE GROUND,CANOPY OVER SNOW AND SNOW OVER BARE GROUND.
+  !     * BARE GROUND,cCANOPY OVER SNOW AND SNOW OVER BARE GROUND.
   !     *
   !     * ALSO CALCULATE SURFACE DETENTION CAPACITY FOR FOUR
   !     * GRID CELL SUBAREAS BASED ON VALUES SUPPLIED BY
@@ -625,35 +625,35 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
   THR_LAI = 1.0  ! BDCS P?
   !>
-  !! In the 175 loop,the fractional coverage of the modelled area by each of the four vegetation categories is
-  !! calculated,for snow-free (FCAN) and snow-covered ground (FCANS). For needleleaf and broadleaf
-  !! trees,FCAN is set to the maximum coverage FCANMX of the vegetation category,scaled by the snow-
-  !! free fraction of the modelled area,1-FSNOW. For crops and grass,this calculation is modified for cases
+  !! In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is
+  !! calculated, for snow-free (FCAN) and snow-covered ground (FCANS). For needleleaf and broadleaf
+  !! trees, FCAN is set to the maximum coverage FCANMX of the vegetation category, scaled by the snow-
+  !! free fraction of the modelled area, 1-FSNOW. For crops and grass, this calculation is modified for cases
   !! where the plant area index has been calculated as falling below a threshold value owing to growth stage or
-  !! burying by snow. (If CLASS is being run coupled to CTEM,this threshold value is set to 0.05; otherwise
-  !! it is set to 1.) In such cases the vegetation coverage is assumed to become discontinuous,and so an
-  !! additional multiplication by PAI is performed to produce a reduced value of FCAN,and PAI is reset to
+  !! burying by snow. (If CLASS is being run coupled to CTEM, this threshold value is set to 0.05; otherwise
+  !! it is set to 1.) In such cases the vegetation coverage is assumed to become discontinuous, and so an
+  !! additional multiplication by PAI is performed to produce a reduced value of FCAN, and PAI is reset to
   !! the threshold value. An identical procedure is followed to determine the FCANS values.
   !!
-  !! The areal :: fractions of each of the four CLASS subareas,vegetation over bare soil (FC),bare soil (FG),
-  !! vegetation over snow (FCS) and snow (FGS) are then calculated,using the FCAN and FCANS values and
-  !! FSNOW. Checks are carried out,and adjustments performed if necessary,to ensure that none of the
+  !! The areal :: fractions of each of the four CLASS subareas, vegetation over bare soil (FC), bare soil (FG),
+  !! vegetation over snow (FCS) and snow (FGS) are then calculated, using the FCAN and FCANS values and
+  !! FSNOW. Checks are carried out, and adjustments performed if necessary, to ensure that none of the
   !! four subareas is vanishingly small. The values of FSNOW and of the four FCANs and FCANSs are
-  !! recalculated accordingly. Finally,checks are carried out to ensure that each of the four subareas is greater
-  !! than zero,and that their sum is unity. If this is not the case,a call to abort is performed.
-  !! In the last part of the 175 loop,the limiting ponding depth for surface water is determined for each of the
-  !! four subareas. If the flag IWF is zero,indicating that lateral flow of water within the soil is to be
-  !! neglected,these values are assigned as follows. If the index ISAND of the first soil layer is -3 or -4,
-  !! indicating a rock surface or an ice sheet,the bare soil ponding limit,ZPLIMG,is set to 1 mm; otherwise
-  !! ZPLIMG is set to 2 mm. If the fractional area of snow on bare soil is greater than zero,the subarea
+  !! recalculated accordingly. Finally, checks are carried out to ensure that each of the four subareas is greater
+  !! than zero, and that their sum is unity. If this is not the case, a call to abort is performed.
+  !! In the last part of the 175 loop, the limiting ponding depth for surface water is determined for each of the
+  !! four subareas. If the flag IWF is zero, indicating that lateral flow of water within the soil is to be
+  !! neglected, these values are assigned as follows. If the index ISAND of the first soil layer is -3 or -4,
+  !! indicating a rock surface or an ice sheet, the bare soil ponding limit, ZPLIMG, is set to 1 mm; otherwise
+  !! ZPLIMG is set to 2 mm. If the fractional area of snow on bare soil is greater than zero, the subarea
   !! ponding limit ZPLMGS is set to the weighted average of ZPLIMG over the areas where snow has not
-  !! buried vegetation and where it has buried crops,and to 3 mm over areas where it has buried grass
-  !! otherwise to zero. If the fractional area of canopy over bare soil is greater than zero,the subarea ponding
+  !! buried vegetation and where it has buried crops, and to 3 mm over areas where it has buried grass
+  !! otherwise to zero. If the fractional area of canopy over bare soil is greater than zero, the subarea ponding
   !! depth ZPLIMC is set to the weighted average of 1 cm under trees and 3 mm under crops and grass
-  !! otherwise to zero. If the fractional area of canopy over snow is greater than zero,the subarea ponding
+  !! otherwise to zero. If the fractional area of canopy over snow is greater than zero, the subarea ponding
   !! depth ZPLMCS is also currently set to the weighted average of 1 cm under trees and 3 mm under crops
-  !! and grass; otherwise to zero. Finally,if the flag IWF is greater than zero,indicating that lateral flow of soil
-  !! water is being modelled,externally derived user-specified values of the ponding limit for the four subareas
+  !! and grass; otherwise to zero. Finally, if the flag IWF is greater than zero, indicating that lateral flow of soil
+  !! water is being modelled, externally derived user-specified values of the ponding limit for the four subareas
   !! are assigned.
   !!
 
@@ -759,7 +759,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
           case ('NdlTr' , 'BdlTr', 'BdlSh')
             ! Assume not buried so do nothing.
           case default
-            ! Error checking,if no known CLASS PFT given,bail.
+            ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
                          ,classpfts(j)
             call errorHandler('calcLandSurfParams', - 7)
@@ -780,7 +780,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
           case ('Crops','Grass')
             ZPLIMC(I) = ZPLIMC(I) + 0.003 * FCAN(I,J)
           case default
-            ! Error checking,if no known CLASS PFT given,bail.
+            ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
                         ,classpfts(j)
             call errorHandler('calcLandSurfParams', - 8)
@@ -798,7 +798,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
           case ('Crops','Grass')
             ZPLMCS(I) = ZPLMCS(I) + 0.003 * FCANS(I,J)
           case default
-            ! Error checking,if no known CLASS PFT given,bail.
+            ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
                     ,classpfts(j)
             call errorHandler('calcLandSurfParams', - 9)
@@ -935,7 +935,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         case ('NdlTr')
           PAICAN(I) = PAICAN(I) + 0.7 * FCAN(I,J) * PAI(I,J)
         case default
-          ! Error checking,if no known CLASS PFT given,bail.
+          ! Error checking, if no known CLASS PFT given, bail.
           print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
                     ,classpfts(j)
           call errorHandler('calcLandSurfParams', - 10)
@@ -953,7 +953,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         case ('NdlTr')
           PAICNS(I) = PAICNS(I) + 0.7 * FCANS(I,J) * PAIS(I,J)
         case default
-          ! Error checking,if no known CLASS PFT given,bail.
+          ! Error checking, if no known CLASS PFT given, bail.
           print * ,'calcLandSurfParams says: Unknown CLASS pft => ' &
                     ,classpfts(j)
           call errorHandler('calcLandSurfParams', - 11)
@@ -1085,21 +1085,21 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! In loops 250 and 275,calculations of the displacement height and the logarithms of the roughness lengths
+  !! In loops 250 and 275, calculations of the displacement height and the logarithms of the roughness lengths
   !! for heat and momentum are performed for the vegetated subareas. The displacement height \f$d_i\f$ and the
-  !! roughness length \f$z_{0,i}\f$ for the separate vegetation categories are obtained as simple ratios of the canopy
+  !! roughness length \f$z_{0, i}\f$ for the separate vegetation categories are obtained as simple ratios of the canopy
   !! height H:
   !! \f$d_i = 0.70 H\f$
-  !! \f$z_{0,i} = 0.10 H\f$
+  !! \f$z_{0, i} = 0.10 H\f$
   !!
   !! The averaged displacement height d over the vegetated subareas is only calculated if the flag IDISP has
-  !! been set to 1. If IDISP = 0,this indicates that the atmospheric model is using a terrain-following
-  !! coordinate system,and thus the displacement height is treated as part of the "terrain". If DISP = 1,d is
+  !! been set to 1. If IDISP = 0, this indicates that the atmospheric model is using a terrain-following
+  !! coordinate system, and thus the displacement height is treated as part of the "terrain". If DISP = 1, d is
   !! calculated as a logarithmic average over the vegetation categories:
   !! \f$X ln(d) = \Sigma [X_i ln(d_i)]\f$
   !! where X is the fractional coverage of the subarea. The averaged roughness length for momentum \f$z_{0m}\f$
   !! over the subarea is determined based on the assumption that averaging should be performed on the basis
-  !! of the drag coefficient formulation. Thus,following Delage et al. (1999) \cite Delage1999-vj,and after Mason (1988):
+  !! of the drag coefficient formulation. Thus, following Delage et al. (1999) \cite Delage1999-vj, and after Mason (1988):
   !! \f$X/ln^2 (z_b /z_{0m}) = \Sigma [X_i /ln^2 (z_b /z_{0i})]\f$
   !!
   !! The averaged roughness length for heat \f$z_{0e}\f$ over the subarea is calculated as a geometric mean over the
@@ -1147,10 +1147,10 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     * SOIL FOR URBAN ROUGHNESS IF PRESENT.
   !
   !>
-  !! In loop 300,calculations of the logarithms of the roughness lengths for heat and momentum are
-  !! performed for the bare ground and snow-covered subareas. Background values of \f$ln(z_{om})\f$ for soil,snow
-  !! cover,ice sheets and urban areas are passed into the subroutine through common blocks. In CLASS,
-  !! urban areas are treated very simply,as areas of bare soil with a high roughness length. The subarea values
+  !! In loop 300, calculations of the logarithms of the roughness lengths for heat and momentum are
+  !! performed for the bare ground and snow-covered subareas. Background values of \f$ln(z_{om})\f$ for soil, snow
+  !! cover, ice sheets and urban areas are passed into the subroutine through common blocks. In CLASS,
+  !! urban areas are treated very simply, as areas of bare soil with a high roughness length. The subarea values
   !! of \f$ln(z_{om})\f$ for bare soil and snow are therefore adjusted for the fractional coverage of urban area. Values
   !! for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also
   !! passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
@@ -1185,10 +1185,10 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! In loop 325,an adjustment is applied to \f$ln(z_{om})\f$ if the effect of terrain roughness needs to be taken into
-  !! account. If the surface orographic roughness length is not vanishingly small,its logarithm,LZ0ORO,is
+  !! In loop 325, an adjustment is applied to \f$ln(z_{om})\f$ if the effect of terrain roughness needs to be taken into
+  !! account. If the surface orographic roughness length is not vanishingly small, its logarithm, LZ0ORO, is
   !! calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of
-  !! the subareas,these are reset to LZ0ORO.
+  !! the subareas, these are reset to LZ0ORO.
   !!
   do I = IL1,IL2 ! loop 325
     if (Z0ORO(I) > 1.0E-4) then
@@ -1208,17 +1208,17 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! In loop 350,the canopy mass is calculated as a weighted average over the vegetation categories,for
-  !! canopy over bare soil (CMASSC) and over snow (CMASCS). (For crops over bare soil,the mass is
-  !! adjusted according to the growth index; for crops and grass over snow,the mass is additionally adjusted
-  !! to take into account burying by snow.) If IDISP = 0,indicating that the vegetation displacement height is
+  !! In loop 350, the canopy mass is calculated as a weighted average over the vegetation categories, for
+  !! canopy over bare soil (CMASSC) and over snow (CMASCS). (For crops over bare soil, the mass is
+  !! adjusted according to the growth index; for crops and grass over snow, the mass is additionally adjusted
+  !! to take into account burying by snow.) If IDISP = 0, indicating that the vegetation displacement height is
   !! part of the "terrain", the mass of air within the displacement height is normalized by the vegetation heat
-  !! capacity and added to the canopy mass. If IZREF = 2,indicating that the bottom of the atmosphere is
-  !! taken to lie at the local roughness length rather than at the ground surface,the mass of air within the
+  !! capacity and added to the canopy mass. If IZREF = 2, indicating that the bottom of the atmosphere is
+  !! taken to lie at the local roughness length rather than at the ground surface, the mass of air within the
   !! roughness length is likewise normalized by the vegetation heat capacity and added to the canopy mass.
   !! The canopy heat capacities over bare soil (CHCAP) and over snow (CHCAPS) are evaluated from the
   !! respective values of canopy mass and of intercepted liquid water and snow. The aggregated canopy mass
-  !! CMAI is recalculated,and is used to determine the change in internal energy of the canopy,HTCC,owing
+  !! CMAI is recalculated, and is used to determine the change in internal energy of the canopy, HTCC, owing
   !! to growth or disappearance of the vegetation.
   !!
   do I = IL1,IL2 ! loop 350
@@ -1247,7 +1247,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         CMASSC(I) = CMASSC(I) / FC(I)
       end if ! CTEM on/off
 
-      !> if idisp=0,vegetation displacement heights are ignored,because the atmospheric model considers these to be part of the "terrain". if idisp=1,vegetation displacement heights are calculated.
+      !> if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
       if (IDISP == 0) then
         temp1 = 0.0
         do J = 1,IC
@@ -1256,8 +1256,8 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         CMASSC(I) = CMASSC(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & ! BDCS P?
                     temp1 / FC(I)
       end if
-      !> if izref=1,the bottom of the atmospheric model is taken lie at the ground surface.
-      !> if izref=2,the bottom of the atmospheric model is taken to lie at the local roughness height.
+      !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+      !> if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
       if (IZREF == 2) then
         temp1 = 0.0
         do J = 1,IC
@@ -1280,7 +1280,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
             CMASCS(I) = CMASCS(I) + FCANS(I,J) * CMASVEGC(I,J) * &
                         HS(I,J) / MAX(H(I,J),HS(I,J))
           case default
-            ! Error checking,if no known CLASS PFT given,bail.
+            ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ', &
                        classpfts(j)
             call errorHandler('calcLandSurfParams', - 13)
@@ -1300,7 +1300,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
             CMASCS(I) = CMASCS(I) + FCANS(I,J) * CWGTMX(I,J) * &
                         HS(I,J) / MAX(H(I,J),HS(I,J))
           case default
-            ! Error checking,if no known CLASS PFT given,bail.
+            ! Error checking, if no known CLASS PFT given, bail.
             print * ,'calcLandSurfParams says: Unknown CLASS pft => ', &
                       classpfts(j)
             call errorHandler('calcLandSurfParams', - 14)
@@ -1309,7 +1309,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         CMASCS(I) = CMASCS(I) / FCS(I)
       end if   ! CTEM on/off
       !
-      !> if idisp=0,vegetation displacement heights are ignored,because the atmospheric model considers these to be part of the "terrain". if idisp=1,vegetation displacement heights are calculated.
+      !> if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.
       if (IDISP == 0) then
         temp1 = 0.0
         do J = 1,IC
@@ -1319,8 +1319,8 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
                     temp1 / FCS(I)
       end if
 
-      !> if izref=1,the bottom of the atmospheric model is taken lie at the ground surface.
-      !> if izref=2,the bottom of the atmospheric model is taken to lie at the local roughness height.
+      !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+      !> if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
       if (IZREF == 2) then
         temp1 = 0.0
         do J = 1,IC
@@ -1355,27 +1355,27 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! In the 450 and 500 loops,the fraction of plant roots in each soil layer is calculated. If CLASS is being run
-  !! coupled to CTEM,the CTEM-derived values are assigned. Otherwise,for each vegetation category the
-  !! rooting depth ZROOT is set to the background maximum value,except in the case of crops,for which it
-  !! is set to the maximum scaled by GROWA. If the soil permeable depth is less than ZROOT,ZROOT is
-  !! set to this depth instead. Values are then assigned in the matrix RMAT,which stores the fraction of roots
-  !! in each vegetation category for each soil layer. According to Feddes et al. (1974) \cite Feddes1974-ff,the fractional root
+  !! In the 450 and 500 loops, the fraction of plant roots in each soil layer is calculated. If CLASS is being run
+  !! coupled to CTEM, the CTEM-derived values are assigned. Otherwise, for each vegetation category the
+  !! rooting depth ZROOT is set to the background maximum value, except in the case of crops, for which it
+  !! is set to the maximum scaled by GROWA. If the soil permeable depth is less than ZROOT, ZROOT is
+  !! set to this depth instead. Values are then assigned in the matrix RMAT, which stores the fraction of roots
+  !! in each vegetation category for each soil layer. According to Feddes et al. (1974) \cite Feddes1974-ff, the fractional root
   !! volume R(z) below a depth z is well represented for many varieties of plants by the following exponential
   !! function:
   !! \f$R(z) = a_1 exp(-3.0z) + a_2.\f$
   !!
-  !! Making use of the boundary conditions \f$R(0) = 1\f$ and \f$R(z_r) = 0\f$, where \f$z_r\f$ is the rooting depth ZROOT,it
+  !! Making use of the boundary conditions \f$R(0) = 1\f$ and \f$R(z_r) = 0\f$, where \f$z_r\f$ is the rooting depth ZROOT, it
   !! can be seen that the fraction of roots within a soil depth interval \f$\Delta z\f$ can be obtained as the difference
   !! between R(z) evaluated at the top \f$(z_T)\f$ and bottom \f$(z_B)\f$ of the interval:
   !! \f$R(\Delta z) = [exp(-3.0z_T) - exp(-3.0z_B)]/ [1 - exp(-3.0z_r)]\f$
   !!
-  !! The total fraction of roots in each soil layer,FROOT for snow-free areas and FROOTS for snow-covered areas,
+  !! The total fraction of roots in each soil layer, FROOT for snow-free areas and FROOTS for snow-covered areas,
   !! can then be determined as weighted averages over the four vegetation categories.
   !!
-  !! In loop 450,a leaf boundary resistance parameter \f$C_{rb}\f$ , incorporating the plant area indices of the four
-  !! vegetation subareas,is also calculated for later use in subroutine energBalVegSolve:
-  !! \f$C_{rb} = C_l \Lambda_{p,i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p,i}^{0.5} )]\f$
+  !! In loop 450, a leaf boundary resistance parameter \f$C_{rb}\f$ , incorporating the plant area indices of the four
+  !! vegetation subareas, is also calculated for later use in subroutine energBalVegSolve:
+  !! \f$C_{rb} = C_l \Lambda_{p, i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p, i}^{0.5} )]\f$
   !! where \f$C_l\f$ is a parameter that varies with the vegetation category. The aggregated value of \f$C_{rb}\f$ is obtained
   !! as a weighted average over the four vegetation categories over bare ground and snow cover.
   !!
@@ -1440,7 +1440,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! In loop 600,the sky view factor \f$\chi\f$ of the ground underlying the canopy is calculated for the vegetated
+  !! In loop 600, the sky view factor \f$\chi\f$ of the ground underlying the canopy is calculated for the vegetated
   !! subareas. The standard approach is to determine \f$\chi\f$ as an exponential function of the plant area index \f$\Lambda_p\f$ :
   !! \f$\chi = exp[-c \Lambda_p ]\f$
   !! where c is a constant depending on the vegetation category. The subarea values of \f$\chi\f$ are obtained as
@@ -1469,16 +1469,16 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! In the 650 loop,the fraction of the total transpiration of water by plants that is extracted from each soil
+  !! In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil
   !! layer is determined. This is done by weighting the values of FROOT and FROOTS calculated above by the relative soil
   !! moisture suction in each layer: \f$( \Psi_w - \Psi_i)/( \Psi_w - \Psi_{sat} )\f$
-  !! where \f$\Psi_i\f$ , the soil moisture suction in the layer,is obtained as
-  !! \f$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p)^{-b}\f$
+  !! where \f$\Psi_i\f$ , the soil moisture suction in the layer, is obtained as
+  !! \f$\Psi_i = \Psi_{sat} ( \theta_{l, i} / \theta_p)^{-b}\f$
   !! In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at
-  !! saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore
-  !! volume,and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite Clapp1978-898. The layer values of FROOT and FROOTS are then
-  !! re-normalized so that their sum adds up to unity. In this loop,the representative soil moisture suction PSIGND is also
-  !! calculated for later use in the vegetation stomatal resistance formulation,as the minimum value of \f$\Psi_i\f$ and
+  !! saturation, \f$\theta_{l, i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore
+  !! volume, and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite Clapp1978-898. The layer values of FROOT and FROOTS are then
+  !! re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
+  !! calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
   !! \f$\Psi_w\f$ over all the soil layers.
   !!
   do J = 1,IG ! loop 650
@@ -1516,9 +1516,9 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !
 
   !>
-  !! Finally,in loop 800 the aggregated canopy plant area indices PAICAN and PAICNS are set back to their
-  !! original values,from the modified values used for the snow interception calculations above; and if CLASS
-  !! is being run coupled with CTEM,a set of CTEM-related calculations is performed.
+  !! Finally, in loop 800 the aggregated canopy plant area indices PAICAN and PAICNS are set back to their
+  !! original values, from the modified values used for the snow interception calculations above; and if CLASS
+  !! is being run coupled with CTEM, a set of CTEM-related calculations is performed.
   !!
 
   do I = IL1,IL2 ! loop 800

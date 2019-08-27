@@ -1,5 +1,5 @@
 !> \file
-!! Calculates near surface output variables
+!> Calculates near surface output variables
 !! @author Y. Delage, D. Verseghy, M. Lazare, J. Melton
 !
 subroutine SLDIAG (SUT, SVT, STT, SQT, CDM, CDH, UA, VA, TA, QA, T0, Q0, &

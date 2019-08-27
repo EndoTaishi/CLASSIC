@@ -1,3 +1,6 @@
+!> \file
+!> ...
+!!
 module classGatherScatter
 
   implicit none
@@ -8,13 +11,12 @@ module classGatherScatter
 
 contains
 
-  !> \file
-  !>
-  !! Gathers variables from two-dimensional arrays (latitude
+  !> \ingroup classgatherscatter_classGather
+  !! @{
+  !> Gathers variables from two-dimensional arrays (latitude
   !! circle x mosaic tiles) onto long vectors for optimum processing
   !! efficiency on vector supercomputers.
-  !! @author D. Verseghy, M. Lazare
-
+  !> @author D. Verseghy, M. Lazare
   subroutine classGather (TBARGAT, THLQGAT, THICGAT, TPNDGAT, ZPNDGAT, & ! Formerly CLASSG
                           TBASGAT, ALBSGAT, TSNOGAT, RHOSGAT, SNOGAT, &
                           TCANGAT, RCANGAT, SCANGAT, GROGAT, CMAIGAT, &
@@ -64,27 +66,27 @@ contains
                           DLATROW, maxAnnualActLyrROT)
 
     !
-    !     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT,ASVDROT,
-    !     *                        ASIDROT TO NLAT,NMOS (FOR LAKE MODEL)
-    !     * Jan 16,2015 - M.Lazare. New version called by "sfcproc3":
+    !     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT, ASVDROT,
+    !     *                        ASIDROT TO NLAT, NMOS (FOR LAKE MODEL)
+    !     * Jan 16, 2015 - M.Lazare. New version called by "sfcproc3":
     !     *                          - Add THLW.
-    !     *                          - {ALGWV,ALGWN,ALGDV,ALGDN} replace
-    !     *                            {ALGW,ALGD}.
-    !     *                          - FSG,FLG,GUST added.
+    !     *                          - {ALGWV, ALGWN, ALGDV, ALGDN} replace
+    !     *                            {ALGW, ALGD}.
+    !     *                          - FSG, FLG, GUST added.
     !     *                          - FDLROW changed to FDLROL (cosmetic).
     !     *                          - Adds GTGAT/GTROT.
     !     *                          - Adds NT (NTLD in sfcproc2
     !     *                            call) to dimension land-only
-    !     *                            ROT fields,consistent with
+    !     *                            ROT fields, consistent with
     !     *                            new comrow12.
-    !     *                          - Unused IWMOS,JWMOS removed.
-    !     * Jun 13,2013 - M.Lazare. CLASS gather routine called by
+    !     *                          - Unused IWMOS, JWMOS removed.
+    !     * Jun 13, 2013 - M.Lazare. CLASS gather routine called by
     !     *                          "sfcproc" in new version gcm17.
     !     * NOTE: This contains the following changes compared to the
     !     *       working temporary version used in conjunction with
     !     *       updates to gcm16 (ie not official):
-    !     *         1) {DEPB,REF,BCSN} added for Maryam's new code.
-    !     *         2) {FSDB,FSFB,FSSB} added for Jason's new code.
+    !     *         1) {DEPB, REF, BCSN} added for Maryam's new code.
+    !     *         2) {FSDB, FSFB, FSSB} added for Jason's new code.
     !     * OCT 18/11 - M.LAZARE.  ADD IGDR.
     !     * OCT 07/11 - M.LAZARE.  ADD VMODL->VMODGAT.
     !     * OCT 05/11 - M.LAZARE.  PUT BACK IN PRESGROW->PRESGAT
@@ -95,12 +97,12 @@ contains
     !     *                        IN CLASS DRIVER).
     !     * SEP 16/11 - M.LAZARE.  - ROW->ROT AND GRD->ROW.
     !     *                        - REMOVE INITIALIZATION OF
-    !     *                          {ALVS,ALIR} TO ZERO.
+    !     *                          {ALVS, ALIR} TO ZERO.
     !     *                        - REMOVE PRESGROW->PRESGAT
     !     *                          (OCEAN-ONLY NOW).
     !     *                        - RADJROW (64-BIT) NOW RADJ
     !     *                          (32-BIT).
-    !     * MAR 23/06 - D.VERSEGHY. ADD WSNO,FSNO,GGEO.
+    !     * MAR 23/06 - D.VERSEGHY. ADD WSNO, FSNO, GGEO.
     !     * MAR 18/05 - D.VERSEGHY. ADDITIONAL VARIABLES.
     !     * FEB 18/05 - D.VERSEGHY. ADD "TSFS" VARIABLES.
     !     * NOV 03/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -167,7 +169,7 @@ contains
     !     * CANOPY AND SOIL INFORMATION ARRAYS.
     !     * (THE LENGTH OF THESE ARRAYS IS DETERMINED BY THE NUMBER
     !     * OF SOIL LAYERS (3) AND THE NUMBER OF BROAD VEGETATION
-    !     * CATEGORIES (4,OR 5 INCLUDING URBAN AREAS).)
+    !     * CATEGORIES (4, OR 5 INCLUDING URBAN AREAS).)
     !
     real, intent(in) :: FCANROT(NL,NT,ICP1)  !< Maximum fractional coverage of modelled
     !! area by vegetation category [ ]
@@ -363,9 +365,9 @@ contains
     real, intent(out) :: FSDBGAT(ILG,NBS), FSFBGAT(ILG,NBS), FSSBGAT(ILG,NBS)
     !----------------------------------------------------------------------
     !
-    ! The prognostic,background and input variables are gathered into
+    ! The prognostic, background and input variables are gathered into
     ! long arrays (collapsing the latitude and mosaic dimensions into
-    ! one,but retaining the soil level and canopy category dimensions)
+    ! one, but retaining the soil level and canopy category dimensions)
     ! using the pointer vectors generated in classGatherPrep.
     !
     do K = 1,NML ! loop 100
@@ -507,15 +509,14 @@ contains
     end do ! L
     return
   end subroutine classGather
+  !! @}
 
-
-
-  !> \file
-  !! Assigns values to pointer vectors relating the location of elements on the "gathered" variable
+  !> \ingroup classgatherscatter_classGatherPrep
+  !! @{
+  !> Assigns values to pointer vectors relating the location of elements on the "gathered" variable
   !! vectors to elements on the original two-dimensional arrays (latitude circle x mosaic tiles) for land grid
   !! cells.
-  !! @author D. Verseghy,M. Lazare,E. Chan
-  !
+  !> @author D. Verseghy, M. Lazare, E. Chan
   subroutine classGatherPrep (ILMOS, JLMOS, IWMOS, JWMOS, & ! Formerly GATPREP
                               NML, NMW, GCROW, FAREA, MOSID, &
                               NL, NM, ILG, IL1, IL2, IM)
@@ -524,7 +525,7 @@ contains
     !     *                         IS DESIGNED SPECIFICALLY FOR LAND.
     !     *                         THE VERSION CURRENTLY USED IN THE AGCM
     !     *                         (SINCE JAN. 2014) HAS BEEN GENERALIZED
-    !     *                         FOR LAND,LAKES AND WATER/ICE.
+    !     *                         FOR LAND, LAKES AND WATER/ICE.
     !     * DEC 28/11 - D.VERSEGHY. CHANGE ILGM BACK TO ILG AND
     !     *                         ILG TO NL FOR CONSISTENCY WITH
     !     *                         BOTH STAND-ALONE AND GCM
@@ -567,22 +568,22 @@ contains
     !     * INPUT FIELDS.
     !
     real     :: GCROW (NL)    !< Real number identifier indicating whether the grid cell
-    !< is land (-1.0),sea ice (+1.0),or ocean (0.0)
+    !< is land (-1.0), sea ice (+1.0), or ocean (0.0)
     real     :: FAREA (NL,NM) !< Fractional coverage of mosaic tile on grid cell [ ]
     !
-    integer  :: MOSID (NL,NM) !< Mosaic tile type identifier (1 for land,0 for inland water)
+    integer  :: MOSID (NL,NM) !< Mosaic tile type identifier (1 for land, 0 for inland water)
     !---------------------------------------------------------------------
     NML = 0
     NMW = 0
     !>
-    !! A looping operation is performed over the latitude circle,or array of grid cells,under consideration. If
-    !! the grid cell is a land one (GCROW = -1.0),an additional internal loop is performed over all the mosaic
-    !! tiles present. For each mosaic tile,if its fractional coverage is greater than zero,then if the mosaic type
-    !! identifier MOSID is equal to 1 (indicating land),the counter of total mosaic tiles in the land surface gather
-    !! vectors,NML,is incremented by one,and the elements of the vectors ILMOS and JLMOS corresponding
+    !! A looping operation is performed over the latitude circle, or array of grid cells, under consideration. If
+    !! the grid cell is a land one (GCROW = -1.0), an additional internal loop is performed over all the mosaic
+    !! tiles present. For each mosaic tile, if its fractional coverage is greater than zero, then if the mosaic type
+    !! identifier MOSID is equal to 1 (indicating land), the counter of total mosaic tiles in the land surface gather
+    !! vectors, NML, is incremented by one, and the elements of the vectors ILMOS and JLMOS corresponding
     !! to NML are set to the indices of the current grid cell and mosaic tile respectively. If MOSID is equal to
-    !! zero (indicating inland water),the counter of total mosaic tiles in the inland water gather vectors,NMW,
-    !! is incremented by one,and the elements of the vectors IWMOS and JWMOS corresponding to NMW are
+    !! zero (indicating inland water), the counter of total mosaic tiles in the inland water gather vectors, NMW,
+    !! is incremented by one, and the elements of the vectors IWMOS and JWMOS corresponding to NMW are
     !! set to the indices of the current grid cell and mosaic tile respectively.
     !!
     do I = IL1,IL2 ! loop 200
@@ -605,20 +606,14 @@ contains
 
     return
   end subroutine classGatherPrep
+  !! @}
 
-
-
-
-
-
-
-
-  !>
-  !! Scatters variables from long,gathered vectors back onto original two-dimensional arrays (latitude
+  !> \ingroup classgatherscatter_classScatter
+  !! @{
+  !> Scatters variables from long, gathered vectors back onto original two-dimensional arrays (latitude
   !! circle x mosaic tiles). The suffix ROT refers to variables on original two-dimensional arrays.
   !! The suffix GAT refers to variables on gathered long vectors.
-  !! @author D. Verseghy,M. Lazare
-  !!
+  !> @author D. Verseghy, M. Lazare
   subroutine classScatter (TBARROT, THLQROT, THICROT, TSFSROT, TPNDROT, & ! Formerly CLASSS
                            ZPNDROT, TBASROT, ALBSROT, TSNOROT, RHOSROT, &
                            SNOROT, GTROT, TCANROT, RCANROT, SCANROT, &
@@ -633,27 +628,27 @@ contains
                            REFGAT, BCSNGAT, EMISGAT, SALBGAT, CSALGAT)
     !
     !     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT TO
-    !     *                        NLAT,NMOS (FOR LAKE MODEL)
-    !     * Jun 20,2014 - M.Lazare. New version for gcm18,called
+    !     *                        NLAT, NMOS (FOR LAKE MODEL)
+    !     * Jun 20, 2014 - M.Lazare. New version for gcm18, called
     !     *                          by new "sfcproc2":
     !     *                          - Adds SALBGAT/SALBROT and
-    !     *                            CSALGAT,CSALROT (need to pass
+    !     *                            CSALGAT, CSALROT (need to pass
     !     *                            NBS as well).
     !     *                          - Adds EMISGAT/EMISROT.
     !     *                          - Adds GTGAT/GTROT.
     !     *                          - Adds NT (NTLD in sfcproc2
     !     *                            call) to dimension land-only
-    !     *                            ROT fields,consistent with
+    !     *                            ROT fields, consistent with
     !     *                            new comrow12.
-    !     *                          - Unused IWMOS,JWMOS removed.
-    !     * Jun 12,2013 - M.Lazare. Previous version for gcm17,
+    !     *                          - Unused IWMOS, JWMOS removed.
+    !     * Jun 12, 2013 - M.Lazare. Previous version for gcm17,
     !     *                          called by "sfcproc".
     !     *                          CLASS scatter routine called by
     !     *                          "sfcproc" in new version gcm17.
     !     * NOTE: This contains the following changes compared to the
     !     *       working temporary version used in conjunction with
     !     *       updates to gcm16 (ie not official):
-    !     *         1) {REF,BCSN} added for Maryam's new code.
+    !     *         1) {REF, BCSN} added for Maryam's new code.
     !     *         2) GFLX removed.
     !
     !     * OCT 25/11 - M.LAZARE.   REMOVE OPERATIONS ON INTERNAL
@@ -662,11 +657,11 @@ contains
     !     * OCT 07/11 - M.LAZARE.   REMOVE TSF.
     !     * OCT 05/11 - M.LAZARE.   ADD SFCH.
     !     * OCT 04/11 - M.LAZARE.   REMOVE ITCT.
-    !     * MAR 23/06 - D.VERSEGHY. ADD WSNO,FSNO.
+    !     * MAR 23/06 - D.VERSEGHY. ADD WSNO, FSNO.
     !     * MAR 18/05 - D.VERSEGHY. ADDITIONAL VARIABLES.
     !     * FEB 18/05 - D.VERSEGHY. ADD "TSFS" VARIABLES.
     !     * AUG 05/04 - D.VERSEGHY. ADD NEW DIAGNOSTIC VARIABLES
-    !     *                         ILMO,UE AND HBL.
+    !     *                         ILMO, UE AND HBL.
     !     * AUG 15/02 - D.VERSEGHY. SCATTER OPERATION ON CLASS
     !     *                         VARIABLES.
     !
@@ -760,7 +755,7 @@ contains
       EMISROT(ILMOS(K),JLMOS(K)) = EMISGAT(K)
 
       !>
-      !! The prognostic variables are scattered from the long,gathered arrays (collapsing the latitude and mosaic
+      !! The prognostic variables are scattered from the long, gathered arrays (collapsing the latitude and mosaic
       !! dimensions into one) back onto the original arrays using the pointer vectors generated in classGatherPrep.
       !!
 
@@ -789,7 +784,10 @@ contains
 
     return
   end subroutine classScatter
+  !! @}
 
+  !> \namespace classgatherscatter
+  !! ...
 
 
 end module classGatherScatter

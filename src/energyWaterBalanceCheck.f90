@@ -1,5 +1,5 @@
 !> \file
-!! Checks for energy and water balance closure over modelled
+!> Checks for energy and water balance closure over modelled
 !! area.
 !! @author D. Verseghy
 !

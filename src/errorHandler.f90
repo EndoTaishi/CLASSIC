@@ -1,5 +1,5 @@
 !> \file
-!! Prints the name of the subroutine and an error code when
+!> Prints the name of the subroutine and an error code when
 !! an error condition is encountered.
 !! @author J. D. Henderson, E. Chan
 !

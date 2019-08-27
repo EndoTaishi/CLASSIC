@@ -1,5 +1,5 @@
 !> \file
-!! Performs allocation of carbon gained by photosynthesis into plant structural pools
+!> Performs allocation of carbon gained by photosynthesis into plant structural pools
 !!
 module allocateCarbon
 
@@ -10,7 +10,7 @@ module allocateCarbon
 
 contains
 
-  !> \ingroup allocateCarbon_allocate
+  !> \ingroup allocatecarbon_allocate
   !! @{
   !> Performs allocation of carbon gained by photosynthesis into plant structural pools
   !> @author Vivek Arora and Joe Melton
@@ -42,7 +42,7 @@ contains
     !     J. Melton       pfts
     !
     !     05  May 2003  - This subroutine calculates the allocation fractions
-    !     V. Arora        for leaf,stem,and root components for ctem's pfts
+    !     V. Arora        for leaf, stem, and root components for ctem's pfts
 
     use classicParams, only : eta, kappa, kn, abszero, icc, &
                               ignd, ican, omega, epsilonl, &
@@ -68,17 +68,17 @@ contains
     real, intent(in)   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
     real, intent(in)   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
     real, intent(in)   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
-    real, intent(in)   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts,kg c/m2
+    real, intent(in)   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts, kg c/m2
     real, intent(in)   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
-    real, intent(in)   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2,for the 9 pfts
-    real, intent(in)   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts,kg c/m2
+    real, intent(in)   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in)   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
     !
     real, intent(inout)   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
     real, intent(inout)   :: afrstem(ilg,icc) !< output: allocation fraction for stem
     real, intent(inout)   :: afrroot(ilg,icc) !< output: allocation fraction for root
     real, intent(inout)  :: wtstatus(ilg,icc) !< output: soil water status (0 dry -> 1 wet)
     real, intent(inout)  :: ltstatus(ilg,icc) !< output: light status
-    real, intent(in)      :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts,but this can be
+    real, intent(in)      :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts, but this can be
     !< modified by land-use change,and competition between pfts
     !
     real  :: avTHLW(ilg,icc), aTHFC(ilg,icc), avthliq(ilg,icc)
@@ -105,7 +105,7 @@ contains
         tot_rmat_ctem(i,j) = 0.0 !< temp var.
         wtstatus(i,j) = 0.0   !< water status
         ltstatus(i,j) = 0.0   !< light status
-        nstatus(i,j) = 0.0   !< nitrogen status,if and when we
+        nstatus(i,j) = 0.0   !< nitrogen status, if and when we
         !< will have n cycle in the model
         wnstatus(i,j) = 0.0   !< min. of water & n status
         mnstrtms(i,j) = 0.0   !< min. (stem+root) biomass needed to
@@ -115,7 +115,7 @@ contains
 
     ! initialization ends
 
-    !> Calculate liquid soil moisture content,and wilting and field capacity
+    !> Calculate liquid soil moisture content, and wilting and field capacity
     !! soil moisture contents averaged over the root zone. note that while
     !! the soil moisture content is same under the entire gcm grid cell,
     !! soil moisture averaged over the rooting depth is different for each
@@ -139,7 +139,7 @@ contains
     end do ! loop 200
 
     !> Using liquid soil moisture content together with wilting and field
-    !! capacity soil moisture contents averaged over the root zone,find
+    !! capacity soil moisture contents averaged over the root zone, find
     !! soil water status.
     do j = 1,icc ! loop 230
       do i = il1,il2 ! loop 240
@@ -158,13 +158,13 @@ contains
     end do ! loop 230
 
     !> Calculate light status as a function of lai and light extinction
-    !! parameter. for now set nitrogen status equal to 1,which means
+    !! parameter. for now set nitrogen status equal to 1, which means
     !! nitrogen is non-limiting.
     do j = 1,ican ! loop 250
       do m = reindexPFTs(j,1),reindexPFTs(j,2) ! loop 255
         do i = il1,il2 ! loop 260
           select case (classpfts(j))
-          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees,crops and shrub
+          case ('NdlTr' , 'BdlTr', 'Crops', 'BdlSh')    ! trees, crops and shrub
             ltstatus(i,m) = exp( - kn(sort(m)) * ailcg(i,m))
           case ('Grass')  ! grass
             ltstatus(i,m) = max(0.0, (1.0 - (ailcg(i,m) / 4.0)))
@@ -187,10 +187,10 @@ contains
       end do ! loop 390
     end do ! loop 380
 
-    !> now that we know water,light,and nitrogen status we can find
-    !! allocation fractions for leaves,stem,and root components. note
+    !> now that we know water, light, and nitrogen status we can find
+    !! allocation fractions for leaves, stem, and root components. note
     !! that allocation formulae for grasses are different from those
-    !! for trees and crops,since there is no stem component in grasses.
+    !! for trees and crops, since there is no stem component in grasses.
     do j = 1,ican ! loop 400
       do m = reindexPFTs(j,1),reindexPFTs(j,2) ! loop 405
         do i = il1,il2 ! loop 410
@@ -252,7 +252,7 @@ contains
     !! rules.
     !!
     !! rule 1 which states that at the time of leaf onset which corresponds
-    !! to leaf status equal to 1,more c is allocated to leaves so
+    !! to leaf status equal to 1, more c is allocated to leaves so
     !! that they can grow asap. in addition when leaf status is
     !! "fall/harvest" then nothing is allocated to leaves.
     !!
@@ -313,10 +313,10 @@ contains
     !! rule 2 overrides rule 1 above and makes sure that we do not allow the
     !! amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed
     !! an amount such that the remaining woody biomass cannot support.
-    !! if this happens,allocation to leaves is reduced and most npp
-    !! is allocated to stem and roots,in a proportion based on calculated
+    !! if this happens, allocation to leaves is reduced and most npp
+    !! is allocated to stem and roots, in a proportion based on calculated
     !! afrstem and afrroot. for grasses this rule essentially constrains
-    !! the root:shoot ratio,meaning that the model grasses can't have
+    !! the root:shoot ratio, meaning that the model grasses can't have
     !! lots of leaves without having a reasonable amount of roots.
     !!
     do j = 1,icc ! loop 530
@@ -407,7 +407,7 @@ contains
   !! @}
   ! ---------------------------------------------------------------------------------------------------
 
-  !> \ingroup allocateCarbon_updatePoolsAllocateRepro
+  !> \ingroup allocatecarbon_updatePoolsAllocateRepro
   !! @{
   !> Performs allocation of carbon gained by photosynthesis into plant structural pools
   !> @author Vivek Arora and Joe Melton
@@ -444,7 +444,7 @@ contains
     real, intent(in)    :: rmsveg(ilg,icc)    !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
     real, intent(in)    :: rmrveg(ilg,icc)    !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
     real, intent(in)    :: rmlveg(ilg,icc)    !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    real, dimension(ilg,icc), intent(in) :: fcancmx      !< max. fractional coverage of CTEM's pfts,but this can be
+    real, dimension(ilg,icc), intent(in) :: fcancmx      !< max. fractional coverage of CTEM's pfts, but this can be
     !< modified by land-use change,and competition between pfts
     real, intent(in) :: tracerNPP(ilg,icc)    !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(in) :: rmsTracer(:,:)        !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
@@ -468,13 +468,13 @@ contains
     real, intent(inout) :: tracerGLeafMass(ilg,icc)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(inout) :: tracerBLeafMass(ilg,icc)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
 
-    real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues,only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    real, intent(out) :: ntchlveg(ilg,icc)  !< fluxes for each pft: Net change in leaf biomass,u-mol CO2/m2.sec
-    real, intent(out) :: ntchsveg(ilg,icc)  !< fluxes for each pft: Net change in stem biomass,u-mol CO2/m2.sec
+    real, intent(out) :: reprocost(ilg,icc) !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: ntchlveg(ilg,icc)  !< fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+    real, intent(out) :: ntchsveg(ilg,icc)  !< fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
     real, intent(out) :: ntchrveg(ilg,icc)  !< fluxes for each pft: Net change in root biomass,
     !! the net change is the difference between allocation and
     !! autotrophic respiratory fluxes,u-mol CO2/m2.sec
-    real, intent(out) :: repro_cost_g(ilg)  !< Tile-level cost of making reproductive tissues,only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: repro_cost_g(ilg)  !< Tile-level cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: tracerReproCost(ilg,icc)   !<
 
     ! Local
@@ -502,9 +502,9 @@ contains
     !!
     if (PFTCompetition)  lambda = expansion(il1,il2,ilg,sort,ailcg,lfstatus,nppveg,pftexist)
 
-    !> Maintenance respiration also reduces leaf,stem,and root biomass.
+    !> Maintenance respiration also reduces leaf, stem, and root biomass.
     !! when NPP for a given pft is positive then this is taken care by
-    !! allocating positive NPP amongst the leaves,stem,and root component.
+    !! allocating positive NPP amongst the leaves, stem, and root component.
     !! when NPP for a given pft is negative then maintenance respiration
     !! loss is explicitly deducted from each component.
 
@@ -585,7 +585,7 @@ contains
             ntchrTracer = - rmrTracerstp
           end if
 
-          !> Since no real :: leaves are on,make allocation fractions equal to zero.
+          !> Since no real :: leaves are on, make allocation fractions equal to zero.
           afrleaf(i,j) = 0.0
           afrstem(i,j) = 0.0
           afrroot(i,j) = 0.0
@@ -634,14 +634,14 @@ contains
           call errorHandler ('updatePoolsAllocateRepro', - 4)
         end if
 
-        !! Convert net change in leaf,stem,and root biomass into
+        !! Convert net change in leaf, stem, and root biomass into
         !! u-mol co2/m2.sec for use in balcar subroutine
         !!
         ntchlveg(i,j) = ntchlveg(i,j) * (963.62 / deltat)
         ntchsveg(i,j) = ntchsveg(i,j) * (963.62 / deltat)
         ntchrveg(i,j) = ntchrveg(i,j) * (963.62 / deltat)
 
-        !! To avoid over/underflow problems set gleafmas,stemmass,and
+        !! To avoid over/underflow problems set gleafmas, stemmass, and
         !! rootmass to zero if they get too small
         !!
         if (bleafmas(i,j) < zero) bleafmas(i,j) = 0.0
@@ -670,26 +670,25 @@ contains
     end do ! loop 620
 
   end subroutine updatePoolsAllocateRepro
-
   !! @}
   ! ---------------------------------------------------------------------------------------------------
 
-  !> \namespace allocateCarbon
+  !> \namespace allocatecarbon
   !!
   !!
-  !! @author V. Arora,J. Melton
+  !! @author V. Arora, J. Melton
   !!
-  !! Positive NPP is allocated daily to the leaf,stem and root components,which generally causes their respective
-  !! biomass to increase,although the biomass may also decrease depending on the autotrophic respiration flux of a
+  !! Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective
+  !! biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a
   !! component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to
-  !! use both specified constant or dynamically calculated allocation fractions for leaves,stems and roots,in
+  !! use both specified constant or dynamically calculated allocation fractions for leaves, stems and roots, in
   !! practice the dynamic allocation fractions are primarily used. The formulation used in CTEM v. 2.0 differs
   !! from that for CTEM v. 1.0 as described in Arora and Boer (2005) \cite Arora2005-6b1 only in the parameter values.
   !!
-  !! The dynamic allocation to the live plant tissues is based on the light,water and leaf phenological status
+  !! The dynamic allocation to the live plant tissues is based on the light, water and leaf phenological status
   !! of vegetation. The preferential allocation of carbon to the different tissue pools is based on three
-  !! assumptions: (i) if soil moisture is limiting,carbon should be preferentially allocated to roots for
-  !! greater access to water, (ii) if LAI is low,carbon should be allocated to leaves for enhanced
+  !! assumptions: (i) if soil moisture is limiting, carbon should be preferentially allocated to roots for
+  !! greater access to water, (ii) if LAI is low, carbon should be allocated to leaves for enhanced
   !! photosynthesis and finally (iii) carbon is allocated to the stem to increase vegetation height and
   !! lateral spread of vegetation when the increase in LAI results in a decrease in light penetration.
   !!
@@ -700,16 +699,16 @@ contains
   !! \f[  W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i})  r_{i}. \hspace{10pt}[Eqn 1]\f]
   !!
   !! The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction
-  !! coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also classicParams.f90),as for trees and crops:
+  !! coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also classicParams.f90), as for trees and crops:
   !!
   !! \f[ L = \exp(-k_\mathrm{n} LAI) ;\hspace{10pt}[Eqn 2]\f]
   !!
   !! and for grasses:
   !!
-  !! \f[ L = \max\left(0,1-\frac{LAI}{4.5}\right).  \hspace{10pt}[Eqn 3]\f]
+  !! \f[ L = \max\left(0, 1-\frac{LAI}{4.5}\right).  \hspace{10pt}[Eqn 3]\f]
   !!
-  !! For PFTs with a stem component (i.e. tree and crop PFTs),the fractions of positive NPP
-  !! allocated to stem (\f$a_{fS}\f$),leaf (\f$a_{fL}\f$) and root (\f$a_{fR}\f$) components
+  !! For PFTs with a stem component (i.e. tree and crop PFTs), the fractions of positive NPP
+  !! allocated to stem (\f$a_{fS}\f$), leaf (\f$a_{fL}\f$) and root (\f$a_{fR}\f$) components
   !! are calculated as
   !! \f[ a_{fS}=\frac{\epsilon_\mathrm{S}+\omega_\mathrm{a}(1-L)}{1+\omega_\mathrm{a}(2-L-W)}, \hspace{10pt}[Eqn 4] \f]
   !!
@@ -719,8 +718,8 @@ contains
   !!
   !! The base allocation fractions for each component (leaves -- \f$\epsilon_\mathrm{L}\f$,
   !! stem -- \f$\epsilon_\mathrm{S}\f$, and roots -- \f$\epsilon_\mathrm{R}\f$) are PFT-dependent
-  !! (see also classicParams.f90) and sum to 1,i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
-  !! The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also classicParams.f90),determines the sensitivity
+  !! (see also classicParams.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$.
+  !! The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also classicParams.f90), determines the sensitivity
   !! of the allocation scheme to changes in \f$W\f$ and \f$L\f$. Larger values of \f$\omega_\mathrm{a}\f$ yield
   !! higher sensitivity to changes in \f$L\f$ and \f$W\f$.
   !!
@@ -733,22 +732,22 @@ contains
   !!
   !! The above equations (4-8) ensure that the allocation fractions add up to one (\f$a_{fL} + a_{fR} + a_{fS} = 1\f$).
   !!
-  !! The dynamic allocation fractions are superseded under three conditions. First,during the leaf
-  !! onset for crops and deciduous trees,all carbon must be allocated to leaves (\f$a_{fL} = 1\f$,
-  !! \f$a_{fS} = a_{fR} = 0\f$). Second,the proportion of stem plus root biomasses to leaf biomass
+  !! The dynamic allocation fractions are superseded under three conditions. First, during the leaf
+  !! onset for crops and deciduous trees, all carbon must be allocated to leaves (\f$a_{fL} = 1\f$,
+  !! \f$a_{fS} = a_{fR} = 0\f$). Second, the proportion of stem plus root biomasses to leaf biomass
   !! must satisfy the relationship:
   !! \f[ C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa}, \hspace{10pt}[Eqn 9]\f]
   !!
   !! where \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$ and \f$C_\mathrm{L}\f$ are the carbon in the stem,
-  !! root and leaves,respectively. The parameter \f$\eta\f$ is PFT-specific (see also classicParams.f90)
+  !! root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also classicParams.f90)
   !! and parameter \f$\kappa\f$ has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters
   !! are based on the Frankfurt Biosphere Model (FBM) Ludeke et al. (1994) \cite Ludeke1994-px. This constraint (Eq. 9) is based
   !! on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As
-  !! grasses have no stem component,Eq. 9 determines their root to shoot ratio (i.e. the ratio of
+  !! grasses have no stem component, Eq. 9 determines their root to shoot ratio (i.e. the ratio of
   !! belowground to aboveground biomass). The final condition ensures that a minimum realistic root
   !! to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also classicParams.f90). Root mass
   !! is required for nutrient and water uptake and support for the aboveground biomass. If the minimum
-  !! root to shoot ratio is not being maintained,carbon is allocated preferentially to roots.
+  !! root to shoot ratio is not being maintained, carbon is allocated preferentially to roots.
   !!
-  !> \file
+
 end module allocateCarbon

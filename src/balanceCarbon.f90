@@ -1,24 +1,22 @@
 !> \file
-!! Checks carbon pools for conservation
-!> @author Vivek Arora
-!!
-!! To check C budget we go through each pool for each vegetation type.
-!! Unless mentioned all pools are in kg C/m2 and all fluxes are in units
-!! of u-mol CO2/m2.sec
-!!
+!> Checks carbon pools for conservation
 module balanceCarbon
 
   implicit none
 
-  ! subroutines contained in this module:
-
+  ! Subroutines
   public :: balcar
   public :: prepBalanceC
 
 contains
 
-  !> \ingroup balanceCarbon_balcar
+  ! ------------------------------------------------------------------
+  !> \ingroup balancecarbon_balcar
   !! @{
+  !> Check C budget we go through each pool for each vegetation type.
+  !! Unless mentioned all pools are in kg C/m2 and all fluxes are in units
+  !! of u-mol CO2/m2.sec
+  !> @author Vivek Arora
   subroutine balcar (gleafmas, stemmass, rootmass, bleafmas, &
                      litrmass, soilcmas, ntchlveg, ntchsveg, &
                      ntchrveg, tltrleaf, tltrstem, tltrroot, &
@@ -107,11 +105,11 @@ contains
     real, intent(in) :: gpp(ilg)           !< grid averaged flux: gross primary productivity
     real, intent(in) :: litres(ilg)        !< grid averaged flux: litter respiration
     real, intent(in) :: socres(ilg)        !< grid averaged flux: soil carbon respiration
-    real, intent(in) :: dstcemls(ilg)      !< grid averaged flux: carbon emission losses due to disturbance,mainly fire
-    real, intent(in) :: litrfall(ilg)      !< grid averaged flux: combined (leaves,stem,and root) total litter fall rate
+    real, intent(in) :: dstcemls(ilg)      !< grid averaged flux: carbon emission losses due to disturbance, mainly fire
+    real, intent(in) :: litrfall(ilg)      !< grid averaged flux: combined (leaves, stem, and root) total litter fall rate
     real, intent(in) :: humiftrs(ilg)      !< grid averaged flux: humification
     real, intent(in) :: repro_cost(ilg,icc)!< pools (after being updated): amount of C transferred to litter due to reproductive tissues
-    integer, intent(in) ::  ipeatland (ilg)!< Peatland flag,non-peatlands = 0
+    integer, intent(in) ::  ipeatland (ilg)!< Peatland flag, non-peatlands = 0
     real, intent(in) :: Cmossmas(ilg)      !< moss biomass C (kgC/m2)
     real, intent(in) :: pCmossmas(ilg)     !< moss biomass C at the previous time step (kgC/m2)
     real, intent(in) :: nppmosstep(ilg)    !< moss npp (kgC/m2/timestep)
@@ -438,17 +436,17 @@ contains
   end subroutine balcar
   !! @}
   ! ---------------------------------------------------------------------------------------------------
-  !> \ingroup balanceCarbon_prepBalanceC
+  !> \ingroup balancecarbon_prepBalanceC
   !! @{
   !> Prepare for the carbon balance check. Calculate total litter fall from each
-  !! component (leaves,stem,and root) from all causes (normal turnover,drought
-  !! and cold stress for leaves,mortality,and disturbance),calculate grid-average
-  !! vegetation biomass,litter mass,and soil carbon mass,and litter fall rate.
-  !! Also add the bare ground values to the grid-average. If a peatland,we assume no bareground and
+  !! component (leaves, stem, and root) from all causes (normal turnover, drought
+  !! and cold stress for leaves, mortality, and disturbance), calculate grid-average
+  !! vegetation biomass, litter mass, and soil carbon mass, and litter fall rate.
+  !! Also add the bare ground values to the grid-average. If a peatland, we assume no bareground and
   !! add the moss values instead. Note: peatland soil C is not aggregated from plants but updated
   !! by humification and respiration from the previous stored value
-  !! @author J. Melton
-  !!
+  !> @author J. Melton
+
   subroutine prepBalanceC (il1, il2, ilg, fcancmx, glealtrm, glfltrdt, & ! In
                            blfltrdt, stemltrm, stemltdt, rootltrm, rootltdt, & ! In
                            ipeatland, nppmosstep, pgavscms, humstepmoss, & ! In
@@ -466,7 +464,7 @@ contains
     integer, intent(in) :: il1             !< il1=1
     integer, intent(in) :: il2             !< il2=ilg (no. of grid cells in latitude circle)
     integer, intent(in) :: ilg             !< il2=ilg (no. of grid cells in latitude circle)
-    real, intent(in)    :: fcancmx(:,:)    !< max. fractional coverage of ctem's 9 pfts,but this can be
+    real, intent(in)    :: fcancmx(:,:)    !< max. fractional coverage of ctem's 9 pfts, but this can be
     !! modified by land-use change,and competition between pfts
     real, intent(in) :: glealtrm(:,:) !<
     real, intent(in) :: glfltrdt(:,:) !<
@@ -513,8 +511,8 @@ contains
     integer :: i, j, k
 
     !>
-    !! Calculate total litter fall from each component (leaves,stem,and root)
-    !!  from all causes (normal turnover,drought and cold stress for leaves,mortality,
+    !! Calculate total litter fall from each component (leaves, stem, and root)
+    !!  from all causes (normal turnover, drought and cold stress for leaves, mortality,
     !! and disturbance) for use in balcar subroutine
     !!
     do j = 1,icc ! loop 1050
@@ -534,7 +532,7 @@ contains
       end do ! loop 1060
     end do ! loop 1050
     !>
-    !> calculate grid-average vegetation biomass,litter mass,and soil carbon mass,and litter fall rate
+    !> calculate grid-average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate
     !>
     litrfall(:) = 0.0
     vgbiomas(:) = 0.0
@@ -574,7 +572,7 @@ contains
       end do ! loop 1110
     end do ! loop 1100
     !
-    !> Add the bare ground values to the grid-average. If a peatland,we assume no bareground and
+    !> Add the bare ground values to the grid-average. If a peatland, we assume no bareground and
     !! add the moss values instead.
     !! Note: peatland soil C is not aggregated from plants but updated
     !! by humification and respiration from the previous stored value
@@ -592,7 +590,7 @@ contains
         ! 1025    continue
         ! COMBAK PERLAY
       else
-        litrmsmoss(i) = litrmsmoss(i) + litrfallmoss(i) &  ! FLAG,I am thinking this needs to be reset to zero somewhere in ctemDriver,but I don't see it. JM.
+        litrmsmoss(i) = litrmsmoss(i) + litrfallmoss(i) &  ! FLAG, I am thinking this needs to be reset to zero somewhere in ctemDriver, but I don't see it. JM.
                         - ltrestepmoss(i) - humstepmoss(i)     ! kg/m2
         Cmossmas(i) = Cmossmas(i) + nppmosstep(i) - litrfallmoss(i)
         vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
@@ -604,5 +602,7 @@ contains
 
   end subroutine prepBalanceC
   !! @}
-  !> \file
+  !> \namespace balancecarbon
+  !! ...
+
 end module balanceCarbon

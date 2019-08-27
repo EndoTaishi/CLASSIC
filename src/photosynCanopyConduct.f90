@@ -1,6 +1,6 @@
 !> \file
-!! Net Photosynthesis and canopy conductance
-!
+!> Net Photosynthesis and canopy conductance
+!> @author V. Arora, J. Melton, M. Lazare
 subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! Formerly PHTSYN3
                                   CFLUX, QA, QSWV, IC, THLIQ, ISAND, &
                                   TA, RMAT, COSZS, XDIFFUS, ILG, &
@@ -400,8 +400,8 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   !
   !     -------------------------------------------------------------------
   !>
-  !! IF LAI IS LESS THAN SLAI THAN WE USE STORAGE LAI TO PHOTOSYNTHESIZE. HOWEVER,WE DO NOT USE THE STOMATAL
-  !! RESISTANCE ESTIMATED IN THIS CASE,BECAUSE STORAGE LAI IS AN IMAGINARY LAI,AND WE SET STOMATAL RESISTANCE
+  !! IF LAI IS LESS THAN SLAI THAN WE USE STORAGE LAI TO PHOTOSYNTHESIZE. HOWEVER, WE DO NOT USE THE STOMATAL
+  !! RESISTANCE ESTIMATED IN THIS CASE, BECAUSE STORAGE LAI IS AN IMAGINARY LAI, AND WE SET STOMATAL RESISTANCE
   !! TO ITS MAX. NOTE THAT THE CONCEPT OF STORAGE/IMAGINARY LAI IS USED FOR PHENOLOGY PURPOSES AND THIS
   !! IMAGINARY LAI ACTS AS MODEL SEEDS.
   !!
@@ -438,7 +438,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   end do ! loop 360
   !>
   !! IF WE ARE USING LEUNING TYPE PHOTOSYNTHESIS-STOMATAL CONDUCTANCE COUPLING WE NEED VAPOR PRESSURE DEFICIT
-  !! AS WELL. CALCULATE THIS FROM THE RH AND AIR TEMPERATURE WE HAVE. WE FIND E_SAT,E,AND VPD IN PASCALS.
+  !! AS WELL. CALCULATE THIS FROM THE RH AND AIR TEMPERATURE WE HAVE. WE FIND E_SAT, E, AND VPD IN PASCALS.
   !!
   if (PS_COUP == 2) then
     do J = 1,ICC
@@ -489,7 +489,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
       !> CHANGE PAR FROM W/M^2 TO MOL/M^2.S
       IPAR(I) = QSWV(I) * 4.6 * 1E-06
       !>
-      !> SUNLIT PART GETS BOTH DIRECT AND DIFFUSED,WHILE THE SHADED PART GETS ONLY DIFFUSED
+      !> SUNLIT PART GETS BOTH DIRECT AND DIFFUSED, WHILE THE SHADED PART GETS ONLY DIFFUSED
       !>
       IPAR_SUN(I) = QSWV(I) * 4.6 * 1E-06
       IPAR_SHA(I) = QSWV(I) * 4.6 * 1E-06 * XDIFFUS(I)
@@ -543,8 +543,8 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
           !>
           !> FIND FPAR - FACTOR FOR SCALING PHOTOSYNTHESIS TO CANOPY BASED ON ASSUMPTION THAT NITROGEN IS
           !! OPTIMALLY DISTRIBUTED. THE TWO-LEAF MODEL IS NOT THAT DIFFERENT FROM THE SINGLE-LEAF MODEL.
-          !! ALL WE DO IS USE TWO SCALING FACTORS (I.E. SCALING FROM LEAF TO CANOPY) INSTEAD OF ONE,AND
-          !! THUS PERFORM CALCULATIONS TWICE,AND IN THE END ADD CONDUCTANCE AND NET PHOTOSYNTHESIS FROM
+          !! ALL WE DO IS USE TWO SCALING FACTORS (I.E. SCALING FROM LEAF TO CANOPY) INSTEAD OF ONE, AND
+          !! THUS PERFORM CALCULATIONS TWICE, AND IN THE END ADD CONDUCTANCE AND NET PHOTOSYNTHESIS FROM
           !! THE TWO LEAVES TO GET THE TOTAL.
           !!
           FPAR(I,M) = (1.0 / KN(SORT(M))) * (1.0 - EXP( - KN(SORT(M)) &
@@ -555,7 +555,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
                             (1.0 - EXP( - 1. * (KN(SORT(M)) + KB(I,M)) * USEAILCG(I,M) ) )
             FPAR_SHA(I,M) = FPAR(I,M) - FPAR_SUN(I,M)
             !>
-            !! IF ALL RADIATION IS DIFFUSED,THEN ALL LEAVES ARE SHADED,AND WE ADJUST FPARs ACCORDINGLY.
+            !! IF ALL RADIATION IS DIFFUSED, THEN ALL LEAVES ARE SHADED, AND WE ADJUST FPARs ACCORDINGLY.
             !! WITHOUT THIS THE TWO LEAF MODELS MAY BEHAVE ERRATICALLY
             !!
             if (XDifFUS(I) > 0.99) then
@@ -564,7 +564,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
             end if
           end if
           !>
-          !> FIND Vmax,canopy,THAT IS Vmax SCALED BY LAI FOR THE SINGLE LEAF MODEL
+          !> FIND Vmax, canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE LEAF MODEL
           !>
           !> ------------- Changing Vcmax seasonally -----------------------
           !!
@@ -595,7 +595,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
           !> ------------- Changing Vcmax seasonally -----------------------///
 
 
-          !> FIND Vm,unstressed (DUE TO WATER) BUT STRESSED DUE TO TEMPERATURE
+          !> FIND Vm, unstressed (DUE TO WATER) BUT STRESSED DUE TO TEMPERATURE
           !>
           Q10 = 2.00
           Q10_FUNC = Q10 ** (0.1 * (TCAN(I) - 298.16))
@@ -630,7 +630,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   end do ! loop 480
   !>
   !> CALCULATE SOIL MOIS STRESS TO ACCOUNT FOR REDUCTION IN PHOTOSYN
-  !> DUE TO LOW SOIL MOISTURE,THREE STEPS HERE
+  !> DUE TO LOW SOIL MOISTURE, THREE STEPS HERE
   !> 1. FIND WILTING
   !> POINT AND FIELD CAPACITY SOIL MOIS. CONTENT FOR ALL THREE LAYERS.
   !> 2. USING THESE FIND THE SOIL MOISTURE STRESS TERM FOR ALL
@@ -640,7 +640,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   !> FOR EACH PFT.
   !!
   !! NOTE THAT WHILE SOIL MOISTURE IS UNIFORM OVER
-  !> AN ENTIRE GCM GRID CELL,THE SOIL MOISTURE STRESS FOR EACH
+  !> AN ENTIRE GCM GRID CELL, THE SOIL MOISTURE STRESS FOR EACH
   !> PFT IS NOT BECAUSE OF DIFFERENCES IN ROOT DISTRIBUTION.
   !>
   !> WILTING POINT CORRESPONDS TO MATRIC POTENTIAL OF 150 M
@@ -700,7 +700,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
     end do ! loop 525
   end do ! loop 520
   !>
-  !> USE SOIL MOISTURE FUNCTION TO MAKE Vm,unstressed -> Vm STRESSED
+  !> USE SOIL MOISTURE FUNCTION TO MAKE Vm, unstressed -> Vm STRESSED
   !>
   do J = 1,ICC
     do I = IL1,IL2
@@ -750,7 +750,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   end do ! loop 570
   !>
   !> CHOOSE A VALUE OF INTERCELLULAR \f$CO_2\f$ CONCENTRATION \f$(CO_2i)\f$ IF STARTING
-  !> FOR THE FIRST TIME,OR USE VALUE FROM THE PREVIOUS TIME STEP
+  !> FOR THE FIRST TIME, OR USE VALUE FROM THE PREVIOUS TIME STEP
   !>
   IT_COUNT = 0
   !ignoreLint(1)
@@ -898,8 +898,8 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
     N_EFFECT(I) = MIN(1.0,N_EFFECT(I))
   end do ! loop 641
   !>
-  !> FIND THE SMOOTHED AVERAGE OF THREE PHOTOSYNTHETIC RATES JC,JE,
-  !> AND JS USING COLLATZ'S TWO QUADRATIC EQUATIONS,OR FIND THE MIN.
+  !> FIND THE SMOOTHED AVERAGE OF THREE PHOTOSYNTHETIC RATES JC, JE,
+  !> AND JS USING COLLATZ'S TWO QUADRATIC EQUATIONS, OR FIND THE MIN.
   !> OF THIS TWO RATES OR FIND MIN. OF JC AND JE.
   !>
   do J = 1,ICC
@@ -1020,7 +1020,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
       if (FCANC(I,J) > ZERO) then
         !>
         !> RECENT STUDIES SHOW RmL IS LESS TEMPERATURE SENSITIVE THAN
-        !> PHOTOSYNTHESIS DURING DAY,THAT'S WHY A SMALL Q10 VALUE IS
+        !> PHOTOSYNTHESIS DURING DAY, THAT'S WHY A SMALL Q10 VALUE IS
         !> USED DURING DAY.
         !>
         Q10_FUNCN = 2.00 ** (0.1 * (TCAN(I) - 298.16))
@@ -1051,11 +1051,11 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   !>
   !> FIND \f$CO_2\f$ CONCENTRATION AT LEAF SURFACE FOR ALL VEGETATION TYPES.
   !> ALTHOUGH WE ARE FINDING \f$CO_2\f$ CONC AT THE LEAF SURFACE SEPARATELY
-  !> FOR ALL VEGETATION TYPES,THE BIG ASSUMPTION HERE IS THAT THE
+  !> FOR ALL VEGETATION TYPES, THE BIG ASSUMPTION HERE IS THAT THE
   !> AERODYNAMIC CONDUCTANCE IS SAME OVER ALL VEGETATION TYPES. CLASS
-  !> FINDS AERODYNAMIC RESISTANCE OVER ALL THE 4 SUB-AREAS,BUT NOT
+  !> FINDS AERODYNAMIC RESISTANCE OVER ALL THE 4 SUB-AREAS, BUT NOT
   !> FOR DIFFERENT VEGETATION TYPES WITHIN A SUB-AREA.
-  !> ALSO CHANGE AERODYNAMIC CONDUCTANCE,CFLUX,FROM M/S TO \f$MOL/M^2/S\f$
+  !> ALSO CHANGE AERODYNAMIC CONDUCTANCE, CFLUX, FROM M/S TO \f$MOL/M^2/S\f$
   !>
   do J = 1,ICC
     do I = IL1,IL2
@@ -1203,7 +1203,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   !
   IT_COUNT = IT_COUNT + 1
   !>
-  !> SEE IF WE HAVE PERFORMED THE REQUIRED NO. OF ITERATIONS,IF NOT
+  !> SEE IF WE HAVE PERFORMED THE REQUIRED NO. OF ITERATIONS, IF NOT
   !> THEN WE GO BACK AND DO ANOTHER ITERATION
   !>
   if (IT_COUNT < REQITER) then
@@ -1354,10 +1354,7 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   return
 end subroutine photosynCanopyConduct
 !> \file
-!!
-!! @author V. Arora, J. Melton, M. Lazare
-!!
-!! All biogeochemical processes in CLASSIC are simulated at a daily time step except gross photosynthetic uptake and
+!> All biogeochemical processes in CLASSIC are simulated at a daily time step except gross photosynthetic uptake and
 !! associated calculation of canopy conductance, which are simulated on a half hour time step with CLASS (physics).
 !! The photosynthesis module of CLASSIC calculates the net canopy photosynthesis rate, which, together with
 !! atmospheric \f$CO_2\f$ concentration and vapour pressure or relative humidity, is used to calculate canopy

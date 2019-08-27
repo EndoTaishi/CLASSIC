@@ -67,7 +67,7 @@ subroutine canopyPhaseChange (TCAN, RAICAN, SNOCAN, FRAINC, FSNOWC, CHCAP, & ! F
   !! \f$\Delta I_c = X_i \Delta [C_c T_c ] / \Delta t\f$
   !!
   !! where \f$C_c\f$ represents the volumetric heat capacity of the canopy, \f$T_c\f$
-  !! its temperature, \f$\Delta t\f$ the length of the time step,and \f$X_i\f$ the
+  !! its temperature, \f$\Delta t\f$ the length of the time step, and \f$X_i\f$ the
   !! fractional coverage of the subarea under consideration relative to
   !! the modelled area.
   !!
@@ -76,25 +76,25 @@ subroutine canopyPhaseChange (TCAN, RAICAN, SNOCAN, FRAINC, FSNOWC, CHCAP, & ! F
       HTCC  (I) = HTCC(I) - FI(I) * TCAN(I) * CHCAP(I) / DELT
       !>
       !! If there is liquid water stored on the canopy and the
-      !! canopy temperature is less than 0 C,the available
+      !! canopy temperature is less than 0 C, the available
       !! energy sink HFREZ is calculated from CHCAP and the
-      !! difference between TCAN and 0 C,and
-      !! compared with HCONV,calculated as the energy sink
+      !! difference between TCAN and 0 C, and
+      !! compared with HCONV, calculated as the energy sink
       !! required to freeze all of the liquid water on the
-      !! canopy. If HFREZ \f$\leq\f$ HCONV,the amount of water that
+      !! canopy. If HFREZ \f$\leq\f$ HCONV, the amount of water that
       !! can be frozen is calculated using the latent heat
       !! of melting. The fractional coverages of frozen and
       !! liquid water FSNOWC and FRAINC and their masses
-      !! SNOCAN and RAICAN are adjusted accordingly,TCAN is
-      !! set to 0 C,and the amount of energy
+      !! SNOCAN and RAICAN are adjusted accordingly, TCAN is
+      !! set to 0 C, and the amount of energy
       !! involved is subtracted from the internal energy HTCC
       !! and added to HMFC. Otherwise all of the
       !! intercepted liquid water is converted to frozen
-      !! water,and the energy available for cooling the canopy is
+      !! water, and the energy available for cooling the canopy is
       !! calculated as HCOOL = HFREZ – HCONV. This available
       !! energy is applied to decreasing the
-      !! temperature of the canopy,using the specific heat of
-      !! the canopy elements,and the amount of energy that
+      !! temperature of the canopy, using the specific heat of
+      !! the canopy elements, and the amount of energy that
       !! was involved in the phase change is subtracted from
       !! HTCC and added to HMFC.
       !!
@@ -124,24 +124,24 @@ subroutine canopyPhaseChange (TCAN, RAICAN, SNOCAN, FRAINC, FSNOWC, CHCAP, & ! F
       end if
       !>
       !! If there is frozen water stored on the canopy and the
-      !! canopy temperature is greater than 0 C,the available
-      !! energy for melting,HMELT,is calculated from CHCAP and
-      !! the difference between TCAN and 0 C,and
-      !! compared with HCONV,calculated as the energy required to
+      !! canopy temperature is greater than 0 C, the available
+      !! energy for melting, HMELT, is calculated from CHCAP and
+      !! the difference between TCAN and 0 C, and
+      !! compared with HCONV, calculated as the energy required to
       !! melt all of the frozen water on the canopy.
-      !! If HMELT \f$\leq\f$ HCONV,the amount of frozen water that can be
+      !! If HMELT \f$\leq\f$ HCONV, the amount of frozen water that can be
       !! melted is calculated using the latent heat
       !! of melting. The fractional coverages of frozen and liquid
       !! water FSNOWC and FRAINC and their masses
-      !! SNOCAN and RAICAN are adjusted accordingly,TCAN is set
-      !! to 0 C,and the amount of energy
+      !! SNOCAN and RAICAN are adjusted accordingly, TCAN is set
+      !! to 0 C, and the amount of energy
       !! involved is subtracted from HTCC and added to HMFC.
-      !! Otherwise,all of the intercepted frozen water is
-      !! converted to liquid water,and the energy available for
+      !! Otherwise, all of the intercepted frozen water is
+      !! converted to liquid water, and the energy available for
       !! warming the canopy is calculated as HWARM =
       !! HMELT – HCONV. This available energy is applied to
-      !! increasing the temperature of the canopy,using
-      !! the specific heats of the canopy elements,and the amount
+      !! increasing the temperature of the canopy, using
+      !! the specific heats of the canopy elements, and the amount
       !! of energy that was involved in the phase
       !! change is subtracted from HTCC and added to HMFC.
       !!
@@ -170,7 +170,7 @@ subroutine canopyPhaseChange (TCAN, RAICAN, SNOCAN, FRAINC, FSNOWC, CHCAP, & ! F
         end if
       end if
       !>
-      !! In the final cleanup,the canopy heat capacity is
+      !! In the final cleanup, the canopy heat capacity is
       !! recomputed and the remaining internal energy calculations
       !! are completed.
       !!

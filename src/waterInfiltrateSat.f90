@@ -63,7 +63,7 @@ subroutine waterInfiltrateSat (WMOVE, TMOVE, LZF, NINF, TRMDR, TPOND, ZPOND, & !
   real, intent(in)    :: TBARWX(ILG,IGP1) !< Temperature of water in soil layer [C]
   real, intent(in)    :: DELZX (ILG,IGP1) !< Permeable depth of soil layer \f$[m] (\Delta z_{z,w})\f$
   real, intent(in)    :: ZBOTX (ILG,IGP1) !< Depth of bottom of soil layer [m]
-  real, intent(inout) :: FMAX  (ILG)      !< Maximum infiltration rate,defined as minimum value of GRKINF
+  real, intent(inout) :: FMAX  (ILG)      !< Maximum infiltration rate, defined as minimum value of GRKINF
   real, intent(inout) :: ZF    (ILG)      !< Depth of the wetting front \f$[m] (z_f)\f$
   integer, intent(in) :: IGRN  (ILG)      !< Flag to indicate whether infiltration is occurring
   !

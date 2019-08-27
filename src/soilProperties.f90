@@ -120,7 +120,7 @@ subroutine soilProperties (THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Former
   !
   !     * INPUT ARRAYS.
   !
-  integer, intent(in) :: ipeatland(nl,nm)  !< Peatland flag: 0 = not a peatland,1= bog,2 = fen
+  integer, intent(in) :: ipeatland(nl,nm)  !< Peatland flag: 0 = not a peatland, 1 = bog, 2 = fen
   real, intent(in) :: SAND  (NL,NM,IG) !< Percent sand content of soil layer [percent] \f$(X_{sand} )\f$
   real, intent(in) :: CLAY  (NL,NM,IG) !< Percent clay content of soil layer [percent] \f$(X_{clay} )\f$
   real, intent(in) :: ORGM  (NL,NM,IG) !< Percent organic matter content of soil layer [percent]
@@ -322,7 +322,7 @@ subroutine soilProperties (THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, & ! Former
           ! FLAG: We should consider here that we don't
           ! necessarily want the entire soil column as
           ! peat so should also include the peat depth ! JM Oct 2016.
-          if (ipeatland(i,m) > 0) then ! Peatland flag,1= bog,2 = fen
+          if (ipeatland(i,m) > 0) then ! Peatland flag, 1 = bog, 2 = fen
             if (j == 1) then ! First layer is moss
               thpor(i,m,j)  = thpmoss
               thlret(i,m,j) = thrmoss

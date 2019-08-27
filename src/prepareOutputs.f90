@@ -1,4 +1,4 @@
-
+!> \file
 !> Central module that handles all preparation and writing to output files
 module prepareOutputs
 
@@ -20,7 +20,7 @@ module prepareOutputs
 
 contains
 
-  !> \ingroup prepareOutputs_class_halfhourly_aw
+  !> \ingroup prepareoutputs_class_halfhourly_aw
   !> @{
   !> Prepares and writes the CLASS (physics) half hourly file
   !! @author J. Melton
@@ -48,10 +48,10 @@ contains
     real :: EVAPSUM         !< Total evapotranspiration \f$[kg m^{-2} s^{-1} ]\f$ (temporary variable)
     real :: FLSTAR
     real :: FSSTAR
-    real :: TCN,TPN,TSN,TSURF,ZSN
-    real :: an_grd,rml_grd,totvegarea
-    real, dimension(:), allocatable :: anveggrd,rmlveggrd,fcanctot
-    integer :: i,j,m
+    real :: TCN, TPN, TSN, TSURF, ZSN
+    real :: an_grd, rml_grd, totvegarea
+    real, dimension(:), allocatable :: anveggrd, rmlveggrd, fcanctot
+    integer :: i, j, m
 
     ! pointers
     logical, pointer :: ctem_on              !< True if this run includes the biogeochemistry parameterizations (CTEM)
@@ -75,10 +75,10 @@ contains
     real, pointer, dimension(:,:) :: CDHROT  !< Surface drag coefficient for heat [ ]
     real, pointer, dimension(:,:) :: CDMROT  !< Surface drag coefficient for momentum [ ]
     real, pointer, dimension(:,:) :: HFSROT  !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:,:) :: TFXROT  !< Product of surface drag coefficient,wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
+    real, pointer, dimension(:,:) :: TFXROT  !< Product of surface drag coefficient, wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
     real, pointer, dimension(:,:) :: QEVPROT !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
     real, pointer, dimension(:,:) :: QFSROT  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
-    real, pointer, dimension(:,:) :: QFXROT  !< Product of surface drag coefficient,wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
+    real, pointer, dimension(:,:) :: QFXROT  !< Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
     real, pointer, dimension(:,:) :: PETROT  !< Diagnosed potential evapotranspiration \f$[kg m^{-2} s^{-1} ]\f$
     real, pointer, dimension(:,:) :: GAROT   !< Diagnosed product of drag coefficient and wind speed over modelled area \f$[m s^{-1} ]\f$
     real, pointer, dimension(:,:) :: EFROT   !< Evaporation efficiency at ground surface [ ]
@@ -157,10 +157,10 @@ contains
     real, pointer, dimension(:) :: CDHROW  !< Surface drag coefficient for heat [ ]
     real, pointer, dimension(:) :: CDMROW  !< Surface drag coefficient for momentum [ ]
     real, pointer, dimension(:) :: HFSROW  !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: TFXROW  !< Product of surface drag coefficient,wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
+    real, pointer, dimension(:) :: TFXROW  !< Product of surface drag coefficient, wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
     real, pointer, dimension(:) :: QEVPROW !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
     real, pointer, dimension(:) :: QFSROW  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
-    real, pointer, dimension(:) :: QFXROW  !< Product of surface drag coefficient,wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
+    real, pointer, dimension(:) :: QFXROW  !< Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
     real, pointer, dimension(:) :: PETROW  !< Diagnosed potential evapotranspiration \f$[kg m^{-2} s^{-1} ]\f$
     real, pointer, dimension(:) :: GAROW   !< Diagnosed product of drag coefficient and wind speed over modelled area \f$[m s^{-1} ]\f$
     real, pointer, dimension(:) :: EFROW   !< Evaporation efficiency at ground surface [ ]
@@ -657,9 +657,9 @@ contains
 
       ! Write half-hourly CTEM results to file
       !
-      ! Net photosynthetic rates (GPP) and leaf maintenance respiration for each pft. however,if ctem_on then physyn subroutine
+      ! Net photosynthetic rates (GPP) and leaf maintenance respiration for each pft. however, if ctem_on then physyn subroutine
       ! is using storage lai while actual lai is zero. if actual lai is zero then we make anveg and rmlveg zero as well because these
-      ! are imaginary just like storage lai. note that anveg and rmlveg are not passed to ctem. rather ancsveg,ancgveg,rmlcsveg,and
+      ! are imaginary just like storage lai. note that anveg and rmlveg are not passed to ctem. rather ancsveg, ancgveg, rmlcsveg, and
       ! rmlcgveg are passed.
       !
       allocate(anveggrd(icc),rmlveggrd(icc),fcanctot(icc))
@@ -709,7 +709,7 @@ contains
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_class_daily_aw
+  !> \ingroup prepareoutputs_class_daily_aw
   !> @{
   !> Accumlates and writes the daily physics variables. These are kept in pointer structures as
   !! this subroutine is called each physics timestep and we increment the timestep values to produce a daily value.
@@ -910,7 +910,7 @@ contains
           ALTOTACC_M(I,M) = ALTOTACC_M(I,M) + (FSSROW(I) - (FSGVROT(I,M) &
                             + FSGSROT(I,M) + FSGGROT(I,M)))/FSSROW(I)
           ALSNOACC_M(I,M) = ALSNOACC_M(I,M) + ALBSROT(I,M)
-          if (i == 1) altotcntr_d(i) = altotcntr_d(i) + 1 ! only count once per gridcell,not per tile
+          if (i == 1) altotcntr_d(i) = altotcntr_d(i) + 1 ! only count once per gridcell, not per tile
         end if
 
         PREACC_M(I,M) = PREACC_M(I,M) + PREROW(I)
@@ -1237,11 +1237,11 @@ contains
     end if ! IF (NCOUNT==NDAY)
 
   end subroutine class_daily_aw
-  !> @}
+  !! @}
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_class_monthly_aw
+  !> \ingroup prepareoutputs_class_monthly_aw
   !> @{
   !> Accumulate and write out the monthly physics outputs. These are kept in pointer structures as
   !! this subroutine is called each physics timestep and we increment the timestep values to produce a monthly value.
@@ -1574,11 +1574,11 @@ contains
     end do ! NMON
 
   end subroutine class_monthly_aw
-  !> @}
+  !! @}
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_class_annual_aw
+  !> \ingroup prepareoutputs_class_annual_aw
   !> @{
   !> Accumulate and write out the annual physics outputs. These are kept in pointer structures as
   !! this subroutine is called each physics timestep and we increment the timestep values to produce annuals values.
@@ -1809,11 +1809,11 @@ contains
     end if !> IDAY==365/366 .AND. NDAY
 
   end subroutine class_annual_aw
-  !> @}
+  !! @}
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_convertUnitsCTEM
+  !> \ingroup prepareoutputs_convertUnitsCTEM
   !! @{
   !> Do some unit conversions for CTEM (biogeochemical processes) so they are ready to be written out
   subroutine convertUnitsCTEM (nltest, nmtest)
@@ -1957,11 +1957,11 @@ contains
     end do ! loop 10
 
   end subroutine convertUnitsCTEM
-  !> @}
+  !! @}
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_ctem_daily_aw
+  !> \ingroup prepareoutputs_ctem_daily_aw
   !> @{
   !> Accumulate and write the daily biogeochemical outputs
   !! @author J. Melton
@@ -2297,28 +2297,28 @@ contains
 
     ! Allocate the grid average and tile average structures
     allocate(gpp_g (nltest),npp_g (nltest),nbp_g (nltest),socres_g (nltest), &
-          autores_g (nltest),litres_g (nltest),dstcemls3_g (nltest),litrfall_g (nltest), &
-          rml_g (nltest),rms_g (nltest),rg_g (nltest),leaflitr_g (nltest),tltrstem_g (nltest), &
-          tltrroot_g (nltest),nep_g (nltest),hetrores_g (nltest),dstcemls_g (nltest), &
-          humiftrs_g (nltest),rmr_g (nltest),tltrleaf_g (nltest),gavgltms_g (nltest), &
-          vgbiomas_g (nltest),gavglai_g (nltest),gavgscms_g (nltest),gleafmas_g (nltest), &
-          bleafmas_g (nltest),stemmass_g (nltest),rootmass_g (nltest),litrmass_g (nltest), &
-          soilcmas_g (nltest),slai_g (nltest),ailcg_g (nltest),ailcb_g (nltest),veghght_g (nltest), &
-          rootdpth_g (nltest),roottemp_g (nltest),totcmass_g (nltest),tcanoacc_out_g (nltest), &
-          burnfrac_g (nltest),smfuncveg_g (nltest),lucemcom_g (nltest),lucltrin_g (nltest),lucsocin_g (nltest), &
-          emit_co2_g (nltest),emit_ch4_g (nltest),ch4WetSpec_g (nltest),wetfdyn_g (nltest),ch4WetDyn_g (nltest), &
-          ch4soills_g (nltest),afrleaf_g (nltest,icc),afrstem_g (nltest,icc), &
-          afrroot_g (nltest,icc),lfstatus_g (nltest,icc),rmlvegrow_g (nltest,icc),anvegrow_g(nltest,icc), &
-          rmatctem_g (nltest,ignd) )
+             autores_g (nltest),litres_g (nltest),dstcemls3_g (nltest),litrfall_g (nltest), &
+             rml_g (nltest),rms_g (nltest),rg_g (nltest),leaflitr_g (nltest),tltrstem_g (nltest), &
+             tltrroot_g (nltest),nep_g (nltest),hetrores_g (nltest),dstcemls_g (nltest), &
+             humiftrs_g (nltest),rmr_g (nltest),tltrleaf_g (nltest),gavgltms_g (nltest), &
+             vgbiomas_g (nltest),gavglai_g (nltest),gavgscms_g (nltest),gleafmas_g (nltest), &
+             bleafmas_g (nltest),stemmass_g (nltest),rootmass_g (nltest),litrmass_g (nltest), &
+             soilcmas_g (nltest),slai_g (nltest),ailcg_g (nltest),ailcb_g (nltest),veghght_g (nltest), &
+             rootdpth_g (nltest),roottemp_g (nltest),totcmass_g (nltest),tcanoacc_out_g (nltest), &
+             burnfrac_g (nltest),smfuncveg_g (nltest),lucemcom_g (nltest),lucltrin_g (nltest),lucsocin_g (nltest), &
+             emit_co2_g (nltest),emit_ch4_g (nltest),ch4WetSpec_g (nltest),wetfdyn_g (nltest),ch4WetDyn_g (nltest), &
+             ch4soills_g (nltest),afrleaf_g (nltest,icc),afrstem_g (nltest,icc), &
+             afrroot_g (nltest,icc),lfstatus_g (nltest,icc),rmlvegrow_g (nltest,icc),anvegrow_g(nltest,icc), &
+             rmatctem_g (nltest,ignd) )
 
     allocate(leaflitr_t (nltest,nmtest),tltrleaf_t (nltest,nmtest),tltrstem_t (nltest,nmtest),tltrroot_t (nltest,nmtest), &
-          ailcg_t (nltest,nmtest),ailcb_t (nltest,nmtest),rmatctem_t (nltest,nmtest,ignd),veghght_t (nltest,nmtest), &
-          rootdpth_t (nltest,nmtest),roottemp_t (nltest,nmtest),slai_t (nltest,nmtest),afrroot_t (nltest,nmtest), &
-          afrleaf_t (nltest,nmtest),afrstem_t (nltest,nmtest),laimaxg_t (nltest,nmtest),stemmass_t (nltest,nmtest), &
-          rootmass_t (nltest,nmtest),gleafmas_t (nltest,nmtest),bleafmas_t(nltest,nmtest), &
-          emit_co2_t (nltest,nmtest),emit_ch4_t (nltest,nmtest),smfuncveg_t (nltest,nmtest), &
-          ! COMBAK PERLAY
-          soilcmas_t (nltest,nmtest),litrmass_t (nltest,nmtest) )
+             ailcg_t (nltest,nmtest),ailcb_t (nltest,nmtest),rmatctem_t (nltest,nmtest,ignd),veghght_t (nltest,nmtest), &
+             rootdpth_t (nltest,nmtest),roottemp_t (nltest,nmtest),slai_t (nltest,nmtest),afrroot_t (nltest,nmtest), &
+             afrleaf_t (nltest,nmtest),afrstem_t (nltest,nmtest),laimaxg_t (nltest,nmtest),stemmass_t (nltest,nmtest), &
+             rootmass_t (nltest,nmtest),gleafmas_t (nltest,nmtest),bleafmas_t(nltest,nmtest), &
+             emit_co2_t (nltest,nmtest),emit_ch4_t (nltest,nmtest),smfuncveg_t (nltest,nmtest), &
+             ! COMBAK PERLAY
+             soilcmas_t (nltest,nmtest),litrmass_t (nltest,nmtest) )
     ! soilcmas_t (nltest,nmtest,ignd),litrmass_t (nltest,nmtest,ignd) )
     ! COMBAK PERLAY
 
@@ -2751,24 +2751,24 @@ contains
 
     ! Deallocate the grid average and tile average structures
     deallocate(gpp_g,npp_g,nbp_g,socres_g,autores_g,litres_g,dstcemls3_g,litrfall_g , &
-    rml_g,rms_g,rg_g,leaflitr_g,tltrstem_g,tltrroot_g,nep_g,hetrores_g,dstcemls_g , &
-    humiftrs_g,rmr_g,tltrleaf_g,gavgltms_g,vgbiomas_g,gavglai_g,gavgscms_g,gleafmas_g , &
-    bleafmas_g,stemmass_g,rootmass_g,litrmass_g,soilcmas_g,slai_g,ailcg_g,ailcb_g,veghght_g , &
-    rootdpth_g,roottemp_g,totcmass_g,tcanoacc_out_g,burnfrac_g,smfuncveg_g , &
-    lucemcom_g,lucltrin_g,lucsocin_g,emit_co2_g,emit_ch4_g,ch4WetSpec_g,wetfdyn_g,ch4WetDyn_g , &
-    ch4soills_g,afrleaf_g,afrstem_g,afrroot_g,lfstatus_g,rmlvegrow_g,anvegrow_g, &
-    rmatctem_g)
+               rml_g,rms_g,rg_g,leaflitr_g,tltrstem_g,tltrroot_g,nep_g,hetrores_g,dstcemls_g , &
+               humiftrs_g,rmr_g,tltrleaf_g,gavgltms_g,vgbiomas_g,gavglai_g,gavgscms_g,gleafmas_g , &
+               bleafmas_g,stemmass_g,rootmass_g,litrmass_g,soilcmas_g,slai_g,ailcg_g,ailcb_g,veghght_g , &
+               rootdpth_g,roottemp_g,totcmass_g,tcanoacc_out_g,burnfrac_g,smfuncveg_g , &
+               lucemcom_g,lucltrin_g,lucsocin_g,emit_co2_g,emit_ch4_g,ch4WetSpec_g,wetfdyn_g,ch4WetDyn_g , &
+               ch4soills_g,afrleaf_g,afrstem_g,afrroot_g,lfstatus_g,rmlvegrow_g,anvegrow_g, &
+               rmatctem_g)
 
     deallocate(leaflitr_t,tltrleaf_t,tltrstem_t,tltrroot_t,ailcg_t,ailcb_t,rmatctem_t,veghght_t , &
-    rootdpth_t,roottemp_t,slai_t,afrroot_t,afrleaf_t,afrstem_t,laimaxg_t,stemmass_t , &
-    rootmass_t,litrmass_t,gleafmas_t,bleafmas_t,soilcmas_t,emit_co2_t,emit_ch4_t,smfuncveg_t)
+               rootdpth_t,roottemp_t,slai_t,afrroot_t,afrleaf_t,afrstem_t,laimaxg_t,stemmass_t , &
+               rootmass_t,litrmass_t,gleafmas_t,bleafmas_t,soilcmas_t,emit_co2_t,emit_ch4_t,smfuncveg_t)
 
   end subroutine ctem_daily_aw
-  !> @}
+  !! @}
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_ctem_monthly_aw
+  !> \ingroup prepareoutputs_ctem_monthly_aw
   !> @{
   !> Accumulate and write out the monthly CTEM outputs. These are kept in pointer structures as
   !! this subroutine is called daily and we increment the daily values to produce a monthly value.
@@ -3518,8 +3518,8 @@ contains
           ! COMBAK PERLAY
 
           ! NOTE: NBP is a special case here. The LUC product pool contributions are not
-          ! per PFT,they exist uniformly across a tile,so they are not inclued in the
-          ! nbp_mo calculation. Instead we need to use the nbp,not nbpveg variable
+          ! per PFT, they exist uniformly across a tile, so they are not inclued in the
+          ! nbp_mo calculation. Instead we need to use the nbp, not nbpveg variable
           ! for per tile and per gridcell outputting.
           nbp_mo_t(i,m) = nbprow(i,m)
 
@@ -3791,11 +3791,11 @@ contains
     end do ! loop 865 ! nmon
 
   end subroutine ctem_monthly_aw
-  !> @}
+  !! @}
 
   !==============================================================================================================
 
-  !> \ingroup prepareOutputs_ctem_annual_aw
+  !> \ingroup prepareoutputs_ctem_annual_aw
   !> @{
   !> Accumulate and write out the annual biogeochemical (CTEM) outputs. These are kept in pointer structures as
   !! this subroutine is called daily and we increment the daily values to produce annual values.
@@ -4262,7 +4262,7 @@ contains
         !   soilcres_yr(i,m,j,k) = soilcres_yr(i,m,j,k) + soilcresvegrow(i,m,j,k) * oneOverDPY
         ! end do
         ! COMBAK PERLAY
-        ! Let accumulate,not a flux or a mean value.
+        ! Let accumulate, not a flux or a mean value.
         burnfrac_yr(i,m,j) = burnfrac_yr(i,m,j) + burnvegfrow(i,m,j)
 
       end do ! loop 884
@@ -4304,8 +4304,8 @@ contains
       !                           + litresvegrow(i,m,iccp2,1)) * oneOverDPY
       ! COMBAK PERLAY
       ! NOTE: NBP is a special case here. The LUC product pool contributions are not
-      ! per PFT,they exist uniformly across a tile,so they are not included in the
-      ! nbp_yr calculation. Instead we need to use the nbp,not nbpveg variable
+      ! per PFT, they exist uniformly across a tile, so they are not included in the
+      ! nbp_yr calculation. Instead we need to use the nbp, not nbpveg variable
       ! for per tile and per gridcell outputting.
       nbp_yr_t(i,m) = nbp_yr_t(i,m) + nbprow(i,m) * oneOverDPY
 
@@ -4714,8 +4714,8 @@ contains
     end if ! if iday=365/366
 
   end subroutine ctem_annual_aw
-  !> @}
-  !> \file
+  !! @}
+  !> \namespace prepareoutputs
   !> Central module that handles all CTEM preparation and writing of output files
 
 end module prepareOutputs

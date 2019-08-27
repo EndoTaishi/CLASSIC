@@ -14,7 +14,7 @@ contains
 
   !=============================================================================================================
 
-  !> \ingroup soilCProcesses_turbation
+  !> \ingroup soilcprocesses_turbation
   !! Simulation of soil C movement due to turbation processes (presently only cryo).
   !!
   !! Modelled simply as a diffusion process.
@@ -77,7 +77,7 @@ contains
 
     do i = il1,il2
 
-      !> First,find the bottom of the permeable soil column by looking at the isand flags.
+      !> First, find the bottom of the permeable soil column by looking at the isand flags.
       botlyr = 0
       do l = 1,ignd
         if (isand(i,l) == - 3 .or. isand(i,l) == - 4) exit
@@ -124,7 +124,7 @@ contains
             littinter(2:botlyr - 1)  = litter(i,j,1:botlyr - 2)
             depthinter(2:botlyr - 1) = zbotw(i,1:botlyr - 2)
 
-            ! The final interface is at the bottom of the soil column and the bedrock,so the soilC/litter is 0 there.
+            ! The final interface is at the bottom of the soil column and the bedrock, so the soilC/litter is 0 there.
             soilcinter(botlyr) = 0.
             littinter(botlyr) = 0.
 
@@ -159,7 +159,7 @@ contains
               else if (depthinter(l) > actlyr(i) .and. depthinter(l) < kactlyr) then ! linear reduction in diffusion coef.
                 effectiveD(l) = diffus * (1. - (depthinter(l) - actlyr(i)) &
                                 / ((kterm - 1.) * actlyr(i))) * real(spinfast)
-              else ! too deep,no cryoturbation assumed
+              else ! too deep, no cryoturbation assumed
                 effectiveD(l) = 0.
               end if
             end do
@@ -197,13 +197,13 @@ contains
             rvect_sc(botlyr) = 0
             rvect_lt(botlyr) = 0.
 
-            !> Once set up,call tridiagonal solver for the soil C mass:
-            call tridiag(avect,bvect,cvect,rvect_sc,soilcinter)
+            !> Once set up, call tridiagonal solver for the soil C mass:
+            call tridiag(avect, bvect, cvect, rvect_sc, soilcinter)
 
             !> Next call tridiagonal solver for the litter mass:
-            call tridiag(avect,bvect,cvect,rvect_lt,littinter)
+            call tridiag(avect, bvect, cvect, rvect_lt, littinter)
 
-            !> Lastly,put the soil C/litter back into their arrays
+            !> Lastly, put the soil C/litter back into their arrays
             soilC(i,j,1:botlyr - 2) = soilcinter(2:botlyr - 1)
             litter(i,j,1:botlyr - 2) = littinter(2:botlyr - 1)
 
@@ -213,7 +213,7 @@ contains
             asoilc = sum(soilC(i,j,:))
             alit   = sum(litter(i,j,:))
 
-            !> (positive amount means we lost some C,negative we gained.)
+            !> (positive amount means we lost some C, negative we gained.)
             amount = psoilc - asoilc
             soilC(i,j,1:botlyr - 2) = soilC(i,j,1:botlyr - 2) + amount/real(botlyr - 2)
 
@@ -240,7 +240,7 @@ contains
 
   end subroutine turbation
   !! @}
-  !> \ingroup soilCProcesses_tridiag
+  !> \ingroup soilcprocesses_tridiag
   !! Subroutine to solve triadiagonal system of equations
   !!
   !! Solves for a vector u of size N the tridiagonal linear set using given by equation 2.4.1 in
@@ -302,9 +302,8 @@ contains
 
   end subroutine tridiag
   !! @}
-  !> \namespace soilCProcesses
+  !> \namespace soilcprocesses
   !! Central module for all soil C processes involving movement of soil C up or down in soil column.
   !!
 
 end module soilCProcesses
-!> \file

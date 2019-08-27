@@ -29,7 +29,7 @@ module metDisaggModule
 contains
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_disaggMet
+  !> \ingroup metdisaggmodule_disaggMet
   !! @{
   !> Main subroutine to disaggregate input meteorology to that of the physics timestep
 
@@ -91,7 +91,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_makebig
+  !> \ingroup metdisaggmodule_makebig
   !! @{
   !> Expands the meteorological variable arrays so they can accomodate the amount of
   !! timesteps on the physics timestep. Also copies the first day and last day values
@@ -165,7 +165,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_stepInterpolation
+  !> \ingroup metdisaggmodule_stepInterpolation
   !! @{
   !> Step interpolation applies the same value across all physics timesteps
   subroutine stepInterpolation (var)
@@ -187,7 +187,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_linearInterpolation
+  !> \ingroup metdisaggmodule_linearInterpolation
   !! @{
   !> This method splits the dataset into intervals and performs linear interpolation of each individual interval
   subroutine linearInterpolation (var)
@@ -202,12 +202,12 @@ contains
 
     ! Determine how many short intervals we'll process
     shortIntervals = countr / numberPhysInMet
-    ! For every interval except the last one,do:
+    ! For every interval except the last one, do:
     do i = 1,shortIntervals - 1
       ! Copy the first value of the next interval to the last position of the current interval
       var(i * numberPhysInMet) = var(i * numberPhysInMet + 1)
     end do
-    ! For the last interval,copy the first value of the interval to the last value
+    ! For the last interval, copy the first value of the interval to the last value
     var(countr) = var(countr - numberPhysInMet)
 
     ! For every interval
@@ -227,7 +227,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_precipDistribution
+  !> \ingroup metdisaggmodule_precipDistribution
   !! @{
   !> Precipitation distribution occurs randomly, but conservatively, over the number of wet timesteps.
   subroutine precipDistribution (var)
@@ -268,7 +268,7 @@ contains
         start = (i - 1) * numberPhysInMet + 1
         endpt = i * numberPhysInMet
 
-        !> If precipitation for this metInputTimeStep is greater than 0,use formula
+        !> If precipitation for this metInputTimeStep is greater than 0, use formula
         !! to produce number of wet half hours
 
         if (var(start) > 0.) then
@@ -322,7 +322,7 @@ contains
 
           random(:) = random(:) / sum(random(:))
 
-          ! Check if random now sums to 1,if not readjust.
+          ! Check if random now sums to 1, if not readjust.
           if (sum(random(:)) /= 1.0) then
             random(:) = random(:) / sum(random(:))
           end if
@@ -335,7 +335,7 @@ contains
             k = k + 1
           end do
 
-        else ! No precip,move on.
+        else ! No precip, move on.
           wetpds = 0
           tmpvar(start:endpt) = 0.
         end if
@@ -350,12 +350,12 @@ contains
           print * ,'Warning: In precipDistribution,precip is not being conserved',sum(var),sum(incomingPre)
           call errorHandler('metModule', - 1)
           return ! this is needed here as it ensures we don't get caught in a loop where it keeps failing but not moving on.
-        else ! retry,could have just been a bad draw.
+        else ! retry, could have just been a bad draw.
           needDistrib = .true.
           attempts = attempts + 1
         end if
       else
-        ! All is well,finish up.
+        ! All is well, finish up.
         needDistrib = .false.
       end if
 
@@ -371,7 +371,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_diurnalDistribution
+  !> \ingroup metdisaggmodule_diurnalDistribution
   !! @{
   !> Diurnal distribution over the entire timespan
   subroutine diurnalDistribution (shortWave, latitude)
@@ -413,7 +413,7 @@ contains
     end do
 
     d = 365 ! We start on day 365 since we have the extra day added on the start
-    do i = 1,size(shortWave) / shortSteps      ! Once,every day
+    do i = 1,size(shortWave) / shortSteps      ! Once, every day
       start = (i - 1) * shortSteps + 1
       endpt = i * shortSteps
 
@@ -430,7 +430,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_zenithAngles
+  !> \ingroup metdisaggmodule_zenithAngles
   !! @{
   !> Find zenith angles depending on day of year and latitude
   function zenithAngles (timesteps, day, latRad, lastDOY, countr)
@@ -456,7 +456,7 @@ contains
     psi = 2. * pi * real(day - 1) / real(lastDOY)
     dec = sum((a * cos(n * psi)) + (b * sin(n * psi)))
 
-    ! Find the hour angle,convert it to radians then find the zenith angle(s).
+    ! Find the hour angle, convert it to radians then find the zenith angle(s).
     do i = 1,countr
       degHourAngle = 15. * (12. - (timesteps(i) / secondsInHour))
       radHourAngle = (degHourAngle / 360.) * 2. * pi
@@ -468,7 +468,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_daylightIndices
+  !> \ingroup metdisaggmodule_daylightIndices
   !! @{
   !> Find day lengths depending on zenith angles
   function daylightIndices (zenithAngles, countr)
@@ -502,7 +502,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_distributeDiurnally
+  !> \ingroup metdisaggmodule_distributeDiurnally
   !! @{
   !> Determines correction for input values based on daylight indices and zenith angles
   function distributeDiurnally (zenithAngles, daylightIndices, zenithNoon, swMean, countr)
@@ -546,7 +546,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_timeZone
+  !> \ingroup metdisaggmodule_timeZone
   !! @{
   !> Find the local timezone relative to Greenwich.
   real function timeZone (longitude)
@@ -571,7 +571,7 @@ contains
   !! @}
 
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
-  !> \ingroup metDisaggModule_timeShift
+  !> \ingroup metdisaggmodule_timeShift
   !! @{
   !> Perform a circular shift on the met arrays to account for the timezone the present cell is in.
   !! Also trims the met arrays to remove the two extra days added for the interpolations
@@ -616,8 +616,8 @@ contains
 
   end subroutine timeShift
   !! @}
-  !> \file
-  !! Performs disaggregation of input meteorological forcing arrays to the model
+  !> \namespace metdisaggmodule
+  !> Performs disaggregation of input meteorological forcing arrays to the model
   !! physics timestep (commonly half-hour)
 
 end module metDisaggModule

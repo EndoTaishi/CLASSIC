@@ -1,5 +1,5 @@
 !> \file
-!! Performs temperature stepping and surface runoff
+!! >Performs temperature stepping and surface runoff
 !! calculations over ice sheets.
 !! @author D. Verseghy, M. Lazare
 !

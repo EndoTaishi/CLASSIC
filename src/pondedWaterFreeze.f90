@@ -1,5 +1,5 @@
 !> \file
-!! Addresses freezing of water ponded on ground surface.
+!> Addresses freezing of water ponded on ground surface.
 !! @author D. Verseghy, M. Lazare
 !
 subroutine pondedWaterFreeze (ZPOND, TPOND, ZSNOW, TSNOW, ALBSNO, RHOSNO, HCPSNO, & ! Formerly TFREEZ
@@ -60,8 +60,8 @@ subroutine pondedWaterFreeze (ZPOND, TPOND, ZSNOW, TSNOW, ALBSNO, RHOSNO, HCPSNO
   real, intent(inout) :: WTRS  (ILG)  !< Water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1}]\f$
   real, intent(inout) :: WTRG  (ILG)  !< Water transferred into or out of the soil \f$[kg m^{-2} s^{-1}]\f$
   !
-  real,intent(inout) :: HMFG  (ILG,IG) !< Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
-  real,intent(inout) :: HTC   (ILG,IG) !< Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ig)
+  real, intent(inout) :: HMFG  (ILG,IG) !< Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
+  real, intent(inout) :: HTC   (ILG,IG) !< Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ig)
   !
   !     * INPUT ARRAYS.
   !

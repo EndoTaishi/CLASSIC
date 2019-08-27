@@ -16,7 +16,7 @@ subroutine checkWaterBudget (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & 
   !     * SEP 26/05 - D.VERSEGHY. REMOVE HARD CODING OF IG=3 IN 300 LOOP.
   !     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
   !     * AUG 04/04 - D.VERSEGHY. RELAX ACCURACY LIMIT FOR WATER
-  !     *                         BALANCE CHECK,CONSISTENT WITH
+  !     *                         BALANCE CHECK, CONSISTENT WITH
   !     *                         ROUNDOFF ERROR CONSTRAINTS.
   !     * JUN 25/02 - D.VERSEGHY. RENAME VARIABLES FOR CLARITY; UPDATES
   !     *                         CAUSED BY CONVERSION OF PONDING DEPTH
@@ -65,9 +65,9 @@ subroutine checkWaterBudget (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & 
   !
   !     * INTEGER CONSTANTS.
   !
-  integer, intent(in) :: ISFC  !< Type of surface (1 = canopy over snow,2 = snow covered ground,3 = canopy over bare ground,4 = bare ground)
+  integer, intent(in) :: ISFC  !< Type of surface (1 = canopy over snow, 2 = snow covered ground, 3 = canopy over bare ground, 4 = bare ground)
   integer, intent(in) :: IG, ILG, IL1, IL2, JL, N
-  integer :: I,J,K
+  integer :: I, J, K
   !
   integer :: IPTBAD, JPTBAD, KPTBAD, IPTBDI, JPTBDI, KPTBDI, LPTBDI, &
              IPTBDJ, JPTBDJ, KPTBDJ, LPTBDJ
@@ -141,14 +141,14 @@ subroutine checkWaterBudget (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & 
   !! This subroutine is called from waterBudgetDriver to perform water balance
   !! checks for each of the four subareas. The flag ISFC indicates
   !! which subarea is being addressed: ISFC=1 for vegetation over
-  !! snow,ISFC=2 for snow over bare ground,ISFC=3 for vegetation
-  !! over bare ground,and ISFC=4 for bare ground. If a problem is
-  !! discovered,a flag is set to the index of the modelled area,and
+  !! snow, ISFC=2 for snow over bare ground, ISFC=3 for vegetation
+  !! over bare ground, and ISFC=4 for bare ground. If a problem is
+  !! discovered, a flag is set to the index of the modelled area, and
   !! a call to errorHandler is performed with an error message. Checks for
   !! unphysical values of certain water balance variables are
-  !! performed against an accuracy limit ACCLMT,currently set to
+  !! performed against an accuracy limit ACCLMT, currently set to
   !! \f$1x10^{-3} kg m^{-2}\f$ or \f$m^3 m^{-3}\f$. The overall water balance of the
-  !! subarea is checked against an accuracy limit BALLMT,currently
+  !! subarea is checked against an accuracy limit BALLMT, currently
   !! set to \f$1x10^{-1} kg m^{-2}\f$. (These values reflect expected roundoff
   !! errors associated with 32-bit computation.)
   !!
@@ -158,9 +158,9 @@ subroutine checkWaterBudget (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & 
   end if
   KPTBAD = 0
   !>
-  !! In loop 100,for canopy-covered subareas,the intercepted rain
+  !! In loop 100, for canopy-covered subareas, the intercepted rain
   !! RAICAN and snow SNOCAN are checked to ensure that if they are
-  !! negative,they are vanishingly small. A similar check is done for
+  !! negative, they are vanishingly small. A similar check is done for
   !! the runoff.
   !!
   do I = IL1,IL2 ! loop 100
@@ -199,15 +199,15 @@ subroutine checkWaterBudget (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & 
   KPTBDI = 0
   LPTBDI = 0
   !>
-  !! In the 150 loop,for all areas that are not continental ice
-  !! sheets (ISAND=-4),the liquid water content in each soil layer is
+  !! In the 150 loop, for all areas that are not continental ice
+  !! sheets (ISAND=-4), the liquid water content in each soil layer is
   !! checked to ensure that it is not larger than the pore volume and
   !! that it is not smaller than the minimum liquid water content
   !! (except for rock layers). The ice content is similarly checked to
-  !! ensure that the sum of it,converted to an equivalent liquid
-  !! water content,plus the minimum water content,is not greater
+  !! ensure that the sum of it, converted to an equivalent liquid
+  !! water content, plus the minimum water content, is not greater
   !! than the pore volume (except for rock layers). It is also checked
-  !! to ensure that if it is negative,it is vanishingly small.
+  !! to ensure that if it is negative, it is vanishingly small.
   !!
   do J = 1,IG ! loop 150
     do I = IL1,IL2
@@ -299,16 +299,16 @@ subroutine checkWaterBudget (ISFC, PCPR, EVAP, RUNOFF, WLOST, RAICAN, SNOCAN, & 
     CANFAC = 0.0
   end if
   !>
-  !! Finally,in loop 300,the overall water balance BAL is calculated
+  !! Finally, in loop 300, the overall water balance BAL is calculated
   !! and compared to BALLMT. BAL is evaluated as the residual of the
-  !! precipitation,the evaporation,the runoff,the water loss term
-  !! WLOST,the change in canopy intercepted liquid and frozen water
-  !! (for vegetation-covered areas),the change in surface ponded
-  !! water,the change in snow pack and snow liquid water content (for
-  !! snow-covered areas),and the changes in the soil layer liquid and
+  !! precipitation, the evaporation, the runoff, the water loss term
+  !! WLOST, the change in canopy intercepted liquid and frozen water
+  !! (for vegetation-covered areas), the change in surface ponded
+  !! water, the change in snow pack and snow liquid water content (for
+  !! snow-covered areas), and the changes in the soil layer liquid and
   !! frozen water contents. If the absolute value of BAL is greater
-  !! than BALLMT,a flag is set,all of the terms entering BAL are
-  !! printed out,and a call to errorHandler is performed.
+  !! than BALLMT, a flag is set, all of the terms entering BAL are
+  !! printed out, and a call to errorHandler is performed.
   !!
   do I = IL1,IL2 ! loop 300
     if (FI(I) > 0. .and. ZSNOW(I) > 0.) XSNOW(I) = 1.0

@@ -15,7 +15,7 @@ module landuseChange
 contains
 
   !-------------------------------------------------------------------------------------------------------------
-  !> \ingroup landuseChange_initializeLandCover
+  !> \ingroup landusechange_initializeLandCover
   !> @{
   !> Initializes and checks over the PFT fractional cover.
   !> @author Joe Melton
@@ -64,7 +64,7 @@ contains
     real, dimension(:,:,:), pointer :: nfcancmxrow
 
     ! local variables:
-    real, dimension(nlat,nmos) :: barfm  !< bare fraction,used in competition runs to ensure that the bare ground fraction is at least seed.
+    real, dimension(nlat,nmos) :: barfm  !< bare fraction, used in competition runs to ensure that the bare ground fraction is at least seed.
     integer, dimension(1) :: bigpft
     real, dimension(nlat,nmos,icc - numcrops)    :: pftarrays ! temp variable
     integer, dimension(nlat,nmos,icc - numcrops) :: indexposj ! temp var
@@ -160,9 +160,9 @@ contains
     return
 
   end subroutine initializeLandCover
-  !> @}
+  !! @}
   !=======================================================================
-  !> \ingroup landuseChange_luc
+  !> \ingroup landusechange_luc
   !> @{
   !> Deals with the changes in the land cover and estimates land use change (LUC)
   !! related carbon emissions. based on whether there is conversion of forests/grassland to crop area,
@@ -228,26 +228,26 @@ contains
     !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
-    real, intent(in) :: grclarea(nilg)       !< gcm grid cell area,km2
+    real, intent(in) :: grclarea(nilg)       !< gcm grid cell area, km2
     logical, intent(in) :: PFTCompetition   !< true if the competition subroutine is on.
     real, intent(in) :: todfrac(nilg,icc)    !< today's fractional coverage of all pfts
     real, intent(in) :: yesfrac(nilg,icc)    !< yesterday's fractional coverage of all pfts
 
-    real, intent(inout) :: gleafmas(nilg,icc)   !< green or live leaf mass in kg c/m2,for the 9 pfts
-    real, intent(inout) :: bleafmas(nilg,icc)   !< brown or dead leaf mass in kg c/m2,for the 9 pfts
-    real, intent(inout) :: stemmass(nilg,icc)   !< stem biomass in kg c/m2,for the 9 pfts
-    real, intent(inout) :: rootmass(nilg,icc)   !< root biomass in kg c/m2,for the 9 pfts
+    real, intent(inout) :: gleafmas(nilg,icc)   !< green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(inout) :: bleafmas(nilg,icc)   !< brown or dead leaf mass in kg c/m2, for the 9 pfts
+    real, intent(inout) :: stemmass(nilg,icc)   !< stem biomass in kg c/m2, for the 9 pfts
+    real, intent(inout) :: rootmass(nilg,icc)   !< root biomass in kg c/m2, for the 9 pfts
     real, intent(inout) :: fcancmx(nilg,icc)    !< max. fractional coverages of ctem's 9 pfts.
     real, intent(inout) :: pfcancmx(nilg,icc)   !< previous max. fractional coverages of ctem's 9 pfts.
-    real, intent(inout) :: vgbiomas(nilg)       !< grid averaged vegetation biomass,kg c/m2
+    real, intent(inout) :: vgbiomas(nilg)       !< grid averaged vegetation biomass, kg c/m2
     ! COMBAK PERLAY
-    real, intent(inout) :: soilcmas(nilg,iccp2) !< soil c mass in kg c/m2,for the 9 pfts + bare
-    real, intent(inout) :: litrmass(nilg,iccp2) !< litter mass in kg c/m2,for the 9 pfts + bare
-    ! real :: soilcmas(nilg,iccp2,ignd) !< soil c mass in kg c/m2,for the 9 pfts + bare
-    ! real :: litrmass(nilg,iccp2,ignd) !< litter mass in kg c/m2,for the 9 pfts + bare
+    real, intent(inout) :: soilcmas(nilg,iccp2) !< soil c mass in kg c/m2, for the 9 pfts + bare
+    real, intent(inout) :: litrmass(nilg,iccp2) !< litter mass in kg c/m2, for the 9 pfts + bare
+    ! real :: soilcmas(nilg,iccp2,ignd) !< soil c mass in kg c/m2, for the 9 pfts + bare
+    ! real :: litrmass(nilg,iccp2,ignd) !< litter mass in kg c/m2, for the 9 pfts + bare
     ! COMBAK PERLAY
-    real, intent(inout) :: gavgltms(nilg)       !< grid averaged litter mass including the LUC product pool,kg c/m2
-    real, intent(inout) :: gavgscms(nilg)       !< grid averaged soil c mass including the LUC product pool,kg c/m2
+    real, intent(inout) :: gavgltms(nilg)       !< grid averaged litter mass including the LUC product pool, kg c/m2
+    real, intent(inout) :: gavgscms(nilg)       !< grid averaged soil c mass including the LUC product pool, kg c/m2
     real, intent(inout) :: nfcancmx(nilg,icc)   !< next max. fractional coverages of ctem's 9 pfts.
     real, intent(inout) :: fcanmx(nilg,icp1)    !< fractional coverages of class 4 pfts (these are found based on new fcancmxs)
     real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
@@ -258,8 +258,8 @@ contains
     real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
     real, intent(out) :: lucemcom(nilg) !< luc related carbon emission losses from combustion u-mol co2/m2.sec
-    real, intent(out) :: lucltrin(nilg) !< luc related input to litter pool,u-mol co2/m2.sec
-    real, intent(out) :: lucsocin(nilg) !< luc related input to soil carbon pool,u-mol co2/m2.sec
+    real, intent(out) :: lucltrin(nilg) !< luc related input to litter pool, u-mol co2/m2.sec
+    real, intent(out) :: lucsocin(nilg) !< luc related input to soil carbon pool, u-mol co2/m2.sec
 
     ! Local variables
     real :: delfrac(nilg,icc)    !<
@@ -270,7 +270,7 @@ contains
     real :: incrlitr             !<
     real :: incrsolc             !<
     real :: chopedbm(nilg)       !< chopped off biomass
-    real :: compdelfrac(nilg,icc)!< with competition on,this is the change in pft frac per timestep
+    real :: compdelfrac(nilg,icc)!< with competition on, this is the change in pft frac per timestep
     real :: fcancmy(nilg,icc)    !<
     integer :: i, j, k, m, n, q
     real :: redubmas1      !<
@@ -294,8 +294,8 @@ contains
     real :: grdenpap(nilg) !< grid averaged densities for paper carbon
     real :: grdenfur(nilg) !< grid averaged densities for furniture carbon
 
-    integer :: fraciord(nilg,icc)!< fractional coverage increase or decrease increase +1,decrease -1
-    integer :: treatind(nilg,icc)!< treatment index for combust,paper, & furniture
+    integer :: fraciord(nilg,icc) !< fractional coverage increase or decrease increase +1, decrease -1
+    integer :: treatind(nilg,icc) !< treatment index for combust, paper, & furniture
     integer :: bareiord(nilg)    !< bare fraction increases or decreases
     integer :: lrgstpft(1)       !<
     logical  luctkplc(nilg)   !<
@@ -319,7 +319,7 @@ contains
     ! -------------------------------------
 
     !> Find/use provided current and previous day's fractional coverage
-    !! if competition is on,we will adjust these later.
+    !! if competition is on, we will adjust these later.
     if (interpol) then ! perform interpolation
       do j = 1,icc
         do i = il1,il2
@@ -385,7 +385,7 @@ contains
       end do ! loop 115
     end if
     !>
-    !> If competition is on,we need to adjust the other fractions for the increase/decrease
+    !> If competition is on, we need to adjust the other fractions for the increase/decrease
     !> in cropland as only the crops areas is now specified.
     if (PFTCompetition) then
 
@@ -426,9 +426,9 @@ contains
 
         do j = 1,icc
           fraciord(i,j) = 0   ! fractional coverage increase or decrease
-          !                           ! increase +1,decrease -1
+          !                           ! increase +1, decrease -1
           abvgmass(i,j) = 0.0 ! above-ground biomass
-          treatind(i,j) = 0   ! treatment index for combust,paper, & furniture
+          treatind(i,j) = 0   ! treatment index for combust, paper, & furniture
           combustc(i,j) = 0.0 ! total carbon from deforestation- combustion
           paperc(i,j) = 0.0   ! total carbon from deforestation- paper
           furnturc(i,j) = 0.0 ! total carbon from deforestation- furniture
@@ -454,14 +454,14 @@ contains
         grsumpap(i) = 0.0          ! similarly for paper,
         grsumfur(i) = 0.0          ! furniture,
         ! COMBAK PERLAY
-        grsumlit(i) = 0.0          ! grid sum of combustion carbon for all chopped PFT's litter,and
+        grsumlit(i) = 0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
         grsumsoc(i) = 0.0          ! soil c
-        grdenlit(i) = 0.0          ! grid averaged densities for litter,and
+        grdenlit(i) = 0.0          ! grid averaged densities for litter, and
         grdensoc(i) = 0.0          ! soil c
         ! do k = 1,ignd
-        !     grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter,and
+        !     grsumlit(i,k)=0.0          ! grid sum of combustion carbon for all chopped PFT's litter, and
         !     grsumsoc(i,k)=0.0          ! soil c
-        !     grdenlit(i,k)=0.0          ! grid averaged densities for litter,and
+        !     grdenlit(i,k)=0.0          ! grid averaged densities for litter, and
         !     grdensoc(i,k)=0.0          ! soil c
         ! end do
         ! COMBAK PERLAY
@@ -513,7 +513,7 @@ contains
           end do ! loop 301
         end do ! loop 300
         !>
-        !> check if the interpol didn't mess up the barefrac. if so,take the
+        !> check if the interpol didn't mess up the barefrac. if so, take the
         !! extra amount from the pft with the largest area.
         !! but you can't take it from crops !
         pftarrays = 0.
@@ -546,7 +546,7 @@ contains
           pbarefra(i) = pbarefra(i) - fcancmy(i,j)
         end do ! loop 310
         !>
-        !> check if the interpol didn't mess up the pbarefra. if so,take the
+        !> check if the interpol didn't mess up the pbarefra. if so, take the
         !! extra amount from the pft with the largest area.
         !! but you can't take it from crops !
         if (pbarefra(i) < 0.0) then
@@ -624,7 +624,7 @@ contains
           call errorHandler('luc', - 6)
         end if
 
-        !> Find above ground biomass and treatment index for combust,paper,
+        !> Find above ground biomass and treatment index for combust, paper,
         !> and furniture
         do j = 1,ican
           do m = reindexPFTs(j,1),reindexPFTs(j,2)
@@ -770,7 +770,7 @@ contains
               grsumfur(i) = grsumfur(i) + furnturc(i,m)
 
               !> litter from the chopped off fraction of the chopped
-              !> off pft needs to be assimilated,and so does soil c from
+              !> off pft needs to be assimilated, and so does soil c from
               !> the chopped off fraction of the chopped pft
               !>
               ! COMBAK PERLAY
@@ -825,7 +825,7 @@ contains
           ! COMBAK PERLAY
         end if
 
-        !> calculate if the chopped off biomass equals the sum of grsumcom(i),grsumpap(i) & grsumfur(i)
+        !> calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) & grsumfur(i)
 
         if (abs(chopedbm(i) - grsumcom(i) - grsumpap(i) - grsumfur(i)) > &
             tolrnce1) then
@@ -841,7 +841,7 @@ contains
           call errorHandler('luc', - 9)
         end if
         !>
-        !! spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts,including the bare fraction.
+        !! spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts, including the bare fraction.
         !!
         !! convert the available c into density
         !!
@@ -1075,9 +1075,9 @@ contains
     return
 
   end subroutine luc
-  !> @}
+  !! @}
   !=======================================================================
-  !> \ingroup landuseChange_adjustLucFracs
+  !> \ingroup landusechange_adjustLucFracs
   !> @{
   !> Adjusts the amount of each pft to ensure that the fraction of
   !> gridcell bare ground is >0.
@@ -1147,9 +1147,9 @@ contains
     end do
 
   end subroutine adjustLucFracs
-  !> @}
+  !! @}
   !=======================================================================
-  !> \ingroup landuseChange_adjustFracsComp
+  !> \ingroup landusechange_adjustFracsComp
   !! @{
   !> Used when PFTCompetition = true. It adjusts the amount of each pft
   !> to allow expansion of cropland.
@@ -1251,7 +1251,7 @@ contains
   end subroutine adjustFracsComp
   !! @}
 
-  !> \namespace landuseChange
+  !> \namespace landusechange
   !> Central module for all land use change operations
   !!
   !! The land use change (LUC) module of CTEM is based on
@@ -1311,5 +1311,4 @@ contains
   !! grow vegetation over the area that was previously a cropland.
   !!
 
-  !> \file
 end module landuseChange

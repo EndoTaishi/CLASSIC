@@ -61,7 +61,7 @@ subroutine soilHeatFluxCleanup (TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, 
   !
   !     * INPUT ARRAYS.
   !
-  real, intent(in) :: TBAR  (ILG,IG) !< Temperatures of soil layers,averaged over modelled area [K]
+  real, intent(in) :: TBAR  (ILG,IG) !< Temperatures of soil layers, averaged over modelled area [K]
   real, intent(in) :: TCTOP (ILG,IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1}] (\lambda)\f$
   real, intent(in) :: TCBOT (ILG,IG) !< Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1}] (\lambda)\f$
   real, intent(in) :: HCP   (ILG,IG) !< Heat capacity of soil layer \f$[J m^{-3} K^{-1}]\f$
@@ -89,7 +89,7 @@ subroutine soilHeatFluxCleanup (TBARPR, G12, G23, TPOND, GZERO, QFREZG, GCONST, 
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: GZROLD,DELZ1
+  real :: GZROLD, DELZ1
   !
   !-----------------------------------------------------------------------
   !

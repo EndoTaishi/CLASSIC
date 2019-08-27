@@ -1,13 +1,6 @@
 !> \file
-!! Computes the direct and diffuse snow transmission using lookup table and current snow conditions.
-!! @author J. Cole
-!!
-!! This subroutine computes the direct and diffuse snow transmission using a
-!! lookup table and information about the current snow pack state.
-!! Transmission are computed for each solar radiation wavelength intervals
-!! so a total of 8 albedos will be returned.  These transmissions can then be
-!! used to compute the total snow transmission based on the by weighting
-!! the results by the direct beam fraction of the incident solar radiation.
+!> Computes the direct and diffuse snow transmission using lookup table and current snow conditions.
+!> @author J. Cole
 !!
 subroutine SNOW_TRANVAL (trandif, trandir, & ! OUTPUT
                          smu, salb, bc_conc, snow_reff, swe, & ! INPUT
@@ -200,3 +193,11 @@ subroutine SNOW_TRANVAL (trandif, trandir, & ! OUTPUT
   return
 
 end subroutine SNOW_TRANVAL
+!> \file
+!> This subroutine computes the direct and diffuse snow transmission using a
+!! lookup table and information about the current snow pack state.
+!! Transmission are computed for each solar radiation wavelength intervals
+!! so a total of 8 albedos will be returned.  These transmissions can then be
+!! used to compute the total snow transmission based on the by weighting
+!! the results by the direct beam fraction of the incident solar radiation.
+!!

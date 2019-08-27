@@ -121,7 +121,7 @@ subroutine waterBaseflow (THLIQX, THICEX, TBARWX, ZPOND, TPOND, & ! Formerly WEN
   real, intent(in) :: THPOR (ILG,IG)   !< Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
   real, intent(in) :: THLRET(ILG,IG)   !< Liquid water retention capacity for organic
   !< soil \f$[m^3 m^{-3} ] (\theta_{l,ret})\f$
-  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content (variable,accounting for unfrozen
+  real, intent(in) :: THLMIN(ILG,IG)   !< Residual soil liquid water content (variable, accounting for unfrozen
   !< water in frozen soils) remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
   real, intent(in) :: BI    (ILG,IG)   !< Clapp and Hornberger empirical "b" parameter [ ] (b)
   real, intent(in) :: PSISAT(ILG,IG)   !< Soil moisture suction at saturation \f$[m] (\Psi_{sat})\f$

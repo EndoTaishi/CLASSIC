@@ -1,5 +1,5 @@
 !> \file
-!! Calculates drag coefficients and related variables
+!> Calculates drag coefficients and related variables
 !! This work has been described in \cite Abdella1996-em.
 !! @author K. Abdella, N. Macfarlane, M. Lazare, D. Verseghy, E. Chan
 !
@@ -54,12 +54,12 @@ subroutine DRCOEF (CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
   real, intent(out)   :: CDM    (ILG) !< STABILITY-DEPENDENT DRAG COEFFICIENT FOR MOMENTUM.
   real, intent(inout) :: CDH    (ILG) !< STABILITY-DEPENDENT DRAG COEFFICIENT FOR HEAT.
   real, intent(inout) :: RIB    (ILG) !< BULK RICHARDSON NUMBER.
-  real, intent(out) :: CFLUX  (ILG) !< CD * MOD(V),BOUNDED BY FREE-CONVECTIVE LIMIT.
+  real, intent(out) :: CFLUX  (ILG) !< CD * MOD(V), BOUNDED BY FREE-CONVECTIVE LIMIT.
 
   !     * INPUT ARRAYS.
   real, intent(in) :: ZOMIN  (ILG) !< ROUGHNESS HEIGHTS FOR MOMENTUM/HEAT NORMALIZED BY REFERENCE HEIGHT.
   real, intent(in) :: ZOHIN  (ILG) !< ROUGHNESS HEIGHTS FOR MOMENTUM/HEAT NORMALIZED BY REFERENCE HEIGHT.
-  real, intent(in) :: CRIB   (ILG) !< -RGAS*SLTHKEF/(VA**2),WHERE SLTHKEF=-LOG(MAX(SGJ(ILEV),SHJ(ILEV)))
+  real, intent(in) :: CRIB   (ILG) !< -RGAS*SLTHKEF/(VA**2), WHERE SLTHKEF=-LOG(MAX(SGJ(ILEV), SHJ(ILEV)))
   real, intent(in) :: TVIRTG (ILG) !< "SURFACE" VIRTUAL TEMPERATURE.
   real, intent(in) :: TVIRTA (ILG) !< LOWEST LEVEL VIRTUAL TEMPERATURE.
   real, intent(in) :: VA     (ILG) !< AMPLITUDE OF LOWEST LEVEL WIND.
@@ -70,7 +70,7 @@ subroutine DRCOEF (CDM, CDH, RIB, CFLUX, QG, QA, ZOMIN, ZOHIN, &
   integer, intent(in) :: ITER(ILG) !< INDEX ARRAY INDICATING IF POINT IS UNDERGOING FURTHER ITERATION OR NOT.
 
   !     * WORK ARRAYS.
-  !> ZOM/ZOH: WORK ARRAYS USED FOR SCALING ZOMIN/ZOHIN ON STABLE SIDE,AS PART OF CALCULATION.
+  !> ZOM/ZOH: WORK ARRAYS USED FOR SCALING ZOMIN/ZOHIN ON STABLE SIDE, AS PART OF CALCULATION.
   real :: ZOM    (ILG)
   real :: ZOH    (ILG)
 

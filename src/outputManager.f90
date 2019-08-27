@@ -1,8 +1,7 @@
 !> \file
 !> Central module for all netcdf output file operations
 !!
-!> @author
-!> Joe Melton and Ed Wisernig
+!> @author Joe Melton and Ed Wisernig
 !ignoreLint(1000)
 module outputManager
 
@@ -87,7 +86,7 @@ module outputManager
 contains
 
   !---------------------------------------------------------------------------------------
-  !> \ingroup output_generateOutputFiles
+  !> \ingroup outputmanager_generateOutputFiles
   !> @{
   !> Runs through all possible variants and calls for the generation of the required output files.
   subroutine generateOutputFiles
@@ -106,10 +105,10 @@ contains
 
   end subroutine generateOutputFiles
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_generateNetCDFFile
+  !> \ingroup outputmanager_generateNetCDFFile
   !> @{
   !> Generates a new (netcdf) variable
   subroutine generateNetCDFFile (nameInCode, timeFreq, outputForm, units, descriptorLabel)
@@ -156,10 +155,10 @@ contains
 
   end subroutine generateNetCDFFile
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_checkFileExists
+  !> \ingroup outputmanager_checkFileExists
   !> @{
   !> Checks if file exists
   logical function checkFileExists (filename)
@@ -171,10 +170,10 @@ contains
 
   end function
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_addVariable
+  !> \ingroup outputmanager_addVariable
   !> @{
   !> Adds the new variable to the list of variables (see the type "netcdfVars")
   integer function addVariable (key, filename)
@@ -193,10 +192,10 @@ contains
 
   end function addVariable
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_validGroup
+  !> \ingroup outputmanager_validGroup
   !> @{
   !> Determines if the current variable matches the project configuration
   logical function validGroup (descriptor,outputForm)
@@ -241,10 +240,10 @@ contains
     end if
   end function validGroup
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_validTime
+  !> \ingroup outputmanager_validTime
   !> @{
   !> Determines whether the current variable matches the project configuration
   logical function validTime (timeFreq, descriptor)
@@ -270,10 +269,10 @@ contains
     validTime = valid
   end function validTime
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_generateFilename
+  !> \ingroup outputmanager_generateFilename
   !> @{
   !> Generates the filename for the current variable
   character(350) function generateFilename (outputForm, descriptor)
@@ -297,10 +296,10 @@ contains
                        trim(descriptor%timeFreq) // trim(suffix) // '.nc'
   end function generateFilename
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_getDescriptor
+  !> \ingroup outputmanager_getDescriptor
   !> @{
   !> Retrieves a variable descriptor based on a given key (e.g. shortName)
   type (outputDescriptor) function getDescriptor (key)
@@ -319,10 +318,10 @@ contains
     print * , "Something went awry with the getDescriptor function"
   end function getDescriptor
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_getIdByKey
+  !> \ingroup outputmanager_getIdByKey
   !> @{
   !> Finds the id of the variable with the following key
   integer function getIdByKey (key)
@@ -339,10 +338,10 @@ contains
     getIdByKey = 0
   end function getIdByKey
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_createNetCDF
+  !> \ingroup outputmanager_createNetCDF
   !> @{
   !> Creates the output netcdf files
   subroutine createNetCDF (fileName, id, outputForm, descriptor, timeFreq, units, nameInCode)
@@ -561,9 +560,9 @@ contains
 
   end subroutine createNetCDF
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
-  !> \ingroup output_determineTime
+  !> \ingroup outputmanager_determineTime
   !> @{
   !> Determines the time vector for this run. This implictly
   !! assumes that leap year meteorological forcing is used for runs with metLoop = 1, otherwise
@@ -764,10 +763,10 @@ contains
 
   end subroutine determineTime
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_writeOutput1D
+  !> \ingroup outputmanager_writeOutput1D
   !> @{
   !> Write model outputs to already created netcdf files
   subroutine writeOutput1D (lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
@@ -838,10 +837,10 @@ contains
 
   end subroutine writeOutput1D
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_checkForTime
+  !> \ingroup outputmanager_checkForTime
   !> @{
   !> Find if a time period is already in the timeIndex of the file
   integer function checkForTime (timeIndex,timeWritten,timeStamp)
@@ -861,10 +860,10 @@ contains
     checkForTime = 0
   end function checkForTime
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_closeNCFiles
+  !> \ingroup outputmanager_closeNCFiles
   !> @{
   !> Close all output netcdfs or just a select file
   subroutine closeNCFiles (incid)
@@ -885,10 +884,10 @@ contains
     end if
 
   end subroutine closeNCFiles
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
 
-  !> \ingroup output_identityVector
+  !> \ingroup outputmanager_identityVector
   !> @{
   pure function identityVector (n) result(res)
     implicit none
@@ -901,9 +900,8 @@ contains
     end forall
   end function identityVector
 
-  !< @}
+  !! @}
   !---------------------------------------------------------------------------------------
-
-  !> \namespace output
-  !> \file
+  !> \namespace outputmanager
+  !! ...
 end module outputManager

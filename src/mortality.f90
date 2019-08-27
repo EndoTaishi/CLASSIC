@@ -226,8 +226,8 @@ contains
 
     integer :: k1, j, m, k2, i, k
 
-    !> Update leaf,stem,and root biomass pools to take into loss due to mortality,and put the
-    !! litter into the litter pool. the mortality for green grasses doesn't generate litter,instead they turn brown.
+    !> Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the
+    !! litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
     do j = 1,ican
       do m = reindexPFTs(j,1),reindexPFTs(j,2)
         do i = il1,il2
@@ -296,8 +296,8 @@ contains
 
   end subroutine updatePoolsMortality
   !! @}
-  !> \namespace mortality
 
+  !> \namespace mortality
   !> @author Vivek Arora, Joe Melton
   !! The PFT-dependent mortality rate (\f$day^{-1}\f$),
   !!
@@ -339,5 +339,4 @@ contains
   !! competitionScheme Eqn 1  is implemented right after area burnt is calculated.
   !!
   !!
-  !> \file
 end module mortality

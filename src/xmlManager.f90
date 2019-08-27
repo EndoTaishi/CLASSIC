@@ -76,7 +76,7 @@ contains
     case ( 'group' )
       currentGroup = trim(attribs(2,1))
       ! If the tag is <variable>, increment the descriptor count and allocate the temporary descriptors.
-      ! Then,add a new descriptor to the array,by copying and extending the array,followed by setting some values.
+      ! Then, add a new descriptor to the array, by copying and extending the array, followed by setting some values.
     case ( 'variable' )
       dormant = trim(attribs(2,3))
       if (dormant == 'false') then
@@ -91,7 +91,7 @@ contains
       else
         currentDormant = .true.
       end if
-      ! If the tag is <variant>, then similar to the above section,extend the array and append a new variant.
+      ! If the tag is <variant>, then similar to the above section, extend the array and append a new variant.
     case ('variant')
       if (dormant == 'false') then
         variantCount = variantCount + 1
@@ -171,5 +171,5 @@ contains
     character(len =* ), intent(in) :: input    !< Char input
     read(input, * ) charToReal
   end function charToReal
-  !> \file
+  !> \namespace xmlmanager
 end module xmlManager

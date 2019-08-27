@@ -43,11 +43,11 @@ module xmlparser
                                                       '>    ', '&gt; ',  &
                                                       '<    ', '&lt; ' /), (/2,3/) )
 
-                                                      !===============================================================================
-                                                      ! Auxiliary routines - private
-                                                      !===============================================================================
+  !===============================================================================
+  ! Auxiliary routines - private
+  !===============================================================================
 
-                                                      private               :: xml_compress_
+  private               :: xml_compress_
   private               :: xml_put_open_tag_
   private               :: xml_put_element_
   private               :: xml_put_close_tag_
@@ -1045,5 +1045,5 @@ contains
     end do
 
   end subroutine xml_remove_tabs_
-
+  !! \namespace xmlparser
 end module xmlparser

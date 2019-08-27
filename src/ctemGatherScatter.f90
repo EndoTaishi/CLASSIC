@@ -1,5 +1,5 @@
 !> \file
-!!
+!>
 !! @author R. Li, J. Melton, E. Chan
 !!
 module ctemGatherScatter
@@ -12,9 +12,9 @@ module ctemGatherScatter
 
 contains
 
-  !> \ingroup ctemGatherScatter_ctemg1
+  !> \ingroup ctemgatherscatter_ctemg1
   !! @{
-  !! Performs initial 'gather' operation on CTEM variables for consistency
+  !> Performs initial 'gather' operation on CTEM variables for consistency
   !! with physics variables gather operations.
   !!
   !! ctemg1 converts variables from the 'row' format (nlat, nmos, ...)
@@ -136,7 +136,7 @@ contains
     real, intent(in) :: tracersoilCMassrot(nlat,nmos,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
     ! Local
-    integer ::  k,l,m
+    integer ::  k, l, m
 
     !----------------------------------------------------------------------
     do k = 1,nml ! loop 100
@@ -217,9 +217,9 @@ contains
   !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup ctemGatherScatter_ctems2
+  !> \ingroup ctemgatherscatter_ctems2
   !! @{
-  !! Performs subsequent scatter operation on biogeochemical variables
+  !> Performs subsequent scatter operation on biogeochemical variables
   !!
   !! ctems2 converts variables from the 'gat' format to the
   !! 'row' format, which is suitable for writing to output/restart
@@ -851,9 +851,9 @@ contains
   end subroutine ctems2
   !! @}
   ! ------------------------------------------------------------------------------------
-  !> \ingroup ctemGatherScatter_ctems2
+  !> \ingroup ctemgatherscatter_ctems2
   !! @{
-  !! Performs subsequent 'gather' operation on CTEM variables for consistency
+  !> Performs subsequent 'gather' operation on CTEM variables for consistency
   !! with physics variables gather operations.
   !!
   !! ctemg2 takes variables in the 'row' format (nlat, nmos, ...)
@@ -1445,13 +1445,11 @@ contains
     return
 
   end subroutine ctemg2
-
   !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \namespace ctemGatherScatter
-  !! Here.
+  !> \namespace ctemgatherscatter
+  !! ...
   !!
-  !> \file
 
 end module ctemGatherScatter

@@ -1,5 +1,5 @@
 !> \file
-!! Calculates screen relative humidity based on input screen
+!> Calculates screen relative humidity based on input screen
 !! temperature, screen specific humidity and surface pressure.
 !!
 !! The formulae used here are consistent with that used elsewhere
@@ -45,7 +45,7 @@ subroutine screenRelativeHumidity (SRH, ST, SQ, PRESSG, FMASK, ILG, IL1, IL2) ! 
       !
       !       * COMPUTE THE FRACTIONAL PROBABILITY OF WATER PHASE
       !       * EXISTING AS A FUNCTION OF TEMPERATURE (FROM ROCKEL,
-      !       * RASCHKE AND WEYRES,BEITR. PHYS. ATMOSPH., 1991.)
+      !       * RASCHKE AND WEYRES, BEITR. PHYS. ATMOSPH., 1991.)
       !
       if (ST(IL) >= T1S) then
         FRACW = 1.0

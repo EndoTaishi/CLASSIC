@@ -10,7 +10,7 @@ module readJobOpts
 contains
 
   ! ---------------------------------------------------
-  !> \ingroup readJobOpts_readFromJobOptions
+  !> \ingroup readjobopts_readFromJobOptions
   !! @{
   !> Reads from the joboptions file, assigns the model switches, and determines the geographic domain
   !! of the simulation. All switches are described in the configurationFiles/template_job_options_file.txt file
@@ -300,12 +300,12 @@ contains
       write( * , * )'  e.g. 90/105/30/45'
       write( * , * )' '
       write( * , * )' ** If you are running a projected grid you must'
-      write( * , * )' use the grid cell indices,not coordinates !** '
+      write( * , * )' use the grid cell indices, not coordinates !** '
       write( * , * )' '
       stop
     end if
 
-    !> Argument 1 is the jobfile,which is openned and the namelist is read
+    !> Argument 1 is the jobfile, which is openned and the namelist is read
     call getarg(1,jobfile)
 
     open(10,file = jobfile,action = 'read',status = 'old')
@@ -315,8 +315,8 @@ contains
     close(10)
 
     !> Parse the 2nd argument to get the domain that the simulation should be run over
-    call getarg(2,argbuff)
-    call parsecoords(argbuff,myDomain%domainBounds)
+    call getarg(2, argbuff)
+    call parsecoords(argbuff, myDomain%domainBounds)
 
     ! Assign some vars that are passed out
     runParamsFile = runparams_file
@@ -329,7 +329,7 @@ contains
   !! @}
   ! ----------------------------------------------------------------------------------
 
-  !> \ingroup readJobOpts_parsecoords
+  !> \ingroup readjobopts_parsecoords
   !! @{
   !> Parses a coordinate string
   !> @author Joe Melton
@@ -368,8 +368,7 @@ contains
   end subroutine parsecoords
   !! @}
 
-  !> \namespace readJobOpts
+  !> \namespace readjobopts
   !> Parses command line arguments to program and reads in joboptions file.
 
-  !> \file
 end module readJobOpts

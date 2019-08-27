@@ -250,7 +250,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: G23CS (ILG) !< Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
   real, intent(out) :: G23G  (ILG) !< Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
   real, intent(out) :: G23GS (ILG) !< Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
-  real, intent(out) :: GT    (ILG) !< Diagnosed effective surface black-body temperature \f$[K] (T_{0,eff} )\f$
+  real, intent(out) :: GT    (ILG) !< Diagnosed effective surface black-body temperature \f$[K] (T_{0, eff} )\f$
   real, intent(out) :: GTBS  (ILG) !< Surface temperature for CCCma black carbon scheme  [K]
   real, intent(out) :: GSNOW (ILG) !< Heat conduction into surface of snow pack  \f$[W m^{-2} ]\f$
   real, intent(out) :: GZEROC(ILG) !< Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
@@ -319,7 +319,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: TCTOPC(ILG,IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
   real, intent(out) :: TCTOPG(ILG,IG) !< Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
   real, intent(out) :: TCSNOW(ILG)    !< Thermal conductivity of snow  \f$[W m^{-1} K^{-1} ]\f$
-  real, intent(out) :: TFLUX (ILG)    !< Product of surface drag coefficient,wind speed and surface-air
+  real, intent(out) :: TFLUX (ILG)    !< Product of surface drag coefficient, wind speed and surface-air
   !< temperature difference \f$[K m s^{-1} ]\f$
   real, intent(out) :: THICEC(ILG,IG) !< Frozen water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
   real, intent(out) :: THICEG(ILG,IG) !< Frozen water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
@@ -441,8 +441,8 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
 
   real, intent(in) :: AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
   real, intent(in) :: AILCGS(ILG,ICTEM)  !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
-  real, intent(in) :: FCANC(ILG,ICTEM)   !< FRACTIONAL COVERAGE OF 8 CARBON PFTs,CANOPY OVER GROUND
-  real, intent(in) :: FCANCS(ILG,ICTEM)  !< FRACTIONAL COVERAGE OF 8 CARBON PFTs,CANOPY OVER SNOW
+  real, intent(in) :: FCANC(ILG,ICTEM)   !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
+  real, intent(in) :: FCANCS(ILG,ICTEM)  !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
   real, intent(in) :: CO2CONC(ILG)       !< ATMOS. CO2 CONC. IN PPM
   real, intent(in) :: CO2I1CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
   real, intent(in) :: CO2I1CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
@@ -466,7 +466,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(in) :: DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
   real, intent(in) :: DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
 
-  integer, intent(in) :: L2MAX,NOL2PFTS(IC)
+  integer, intent(in) :: L2MAX, NOL2PFTS(IC)
   !
   !     * INTERNAL WORK ARRAYS FOR THIS ROUTINE.
   !
@@ -533,12 +533,12 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !     * CALCULATION OF ATMOSPHERIC INPUT FIELDS REQUIRED BY CLASS FROM
   !     * VARIABLES SUPPLIED BY GCM.
   !
-  !> First,two parameters are calculated for later use in the energyBudgetDriver subroutines: the corrected wind speed \f$v_a\f$ ,
+  !> First, two parameters are calculated for later use in the energyBudgetDriver subroutines: the corrected wind speed \f$v_a\f$ ,
   !! and the Coriolis parameter \f$f_{cor}\f$ (describing the effect of the earth’s rotation on the movement of air
   !! according to the reference frame of the earth’s surface). The wind speed correction is applied because it
-  !! is assumed that air is never completely still,so \f$v_a\f$ is specified as the maximum of VMOD and a limiting
+  !! is assumed that air is never completely still, so \f$v_a\f$ is specified as the maximum of VMOD and a limiting
   !! lower value of \f$0.1 m s^{-1}\f$ . The Coriolis parameter is calculated from the angular velocity \f$\Omega\f$ of the earth’s
-  !! rotation (7.29 x 10 -5 radians/s),and the latitude \f$\varphi\f$:
+  !! rotation (7.29 x 10 -5 radians/s), and the latitude \f$\varphi\f$:
   !! \f$f_{cor} = 2 \Omega sin \varphi\f$
   !!
   !! The packing and unpacking of binary files may cause small shifts in the values of variables at certain

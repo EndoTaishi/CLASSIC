@@ -473,7 +473,7 @@ contains
     real, pointer, dimension(:) :: FDLROW  !<
     real, pointer, dimension(:) :: FSIHROW !<
     real, pointer, dimension(:) :: FSVHROW !<
-    real, pointer, dimension(:) :: GCROW   !< Type identifier for grid cell (1 = sea ice,0 = ocean, -1 = land)
+    real, pointer, dimension(:) :: GCROW   !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
     real, pointer, dimension(:) :: GGEOROW !< The geothermal heat flux
     real, pointer, dimension(:) :: PADRROW !<
     real, pointer, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
@@ -515,7 +515,7 @@ contains
     ! These will be allocated the dimension: 'nlat,nmos'
 
     integer, pointer, dimension(:,:) :: IGDRROT !<
-    integer, pointer, dimension(:,:) :: MIDROT  !< Mosaic tile type identifier (1 for land surface,0 for inland lake)
+    integer, pointer, dimension(:,:) :: MIDROT  !< Mosaic tile type identifier (1 for land surface, 0 for inland lake)
     real, pointer, dimension(:,:) :: ALBSROT !<
     real, pointer, dimension(:,:) :: CMAIROT !<
     real, pointer, dimension(:,:) :: GROROT  !<
@@ -692,7 +692,7 @@ contains
     !
     !     Local variables for coupling CLASS and CTEM
     !
-    integer   :: lopcount ! xday,month1,month2,
+    integer   :: lopcount ! xday, month1, month2,
 
     integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
     !< soil carbon pool faster
@@ -720,75 +720,75 @@ contains
     !< we search for that year in the LUCFile
     integer, pointer :: fixedYearOBSWETF !< set the year to use for observed wetland fraction if transientOBSWETF is false.
 
-    integer, pointer :: idisp    !< if idisp=0,vegetation displacement heights are ignored,
+    integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
     !< because the atmospheric model considers these to be part
     !< of the "terrain".
-    !< if idisp=1,vegetation displacement heights are calculated.
-    integer, pointer :: izref    !< if izref=1,the bottom of the atmospheric model is taken
+    !< if idisp=1, vegetation displacement heights are calculated.
+    integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
     !< to lie at the ground surface.
-    !< if izref=2,the bottom of the atmospheric model is taken
+    !< if izref=2, the bottom of the atmospheric model is taken
     !< to lie at the local roughness height.
-    integer, pointer :: islfd    !< if islfd=0,drcoef is called for surface stability corrections
+    integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
     !< and the original gcm set of screen-level diagnostic calculations
     !< is done.
-    !< if islfd=1,drcoef is called for surface stability corrections
+    !< if islfd=1, drcoef is called for surface stability corrections
     !< and sldiag is called for screen-level diagnostic calculations.
-    !< if islfd=2,flxsurfz is called for surface stability corrections
+    !< if islfd=2, flxsurfz is called for surface stability corrections
     !< and diasurf is called for screen-level diagnostic calculations.
-    integer, pointer :: ipcp     !< if ipcp=1,the rainfall-snowfall cutoff is taken to lie at 0 c.
-    !< if ipcp=2,a linear partitioning of precipitation betweeen
+    integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+    !< if ipcp=2, a linear partitioning of precipitation betweeen
     !< rainfall and snowfall is done between 0 c and 2 c.
-    !< if ipcp=3,rainfall and snowfall are partitioned according to
+    !< if ipcp=3, rainfall and snowfall are partitioned according to
     !< a polynomial curve between 0 c and 6 c.
-    integer, pointer :: iwf     !< if iwf=0,only overland flow and baseflow are modelled,and
+    integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
     !< the ground surface slope is not modelled.
-    !< if iwf=n (0<n<4),the watflood calculations of overland flow
+    !< if iwf=n (0<n<4), the watflood calculations of overland flow
     !< and interflow are performed; interflow is drawn from the top
     !< n soil layers.
-    integer, pointer :: ITC !< itc,itcg and itg are switches to choose the iteration scheme to
+    integer, pointer :: ITC !< itc, itcg and itg are switches to choose the iteration scheme to
     !< be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1,a bisection method is
-    !< used; if to 2,the newton-raphson method is used.
-    integer, pointer :: ITCG !< itc,itcg and itg are switches to choose the iteration scheme to
+    !< respectively.  if the switch is set to 1, a bisection method is
+    !< used; if to 2, the newton-raphson method is used.
+    integer, pointer :: ITCG !< itc, itcg and itg are switches to choose the iteration scheme to
     !< be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1,a bisection method is
-    !< used; if to 2,the newton-raphson method is used.
-    integer, pointer :: ITG !< itc,itcg and itg are switches to choose the iteration scheme to
+    !< respectively.  if the switch is set to 1, a bisection method is
+    !< used; if to 2, the newton-raphson method is used.
+    integer, pointer :: ITG !< itc, itcg and itg are switches to choose the iteration scheme to
     !< be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1,a bisection method is
-    !< used; if to 2,the newton-raphson method is used.
-    integer, pointer :: IPAI !< if ipai,ihgt,ialc,ials and ialg are zero,the values of
-    !< plant area index,vegetation height,canopy albedo,snow albedo
+    !< respectively.  if the switch is set to 1, a bisection method is
+    !< used; if to 2, the newton-raphson method is used.
+    integer, pointer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+    !< plant area index, vegetation height, canopy albedo, snow albedo
     !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1,the value of the
+    !< if any of these switches is set to 1, the value of the
     !< corresponding parameter calculated by class is overridden by
     !< a user-supplied input value.
-    integer, pointer :: IHGT !< if ipai,ihgt,ialc,ials and ialg are zero,the values of
-    !< plant area index,vegetation height,canopy albedo,snow albedo
+    integer, pointer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+    !< plant area index, vegetation height, canopy albedo, snow albedo
     !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1,the value of the
+    !< if any of these switches is set to 1, the value of the
     !< corresponding parameter calculated by class is overridden by
     !< a user-supplied input value.
-    integer, pointer :: IALC !< if ipai,ihgt,ialc,ials and ialg are zero,the values of
-    !< plant area index,vegetation height,canopy albedo,snow albedo
+    integer, pointer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+    !< plant area index, vegetation height, canopy albedo, snow albedo
     !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1,the value of the
+    !< if any of these switches is set to 1, the value of the
     !< corresponding parameter calculated by class is overridden by
     !< a user-supplied input value.
-    integer, pointer :: IALS !< if ipai,ihgt,ialc,ials and ialg are zero,the values of
-    !< plant area index,vegetation height,canopy albedo,snow albedo
+    integer, pointer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+    !< plant area index, vegetation height, canopy albedo, snow albedo
     !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1,the value of the
+    !< if any of these switches is set to 1, the value of the
     !< corresponding parameter calculated by class is overridden by
     !< a user-supplied input value.
-    integer, pointer :: IALG !< if ipai,ihgt,ialc,ials and ialg are zero,the values of
-    !< plant area index,vegetation height,canopy albedo,snow albedo
+    integer, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+    !< plant area index, vegetation height, canopy albedo, snow albedo
     !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1,the value of the
+    !< if any of these switches is set to 1, the value of the
     !< corresponding parameter calculated by class is overridden by
     !< a user-supplied input value.
-    integer, pointer :: isnoalb !< if isnoalb is set to 0,the original two-band snow albedo algorithms are used.
-    !< if it is set to 1,the new four-band routines are used.
+    integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
+    !< if it is set to 1, the new four-band routines are used.
     integer, pointer, dimension(:) :: altotcount_ctm ! nlat
     real, pointer, dimension(:,:)  :: todfrac  !(ilg,icc)
     real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
@@ -823,8 +823,8 @@ contains
     logical, pointer :: doMonthOutput
     logical, pointer :: doDayOutput
     logical, pointer :: doHhOutput
-    logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid,false if not. Projected grids can only have
-    !! regions referenced by the indexes,not coordinates,when running a sub-region
+    logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
+    !! regions referenced by the indexes, not coordinates, when running a sub-region
 
 
     ! ROW vars:
@@ -1086,11 +1086,11 @@ contains
     real, pointer, dimension(:,:) :: ltrcemls  !< litter carbon emission disturbance losses, \f$kg c/m^2\f$
     real, pointer, dimension(:,:) :: blfltrdt  !< brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
     real, pointer, dimension(:,:) :: glfltrdt  !< green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
-    real, pointer, dimension(:,:) :: ntchlveg  !< fluxes for each pft: Net change in leaf biomass,u-mol CO2/m2.sec
-    real, pointer, dimension(:,:) :: ntchsveg  !< fluxes for each pft: Net change in stem biomass,u-mol CO2/m2.sec
+    real, pointer, dimension(:,:) :: ntchlveg  !< fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
+    real, pointer, dimension(:,:) :: ntchsveg  !< fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
     real, pointer, dimension(:,:) :: ntchrveg  !< fluxes for each pft: Net change in root biomass,
     !! the net change is the difference between allocation and
-    !! autotrophic respiratory fluxes,u-mol CO2/m2.sec
+    !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
     real, pointer, dimension(:) :: extnprobgat
     real, pointer, dimension(:) :: prbfrhucgat
     real, pointer, dimension(:) :: dayl_maxgat
@@ -1151,7 +1151,7 @@ contains
     real, pointer, dimension(:,:) :: rmrveggat
     real, pointer, dimension(:,:) :: rgveggat
     real, pointer, dimension(:,:) :: litrfallveggat
-    real, pointer, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues,only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, pointer, dimension(:,:) :: reprocost   !< Cost of making reproductive tissues, only non-zero when NPP is positive (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
     real, pointer, dimension(:,:) :: rothrlosgat
     real, pointer, dimension(:,:) :: pfcancmxgat
@@ -1217,7 +1217,7 @@ contains
     !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
     !     * WITHIN THE GCM.
 
-    ! leap year flag (if the switch 'leap' is true,this will be used,otherwise it remains false)
+    ! leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
     logical :: leapnow
 
     !   ----CLASS moss variables-------YW ----------------------------------
@@ -1276,22 +1276,22 @@ contains
     real, pointer, dimension(:,:,:) :: tracerbLeafMassrot      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerstemMassrot       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerrootMassrot       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     real, pointer, dimension(:,:,:,:) :: tracerlitrMassrot       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:,:) :: tracersoilCMassrot      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer, dimension(:,:) :: tracerCO2rot     !< Atmopspheric tracer CO2 concentration (units vary)
 
-    ! allocated with ilg,...:
+    ! allocated with ilg, ...:
     real, pointer, dimension(:) :: tracermossCMassgat      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, pointer, dimension(:) :: tracermossLitrMassgat   !< Tracer mass in moss litter, \f$kg C/m^2\f$
     real, pointer, dimension(:) :: tracerCO2gat     !< Atmopspheric tracer CO2 concentration (units vary)
 
-    ! allocated with nlat,nmos,icc:
+    ! allocated with nlat, nmos, icc:
     real, pointer, dimension(:,:) :: tracergLeafMassgat      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:) :: tracerbLeafMassgat      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:) :: tracerstemMassgat       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:) :: tracerrootMassgat       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
-    ! allocated with nlat,nmos,iccp2,ignd:
+    ! allocated with nlat, nmos, iccp2, ignd:
     real, pointer, dimension(:,:,:) :: tracerlitrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracersoilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
 
@@ -2315,7 +2315,7 @@ contains
 
     !    =================================================================================
 
-    !> NLTEST and NMTEST are the number of grid cells and the number of mosaic tiles per grid cell for this test run,respectively.
+    !> NLTEST and NMTEST are the number of grid cells and the number of mosaic tiles per grid cell for this test run, respectively.
     !> This driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then
     !> of nlat and nmos.
     nltest = nlat
@@ -2327,8 +2327,8 @@ contains
     JLAT = NINT(DLATROW(1))
     DLONROW(1) = longitude
 
-    !> The timestep counter N for the run is initialized to 0,the daily
-    !> averaging counter NCOUNT is set to 1,and the total number of
+    !> The timestep counter N for the run is initialized to 0, the daily
+    !> averaging counter NCOUNT is set to 1, and the total number of
     !> timesteps in the day NDAY is calculated as the number of seconds
     !> in a day (86400) divided by the timestep length DELT.
     N = 0
@@ -2347,21 +2347,21 @@ contains
     !! real :: wetland fractions. Otherwise the negative is used as a switch so the dynamic
     !! wetland extent is used instead of the prescribed.
 
-    !> The grid-average height for the momentum diagnostic variables,ZDMROW,and for the
-    !> energy diagnostic variables,ZDHROW,are hard-coded to the standard anemometer
+    !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
+    !> energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
     !> height of 10 m and to the screen height of 2 m respectively.
     ZDMROW(:) = 10.0
     ZDHROW(:) = 2.0
 
-    !> ZRFMROW and ZRFHROW,the reference heights at which the momentum variables (wind speed) and energy variables
-    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data,these heights
-    !> would vary by time step,but since this version of the driver is set up to use field data,ZRFMROW and ZRFHROW
-    !> refer to the measurement height of these variables,which is fixed. The value is read in from the job options file.
+    !> ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
+    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
+    !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
+    !> refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.
     ZRFMROW = zrfmJobOpt
     ZRFHROW = zrfhJobOpt
 
-    !> ZBLDROW,the atmospheric blending height.  Technically this variable depends on the length scale of the
-    !> patches of roughness elements on the land surface,but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
+    !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
+    !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
     !>  The value is read in from the job options file.
     ZBLDROW = zbldJobOpt
 
@@ -2385,7 +2385,7 @@ contains
         if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
         if (lnduseon .or. (fixedYearLUC /= - 9999)) call getInput('LUC',longitude,latitude) ! Land use change
       else
-        ! Projected grids use the lon and lat indexes,not the actual coordinates
+        ! Projected grids use the lon and lat indexes, not the actual coordinates
         if (dofire) call getInput('POPD',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Population density
         if (dofire) call getInput('LGHT',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Cloud-to-ground lightning frequency
         if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) &
@@ -2393,7 +2393,7 @@ contains
         if (lnduseon .or. (fixedYearLUC /= - 9999)) &
             call getInput('LUC',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Land use change
       end if
-      !> Regardless of whether lnduseon or not,we need to check the land cover that was read in
+      !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
       !! and assign the CLASS PFTs as they are not read in when ctem_on.
       call initializeLandCover
     end if
@@ -2423,8 +2423,8 @@ contains
       call resetYearEnd(nltest, nmtest)
     end if
 
-    !> As the last step in the initialization sequence,the subroutine soilProperties is
-    !> called,to assign soil thermal and hydraulic properties on the basis of the
+    !> As the last step in the initialization sequence, the subroutine soilProperties is
+    !> called, to assign soil thermal and hydraulic properties on the basis of the
     !> textural information read in for each of the soil layers.
 
     call soilProperties(THPROT, THRROT, THMROT, BIROT, PSISROT, GRKSROT, & ! Formerly CLASSB
@@ -2443,7 +2443,7 @@ contains
                            NML, NMW, GCROW, FAREROT, MIDROT, &
                            NLAT, NMOS, ILG, 1, NLTEST, NMTEST)
 
-      ! ctemg1 converts variables from the 'row' format (nlat,nmos,...)
+      ! ctemg1 converts variables from the 'row' format (nlat, nmos, ...)
       ! to the 'gat' format (ilg, ...) which is what the model calculations
       ! are performed on. The ctemg1 subroutine is used to transform the
       ! read in state variables (which come in with the 'row' format from the
@@ -2488,7 +2488,7 @@ contains
     !     **** LAUNCH RUN. ****
 
     !> The do while loop marks the beginning of the time stepping loop
-    !> for the actual run.  N is incremented by 1,and the atmospheric forcing
+    !> for the actual run.  N is incremented by 1, and the atmospheric forcing
     !> data for the current time step are updated for each grid cell or modelled
     !> area (see the manual section on “Data Requirements”).
 
@@ -2510,12 +2510,12 @@ contains
       !> Generally only the total incoming shortwave radiation FSDOWN
       !> is available; so it is partitioned 50:50 between the incoming visible (FSVHROW)
       !> and near-infrared (FSIHROW) radiation.  The first two elements of the
-      !> generalized incoming radiation array,FSSBROL (used for both the ISNOALB=0
+      !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
       !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
       !> The air temperature TAROW is converted from degrees C to K.  The zonal
       !> (ULROW) and meridional (VLROW) components of the wind speed are generally not
       !> used; only the overall wind speed UVROW is
-      !> measured.  However,CLASS does not require wind direction for its calculations,
+      !> measured.  However, CLASS does not require wind direction for its calculations,
       !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
       !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
 
@@ -2536,7 +2536,7 @@ contains
       if (ihour == 0 .and. imin == 0) then
 
         ! Find the daylength of this day
-        daylrow = findDaylength(real(iday),radjrow(1)) ! following rest of code,radjrow is always given index of 1 offline.
+        daylrow = findDaylength(real(iday),radjrow(1)) ! following rest of code, radjrow is always given index of 1 offline.
 
         ! Update the lightning if fire is on and transientLGHT is true
         if (dofire .and. ctem_on) call updateInput('LGHT',runyr,imonth = imonth,iday = iday,dom = DOM)
@@ -2549,10 +2549,10 @@ contains
         ! Check if this is the first day of the year
         if (iday == 1) then
 
-          ! Check if this year is a leap year,and if so adjust the monthdays,monthend and mmday values.
+          ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
           if (leap) call findLeapYears(iyear,leapnow,lastDOY)
 
-          ! If needed,update values that were read in from the accessory input files (popd,wetlands,lightning...)
+          ! If needed, update values that were read in from the accessory input files (popd, wetlands, lightning...)
           if (ctem_on) then
 
             if (transientCO2) call updateInput('CO2',runyr)
@@ -2561,7 +2561,7 @@ contains
             if (dofire .and. transientPOPD) call updateInput('POPD',runyr)
             if (lnduseon) then
               call updateInput('LUC',runyr)
-            else ! If landuse change is not on,then set the next years landcover to be
+            else ! If landuse change is not on, then set the next years landcover to be
               ! the same as this years.
               nfcancmxrow = pfcancmxrow
             end if
@@ -3304,18 +3304,18 @@ contains
 
       end if ! last day of year check
 
-      ! Increment the counter for timestep of the day,or reset it to 1.
+      ! Increment the counter for timestep of the day, or reset it to 1.
       NCOUNT = NCOUNT + 1
       if (NCOUNT > NDAY) then
         NCOUNT = 1
       end if
 
-      !> Now check if the met file is done,needs to loop more,or just continues to the next timestep
+      !> Now check if the met file is done, needs to loop more, or just continues to the next timestep
       if (.not. metDone) then
         !> Increment the metTimeIndex to advance to the next timestep on the next time around
         metTimeIndex = metTimeIndex + 1
       else if (metDone) then
-        !> End of met array read-in reached,decide what to do
+        !> End of met array read-in reached, decide what to do
         if (lopcount == metLoop) then
           !> The lopcount is reached so the run must be over
           run_model = .false.
@@ -3329,7 +3329,7 @@ contains
 
     end do mainModelLoop ! MAIN MODEL LOOP
 
-    ! If we've enabled checksums,now is the time to calculate them.
+    ! If we've enabled checksums, now is the time to calculate them.
     if (c_switch%doChecksums) call checksumCalc(lonIndex, latIndex)
 
     ! deallocate arrays used for input files
@@ -3344,12 +3344,12 @@ contains
 
   end subroutine main_driver
   !! @}
-  !> \file
+  !> \namespace main
   !> Main model driver for CLASSIC in stand-alone mode using specified boundary
   !! conditions and atmospheric forcing.
   !!
-  !! This driver program initializes the run,reads in CLASSIC input files,
-  !! manages the run and the coupling between CLASS and CTEM,calls subroutines
-  !! that aggregate and write outputs,and closes the run for this grid cell.
+  !! This driver program initializes the run, reads in CLASSIC input files,
+  !! manages the run and the coupling between CLASS and CTEM, calls subroutines
+  !! that aggregate and write outputs, and closes the run for this grid cell.
 
 end module main

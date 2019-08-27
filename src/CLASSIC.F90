@@ -61,14 +61,14 @@ contains
   subroutine processLandCells
 
     ! PROCESS LAND CELLS
-    ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells,stored in lonLandCell and latLandCell
+    ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells, stored in lonLandCell and latLandCell
 
     use outputManager,       only : myDomain
     use fileIOModule
 
     implicit none
 
-    ! Since we know the nlat,nmos,ignd,and ilg we can allocate the CLASS and
+    ! Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
     ! CTEM variable structures. This has to be done before call to main_driver.
     call allocClassVars()
     call allocCtemVars()
@@ -97,7 +97,7 @@ contains
 
   !> \ingroup CLASSIC_initializeParallelEnvironment
   !! @{
-  !> If compiled in parallel mode,initializes MPI variables.
+  !> If compiled in parallel mode, initializes MPI variables.
   subroutine initializeParallelEnvironment
     implicit none
 
@@ -116,7 +116,7 @@ contains
   !> \namespace CLASSIC
 
   !>
-  !! @author J. Melton,E. Wisernig
+  !! @author J. Melton, E. Wisernig
   !!
   !! The order of events of the main program are summarized here:
   !!
@@ -132,10 +132,10 @@ contains
   !! Then load the run setup information based on the metadata in the
   !! initialization netcdf file. The bounds given as an argument to
   !! CLASSIC are used to find the start points (srtx and srty)
-  !! in the netcdf file,placing the gridcell on the domain of the
+  !! in the netcdf file, placing the gridcell on the domain of the
   !! input/output netcdfs. In read_modelsetup we use the netcdf to set
-  !! the nmos (number of tiles),ignd (number of soil layers),and ilg (number of latitude
-  !! points times nmos,which defaults to nmos in offline mode) constants.
+  !! the nmos (number of tiles), ignd (number of soil layers), and ilg (number of latitude
+  !! points times nmos, which defaults to nmos in offline mode) constants.
   !! It also opens the initial conditions file that is used below in
   !! read_initialstate as well as the restart file that is written to later.
   !!
@@ -148,14 +148,14 @@ contains
   !! joboptions file and the xml file that describes the metadata for
   !! each output file. The loadoutputDescriptor parses the xml file and
   !! creates a data structure to allow us to make all of the netcdf output
-  !! files,one per variable per time period (daily,monthly,etc.).
+  !! files, one per variable per time period (daily, monthly, etc.).
   !!
   !! (generateOutputFiles) -
   !! Generate the output files based on options in the joboptions file
   !! and the parameters of the initilization netcdf file.
   !!
   !! (processLandCells) -
-  !! Run model over the land grid cells,in parallel or serial
+  !! Run model over the land grid cells, in parallel or serial
   !!
   !! (closeNCFiles) -
   !! Close all of the output netcdf files and the restart file

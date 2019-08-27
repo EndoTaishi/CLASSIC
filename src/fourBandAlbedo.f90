@@ -1,5 +1,5 @@
 !> \file
-!! Driver for four band albedo scheme
+!> Driver for four band albedo scheme
 !! @author M. Namazi, K. V. Salzen, M. Lazare, S. Kharin
 module fourBandAlbedo
 
@@ -14,7 +14,7 @@ module fourBandAlbedo
   public  :: BCCONC
 
 contains
-  !> \ingroup fourBandAlbedo_fourBandDriver
+  !> \ingroup fourbandalbedo_fourBandDriver
   !! @{
   subroutine fourBandDriver (NML, SNOGAT, GCGAT, TSNOGAT, & ! in
                              ZSNOW, TCSNOW, GSNOW, PCSNGAT, WSNOGAT, & ! in
@@ -68,7 +68,7 @@ contains
     GCMAX = - 0.5
 
     ! Define parameters for "climatological" snow grain size.  Use 2 values,
-    ! one for sea-ice (based on discussion with Josh King,ECCC) and one
+    ! one for sea-ice (based on discussion with Josh King, ECCC) and one
     ! for all other land types.  Pass them into the snow grain growth routines.
 
     !> Compute snow grain growth of dry snow
@@ -88,9 +88,9 @@ contains
     ! End FLAG/
 
   end subroutine fourBandDriver
-  !> @}
+  !! @}
   ! ====================================================================
-  !> \ingroup fourBandAlbedo_RDSDRY
+  !> \ingroup fourbandalbedo_RDSDRY
   !! @{
   !! Computes snow grain growth of dry snow
   !! @author M. Namazi, K. V. Salzen, M. Lazare, S. Kharin
@@ -1834,9 +1834,9 @@ contains
     return
 
   end subroutine RDSDRY
-  !> @}
+  !! @}
   ! =======================================================================
-  !> \ingroup fourBandAlbedo_RDSWET
+  !> \ingroup fourbandalbedo_RDSWET
   !! @{
   !! Computes snow grain growth due to wet aging
   !! @author M. Namazi, K. V. Salzen
@@ -1878,9 +1878,9 @@ contains
 
     return
   end
-  !> @}
+  !! @}
   ! =====================================================================
-  !> \ingroup fourBandAlbedo_RDSDPS
+  !> \ingroup fourbandalbedo_RDSDPS
   !! @{
   !! Computes snow grain growth due to deposition
   !! @author M. Namazi &  K. V. Salzen
@@ -1933,9 +1933,9 @@ contains
 
     return
   end subroutine RDSDPS
-  !> @}
+  !! @}
   ! ========================================================================
-  !> \ingroup fourBandAlbedo_BCCONC
+  !> \ingroup fourbandalbedo_BCCONC
   !! @{
   !! Black carbon concentration in snow due to deposition of BC and
   !! scavenging through melting
@@ -1999,10 +1999,9 @@ contains
 
     return
   end subroutine BCCONC
-  !> @}
+  !! @}
   ! ===========================================================================
-  !> \namespace fourBandAlbedo
+  !> \namespace fourbandalbedo
   !> Central module that contains the fourBandAlbedo driver and associated subroutines.
   !!
-  !> \file
 end module fourBandAlbedo

@@ -95,13 +95,13 @@ subroutine snowTempUpdate (GSNOW, TSNOW, WSNOW, RHOSNO, QMELTG, & ! Formerly TSP
   !< surface heat flux to snow surface temperature \f$[W m^{-2}]\f$
   real,intent(in) :: GCOEFFS(ILG) !< Multiplier used in equation relating snow
   !< surface heat flux to snow surface temperature \f$[W m^{-2} K^{-1}]\f$
-  real,intent(in) :: TBAR(ILG,IG) !< Temperatures of soil layers,averaged over
+  real,intent(in) :: TBAR(ILG,IG) !< Temperatures of soil layers, averaged over
   !< modelled area [K]
   real,intent(in) :: DELZ  (IG)   !< Overall thickness of soil layer [m]
   !
   !     * TEMPORARY VARIABLES.
   !
-  real :: GSNOLD,HADD,HCONV,WFREZ
+  real :: GSNOLD, HADD, HCONV, WFREZ
   !
   !-----------------------------------------------------------------------
   !

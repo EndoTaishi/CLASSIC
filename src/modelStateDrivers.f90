@@ -83,7 +83,7 @@ contains
 
   !---
 
-  !> \ingroup modelStateDrivers_read_modelsetup
+  !> \ingroup modelstatedrivers_read_modelsetup
   !! @{
   !> Reads in the model setup from the netcdf initialization file.
   !> The number of latitudes is always 1 offline while the maximum number of
@@ -163,12 +163,12 @@ contains
 
     ! ------------
 
-    !> First,open initial conditions file.
+    !> First, open initial conditions file.
     initid = ncOpen(init_file,NF90_NOWRITE)
 
     if (.not. projectedGrid) then
 
-      !> Next,retrieve dimensions and allocate arrays to hold the lons and lats.
+      !> Next, retrieve dimensions and allocate arrays to hold the lons and lats.
       !! We assume the file has 'lon' and 'lat' for names of longitude and latitude.
 
       totlon = ncGetDimLen(initid,'lon')
@@ -222,7 +222,7 @@ contains
 
       if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
           myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
-        ! Special case,if the domainBounds are 0/0/0/0 then take whole domain.
+        ! Special case, if the domainBounds are 0/0/0/0 then take whole domain.
         print * , ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
         xpos(1) = 1
         xpos(2) = totlon
@@ -249,9 +249,9 @@ contains
       myDomain%srty = minval(ypos)
 
       !> Ensure that the starting indices are within the specified bounds of the domain.
-      !! Note that when the domain is a single point,the 1st/2nd elements of domainBounds are set to the
+      !! Note that when the domain is a single point, the 1st/2nd elements of domainBounds are set to the
       !! the longitude and the 3rd/4th elements are set to the latitude (see readFromJobOptions.f90).
-      !! In this case,the closest grid point to the specified coordinates is used and the check should not be done.
+      !! In this case, the closest grid point to the specified coordinates is used and the check should not be done.
 
       if (myDomain%allLonValues(myDomain%srtx) < myDomain%domainBounds(1) .and. &
           myDomain%domainBounds(2) /= myDomain%domainBounds(1)) myDomain%srtx = myDomain%srtx + 1
@@ -291,13 +291,13 @@ contains
       myDomain%allLonValues = ncGetDimValues(initid, 'lon', count2D = (/totlon,totlat/))
       myDomain%allLatValues = ncGetDimValues(initid, 'lat', count2D = (/totlon,totlat/))
 
-      !> Since the domainBounds are indexes,and not coordinates,we can use them directly.
+      !> Since the domainBounds are indexes, and not coordinates, we can use them directly.
       xpos(1) = myDomain%domainBounds(1)
       xpos(2) = myDomain%domainBounds(2)
       ypos(1) = myDomain%domainBounds(3)
       ypos(2) = myDomain%domainBounds(4)
 
-      !> Special case,if the domainBounds are 0/0/0/0 then take whole domain
+      !> Special case, if the domainBounds are 0/0/0/0 then take whole domain
       if (myDomain%domainBounds(1) + myDomain%domainBounds(2) + &
           myDomain%domainBounds(3) + myDomain%domainBounds(4) == 0) then
         print * , ' domainBounds given = 0/0/0/0 so running whole domain of',totlon,' longitude cells and ',totlat,' latitude cells.'
@@ -400,7 +400,7 @@ contains
 
     nlat = 1
 
-    !> To determine nmos,we use the largest number in the input file variable nmtest
+    !> To determine nmos, we use the largest number in the input file variable nmtest
     !! for the region we are running.
     allocate(nmarray(myDomain%cntx,myDomain%cnty))
     nmarray = ncGet2DVar(initid, 'nmtest', start = [myDomain%srtx,myDomain%srty], &
@@ -411,11 +411,11 @@ contains
 
     ilg = nlat * nmos
 
-    !> Lastly,open some files so they are ready
+    !> Lastly, open some files so they are ready
 
     rsid = ncOpen(rs_file_to_overwrite,nf90_write)
 
-    !> Add global attribute to restart file,storing the rows overwritten.
+    !> Add global attribute to restart file, storing the rows overwritten.
     !> Could be used in the future to simplify stitching of the restart file when the run is split across multiple nodes.
     write(row_bounds,'(I0,x,I0)') ypos
     call ncReDef(rsid)
@@ -431,7 +431,7 @@ contains
         tracerco2id = ncOpen(tracerCO2File,nf90_nowrite)
         ! 14C has different values depending on latitudional bands. The expected
         ! input file is from CMIP6 and it splits the bands as follows:
-        ! Southern Hemisphere (30-90°S),Tropics (30°S-30°N),
+        ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N),
         ! and Northern Hemisphere (30-90°N). Since at this stage of
         ! CLASSIC we don't know the latitude of the cell being simulated
         ! we need to get tracerco2VarName later for 14C simulations.
@@ -472,10 +472,10 @@ contains
 
   end subroutine read_modelsetup
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_read_initialstate
+  !> \ingroup modelstatedrivers_read_initialstate
   !! @{
   !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
   !> @author Joe Melton
@@ -485,17 +485,17 @@ contains
     ! J. Melton
     ! Nov 2016
 
-    use ctemStateVars,only : c_switch,vrot,vgat,tracer
-    use classStateVars,only : class_rot,class_gat
-    use classicParams,only : icc,iccp2,nmos,ignd,icp1,nlat,ican,pi,crop,TFREZ, &
-                                          RSMN,QA50,VPDA,VPDB,PSGA,PSGB, &
-                                          albdif_lut,albdir_lut,trandif_lut,trandir_lut, &
-                                          nsmu,nsalb,nbc,nreff,nswe,nbnd_lut
+    use ctemStateVars,  only : c_switch, vrot, vgat, tracer
+    use classStateVars, only : class_rot, class_gat
+    use classicParams,  only : icc, iccp2, nmos, ignd, icp1, nlat, ican, pi, crop, TFREZ, &
+                               RSMN, QA50, VPDA, VPDB, PSGA, PSGB, &
+                               albdif_lut, albdir_lut, trandif_lut, trandir_lut, &
+                               nsmu, nsalb, nbc, nreff, nswe, nbnd_lut
 
     implicit none
 
     ! arguments
-    integer, intent(in) :: lonIndex,latIndex
+    integer, intent(in) :: lonIndex, latIndex
 
     ! pointers:
     real, pointer, dimension(:,:,:) :: FCANROT      !< Maximum fractional coverage of modelled
@@ -542,7 +542,7 @@ contains
     real, pointer, dimension(:,:)   :: GROROT
     real, pointer, dimension(:)     :: DLATROW !<
     real, pointer, dimension(:)     :: DLONROW !<
-    real, pointer, dimension(:)     :: GCROW   !< Type identifier for grid cell (1 = sea ice,0 = ocean, -1 = land)
+    real, pointer, dimension(:)     :: GCROW   !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
     real, pointer, dimension(:)     :: RADJROW !< Latitude of grid cell (positive north of equator) [rad]
     real, pointer, dimension(:)     :: Z0ORROW !<
     real, pointer, dimension(:)     :: GGEOROW !< Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
@@ -561,7 +561,7 @@ contains
     logical, pointer :: start_bare
     logical, pointer :: lnduseon
     integer, pointer :: isnoalb
-    integer, pointer :: useTracer !< useTracer = 0,the tracer code is not used.
+    integer, pointer :: useTracer !< useTracer = 0, the tracer code is not used.
     ! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the
     !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
@@ -577,8 +577,8 @@ contains
     ! real, pointer, dimension(:,:,:,:) :: litrmassrow          !< Litter mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     ! real, pointer, dimension(:,:,:,:) :: soilcmasrow          !< Soil C mass for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     ! COMBAK PERLAY
-    real, pointer, dimension(:,:,:) :: pstemmassrow         !< Stem mass from previous timestep,is value before fire. used by burntobare subroutine
-    real, pointer, dimension(:,:,:) :: pgleafmassrow        !< Green leaf mass from previous timestep,is value before fire. used by burntobare subroutine
+    real, pointer, dimension(:,:,:) :: pstemmassrow         !< Stem mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, pointer, dimension(:,:,:) :: pgleafmassrow        !< Green leaf mass from previous timestep, is value before fire. used by burntobare subroutine
     real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -591,7 +591,7 @@ contains
     real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
     real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
     real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
-    real, pointer, dimension(:,:) :: aridity           !< aridity index,ratio of potential evaporation to precipitation
+    real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
     real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
     real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
     real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
@@ -601,7 +601,7 @@ contains
     integer, pointer, dimension(:,:,:) :: lfstatusrow
     integer, pointer, dimension(:,:,:) :: pandaysrow
     real, pointer, dimension(:,:,:) :: slopefrac
-    integer, pointer, dimension(:,:) :: ipeatlandrow   !< Peatland switch: 0 = not a peatland,1= bog,2 = fen
+    integer, pointer, dimension(:,:) :: ipeatlandrow   !< Peatland switch: 0 = not a peatland, 1 = bog, 2 = fen
     real, pointer, dimension(:,:) :: Cmossmas          !< Carbon in moss biomass, \f$kg C/m^2\f$
     real, pointer, dimension(:,:) :: litrmsmoss        !< moss litter mass, \f$kg C/m^2\f$
     real, pointer, dimension(:,:) :: dmoss             !< depth of living moss (m)
@@ -609,10 +609,10 @@ contains
 
     ! local variables
 
-    integer :: i,m,j,n
+    integer :: i, m, j, n
     real :: bots
-    integer :: ipnt,albdim
-    integer :: isalb,ismu,isgs,iswe,ibc
+    integer :: ipnt, albdim
+    integer :: isalb, ismu, isgs, iswe, ibc
     real, dimension(:,:,:), allocatable :: tmpalb
 
     ! point pointers:
@@ -757,7 +757,7 @@ contains
     ROOTROT = ncGet3DVar(initid, 'ROOT', start = [lonIndex,latIndex,1,1], count = [1,1,ican,nmos], format = [nlat,nmos,ican])
 
     ! The following six are parameters that can be made to spatially vary by uncommenting below and including them in the
-    ! model init file. However,in practice these parameters are used with spatially invariable values so are read in from
+    ! model init file. However, in practice these parameters are used with spatially invariable values so are read in from
     ! the CLASSIC namelist in classicParams.f90.
     ! RSMNROT = ncGet3DVar(initid, 'RSMN', start = [lonIndex,latIndex,1,1], count = [1,1,ican,nmos], format = [nlat,nmos,ican])
     ! QA50ROT = ncGet3DVar(initid, 'QA50', start = [lonIndex,latIndex,1,1], count = [1,1,ican,nmos], format = [nlat,nmos,ican])
@@ -863,7 +863,7 @@ contains
     end if
 
     ! Complete some initial set up work. The limiting snow
-    ! depth,ZSNL,is assigned its operational value of 0.10 m.
+    ! depth, ZSNL, is assigned its operational value of 0.10 m.
     do I = 1,nlat ! loop 100
       do M = 1,nmos
         do J = 1,IGND
@@ -907,7 +907,7 @@ contains
       grclarea = ncGet1DVar(initid, 'grclarea', start = [lonIndex,latIndex], count = [1,1])
 
       do i = 1,nmos
-        grclarea(i) = grclarea(1)  ! grclarea is ilg,but offline nlat is always 1 so ilg = nmos.
+        grclarea(i) = grclarea(1)  ! grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
       end do
 
       slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex,latIndex,1,1], count = [1,1,8,nmos], format = [nlat,nmos,8])
@@ -921,7 +921,7 @@ contains
       stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
 
-      !> If fire and competition are on,save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+      !> If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
       if (dofire .and. PFTCompetition) then
         do i = 1,nlat
           do m = 1,nmos
@@ -940,7 +940,7 @@ contains
       ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex,latIndex,1,1,1], count = [1,1,iccp2,ignd,nmos], format = [nlat,nmos,iccp2,ignd])
       ! COMBAK PERLAY
 
-      ! If a tracer is being used,read in those values.
+      ! If a tracer is being used, read in those values.
       if (useTracer > 0) then
         tracerGLeafMass = ncGet3DVar(initid, 'tracerGLeafMass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
         tracerBLeafMass = ncGet3DVar(initid, 'tracerBLeafMass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
@@ -997,7 +997,7 @@ contains
 
       end if
 
-      !> if this run uses the competition and starts from bare ground,set up the model state here. this
+      !> if this run uses the competition and starts from bare ground, set up the model state here. this
       !> overwrites what was read in from the initialization file.
 
       if (PFTCompetition .and. start_bare) then
@@ -1033,10 +1033,10 @@ contains
 
   end subroutine read_initialstate
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_write_restart
+  !> \ingroup modelstatedrivers_write_restart
   !! @{
   !> Write out the model restart file to netcdf. We only write out the variables that the model
   !! influences. This overwrites a pre-existing netcdf file.
@@ -1091,7 +1091,7 @@ contains
     real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
     real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
     real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
-    real, pointer, dimension(:,:) :: aridity           !< aridity index,ratio of potential evaporation to precipitation
+    real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
     real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
     real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
     real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
@@ -1238,10 +1238,10 @@ contains
 
   end subroutine write_restart
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_getInput
+  !> \ingroup modelstatedrivers_getInput
   !! @{
   !>  Read in a model input from a netcdf file and store the file's time array
   !! as well as the input values into memory.
@@ -1331,7 +1331,7 @@ contains
 
     select case (trim(inputRequested))
 
-      !> For each of the time varying inputs in this subroutine,we take in the whole dataset
+      !> For each of the time varying inputs in this subroutine, we take in the whole dataset
       !! and later determine the year we need (in updateInput). The general approach is that these
       !! files are light enough on memory demands to make this acceptable.
 
@@ -1398,7 +1398,7 @@ contains
       if (useTracer == 2) then
         ! 14C has different values depending on latitudional bands. The expected
         ! input file is from CMIP6 and it splits the bands as follows:
-        ! Southern Hemisphere (30-90°S),Tropics (30°S-30°N),
+        ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N),
         ! and Northern Hemisphere (30-90°N). We now assign the file
         ! variable name here
         if (latitude > 30.) then
@@ -1556,7 +1556,7 @@ contains
         lonloc = closestCell(lghtid,'lon',longitude)
         latloc = closestCell(lghtid,'lat',latitude)
       else
-        ! For projected grids,we use the index of the cells,not their coordinates.
+        ! For projected grids, we use the index of the cells, not their coordinates.
         lonloc = projLonInd
         latloc = projLatInd
       end if
@@ -1593,14 +1593,14 @@ contains
 
         ! We read in only the suggested year of daily inputs
 
-        ! If we are using leap years,check if that year is a leap year
-        call findLeapYears(fixedYearLGHT,dummyVar,lastDOY)
+        ! If we are using leap years, check if that year is a leap year
+        call findLeapYears(fixedYearLGHT, dummyVar, lastDOY)
 
         ! FLAG Not presently set up for leap years !
         allocate(LGHTFromFile(lastDOY))
         LGHTFromFile = ncGet1DVar(lghtid,trim(lghtVarName),start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
-        ! Lastly,remake the LGHTTime to be only counting for one year for simplicity
+        ! Lastly, remake the LGHTTime to be only counting for one year for simplicity
         allocate(LGHTTime(lastDOY))
         do d = 1,lastDOY
           LGHTTime(d) = real(d)
@@ -1625,7 +1625,7 @@ contains
         lonloc = closestCell(lucid,'lon',longitude)
         latloc = closestCell(lucid,'lat',latitude)
       else
-        ! For projected grids,we use the index of the cells,not their coordinates.
+        ! For projected grids, we use the index of the cells, not their coordinates.
         lonloc = projLonInd
         latloc = projLatInd
       end if
@@ -1689,7 +1689,7 @@ contains
         lonloc = closestCell(obswetid,'lon',longitude)
         latloc = closestCell(obswetid,'lat',latitude)
       else
-        ! For projected grids,we use the index of the cells,not their coordinates.
+        ! For projected grids, we use the index of the cells, not their coordinates.
         lonloc = projLonInd
         latloc = projLatInd
       end if
@@ -1725,13 +1725,13 @@ contains
 
         ! We read in only the suggested year's worth of daily data
 
-        ! If we are using leap years,check if that year is a leap year
+        ! If we are using leap years, check if that year is a leap year
         call findLeapYears(fixedYearOBSWETF, dummyVar, lastDOY)
 
         allocate(OBSWETFFromFile(lastDOY))
         OBSWETFFromFile = ncGet1DVar(obswetid,trim(obswetVarName),start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
-        ! Lastly,remake the OBSWETFTime to be only counting for one year for simplicity
+        ! Lastly, remake the OBSWETFTime to be only counting for one year for simplicity
         allocate(OBSWETFTime(lastDOY))
         do d = 1,lastDOY
           OBSWETFTime(d) = real(d)
@@ -1747,10 +1747,10 @@ contains
 
   end subroutine getInput
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_updateInput
+  !> \ingroup modelstatedrivers_updateInput
   !! @{
   !> Update the input field variable based on the present model timestep
   !> @author Joe Melton
@@ -1779,7 +1779,7 @@ contains
     real, pointer, dimension(:,:) :: ch4concrow
     real, pointer, dimension(:,:) :: popdinrow
     real, pointer, dimension(:,:,:) :: nfcancmxrow
-    real, pointer, dimension(:) :: lightng       !< total \f$lightning,flashes/(km^2 . year)\f$ it is assumed that cloud
+    real, pointer, dimension(:) :: lightng       !< total \f$lightning, flashes/(km^2 . year)\f$ it is assumed that cloud
     !< to ground lightning is some fixed fraction of total lightning.
     real, pointer, dimension(:) :: wetfrac_presgat
     logical, pointer :: transientLGHT
@@ -1898,7 +1898,7 @@ contains
         call abandonCell('updateInput says: The LGHT file does not contain requested time: '//seqstring)
       else
         lightng(1) = LGHTFromFile(arrindex)
-        ! Since lighning is the same for all tiles,and nlat is always 1 offline,then we
+        ! Since lighning is the same for all tiles, and nlat is always 1 offline, then we
         ! can just pass the same values across all ilg.
         do m = 1,size(lightng)
           lightng(m) = lightng(1)
@@ -1926,8 +1926,8 @@ contains
       else
         wetfrac_presgat(1) = OBSWETFFromFile(arrindex)
 
-        ! Since wetland area is presently assumed the same for all tiles,and nlat is
-        ! always 1 offline,then we can just pass the same values across all ilg.
+        ! Since wetland area is presently assumed the same for all tiles, and nlat is
+        ! always 1 offline, then we can just pass the same values across all ilg.
         do m = 1,size(wetfrac_presgat)
           wetfrac_presgat(m) = wetfrac_presgat(1)
         end do
@@ -1939,10 +1939,10 @@ contains
 
   end subroutine updateInput
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_getMet
+  !> \ingroup modelstatedrivers_getMet
   !! @{
   !> Read in the meteorological input from a netcdf file
   !! It is **very** important that the files are chunked correctly (for global and regional runs).
@@ -2008,7 +2008,7 @@ contains
     timeEnd =  readMetEndYear * 10000. + moEnd * 100. + domEnd + (real(nday - 1) * delt / 86400.)
 
     ! Now we read in and append the metTime the timesteps from the time variable of the met file. This
-    ! uses the intrinsic move_alloc,but it simply appends to the array.
+    ! uses the intrinsic move_alloc, but it simply appends to the array.
     allocate(metTime(0))
     validTimestep = 0
     firstIndex = 999999999 ! set to large value
@@ -2024,7 +2024,7 @@ contains
       end if
     end do
 
-    !  Error check,if metTime is of shape 0 then your met year start is
+    !  Error check, if metTime is of shape 0 then your met year start is
     ! not in your met file so throw an error message
     if (size(metTime) == 0) then
       print * ,' *** Check readMetStartYear in your joboptions file '
@@ -2032,7 +2032,7 @@ contains
       call errorHandler('modelStateDrivers:getMet', - 1)
     end if
 
-    ! Check that the first day is Jan 1,otherwise warn the user
+    ! Check that the first day is Jan 1, otherwise warn the user
     firstTime =  parseTimeStamp(metTime(1))
     if (.not. closeEnough(firstTime(5),1.,0.001)) then
       print * ,'Warning,your met file does not start on Jan 1.'
@@ -2048,7 +2048,7 @@ contains
       lonloc = closestCell(metFssId,'lon',longitude)
       latloc = closestCell(metFssId,'lat',latitude)
     else
-      ! For projected grids,we use the index of the cells,not their coordinates.
+      ! For projected grids, we use the index of the cells, not their coordinates.
       ! So the index has been passed in as a real, convert here to an integer.
       lonloc = projLonInd
       latloc = projLatInd
@@ -2074,10 +2074,10 @@ contains
 
   end subroutine getMet
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_updateMet
+  !> \ingroup modelstatedrivers_updateMet
   !! @{
   !> This transfers the met data of this time step from the read-in array to the
   !! instantaneous variables. This also sets iyear to the present year of MET being read in.
@@ -2143,27 +2143,27 @@ contains
     PREROW(i)   = metPre(metTimeIndex)
     TAROW(i)    = metTa(metTimeIndex) ! This is converted from the read-in degree C to K in main_driver !
     QAROW(i)    = metQa(metTimeIndex)
-    ! To prevent a divide by zero in atmosphericVarsCalc,we set this lower limit on the specific humidity.
+    ! To prevent a divide by zero in atmosphericVarsCalc, we set this lower limit on the specific humidity.
     if (QAROW(i) == 0.) then
       QAROW(i) = 1.E-6
-      ! print * ,'Warning,specific humidity of 0 in your input file. metTimeindex = ',metTimeIndex
+      ! print * ,'Warning, specific humidity of 0 in your input file. metTimeindex = ',metTimeIndex
       ! print * ,'setting to 1.E-6 g/kg and moving on (updateMet)'
     end if
 
     UVROW(i)    = metUv(metTimeIndex)
     PRESROW(i)  = metPres(metTimeIndex)
 
-    !> If the end of the timeseries is reached,change the metDone switch to true.
+    !> If the end of the timeseries is reached, change the metDone switch to true.
     if (metTimeIndex ==  size(metTime)) metDone = .true.
 
     return
 
   end subroutine updateMet
 
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_closestCell
+  !> \ingroup modelstatedrivers_closestCell
   !! @{
   !> Finds the closest grid cell in the file
   !> @author Joe Melton
@@ -2189,10 +2189,10 @@ contains
     closestCell = tempintarr(1)
 
   end function closestCell
-  !> @}
+  !! @}
   ! ------------------------------------------------------------------------------------
 
-  !> \ingroup modelStateDrivers_deallocInput
+  !> \ingroup modelstatedrivers_deallocInput
   !! @{
   !> Deallocates the input files arrays
   !> @author Joe Melton
@@ -2218,8 +2218,8 @@ contains
 
   end subroutine deallocInput
   !! @}
-  !> \file
-  !> Central driver to read in,and write out all model state variables (replacing INI and CTM files)
-  !! as well as the model inputs such as MET,population density,land use change,CO2 etc.
+  !> \namespace modelstatedrivers
+  !> Central driver to read in, and write out all model state variables (replacing INI and CTM files)
+  !! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 
 end module modelStateDrivers

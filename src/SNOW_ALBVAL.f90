@@ -1,13 +1,6 @@
 !> \file
-!! Computes the direct and diffuse snow albedo using lookup table and current snow conditions.
+!> Computes the direct and diffuse snow albedo using lookup table and current snow conditions.
 !! @author J. Cole
-!!
-!! This subroutine computes the direct and diffuse snow albedo using a
-!! lookup table and information about the current snow pack state.
-!! Albedos are computed for each solar radiation wavelength intervals
-!! so a total of 8 albedos will be returned.  These albedos can then be
-!! used to compute the total snow albedo based on the by weighting
-!! the results by the direct beam fraction of the incident solar radiation.
 !!
 subroutine SNOW_ALBVAL (albdif, albdir, & ! OUTPUT
                         smu, salb, bc_conc, snow_reff, & ! INPUT
@@ -26,7 +19,7 @@ subroutine SNOW_ALBVAL (albdif, albdir, & ! OUTPUT
   real, intent(in)    :: snow_reff(ILG) !< EFFECTIVE RADIUS OF THE SNOW GRAIN [MICRONS]
   real, intent(in)    :: swe(ILG) !< SNOW WATER EQUIVALENT (SNOWPACK DENSITY*SNOW PACK DEPTH) [KG/M^2]
   real, intent(in)    :: salb(ILG,NBND) !< ALBEDO OF THE UNDERLYING SURFACE [UNITLESS]
-  integer, intent(in) :: c_ind(ILG) !< INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT 1-YES,0-NO
+  integer, intent(in) :: c_ind(ILG) !< INDICATOR THAT A CALCULATION SHOULD BE PERFORMED FOR THIS POINT 1-YES, 0-NO
   integer, intent(in) :: il1 !< STARTING POINT FOR ALBEDO CALCULATIONS
   integer, intent(in) :: il2 !< ENDING POINT FOR ALBEDO CALCULATIONS
   integer, intent(in) :: ilg !< NUMBER OF POINTS FOR WHICH TO COMPUTE ALBEDOS
@@ -221,3 +214,10 @@ subroutine SNOW_ALBVAL (albdif, albdir, & ! OUTPUT
 
   return
 end subroutine SNOW_ALBVAL
+!> \file
+!> This subroutine computes the direct and diffuse snow albedo using a
+!! lookup table and information about the current snow pack state.
+!! Albedos are computed for each solar radiation wavelength intervals
+!! so a total of 8 albedos will be returned.  These albedos can then be
+!! used to compute the total snow albedo based on the by weighting
+!! the results by the direct beam fraction of the incident solar radiation.

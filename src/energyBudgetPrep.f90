@@ -660,12 +660,12 @@ subroutine energyBudgetPrep (THLIQC, THLIQG, THICEC, THICEG, TBARC, TBARG, & ! F
         TCBOTG(I,J) = TCSAND
       else if (ISAND(I,J) == - 2) then
         !             FLAG - Needs to be reviewed.   EC Feb 032017.
-        !                    For some peatland cases,thliqg+thiceg > thpor-0.01 at bottom layer
-        !                    and wtable remains 9999,causing wrong values of socres_peat
-        !                    to be computed in hetresPeat,leading to crash in ctem loop 1020
+        !                    For some peatland cases, thliqg+thiceg > thpor-0.01 at bottom layer
+        !                    and wtable remains 9999, causing wrong values of socres_peat
+        !                    to be computed in hetresPeat, leading to crash in ctem loop 1020
         !                    during calculation of peatdep.
         !                    Testing shows that commenting out the following IF condition
-        !                    produces the same WTABLE as YW's original code,except that the
+        !                    produces the same WTABLE as YW's original code, except that the
         !                    crash is avoided.
         !                    Removing the check for WTABLE<9000 also doesn't change the result.
         !                    This ensures that the water table is at least in the last layer.

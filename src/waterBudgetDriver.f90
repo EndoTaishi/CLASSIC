@@ -200,7 +200,7 @@ subroutine waterBudgetDriver (THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerl
   real, intent(in) :: TSUBFL(ILG)  !< Temperature of interflow from sides of soil column [K]
   real, intent(in) :: TBASFL(ILG)  !< Temperature of base flow from bottom of soil column [K]
   real, intent(inout) :: EVAP  (ILG)  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1}]\f$
-  real, intent(inout) :: QFLUX (ILG)  !< Product of surface drag coefficient,wind speed and surface-air specific humidity difference \f$[m s^{-1}]\f$
+  real, intent(inout) :: QFLUX (ILG)  !< Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1}]\f$
   real, intent(in) :: RHOAIR (ILG) !< Density of air \f$[kg m^{-3}]\f$
   !
   real, intent(in) :: QFC  (ILG,IG) !< Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
@@ -209,7 +209,7 @@ subroutine waterBudgetDriver (THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerl
   !
   !     * I/O FIELDS PASSED THROUGH CLASS.
   !
-  !(In composite definitions,suffix C or CO = vegetation over
+  !(In composite definitions, suffix C or CO = vegetation over
   ! ground; G or GO = bare ground; CS = vegetation over snow cover
   ! GS = bare snow cover.)
   !
@@ -366,7 +366,7 @@ subroutine waterBudgetDriver (THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerl
   real :: RADD(ILG), SADD(ILG)
   !
   !     * INTERNAL WORK FIELDS FOR waterFlowInfiltrate/waterFlowNonInfiltrate (AND THEIR CALLED
-  !     * ROUTINES (I.E. waterInfiltrateUnsat,waterInfiltrateSat,waterBaseflow) AND iceSheetBalance.
+  !     * ROUTINES (I.E. waterInfiltrateUnsat, waterInfiltrateSat, waterBaseflow) AND iceSheetBalance.
   !
   real :: ZMAT(ILG,IGP2,IGP1)
   !
@@ -437,7 +437,7 @@ subroutine waterBudgetDriver (THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerl
   !! \text{iceSheetBalance}  & \text{Energy and water budget of ice sheets}                          &   \text{GS,G}    \\ \hline
   !! \text{waterFlowInfiltrate}  & \text{Infiltraiton of water into soil}                                & \text{CS,GS,C,G} \\ \hline
   !! \text{waterFlowNonInfiltrate}  & \text{Soil water movement in response to gravity and suction forces}  & \text{CS,GS,C,G} \\ \hline
-  !! \text{waterUpdates}  & \text{Step ahead soil layer temperatures,check for freezing/thawing} & \text{CS,GS,C,G} \\ \hline
+  !! \text{waterUpdates}  & \text{Step ahead soil layer temperatures, check for freezing/thawing} & \text{CS,GS,C,G} \\ \hline
   !! \text{checkWaterBudget}  & \text{Check subarea moisture balances for closure}                    & \text{CS,GS,C,G} \\ \hline
   !! \text{snowAging} & \text{Temporal variation of snow albedo and density}                  &   \text{CS,GS}   \\ \hline
   !! \end{array}
@@ -1094,7 +1094,7 @@ subroutine waterBudgetDriver (THLIQ, THICE, TBAR, TCAN, RCAN, SNCAN, & ! Formerl
   !> Finally, subroutine classGrowthIndex is called to update the vegetation
   !! growth index.
   !!
-  call classGrowthIndex(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL) ! Formerly CGROW
+  call classGrowthIndex(GROWTH, TBAR, TA, FC, FCS, ILG, IG, IL1, IL2, JL) ! Formerly CGROW
   !
   return
 end subroutine waterBudgetDriver

@@ -282,7 +282,7 @@ subroutine waterCalcPrep (THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! Fo
   real, intent(in) :: EVPCSG(ILG)  !< Evaporation from snow under vegetation \f$[m s^{-1}]\f$
   real, intent(inout) :: EVAPGS(ILG)  !< Evaporation from snow on bare ground \f$[m s^{-1}]\f$
   real, intent(in) :: RPCP  (ILG)  !< Rainfall rate over modelled area \f$[m s^{-1}]\f$
-  real, intent(in) :: TRPCP (ILG)  !,Rainfall temperature over modelled area [C]
+  real, intent(in) :: TRPCP (ILG)  !< Rainfall temperature over modelled area [C]
   real, intent(in) :: SPCP  (ILG)  !< Snowfall rate over modelled area \f$[m s^{-1}]\f$
   real, intent(in) :: TSPCP (ILG)  !< Snowfall temperature over modelled area [C]
   real, intent(in) :: RHOSNI(ILG)  !< Density of fresh snow \f$[kg m^{-3}]\f$
@@ -324,7 +324,7 @@ subroutine waterCalcPrep (THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO, & ! Fo
   !
   !-----------------------------------------------------------------------
   !>
-  !! In the first three loops,various subarea arrays and internal
+  !! In the first three loops, various subarea arrays and internal
   !! waterBudgetDriver variables are initialized.
   !!
   !     * INITIALIZE 2-D ARRAYS.

@@ -55,7 +55,7 @@ subroutine FLXSURFZ (CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
   !                               - Correction of the log-linear profile
   !                               - Double precision for rib calculations
   !                               - VAMIN is now retreived from CLASSD3
-  ! 020      J. Melton            - Made some reals coded as ints,explicitly real
+  ! 020      J. Melton            - Made some reals coded as ints, explicitly real
   !
   ! Object
   !          to calculate surface layer transfer coefficients and fluxes
@@ -262,7 +262,7 @@ subroutine FLXSURFZ (CDM, CDH, CTU, RIB, FTEMP, FVAP, ILMO, &
 contains
 
   !   The following code is taken from the RPN/CMC physics library file
-  !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk,v
+  !   /usr/local/env/armnlib/modeles/PHY_shared/ops/v_4.5/RCS/stabfunc2.cdk, v
 
   !   Internal function FMI
   !   Stability function for momentum in the unstable regime (ilmo<0)

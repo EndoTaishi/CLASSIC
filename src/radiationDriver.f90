@@ -1,5 +1,5 @@
 !> \file
-!! Organizes calculation of radiation-related and other
+!> Organizes calculation of radiation-related and other
 !! surface parameters.
 !! @author D. Verseghy, M. Lazare, J. Cole, Y. Wu, J. Melton
 !!
@@ -370,7 +370,7 @@ subroutine radiationDriver (FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASS
   integer, intent(in) :: ICTEM, NOL2PFTS(IC)
 
   logical, intent(in) :: ctem_on
-  integer, intent(in)  :: ipeatland(ilg) !< Peatland flag: 0 = not a peatland,1= bog,2 = fen
+  integer, intent(in)  :: ipeatland(ilg) !< Peatland flag: 0 = not a peatland, 1 = bog, 2 = fen
   !
   !     * INTERNAL WORK ARRAYS FOR THIS AND ASSOCIATED SUBROUTINES.
   !
@@ -387,26 +387,26 @@ subroutine radiationDriver (FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASS
   !
   !------------------------------------------------------------------
   !>
-  !! In the first loop,the depth of snow \f$z_s\f$ is calculated from the
+  !! In the first loop, the depth of snow \f$z_s\f$ is calculated from the
   !! snow mass \f$W_s\f$ and density \f$\varrho_s\f$ as:
   !! \f$ z_s = W_s / \varrho_s. \f$
   !!
   !! If the calculated value of \f$z_s\f$ is less than the limiting snow
-  !! depth \f$z_{s,lim}\f$, the snow cover is deemed to be discontinuous. The
+  !! depth \f$z_{s, lim}\f$, the snow cover is deemed to be discontinuous. The
   !! fractional snow coverage \f$X_s\f$ of the modelled area is evaluated
   !! as
-  !! \f$ X_s = z_s / z_{s,lim} \f$
-  !! and the snow depth is reset to \f$z_{s,lim}\f$. The water content of the
+  !! \f$ X_s = z_s / z_{s, lim} \f$
+  !! and the snow depth is reset to \f$z_{s, lim}\f$. The water content of the
   !! snow pack is corrected according to the new snow fractional area.
   !!
-  !! The subarea albedo and transmissivity arrays (for canopy,bare
-  !! ground,canopy over snow and snow over bare ground) are next
-  !! initialized to zero,and the four radiationDriver subsidiary subroutines
+  !! The subarea albedo and transmissivity arrays (for canopy, bare
+  !! ground, canopy over snow and snow over bare ground) are next
+  !! initialized to zero, and the four radiationDriver subsidiary subroutines
   !! are called in turn: calcLandSurfParams to evaluate various model parameters
-  !! for the four subareas,groundAlbedo to calculate the ground surface albedo,
-  !! snowAlbedoTransmiss to calculate the snow albedo and transmissivity,and canopyAlbedoTransmiss
-  !! to calculate the canopy albedo,transmissivity and stomatal resistance.
-  !! Finally,the overall visible,near-infrared and total albedos for the
+  !! for the four subareas, groundAlbedo to calculate the ground surface albedo,
+  !! snowAlbedoTransmiss to calculate the snow albedo and transmissivity, and canopyAlbedoTransmiss
+  !! to calculate the canopy albedo, transmissivity and stomatal resistance.
+  !! Finally, the overall visible, near-infrared and total albedos for the
   !! modelled area are determined as weighted averages over the four subareas.
   !!
   !     * CALCULATION OF SNOW DEPTH ZSNOW AND FRACTIONAL SNOW COVER
@@ -452,7 +452,7 @@ subroutine radiationDriver (FC, FG, FCS, FGS, ALVSCN, ALIRCN, & ! Formerly CLASS
   end do ! loop 100
   !
   ! ===================== CTEM =====================================\
-  !     IF USING DYNAMIC VEGETATION COMPONENT OF CTEM,REPLACE ALBEDOS
+  !     IF USING DYNAMIC VEGETATION COMPONENT OF CTEM, REPLACE ALBEDOS
   !     THAT ARE BASED ON CTEM.
 
   if (ctem_on) then

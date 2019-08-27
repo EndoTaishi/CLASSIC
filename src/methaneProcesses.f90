@@ -1,15 +1,20 @@
+!> \file
+!> ...
 module methaneProcesses
 
   implicit none
 
+  ! Subroutines
   public :: wetland_methane
   public :: soil_ch4uptake
 
 contains
 
-  !! Oxidation of methane in upland soils
-  !! @author J. Melton
-  !! Coded up based on \cite Curry2007-du.
+  ! ------------------------------------------------------------------
+  !> \ingroup methaneprocesses_soil_ch4uptake
+  !! @{
+  !> ....
+  !> @author J. Melton
   subroutine soil_ch4uptake (il1, il2, ilg, tbar, & ! In
                              bi, thlq, thic, psis, & ! In
                              fcan, wetfdyn, wetfrac, & ! In
@@ -56,7 +61,7 @@ contains
     real :: k_oxidr                         !< First-order oxidation rate constant \f$(s^-1)\f$
     real :: r_T                             !< Temperature factor used in determination of rate constant (-)
     real :: r_SM                            !< Soil moisture factor used in determination of rate constant (-)
-    integer :: i,j,layer                    !< Counters
+    integer :: i, j, layer                  !< Counters
     real :: psi                             !< Soil moisture suction / matric potential (m)
     real :: r_C                             !< Factor to account for croplands
     real :: r_W                             !< Factor to account for wetlands
@@ -66,7 +71,7 @@ contains
     !> Begin
     !!
     !! The soil oxidation methane sink is assumed to only operate in the first model
-    !! soil layer,thus we only consider that layer here.
+    !! soil layer, thus we only consider that layer here.
     layer = 1
 
     do i = IL1,IL2
@@ -78,7 +83,7 @@ contains
 
       !> Find the diffusion coefficient in soil (D_soil)
 
-      !> First the temperature factor,G_T:
+      !> First the temperature factor, G_T:
       G_T = 1.0 + 0.0055 * Tsoil
 
       !> Find the air filled porosity,THP_air:
@@ -92,9 +97,9 @@ contains
       end if
 
       !> The BI  (Clapp and Hornberger b-term) is already calculated by CLASS as:
-      !> BI = 15.9 * f_clay + 2.91,thus we use that value.
+      !> BI = 15.9 * f_clay + 2.91, thus we use that value.
 
-      !> G_soil is the influence of the soil texture,moisture,and porosity:
+      !> G_soil is the influence of the soil texture, moisture, and porosity:
       G_soil = THP_tot ** (4./3.) * (THP_air / THP_tot) ** (1.5 + 3. / BI(i,layer))
 
       !> The diffusion coefficient of CH4 in soil is then:
@@ -102,7 +107,7 @@ contains
 
       !> Determine the first-order oxidation rate constant (k_oxidr)
 
-      !> First find the temperature term,r_T (FLAG note that Charles' original code does not have the high temp limit !)
+      !> First find the temperature term, r_T (FLAG note that Charles' original code does not have the high temp limit !)
 
       if (Tsoil < 0.0 .and. Tsoil >= - 10.0) then
         r_T = (0.1 * Tsoil + 1.0) ** 2
@@ -143,7 +148,7 @@ contains
         r_W = 1.0 - wetfdyn(i)
       end if
 
-      !> Find the surface flux (CH4_soills) for each tile,then for each gridcell
+      !> Find the surface flux (CH4_soills) for each tile, then for each gridcell
 
       CH4_soills(i) =  atm_CH4(i) * r_C * r_W * g_0 * sqrt(D_soil * k_oxidr)
 
@@ -155,10 +160,13 @@ contains
     end do ! loop 10
 
   end subroutine soil_ch4uptake
+  !> @}
+  ! ------------------------------------------------------------------
 
+  !> \ingroup methaneprocesses_wetland_methane
+  !! @{
   !> Prognostic determination of wetland fractional coverage and emission of wetland methane subroutine
-  !! @author B. Amiro, J. Melton, V. Arora
-  !!
+  !> @author B. Amiro, J. Melton, V. Arora
   subroutine wetland_methane (hetrores, il1, il2, ilg, wetfrac, &       ! inputs
                               thliqg, currlat, sand, slopefrac, ta, &   ! inputs
                               ch4WetSpec, wetfdyn, ch4WetDyn)         ! outputs
@@ -184,15 +192,15 @@ contains
     integer, intent(in) :: il1                      !< il1=1
     integer, intent(in) :: il2                      !< il2=ilg
     real, dimension(ilg), intent(in) :: hetrores    !< heterotrophic respiration from main ctem program calculated as sum of litres + socres
-    real, dimension(ilg), intent(in) :: ta          !< air temperature,k
+    real, dimension(ilg), intent(in) :: ta          !< air temperature, k
     real, dimension(ilg), intent(in) :: wetfrac     !< prescribed fraction of wetlands in a grid cell
     real, dimension(ilg), intent(in) :: currlat     !< centre latitude of grid cells in degrees
-    real, dimension(ilg,8), intent(in) :: slopefrac !< Fraction of gridcell flatter than slope thresholds (0.025,0.05,0.1,0.15,0.20,0.25,0.3 and 0.35 percent slope thresholds)
+    real, dimension(ilg,8), intent(in) :: slopefrac !< Fraction of gridcell flatter than slope thresholds (0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
     real, dimension(ilg,ignd), intent(in) :: thliqg !< liquid soil moisture content (fraction)
     real, dimension(ilg,ignd), intent(in) :: sand   !< percentage sand in soil layers
     real, dimension(ilg), intent(out) :: ch4WetSpec    !< methane flux from wetlands calculated using hetrores in umol ch4/m2.s
     real, dimension(ilg), intent(out) :: wetfdyn    !< dynamic gridcell wetland fraction determined using  slope and soil moisture
-    real, dimension(ilg), intent(out) :: ch4WetDyn    !< methane flux from wetlands calculated using hetrores and wetfdyn,in umol ch4/m2.s
+    real, dimension(ilg), intent(out) :: ch4WetDyn    !< methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s
 
     ! local variables
     real, dimension(ilg) :: wetresp !< heterotrophic wetland respiration
@@ -230,17 +238,17 @@ contains
 
     !> Set up the latitude bounds based on the parameters read in from the namelist file.
     !! If soil wetness meets a latitude specific threshold then the slope based wetland
-    !! fraction is wet and is an actual wetland,else not. As well the ratio of upland to
+    !! fraction is wet and is an actual wetland, else not. As well the ratio of upland to
     !! wetland respiration is assumed to be latitidionally varying. This is intended to
     !! reflect the differnt wetland types in the tropics (floodplain types) vs. those in
     !! higher latitudes (peatlands). This is a very coarse approximation and should be
     !! replaced once we have CH4 in our peatland module. The choice of wtdryres instead
-    !! of ratioCH4 to try and mimic this is arbitrary,either parameter could be used since
+    !! of ratioCH4 to try and mimic this is arbitrary, either parameter could be used since
     !! they are simply multiplicative.
 
     do i = il1,il2
 
-      if (currlat(i) >= lat_thrshld1) then ! Northern high lats,all area north of lat_thrshld1
+      if (currlat(i) >= lat_thrshld1) then ! Northern high lats, all area north of lat_thrshld1
         low_mois_lim = soilw_thrshN(1)
         mid_mois_lim = soilw_thrshN(2)
         ! upp_mois_lim = soilw_thrshN(3)
@@ -250,7 +258,7 @@ contains
         mid_mois_lim = soilw_thrshE(2)
         ! upp_mois_lim = soilw_thrshE(3)
         upvslow = wtdryres(2)
-      else ! S. Hemi,everything else below lat_thrshld2
+      else ! S. Hemi, everything else below lat_thrshld2
         low_mois_lim = soilw_thrshS(1)
         mid_mois_lim = soilw_thrshS(2)
         ! upp_mois_lim = soilw_thrshS(3)
@@ -283,7 +291,7 @@ contains
       wetfdyn(i) = min(1.0,max(0.0,slope * soil_wetness + intercept))
 
       !    new dynamic calculation
-      !    same as ch4WetSpec & 2,but wetfrac replaced by wetfdyn
+      !    same as ch4WetSpec & 2, but wetfrac replaced by wetfdyn
 
       wetresp(i) = hetrores(i) * upvslow * wetfdyn(i)
       ch4WetDyn(i) = ratioch4 * wetresp(i)
@@ -292,5 +300,9 @@ contains
 
     return
   end subroutine wetland_methane
+  !! @}
+  !> \namespace methaneprocesses
+  !! ...
 
+  !> \file
 end module methaneProcesses

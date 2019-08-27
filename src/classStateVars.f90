@@ -6,7 +6,6 @@
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs
 
-
 module classStateVars
 
   ! J. Melton Nov 2016
@@ -34,7 +33,7 @@ module classStateVars
     integer, allocatable, dimension(:) :: JWMOS     !< Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
     integer, allocatable, dimension(:) :: IGDRGAT   !< Index of soil layer in which bedrock is encountered
 
-    real, allocatable, dimension(:) :: GCGAT   !< Type identifier for grid cell (1 = sea ice,0 = ocean, -1 = land)
+    real, allocatable, dimension(:) :: GCGAT   !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
     real, allocatable, dimension(:) :: TZSGAT  !< Vertical temperature gradient in a snow pack
     real, allocatable, dimension(:) :: PCSNGAT !< Snow fall flux \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: ALBSGAT !< Snow albedo [ ]
@@ -154,7 +153,7 @@ module classStateVars
     real, allocatable, dimension(:) :: QFGGAT  !< Diagnosed water vapour flux from ground \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: QFNGAT  !< Diagnosed water vapour flux from snow pack \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: QFSGAT  !< Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
-    real, allocatable, dimension(:) :: QFXGAT  !< Product of surface drag coefficient,wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
+    real, allocatable, dimension(:) :: QFXGAT  !< Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1} ]\f$
     real, allocatable, dimension(:) :: QGGAT   !< Diagnosed surface specific humidity \f$[kg kg^{-1} ]\f$
     real, allocatable, dimension(:) :: ROFGAT  !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: ROFBGAT !< Base flow from bottom of soil column \f$[kg m^{-2} s^{-1} ]\f$
@@ -167,7 +166,7 @@ module classStateVars
     real, allocatable, dimension(:) :: SFCTGAT !< Diagnosed screen-level air temperature [K]
     real, allocatable, dimension(:) :: SFCUGAT !< Diagnosed anemometer-level zonal wind \f$[m s^{-1} ]\f$
     real, allocatable, dimension(:) :: SFCVGAT !< Diagnosed anemometer-level meridional wind \f$[m s^{-1} ]\f$
-    real, allocatable, dimension(:) :: TFXGAT  !< Product of surface drag coefficient,wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
+    real, allocatable, dimension(:) :: TFXGAT  !< Product of surface drag coefficient, wind speed and surface-air temperature difference \f$[K m s^{-1} ]\f$
     real, allocatable, dimension(:) :: TROBGAT !< Temperature of base flow from bottom of soil column [K]
     real, allocatable, dimension(:) :: TROFGAT !< Temperature of total runoff [K]
     real, allocatable, dimension(:) :: TROOGAT !< Temperature of overland flow from top of soil column [K]
@@ -389,7 +388,7 @@ module classStateVars
     real, allocatable, dimension(:) :: FDLROW  !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:) :: FSIHROW !< Near infrared shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:) :: FSVHROW !< Visible shortwave radiation incident on a horizontal surface \f$[W m^{-2} ]\f$
-    real, allocatable, dimension(:) :: GCROW   !< Type identifier for grid cell (1 = sea ice,0 = ocean, -1 = land)
+    real, allocatable, dimension(:) :: GCROW   !< Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
     real, allocatable, dimension(:) :: GGEOROW !<
     real, allocatable, dimension(:) :: PADRROW !<
     real, allocatable, dimension(:) :: PREROW  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
@@ -498,7 +497,7 @@ module classStateVars
     ! These will be allocated the dimension: 'nlat,nmos'
 
     integer, allocatable, dimension(:,:) :: IGDRROT !<
-    integer, allocatable, dimension(:,:) :: MIDROT  !< Mosaic tile type identifier (1 for land surface,0 for inland lake)
+    integer, allocatable, dimension(:,:) :: MIDROT  !< Mosaic tile type identifier (1 for land surface, 0 for inland lake)
     real, allocatable, dimension(:,:) :: ALBSROT !< Snow albedo [ ]
     real, allocatable, dimension(:,:) :: CMAIROT !<
     real, allocatable, dimension(:,:) :: GROROT  !< Vegetation growth index [ ]
@@ -609,7 +608,7 @@ module classStateVars
     real, allocatable, dimension(:,:) :: actLyrThisYrROT !< Annual active layer depth maximum starting from summer solstice for the present year (m)
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
-    integer, allocatable, dimension(:,:,:) :: ISNDROT !< Sand content flag,used to delineate non-soils.
+    integer, allocatable, dimension(:,:,:) :: ISNDROT !< Sand content flag, used to delineate non-soils.
     real, allocatable, dimension(:,:,:) :: TBARROT !< Temperature of soil layers [K]
     real, allocatable, dimension(:,:,:) :: THICROT !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
     real, allocatable, dimension(:,:,:) :: THLQROT !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -755,8 +754,8 @@ module classStateVars
     real, allocatable, dimension(:,:) :: MRSOL_MO     !< Total water content of soil layer [kg $m^{-2}$]
     real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo [ ]
     real, allocatable, dimension(:) :: ALSNOACC_MO  !< Snow albedo [ ]
-    real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN),kg /m/mon
-    real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF),kg /m/mon
+    real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
+    real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
     integer, allocatable, dimension(:) :: altotcntr_m !< Used to count the number of time steps with the sun above the horizon
 
     ! allocated with nlat,ignd:
@@ -795,10 +794,9 @@ module classStateVars
 
 contains
 
-  !> \ingroup classStateVars_alloc
+  !> \ingroup classstatevars_alloc
   !! @{
   !> Allocates the CLASS (physics) variables in preparation for the simulation
-
   subroutine allocClassVars
 
     use classicParams,     only : ican, nbs, icp1, nlat, nmos, ignd, ilg
@@ -1541,13 +1539,12 @@ contains
     allocate(class_rot% TSFSROT (nlat,nmos,4))
 
   end subroutine allocClassVars
-  !> @}
+  !! @}
   !==================================================
 
-  !> \ingroup classStateVars_resetClassMon
+  !> \ingroup classstatevars_resetClassMon
   !! @{
   !> Resets the CLASS (physics) monthly variables in preparation for the next month
-
   subroutine resetClassMon (nltest)
 
     use classicParams,    only : ignd
@@ -1595,13 +1592,12 @@ contains
     end do
 
   end subroutine resetClassMon
-  !> @}
+  !! @}
   !==================================================
 
-  !> \ingroup classStateVars_resetClassYr
+  !> \ingroup classstatevars_resetClassYr
   !! @{
   !> Resets the CLASS (physics) annual variables in preparation for the next year
-
   subroutine resetClassYr (nltest)
 
     implicit none
@@ -1635,13 +1631,12 @@ contains
     end do
 
   end subroutine resetClassYr
-  !> @}
+  !! @}
   !==================================================
 
-  !> \ingroup classStateVars_resetAccVars
+  !> \ingroup classstatevars_resetAccVars
   !! @{
   !> Resets the CLASS (physics) aggregation variables in preparation for the next period
-
   subroutine resetAccVars (nltest,nmtest)
 
     use classicParams,         only : ignd
@@ -1699,13 +1694,12 @@ contains
     end do
 
   end subroutine resetAccVars
-  !> @}
+  !! @}
   !==================================================
-  !> \ingroup classStateVars_initDiagnosticVars
+  !> \ingroup classstatevars_initDiagnosticVars
   !! @{
   !> Initialization of diagnostic variables split out of classGather for consistency with gcm applications.
-
-  subroutine initDiagnosticVars (nml,ilg)
+  subroutine initDiagnosticVars (nml, ilg)
 
     use classicParams,      only : ignd
 
@@ -1797,12 +1791,11 @@ contains
     end do ! loop 340
 
   end subroutine initDiagnosticVars
-  !> @}
+  !! @}
 
-  !> \ingroup classStateVars_initRowVars
+  !> \ingroup classstatevars_initRowVars
   !! @{
   !> Initialization of diagnostic variables split out of classGather for consistency with gcm applications.
-
   subroutine initRowVars (nml)
 
     use classicParams,      only : ignd
@@ -1885,8 +1878,8 @@ contains
       class_rot%UEROW(I) = 0.
       class_rot%HBLROW(I) = 0.
 
-      ! G12GRD(I)= 0.       ! YW March 27,2015
-      ! G23GRD(I)= 0.       ! YW March 27,2015
+      ! G12GRD(I)= 0.       ! YW March 27, 2015
+      ! G23GRD(I)= 0.       ! YW March 27, 2015
       do J = 1,IGND ! loop 500
         class_rot%HMFGROW(I,J) = 0.
         class_rot%HTCROW(I,J) = 0.
@@ -1903,7 +1896,9 @@ contains
     class_rot%actLyrThisYrROT(:,:) = 0.
 
   end subroutine initRowVars
-  !> @}
-  !> \file
-  !> Contains the physics variable type structures.
+  !! @}
+
+  !> \namespace classstatevars
+  !!
+  !! Contains the physics variable type structures.
 end module classStateVars

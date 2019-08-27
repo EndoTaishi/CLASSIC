@@ -4,7 +4,7 @@
 !!
 module classicParams
 
-  !> \ingroup classicParams_main
+  !> \ingroup classicparams_main
   !! @{
 
   ! J. Melton
@@ -33,8 +33,8 @@ module classicParams
   ! Constants
 
   real, parameter :: zero     = 1.0e-20   !< Defintion of zero
-  real, parameter :: abszero  = 1e-12     !< Defintion of zero,this one is for main.f90 and allocate.f
-  real, parameter :: earthrad = 6371.22   !< Radius of Earth,km
+  real, parameter :: abszero  = 1e-12     !< Defintion of zero, this one is for main.f90 and allocate.f
+  real, parameter :: earthrad = 6371.22   !< Radius of Earth, km
   real, parameter :: km2tom2  = 1.0e+06   !< Conversion factor from \f$km^2\f$ to \f$m^2\f$
   real, parameter :: gasc = 8.314         !< Gas constant (\f$J mol^{-1} K^{-1}\f$)
   real, parameter :: convertkgC = 1.201e-8 !< Converts from \f$ \mu molCO2/m2/s\f$ to \f$kgC/m2/s\f$
@@ -50,7 +50,7 @@ module classicParams
   real, parameter :: PI = 3.1415926535898 !< pi (-) (GCM name: CPI)
   real, parameter :: STD_PRESS = 101325.0 !< Standard atmospheric pressure (Pa)
 
-  real, parameter :: lambda14C = 8267.  !< radioactive decay rate for 14C,corresponds to a half life of 5730 years. (\f$yr^{-1}\f$)
+  real, parameter :: lambda14C = 8267.  !< radioactive decay rate for 14C, corresponds to a half life of 5730 years. (\f$yr^{-1}\f$)
 
   ! FLAG below not used anywhere.
   ! AI=2.88053E+6/1004.5
@@ -118,18 +118,18 @@ module classicParams
 
   ! Biogeochemical parameters:
   real, parameter :: deltat   = 1.0       !< CTEM's time step in days
-  real, parameter :: seed    = 0.001    !< seed pft fraction,same as in competition in mosaic mode,all tiles are given this as a minimum
+  real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition in mosaic mode, all tiles are given this as a minimum
   real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
   real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
   real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 (\f$g mol^{-1}\f$)
 
   integer, parameter :: nbs = 4         !< Number of modelled shortwave radiation wavelength bands COMBAK Can be read in from the init file when I have the new snow albedo scheme fully implemented. Leave here for now.
 
-  integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV,ALDV,ALWN,ALDN)
+  integer, parameter :: soilcolrinds = 20 !< Number of soil colour index classes used (Affects ALWV, ALDV, ALWN, ALDN)
 
   real, parameter  :: tolrance = 0.0001 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
-  ! YW May 12,2015 in peatland the C balance gap reaches 0.00016.
-  real, parameter  :: tolrnce1 = 0.5      !< kg c,tolerance of total c balance (FOR LUC)
+  ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
+  real, parameter  :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC)
 
   !> Logical switch for using constant allocation factors (default value is false)
   logical :: consallo = .false.
@@ -137,14 +137,14 @@ module classicParams
   ! --------------------------------------------------------------
 
   ! Read in from the netcdf initialization file:
-  integer :: nlat        !< Number of cells we are running,read in from the initialization file. Offline this always 1.
-  integer :: nmos        !< Number of mosaic tiles,read in from the initialization file
+  integer :: nlat        !< Number of cells we are running, read in from the initialization file. Offline this always 1.
+  integer :: nmos        !< Number of mosaic tiles, read in from the initialization file
   integer :: ilg         !< nlat x nmos
-  integer :: ignd        !< Number of soil layers,read in from the initialization file
+  integer :: ignd        !< Number of soil layers, read in from the initialization file
 
   ! Read in from the job options file:
-  integer :: ican              !< Number of CLASS (physics) pfts,read in from the job options file.
-  integer :: icc               !< Number of CTEM (biogeochemical) pfts,read in from the job options file.
+  integer :: ican              !< Number of CLASS (physics) pfts, read in from the job options file.
+  integer :: icc               !< Number of CTEM (biogeochemical) pfts, read in from the job options file.
   integer :: l2max             !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs
   !! associated with a single CLASS PFT. Read in from the job options file.
   ! ----
@@ -158,8 +158,8 @@ module classicParams
   integer :: numgrass          !< number of grass pfts
   integer :: numshrubs         !< number of shrubs pfts
   integer, dimension(:), allocatable :: nol2pfts !< Number of level 2 PFTs calculated in readInParams
-  logical, dimension(:), allocatable :: crop     !< simple crop matrix,define number and position of the crops (NOTE: dimension icc)
-  logical, dimension(:), allocatable :: grass    !< simple grass matric,define the number and position of grass (NOTE: dimension icc)
+  logical, dimension(:), allocatable :: crop     !< simple crop matrix, define number and position of the crops (NOTE: dimension icc)
+  logical, dimension(:), allocatable :: grass    !< simple grass matric, define the number and position of grass (NOTE: dimension icc)
   integer, dimension(:), allocatable :: CL4CTEM  !< Indexing of the CTEM-level PFTs into a CLASS PFT-level array.
   integer, dimension(:,:), allocatable :: reindexPFTs !< Reindexing arrays of CLASS variables into the parameters arrays at the CTEM level.
 
@@ -191,9 +191,9 @@ module classicParams
   real :: VMIN   !< Minimum wind speed (\f$m s^{-1}\f$)
   real :: TCW    !< Thermal conductivity of water (\f$W m^{-1} K^{-1} \f$)
   real :: TCICE  !< Thermal conductivity of ice  (\f$W m^{-1} K^{-1} \f$)
-  real :: TCSAND !< Thermal conductivity of sand particles  (\f$W m^{-1} K^{-1} \f$)
+  real :: TCSAND !< Thermal conductivity of sand particles (\f$W m^{-1} K^{-1} \f$)
   real :: TCCLAY !< Thermal conductivity of fine mineral particles  (\f$W m^{-1} K^{-1} \f$)
-  real :: TCOM   !< Thermal conductivity of organic matter  (\f$W m^{-1} K^{-1} \f$)
+  real :: TCOM   !< Thermal conductivity of organic matter (\f$W m^{-1} K^{-1} \f$)
   real :: TCDRYS !< Thermal conductivity of dry mineral soil  (\f$W m^{-1} K^{-1} \f$) FLAG QUESTION ever used?
   real :: RHOSOL !< Particle density of soil mineral matter (\f$kg m^{-3}\f$)
   real :: RHOOM  !< Particle density of soil organic matter (\f$kg m^{-3}\f$)
@@ -228,7 +228,7 @@ module classicParams
   real, dimension(:), allocatable  :: XLEAF  !< a leaf dimension factor used in calculating the leaf boundary resistance
   !! (variable Cl in the documentation for subroutine calcLandSurfParams.f90)
 
-  !! Six hydraulic parameters associated with the three basic types of organic soils (fibric,hemic and sapric),see the documentation for subroutine soilProperties.
+  !! Six hydraulic parameters associated with the three basic types of organic soils (fibric, hemic and sapric), see the documentation for subroutine soilProperties.
 
   real, dimension(:), allocatable  :: THPORG !< Organic soils (peat) pore volume \f$[m^3 m^{-3} ] ( \theta_p)\f$
   real, dimension(:), allocatable  :: THRORG !< Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
@@ -262,7 +262,7 @@ module classicParams
   real :: WSNCAP !< Maximum water retention capacity of the snow pack (weight percentage)
 
   ! Four-band albedo information
-  real :: REFF0_LAND  ! "climatological" snow grain size,SSA = 60 m^2/kg
+  real :: REFF0_LAND  ! "climatological" snow grain size, SSA = 60 m^2/kg
   real :: ZSNMIN
   real :: ZSNMAX2
 
@@ -287,18 +287,18 @@ module classicParams
 
   ! allocate.f90 parameters: ----------
 
-  real, dimension(:), allocatable :: omega            !< omega,parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-  real, dimension(:), allocatable :: epsilonl         !< Epsilon leaf,parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-  real, dimension(:), allocatable :: epsilons         !< Epsilon stem,parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-  real, dimension(:), allocatable :: epsilonr         !< Epsilon root,parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+  real, dimension(:), allocatable :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+  real, dimension(:), allocatable :: epsilonl         !< Epsilon leaf, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+  real, dimension(:), allocatable :: epsilons         !< Epsilon stem, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+  real, dimension(:), allocatable :: epsilonr         !< Epsilon root, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
   real, dimension(:), allocatable :: rtsrmin          !< Minimum root:shoot ratio mostly for support and stability
   real, dimension(:), allocatable :: aldrlfon         !< Allocation to leaves during leaf onset
   real, dimension(:), allocatable :: caleaf           !< Constant allocation fractions to leaves if not using dynamic allocation.
-  !! (NOT thoroughly tested,and using dynamic allocation is preferable)
+  !! (NOT thoroughly tested, and using dynamic allocation is preferable)
   real, dimension(:), allocatable :: castem           !< Constant allocation fractions to stem if not using dynamic allocation.
-  !! (NOT thoroughly tested,and using dynamic allocation is preferable)
+  !! (NOT thoroughly tested, and using dynamic allocation is preferable)
   real, dimension(:), allocatable :: caroot           !< Constant allocation fractions to roots if not using dynamic allocation.
-  !! (NOT thoroughly tested,and using dynamic allocation is preferable)
+  !! (NOT thoroughly tested, and using dynamic allocation is preferable)
 
   ! bio2str.f90 parameters: ---------
 
@@ -357,14 +357,14 @@ module classicParams
 
   !> parameter m (mean) and b of logistic distribution used for \n
   !> **Parmlght was increased to 0.8 to make it so areas with higher amounts of
-  !> lightning have higher lterm. The saturation is still the same,but the
+  !> lightning have higher lterm. The saturation is still the same, but the
   !> increase is more gradual at low lightning density. JM
   real :: parmlght
   real :: parblght                    !< estimating fire likelihood due to lightning
   real :: reparea                     !< typical area representing ctem's fire parameterization (km2)
   real :: popdthrshld                 !< threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
   real :: f0                          !< Fire spread rate in the absence of wind
-  real, dimension(:), allocatable :: maxsprd      !< max. fire spread rate,km/hr
+  real, dimension(:), allocatable :: maxsprd      !< max. fire spread rate, km/hr
   real, dimension(:), allocatable :: frco2glf     !< fraction of green leaf biomass converted to gases due to combustion
   real, dimension(:), allocatable :: frco2blf     !< fraction of brown leaf biomass converted to gases due to combustion
   real, dimension(:), allocatable :: frltrglf     !< fraction of green leaf biomass becoming litter after combustion
@@ -374,19 +374,19 @@ module classicParams
   real, dimension(:), allocatable :: frco2rt      !< fraction of root biomass converted to gases due to combustion
   real, dimension(:), allocatable :: frltrrt      !< fraction of root biomass becoming litter after combustion
   real, dimension(:), allocatable :: frltrbrn     !< fraction of litter burned during fire and emitted as gases
-  real, dimension(:), allocatable :: standreplace !< pft prevalence for stand replacing fire events (based on resistance to fire damage,ie. cambial kill)(unitless)
-  real, dimension(:), allocatable :: emif_co2     !< pft-specific emission factors for CO2,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_co      !< pft-specific emission factors for CO,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_ch4     !< pft-specific emission factors for CH4,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_nmhc    !< pft-specific emission factors for non-methane hydrocarbons,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_h2      !< pft-specific emission factors for H2,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_nox     !< pft-specific emission factors for NOx,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_n2o     !< pft-specific emission factors for N2O,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_pm25    !< pft-specific emission factors for particles <2.5 micrometers in diameter,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_tpm     !< pft-specific emission factors for total particulate matter,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_tc      !< pft-specific emission factors for total carbon,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_oc      !< pft-specific emission factors for organic carbon,g species / (kg DOM)
-  real, dimension(:), allocatable :: emif_bc      !< pft-specific emission factors for black carbon,g species / (kg DOM)
+  real, dimension(:), allocatable :: standreplace !< pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
+  real, dimension(:), allocatable :: emif_co2     !< pft-specific emission factors for CO2, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_co      !< pft-specific emission factors for CO, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_ch4     !< pft-specific emission factors for CH4, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_nmhc    !< pft-specific emission factors for non-methane hydrocarbons, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_h2      !< pft-specific emission factors for H2, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_nox     !< pft-specific emission factors for NOx, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_n2o     !< pft-specific emission factors for N2O, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_pm25    !< pft-specific emission factors for particles <2.5 micrometers in diameter, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_tpm     !< pft-specific emission factors for total particulate matter, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_tc      !< pft-specific emission factors for total carbon, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_oc      !< pft-specific emission factors for organic carbon, g species / (kg DOM)
+  real, dimension(:), allocatable :: emif_bc      !< pft-specific emission factors for black carbon, g species / (kg DOM)
 
   ! hetres parameters: ----------
 
@@ -397,7 +397,7 @@ module classicParams
   real :: bsratelt_g                  !< bare ground litter respiration rate at 15 c in kg c/kg c.year
   real :: bsratesc_g                  !< bare ground soil c respiration rates at 15 c in kg c/kg c.year
   real :: a_hetr                           !< parameter describing exponential soil carbon profile. used for estimating temperature of the carbon pool
-  real :: r_depthredu                 !< Following Lawrence et al. Environ. Res. Lett.,2015. we adopt 10.0 as our value,controls
+  real :: r_depthredu                 !< Following Lawrence et al. Environ. Res. Lett., 2015. we adopt 10.0 as our value, controls
   !!  decomposition at depth to account for observed reductions that are independent of temp and moisture.
   real :: tcrit                       !< temperature below which respiration is inhibited. [ C ]
   real :: frozered                    !< factor to reduce respiration by for temps below tcrit
@@ -407,14 +407,14 @@ module classicParams
   real, dimension(3) :: combust       !< how much deforested/chopped off biomass is combusted (these absolutely must add to 1.0 !)
   real, dimension(3) :: paper         !< how much deforested/chopped off biomass goes into short term storage such as paper
   real, dimension(3) :: furniture     !< how much deforested/chopped off biomass goes into long term storage such as furniture
-  real, dimension(2) :: bmasthrs      !< biomass thresholds for determining if deforested area is a forest,a shrubland,or a bush kg c/m2
+  real, dimension(2) :: bmasthrs      !< biomass thresholds for determining if deforested area is a forest, a shrubland, or a bush kg c/m2
 
   ! mainres.f90 parameters: ----------
 
   !    Base respiration rates for stem and root for ctem pfts in kg c/kg c.year at 15 degrees celcius. note that maintenance
   !    respiration rates of root are higher because they contain both wood (coarse roots) and fine roots.
   !    New parameter values introduced to produce carbon use efficiencies more in
-  !    line with literature (zhang et al. 2009,luyssaert et al. gcb 2007)
+  !    line with literature (zhang et al. 2009, luyssaert et al. gcb 2007)
   !    values changed for bsrtstem and bsrtroot. jm 06.2012
 
   real, dimension(:), allocatable :: bsrtstem     !< Base respiration rates for stem in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
@@ -442,8 +442,8 @@ module classicParams
 
   ! decp subroutine parameters:
 
-  real ::     dctmin                   !< minimum temperature of soil respiration,K (peatland soils)
-  real ::     dcbaset                  !< base temperature for Q10,K (peatland soils)
+  real ::     dctmin                   !< minimum temperature of soil respiration, K (peatland soils)
+  real ::     dcbaset                  !< base temperature for Q10, K (peatland soils)
   real ::     bsrateltms               !< heterotrophic respiration base rate for peatlands (yr-1)
 
   ! peatland parameters used in other subroutines:
@@ -463,7 +463,7 @@ module classicParams
 
   ! real :: rhoms = 40.0        !< Density of dry moss (\f$kg m^{-3}\f$)  ! FLAG NOT USED JM Oct 2016.
   !! Based upon:
-  !! 40.0 Price et al. 2008,Price and
+  !! 40.0 Price et al. 2008, Price and
   !! Whittington 2010 value for feather moss
   !! is lower than sphagnmum (20 kg/m3 in
   !! O'Donnell et al. 2009)
@@ -481,17 +481,17 @@ module classicParams
 
   integer, dimension(:), allocatable :: dayschk       !< Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset
   real, dimension(:), allocatable :: drgta            !< Parameter determining how fast soil dryness causes leaves to fall
-  real, dimension(:), allocatable :: eta              !< eta and kappa,parameters for estimating min. stem+root biomass
-  real, dimension(:), allocatable :: kappa            !< required to support green leaf biomass. kappa is 1.6 for trees and crops,and 1.2 for grasses.
-  real, dimension(2) :: flhrspan          !< Harvest span (time in days over which crops are harvested,15 days),
-  !< and  fall span (time in days over which bdl cold dcd plants shed their leaves,30 days)
+  real, dimension(:), allocatable :: eta              !< eta and kappa, parameters for estimating min. stem+root biomass
+  real, dimension(:), allocatable :: kappa            !< required to support green leaf biomass. kappa is 1.6 for trees and crops, and 1.2 for grasses.
+  real, dimension(2) :: flhrspan          !< Harvest span (time in days over which crops are harvested, 15 days),
+  !< and  fall span (time in days over which bdl cold dcd plants shed their leaves, 30 days)
   real :: fracbofg                        !< Parameter used to estimate lai of brown leaves. We assume that SLA of brown leaves is this fraction of SLA of green leaves
   real, dimension(:), allocatable :: harvthrs         !< LAI threshold for harvesting crops. values are zero for all pftsother than c3 and c4 crops.
   real, dimension(:), allocatable :: specsla          !< CTEM can use user-specified specific leaf areas (SLA) if the following specified values are greater than zero
   real, dimension(:), allocatable :: thrprcnt         !< Percentage of max. LAI that can be supported which is used as a threshold for determining leaf phenology status
   real, dimension(:), allocatable :: lwrthrsh         !< Lower temperature threshold for ctem's 9 pfts. these are used to estimate cold stress related leaf loss rate (degree c)
   real, dimension(:), allocatable :: cdlsrtmx         !< Max. loss rate for cold stress for all 9 pfts, (1/day)
-  real :: kmort1                                      !< kmort1,parameter used in growth efficiency mortality formulation
+  real :: kmort1                                      !< kmort1, parameter used in growth efficiency mortality formulation
 
   real, dimension(:), allocatable :: mxmortge !< Maximum mortality when growth efficiency is zero (1/year) (values differ if using prescribed vs. competition run)
   real, dimension(:), allocatable :: maxage   !< Maximum plant age. used to calculate intrinsic mortality rate.
@@ -502,10 +502,10 @@ module classicParams
   real, dimension(:), allocatable :: lfespany !< Leaf life span (in years) for CTEM's pfts
   real, dimension(:), allocatable :: drlsrtmx !< Max. loss rate for drought stress for all 9 pfts, (1/day) (values differ if using prescribed vs. competition run)
   real, dimension(:), allocatable :: colda    !< Parameter determining how fast cold temperatures causes leaves to fall
-  integer, dimension(2) :: coldlmt !< No. of days for which some temperature has to remain below a given threshold for initiating a process,days
+  integer, dimension(2) :: coldlmt !< No. of days for which some temperature has to remain below a given threshold for initiating a process, days
   real, dimension(2) :: coldthrs  !< 1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees \n
-  !! 2.  8 c threshold for initiating "harvest" for crops,the array colddays tracks days corresponding to these thresholds
-  real :: roothrsh                !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft,degrees celcius
+  !! 2.  8 c threshold for initiating "harvest" for crops, the array colddays tracks days corresponding to these thresholds
+  real :: roothrsh                !< Root temperature threshold for initiating leaf onset for cold broadleaf deciduous pft, degrees celcius
 
   ! Turbation (in soilCProcesses.f90) parameters: ---------------------------------
 
@@ -530,8 +530,8 @@ module classicParams
 
   ! turnover.f90 parameters: ---------------------------------
 
-  real, dimension(:), allocatable :: stemlife !< Stemlife,turnover time scale for stem for different pfts
-  real, dimension(:), allocatable :: rootlife !< Rootlife,turnover time scale for root for different pfts
+  real, dimension(:), allocatable :: stemlife !< Stemlife, turnover time scale for stem for different pfts
+  real, dimension(:), allocatable :: rootlife !< Rootlife, turnover time scale for root for different pfts
   real :: stmhrspn                !< Stem harvest span. same as crop harvest span. period in days over which crops are harvested.
 
   ! wetland_methane.f90 parameters: ------------
@@ -554,14 +554,14 @@ module classicParams
   logical, dimension(:), allocatable :: isc4     !< Array telling which vegetation type is c4
   real, dimension(:), allocatable :: tlow         !< lower temperature limits for photosynthesis, (kelvin)
   real, dimension(:), allocatable :: tup          !< upper temperature limits for photosynthesis, (kelvin)
-  real, dimension(:), allocatable :: alpha_phtsyn !< quantum efficiencies,values of 0.08 & 0.04 are used for c3 and c4 plants,respectively
-  real, dimension(:), allocatable :: omega_phtsyn !< leaf scattering coefficients,values of 0.15 & 0.17 are used for c3 and c4 plants,respectively
+  real, dimension(:), allocatable :: alpha_phtsyn !< quantum efficiencies, values of 0.08 & 0.04 are used for c3 and c4 plants, respectively
+  real, dimension(:), allocatable :: omega_phtsyn !< leaf scattering coefficients, values of 0.15 & 0.17 are used for c3 and c4 plants, respectively
   real, dimension(:), allocatable :: mm           !< parameter m used in photosynthesis-stomatal conductance coupling.
   real, dimension(:), allocatable :: bb           !< parameter b used in photosynthesis-stomatal conductance coupling.
   real, dimension(:), allocatable :: vpd0         !< parameter vpd0 used in leuning type photosynthesis - stomatal conductance coupling, (Pa)
-  integer, dimension(:), allocatable :: sn        !< exponent for soil moisture stress. for sn equal to 1,photosynthesis decreases
-  !! linearly with soil moisture,and of course non-linearly for values higher than 1.
-  !! when sn is about 10,photosynthesis does not start decreasing until soil moisture
+  integer, dimension(:), allocatable :: sn        !< exponent for soil moisture stress. for sn equal to 1, photosynthesis decreases
+  !! linearly with soil moisture, and of course non-linearly for values higher than 1.
+  !! when sn is about 10, photosynthesis does not start decreasing until soil moisture
   !! is about half way between wilting point and field capacity.
   real, dimension(:), allocatable :: smscale      !< additional constrain of soil moisture stress on photosynthesis. this can be used
   !! to simulate the effect of irrigation for crops.
@@ -569,7 +569,7 @@ module classicParams
   !! \cite kattge20090c0 which doesn't include c4. also see \cite alton2017-pd
   integer :: reqiter                              !< no. of iterations for calculating intercellular co2 concentration
   real :: co2imax                                 !< max. intercellular co2 concentration (Pa)
-  real :: beta1,beta2                            !< photosynthesis coupling or curvature coefficients
+  real :: beta1, beta2                            !< photosynthesis coupling or curvature coefficients
   real, dimension(:), allocatable :: inico2i      !< parameter to initialize intercellular co2 conc.
   real, dimension(:), allocatable :: rmlcoeff     !< leaf maintenance respiration coefficients
   real, dimension(:), allocatable :: chi          !< additional parameters for two-leaf model leaf angle distribution
@@ -583,27 +583,26 @@ module classicParams
   real :: zbldJobOpt, zrfhJobOpt, zrfmJobOpt
   real, dimension(:), allocatable :: RSMN, QA50, VPDA, VPDB, PSGA, PSGB ! These are temporary variables storing these parameters until they are
   ! transfered into their ROT structure in read_initialstate
-
+  !! @}
 
   ! --------------------------------------------------------------------------
 
 contains
 
-  !> \ingroup classicParams_prepareGlobalParams
+  !> \ingroup classicparams_prepareGlobalParams
   !! @{
   !> Initialize and/or read in all global model parameters
-
   subroutine prepareGlobalParams
 
     implicit none
 
-    !> Read in the number of PFTs to be used,this reads them in from the namelist file.
+    !> Read in the number of PFTs to be used, this reads them in from the namelist file.
     call readInPFTNums
 
     !> Allocate the arrays that store the CTEM parameter values
     call allocateParamsCLASSIC
 
-    !> Initialize the CTEM parameters,this reads them in from a namelist file.
+    !> Initialize the CTEM parameters, this reads them in from a namelist file.
     call readInParams
 
   end subroutine prepareGlobalParams
@@ -1114,7 +1113,7 @@ contains
   !! @}
 
   ! ---------------------------------------------------------------------------------------------------
-  !> \ingroup classicParams_reindexPFTs
+  !> \ingroup classicparams_reindexPFTs
   !! @{
   !> Provides indexes to relate the CLASS PFTs to the CTEM ones in the
   !! parameter arrays.
@@ -1140,17 +1139,17 @@ contains
   end function findPFTindexes
   !! @}
 
-  !> \file
-  !> This module holds CLASSIC globally accessible parameters
+  !> \namespace classicparams
+  !! This module holds CLASSIC globally accessible parameters
   !!
-  !> These parameters are used in all CLASSIC subroutines
-  !> via use statements pointing to this module.
-  !> The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
-  !> first,then the remaining variables are assigned different variables if competition is on,or not.
-  !>
-  !> Please see documentation/overviewCTEM.md for more info.
+  !! These parameters are used in all CLASSIC subroutines
+  !! via use statements pointing to this module.
+  !! The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
+  !! first, then the remaining variables are assigned different variables if competition is on, or not.
   !!
-  !> PFT parameters
+  !! Please see documentation/overviewCTEM.md for more info.
+  !!
+  !! PFT parameters
   !!
   !! Note the structure of vectors which clearly shows the CLASS
   !! PFTs (along rows) and CTEM sub-PFTs (along columns)
@@ -1170,10 +1169,10 @@ contains
   !!
   !! The peatland module expands upon these PFTs with the addition of two
   !! shrub PFTs (only biogeochemistry) and sedges (see Wu et al. 2016) \cite Wu2016-zt Evergreen
-  !! shrubs,for example the ericaceous shrubs,are the common dominant vascular
-  !! plants in bogs and poor fens while deciduous shrubs,such as the betulaceous
-  !! shrubs,often dominate rich fens. Both shrubs are categorized as broadleaf
-  !! trees in CLASS morphologically,but their phenological and physiological
+  !! shrubs, for example the ericaceous shrubs, are the common dominant vascular
+  !! plants in bogs and poor fens while deciduous shrubs, such as the betulaceous
+  !! shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf
+  !! trees in CLASS morphologically, but their phenological and physiological
   !! characteristics are more similar to those of needleleaf trees. The shrub
   !! tundra ecosystem is situated adjacent to needleleaf forest in the Northern
   !! Hemisphere (Kaplan et al., 2003) and they share similar responses to climate
@@ -1207,5 +1206,4 @@ contains
   !! \end{array}
   !! \f]
   !!
-  !> \file
 end module classicParams

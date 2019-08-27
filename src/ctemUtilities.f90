@@ -12,11 +12,11 @@ module ctemUtilities
 contains
 
   ! --------------------------------------------------------------------------------------------------------------------
-  !> \ingroup ctemUtil_genSortIndex
+  !> \ingroup ctemutilities_genSortIndex
   !! @{
   !> Generate the sort index for correspondence between the CTEM pfts and the
-  !> array of values in the parameter vectors (e.g. for 9 CTEM, the array is of
-  !> size 12)
+  !! array of values in the parameter vectors (e.g. for 9 CTEM, the array is of
+  !! size 12)
   !! @author V.Arora, J. Melton
   function genSortIndex ()
 
@@ -38,10 +38,10 @@ contains
     end do ! loop 95
 
   end function genSortIndex
-  !> @}
+  !! @}
 
   ! --------------------------------------------------------------------------------------------------------------------
-  !> \ingroup ctemUtil_dayEndCTEMPreparation
+  !> \ingroup ctemutilities_dayEndCTEMPreparation
   !! @{
   !> Prepare the CTEM input (physics) variables at the end of the day.
   !! @author V.Arora, J. Melton
@@ -135,8 +135,8 @@ contains
       end do ! loop 832
 
       !     -daily average moss C fluxes for ctem.f-------------------\
-      !     Capitulum biomass = 0.22 kg/m2 in hummock,0.1 kg/m2 in lawn
-      !     stem biomass = 1.65 kg/m2 in hummock,0.77 kg/m2 in lawn (Bragazza et al.2004)
+      !     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
+      !     stem biomass = 1.65 kg/m2 in hummock, 0.77 kg/m2 in lawn (Bragazza et al.2004)
       !     the ratio between stem and capitulum = 7.5 and 7.7
       if (ipeatlandgat(i) > 0) then
         anmossac_t(i) = anmossac_t(i)/real(nday)
@@ -147,9 +147,9 @@ contains
     end do ! nml loop
 
   end subroutine dayEndCTEMPreparation
-  !> @}
+  !! @}
   ! --------------------------------------------------------------------------------------------------------------------
-  !> \ingroup ctemUtil_accumulateForCTEM
+  !> \ingroup ctemutilities_accumulateForCTEM
   !! @{
   !> Accumulate the CTEM input (physics) variables at the end of each physics timestep
   !! @author V.Arora, J. Melton
@@ -324,10 +324,10 @@ contains
     end do
 
   end subroutine accumulateForCTEM
-  !> @}
+  !! @}
   !
   ! --------------------------------------------------------------------------------------------------------------------
-  !> \ingroup ctemUtil_ctemInit
+  !> \ingroup ctemutilities_ctemInit
   !! @{
   !> Find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
   !! Also initialize additional variables which are used by CTEM (biogeochemical processes).
@@ -531,18 +531,19 @@ contains
     rmlmossac_t = 0.0
     gppmossac_t = 0.0
 
-    !    ----------------------------YW March 25,2015 --------------------/
+    !    ----------------------------YW March 25, 2015 --------------------/
 
-    ! Lastly,find the maximum daylength at this location for day 172 = June 21st - summer solstice.
+    ! Lastly, find the maximum daylength at this location for day 172 = June 21st - summer solstice.
     do i = 1,nltest
       if (radjrow(i) > 0.) then
-        dayl_maxrow(i) = findDaylength(172.0,radjrow(i)) ! following rest of code,radjrow is always given index of 1 offline.
+        dayl_maxrow(i) = findDaylength(172.0,radjrow(i)) ! following rest of code, radjrow is always given index of 1 offline.
       else ! S. Hemi so do N.Hemi winter solstice Dec 21
-        dayl_maxrow(i) = findDaylength(355.0,radjrow(i)) ! following rest of code,radjrow is always given index of 1 offline.
+        dayl_maxrow(i) = findDaylength(355.0,radjrow(i)) ! following rest of code, radjrow is always given index of 1 offline.
       end if
     end do
 
   end subroutine ctemInit
-  !> @}
-  !> \file
+  !! @}
+  !> \namespace ctemutilities
+  !! ...
 end module ctemUtilities

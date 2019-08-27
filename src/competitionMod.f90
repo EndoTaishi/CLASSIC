@@ -14,11 +14,10 @@ contains
 
   !-------------------------------------------------------------------------------------------------------------
 
-  !> \ingroup competitionScheme_bioclim
+  !> \ingroup competitionscheme_bioclim
   !! @{
   !> Calculates bioclimatic parameters required to determine existance of PFTs
   !! @author V. Arora, J. Melton, R. Shrestha
-
   subroutine  bioclim (iday, ta, precip, netrad, &
                        il1, il2, nilg, leapnow, &
                        tcurm, srpcuryr, dftcuryr, inibioclim, &
@@ -44,12 +43,12 @@ contains
     !     V. Arora        parameters that are required for determining
     !                     existence of pfts. the bioclimatic parameters
     !                     are the mean monthly temperature of the warmest
-    !                     and the coldest months,growing degree days
-    !                     above 5 c,annual precipitation and potential
+    !                     and the coldest months, growing degree days
+    !                     above 5 c, annual precipitation and potential
     !                     evaporation and some aridity parameters that are
     !                     function of potential evaporation and precipitation.
     !
-    !                     In addition,all these parameters are updated
+    !                     In addition, all these parameters are updated
     !                     in an e-folding sense at some specified time
     !                     scale.
     !
@@ -69,7 +68,7 @@ contains
     !< as either ilg or nlat depending on mos/comp)
     integer, intent(in) :: il1       !< il1=1
     integer, intent(in) :: il2       !< il2=nilg
-    real, dimension(nilg), intent(in)    :: ta        !< mean daily temperature,k
+    real, dimension(nilg), intent(in)    :: ta        !< mean daily temperature, k
     real, dimension(nilg), intent(in)    :: precip    !< daily precipitation (mm/day)
     real, dimension(nilg), intent(in)    :: netrad    !< daily net radiation (w/m2)
 
@@ -94,7 +93,7 @@ contains
     real, dimension(nilg), intent(inout) :: twarmm    !< temperature of the warmest month (c)
     real, dimension(nilg), intent(inout) :: tcoldm    !< temperature of the coldest month (c)
     real, dimension(nilg), intent(inout) :: gdd5      !< growing degree days above 5 c
-    real, dimension(nilg), intent(inout) :: aridity   !< aridity index,ratio of potential evaporation to precipitation
+    real, dimension(nilg), intent(inout) :: aridity   !< aridity index, ratio of potential evaporation to precipitation
     real, dimension(nilg), intent(inout) :: srplsmon  !< number of months in a year with surplus water i.e.
     !< precipitation more than potential evaporation
     real, dimension(nilg), intent(inout) :: defctmon  !< number of months in a year with water deficit i.e.
@@ -110,8 +109,8 @@ contains
     real, dimension(nilg) :: aridcur
     real :: wtrbal
     integer :: month, atmonthend, temp, nmax, i, j, k, curmonth, m, n, l
-    integer, save,dimension(:,:), allocatable :: wet_dry_mon_index
-    integer, save,dimension(:,:), allocatable :: wet_dry_mon_index2
+    integer, save, dimension(:,:), allocatable :: wet_dry_mon_index
+    integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2
     real, dimension(:), allocatable, save :: dry_season_length_curyr !< current year's maximum dry month length
 
     ! local parameters
@@ -173,7 +172,7 @@ contains
       atmonthend = 1
     end if
     !>
-    !> Update monthly temperature for the current month,and other
+    !> Update monthly temperature for the current month, and other
     !! variables. at the end of the month we will have average of
     !! all daily temperatures for the current month.
     !!
@@ -255,7 +254,7 @@ contains
 
     end do ! loop 250
     !>
-    !! If its the end of year,then find the temperature of the warmest
+    !! If its the end of year, then find the temperature of the warmest
     !! and the coldest month
 
     if ((.not. leapnow .and. iday == 365) .or. &
@@ -306,13 +305,13 @@ contains
 
     return
   end subroutine bioclim
-  !> @}
+  !! @}
   !-------------------------------------------------------------------------------------------------------------
 
-  !> \ingroup competitionScheme_existence
+  !> \ingroup competitionscheme_existence
   !! @{
   !> Determines if a PFT can exist in a grid cell based on climatic conditions
-  !! @author V. Arora,J. Melton
+  !! @author V. Arora, J. Melton
 
   subroutine existence (iday, il1, il2, nilg, sort, twarmm, tcoldm, gdd5, &
                         aridity, srplsmon, defctmon, anndefct, &
@@ -331,7 +330,7 @@ contains
     !     26  Nov 2013  - Update parameters for global off-line runs
     !     J. Melton
     !
-    !     25  Jun 2013  - Convert to f90,incorporate modules,and into larger module.
+    !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
     !     J. Melton
 
     !     27  May 2004  - This subroutine calculates the existence of
@@ -346,8 +345,8 @@ contains
     !                     may be excluded by competition from other pfts.
     !
     !                -->  Note that since the fractional coverage of c3 and
-    !                -->  c4 crops is going to be prescribed,the model
-    !                -->  assumes that these pfts can always exist. But,of
+    !                -->  c4 crops is going to be prescribed, the model
+    !                -->  assumes that these pfts can always exist. But, of
     !                     course the prescribed fractional coverage of these
     !                     pfts will decide if they are present in a grid cell or
     !                     not.
@@ -370,7 +369,7 @@ contains
     real, dimension(nilg), intent(in) :: twarmm    !< temperature of the warmest month (c)
     real, dimension(nilg), intent(in) :: tcoldm    !< temperature of the coldest month (c)
     real, dimension(nilg), intent(in) :: gdd5      !< growing degree days above 5 c
-    real, dimension(nilg), intent(in) :: aridity   !< aridity index,ratio of potential evaporation to precipitation
+    real, dimension(nilg), intent(in) :: aridity   !< aridity index, ratio of potential evaporation to precipitation
     real, dimension(nilg), intent(in) :: srplsmon  !< number of months in a year with surplus water i.e.
     !< precipitation more than potential evaporation
     real, dimension(nilg), intent(in) :: defctmon  !< number of months in a year with water deficit i.e.
@@ -422,7 +421,7 @@ contains
             pftexist(i,j) = .true.
 
             if (k == 0) then
-              print * ,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays,please switch the order'
+              print * ,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays, please switch the order'
               call errorHandler('competition:existence', - 1)
             end if
             !> We don't want both broadleaf species co-existing so if it has BdlDDrTr
@@ -458,15 +457,14 @@ contains
     return
 
   end subroutine existence
-  !> @}
+  !! @}
 
   !-------------------------------------------------------------------------------------------------------------
-  !> \ingroup competitionScheme_competition
+  !> \ingroup competitionscheme_competition
   !! @{
   !> Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified
   !! forms. either option may be used.
-  !! @author V. Arora,J. Melton,Y. Peng
-
+  !! @author V. Arora, J. Melton, Y. Peng
   subroutine competition (iday, il1, il2, nilg, nppveg, dofire, leapnow, useTracer, &! In
                           pftexist, geremort, intrmort, pgleafmass, rmatctem, &! In
                           grclarea, lambda, burnvegf, sort, pstemmass, &! In
@@ -492,7 +490,7 @@ contains
     !     27  Jan 2014  - Moved parameters to global file (classicParams.f90)
     !     J. Melton
 
-    !     25  Jun 2013  - Convert to f90,incorporate modules,and into larger module.
+    !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
     !     J. Melton
 
     !     17  Oct 2012  - Adapt subroutine to any number of crops or grass
@@ -528,7 +526,7 @@ contains
     integer, intent(in) :: il1                              !< il1=1
     integer, intent(in) :: il2                              !< il2=nilg
     logical, intent(in) :: dofire                           !< if true then we have disturbance on.
-    real, dimension(nilg), intent(in) :: grclarea         !< grid cell area,km^2
+    real, dimension(nilg), intent(in) :: grclarea         !< grid cell area, km^2
     integer, dimension(icc), intent(in) :: sort             !< index for correspondence between 9 ctem pfts and
     !< size 12 of parameter vectors
     logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
@@ -541,21 +539,21 @@ contains
     real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
     real, dimension(nilg,icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
     real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
-    real, dimension(nilg,icc), intent(in) :: burnvegf       !< fractional areas burned,for 9 ctem pfts
-    real, dimension(nilg,icc), intent(in) :: pstemmass      !< stem mass from previous timestep,is value before fire. used by burntobare subroutine
-    real, dimension(nilg,icc), intent(in) :: pgleafmass     !< root mass from previous timestep,is value before fire. used by burntobare subroutine
+    real, dimension(nilg,icc), intent(in) :: burnvegf       !< fractional areas burned, for 9 ctem pfts
+    real, dimension(nilg,icc), intent(in) :: pstemmass      !< stem mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, dimension(nilg,icc), intent(in) :: pgleafmass     !< root mass from previous timestep, is value before fire. used by burntobare subroutine
     real, dimension(nilg,icc,ignd), intent(in) :: rmatctem  ! fraction of roots for each of ctem's 9 pfts in each soil layer
     real, dimension(nilg,icc), intent(inout) :: nppveg      !< npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
-    real, dimension(nilg,icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft,kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts,kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts,kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts,kg c/m2
-    real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts,kg c/m2
+    real, dimension(nilg,icc), intent(inout) :: bmasveg     !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+    real, dimension(nilg,icc), intent(inout) :: gleafmas    !< green leaf mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg,icc), intent(inout) :: bleafmas    !< brown leaf mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg,icc), intent(inout) :: stemmass    !< stem mass for each of the 9 ctem pfts, kg c/m2
+    real, dimension(nilg,icc), intent(inout) :: rootmass    !< root mass for each of the 9 ctem pfts, kg c/m2
     ! COMBAK PERLAY
-    real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare,kg c/m2
-    real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare,kg c/m2
-    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare,kg c/m2 ! COMBAK PERLAY
-    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare,kg c/m2 ! COMBAK PERLAY
+    real, dimension(nilg,iccp2), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2
+    real, dimension(nilg,iccp2), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: litrmass  !< litter mass for each of the 9 ctem pfts + bare, kg c/m2 ! COMBAK PERLAY
+    ! real, dimension(nilg,iccp2,ignd), intent(inout) :: soilcmas  !< soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2 ! COMBAK PERLAY
     ! COMBAK PERLAY
     real, intent(inout) :: tracerGLeafMass(:,:)      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
     real, intent(inout) :: tracerBLeafMass(:,:)      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$tracer C units/m^2\f$
@@ -565,11 +563,11 @@ contains
     real, intent(inout) :: tracerSoilCMass(:,:,:)    !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, dimension(nilg,icc), intent(inout) :: fcancmx     !< fractional coverage of ctem's 9 pfts
     real, dimension(nilg,icp1), intent(inout)  :: fcanmx    !< fractional coverage of class' 4 pfts
-    real, dimension(nilg), intent(inout) :: vgbiomas    !< grid averaged vegetation biomass,kg c/m2
-    real, dimension(nilg), intent(inout) :: gavgltms    !< grid averaged litter mass,kg c/m2
-    real, dimension(nilg), intent(inout) :: gavgscms    !< grid averaged soil c mass,kg c/m2
+    real, dimension(nilg), intent(inout) :: vgbiomas    !< grid averaged vegetation biomass, kg c/m2
+    real, dimension(nilg), intent(inout) :: gavgltms    !< grid averaged litter mass, kg c/m2
+    real, dimension(nilg), intent(inout) :: gavgscms    !< grid averaged soil c mass, kg c/m2
     real, dimension(nilg,icc), intent(out) :: add2allo      !< npp kg c/m2.day that is used for expansion and
-    !< subsequently allocated to leaves,stem,and root via
+    !< subsequently allocated to leaves, stem, and root via
     !< the allocation part of the model.
     real, dimension(nilg,icc), intent(out) :: colrate       !< colonization rate (1/day)
     real, dimension(nilg,icc), intent(out) :: mortrate      !< mortality rate
@@ -669,7 +667,7 @@ contains
       colmult = 1.00 !< multiplier for colonization rate
     end if
 
-    !> First,let's adjust the fractions if fire is turned on.
+    !> First, let's adjust the fractions if fire is turned on.
     if (dofire) then
 
       call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms, & ! In
@@ -678,7 +676,7 @@ contains
                       litrmass, soilcmas, nppveg, tracerLitrMass, tracerSoilCMass, & ! In/Out
                       tracerGLeafMass, tracerBLeafMass, tracerStemMass, tracerRootMass) ! In/Out
 
-      !> Since the biomass pools could have changed,update bmasveg.
+      !> Since the biomass pools could have changed, update bmasveg.
       do i = il1,il2 ! loop 190
         do j = 1,icc ! loop 195
           if (fcancmx(i,j) > 0.0) then
@@ -807,7 +805,7 @@ contains
       end do ! loop 180
     end do
 
-    !> Estimate colonization and mortality rate for each PFT,except for
+    !> Estimate colonization and mortality rate for each PFT, except for
     !! crops whose fractional coverage is prescribed.
     do j = 1,icc ! loop 200
       if (.not. crop(j)) then  ! do not run for crops
@@ -820,7 +818,7 @@ contains
           colrate(i,j) = lambda(i,j) * max(0.0,nppveg(i,j)) * (deltat / 963.62) &
                          * colmult * (1.0 / (bio2sap(sort(j)) * usebmsvg(i,j)))
 
-          !> Mortality rate is the sum of growth related mortality,intrinsic mortality,
+          !> Mortality rate is the sum of growth related mortality, intrinsic mortality,
           !! and an additional mortality that kicks in when long term averaged
           !! bioclimatic conditions become unfavourable for a PFT. This last term is based
           !! on the binary array pftexist.
@@ -843,7 +841,7 @@ contains
     !!
     !! Based on NPP for each PFT find the competition ranks / superiority
     !! order for simulating competition. Note that crops
-    !! are not in competition,so the competition is between the
+    !! are not in competition, so the competition is between the
     !! remaining pfts. In addition PFTs which shouldn't exist in the
     !! grid cell because of unfavourable values of long-term climatic
     !! conditions are considered inferior.
@@ -865,7 +863,7 @@ contains
     end do ! loop 220
 
     !> Bubble sort according to colonization rates WARNING - this only works if no tree species are
-    !! indexed at positions > numtreepfts,i.e. the trees must be a contiguous
+    !! indexed at positions > numtreepfts, i.e. the trees must be a contiguous
     !! unit at the start of the indexes.
     do j = 1,numtreepfts ! loop 270
       do n = 1,numtreepfts ! loop 280
@@ -885,7 +883,7 @@ contains
     !> The rank of grasses is also determined on the basis of
     !! their NPP but grasses are always assumed to be inferior to tree pfts
 
-    ! Find index of the first grass pft and give it to the temp variable,k.
+    ! Find index of the first grass pft and give it to the temp variable, k.
     do j = 1,icc
       if (grass(j)) then
         k = j
@@ -893,7 +891,7 @@ contains
       end if
     end do
 
-    ! Also now bubble sort the grass. WARNING:Again this assumes,like the trees,that all grass are
+    ! Also now bubble sort the grass. WARNING:Again this assumes, like the trees, that all grass are
     ! contiguous in the arrays. Additionally it assumes that crops are specified before grass !
     do j = k,k + numgrass - 1 ! loop 300
       do n = k,k + numgrass - 1 ! loop 305
@@ -932,7 +930,7 @@ contains
       end do ! loop 340
     end do ! loop 330
 
-    !> Arrange colonization and mortality rates,and fractions,according to superiority ranks
+    !> Arrange colonization and mortality rates, and fractions, according to superiority ranks
     do n = 1,icc - numcrops ! loop 350 - n now goes from 1 to icc-numcrops
       do i = il1,il2 ! loop 360
         usefrac(i,n) = frac(i,rank(i,n))
@@ -987,7 +985,7 @@ contains
       end do ! loop 510
     end do ! loop 500
 
-    !> With the minimum seeding fraction prescription,especially for
+    !> With the minimum seeding fraction prescription, especially for
     !! Lotka Volterra eqns the total veg fraction may exceed 1. to
     !! prevent this we need to adjust fractional coverage of all non-crop
     !! pfts that do not have the minimum fraction.
@@ -1082,24 +1080,24 @@ contains
 
     !> Now that we know the change in fraction for every pft we use its
     !! NPP for spatial expansion and litter generation. we also spread
-    !! vegetation biomass uniformly over the new fractions,and generate
+    !! vegetation biomass uniformly over the new fractions, and generate
     !! additional litter from mortality if the fractions decrease.
     !!
     !! Three things can happen here
     !!
-    !! 1. fraciord = 0,which means all npp that was used for expansion
-    !! becomes litter,due to self/expansion thinning and mortality.
+    !! 1. fraciord = 0, which means all npp that was used for expansion
+    !! becomes litter, due to self/expansion thinning and mortality.
     !!
-    !! 2. fraciord = 1,which means a part of or full npp is used for
+    !! 2. fraciord = 1, which means a part of or full npp is used for
     !! expansion but some litter may also be generated. the part of
     !! npp that is used for expansion needs to be allocated to leaves,
-    !! stem,and root. rather than doing this here we will let the
+    !! stem, and root. rather than doing this here we will let the
     !! allocation part handle this. so allocation module will allocate
     !! not only the npp that is used for pure vertical expansion but
     !! also this npp. but we will do our part here and spread the
     !! vegetation biomass over the new increased fraction.
     !!
-    !! 3. fraciord = -1,which means all of the npp is to be used for
+    !! 3. fraciord = -1, which means all of the npp is to be used for
     !! litter generation but in addition some more litter will be
     !! generated from mortality of the standing biomass.
     do j = 1,icc ! loop 660
@@ -1344,7 +1342,7 @@ contains
           gleafmas(i,j) = 0.0
           bleafmas(i,j) = 0.0
           stemmass(i,j) = 0.0
-          rootmass(i,j) = 0.0  ! FLAG,should I set rmatctem to zero here too? JM Feb 2016.
+          rootmass(i,j) = 0.0  ! FLAG, should I set rmatctem to zero here too? JM Feb 2016.
           ! COMBAK PERLAY
           litrmass(i,j) = 0.0
           soilcmas(i,j) = 0.0
@@ -1403,7 +1401,7 @@ contains
       end do ! loop 751
     end do ! loop 750
 
-    !> Update grid averaged vegetation biomass,and litter and soil c densities
+    !> Update grid averaged vegetation biomass, and litter and soil c densities
     do j = 1,icc ! loop 800
       do i = il1,il2 ! loop 801
         vgbiomas(i) = vgbiomas(i) + fcancmx(i,j) * (gleafmas(i,j) + bleafmas(i,j) &
@@ -1432,7 +1430,7 @@ contains
     !>
     !> and finally we check the C balance. We were supposed to use a
     !! fraction of NPP for competition. Some of it is used for expansion
-    !! (this is what we save for allocation),and the rest becomes litter.
+    !! (this is what we save for allocation), and the rest becomes litter.
     !! so for each pft the total C mass in vegetation and litter pools
     !! must all add up to the same value as before competition.
     !!
@@ -1574,16 +1572,16 @@ contains
     return
 
   end subroutine competition
-  !> @}
+  !! @}
   !
   !----------------------------------------------------------------------------------------------
   !
-  !> \ingroup competitionScheme_expansion
+  !> \ingroup competitionscheme_expansion
   !! @{
   !> Estimate fraction of NPP that is to be used for horizontal
   !! expansion (lambda) during the next day (i.e. this will be determining
   !! the colonization rate in competition).
-  !! @author V. Arora,J. Melton
+  !! @author V. Arora, J. Melton
   !!
   function expansion (il1, il2, ilg, sort, ailcg, lfstatus, nppveg, pftexist)
 
@@ -1599,7 +1597,7 @@ contains
     integer, intent(in) :: sort(:)          !< Maps the CTEM PFTs to the parameter arrays.
     real, intent(in) :: ailcg(:,:)          !< Green lai for ctem's pfts
     integer, intent(in) :: lfstatus(:,:)    !< leaf phenology status
-    real, intent(in) :: nppveg(:,:)         !< npp for individual pfts,u-mol co2/m2.sec
+    real, intent(in) :: nppveg(:,:)         !< npp for individual pfts, u-mol co2/m2.sec
     logical, intent(in) :: pftexist(:,:)    !< logical array indicating pfts exist (t) or not (f)
 
     real :: expansion(ilg,icc)        !< Used to determine the colonization rate
@@ -1636,7 +1634,7 @@ contains
 
           expansion(i,j) = max(0.0,min(lambdamax,expansion(i,j)))
 
-          !> If tree and leaves still coming out,or if npp is negative,then do not expand
+          !> If tree and leaves still coming out, or if npp is negative, then do not expand
           if ((lfstatus(i,j) == 1) .or. nppveg(i,j) < 0.0 .or. .not.pftexist(i,j)) then
             select case (ctempfts(J))
             case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
@@ -1654,36 +1652,37 @@ contains
     end do ! loop 100
 
   end function expansion
-  !> @}
-  !> \namespace competitionScheme
+  !! @}
+
+  !> \namespace competitionscheme
   !! Performs competition between PFTs for space
   !!
   !! # Competition parameterization
   !!
-  !! Competition between PFTs in CTEM is based upon modified L--V equations (Arora and Boer,2006a,b) \cite Arora2006-pp
-  !! \cite Arora2006-ax. The L--V equations (Lotka 1925 \cite Lotka1925-dg,Volterra 1926 \cite Volterra1926-iz) have
+  !! Competition between PFTs in CTEM is based upon modified L--V equations (Arora and Boer, 2006a, b) \cite Arora2006-pp
+  !! \cite Arora2006-ax. The L--V equations (Lotka 1925 \cite Lotka1925-dg, Volterra 1926 \cite Volterra1926-iz) have
   !! been adapted from their initial application for simulating predator--prey interactions
   !! in ecosystem models as described below.
   !!
   !! The change in fractional coverage (\f$f\f$) of a PFT \f$\alpha\f$ through time,
   !! \f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}\f$, is expressed as the result of mortality,
   !! and competition and colonization (CC) interactions with the other PFTs present in a
-  !! grid cell and bare ground,collectively represented as \f$B\f$ where \f$\alpha \notin B\f$:
+  !! grid cell and bare ground, collectively represented as \f$B\f$ where \f$\alpha \notin B\f$:
   !! \f[
-  !! \label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha,f_B) - m_{\alpha} f_\alpha.\qquad (Eqn 1)
+  !! \label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.\qquad (Eqn 1)
   !! \f]
   !!
-  !! The CC interactions are represented symbolically by the \f$g(f_\alpha,f_B)\f$ function.
+  !! The CC interactions are represented symbolically by the \f$g(f_\alpha, f_B)\f$ function.
   !! Mortality is assumed to be proportional to the number density of plants and represented
   !! by the mortality term, \f$m_{\alpha} f_\alpha\f$. The PFT-dependent mortality rate
   !! (\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in mortality.f90) produces bare
-  !! ground via a number of processes,and that bare ground is subsequently available for colonization.
+  !! ground via a number of processes, and that bare ground is subsequently available for colonization.
   !! We consider the fractional coverage for \f$N\f$ PFTs plus bare ground (\f$f_{N+1}\f$ =
   !! \f$f_{bare}\f$) where \f$\sum_{j=1}^{N+1} f_{j}=1\f$. For competition between unequal
-  !! competitors,the PFTs are ranked in terms of their dominance. If PFT \f$\alpha\f$ is the
-  !! most dominant,it will invade the area of other PFTs and the bare ground (\f$f_B\f$,
+  !! competitors, the PFTs are ranked in terms of their dominance. If PFT \f$\alpha\f$ is the
+  !! most dominant, it will invade the area of other PFTs and the bare ground (\f$f_B\f$,
   !! \f$\alpha \notin B\f$). Woody PFTs are all more dominant than grass PFTs since trees
-  !! can successfully invade grasses by overshading them (Siemann and Rogers,2003)\cite Siemann2003-jl and thus are
+  !! can successfully invade grasses by overshading them (Siemann and Rogers, 2003)\cite Siemann2003-jl and thus are
   !! ranked higher. Within tree or grass PFTs the dominance rank of a PFT is calculated
   !! based upon its colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) with higher colonization
   !! rates giving a higher dominance ranking. For the general case of PFT \f$\alpha\f$ with a
@@ -1693,15 +1692,15 @@ contains
   !! approach as
   !!
   !! \f[
-  !! \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha,i+1}f_{i+1}
-  !! +c_{\alpha,i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\
-  !! - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1),
-  !! \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}\qquad (Eqn 2)
+  !! \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1}
+  !! +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha, N}f_{N})\nonumber\\
+  !! - f_\alpha(c_{1, \alpha}f^b_1 + c_{2, \alpha}f^b_2 + \ldots + c_{(i-1),
+  !! \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha, \label{full}\qquad (Eqn 2)
   !! \f]
   !!
-  !! where the exponent \f$b\f$ is an empirical parameter,which controls the behaviour
-  !! of the L--V equations. In the original L--V formulation, \f$b\f$ is 1,but we
-  !! modify the L--V relations by using \f$b = 0\f$ following Arora and Boer (2006a,b) \cite Arora2006-pp
+  !! where the exponent \f$b\f$ is an empirical parameter, which controls the behaviour
+  !! of the L--V equations. In the original L--V formulation, \f$b\f$ is 1, but we
+  !! modify the L--V relations by using \f$b = 0\f$ following Arora and Boer (2006a, b) \cite Arora2006-pp
   !! \cite Arora2006-ax (implications of this choice are expanded upon below). The
   !! fractional cover of PFT \f$\alpha\f$ then changes depending on the gains it makes
   !! into the area of less dominant PFTs and the losses it suffers due to mortality
@@ -1716,44 +1715,44 @@ contains
   !! The rate at which PFT \f$\alpha\f$ invades another PFT \f$\beta\f$ is given by
   !!
   !! \f[
-  !! \label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha
-  !! \left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta}
-  !! = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.\qquad (Eqn 4)
+  !! \label{coloniz} c_{\alpha, \beta}f^b_\alpha f_{\beta} = c_\alpha
+  !! \left(\frac{c_{\alpha, \beta}}{c_\alpha} \right)f^b_\alpha f_{\beta}
+  !! = c_\alpha \delta_{\alpha, \beta} f^b_\alpha f_{\beta}.\qquad (Eqn 4)
   !! \f]
   !!
   !! A PFT invading bare ground has an unimpeded invasion rate, \f$c_\alpha\f$.
   !! The ratio of the invasion rate by PFT \f$\alpha\f$ into area covered by another PFT
-  !! \f$\beta\f$ and its unimpeded invasion rate (\f$\frac{c_{\alpha,\beta}}{c_\alpha}\f$)
-  !! gives the relative efficiency of colonization,termed \f$\delta_{\alpha,\beta}\f$,
+  !! \f$\beta\f$ and its unimpeded invasion rate (\f$\frac{c_{\alpha, \beta}}{c_\alpha}\f$)
+  !! gives the relative efficiency of colonization, termed \f$\delta_{\alpha, \beta}\f$,
   !! which is a scalar between 0 and 1. \f$\delta\f$ is 1 for invasion of any PFT into
   !! bare ground and 1 for tree PFT invasion into grass PFTs. If a PFT \f$\beta\f$ has
-  !! a lower dominance ranking than another PFT \f$\alpha\f$ then \f$\delta_{\beta,\alpha}
-  !! =0\f$ implying that sub-dominant PFTs do not invade dominant PFTs,but get invaded
-  !! by them,i.e. \f$\delta_{\alpha,\beta}=1\f$.  Equation 2 can then
+  !! a lower dominance ranking than another PFT \f$\alpha\f$ then \f$\delta_{\beta, \alpha}
+  !! =0\f$ implying that sub-dominant PFTs do not invade dominant PFTs, but get invaded
+  !! by them, i.e. \f$\delta_{\alpha, \beta}=1\f$.  Equation 2 can then
   !! be written more succinctly for each PFT as
   !!
   !! \f[
   !! \label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1}
-  !! (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta}
-  !! \delta_{\beta,\alpha} f_\alpha f^b_\beta) -  m_{\alpha} f_\alpha.\qquad (Eqn 5)
+  !! (c_{\alpha} \delta_{\alpha, \beta}f^b_\alpha f_\beta - c_{\beta}
+  !! \delta_{\beta, \alpha} f_\alpha f^b_\beta) -  m_{\alpha} f_\alpha.\qquad (Eqn 5)
   !! \f]
   !!
   !! The value of parameter \f$b\f$ is related to the manner in which two PFTs interact,
   !! represented by \f$f_{\alpha}^b f_{\beta}\f$, in Eqns. 2 -- 4.
-  !! As a result,the value of \f$b\f$ affects the equilibrium solution for fractional
+  !! As a result, the value of \f$b\f$ affects the equilibrium solution for fractional
   !! coverage of PFTs as well as how \f$f_i\f$ evolves over time.
   !!
   !! For the usual form of the L--V equations with \f$b=\delta=1\f$, and for the case of
-  !! a grid cell with two PFTs,the competition--colonization equations are
+  !! a grid cell with two PFTs, the competition--colonization equations are
   !!
   !! \f[
   !! \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1
   !! \nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}}
   !! {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\
-  !! = c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2},\qquad (Eqn 6)
+  !! = c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2}, \qquad (Eqn 6)
   !! \f]
   !!
-  !! where the dominant PFT 1 invades PFT 2 and the bare fraction,and PFT 2 invades
+  !! where the dominant PFT 1 invades PFT 2 and the bare fraction, and PFT 2 invades
   !! only the bare fraction. The equilibrium solutions for \f$f_1\f$ and \f$f_2\f$ in this case are
   !!
   !! \f[
@@ -1762,11 +1761,11 @@ contains
   !!
   !! \f[
   !! f_2 = max \left[  \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0   \right]
-  !! \nonumber \\ = max \left[  \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0
-  !!   \right],\label{f2_eq_b_eq_1}\qquad (Eqn 8)
+  !! \nonumber \\ = max \left[  \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2}, 0
+  !!   \right], \label{f2_eq_b_eq_1}\qquad (Eqn 8)
   !! \f]
   !!
-  !! In Eqn. 8,as long as \f$(c_1 - m_1)\f$ > \f$(c_2 - m_2)\f$
+  !! In Eqn. 8, as long as \f$(c_1 - m_1)\f$ > \f$(c_2 - m_2)\f$
   !! the equilibrium solution for \f$f_2\f$ will always be zero and coexistence is not possible.
   !!
   !! For \f$b=0\f$ and \f$\delta=1\f$, the competition--colonization equations are
@@ -1774,7 +1773,7 @@ contains
   !! \f[
   !! \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\
   !! = c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare}
-  !! - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1}\qquad (Eqn 9)
+  !! - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2, \label{cc_eq_b_eq_0_1}\qquad (Eqn 9)
   !! \f]
   !!
   !! and the corresponding equilibrium fractions are
@@ -1787,7 +1786,7 @@ contains
   !! \label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)} \qquad (Eqn 11)
   !! \f]
   !!
-  !! In Eqs. 10 and 11,as long as
+  !! In Eqs. 10 and 11, as long as
   !! \f$m_1> 0\f$ and \f$c_2 > 0\f$, then PFT 2 will always exist and
   !! equilibrium coexistence is possible. Values of parameter \f$b\f$
   !! between 1 and 0 yield equilibrium values of \f$f_2\f$ that vary
@@ -1800,10 +1799,10 @@ contains
   !! contrast to the application of the equations for competition between PFTs
   !! where the dominant PFT does not depend on sub-dominant PFTs for its existence
   !! and is thus able to exclude them completely. The PFTs interact with each other
-  !! through the invasion term \f$(-c_{\beta} \delta_{\beta,\alpha}
-  !! f_\alpha f^b_\beta)\f$ in Eq. 1,where \f$\delta_{\alpha,\beta}
+  !! through the invasion term \f$(-c_{\beta} \delta_{\beta, \alpha}
+  !! f_\alpha f^b_\beta)\f$ in Eq. 1, where \f$\delta_{\alpha, \beta}
   !! = 1\f$ or \f$0\f$ depending on whether PFT \f$\alpha\f$ can or cannot
-  !! invade PFT \f$\beta\f$, respectively,as mentioned earlier. This interaction
+  !! invade PFT \f$\beta\f$, respectively, as mentioned earlier. This interaction
   !! through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq. 6
   !! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. 9 (for \f$b=0\f$).
   !! The magnitude of this interaction thus depends on the value of parameter \f$b\f$.
@@ -1815,13 +1814,13 @@ contains
   !! does not depend on the current fractional coverage of the dominant PFT \f$\alpha\f$.
   !! This case may be thought of as corresponding to the general availability of the
   !! seeds of the dominant PFT \f$\alpha\f$ that may germinate and invade the coverage
-  !! of the sub-dominant PFT \f$\beta\f$ provided the climate is favourable,even if PFT
-  !! \f$\alpha\f$ does not exist in the grid cell,i.e. \f$f_\alpha = 0\f$ (in the case
+  !! of the sub-dominant PFT \f$\beta\f$ provided the climate is favourable, even if PFT
+  !! \f$\alpha\f$ does not exist in the grid cell, i.e. \f$f_\alpha = 0\f$ (in the case
   !! where \f$f_\alpha = 0\f$, the PFT is always assumed to have a dormant seed bank
   !! in the grid cell given the long lifetimes of seeds and their wide dispersion).
-  !! In contrast,in the standard version of the L--V equations,as implemented for
+  !! In contrast, in the standard version of the L--V equations, as implemented for
   !! predator--prey interactions, \f$b\f$ always equals \f$1\f$ since the amount of
-  !! predation,and hence the reduction in the number of prey,depends on the product
+  !! predation, and hence the reduction in the number of prey, depends on the product
   !! of the number of predators and the number of prey. Using \f$b=0\f$ is thus
   !! consistent with invasion of the sub-dominant PFT \f$\beta\f$ being unaffected by
   !! the fractional coverage of the dominant PFT \f$\alpha\f$.
@@ -1833,50 +1832,50 @@ contains
   !!
   !!
   !! The PFT-dependent colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) is calculated based
-  !! on the fraction (\f$\Lambda_\alpha\f$) of positive NPP (\f$kg\,C\,m^{-2}\,day^{-1}\f$)
+  !! on the fraction (\f$\Lambda_\alpha\f$) of positive NPP (\f$kg\, C\, m^{-2}\, day^{-1}\f$)
   !! that is used for spatial expansion
   !!
   !! \f[
-  !! \label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}},\qquad (Eqn 12)
+  !! \label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\, \xi_{\alpha}}, \qquad (Eqn 12)
   !! \f]
   !!
-  !! where \f$\xi_{\alpha}\f$ (\f$(kg\,C)^{-1}\,m^{2}\f$) is the inverse sapling density
-  !! calculated as the reciprocal of vegetation biomass (\f$C_{veg,\alpha}\f$; \f$kg\,C\,m^{-2}\f$)
-  !! multiplied by a PFT-dependent constant (\f$S_{sap,\alpha}\f$; unitless; see also classicParams.f90)
+  !! where \f$\xi_{\alpha}\f$ (\f$(kg\, C)^{-1}\, m^{2}\f$) is the inverse sapling density
+  !! calculated as the reciprocal of vegetation biomass (\f$C_{veg, \alpha}\f$; \f$kg\, C\, m^{-2}\f$)
+  !! multiplied by a PFT-dependent constant (\f$S_{sap, \alpha}\f$; unitless; see also classicParams.f90)
   !!
   !! \f[
-  !! \label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0,C_{veg,\alpha})]}.\qquad (Eqn 13)
+  !! \label{xi} \xi_{\alpha}=\frac{1}{S_{sap, \alpha}\, \max[0.25, \min(5.0, C_{veg, \alpha})]}.\qquad (Eqn 13)
   !! \f]
   !!
   !! The fraction of NPP used for spatial expansion, \f$\Lambda_\alpha\f$, is calculated using the
-  !! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\,leaf\,(m^{2}\,ground)^{-1}\f$) of a PFT
+  !! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\, leaf\, (m^{2}\, ground)^{-1}\f$) of a PFT
   !!
   !! \f[
-  !! \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})) \qquad (Eqn 14)
+  !! \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1, \alpha}, \lambda_{2, \alpha})) \qquad (Eqn 14)
   !! \f]
   !!
   !! \f[
-  !! if   LAI_\alpha \leq LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =0 \nonumber \\
-  !! if   LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad  \lambda_{1,\alpha}
-  !! =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max}
-  !! \nonumber \\ if   LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha}
+  !! if   LAI_\alpha \leq LAI_{min, \alpha}:\nonumber \\ \quad \lambda_{1, \alpha} =0 \nonumber \\
+  !! if   LAI_{min, \alpha} < LAI_\alpha < LAI_{max, \alpha}:\nonumber \\ \quad  \lambda_{1, \alpha}
+  !! =\frac{LAI_\alpha - LAI_{min, \alpha}} {LAI_{max, \alpha} - LAI_{min, \alpha}} \lambda_{max}
+  !! \nonumber \\ if   LAI_\alpha \geq LAI_{max, \alpha}:\nonumber \\ \quad \lambda_{1, \alpha}
   !! =\lambda_{max} \label{lam1} \qquad (Eqn 15)
   !! \f]
   !!
   !! \f[
-  !! if   LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha
-  !! - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if   LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\
-  !! \quad \lambda_{2,\alpha} = 0\label{lam2}\qquad (Eqn 16)
+  !! if   LAI_\alpha > 0.25 LAI_{min, \alpha}:\nonumber \\ \quad \lambda_{2, \alpha} =\cosh(0.115(LAI_\alpha
+  !! - 0.25 LAI_{min, \alpha})) - 1 \nonumber \\ if   LAI_\alpha \leq 0.25 LAI_{min, \alpha}: \nonumber \\
+  !! \quad \lambda_{2, \alpha} = 0\label{lam2}\qquad (Eqn 16)
   !! \f]
   !!
-  !! The original formulation of Arora and Boer (2006) \cite Arora2006-pp only considered \f$\lambda_{1,\alpha}\f$ but here
-  !! we adjust the parametrization with the addition of \f$\lambda_{2,\alpha}\f$, which ensures
+  !! The original formulation of Arora and Boer (2006) \cite Arora2006-pp only considered \f$\lambda_{1, \alpha}\f$ but here
+  !! we adjust the parametrization with the addition of \f$\lambda_{2, \alpha}\f$, which ensures
   !! that a small fraction of NPP is used for spatial expansion even at very low LAI values.
   !! This additional constraint allows for improved fractional coverage of grasses in arid
-  !! regions. Similar to \f$S_{sap,\alpha}\f$, \f$LAI_{min,\alpha}\f$ and
-  !! \f$LAI_{max,\alpha}\f$ are PFT-dependent parameters (see also classicParams.f90).
+  !! regions. Similar to \f$S_{sap, \alpha}\f$, \f$LAI_{min, \alpha}\f$ and
+  !! \f$LAI_{max, \alpha}\f$ are PFT-dependent parameters (see also classicParams.f90).
   !!
-  !! The value of \f$\lambda_{max}\f$ is set to 0.1 so that a maximum of 10\,{\%} of
+  !! The value of \f$\lambda_{max}\f$ is set to 0.1 so that a maximum of 10\, {\%} of
   !! daily NPP can be used for spatial expansion. Finally, \f$\Lambda_\alpha\f$ is
   !! set to zero for tree PFTs when they are in a full leaf-out mode and all NPP is
   !! being used for leaf expansion (see phenolgy.f90).
@@ -1892,12 +1891,12 @@ contains
   !! described by empirical observations to allow their parametrization. Some examples
   !! of the latter include a plant's resistance to frost damage and xylem cavitation
   !! limits due to moisture stress. The bioclimatic criteria include the minimum
-  !! coldest month air temperature (\f$T^{cold}_{min}\f$),the maximum coldest month
-  !! air temperature (\f$T^{cold}_{max}\f$),the maximum warmest month air temperature
-  !! (\f$T^{warm}_{max}\f$),the minimum number of annual growing degree days above
-  !! \f$5\,C\f$ (\f$GDD5_{min}\f$),the minimum annual aridity index (ratio of
+  !! coldest month air temperature (\f$T^{cold}_{min}\f$), the maximum coldest month
+  !! air temperature (\f$T^{cold}_{max}\f$), the maximum warmest month air temperature
+  !! (\f$T^{warm}_{max}\f$), the minimum number of annual growing degree days above
+  !! \f$5\, C\f$ (\f$GDD5_{min}\f$), the minimum annual aridity index (ratio of
   !! potential evapotranspiration to precipitation; \f$arid_{min}\f$) and the
-  !! minimum dry season length in a year (\f$dryseason_{min}\f$),where the dry
+  !! minimum dry season length in a year (\f$dryseason_{min}\f$), where the dry
   !! season length represents the number of consecutive months with precipitation
   !! less than potential evaporation. The bioclimatic indices are updated on a 25 year
   !! timescale (\f$T=25\f$) such that the slowly changing value of a bioclimatic
@@ -1908,11 +1907,10 @@ contains
   !! \label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}).\qquad (Eqn 17)
   !! \f]
   !!
-  !! Equation 17 implies that \f$63\,{\%}\f$ of a sudden change in
+  !! Equation 17 implies that \f$63\, {\%}\f$ of a sudden change in
   !! the value of a bioclimatic index \f$\Delta x\f$ is reflected in \f$X(t)\f$
-  !! in \f$T\f$ years \f$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)\f$, while \f$86\,{\%}\f$
+  !! in \f$T\f$ years \f$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)\f$, while \f$86\, {\%}\f$
   !! of the change is reflected in \f$2T\f$ years \f$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86)
   !! \f$.
   !!
-  !> \file
 end module
