@@ -690,7 +690,7 @@ contains
     implicit none
     integer, intent(in)         :: ncStatus !< Status variable
     character( * ), optional      :: tag  !< Optional tag
-    character(100)              :: message
+    character(150)              :: message
     integer                     :: status
     if (present(tag)) then
       message = tag

@@ -86,9 +86,9 @@ else ifeq ($(mode), parallel)
         # Fortran Flags. The following is specific to the gfortran compiler.
         FFLAGS = -DPARALLEL -O3 -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -J$(ODIR)
         # Include Flags.
-        IFLAGS =  -I${HOME}/PnetCDF/include
+        IFLAGS =  -I/para_netcdf_hdf-4.6.3/MPI/include
         # Library Flags.
-        LFLAGS = -L${HOME}/PnetCDF/lib -lnetcdf -ldl -lz -lm
+        LFLAGS = -L/para_netcdf_hdf-4.6.3/MPI/lib -lnetcdff -lnetcdf -lhdf5_hl -lhdf5
 else
 	# Serial compiler.
 	COMPILER = gfortran
