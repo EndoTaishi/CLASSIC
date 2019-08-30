@@ -2907,7 +2907,7 @@ contains
           call ctem(fsnowacc_t, sandgat, & ! In
                     ilg, 1, nml, iday, radjgat, &! In
                     taaccgat_t, dlzwgat, ancgvgac_t, rmlcgvga_t, & ! In
-                    zbtwgat, & ! In
+                    zbtwgat, doMethane, & ! In
                     uvaccgat_t, vvaccgat_t, lightng, tbaraccgat_t, &! In
                     sdepgat, spinfast, todfrac, & ! In
                     netrad_gat, preacc_gat, PSISGAT, &! In
