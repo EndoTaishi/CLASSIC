@@ -52,11 +52,24 @@
         fixedYearCO2 = 1850 ,   ! If transientCO2 = .true., this is ignored.
 
     !CH4 switches:
-        ! If you don't care about running with methane, you can just copy your CO2 file (cp CO2file.nc fakeCH4file.nc) and point to it here.
-        ! It won't affect the rest of your run. However you do need to have a file specified if CTEM is on.
-        transientCH4 = .true. , ! Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
-        CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
-        fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
+    
+        doMethane = .false., ! If set to .true., a methane file should be specified below.
+
+          ! Read in of atmospheric methane concentration for soil CH4 uptake. 
+          transientCH4 = .true. , ! Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
+          CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
+          fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
+
+          ! Wetland switches:
+              ! If you wish to read in and use observed wetland fractions, there are two options. If you wish time
+              ! evolving wetland fractions set transientOBSWETF to true and give a OBSWETFFile. If you wish to use
+              ! a single year of that file set transientOBSWETF to false, give a OBSWETFFile, and set fixedYearOBSWETF
+              ! to some valid year. If you wish to use only dynamically determined wetland fractions set transientOBSWETF
+              ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
+              ! dynamically determine wetland extent.
+              transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
+              OBSWETFFile = 'inputFiles/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
+              fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
     !Fire switches
         dofire = .true. ,               ! If true the fire disturbance parameterization is turned on.
@@ -86,17 +99,6 @@
         lnduseon = .false. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
         fixedYearLUC = 1850 ,
-
-    ! Wetland switches:
-        ! If you wish to read in and use observed wetland fractions, there are two options. If you wish time
-        ! evolving wetland fractions set transientOBSWETF to true and give a OBSWETFFile. If you wish to use
-        ! a single year of that file set transientOBSWETF to false, give a OBSWETFFile, and set fixedYearOBSWETF
-        ! to some valid year. If you wish to use only dynamically determined wetland fractions set transientOBSWETF
-        ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
-        ! dynamically determine wetland extent.
-        transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
-        OBSWETFFile = 'inputFiles/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
-        fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
 ! Physics switches:
 

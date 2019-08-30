@@ -782,11 +782,11 @@ contains
     !< corresponding parameter calculated by class is overridden by
     !< a user-supplied input value.
     integer, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-    !< plant area index, vegetation height, canopy albedo, snow albedo
-    !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1, the value of the
-    !< corresponding parameter calculated by class is overridden by
-    !< a user-supplied input value.
+                            !< plant area index, vegetation height, canopy albedo, snow albedo
+                            !< and soil albedo respectively calculated by class are used.
+                            !< if any of these switches is set to 1, the value of the
+                            !< corresponding parameter calculated by class is overridden by
+                            !< a user-supplied input value.
     integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
     !< if it is set to 1, the new four-band routines are used.
     integer, pointer, dimension(:) :: altotcount_ctm ! nlat
@@ -794,12 +794,10 @@ contains
     real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
     real, pointer, dimension(:)    :: flutacc_gat !(ilg)
     real, pointer, dimension(:)    :: flinacc_gat !(ilg)
-    !         real, pointer, dimension(:)    :: pregacc_gat !(ilg)
     real, pointer, dimension(:)    :: altotacc_gat !(ilg)
     real, pointer, dimension(:)    :: netrad_gat !(ilg)
     real, pointer, dimension(:)    :: preacc_gat !(ilg)
     real, pointer, dimension(:)    :: sdepgat !(ilg)
-    !         real, pointer, dimension(:,:)  :: rgmgat !(ilg,ignd)
     real, pointer, dimension(:,:)  :: sandgat !(ilg,ignd)
     real, pointer, dimension(:,:)  :: claygat !(ilg,ignd)
     real, pointer, dimension(:,:)  :: orgmgat !(ilg,ignd)
@@ -813,6 +811,7 @@ contains
     logical, pointer :: start_bare
     logical, pointer :: lnduseon
     logical, pointer :: transientCO2
+    logical, pointer :: doMethane
     logical, pointer :: transientCH4
     logical, pointer :: transientPOPD
     logical, pointer :: transientLGHT
@@ -824,8 +823,7 @@ contains
     logical, pointer :: doDayOutput
     logical, pointer :: doHhOutput
     logical, pointer :: projectedGrid    !< True if you have a projected lon lat grid, false if not. Projected grids can only have
-    !! regions referenced by the indexes, not coordinates, when running a sub-region
-
+                                          !! regions referenced by the indexes, not coordinates, when running a sub-region
 
     ! ROW vars:
     logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -1089,8 +1087,8 @@ contains
     real, pointer, dimension(:,:) :: ntchlveg  !< fluxes for each pft: Net change in leaf biomass, u-mol CO2/m2.sec
     real, pointer, dimension(:,:) :: ntchsveg  !< fluxes for each pft: Net change in stem biomass, u-mol CO2/m2.sec
     real, pointer, dimension(:,:) :: ntchrveg  !< fluxes for each pft: Net change in root biomass,
-    !! the net change is the difference between allocation and
-    !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
+                                              !! the net change is the difference between allocation and
+                                              !! autotrophic respiratory fluxes, u-mol CO2/m2.sec
     real, pointer, dimension(:) :: extnprobgat
     real, pointer, dimension(:) :: prbfrhucgat
     real, pointer, dimension(:) :: dayl_maxgat
@@ -1196,7 +1194,6 @@ contains
     real, pointer, dimension(:,:) :: mmgat
 
     !      Outputs
-
     real, pointer, dimension(:,:) :: qevpacc_m_save
 
     !     -----------------------
@@ -1213,27 +1210,8 @@ contains
 
     !============= CTEM array declaration done =============================/
 
-    !     * PHYSICAL CONSTANTS.
-    !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
-    !     * WITHIN THE GCM.
-
     ! leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
     logical :: leapnow
-
-    !   ----CLASS moss variables-------YW ----------------------------------
-    !     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
-    !     See corresponding changes in calls to ctemg2,ctem,and ctems2.
-    !     real  :: thlqaccgat_m(ilg,ignd),thlqaccrow_m(nlat,nmos,ignd),
-    !    4      thicaccgat_m(ilg,ignd),thicaccrow_m(nlat,nmos,ignd),
-    !    5      peatdepgat(ilg),
-    ! real  :: g12acc(ilg),g23acc(ilg) ! g12grd(ilg),g23grd(ilg),
-    !   g12 - energy flux between soil layer 1 and 2 (W/m2)
-    !   g23 - energy flux between soil layer 2 and 3 (W/m2)
-    !   wiltsm - wilting point for peat soil layers  (m3/m3)
-    !   fieldsm - field capacity for peat soil layers (m3/m3)
-    !   thliqc - liquid water content of canopy+snow subarea (m3/m3)
-    !   thliqg - liquid water content of snow ground subarea (m3/m3)
-    !   peatdep - peat depth (m)
 
     integer, pointer, dimension(:,:) :: ipeatlandrow ! This is first set in read_from_ctm.
     integer, pointer, dimension(:) :: ipeatlandgat
@@ -1294,8 +1272,6 @@ contains
     ! allocated with nlat, nmos, iccp2, ignd:
     real, pointer, dimension(:,:,:) :: tracerlitrMassgat       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracersoilCMassgat      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-
-
 
     ! Point the CLASS pointers
 
@@ -1831,7 +1807,8 @@ contains
     PFTCompetition    => c_switch%PFTCompetition
     start_bare        => c_switch%start_bare
     lnduseon          => c_switch%lnduseon
-    transientCO2     => c_switch%transientCO2
+    transientCO2      => c_switch%transientCO2
+    doMethane         => c_switch%doMethane
     transientCH4      => c_switch%transientCH4
     transientPOPD     => c_switch%transientPOPD
     transientLGHT     => c_switch%transientLGHT
@@ -1970,9 +1947,9 @@ contains
 
     slopefracrow      => vrot%slopefrac
     wetfrac_presrow   => vrot%wetfrac_pres
-    ch4WetSpecrow        => vrot%ch4WetSpec
+    ch4WetSpecrow     => vrot%ch4WetSpec
     wetfdynrow        => vrot%wetfdyn
-    ch4WetDynrow        => vrot%ch4WetDyn
+    ch4WetDynrow      => vrot%ch4WetDyn
     ch4soillsrow      => vrot%ch4_soills
 
     peatdeprow        => vrot%peatdep
@@ -2050,7 +2027,6 @@ contains
     dmossrow         => vrot%dmoss
     pddrow           => vrot%pdd
 
-
     ! >>>>>>>>>>>>>>>>>>>>>>>>>>
     ! GAT:
 
@@ -2108,12 +2084,10 @@ contains
     fsinacc_gat       => vgat%fsinacc_gat
     flutacc_gat       => vgat%flutacc_gat
     flinacc_gat       => vgat%flinacc_gat
-    !         pregacc_gat       => vgat%pregacc_gat
     altotacc_gat      => vgat%altotacc_gat
     netrad_gat        => vgat%netrad_gat
     preacc_gat        => vgat%preacc_gat
     sdepgat           => vgat%sdepgat
-    !         rgmgat            => vgat%rgmgat
     sandgat           => vgat%sandgat
     claygat           => vgat%claygat
     orgmgat           => vgat%orgmgat
@@ -2376,7 +2350,7 @@ contains
     if (ctem_on) then
       !> Read in the inputs for a run with biogeochemical component turned on
       call getInput('CO2') ! CO2 atmospheric concentration
-      call getInput('CH4') ! CH4 atmospheric concentration
+      if (doMethane) call getInput('CH4') ! CH4 atmospheric concentration
       if (useTracer > 0) call getInput('tracerCO2',longitude,latitude) ! tracer atmospheric values
       if (.not. projectedGrid) then
         ! regular lon/lat grid
@@ -2557,7 +2531,7 @@ contains
 
             if (transientCO2) call updateInput('CO2',runyr)
             if (useTracer > 0 .and. transientCO2) call updateInput('tracerCO2',runyr)
-            if (transientCH4) call updateInput('CH4',runyr)
+            if (doMethane .and. transientCH4) call updateInput('CH4',runyr)
             if (dofire .and. transientPOPD) call updateInput('POPD',runyr)
             if (lnduseon) then
               call updateInput('LUC',runyr)

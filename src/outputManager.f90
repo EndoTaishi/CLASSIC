@@ -232,6 +232,8 @@ contains
         validGroup = .true.
       else if (c_switch%useTracer > 0 .and. trim(descriptor%group) == "tracer") then
         validGroup = .true.
+      else if (c_switch%doMethane .and. trim(descriptor%group) == "methane") then
+        validGroup = .true.
       else
         validGroup = .false.
       end if

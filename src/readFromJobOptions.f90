@@ -43,6 +43,7 @@ contains
     logical, pointer :: transientCO2
     character(:), pointer :: CO2File
     integer, pointer :: fixedYearCO2
+    logical, pointer :: doMethane
     logical, pointer :: transientCH4
     character(:), pointer :: CH4File
     integer, pointer :: fixedYearCH4
@@ -134,6 +135,7 @@ contains
         transientCO2, &
         CO2File, &
         fixedYearCO2, &
+        doMethane, &
         transientCH4, &
         CH4File, &
         fixedYearCH4, &
@@ -215,6 +217,7 @@ contains
     transientCO2    => c_switch%transientCO2
     CO2File         => c_switch%CO2File
     fixedYearCO2    => c_switch%fixedYearCO2
+    doMethane       => c_switch%doMethane
     transientCH4    => c_switch%transientCH4
     CH4File         => c_switch%CH4File
     fixedYearCH4    => c_switch%fixedYearCH4

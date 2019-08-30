@@ -57,6 +57,8 @@ module ctemStateVars
     character(350) :: CO2File   !< Location of the netcdf file containing atmospheric \f$CO_2\f$ values
     integer :: fixedYearCO2     !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
 
+    logical :: doMethane        !< Setting to true will enable wetland CH4 and soil uptake of CH4 subroutines and also require the 
+                                !! [CH4] input file.
     logical :: transientCH4     !< use \f$CH_4\f$ time series, if false, fixedYearCH4 is used
     character(350) :: CH4File   !< Location of the netcdf file containing atmospheric \f$CH_4\f$ values
     integer :: fixedYearCH4     !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
