@@ -36,7 +36,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 #######################################################
 output_dir = ""
-observationalData = "/home/crp102/mattfortier2019/code/integrated_fluxnet/observations/outputs"
+observationalData = "inputFiles/observationalDataFLUXNET"
 compare_to_obs = True
 simulatedRuns = []
 
@@ -58,6 +58,9 @@ data if needed. It this step is unnecessary, it may be set to 1.
 - units indicates the string that will be displayed beside the attribute on the final graph. If
 the substring "month" appears within {units}, the input data will be multiplied by 1 / 8.64E7.
 
+- seconds_to_months should be True if you need to convert from a value per second, to a value
+per month. In general, fluxes should mark this as True, whereas pools should mark this as False
+
 - input_attributes is a list that will contain one or more simulated attributes to be used
 in linear combination to compare to the observational attribute in question. Each string
 in the input_attributes list should correspond to a {input_attribute}_monthly.csv file
@@ -74,6 +77,7 @@ variables = [
         "observational_attribute": "gpp",
         "observational_multiplier": 1,
         "units": "kg C/m$^2$/month",
+        "seconds_to_months": True,
         "input_attributes": ["gpp"],
         "input_multipliers": [1]
 
@@ -82,6 +86,7 @@ variables = [
         "observational_attribute": "reco",
         "observational_multiplier": 1,
         "units": "kg C/m$^2$/month",
+        "seconds_to_months": True,
         "input_attributes": ["ra", "rh"], # reco is 1*ra + 1*rh
         "input_multipliers": [1, 1]
 
@@ -90,6 +95,7 @@ variables = [
         "observational_attribute": "nee",
         "observational_multiplier": -1, # "nee" needs to be inverted
         "units": "kg C/m$^2$/month",
+        "seconds_to_months": True,
         "input_attributes": ["nep"],
         "input_multipliers": [1]
 
@@ -98,6 +104,7 @@ variables = [
         "observational_attribute": "hfss",
         "observational_multiplier": 1,
         "units": "W/m$^2$",
+        "seconds_to_months": False,
         "input_attributes": ["hfss"],
         "input_multipliers": [1]
 
@@ -106,6 +113,7 @@ variables = [
         "observational_attribute": "hfls",
         "observational_multiplier": 1,
         "units": "W/m$^2$",
+        "seconds_to_months": False,
         "input_attributes": ["hfls"],
         "input_multipliers": [1]
 
@@ -114,6 +122,7 @@ variables = [
         "observational_attribute": "rns",
         "observational_multiplier": 1,
         "units": "W/m$^2$",
+        "seconds_to_months": False,
         "input_attributes": ["rss", "rls"],
         "input_multipliers": [1, 1]
 
@@ -156,7 +165,10 @@ def main():
             sim = {}
             sim["outputs"] = item
             name = re.match(r".*\/([^\/]*)\/outputs", item)
-            sim["name"] = name.group(1)
+            if not name:
+                sim["name"] = "CLASSIC"
+            else:
+                sim["name"] = name.group(1)
             sim["colour"] = avail_colours.pop(0)
             simulatedRuns.append(sim)
             colours.append(sim["colour"])
@@ -295,7 +307,8 @@ def generate_comparative_frame(df_obs, site, dataframes, var):
     if compare_to_obs:
         simulatedFrames.insert(0, df_obs)
     for df_sim in simulatedFrames:
-        seconds_to_months(df_sim)
+        if var["seconds_to_months"]:
+            seconds_to_months(df_sim)
         df_sim.set_index('time', inplace=True)
 
     df_combined = pd.concat(simulatedFrames, axis=1, sort=False)
@@ -318,7 +331,7 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
     num_cols = 5
     num_rows = math.ceil(num_plots/num_cols)
     # Create the figure, make the size based on the number of plots in the matrix.
-    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols)
+    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
     fig.suptitle(f"{var['observational_attribute'].upper()}\n({var['units']})", fontsize=20, x=0.125, y=1-(1/(4*num_rows)))
     fig.set_figheight(3*num_rows)
     fig.set_figwidth(3*num_cols)
@@ -351,7 +364,7 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
     if compare_to_obs:
         handles = []
         labels = []
-        fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols)
+        fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
         fig.suptitle(f"{var['observational_attribute'].upper()}\n({var['units']})", fontsize=20, x=0.125, y=1-(1/(4*num_rows)))
         fig.set_figheight(3*num_rows)
         fig.set_figwidth(3*num_cols)
@@ -388,7 +401,7 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
                     i += 1
         for ii in range(num_plots, num_cols*num_rows):
             plt.delaxes(axes[math.floor(ii/num_cols), ii%num_cols])
-        fig.text(0.1, 1-(6/(7*num_rows)), "slope / r$^2$ / mse") 
+        fig.text(0.1, 1-(6/(7*num_rows)), "slope / r$^2$ / mse")
         fig.legend(handles, labels, loc=(0.08, 1-(3/(4*num_rows))))
         plt.savefig(output_dir + "/" + var["observational_attribute"] + "_scatter" + ".pdf")
         plt.close()
@@ -400,7 +413,7 @@ def seasonal_plots(dataframes, colours, IGBP, var):
     num_cols = 5
     num_rows = math.ceil(num_plots/num_cols)
     # Create the figure, make the size based on the number of plots in the matrix.
-    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols)
+    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
     fig.suptitle(f"Seasonal {var['observational_attribute'].upper()}\n({var['units']})", fontsize=20, x=0.125, y=1-(1/(4*num_rows)))
     fig.set_figheight(3*num_rows)
     fig.set_figwidth(3*num_cols)
