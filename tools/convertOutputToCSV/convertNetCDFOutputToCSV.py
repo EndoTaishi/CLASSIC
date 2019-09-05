@@ -14,7 +14,7 @@ import pandas as pd
 inNcFile = str(sys.argv[1])
 
 # Read in the file using xarray
-inNC = xr.open_dataset(inNcFile, decode_times=False)
+inNC = xr.open_dataset(inNcFile)
 
 # Convert to a pandas dataframe 
 df = inNC.to_dataframe()
