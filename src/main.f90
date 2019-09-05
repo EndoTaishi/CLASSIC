@@ -2356,13 +2356,13 @@ contains
         ! regular lon/lat grid
         if (dofire) call getInput('POPD',longitude,latitude) ! Population density
         if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
-        if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
+        if (doMethane .and. transientOBSWETF .or. fixedYearOBSWETF /= - 9999) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
         if (lnduseon .or. (fixedYearLUC /= - 9999)) call getInput('LUC',longitude,latitude) ! Land use change
       else
         ! Projected grids use the lon and lat indexes, not the actual coordinates
         if (dofire) call getInput('POPD',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Population density
         if (dofire) call getInput('LGHT',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Cloud-to-ground lightning frequency
-        if (transientOBSWETF .or. fixedYearOBSWETF /= - 9999) &
+        if (doMethane .and. transientOBSWETF .or. fixedYearOBSWETF /= - 9999) &
             call getInput('OBSWETF',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Observed wetland distribution
         if (lnduseon .or. (fixedYearLUC /= - 9999)) &
             call getInput('LUC',longitude,latitude,projLonInd = lonIndex,projLatInd = latIndex) ! Land use change
