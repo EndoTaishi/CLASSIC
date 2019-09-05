@@ -329,17 +329,6 @@ contains
     end do ! loop 260
     do i = il1,il2 ! loop 290
       socmoscl(i) = sum(scmotrm(i,:) * fracarb(i,:)) / sum(fracarb(i,:))
-      !         socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2) +scmotrm(i,3)*fracarb(i,3)
-      !         socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
-      !       make sure we don't use scmotrm of 2nd and 3rd soil layers
-      !       if they are specified bedrock via sand -3 flag
-      !         if (isand(i,3)==-3) then ! third layer bed rock
-      !           socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2)
-      !           socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2))
-      !         end if
-      !         if (isand(i,2)==-3) then ! second layer bed rock
-      !           socmoscl(i) = scmotrm(i,1)
-      !         end if
       socmoscl(i) = max(0.2,min(socmoscl(i),1.0))
     end do ! loop 290
     !>     find moisture scalar for litter decomposition
