@@ -16,7 +16,7 @@ for f in $inputs/*; do
   ZRFH=$(python3 $yaml_reader $f/siteinfo.yaml ZRFH)
   ZRFM=$(python3 $yaml_reader $f/siteinfo.yaml ZRFM)
   jof=$f/job_options_file.txt
-  yes | cp $rootdir/inputFiles/template_job_options_file.txt $jof
+  yes | cp $rootdir/configurationFiles/template_job_options_file.txt $jof
 
   # Now we use sed (stream editor) to tailor the job options file with the info we gained
   # from site_info.yaml
@@ -25,6 +25,9 @@ for f in $inputs/*; do
 
   # Replace all the meteorological files
   sed -i "/metFileFss/s|'.*'|'$f/metVar_sw.nc'| ; /metFileFdl/s|'.*'|'$f/metVar_lw.nc'| ; /metFilePre/s|'.*'|'$f/metVar_pr.nc'| ; /metFileTa/s|'.*'|'$f/metVar_ta.nc'| ; /metFileQa/s|'.*'|'$f/metVar_qa.nc'| ; /metFileUv/s|'.*'|'$f/metVar_wi.nc'| ; /metFilePres/s|'.*'|'$f/metVar_ap.nc'|" $jof
+
+  # Use the proper CO2 file
+  sed -i "/CO2File/s|'.*'|'inputFiles/TRENDY_CO2_1700_2018.nc'|" $jof
 
   # Replace the init and restart files
   sed -i "/init_file/s|'.*'|'$f/${current}_init.nc'| ; /rs_file_to_overwrite/s|'.*'|'$f/rsfile.nc'|" $jof
