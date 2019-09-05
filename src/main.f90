@@ -2516,7 +2516,7 @@ contains
         if (dofire .and. ctem_on) call updateInput('LGHT',runyr,imonth = imonth,iday = iday,dom = DOM)
 
         ! Update the wetland fractions if we are using read-in wetland fractions
-        if ((transientOBSWETF .or. fixedYearOBSWETF /= - 9999) .and. ctem_on) then
+        if (ctem_on .and. doMethane .and. (transientOBSWETF .or. fixedYearOBSWETF /= - 9999)) then
           call updateInput('OBSWETF',runyr,imonth = imonth,iday = iday,dom = DOM)
         end if
 
