@@ -53,7 +53,7 @@ contains
     !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
-    logical, intent(in) :: leapnow     !< true if this year is a leap year. Only used if the switch 'leap' is true.
+    logical, intent(in) :: leapnow        !< true if this year is a leap year. Only used if the switch 'leap' is true.
     integer, intent(in) :: sort(icc)      !< index for correspondence between ctem pfts and size of parameter vectors
     real, intent(in) :: stemmass(ilg,icc) !< stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
     real, intent(in) :: rootmass(ilg,icc) !< root mass for each of the ctem pfts, \f$(kg C/m^2)\f$

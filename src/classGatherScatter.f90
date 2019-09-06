@@ -1,5 +1,5 @@
 !> \file
-!> ...
+!> Transfers information between the 'gathered' and 'scattered' form of the CLASS data arrays.
 !!
 module classGatherScatter
 
@@ -787,7 +787,7 @@ contains
   !! @}
 
   !> \namespace classgatherscatter
-  !! ...
+  !! Transfers information between the 'gathered' and 'scattered' form of the CLASS data arrays.
 
 
 end module classGatherScatter

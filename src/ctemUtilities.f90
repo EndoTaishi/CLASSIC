@@ -545,5 +545,5 @@ contains
   end subroutine ctemInit
   !! @}
   !> \namespace ctemutilities
-  !! ...
+  !! Central module for CTEM (biogeochemical)-related utilities
 end module ctemUtilities

@@ -709,5 +709,5 @@ contains
   !! @}
 
   !> \namespace fileiomodule
-  !! ...
+  !! Contains wrappers for accessing netCDF files thus allowing the same code for MPI and serial
 end module fileIOModule

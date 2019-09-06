@@ -656,13 +656,17 @@ contains
   !!
   !! where \f$\gamma_L\f$ is a constant with value equal to \f$25\, m^2\, (kg\, C)^{-1}\,
   !! yr^{0.5}\f$. The vegetation height (\f$H\f$; \f$m\f$) is calculated for tree, crop
-  !! and grass PFTs as
+  !! and grass PFTs as for trees
   !!
-  !! \f$ H = \min (10.0C_S^{0.385}, 45) \f$ for trees
+  !! \f[ H = \min (10.0C_S^{0.385}, 45) \f] 
   !!
-  !! \f$ H = (C_S + C_L)^{0.385} \f$ for crops
+  !! for crops,
   !!
-  !! \f$ H = 3.5 (C_{L, g} + 0.55C_{L, b})^{0.5} \f$ for  grasses
+  !! \f[ H = (C_S + C_L)^{0.385} \f] 
+  !!
+  !!for  grasses,
+  !!
+  !! \f[ H = 3.5 (C_{L, g} + 0.55C_{L, b})^{0.5} \f] 
   !!
   !! where \f$C_{L, g}\f$ is the green leaf biomass and \f$C_{L, b}\f$ is the brown
   !! leaf biomass that is scaled by 0.55 to reduce its contribution to the plant
@@ -671,17 +675,17 @@ contains
   !! not contribute to litter pool directly as the leaves first turn brown. The brown
   !! leaves themselves turnover to litter relatively rapidly \f$(\tau_{L, b} = 0.1\, \tau_L\f$).
   !!
-  !! In peatlands the vegetation height is calculated as (Wu et al. 2016) \cite Wu2016-zt
+  !! In peatlands the vegetation height is calculated as (Wu et al. 2016) \cite Wu2016-zt for trees,
   !!
-  !! \f$ H = \min(10.0, 3.0C_S^{0.385}) \f$ for trees
+  !! \f[ H = \min(10.0, 3.0C_S^{0.385}) \f] for shrubs,
   !!
-  !! \f$ H = \min(1.0, 0.25(C_S^{0.2})) \f$ for shrubs
+  !! \f[ H = \min(1.0, 0.25(C_S^{0.2})) \f] and for grasses and sedges,
   !!
-  !! \f$ H = = min(1.0, (C_{L, g}+0.55C_{L, b})^{0.3}) \f$ for grasses and sedges
+  !! \f[ H = = min(1.0, (C_{L, g}+0.55C_{L, b})^{0.3}) \f] 
   !!
   !! CTEM dynamically simulates root distribution and depth in soil following (Arora and Boer, 2003) \cite Arora2003838. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth \f$z\f$ is given by
   !!
-  !! \f$ f_R(z) = 1 - \exp(-\iota z) \f$
+  !! \f[ f_R(z) = 1 - \exp(-\iota z) \f]
   !!
   !! Rooting depth (\f$d_R\f$; \f$m\f$), which is defined to be the depth
   !! containing \f$99\, {\%}\f$ of the root mass, is found by setting \f$z\f$ equal

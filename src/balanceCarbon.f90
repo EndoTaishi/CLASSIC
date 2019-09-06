@@ -13,7 +13,7 @@ contains
   ! ------------------------------------------------------------------
   !> \ingroup balancecarbon_balcar
   !! @{
-  !> Check C budget we go through each pool for each vegetation type.
+  !> Check C budget by going through each pool for each vegetation type.
   !! Unless mentioned all pools are in kg C/m2 and all fluxes are in units
   !! of u-mol CO2/m2.sec
   !> @author Vivek Arora
@@ -603,6 +603,6 @@ contains
   end subroutine prepBalanceC
   !! @}
   !> \namespace balancecarbon
-  !! ...
+  !! Checks carbon pools for conservation
 
 end module balanceCarbon

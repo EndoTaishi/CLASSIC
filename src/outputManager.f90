@@ -1,5 +1,5 @@
 !> \file
-!> Central module for all netcdf output file operations
+!> Central module for all netCDF output file operations
 !!
 !> @author Joe Melton and Ed Wisernig
 !ignoreLint(1000)
@@ -905,5 +905,5 @@ contains
   !! @}
   !---------------------------------------------------------------------------------------
   !> \namespace outputmanager
-  !! ...
+  !! Central module for all netCDF output file operations
 end module outputManager

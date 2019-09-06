@@ -1,5 +1,5 @@
 !> \file
-!> ...
+!> Methane subroutines for wetland areal determination and methane emission and upland (oxic) soils methane uptake
 module methaneProcesses
 
   implicit none
@@ -13,7 +13,7 @@ contains
   ! ------------------------------------------------------------------
   !> \ingroup methaneprocesses_soil_ch4uptake
   !! @{
-  !> ....
+  !> Calculates the uptake of atmospheric methane by oxic soils.
   !> @author J. Melton
   subroutine soil_ch4uptake (il1, il2, ilg, tbar, & ! In
                              bi, thlq, thic, psis, & ! In
@@ -302,7 +302,7 @@ contains
   end subroutine wetland_methane
   !! @}
   !> \namespace methaneprocesses
-  !! ...
+  !! Methane subroutines for wetland areal determination and methane emission and upland (oxic) soils methane uptake
 
   !> \file
 end module methaneProcesses

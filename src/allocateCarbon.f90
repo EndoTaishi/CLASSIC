@@ -12,8 +12,8 @@ contains
 
   !> \ingroup allocatecarbon_allocate
   !! @{
-  !> Performs allocation of carbon gained by photosynthesis into plant structural pools
-  !> @author Vivek Arora and Joe Melton
+  !! Performs allocation of carbon gained by photosynthesis into plant structural pools
+  !! @author Vivek Arora and Joe Melton
   subroutine allocate (lfstatus, thliq, ailcg, il1, il2, ilg, & ! In
                        rmatctem, gleafmas, stemmass, & ! In
                        rootmass, sort, fcancmx, isand, THFC, THLW, & ! In
@@ -53,33 +53,33 @@ contains
     implicit none
 
     integer, intent(in) :: ilg !<
-    integer, intent(in) :: il1 !< input: il1=1
-    integer, intent(in) :: il2 !< input: il2=ilg
+    integer, intent(in) :: il1 !< il1=1
+    integer, intent(in) :: il2 !< il2=ilg
     integer :: i, j, k, m, n
-    integer, intent(in) :: lfstatus(ilg,icc) !< input: leaf status. an integer :: indicating if leaves are
-    !< in "max. growth", "normal growth", "fall/harvest",
-    !< or "no leaves" mode. see phenolgy subroutine for more details.
+    integer, intent(in) :: lfstatus(ilg,icc) !< leaf status. an integer :: indicating if leaves are
+    !! in "max. growth", "normal growth", "fall/harvest",
+    !! or "no leaves" mode. see phenolgy subroutine for more details.
     !
-    integer, intent(in) :: sort(icc) !< input: index for correspondence between 9 pfts and the
-    !< 12 values in parameters vectors
+    integer, intent(in) :: sort(icc) !< index for correspondence between 9 pfts and the
+    !! 12 values in parameters vectors
     integer, intent(in) :: isand(ilg,ignd)
     !
-    real, intent(in)   :: ailcg(ilg,icc) !< input: green or live leaf area index
-    real, intent(in)   :: thliq(ilg,ignd) !< input: liquid soil moisture content in 3 soil layers
-    real, intent(in)   :: THLW(ilg,ignd) !< input: wilting point soil moisture content
-    real, intent(in)   :: THFC(ilg,ignd) !< input: field capacity soil moisture content
-    real, intent(in)   :: rootmass(ilg,icc) !< input: root mass for each of the 9 ctem pfts, kg c/m2
-    real, intent(in)   :: rmatctem(ilg,icc,ignd) !< input: fraction of roots in each soil layer for each pft
-    real, intent(in)   :: gleafmas(ilg,icc) !< input: green or live leaf mass in kg c/m2, for the 9 pfts
-    real, intent(in)   :: stemmass(ilg,icc) !< input: stem mass for each of the 9 ctem pfts, kg c/m2
+    real, intent(in)   :: ailcg(ilg,icc) !< green or live leaf area index
+    real, intent(in)   :: thliq(ilg,ignd) !< liquid soil moisture content in 3 soil layers
+    real, intent(in)   :: THLW(ilg,ignd) !< wilting point soil moisture content
+    real, intent(in)   :: THFC(ilg,ignd) !< field capacity soil moisture content
+    real, intent(in)   :: rootmass(ilg,icc) !< root mass for each of the 9 ctem pfts, kg c/m2
+    real, intent(in)   :: rmatctem(ilg,icc,ignd) !< fraction of roots in each soil layer for each pft
+    real, intent(in)   :: gleafmas(ilg,icc) !< green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in)   :: stemmass(ilg,icc) !< stem mass for each of the 9 ctem pfts, kg c/m2
     !
-    real, intent(inout)   :: afrleaf(ilg,icc) !< output: allocation fraction for leaves
-    real, intent(inout)   :: afrstem(ilg,icc) !< output: allocation fraction for stem
-    real, intent(inout)   :: afrroot(ilg,icc) !< output: allocation fraction for root
-    real, intent(inout)  :: wtstatus(ilg,icc) !< output: soil water status (0 dry -> 1 wet)
-    real, intent(inout)  :: ltstatus(ilg,icc) !< output: light status
-    real, intent(in)      :: fcancmx(ilg,icc) !< input: max. fractional coverage of ctem's 9 pfts, but this can be
-    !< modified by land-use change,and competition between pfts
+    real, intent(inout)   :: afrleaf(ilg,icc) !< allocation fraction for leaves
+    real, intent(inout)   :: afrstem(ilg,icc) !< allocation fraction for stem
+    real, intent(inout)   :: afrroot(ilg,icc) !< allocation fraction for root
+    real, intent(inout)  :: wtstatus(ilg,icc) !< soil water status (0 dry -> 1 wet)
+    real, intent(inout)  :: ltstatus(ilg,icc) !< light status
+    real, intent(in)      :: fcancmx(ilg,icc) !< max. fractional coverage of ctem's 9 pfts, but this can be
+    !! modified by land-use change,and competition between pfts
     !
     real  :: avTHLW(ilg,icc), aTHFC(ilg,icc), avthliq(ilg,icc)
     real  :: nstatus(ilg,icc)
@@ -98,7 +98,7 @@ contains
         aleaf(i,j) = 0.0    !< temporary variable
         astem(i,j) = 0.0    !< temporary variable
         aroot(i,j) = 0.0    !< temporary variable
-        !< averaged over the root zone
+        !! averaged over the root zone
         avTHLW(i,j) = 0.0   !< wilting point soil moisture
         aTHFC(i,j) = 0.0   !< field capacity soil moisture
         avthliq(i,j) = 0.0    !< liquid soil moisture content
@@ -109,7 +109,7 @@ contains
         !< will have n cycle in the model
         wnstatus(i,j) = 0.0   !< min. of water & n status
         mnstrtms(i,j) = 0.0   !< min. (stem+root) biomass needed to
-        !< support leaves
+        !! support leaves
       end do ! loop 150
     end do ! loop 140
 
@@ -445,7 +445,7 @@ contains
     real, intent(in)    :: rmrveg(ilg,icc)    !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
     real, intent(in)    :: rmlveg(ilg,icc)    !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, dimension(ilg,icc), intent(in) :: fcancmx      !< max. fractional coverage of CTEM's pfts, but this can be
-    !< modified by land-use change,and competition between pfts
+    !! modified by land-use change,and competition between pfts
     real, intent(in) :: tracerNPP(ilg,icc)    !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(in) :: rmsTracer(:,:)        !< Tracer maintenance respiration for stem for the CTEM pfts (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(in) :: rmrTracer(:,:)        !< Tracer maintenance respiration for root for the CTEM pfts both (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
@@ -674,8 +674,7 @@ contains
   ! ---------------------------------------------------------------------------------------------------
 
   !> \namespace allocatecarbon
-  !!
-  !!
+  !! Allocates carbon to plant carbon pools (leaves, stem, roots)
   !! @author V. Arora, J. Melton
   !!
   !! Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective

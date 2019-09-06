@@ -702,10 +702,10 @@ contains
   ! ---------------------------------------------------------------------------------------------------
 
   !> \namespace peatlandsmod
+  !! Peatland specific processes 
   !! @author Y. Wu, J. Melton
   !!
   !! The peatland module is published in Geoscientific Model Development (Wu et al. 2016) \cite Wu2016-zt.
-  !! A copy of the paper is in the Documentation folder of this git repository.
   !!
   !! To account for the eco-hydrological and biogeochemical interactions among
   !! vegetation, atmosphere and soil in peatlands, the following modifications

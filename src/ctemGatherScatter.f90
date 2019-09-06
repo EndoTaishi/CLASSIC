@@ -1,5 +1,5 @@
 !> \file
-!>
+!> Transfers information between the 'gathered' and 'scattered' form of the CTEM data arrays.
 !! @author R. Li, J. Melton, E. Chan
 !!
 module ctemGatherScatter
@@ -1449,7 +1449,7 @@ contains
   ! ------------------------------------------------------------------------------------
 
   !> \namespace ctemgatherscatter
-  !! ...
+  !! Transfers information between the 'gathered' and 'scattered' form of the CTEM data arrays.
   !!
 
 end module ctemGatherScatter

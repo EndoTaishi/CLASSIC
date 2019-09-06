@@ -1491,8 +1491,7 @@ contains
   !! function to reflect lost mobility of the microbial populations due to less liquid water as:
   !! \f[ f_{15}(Q_{10, (T_i < T_{crit})}) = f_{15}(Q_{10}) * 0.1 \f]
   !!
-  !!   \image html Q10_response_sm.png
-  !!   \image latex Q10_response.eps
+  !!   \image html "Q10_response_sm.png" "Q10 response"
   !!
   !! The soil detrital pools are explictly tracked per soil layer.
   !!
@@ -1534,8 +1533,7 @@ contains
   !!
   !! \f[ f(z_i) =\exp (-z_i / z_t) \hspace{10pt}[Eqn 9]\f]
   !!
-  !!   \image html decr_resp_wit_depth_sm.png
-  !!   \image latex decr_resp_wit_depth.eps
+  !!   \image html "decr_resp_wit_depth_sm.png" "Decrease in respiration with depth"
   !!
   !! Heterotrophic respiration for bare ground is treated separately in CTEM. The carbon
   !! contributions to the bare ground litter and soil carbon pools come via processes
@@ -1549,7 +1547,7 @@ contains
   !! carbon pool (\f$C_{\mathrm{D} \rightarrow \mathrm{H}}\f$) is modelled as a fraction
   !! of litter respiration (\f$R_{h, D}\f$) as
   !!
-  !! \f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\, R_{h, D} \hspace{10pt}[Eqn 10] \]
+  !! \f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\, R_{h, D} \hspace{10pt}[Eqn 10] \f]
   !!
   !! where \f$\chi\f$ (see also ctem_params.f90) is the PFT-dependent humification factor
   !! and varies between 0.4 and 0.5. For crops, \f$\chi\f$ is set to 0.1 to account for
@@ -1559,7 +1557,7 @@ contains
   !!
   !! With heterotrophic respiration known, net ecosystem productivity (\f$NEP\f$) is
   !! calculated as
-  !! \f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \hspace{10pt}[Eqn 11]\f]
+  !! \f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \hspace{10pt}[Eqn 11] \f]
   !!
 
 end module heterotrophicRespirationMod
