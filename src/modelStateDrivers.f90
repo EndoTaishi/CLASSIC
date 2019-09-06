@@ -118,6 +118,7 @@ contains
     character(350), pointer          :: metFilePres
     integer, pointer                 :: useTracer
     logical, pointer                 :: ctem_on
+    logical, pointer                 :: doMethane
     logical, pointer                 :: projectedGrid
     logical, pointer                 :: dofire
     logical, pointer                 :: lnduseon
@@ -142,6 +143,7 @@ contains
     tracerCO2File           => c_switch%tracerCO2File
     useTracer               => c_switch%useTracer
     CH4File                 => c_switch%CH4File
+    doMethane               => c_switch%doMethane
     POPDFile                => c_switch%POPDFile
     LGHTFile                => c_switch%LGHTFile
     LUCFile                 => c_switch%LUCFile
@@ -425,8 +427,10 @@ contains
     if (ctem_on) then
       co2id = ncOpen(CO2File,nf90_nowrite)
       co2VarName = ncGetVarName(co2id)
-      ch4id = ncOpen(CH4File,nf90_nowrite)
-      ch4VarName = ncGetVarName(ch4id)
+      if (doMethane) then
+        ch4id = ncOpen(CH4File,nf90_nowrite)
+        ch4VarName = ncGetVarName(ch4id)
+      end if
       if (useTracer > 0) then
         tracerco2id = ncOpen(tracerCO2File,nf90_nowrite)
         ! 14C has different values depending on latitudional bands. The expected
