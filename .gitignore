@@ -20,3 +20,4 @@ src/backups/
 bib*
 cite*
 *_pycache_*
+*.simg

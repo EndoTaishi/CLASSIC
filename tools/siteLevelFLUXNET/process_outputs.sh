@@ -2,7 +2,7 @@
 # deducing where the root of the repository is.
 script_location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 rootdir=${script_location%%/tools*}
-container=$rootdir/inputFiles/CLASSIC_container.simg
+container=$rootdir/CLASSIC_container.simg
 # Iterate through the FLUXNET output directories. Any non-empty directories will
 # have their outputs converted to csv files, then moved into an appropriate csv
 # sub-directory

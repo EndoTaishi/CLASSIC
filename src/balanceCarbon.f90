@@ -466,46 +466,47 @@ contains
     integer, intent(in) :: ilg             !< il2=ilg (no. of grid cells in latitude circle)
     real, intent(in)    :: fcancmx(:,:)    !< max. fractional coverage of ctem's 9 pfts, but this can be
     !! modified by land-use change,and competition between pfts
-    real, intent(in) :: glealtrm(:,:) !<
-    real, intent(in) :: glfltrdt(:,:) !<
-    real, intent(in) :: blfltrdt(:,:) !<
-    real, intent(in) :: stemltrm(:,:) !<
-    real, intent(in) :: stemltdt(:,:) !<
-    real, intent(in) :: rootltrm(:,:) !<
-    real, intent(in) :: rootltdt(:,:) !<
-    real, intent(in) :: stemlitr(:,:) !<
-    real, intent(in) :: rootlitr(:,:) !<
-    real, intent(in) :: bleafmas(:,:) !<
-    real, intent(in) :: gleafmas(:,:) !<
-    real, intent(in) :: rootmass(:,:) !<
-    real, intent(in) :: stemmass(:,:) !<
+    real, intent(in) :: glealtrm(:,:) !< green leaf litter generated due to mortality \f$(kg C/m^2)\f$
+    real, intent(in) :: glfltrdt(:,:) !< green leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(in) :: blfltrdt(:,:) !< brown leaf litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(in) :: stemlitr(:,:) !< stem litter \f$(kg C/m^2)\f$
+    real, intent(in) :: stemltrm(:,:) !< stem litter generated due to mortality \f$(kg C/m^2)\f$
+    real, intent(in) :: stemltdt(:,:) !< stem litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(in) :: rootlitr(:,:) !< root litter \f$(kg C/m^2)\f$
+    real, intent(in) :: rootltrm(:,:) !< root litter generated due to mortality \f$(kg C/m^2)\f$
+    real, intent(in) :: rootltdt(:,:) !< root litter generated due to disturbance \f$(kg c/m^2)\f$
+    real, intent(in) :: bleafmas(:,:) !< brown leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+    real, intent(in) :: gleafmas(:,:) !< green leaf mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+    real, intent(in) :: rootmass(:,:) !< root mass for each of the ctem pfts, \f$(kg C/m^2)\f$
+    real, intent(in) :: stemmass(:,:) !< stem mass for each of the ctem pfts, \f$(kg C/m^2)\f$
     ! real, intent(in) :: litrmass(:,:,:) ! COMBAK PERLAY
     ! real, intent(in) :: soilCmas(:,:,:) ! COMBAK PERLAY
-    real, intent(in) :: litrmass(:,:) !<
+    real, intent(in) :: litrmass(:,:) !< litter mass for each of the ctem pfts, \f$(kg C/m^2)\f$
     real, intent(in) :: soilCmas(:,:) !<
-    real, intent(in) :: hutrstep_g(:) !<
-    real, intent(in) :: socrestep(:) !<
-    integer, intent(in) :: ipeatland(:) !<
-    real, intent(in) :: nppmosstep(:) !<
-    real, intent(in) :: humstepmoss(:) !<
-    real, intent(in) :: ltrestepmoss(:) !<
+    real, intent(in) :: hutrstep_g(:) !< grid sum of humification from vascualr litter \f$(kg C/m^2/timestep)\f$
+    real, intent(in) :: socrestep(:) !< heterotrophic respiration from soil \f$(kg C/m^2/timestep)\f$
+    integer, intent(in) :: ipeatland(:) !< Peatland switch: 0 = not a peatland, 1 = bog, 2 = fen
+    real, intent(in) :: nppmosstep(:) !< moss npp \f$(kg C/m^2/timestep)\f$
+    real, intent(in) :: humstepmoss(:) !< moss humification \f$(kg C/m^2/timestep)\f$
+    real, intent(in) :: ltrestepmoss(:) !< litter respiration from moss \f$(kg C/m^2/timestep)\f$
     real, intent(in) :: pgavscms(:) !<
-    real, intent(in) :: fg(:) !<
-    real, intent(in) :: litrfallmoss(:) !<
+    real, intent(in) :: fg(:) !< Fraction of grid cell that is bare ground.
+    real, intent(in) :: litrfallmoss(:) !< moss litter fall \f$(kg C/m^2/timestep)\f$
 
     real, intent(inout) :: leaflitr(:,:) !<
-    real, intent(inout) :: Cmossmas(:) !<
-    real, intent(inout) :: litrmsmoss(:) !<
+    real, intent(inout) :: Cmossmas(:) !< C in moss biomass, \f$kg C/m^2\f$
+    real, intent(inout) :: litrmsmoss(:) !< moss litter mass, \f$kg C/m^2\f$
 
-    real, intent(out) :: tltrleaf(ilg,icc) !<
-    real, intent(out) :: tltrstem(ilg,icc) !<
-    real, intent(out) :: tltrroot(ilg,icc) !<
-    real, intent(out) :: litrfallveg(ilg,icc) !<
-    real, intent(out) :: vgbiomas(ilg) !<
-    real, intent(out) :: vgbiomas_veg(ilg,icc) !<
-    real, intent(out) :: litrfall(ilg) !<
-    real, intent(out) :: gavgltms(ilg) !<
-    real, intent(out) :: gavgscms(ilg) !<
+    real, intent(out) :: tltrleaf(ilg,icc) !< total leaf litter fall rate (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: tltrstem(ilg,icc) !< total stem litter fall rate (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: tltrroot(ilg,icc) !< total root litter fall rate (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: litrfallveg(ilg,icc) !< litter fall for each pft (\f$kg c/m^2\f$)
+    real, intent(out) :: vgbiomas(ilg) !< grid averaged vegetation biomass (\f$kg C/m^2\f$)
+    real, intent(out) :: vgbiomas_veg(ilg,icc) !< vegetation biomass for each pft
+    real, intent(out) :: litrfall(ilg) !< total litter fall (from leaves, stem, and root) due to
+    !! all causes (mortality,turnover,and disturbance)
+    real, intent(out) :: gavgltms(ilg) !< grid averaged litter mass including the LUC product pool, (\f$kg C/m^2\f$)
+    real, intent(out) :: gavgscms(ilg) !< grid averaged soil c mass, (\f$kg C/m^2\f$)
 
     ! Local
     integer :: i, j, k
