@@ -937,30 +937,6 @@
                 <units>[W m$^{-2}$ ]</units>
             </variant>
         </variable>
-        <variable id="76" includeBareGround="false" dormant="false">
-            <standardName>Leaf maintenance respiration</standardName>
-            <longName>Leaf maintenance respiration, does not include growth respiration</longName>
-            <shortName>rmLeaf</shortName>
-            <defaultUnits>[kg m$^{-2}$ s$^{-1}$ ]</defaultUnits>
-            <variant>
-                <timeFrequency>halfhourly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>rml_hh_g</nameInCode>
-                <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
-            </variant>
-            <variant>
-                <timeFrequency>halfhourly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>rml_hh</nameInCode>
-                <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
-            </variant>
-            <variant>
-                <timeFrequency>halfhourly</timeFrequency>
-                <outputForm>tile</outputForm>
-                <nameInCode>rml_hh_t</nameInCode>
-                <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
-            </variant>
-        </variable>
         <variable id="78" includeBareGround="false" dormant="false">
             <standardName>Total Soil Moisture Content</standardName>
             <longName>the mass per unit area (summed over all soil layers) of water in all phases</longName>
@@ -1020,15 +996,45 @@
                 <nameInCode>evspsbl_hh_t</nameInCode>
                 <units>kg m$^{-2}$ s$^{-1}$</units>
             </variant>
+        </variable>
+        <variable id="92" includeBareGround="true" dormant="false">
+            <standardName>Ground heat flux </standardName>
+            <longName>Ground heat flux accounts for the energy gained or lost during belowground warming or cooling.</longName>
+            <shortName>hfg</shortName>
+            <defaultUnits>W m$^{-2}$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
-                <outputForm>pft</outputForm>
-                <nameInCode>tracerRootMass</nameInCode>
-                <units>Depends on tracer</units>
+                <outputForm>grid</outputForm>
+                <nameInCode>hfg_mo</nameInCode>
+                <units>W m$^{-2}$</units>
             </variant>
         </variable>
     </group>
     <group type="ctem">
+        <variable id="76" includeBareGround="false" dormant="false">
+            <standardName>Leaf maintenance respiration</standardName>
+            <longName>Leaf maintenance respiration, does not include growth respiration</longName>
+            <shortName>rmLeaf</shortName>
+            <defaultUnits>[kg m$^{-2}$ s$^{-1}$ ]</defaultUnits>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>rml_hh_g</nameInCode>
+                <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>rml_hh</nameInCode>
+                <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
+            </variant>
+            <variant>
+                <timeFrequency>halfhourly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>rml_hh_t</nameInCode>
+                <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
+            </variant>
+        </variable>      
         <variable id="23" includeBareGround="false" dormant="false">
             <standardName>Leaf area index</standardName>
             <longName>Leaf Area Index</longName>
@@ -2269,23 +2275,11 @@
                 <units>Depends on tracer</units>
             </variant>
         </variable>
-        <variable id="90" includeBareGround="false" dormant="true">
+        <variable id="91" includeBareGround="false" dormant="true">
             <standardName>Tracer of root C</standardName>
             <longName>Tracer of root carbon (can be simple tracer, 14C or 13C)</longName>
             <shortName>cRootTracer</shortName>
             <defaultUnits>Depends on tracer</defaultUnits>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>evspsbl_mo</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>halfhourly</timeFrequency>
-                <outputForm>tile</outputForm>
-                <nameInCode>evspsbl_hh_t</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>pft</outputForm>
@@ -2294,7 +2288,7 @@
             </variant>
         </variable>
     </group>
-    <group type="methane"/>
+    <group type="methane">
       <variable id="49" includeBareGround="false" dormant="false">
           <standardName>Methane emissions from wetlands</standardName>
           <longName>Methane emissions from specified wetland areas based on heterotrophic respiration</longName>

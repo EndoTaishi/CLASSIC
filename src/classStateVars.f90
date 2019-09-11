@@ -227,10 +227,11 @@ module classStateVars
     real, allocatable, dimension(:) :: TRSNOWC !<
     real, allocatable, dimension(:) :: CHCAP   !<
     real, allocatable, dimension(:) :: CHCAPS  !<
-    real, allocatable, dimension(:) :: GZEROC  !<
-    real, allocatable, dimension(:) :: GZEROG  !<
-    real, allocatable, dimension(:) :: GZROCS  !<
-    real, allocatable, dimension(:) :: GZROGS  !<
+    real, allocatable, dimension(:) :: GZEROC  !< Vegetated subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: GZEROG  !< Bare ground subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: GZROCS  !< Snow-covered vegetated subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: GZROGS  !<  Snow-covered bare ground subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: groundHeatFlux  !<  !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:) :: G12C    !<
     real, allocatable, dimension(:) :: G12G    !<
     real, allocatable, dimension(:) :: G12CS   !<
@@ -606,6 +607,7 @@ module classStateVars
     real, allocatable, dimension(:,:) :: ACTLYR !< Active layer depth (m)
     real, allocatable, dimension(:,:) :: maxAnnualActLyrROT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     real, allocatable, dimension(:,:) :: actLyrThisYrROT !< Annual active layer depth maximum starting from summer solstice for the present year (m)
+    real, allocatable, dimension(:,:) :: groundHeatFluxROT !< Heat flux at soil surface \f$[W m^{-2} ]\f$
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
     integer, allocatable, dimension(:,:,:) :: ISNDROT !< Sand content flag, used to delineate non-soils.
@@ -737,6 +739,7 @@ module classStateVars
     real, allocatable, dimension(:) :: FLINACC_MO   !< Downwelling longwave radiation above surface \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:) :: HFSACC_MO    !< Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:) :: QEVPACC_MO   !< Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+    real, allocatable, dimension(:) :: groundHeatFlux_MO  !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, allocatable, dimension(:) :: SNOACC_MO    !< Mass of snow pack \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: WSNOACC_MO   !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: ROFACC_MO    !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
@@ -1009,6 +1012,7 @@ contains
              class_gat%GZEROG  (ilg), &
              class_gat%GZROCS  (ilg), &
              class_gat%GZROGS  (ilg), &
+             class_gat%groundHeatFlux  (ilg), &
              class_gat%G12C    (ilg), &
              class_gat%G12G    (ilg), &
              class_gat%G12CS   (ilg), &
@@ -1270,6 +1274,7 @@ contains
              class_out%FLINACC_MO (nlat), &
              class_out%HFSACC_MO (nlat), &
              class_out%QEVPACC_MO (nlat), &
+             class_out%groundHeatFlux_MO (nlat), &
              class_out%SNOACC_MO (nlat), &
              class_out%WSNOACC_MO (nlat), &
              class_out%ROFACC_MO (nlat), &
@@ -1429,6 +1434,7 @@ contains
              class_rot% ACTLYR(nlat,nmos), &
              class_rot% maxAnnualActLyrROT(nlat,nmos), &
              class_rot% actLyrThisYrROT(nlat,nmos), &
+             class_rot% groundHeatFluxROT(nlat,nmos), &
              class_rot% FTABLE(nlat,nmos), &
              class_rot%PREACC_M(nlat,nmos), &
              class_rot%GTACC_M (nlat,nmos), &
@@ -1563,6 +1569,7 @@ contains
       class_out%FLINACC_MO(I) = 0.
       class_out%HFSACC_MO(I) = 0.
       class_out%QEVPACC_MO(I) = 0.
+      class_out%groundHeatFlux_MO(I) = 0.
       class_out%TRANSPACC_MO(I) = 0.
       class_out%SNOACC_MO(I) = 0.
       class_out%WSNOACC_MO(I) = 0.

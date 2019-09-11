@@ -1305,6 +1305,7 @@ contains
     real, pointer, dimension(:) :: FLINACC_MO
     real, pointer, dimension(:) :: HFSACC_MO
     real, pointer, dimension(:) :: QEVPACC_MO
+    real, pointer, dimension(:) :: groundHeatFlux_MO  !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, pointer, dimension(:) :: SNOACC_MO
     real, pointer, dimension(:) :: WSNOACC_MO
     real, pointer, dimension(:) :: ROFACC_MO
@@ -1384,6 +1385,7 @@ contains
     FLINACC_MO        => class_out%FLINACC_MO
     HFSACC_MO         => class_out%HFSACC_MO
     QEVPACC_MO        => class_out%QEVPACC_MO
+    groundHeatFlux_MO => class_out%groundHeatFlux_MO
     SNOACC_MO         => class_out%SNOACC_MO
     WSNOACC_MO        => class_out%WSNOACC_MO
     ROFACC_MO         => class_out%ROFACC_MO
@@ -1431,6 +1433,7 @@ contains
       FLINACC_MO(I) = FLINACC_MO(I) + FDLROW(I) * FAREROT(I,M)
       HFSACC_MO(I) = HFSACC_MO(I) + HFSROT(I,M) * FAREROT(I,M)
       QEVPACC_MO(I) = QEVPACC_MO(I) + QEVPROT(I,M) * FAREROT(I,M)
+      groundHeatFlux_MO(I) = groundHeatFlux_MO(I) + groundHeatFluxROT(I,M) * FAREROT(I,M) !*()*()*()*()*()*()
       SNOACC_MO(I) = SNOACC_MO(I) + SNOROT(I,M) * FAREROT(I,M)
       TAACC_MO(I) = TAACC_MO(I) + TAROW(I) * FAREROT(I,M)
       ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
@@ -1506,6 +1509,7 @@ contains
         FLINACC_MO(I) = FLINACC_MO(I)/real(NDMONTH)
         HFSACC_MO(I) = HFSACC_MO(I)/real(NDMONTH)
         QEVPACC_MO(I) = QEVPACC_MO(I)/real(NDMONTH)
+        groundHeatFlux_MO(I) = groundHeatFlux_MO(I)/real(NDMONTH)
         SNOACC_MO(I) = SNOACC_MO(I)/real(NDMONTH)
         WSNOACC_MO(I) = WSNOACC_MO(I)/real(NDMONTH)
         TAACC_MO(I) = TAACC_MO(I)/real(NDMONTH)
@@ -1543,6 +1547,7 @@ contains
         call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_mo'     ,timeStamp,'hfss', [QH_MO])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_mo'     ,timeStamp,'hfls', [QE_MO])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'hfg_mo'    ,timeStamp,'hfg', [groundHeatFlux_MO])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [SNOACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'taacc_mo'  ,timeStamp,'tas', [TAACC_MO(I)])

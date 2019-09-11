@@ -22,7 +22,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
                                TA, QA, PADRY, FC, FG, FCS, FGS, RBCOEF, &
                                FSVF, FSVFS, PRESSG, VMOD, ALVSCN, ALIRCN, ALVSG, ALIRG, &
                                ALVSCS, ALIRCS, ALVSSN, ALIRSN, ALVSGC, ALIRGC, ALVSSC, ALIRSC, &
-                               TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC, RCS, WTRG, QLWAVG, &
+                               TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC, RCS, WTRG, groundHeatFlux, QLWAVG, &
                                FRAINC, FSNOWC, FRAICS, FSNOCS, CMASSC, CMASCS, DISP, DISPS, &
                                ZOMLNC, ZOELNC, ZOMLNG, ZOELNG, ZOMLCS, ZOELCS, ZOMLNS, ZOELNS, &
                                TBAR, THLIQ, THICE, TPOND, ZPOND, TBASE, TCAN, TSNOW, &
@@ -339,6 +339,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   real, intent(out) :: WSNOGS(ILG)  !< Liquid water content of snow pack in bare areas \f$[kg m^{-2} ]\f$
   real, intent(out) :: WTABLE(ILG)  !< Depth of water table in soil [m]
   real, intent(out) :: WTRG  (ILG)  !< Diagnosed residual water transferred into or out of the soil \f$[kg m^{-2} s^{-1} ]\f$
+  real, intent(out) :: groundHeatFlux !< Heat flux at soil surface \f$[W m^{-2} ]\f$
   !
   !
   !     * INPUT FIELDS.
@@ -1529,6 +1530,11 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
       TAC(I) = TA(I)
       QAC(I) = QA(I)
     end if
+    ! Calculate the ground heat flux across the sub-regions.
+    groundHeatFlux(i) = FC (I) * GZEROC & !vegetated 
+                       + FG (I) * GZEROG & !bare ground 
+                       + FCS(I) * GZROCS & ! snow covered vegetated
+                       + FGS(I) * GZROGS ! bare ground snow covered.
   end do ! loop 500
 
   return

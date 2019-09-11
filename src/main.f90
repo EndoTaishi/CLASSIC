@@ -322,10 +322,11 @@ contains
     real, pointer, dimension(:) :: TRSNOWC !<
     real, pointer, dimension(:) :: CHCAP   !< Heat capacity of vegetation canopy \f$[J m^{-2} K^{-1} ] (C_c)\f$
     real, pointer, dimension(:) :: CHCAPS  !<
-    real, pointer, dimension(:) :: GZEROC  !<
-    real, pointer, dimension(:) :: GZEROG  !<
-    real, pointer, dimension(:) :: GZROCS  !<
-    real, pointer, dimension(:) :: GZROGS  !<
+    real, pointer, dimension(:) :: GZEROC  !< Vegetated subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, pointer, dimension(:) :: GZEROG  !< Bare ground subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, pointer, dimension(:) :: GZROCS  !< Snow-covered vegetated subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, pointer, dimension(:) :: GZROGS  !< Snow-covered bare ground subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+    real, pointer, dimension(:) :: groundHeatFlux !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, pointer, dimension(:) :: G12C    !<
     real, pointer, dimension(:) :: G12G    !<
     real, pointer, dimension(:) :: G12CS   !<
@@ -621,6 +622,7 @@ contains
     real, pointer, dimension(:,:) :: SFRHROT !<
     real, pointer, dimension(:,:) :: wtableROT !< Depth of water table in soil [m]
     real, pointer, dimension(:,:) :: maxAnnualActLyrROT  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
+    real, pointer, dimension(:,:) :: groundHeatFluxROT !< Heat flux at soil surface \f$[W m^{-2} ]\f$
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
     integer, pointer, dimension(:,:,:) :: ISNDROT !<
@@ -1480,6 +1482,7 @@ contains
     GZEROG => class_gat%GZEROG
     GZROCS => class_gat%GZROCS
     GZROGS => class_gat%GZROGS
+    groundHeatFlux => class_gat%groundHeatFlux
     G12C => class_gat%G12C
     G12G => class_gat%G12G
     G12CS => class_gat%G12CS
@@ -1643,6 +1646,7 @@ contains
     WTABROW => class_rot%WTABROW  ! FLAG
     wtableROW => class_rot%wtableROW  ! FLAG
     maxAnnualActLyrROT => class_rot%maxAnnualActLyrROT
+    groundHeatFluxROT => class_rot%groundHeatFluxROT
     IGDRROT => class_rot%IGDRROT
     MIDROT => class_rot%MIDROT
     ALBSROT => class_rot%ALBSROT
@@ -2821,7 +2825,7 @@ contains
                               TAGAT, QAGAT, PADRGAT, FC, FG, FCS, FGS, RBCOEF, &
                               FSVF, FSVFS, PRESGAT, VMODGAT, ALVSCN, ALIRCN, ALVSG, ALIRG, &
                               ALVSCS, ALIRCS, ALVSSN, ALIRSN, ALVSGC, ALIRGC, ALVSSC, ALIRSC, &
-                              TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC, RCS, WTRGGAT, QLWOGAT, &
+                              TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC, RCS, WTRGGAT, groundHeatFlux, QLWOGAT, &
                               FRAINC, FSNOWC, FRAICS, FSNOCS, CMASSC, CMASCS, DISP, DISPS, &
                               ZOMLNC, ZOELNC, ZOMLNG, ZOELNG, ZOMLCS, ZOELCS, ZOMLNS, ZOELNS, &
                               TBARGAT, THLQGAT, THICGAT, TPNDGAT, ZPNDGAT, TBASGAT, TCANGAT, TSNOGAT, &
@@ -2995,13 +2999,15 @@ contains
                         SNOROT, GTROT, TCANROT, RCANROT, SCANROT, &
                         GROROT, CMAIROT, TACROT, QACROT, WSNOROT, &
                         REFROT, BCSNROT, EMISROT, SALBROT, CSALROT, &
+                        groundHeatFluxROT, &
                         ILMOS, JLMOS, NML, NLAT, NTLD, NMOS, &
                         ILG, IGND, ICAN, ICAN + 1, NBS, &
                         TBARGAT, THLQGAT, THICGAT, TSFSGAT, TPNDGAT, &
                         ZPNDGAT, TBASGAT, ALBSGAT, TSNOGAT, RHOSGAT, &
                         SNOGAT, GTGAT, TCANGAT, RCANGAT, SCANGAT, &
                         GROGAT, CMAIGAT, TACGAT, QACGAT, WSNOGAT, &
-                        REFGAT, BCSNGAT, EMISGAT, SALBGAT, CSALGAT)
+                        REFGAT, BCSNGAT, EMISGAT, SALBGAT, CSALGAT,&
+                        groundHeatFlux)
 
       !
       !    * SCATTER OPERATION ON DIAGNOSTIC VARIABLES SPLIT OUT OF
@@ -3135,7 +3141,7 @@ contains
                   annsrplsrow, annpcprow, dry_season_lengthrow, &
                   anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow, &
                   peatdeprow, litrmsmossrow, Cmossmasrow, dmossrow, &
-                  ipeatlandrow, pddrow, wetfrac_presrow, &! thlqaccrow_m, thicaccrow_m, &
+                  ipeatlandrow, pddrow, wetfrac_presrow, &
                   tracergLeafMassrot, tracerBLeafMassrot, tracerStemMassrot, &
                   tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot, &
                   tracerMossCMassrot, tracerMossLitrMassrot, &
@@ -3186,7 +3192,7 @@ contains
                   ipeatlandgat, pddgat, wetfrac_presgat, &
                   tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, &
                   tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, &
-                  tracerMossCMassgat, tracerMossLitrMassgat)!, thlqaccgat_m, thicaccgat_m)
+                  tracerMossCMassgat, tracerMossLitrMassgat)
 
       if (ncount == nday) then
 
@@ -3209,7 +3215,7 @@ contains
           (runyr <= jhhendy) .and. &
           (iday >= jhhstd) .and. &
           (iday <= jhhendd) ) call class_hh_w(lonLocalIndex, latLocalIndex, nltest, &
-          nmtest, ncount, nday, iday, runyr)
+                                              nmtest, ncount, nday, iday, runyr)
 
       ! Daily physics outputs
       if (doDayOutput .and. &
@@ -3217,7 +3223,7 @@ contains
           (runyr <= jdendy) .and. &
           (iday  >= jdstd) .and. &
           (iday  <= jdendd))  call class_daily_aw(lonLocalIndex, latLocalIndex, iday, nltest, nmtest, &
-          ncount, nday, lastDOY, runyr)
+                                                  ncount, nday, lastDOY, runyr)
 
       do NT = 1,NMON
         if ((IDAY == monthend(NT + 1)) .and. (NCOUNT == NDAY)) then
@@ -3228,12 +3234,12 @@ contains
 
       ! Monthly physics outputs
       if (doMonthOutput .and. (runyr >= jmosty)) call class_monthly_aw(lonLocalIndex, &
-          latLocalIndex, IDAY, runyr, NCOUNT, &
-          NDAY, nltest, nmtest, lastDOY)
+                                                        latLocalIndex, IDAY, runyr, NCOUNT, &
+                                                        NDAY, nltest, nmtest, lastDOY)
 
       ! Annual physics outputs
       if (doAnnualOutput) call class_annual_aw(lonLocalIndex, latLocalIndex, IDAY, runyr, NCOUNT, NDAY, &
-          nltest, nmtest, lastDOY)
+                                              nltest, nmtest, lastDOY)
 
       if (ctem_on .and. (ncount == nday)) then
 
@@ -3246,16 +3252,17 @@ contains
             (runyr <= jdendy) .and. &
             (iday   >= jdstd) .and. &
             (iday   <= jdendd)) call ctem_daily_aw(lonLocalIndex, latLocalIndex, nltest, &
-            nmtest, iday, ncount, nday, &
-            runyr, grclarea, ipeatlandrow)
+                                                  nmtest, iday, ncount, nday, &
+                                                  runyr, grclarea, ipeatlandrow)
 
         ! Monthly biogeochem outputs
         if (doMonthOutput .and. &
             (runyr >= jmosty)) call ctem_monthly_aw(lonLocalIndex, latLocalIndex, nltest, &
-            nmtest, iday, runyr, nday, lastDOY)
+                                                    nmtest, iday, runyr, nday, lastDOY)
 
         ! Annual biogeochem outputs
         if (doAnnualOutput) call ctem_annual_aw(lonLocalIndex, latLocalIndex, iday, runyr, nltest, nmtest, lastDOY)
+        
       end if
 
       ! Check if it is the last timestep of the last day of the year

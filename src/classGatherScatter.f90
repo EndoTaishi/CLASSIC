@@ -619,13 +619,15 @@ contains
                            SNOROT, GTROT, TCANROT, RCANROT, SCANROT, &
                            GROROT, CMAIROT, TACROT, QACROT, WSNOROT, &
                            REFROT, BCSNROT, EMISROT, SALBROT, CSALROT, &
+                           groundHeatFluxROT, &
                            ILMOS, JLMOS, &
                            NML, NL, NT, NM, ILG, IG, IC, ICP1, NBS, &
                            TBARGAT, THLQGAT, THICGAT, TSFSGAT, TPNDGAT, &
                            ZPNDGAT, TBASGAT, ALBSGAT, TSNOGAT, RHOSGAT, &
                            SNOGAT, GTGAT, TCANGAT, RCANGAT, SCANGAT, &
                            GROGAT, CMAIGAT, TACGAT, QACGAT, WSNOGAT, &
-                           REFGAT, BCSNGAT, EMISGAT, SALBGAT, CSALGAT)
+                           REFGAT, BCSNGAT, EMISGAT, SALBGAT, CSALGAT,&
+                           groundHeatFlux)
     !
     !     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT TO
     !     *                        NLAT, NMOS (FOR LAKE MODEL)
@@ -701,6 +703,7 @@ contains
     real, intent(out)    :: REFROT (NL,NM) !< Snow grain size  [m]
     real, intent(out)    :: BCSNROT(NL,NM) !< Black carbon mixing ratio \f$[kg m^{-3} ]\f$
     real, intent(out)    :: EMISROT(NL,NM) !< Surface emissivity  [  ]
+    real, intent(out)    :: groundHeatFluxROT(NL, NM) !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     !
     real, intent(in)     :: SALBGAT(ILG,NBS) !< All-sky albedo  [  ]
     real, intent(in)     :: CSALGAT(ILG,NBS) !< Clear-sky albedo  [  ]
@@ -727,6 +730,7 @@ contains
     real, intent(in)     :: REFGAT (ILG) !< Snow grain size  [m]
     real, intent(in)     :: BCSNGAT(ILG) !< Black carbon mixing ratio \f$[kg m^{-3} ]\f$
     real, intent(in)     :: EMISGAT(ILG) !< Surface emissivity  [  ]
+    real, intent(in)     :: groundHeatFlux(ILG) !< Heat flux at soil surface \f$[W m^{-2} ]\f$
 
     !
     !     * GATHER-SCATTER INDEX ARRAYS.
@@ -753,6 +757,7 @@ contains
       REFROT (ILMOS(K),JLMOS(K)) = REFGAT (K)
       BCSNROT(ILMOS(K),JLMOS(K)) = BCSNGAT(K)
       EMISROT(ILMOS(K),JLMOS(K)) = EMISGAT(K)
+      groundHeatFluxROT(ILMOS(K),JLMOS(K)) = groundHeatFlux(K)
 
       !>
       !! The prognostic variables are scattered from the long, gathered arrays (collapsing the latitude and mosaic
