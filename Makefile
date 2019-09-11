@@ -130,4 +130,4 @@ CLASSIC: $(OBJD)
 
 # "make clean mode=supercomputer" removes all object files in objectFiles_supercomputer
 clean:
-	rm -f $(ODIR)/*.o $(ODIR)/*.mod
+	rm -f $(ODIR)/*.o $(ODIR)/*.mod bin/CLASSIC_$(mode)

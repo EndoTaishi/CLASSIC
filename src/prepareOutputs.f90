@@ -1284,6 +1284,7 @@ contains
     real, dimension(:,:), pointer :: GTROT
     real, dimension(:,:), pointer :: HFSROT
     real, dimension(:,:), pointer :: QEVPROT
+    real, dimension(:,:), pointer :: groundHeatFluxROT !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, dimension(:,:), pointer :: SNOROT
     real, dimension(:,:), pointer :: WSNOROT
     real, dimension(:,:), pointer :: ROFROT
@@ -1358,6 +1359,7 @@ contains
     GTROT           => class_rot%GTROT
     HFSROT          => class_rot%HFSROT
     QEVPROT         => class_rot%QEVPROT
+    groundHeatFluxROT => class_rot%groundHeatFluxROT
     SNOROT          => class_rot%SNOROT
     WSNOROT         => class_rot%WSNOROT
     ROFROT          => class_rot%ROFROT
