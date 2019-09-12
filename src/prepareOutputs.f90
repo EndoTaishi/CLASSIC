@@ -3639,6 +3639,7 @@ contains
 
         if (dofire) then
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_g' ,timeStamp,'fFireCH4',[emit_ch4_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co_mo_g' ,timeStamp,'fFireCO',[emit_co_mo_g(i)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)])
         end if

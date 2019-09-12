@@ -14,7 +14,6 @@ contains
   !! @{
   !> Calculates maintenance respiration for roots and stems
   !> @author Vivek Arora and Joe Melton
-
   subroutine mainres (fcan, fct, stemmass, rootmass, il1, il2, ilg, & ! In
                       leapnow, ta, tbar, rmatctem, sort, isand, & ! In
                       useTracer, tracerStemMass, tracerRootMass, & ! In
@@ -237,11 +236,9 @@ contains
     return
 
   end subroutine mainres
-
   !! @}
   ! ---------------------------------------------------------------------------------------------------
   !> \namespace autotrophic_res
-
   !> Calculates maintenance respiration, over a given sub-area, for stem and root components.
   !! leaf respiration is estimated within the phtsyn subroutine.
   !! @author V. Arora, J. Melton

@@ -697,17 +697,16 @@ contains
     integer   :: lopcount ! xday, month1, month2,
 
     integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
-    !< soil carbon pool faster
+    !! soil carbon pool faster
     integer, pointer :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
     !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
     !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
     integer, pointer :: metLoop !< no. of times the .met file is to be read. this
-    !< option is useful to see how ctem's c pools
-    !< equilibrate when driven with same climate data
-    !< over and over again.
-    ! integer, pointer :: ncyear   !< no. of years in the .met file.
+    !! option is useful to see how ctem's c pools
+    !! equilibrate when driven with same climate data
+    !! over and over again.
     integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
     integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
     integer, pointer :: jdstd   !< day of the year to start writing the daily output
@@ -718,79 +717,79 @@ contains
     integer, pointer :: jdendy  !< simulation year (runyr) to stop writing the daily output
     integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
     integer, pointer :: fixedYearLUC  !< Set the year to use for land cover if lnduseon is false. If set to -9999,
-    !< we use the PFT distribution found in the initialization file. Any other year
-    !< we search for that year in the LUCFile
+    !! we use the PFT distribution found in the initialization file. Any other year
+    !1 we search for that year in the LUCFile
     integer, pointer :: fixedYearOBSWETF !< set the year to use for observed wetland fraction if transientOBSWETF is false.
 
     integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
-    !< because the atmospheric model considers these to be part
-    !< of the "terrain".
-    !< if idisp=1, vegetation displacement heights are calculated.
+    !! because the atmospheric model considers these to be part
+    !! of the "terrain".
+    !! if idisp=1, vegetation displacement heights are calculated.
     integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
-    !< to lie at the ground surface.
-    !< if izref=2, the bottom of the atmospheric model is taken
-    !< to lie at the local roughness height.
+    !! to lie at the ground surface.
+    !! if izref=2, the bottom of the atmospheric model is taken
+    !! to lie at the local roughness height.
     integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
-    !< and the original gcm set of screen-level diagnostic calculations
-    !< is done.
-    !< if islfd=1, drcoef is called for surface stability corrections
-    !< and sldiag is called for screen-level diagnostic calculations.
-    !< if islfd=2, flxsurfz is called for surface stability corrections
-    !< and diasurf is called for screen-level diagnostic calculations.
+    !! and the original gcm set of screen-level diagnostic calculations
+    !! is done.
+    !! if islfd=1, drcoef is called for surface stability corrections
+    !! and sldiag is called for screen-level diagnostic calculations.
+    !1 if islfd=2, flxsurfz is called for surface stability corrections
+    !! and diasurf is called for screen-level diagnostic calculations.
     integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
-    !< if ipcp=2, a linear partitioning of precipitation betweeen
-    !< rainfall and snowfall is done between 0 c and 2 c.
-    !< if ipcp=3, rainfall and snowfall are partitioned according to
-    !< a polynomial curve between 0 c and 6 c.
+    !! if ipcp=2, a linear partitioning of precipitation betweeen
+    !! rainfall and snowfall is done between 0 c and 2 c.
+    !! if ipcp=3, rainfall and snowfall are partitioned according to
+    !! a polynomial curve between 0 c and 6 c.
     integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
-    !< the ground surface slope is not modelled.
-    !< if iwf=n (0<n<4), the watflood calculations of overland flow
-    !< and interflow are performed; interflow is drawn from the top
-    !< n soil layers.
+    !! the ground surface slope is not modelled.
+    !! if iwf=n (0<n<4), the watflood calculations of overland flow
+    !! and interflow are performed; interflow is drawn from the top
+    !! n soil layers.
     integer, pointer :: ITC !< itc, itcg and itg are switches to choose the iteration scheme to
-    !< be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1, a bisection method is
-    !< used; if to 2, the newton-raphson method is used.
+    !! be used in calculating the canopy or ground surface temperature
+    !! respectively.  if the switch is set to 1, a bisection method is
+    !! used; if to 2, the newton-raphson method is used.
     integer, pointer :: ITCG !< itc, itcg and itg are switches to choose the iteration scheme to
-    !< be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1, a bisection method is
-    !< used; if to 2, the newton-raphson method is used.
+    !! be used in calculating the canopy or ground surface temperature
+    !! respectively.  if the switch is set to 1, a bisection method is
+    !! used; if to 2, the newton-raphson method is used.
     integer, pointer :: ITG !< itc, itcg and itg are switches to choose the iteration scheme to
-    !< be used in calculating the canopy or ground surface temperature
-    !< respectively.  if the switch is set to 1, a bisection method is
-    !< used; if to 2, the newton-raphson method is used.
+    !! be used in calculating the canopy or ground surface temperature
+    !! respectively.  if the switch is set to 1, a bisection method is
+    !! used; if to 2, the newton-raphson method is used.
     integer, pointer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-    !< plant area index, vegetation height, canopy albedo, snow albedo
-    !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1, the value of the
-    !< corresponding parameter calculated by class is overridden by
-    !< a user-supplied input value.
+    !! plant area index, vegetation height, canopy albedo, snow albedo
+    !! and soil albedo respectively calculated by class are used.
+    !! if any of these switches is set to 1, the value of the
+    !! corresponding parameter calculated by class is overridden by
+    !! a user-supplied input value.
     integer, pointer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-    !< plant area index, vegetation height, canopy albedo, snow albedo
-    !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1, the value of the
-    !< corresponding parameter calculated by class is overridden by
-    !< a user-supplied input value.
+    !! plant area index, vegetation height, canopy albedo, snow albedo
+    !! and soil albedo respectively calculated by class are used.
+    !! if any of these switches is set to 1, the value of the
+    !! corresponding parameter calculated by class is overridden by
+    !! a user-supplied input value.
     integer, pointer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-    !< plant area index, vegetation height, canopy albedo, snow albedo
-    !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1, the value of the
-    !< corresponding parameter calculated by class is overridden by
-    !< a user-supplied input value.
+     !! plant area index, vegetation height, canopy albedo, snow albedo
+     !! and soil albedo respectively calculated by class are used.
+    !! if any of these switches is set to 1, the value of the
+    !! corresponding parameter calculated by class is overridden by
+    !! a user-supplied input value.
     integer, pointer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-    !< plant area index, vegetation height, canopy albedo, snow albedo
-    !< and soil albedo respectively calculated by class are used.
-    !< if any of these switches is set to 1, the value of the
-    !< corresponding parameter calculated by class is overridden by
-    !< a user-supplied input value.
+    !! plant area index, vegetation height, canopy albedo, snow albedo
+    !! and soil albedo respectively calculated by class are used.
+    !! if any of these switches is set to 1, the value of the
+    !! corresponding parameter calculated by class is overridden by
+    !! a user-supplied input value.
     integer, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-                            !< plant area index, vegetation height, canopy albedo, snow albedo
-                            !< and soil albedo respectively calculated by class are used.
-                            !< if any of these switches is set to 1, the value of the
-                            !< corresponding parameter calculated by class is overridden by
-                            !< a user-supplied input value.
+                            !! plant area index, vegetation height, canopy albedo, snow albedo
+                            !! and soil albedo respectively calculated by class are used.
+                            !! if any of these switches is set to 1, the value of the
+                            !! corresponding parameter calculated by class is overridden by
+                            !! a user-supplied input value.
     integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
-    !< if it is set to 1, the new four-band routines are used.
+                                !! if it is set to 1, the new four-band routines are used.
     integer, pointer, dimension(:) :: altotcount_ctm ! nlat
     real, pointer, dimension(:,:)  :: todfrac  !(ilg,icc)
     real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
@@ -2294,8 +2293,8 @@ contains
     !    =================================================================================
 
     !> NLTEST and NMTEST are the number of grid cells and the number of mosaic tiles per grid cell for this test run, respectively.
-    !> This driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then
-    !> of nlat and nmos.
+    !! This driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then
+    !! of nlat and nmos.
     nltest = nlat
     nmtest = nmos
     NTLD = NMOS
@@ -2306,9 +2305,9 @@ contains
     DLONROW(1) = longitude
 
     !> The timestep counter N for the run is initialized to 0, the daily
-    !> averaging counter NCOUNT is set to 1, and the total number of
-    !> timesteps in the day NDAY is calculated as the number of seconds
-    !> in a day (86400) divided by the timestep length DELT.
+    !! averaging counter NCOUNT is set to 1, and the total number of
+    !! timesteps in the day NDAY is calculated as the number of seconds
+    !! in a day (86400) divided by the timestep length DELT.
     N = 0
     NCOUNT = 1
     NDAY = 86400/NINT(DELT)
@@ -2326,21 +2325,21 @@ contains
     !! wetland extent is used instead of the prescribed.
 
     !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
-    !> energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
-    !> height of 10 m and to the screen height of 2 m respectively.
+    !! energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
+    !! height of 10 m and to the screen height of 2 m respectively.
     ZDMROW(:) = 10.0
     ZDHROW(:) = 2.0
 
     !> ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
-    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
-    !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
-    !> refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.
+    !! (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
+    !! would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
+    !! refer to the measurement height of these variables, which is fixed. The value is read in from the job options file.
     ZRFMROW = zrfmJobOpt
     ZRFHROW = zrfhJobOpt
 
     !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
-    !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
-    !>  The value is read in from the job options file.
+    !! patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
+    !!  The value is read in from the job options file.
     ZBLDROW = zbldJobOpt
 
     !> Initialize variables in preparation for the run
@@ -2402,8 +2401,8 @@ contains
     end if
 
     !> As the last step in the initialization sequence, the subroutine soilProperties is
-    !> called, to assign soil thermal and hydraulic properties on the basis of the
-    !> textural information read in for each of the soil layers.
+    !! called, to assign soil thermal and hydraulic properties on the basis of the
+    !! textural information read in for each of the soil layers.
 
     call soilProperties(THPROT, THRROT, THMROT, BIROT, PSISROT, GRKSROT, & ! Formerly CLASSB
                         THRAROT, HCPSROT, TCSROT, THFCROT, THLWROT, PSIWROT, &
@@ -2466,9 +2465,9 @@ contains
     !     **** LAUNCH RUN. ****
 
     !> The do while loop marks the beginning of the time stepping loop
-    !> for the actual run.  N is incremented by 1, and the atmospheric forcing
-    !> data for the current time step are updated for each grid cell or modelled
-    !> area (see the manual section on “Data Requirements”).
+    !! for the actual run.  N is incremented by 1, and the atmospheric forcing
+    !! data for the current time step are updated for each grid cell or modelled
+    !! area (see the manual section on “Data Requirements”).
 
     runyr = readMetStartYear  ! Initialize the runyr as the first year of met forcing.
 
@@ -2486,16 +2485,16 @@ contains
       N = N + 1
 
       !> Generally only the total incoming shortwave radiation FSDOWN
-      !> is available; so it is partitioned 50:50 between the incoming visible (FSVHROW)
-      !> and near-infrared (FSIHROW) radiation.  The first two elements of the
-      !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
-      !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
-      !> The air temperature TAROW is converted from degrees C to K.  The zonal
-      !> (ULROW) and meridional (VLROW) components of the wind speed are generally not
-      !> used; only the overall wind speed UVROW is
-      !> measured.  However, CLASS does not require wind direction for its calculations,
-      !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
-      !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
+      !! is available; so it is partitioned 50:50 between the incoming visible (FSVHROW)
+      !! and near-infrared (FSIHROW) radiation.  The first two elements of the
+      !! generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
+      !! and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
+      !! The air temperature TAROW is converted from degrees C to K.  The zonal
+      !! (ULROW) and meridional (VLROW) components of the wind speed are generally not
+      !! used; only the overall wind speed UVROW is
+      !! measured.  However, CLASS does not require wind direction for its calculations,
+      !! so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
+      !! this run.  The input wind speed VMODROW is assigned the value of UVROW.
 
       do I = 1,NLTEST
 

@@ -984,8 +984,8 @@ contains
     ! (ancgveg) and mean rml (rmlveg) to the anveg and rmlveg variables
     ! and their sum to gpp veg since gpp = anveg + rml if we both have some coverage of the
     ! PFT (fcancmx > 1) and the leaves are not imaginary (lfstatus /= 4).
-    ! If no real :: leaves are in existence we leave rml, anveg and gpp set to 0.
-    ! However, if we have real :: leaves, but they are quite small we are going to
+    ! If no real leaves are in existence we leave rml, anveg and gpp set to 0.
+    ! However, if we have real leaves, but they are quite small we are going to
     ! reduce rml, but we need to use the original rml to find the gppveg otherwise
     ! the gpp will not be corrected properly. We store the original ancgveg for
     ! phenology to test if the leaves should be coming out.
