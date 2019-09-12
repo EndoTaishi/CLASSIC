@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2019/8/30">
+<variableSet type="CLASS" version="1.2" created="2019/9/12">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -998,7 +998,7 @@
             </variant>
         </variable>
         <variable id="92" includeBareGround="true" dormant="false">
-            <standardName>Ground heat flux </standardName>
+            <standardName>Ground heat flux</standardName>
             <longName>Ground heat flux accounts for the energy gained or lost during belowground warming or cooling.</longName>
             <shortName>hfg</shortName>
             <defaultUnits>W m$^{-2}$</defaultUnits>
@@ -1034,7 +1034,7 @@
                 <nameInCode>rml_hh_t</nameInCode>
                 <units>[kg m$^{-2}$ s$^{-1}$ ]</units>
             </variant>
-        </variable>      
+        </variable>
         <variable id="23" includeBareGround="false" dormant="false">
             <standardName>Leaf area index</standardName>
             <longName>Leaf Area Index</longName>
@@ -1778,42 +1778,6 @@
                 <nameInCode>fProductDecomp_mo_g</nameInCode>
                 <units>kg m$^{-2}$ s$^{-1}$</units>
             </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_yr_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_mo_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_yr_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_mo_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_yr_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_mo_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
         </variable>
         <variable id="84" includeBareGround="true" dormant="true">
             <standardName>Carbon Mass in Model Litter Pool per layer</standardName>
@@ -1837,6 +1801,24 @@
                 <outputForm>layer</outputForm>
                 <nameInCode>soilCMasPerLay_yr_g</nameInCode>
                 <units>kg/m$^2$​</units>
+            </variant>
+        </variable>
+        <variable id="94" includeBareGround="false" dormant="false">
+            <standardName> Carbon Mass in Leaves</standardName>
+            <longName> Carbon mass per unit area in leaves. (monthly is mid month value)</longName>
+            <shortName>cLeaf</shortName>
+            <defaultUnits>kg m${-2}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>leafmass_mo_g</nameInCode>
+                <units>kg m${-2}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>leafmass_mo_g</nameInCode>
+                <units>kg m${-2}$</units>
             </variant>
         </variable>
     </group>
@@ -1972,30 +1954,6 @@
                 <nameInCode>fProductDecomp_mo_g</nameInCode>
                 <units>kg m$^{-2}$ s$^{-1}$</units>
             </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_yr_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_mo_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_yr_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
-            <variant>
-                <timeFrequency>monthly</timeFrequency>
-                <outputForm>grid</outputForm>
-                <nameInCode>fProductDecomp_mo_g</nameInCode>
-                <units>kg m$^{-2}$ s$^{-1}$</units>
-            </variant>
         </variable>
     </group>
     <group type="fire">
@@ -2045,6 +2003,18 @@
                 <outputForm>grid</outputForm>
                 <nameInCode>emit_ch4_d_g</nameInCode>
                 <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="93" includeBareGround="false" dormant="false">
+            <standardName>CO Flux into Atmosphere due to Fire</standardName>
+            <longName>CO emissions (expressed as a CO mass flux per unit area) from natural fires and human ignition fires as calculated by the fire module of the dynamic vegetation model</longName>
+            <shortName>fFireCO</shortName>
+            <defaultUnits>kg CO m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_co_mo_g</nameInCode>
+                <units>kg CO m$^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
     </group>
@@ -2289,155 +2259,155 @@
         </variable>
     </group>
     <group type="methane">
-      <variable id="49" includeBareGround="false" dormant="false">
-          <standardName>Methane emissions from wetlands</standardName>
-          <longName>Methane emissions from specified wetland areas based on heterotrophic respiration</longName>
-          <shortName>wetlandCH4spec</shortName>
-          <defaultUnits>kg CH$_4$ m$^{-2}$ s$^{-1}$</defaultUnits>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4WetSpec_yr_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>ch4WetSpec_yr_t</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4WetSpec_mo_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>ch4WetSpec_mo_t</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>daily</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4WetSpec_d_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-      </variable>
-      <variable id="50" includeBareGround="false" dormant="false">
-          <standardName>Methane emissions from wetlands</standardName>
-          <longName>Methane emissions from dynamically determined wetland areas based on heterotrophic respiration</longName>
-          <shortName>wetlandCH4dyn</shortName>
-          <defaultUnits>kg CH$_4$ m$^{-2}$ s$^{-1}$</defaultUnits>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4WetDyn_yr_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>ch4WetDyn_yr_t</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4WetDyn_mo_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>ch4WetDyn_mo_t</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>daily</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4WetDyn_d_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-      </variable>
-      <variable id="51" includeBareGround="false" dormant="false">
-          <standardName>Methane uptake (methanotrophy) by oxic soils</standardName>
-          <longName>Methane uptake (methanotrophy) by oxic soils</longName>
-          <shortName>soilCH4cons</shortName>
-          <defaultUnits>kg CH$_4$ m$^{-2}$ s$^{-1}$</defaultUnits>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4soills_yr_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>ch4soills_yr_t</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4soills_mo_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-          <variant>
-              <timeFrequency>daily</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>ch4soills_d_g</nameInCode>
-              <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
-          </variant>
-      </variable>
-      <variable id="52" includeBareGround="false" dormant="false">
-          <standardName>Fraction of a grid cell covered by wetland</standardName>
-          <longName>Fraction of a grid cell covered by wetland. Prognostically determined.</longName>
-          <shortName>wetlandFrac</shortName>
-          <defaultUnits>Fraction</defaultUnits>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>wetfdyn_yr_g</nameInCode>
-              <units>Fraction</units>
-          </variant>
-          <variant>
-              <timeFrequency>annually</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>wetfdyn_yr_t</nameInCode>
-              <units>Fraction</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>wetfdyn_mo_g</nameInCode>
-              <units>Fraction</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>wetfdyn_mo_t</nameInCode>
-              <units>Fraction</units>
-          </variant>
-      </variable>
-      <variable id="80" includeBareGround="false" dormant="false">
-          <standardName>Prescribed wetland fraction</standardName>
-          <longName>Wetland fraction prescribed from an external input file</longName>
-          <shortName>wetlandFracPresc</shortName>
-          <defaultUnits>Fraction</defaultUnits>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>grid</outputForm>
-              <nameInCode>wetfpres_mo_g</nameInCode>
-              <units>Fraction</units>
-          </variant>
-          <variant>
-              <timeFrequency>monthly</timeFrequency>
-              <outputForm>tile</outputForm>
-              <nameInCode>wetfpres_mo_t</nameInCode>
-              <units>Fraction</units>
-          </variant>
-      </variable>
+        <variable id="49" includeBareGround="false" dormant="false">
+            <standardName>Methane emissions from wetlands</standardName>
+            <longName>Methane emissions from specified wetland areas based on heterotrophic respiration</longName>
+            <shortName>wetlandCH4spec</shortName>
+            <defaultUnits>kg CH$_4$ m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetSpec_yr_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>ch4WetSpec_yr_t</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetSpec_mo_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>ch4WetSpec_mo_t</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetSpec_d_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="50" includeBareGround="false" dormant="false">
+            <standardName>Methane emissions from wetlands</standardName>
+            <longName>Methane emissions from dynamically determined wetland areas based on heterotrophic respiration</longName>
+            <shortName>wetlandCH4dyn</shortName>
+            <defaultUnits>kg CH$_4$ m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetDyn_yr_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>ch4WetDyn_yr_t</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetDyn_mo_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>ch4WetDyn_mo_t</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4WetDyn_d_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="51" includeBareGround="false" dormant="false">
+            <standardName>Methane uptake (methanotrophy) by oxic soils</standardName>
+            <longName>Methane uptake (methanotrophy) by oxic soils</longName>
+            <shortName>soilCH4cons</shortName>
+            <defaultUnits>kg CH$_4$ m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4soills_yr_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>ch4soills_yr_t</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4soills_mo_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>daily</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>ch4soills_d_g</nameInCode>
+                <units>kg CH$_4$ m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="52" includeBareGround="false" dormant="false">
+            <standardName>Fraction of a grid cell covered by wetland</standardName>
+            <longName>Fraction of a grid cell covered by wetland. Prognostically determined.</longName>
+            <shortName>wetlandFrac</shortName>
+            <defaultUnits>Fraction</defaultUnits>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>wetfdyn_yr_g</nameInCode>
+                <units>Fraction</units>
+            </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>wetfdyn_yr_t</nameInCode>
+                <units>Fraction</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>wetfdyn_mo_g</nameInCode>
+                <units>Fraction</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>wetfdyn_mo_t</nameInCode>
+                <units>Fraction</units>
+            </variant>
+        </variable>
+        <variable id="80" includeBareGround="false" dormant="false">
+            <standardName>Prescribed wetland fraction</standardName>
+            <longName>Wetland fraction prescribed from an external input file</longName>
+            <shortName>wetlandFracPresc</shortName>
+            <defaultUnits>Fraction</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>wetfpres_mo_g</nameInCode>
+                <units>Fraction</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>wetfpres_mo_t</nameInCode>
+                <units>Fraction</units>
+            </variant>
+        </variable>
     </group>
 </variableSet>

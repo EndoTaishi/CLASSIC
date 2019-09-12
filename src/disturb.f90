@@ -284,8 +284,7 @@ contains
 
     end do ! loop 180
 
-    !> if not simulating fire, leave the subroutine now.
-    if (.not. dofire) goto 600
+    if (dofire) then
 
     !> initialization ends
 
@@ -691,9 +690,9 @@ contains
         end if
       end do ! loop 530
     end do ! loop 520
-
-    !ignoreLint(1) - this is for a goto statement that needs to be removed
-600 continue !> If .not. dofire then we enter here and perform the calculations for the emissions
+  end if ! dofire check.
+  
+    !> Even if no fire we still enter here and perform the calculations for the emissions
     !> since we might have some from luc.
     !>
     !> We also estimate \f$CO_2\f$ emissions from each
