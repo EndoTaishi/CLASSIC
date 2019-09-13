@@ -1,25 +1,21 @@
 # lint-fortran-90
 
-This tool is made for linting Fortran source code files, and modifying them to fit the style guide outlined for [CLASSIC](https://jormelton.gitlab.io/classic_pages).
-
-## Disclaimer
-
-Though this program does its best to back up original files, caution should be taken as it is still in the development phase. The author makes no guarantee that linting will complete successfully, or even complete at all.
+This tool is made for linting Fortran source code files, and modifying them to fit the style guide outlined for [CLASSIC](https://cccma.gitlab.io/classic_pages/info/conventions/).
 
 ## Getting Started
 
 Python 3 is required to use this software.
 
-Rather than being installed as a package, this linter is meant to be a standalone tool. Clone this repository, navigate into its root folder, and call the program on any number of files.
+Rather than being installed as a package, this linter is meant to be a standalone tool. All libraries used are part of the Python standard ecosystem. General use is as follows:
 
 ```
-./linter.py path/to/file1.f path/to/file2.f another/path/to/a/file.f90
+python3 linter.py path/to/file1.f path/to/file2.f another/path/to/a/file.f90
 ```
 
 Relative paths and absolute paths are both acceptable. If a large number of files are to be linted, it may be easier to call the program like this:
 
 ```
-./linter.py path/to/many/files/* path/to/more/files/*
+python3 linter.py path/to/many/files/* path/to/more/files/*
 ```
 
 This will cause most shells (such as bash) to automatically unpack the wildcard in the command.
@@ -31,15 +27,15 @@ After being called, a backup folder will be created in any directory where files
 For example, if we were to call:
 
 ```
-./linter.py ../CLASSIC/src/APREP.f
+python3 tools/linter/linter.py src/APREP.f90
 ```
 
-we would end up with the following directory structure:
+from the base CLASSIC repository, we would end up with the following directory structure:
 
 ```
-../CLASSIC/src/APREP.f90
-../CLASSIC/src/backups/APREP.f
-../CLASSIC/src/backups/APREP.f.comments
+src/APREP.f90
+src/backups/APREP.f
+src/backups/APREP.f.comments
 ```
 
 ## Ignore directive
@@ -51,7 +47,7 @@ There are some circumstances where the linter needs to be disabled for a certain
 In case of unintended program behaviour, or a desire to return to the original files, simply call the program as you usually would if linting, but specify the `--restore` argument before or after the input files
 
 ```
-./linter.py ../CLASSIC/src/APREP.f --restore
+python3 tools/linter/linter.py src/APREP.f --restore
 ```
 
 Continuing from our previous example, this command will delete the .f90 file, delete the .comments file, restore the .f file to its original location, and delete the backups directory (if there are no remaining backups in it).

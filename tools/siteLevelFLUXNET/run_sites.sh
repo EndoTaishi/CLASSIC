@@ -5,10 +5,12 @@ rootdir=${script_location%%/tools*}
 container=$rootdir/CLASSIC_container.simg
 # Iterate through the sites and start a run for each one sequentially (using the container)
 for f in $rootdir/inputFiles/FLUXNETsites/*; do
-  current=${f##*/}
-  echo
-  echo
-  echo "Running $current..."
-  echo
-  singularity exec $container $rootdir/bin/CLASSIC_serial $f/job_options_file.txt 0/0/0/0
+  if [ -d $f ]; then
+    current=${f##*/}
+    echo
+    echo
+    echo "Running $current..."
+    echo
+    singularity exec $container $rootdir/bin/CLASSIC_serial $f/job_options_file.txt 0/0/0/0
+  fi
 done

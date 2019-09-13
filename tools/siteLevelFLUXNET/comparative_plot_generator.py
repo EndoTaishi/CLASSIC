@@ -36,7 +36,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 #######################################################
 output_dir = ""
-observationalData = "inputFiles/observationalDataFLUXNET"
+observationalData = "../fluxnet_data/test/outputs"
 compare_to_obs = True
 simulatedRuns = []
 
@@ -125,6 +125,15 @@ variables = [
         "seconds_to_months": False,
         "input_attributes": ["rss", "rls"],
         "input_multipliers": [1, 1]
+
+    },
+    {
+        "observational_attribute": "imbalance",
+        "observational_multiplier": 1,
+        "units": "W/m$^2$",
+        "seconds_to_months": False,
+        "input_attributes": ["rss", "rss"],
+        "input_multipliers": [1, -1]
 
     }
 ]

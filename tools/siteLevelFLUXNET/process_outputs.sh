@@ -16,4 +16,7 @@ for f in $rootdir/outputFiles/FLUXNETsites/*; do
 done
 # Run the plot generator on the FLUXNET outputs. Output may be quite substantial
 # if not all sites have output. This is to be expected and is not a problem.
+#singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/comparative_plot_generator.py $rootdir/outputFiles/FLUXNETsites -o $rootdir/outputFiles/plots
 singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/comparative_plot_generator.py $rootdir/outputFiles/FLUXNETsites -o $rootdir/outputFiles/plots
+
+# Call script that will hook up AMBER librares and run AMBER on the output.
