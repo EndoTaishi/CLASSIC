@@ -122,4 +122,4 @@ pages:
     paths:
     - public
   only:
-  - master@mfortier/classctem
+  - master@cccma/CLASSIC
