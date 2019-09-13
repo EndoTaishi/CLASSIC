@@ -1,0 +1,125 @@
+before_script:
+
+stages:
+ - setup
+ - build
+ - run
+ - test
+ - documentation
+
+check_location:
+  stage: setup
+  script:
+    - echo "HELLO FROM MASTER!"
+  only:
+    - master@CLASSIC_development/CLASSIC
+
+prepare_binary_folder:
+  stage: setup
+  script:
+    - if [ -d "~/tmp/CLASSIC" ]; then
+    -   rm -rf ~/tmp/CLASSIC
+    - else
+    -   mkdir -p ~/tmp/CLASSIC
+    - fi
+    - echo "setup complete"
+  except:
+    - master
+
+compile:
+  stage: build
+  script:
+    - /usr/bin/make mode=ppp
+    - cp -r bin/* ~/tmp/CLASSIC
+    - echo "compilation complete"
+  except:
+    - master
+
+run:ctem_on:
+  stage: run
+  script:
+    - tools/regression_testing/submission_scripts/job_submit_ctem_on.sh
+    - echo "job submitted"
+  artifacts:
+    paths:
+      - job_id.txt
+  except:
+    - master
+
+run:ctem_off:
+  stage: run
+  script:
+    - tools/regression_testing/submission_scripts/job_submit_ctem_off.sh
+    - echo "job submitted"
+  artifacts:
+    paths:
+      - job_id.txt
+  except:
+    - master
+
+run:ctem_compete:
+  stage: run
+  script:
+    - tools/regression_testing/submission_scripts/job_submit_ctem_compete.sh
+    - echo "job submitted"
+  artifacts:
+    paths:
+      - job_id.txt
+  except:
+    - master
+
+regression_test:ctem_on:
+  stage: test
+  script:
+    - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_on
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression_testing/verification.sh ctem_on
+    - echo "regression test complete"
+  dependencies:
+    - run:ctem_on
+  except:
+    - master
+
+retression_test:ctem_off:
+  stage: test
+  script:
+    - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_off
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression_testing/verification.sh ctem_off
+    - echo "regression test complete"
+  dependencies:
+    - run:ctem_off
+  except:
+    - master
+
+retression_test:ctem_compete:
+  stage: test
+  script:
+    - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_compete
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression_testing/verification.sh ctem_compete
+    - echo "regression test complete"
+  dependencies:
+    - run:ctem_compete
+  except:
+    - master
+
+pages:
+  stage: build
+  image: alpine
+  script:
+  - apk update
+  - apk add doxygen
+  - doxygen Doxyfile
+  - mv documentation/html/ public/
+  - rm -r -f documentation/html
+  - rm -f bib*
+  - rm -f citelist*
+  artifacts:
+    paths:
+    - public
+  only:
+  - master@cccma/CLASSIC
