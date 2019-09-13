@@ -41,7 +41,7 @@ modelpft(10:12)= 1,     1,   0,   ! CLASS PFT 4 GRASS (Grass)
 !              C3      C4
 
 ! List of CLASS-level PFTs
-classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass'
+classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass',
 
 ! List of CTEM PFTs
 ! **Note: 'BdlDCoTr' should be specified before 'BdlDDrTr' due to some code in competition.

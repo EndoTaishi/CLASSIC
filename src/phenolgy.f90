@@ -290,7 +290,7 @@ subroutine phenolgy (il1, il2, ilg, leapnow, tbar, thice, & ! In
             !     &    (daylngth(i)<11.0.and.roottemp(i,j)<(11.15+273.16))) then
             if (ta(i) < (coldthrs(1) + 273.16)) lfstatus(i,j) = 4
 
-          case ('GrassC3 ')
+          case ('GrassC3 ','Sedge   ')
 
             if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i,j) = 4
 
@@ -298,7 +298,7 @@ subroutine phenolgy (il1, il2, ilg, leapnow, tbar, thice, & ! In
 
             if (ta(i) < (coldthrs(2) + 273.16)) lfstatus(i,j) = 4
 
-          case ('NdlEvgTr','BdlEvgTr')
+          case ('NdlEvgTr','BdlEvgTr','BdlEvgSh')
 
             ! Evergreen, leave unchanged.
 
