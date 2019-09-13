@@ -914,6 +914,7 @@ contains
 
     use classicParams, only : icc, iccp1, kn, zero, grescoefmoss, deltat, &
                               grescoef
+    use autotrophicRespiration, only : GrowthRespiration
 
     implicit none
 
@@ -931,7 +932,7 @@ contains
     real, intent(in) :: rmlcgveg(:,:)     !< leaf respiration rate for CTEM's pfts
     real, intent(in) :: slai(:,:)         !< storage/imaginary lai for phenology purposes
     real, intent(in) :: ailcg(:,:)        !< green lai for ctem's 9 pfts
-    integer, intent(in) :: sort(:)        !<
+    integer, intent(in) :: sort(:)        !< index for correspondence between biogeochem pfts and the number of values in parameters vectors in run params file.
     real, intent(in) :: rmsveg(:,:)       !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
     real, intent(in) :: rmrveg(:,:)       !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
     integer, intent(in) :: ipeatland(:)   !< Peatland flag: 0 = not a peatland, 1 = bog, 2 = fen
@@ -974,7 +975,7 @@ contains
     real :: rgmoss(ilg)          !< moss growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real :: rmveg(ilg,icc)       !<
     real :: frac                 !< temp var.
-    real :: tracerRG             !< Tracer growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real :: tracerRG(ilg,icc)    !< Tracer growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real :: tracerRM             !<  Tracer total maintenance respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
 
     !--------
@@ -1034,6 +1035,17 @@ contains
         rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
         nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
 
+        !> Now that we know maintenance respiration from leaf, stem, and root
+        !! and gpp, we can find growth respiration for each vegetation type
+        call GrowthRespiration(il1,il2,sort,useTracer,nppveg,tracerNPP,&
+                              rgveg,tracerRG)
+        ! if (nppveg(i,j) > zero) then
+        !   rgveg(i,j) = grescoef(sort(j)) * nppveg(i,j)
+        ! else
+        !   rgveg(i,j) = 0.0
+        ! end if
+        nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
+        
         if (useTracer > 0) then
           !> Determine the NPP for the tracer. To find the value of rml for the tracer
           !! we need to scale the 'normal' rml value by the proportion of tracer to
@@ -1055,22 +1067,12 @@ contains
           !> And from that calculate the tracerNPP,which is what we are needing.
           tracerNPP(i,j) = tracerGPP(i,j) - tracerRM
 
-          tracerRG = 0.
-          if (tracerNPP(i,j) > 0.) tracerRG = grescoef(sort(j)) * tracerNPP(i,j)
+          ! tracerRG = 0.
+          ! if (tracerNPP(i,j) > 0.) tracerRG = grescoef(sort(j)) * tracerNPP(i,j)
 
-          tracerNPP(i,j) = tracerNPP(i,j) - tracerRG
+          tracerNPP(i,j) = tracerNPP(i,j) - tracerRG(i,j)
 
         end if
-
-        !> Now that we know maintenance respiration from leaf, stem, and root
-        !! and gpp, we can find growth respiration for each vegetation type
-
-        if (nppveg(i,j) > zero) then
-          rgveg(i,j) = grescoef(sort(j)) * nppveg(i,j)
-        else
-          rgveg(i,j) = 0.0
-        end if
-        nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
 
         !> Calculate grid/tile-averaged rates of rm, rg, npp, and gpp
         rml(i) = rml(i) + fcancmx(i,j) * rmlveg(i,j)

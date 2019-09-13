@@ -70,48 +70,48 @@ contains
                                  alpha, prcnslai, minslai, mxrtdpth, &
                                  albvis, albnir, classpfts, nol2pfts, &
                                  reindexPFTs
-    use ctemUtilities,    only : genSortIndex !, unfrozenRoots
+    use ctemUtilities,    only : genSortIndex
 
     implicit none
 
-    integer, intent(in) :: ilg !<
-    integer, intent(in) :: il1 !< input: il1=1
-    integer, intent(in) :: il2 !< input: il2=ilg
+    integer, intent(in) :: ilg !< nlat * nmos 
+    integer, intent(in) :: il1 !< il1=1
+    integer, intent(in) :: il2 !< il2=ilg
     integer :: i, j, k, m, n
     integer :: sort(icc)
     integer :: kend
 
     logical :: deeproots
 
-    real, intent(in) :: fcancmx(ilg,icc)      !< input: max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
-    !< (which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
-    !< land use change or dynamic vegetation.
-    real, intent(in)    :: gleafmas(ilg,icc)     !< input: green or live leaf mass in kg c/m2, for the 9 pfts
-    real, intent(in)    :: bleafmas(ilg,icc)     !< input: brown or dead leaf mass in kg c/m2, for the 9 pfts
-    real, intent(in)    :: stemmass(ilg,icc)     !< input: stem biomass in kg c/m2, for the 9 pfts
-    real, intent(in)    :: rootmass(ilg,icc)     !< input: root biomass in kg c/m2, for the 9 pfts
-    real, intent(in)    :: soildpth(ilg)         !< input: soil depth (m)
-    real, intent(in)    :: zbotw(ilg,ignd)       !< input: bottom of soil layers
+    real, intent(in) :: fcancmx(ilg,icc)      !< max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
+    !! (which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
+    !! land use change or dynamic vegetation.
+    real, intent(in)    :: gleafmas(ilg,icc)     !< green or live leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in)    :: bleafmas(ilg,icc)     !< brown or dead leaf mass in kg c/m2, for the 9 pfts
+    real, intent(in)    :: stemmass(ilg,icc)     !< stem biomass in kg c/m2, for the 9 pfts
+    real, intent(in)    :: rootmass(ilg,icc)     !< root biomass in kg c/m2, for the 9 pfts
+    real, intent(in)    :: soildpth(ilg)         !< soil depth (m)
+    real, intent(in)    :: zbotw(ilg,ignd)       !< bottom of soil layers
     real, intent(in)    :: maxAnnualActLyr(ilg)  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
     integer, intent(in) :: ipeatland(ilg)        !< Peatland flag, non-peatlands are 0.
-    real, intent(inout) :: rmatctem(ilg,icc,ignd)!< output: fraction of live roots in each soil layer for each of ctem's 9 pfts
-    real, intent(inout) :: slai(ilg,icc)         !< output: storage or imaginary lai for phenology purposes
-    real, intent(inout) :: cmasvegc(ilg,ican)    !< output: total canopy mass for each of the 4 class pfts. recall that class requires canopy
-    !< mass as an input, and this is now provided by ctem. kg/m2.
-    real, intent(inout) :: ailcg(ilg,icc)        !< output: green lai for ctem's 9 pfts
-    real, intent(inout) :: ailcb(ilg,icc)        !< output: brown lai for ctem's 9 pfts. for now we assume only grasses can have brown leaves.
-    real, intent(inout) :: ailc(ilg,ican)        !< output: lai to be used by class
-    real, intent(inout) :: paic(ilg,ican)        !< output: plant area index for class' 4 pfts. this is the sum of leaf area index and stem area index.
-    real, intent(inout) :: rmatc(ilg,ican,ignd)  !< output: fraction of live roots in each soil layer for each of the class' 4 pfts
-    real, intent(inout) :: alvisc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, visible
-    real, intent(inout) :: alnirc(ilg,ican)      !< output: albedo for 4 class pfts simulated by ctem, near ir
-    real, intent(inout) :: slaic(ilg,ican)       !< output: storage lai. this will be used as min. lai that class sees
-    !< so that it doesn't blow up in its stomatal conductance calculations.
-    real, intent(inout) :: veghght(ilg,icc)      !< output: vegetation height (meters)
-    real, intent(inout) :: rootdpth(ilg,icc)     !< output: 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
-    !< to see how vegetation grows above and below ground, respectively.
-    real, intent(out) :: bmasveg(ilg,icc)        !< output: total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-    real, intent(out) :: zolnc(ilg,ican)         !< output: log of roughness length to be used by class
+    real, intent(inout) :: rmatctem(ilg,icc,ignd)!< fraction of live roots in each soil layer for each of ctem's 9 pfts
+    real, intent(inout) :: slai(ilg,icc)         !< storage or imaginary lai for phenology purposes
+    real, intent(inout) :: cmasvegc(ilg,ican)    !< total canopy mass for each of the 4 class pfts. recall that class requires canopy
+    !! mass as an input, and this is now provided by ctem. kg/m2.
+    real, intent(inout) :: ailcg(ilg,icc)        !< green lai for ctem's 9 pfts
+    real, intent(inout) :: ailcb(ilg,icc)        !< brown lai for ctem's 9 pfts. for now we assume only grasses can have brown leaves.
+    real, intent(inout) :: ailc(ilg,ican)        !< lai to be used by class
+    real, intent(inout) :: paic(ilg,ican)        !< plant area index for class' 4 pfts. this is the sum of leaf area index and stem area index.
+    real, intent(inout) :: rmatc(ilg,ican,ignd)  !< fraction of live roots in each soil layer for each of the class' 4 pfts
+    real, intent(inout) :: alvisc(ilg,ican)      !< albedo for 4 class pfts simulated by ctem, visible
+    real, intent(inout) :: alnirc(ilg,ican)      !< albedo for 4 class pfts simulated by ctem, near ir
+    real, intent(inout) :: slaic(ilg,ican)       !< storage lai. this will be used as min. lai that class sees
+    !! so that it doesn't blow up in its stomatal conductance calculations.
+    real, intent(inout) :: veghght(ilg,icc)      !< vegetation height (meters)
+    real, intent(inout) :: rootdpth(ilg,icc)     !< 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
+    !! to see how vegetation grows above and below ground, respectively.
+    real, intent(out) :: bmasveg(ilg,icc)        !< total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+    real, intent(out) :: zolnc(ilg,ican)         !< log of roughness length to be used by class
 
     real :: sai(ilg,icc)          !<
     real :: saic(ilg,ican)        !<

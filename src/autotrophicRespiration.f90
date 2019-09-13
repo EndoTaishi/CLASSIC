@@ -7,6 +7,7 @@ module autotrophicRespiration
   implicit none
 
   public :: mainres
+  public :: GrowthRespiration
 
 contains
 
@@ -237,6 +238,44 @@ contains
 
   end subroutine mainres
   !! @}
+  !> \ingroup autotrophic_res_GrowthRespiration
+  !! @{
+  !> Calculates growth respiration for all PFTs
+  !> @author Vivek Arora and Joe Melton
+  subroutine GrowthRespiration(il1,il2,sort,useTracer,nppveg,tracerNPP,&
+                                rgveg,tracerRG)
+
+    use classicParams,     only : icc,grescoef,zero
+
+    implicit none
+
+    integer, intent(in) :: il1      !< il1=1
+    integer, intent(in) :: il2      !< il2=ilg (no. of grid cells in latitude circle)
+    integer, intent(in) :: sort(:)  !< index for correspondence between biogeochem pfts and the number of values in parameters vectors in run params file.   
+    integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
+    !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
+    !!               the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
+    !! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
+    !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.   
+    real, intent(in) :: nppveg(:,:)  !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(in) :: tracerNPP(:,:) !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) ::  :: tracerRG(ilg,icc)    !< Tracer growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: rgveg(ilg,icc)   !< PFT level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    
+    integer :: j,i
+
+    do j = 1,icc
+      do i = il1,il2
+        if (nppveg(i,j) > zero) then
+          rgveg(i,j) = grescoef(sort(j)) * nppveg(i,j)
+          if (useTracer > 0) then          
+            tracerRG(i,j) = 0.
+            if (tracerNPP(i,j) > 0.) tracerRG(i,j) = grescoef(sort(j)) * tracerNPP(i,j)
+          end if 
+        else
+          rgveg(i,j) = 0.0
+        end if
+
   ! ---------------------------------------------------------------------------------------------------
   !> \namespace autotrophic_res
   !> Calculates maintenance respiration, over a given sub-area, for stem and root components.
@@ -252,26 +291,26 @@ contains
   !! \label{mainres_all} R_\mathrm{m} = R_{mL} + R_{mS} + R_{mR}.
   !! \f]
   !!
-  !! Maintenance respiration is generally strongly correlated with nitrogen content \cite Reich1998-zr \cite Ryan1991-ai. The current version of CTEM does not explicitly track nitrogen in its vegetation components. Therefore, we adopt the approach of \cite Collatz1991-5bc \cite Collatz1992-jf in which the close relation between maximum catalytic capacity of Rubisco, \f$V_\mathrm{m}\f$, and leaf nitrogen content is used as a proxy to estimate leaf maintenance respiration,
+  !! Maintenance respiration is generally strongly correlated with nitrogen content (Reich et al. 1998; Ryan 1991) \cite Reich1998-zr \cite Ryan1991-ai. The current version of CTEM does not explicitly track nitrogen in its vegetation components. Therefore, we adopt the approach of Collatz et al. (1991,1992) \cite Collatz1991-5bc \cite Collatz1992-jf in which the close relation between maximum catalytic capacity of Rubisco, \f$V_\mathrm{m}\f$, and leaf nitrogen content is used as a proxy to estimate leaf maintenance respiration,
   !! \f[
   !! R_{mL} = \varsigma_\mathrm{L}V_\mathrm{m}\, f_{25}(Q_10d, n)f_{PAR},
   !! \f]
-  !! where \f$\varsigma_\mathrm{L}\f$ is set to 0.015 and 0.025 for \f$C_3\f$ and \f$C_4\f$ plants, respectively, \f$f_{PAR}\f$ scales respiration from the leaf to the canopy level, similar to Eq. (\ref{G_canopy}), and the \f$f_{25}(Q_10d, n)\f$ function accounts for different temperature sensitivities of leaf respiration during day (\f$d\f$) and night (\f$n\f$). \cite Pons2003-f26 and \cite Xu2003-d75 suggest lower temperature sensitivity for leaf respiration during the day compared to night, and therefore we use values of \f$Q_10d=1.3\f$ and \f$Q_10n=2.0\f$ for day and night, respectively.
+  !! where \f$\varsigma_\mathrm{L}\f$ is set to 0.015 and 0.025 for \f$C_3\f$ and \f$C_4\f$ plants, respectively, \f$f_{PAR}\f$ scales respiration from the leaf to the canopy level, similar to Eq. (\ref{G_canopy}), and the \f$f_{25}(Q_10d, n)\f$ function accounts for different temperature sensitivities of leaf respiration during day (\f$d\f$) and night (\f$n\f$). Pons and Welschen (2003) \cite Pons2003-f26 and Xu and Baldocchi (2003) \cite Xu2003-d75 suggest lower temperature sensitivity for leaf respiration during the day compared to night, and therefore we use values of \f$Q_10d=1.3\f$ and \f$Q_10n=2.0\f$ for day and night, respectively.
   !!
   !! Maintenance respiration from the stem and root components is estimated based on PFT-specific base respiration rates (\f$\varsigma_\mathrm{S}\f$ and \f$\varsigma_\mathrm{R}\f$ specified at \f$15\, C\f$, \f$kg\, C\, (kg\, C)^{-1}\, yr^{-1}\f$; see also classicParams.f90) that are modified to account for temperature response following a \f$Q_{10}\f$ function. Maintenance respiration from stem and root components, \f$R_{m\{S, R\}}\f$, is calculated as
   !! \f[
   !! \label{r_msr} R_{\mathrm{m}, i} = 2.64 \times 10^{-6}\varsigma_{i}l_{\mathrm{v}, i}C_{i}f_{15}(Q_{10}), \quad i = \mathrm{S}, \mathrm{R},
   !! \f]
-  !! where \f$l_{v, i}\f$ is the live fraction of stem or root component, i.e. the sapwood, and \f$C_i\f$ is the stem or root carbon mass (\f$kg\, C\, m^{-2}\f$). The constant \f$2.64 \times 10^{-6}\f$ converts units from \f$kg\, C\, m^{-2}\, yr^{-1}\f$ to \f$mol\, CO_2\, m^{-2}\, s^{-1}\f$. The live sapwood fraction, \f$l_{\mathrm{v}, i}\f$, for stem or root component is calculated following the CENTURY model \cite Parton1996-zv as
+  !! where \f$l_{v, i}\f$ is the live fraction of stem or root component, i.e. the sapwood, and \f$C_i\f$ is the stem or root carbon mass (\f$kg\, C\, m^{-2}\f$). The constant \f$2.64 \times 10^{-6}\f$ converts units from \f$kg\, C\, m^{-2}\, yr^{-1}\f$ to \f$mol\, CO_2\, m^{-2}\, s^{-1}\f$. The live sapwood fraction, \f$l_{\mathrm{v}, i}\f$, for stem or root component is calculated following the CENTURY model (Parton et al. 1996) \cite Parton1996-zv as
   !! \f[
   !! l_{\mathrm{v}, i} = \max(0.05, \min[1.0, \exp^{-0.2835 C_i} ]), \quad i = \mathrm{S}, \mathrm{R}.
   !! \f]
   !!
-  !! The \f$Q_{10}\f$ value used in Eq. (\ref{r_msr}) is not assumed to be constant but modelled as a function of temperature following \cite Tjoelker2001-uz as
+  !! The \f$Q_{10}\f$ value used in Eq. (\ref{r_msr}) is not assumed to be constant but modelled as a function of temperature following Tjoelker et al. (2001) \cite Tjoelker2001-uz as
   !! \f[
   !! Q_{10} = 3.22 - 0.046 \left(\frac{15.0 + T_{\{S, R\}}}{1.9}\right),
   !! \f]
-  !! where \f$T_{\{S, R\}}\f$ is stem or root temperature (\f$C\f$). Stem temperature is assumed to be the same as air temperature while root temperature is based on the soil temperature weighted by the fraction of roots present in each soil layer \cite Arora2003838. The calculated \f$Q_{10}\f$ value is additionally constrained to be between 1.5 and 4.0.
+  !! where \f$T_{\{S, R\}}\f$ is stem or root temperature (\f$C\f$). Stem temperature is assumed to be the same as air temperature while root temperature is based on the soil temperature weighted by the fraction of roots present in each soil layer (Arora and Boer, 2003) \cite Arora2003838. The calculated \f$Q_{10}\f$ value is additionally constrained to be between 1.5 and 4.0.
   !!
   !! Growth respiration, \f$R_\mathrm{g}\f$ (\f$mol\, CO_2\, m^{-2}\, s^{-1}\f$), is estimated as a fraction (\f$\epsilon_\mathrm{g}=0.15\f$) of the positive gross canopy photosynthetic rate after maintenance respiration has been accounted for
   !! \f[
