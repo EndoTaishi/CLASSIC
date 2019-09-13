@@ -24,7 +24,7 @@ prepare_binary_folder:
     - fi
     - echo "setup complete"
   except:
-    - master
+    - master@cccma/CLASSIC
 
 compile:
   stage: build
@@ -33,7 +33,7 @@ compile:
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
   except:
-    - master
+    - master@cccma/CLASSIC
 
 run:ctem_on:
   stage: run
@@ -44,7 +44,7 @@ run:ctem_on:
     paths:
       - job_id.txt
   except:
-    - master
+    - master@cccma/CLASSIC
 
 run:ctem_off:
   stage: run
@@ -55,7 +55,7 @@ run:ctem_off:
     paths:
       - job_id.txt
   except:
-    - master
+    - master@cccma/CLASSIC
 
 run:ctem_compete:
   stage: run
@@ -66,7 +66,7 @@ run:ctem_compete:
     paths:
       - job_id.txt
   except:
-    - master
+    - master@cccma/CLASSIC
 
 regression_test:ctem_on:
   stage: test
@@ -79,7 +79,7 @@ regression_test:ctem_on:
   dependencies:
     - run:ctem_on
   except:
-    - master
+    - master@cccma/CLASSIC
 
 retression_test:ctem_off:
   stage: test
@@ -92,7 +92,7 @@ retression_test:ctem_off:
   dependencies:
     - run:ctem_off
   except:
-    - master
+    - master@cccma/CLASSIC
 
 retression_test:ctem_compete:
   stage: test
@@ -105,7 +105,7 @@ retression_test:ctem_compete:
   dependencies:
     - run:ctem_compete
   except:
-    - master
+    - master@cccma/CLASSIC
 
 pages:
   stage: build
