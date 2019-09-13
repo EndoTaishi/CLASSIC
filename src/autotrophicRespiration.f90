@@ -242,7 +242,7 @@ contains
   !! @{
   !> Calculates growth respiration for all PFTs
   !> @author Vivek Arora and Joe Melton
-  subroutine GrowthRespiration(il1,il2,sort,useTracer,nppveg,tracerNPP,&
+  subroutine GrowthRespiration(il1,il2,ilg,sort,useTracer,nppveg,tracerNPP,&
                                 rgveg,tracerRG)
 
     use classicParams,     only : icc,grescoef,zero
@@ -251,6 +251,7 @@ contains
 
     integer, intent(in) :: il1      !< il1=1
     integer, intent(in) :: il2      !< il2=ilg (no. of grid cells in latitude circle)
+    integer, intent(in) :: ilg      !< nlat * nmos 
     integer, intent(in) :: sort(:)  !< index for correspondence between biogeochem pfts and the number of values in parameters vectors in run params file.   
     integer, intent(in) :: useTracer !< Switch for use of a model tracer. If useTracer is 0 then the tracer code is not used.
     !! useTracer = 1 turns on a simple tracer that tracks pools and fluxes. The simple tracer then requires that the tracer values in
@@ -259,7 +260,7 @@ contains
     !! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.   
     real, intent(in) :: nppveg(:,:)  !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(in) :: tracerNPP(:,:) !< tracer NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    real, intent(out) ::  :: tracerRG(ilg,icc)    !< Tracer growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, intent(out) :: tracerRG(ilg,icc)    !< Tracer growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, intent(out) :: rgveg(ilg,icc)   !< PFT level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     
     integer :: j,i
@@ -275,7 +276,11 @@ contains
         else
           rgveg(i,j) = 0.0
         end if
-
+      end do 
+    end do 
+    
+  end subroutine GrowthRespiration
+  !! @}
   ! ---------------------------------------------------------------------------------------------------
   !> \namespace autotrophic_res
   !> Calculates maintenance respiration, over a given sub-area, for stem and root components.

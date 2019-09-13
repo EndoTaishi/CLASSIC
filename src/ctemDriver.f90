@@ -1037,7 +1037,7 @@ contains
 
         !> Now that we know maintenance respiration from leaf, stem, and root
         !! and gpp, we can find growth respiration for each vegetation type
-        call GrowthRespiration(il1,il2,sort,useTracer,nppveg,tracerNPP,&
+        call GrowthRespiration(il1,il2,ilg,sort,useTracer,nppveg,tracerNPP,&
                               rgveg,tracerRG)
         ! if (nppveg(i,j) > zero) then
         !   rgveg(i,j) = grescoef(sort(j)) * nppveg(i,j)
