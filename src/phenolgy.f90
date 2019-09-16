@@ -379,7 +379,7 @@ subroutine phenolgy (il1, il2, ilg, leapnow, tbar, thice, & ! In
 
             end if
 
-          case ('NdlEvgTr' , 'BdlEvgTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
+          case ('NdlEvgTr' , 'BdlEvgTr','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ','BdlEvgSh','Sedge   ')
 
             ! Evergreen,crop or grass so do nothing.
 

@@ -28,7 +28,7 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
   - Greenhouse gases
     - @subpage initCO2
     - @subpage initCH4
-  - Disturbrance (fire) inputs
+  - Disturbance (fire) inputs
     - @subpage initLightFire
     - @subpage initPopd
   - @subpage initClimComp "Competition for space between PFTs"
@@ -63,3 +63,4 @@ The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC) simul
   - @subpage regTest
 12. @subpage howDoI
 13. @subpage legacyFileNames
+14. [CLASSIC Code Conventions](http://cccma.gitlab.io/classic_pages/info/conventions/)
