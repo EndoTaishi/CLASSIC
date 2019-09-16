@@ -15,7 +15,8 @@ do
     break
   else
     echo "Unexpected jobstat result:"
-    echo $( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s ' ' | perl -pe 's/\s+/ /g' )
+    echo $( jobst -c $HDNODE 2>/dev/null | grep $1 )
+    #echo $( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s ' ' | perl -pe 's/\s+/ /g' )
     echo $status
   fi
   let sleepcount=$sleepcount+1

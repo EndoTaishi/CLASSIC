@@ -29,6 +29,7 @@ class WhitespaceChecker(object):
         self.ignoreLines = 0 # tracks number of lines from the !ignoreLint(x) directive
         self.directive = False # if true, we're in a preprocessor directive (and won't touch anything)
         self.levelNumber = 0 # how many block indentations in are we?
+        self.multiline_spacing = 0
         self.continuedIf = False # flag for if we're in a continued if statement (important edge case)
         self.checkWhiteSpace()
         if self.levelNumber != 0: # we haven't finished with 0 whitespace; this is a problem.
@@ -80,6 +81,21 @@ class WhitespaceChecker(object):
                     self.fixedlines.append(line)
                     continue
                 self.analyzeLine1(parsed_line.group(4))
+
+                # Here we'll consider multiline comment descriptions of variables
+                linspc = re.match(r'^([^!]*)!<', line)
+                if linspc:
+                    self.multiline_spacing = len(linspc.group(1))
+                elif not re.match(r'^(\s+)(!!.*$)', line):
+                    self.multiline_spacing = 0
+
+                linspc = re.match(r'^(\s+)(!!.*$)', line)
+                if linspc and self.multiline_spacing > 0:
+                    for a in range(self.multiline_spacing):
+                        newline += " "
+                    newline += linspc.group(2)
+                    self.fixedlines.append(newline)
+                    continue
 
                 # if we have a labelled line, we must account for that in the whitespace
                 if parsed_line.group(2) != "":
