@@ -123,3 +123,4 @@ pages:
     - public
   only:
   - master@cccma/classic
+  - master@cccma/CLASSIC*
