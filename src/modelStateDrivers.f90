@@ -919,7 +919,6 @@ contains
       litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex,latIndex,1], count = [1,1,nmos], format = [nlat,nmos])
       dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex,latIndex,1], count = [1,1,nmos], format = [nlat,nmos])
       fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
-
       gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
@@ -940,6 +939,7 @@ contains
       ! COMBAK PERLAY
       litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos], format = [nlat,nmos,iccp2])
       soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos], format = [nlat,nmos,iccp2])
+      ! FLAG the order in the function ncGet4DVar should be checked carefully once this is turned on.
       ! litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex,latIndex,1,1,1], count = [1,1,iccp2,ignd,nmos], format = [nlat,nmos,iccp2,ignd])
       ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex,latIndex,1,1,1], count = [1,1,iccp2,ignd,nmos], format = [nlat,nmos,iccp2,ignd])
       ! COMBAK PERLAY

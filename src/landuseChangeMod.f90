@@ -128,7 +128,7 @@ contains
             bigpft = maxloc(pftarrays(i,m,:))
             !> j is then the nmos index and m is the icc index of the PFT with the largest area
             j = indexposj(i,m,bigpft(1))
-            print * ,'big',bigpft,j
+      
             !>
             !> Reduce the most dominant PFT by barf and minbare. The extra
             !! amount is to ensure we don't have trouble later with an extremely
