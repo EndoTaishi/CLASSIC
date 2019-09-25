@@ -97,16 +97,14 @@ else
 	# Fortran Flags.
 	FFLAGS = -O3 -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -J$(ODIR) #-Wall -Wextra
 	# Include Flags.
-	#IFLAGS = -I/home/rjm/Public/NETCDF/include -J$(ODIR)
 	IFLAGS = -I/usr/include
-	# Library Flags.
-	#LFLAGS = -L/home/rjm/Public/NETCDF/lib -lnetcdff -L/home/rjm/Public/NETCDF/lib -fPIC -lnetcdf -lnetcdf -L/home/rjm/Public/NETCDF/lib
+	# Library Flags
 	LFLAGS = -lnetcdff -ldl -lz -lm
 endif
 
 # Create required directory/.gitignore file, if missing.
 VOID := $(shell mkdir -p $(ODIR))
-VOID := $(shell [ ! -f $(ODIR)/.gitignore ] && cp objectFiles/.gitignore $(ODIR))
+#VOID := $(shell [ ! -f $(ODIR)/.gitignore ] && cp objectFiles/.gitignore $(ODIR))
 
 # RECIPES
 # Compile object files from .F90 sources

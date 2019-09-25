@@ -16,7 +16,7 @@ module ctemDriver
 contains
   !> \ingroup ctemdriver_ctem
   !! @{
-  subroutine ctem (fsnow, sand, & ! In
+  subroutine ctem (fsnow, sand, ilmos, & ! In
                    ilg, il1, il2, iday, radj, & ! In
                    ta, delzw, ancgveg, rmlcgveg, & ! In
                    zbotw, doMethane, & ! In
@@ -182,6 +182,7 @@ contains
     integer, intent(in) :: ilg                              !< ilg=no. of grid cells in latitude circle
     integer, intent(in) :: il1                              !< il1=1
     integer, intent(in) :: il2                              !< il2=ilg (no. of grid cells in latitude circle)
+    integer, intent(in), dimension(:) :: ilmos              !< Index of gridcell corresponding to current element of gathered vector of land surface variables [ ]
     integer, dimension(ilg,ignd), intent(in) :: isand       !<
     integer, dimension(ilg), intent(in) :: ipeatland        !< Peatland flag: 0 = not a peatland, 1 = bog, 2 = fen
     real, dimension(ilg), intent(in) :: fsnow               !< fraction of snow simulated by class
@@ -688,7 +689,7 @@ contains
                           ch4WetSpec, wetfdyn, ch4WetDyn) ! Out
 
       !> Calculate the methane that is oxidized by the soil sink
-      call soil_ch4uptake(il1, il2, ilg, tbar, & ! In
+      call soil_ch4uptake(il1, il2, ilmos, ilg, tbar, & ! In
                         bi, thliq, thice, psisat, & ! In
                         fcanmx, wetfdyn, wetfrac, & ! In
                         isand, ch4conc, thpor, & ! In
