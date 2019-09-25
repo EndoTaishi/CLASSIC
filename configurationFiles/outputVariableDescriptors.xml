@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2019/9/12">
+<variableSet type="CLASS" version="1.2" created="2019/9/25">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -1778,6 +1778,18 @@
                 <nameInCode>fProductDecomp_mo_g</nameInCode>
                 <units>kg m$^{-2}$ s$^{-1}$</units>
             </variant>
+            <variant>
+                <timeFrequency>annually</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fProductDecomp_yr_g</nameInCode>
+                <units>kg m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>fProductDecomp_mo_g</nameInCode>
+                <units>kg m$^{-2}$ s$^{-1}$</units>
+            </variant>
         </variable>
         <variable id="84" includeBareGround="true" dormant="true">
             <standardName>Carbon Mass in Model Litter Pool per layer</standardName>
@@ -1804,8 +1816,8 @@
             </variant>
         </variable>
         <variable id="94" includeBareGround="false" dormant="false">
-            <standardName> Carbon Mass in Leaves</standardName>
-            <longName> Carbon mass per unit area in leaves. (monthly is mid month value)</longName>
+            <standardName>Carbon Mass in Leaves</standardName>
+            <longName>Carbon mass per unit area in leaves. (monthly is mid month value)</longName>
             <shortName>cLeaf</shortName>
             <defaultUnits>kg m${-2}$</defaultUnits>
             <variant>
@@ -1814,11 +1826,29 @@
                 <nameInCode>leafmass_mo_g</nameInCode>
                 <units>kg m${-2}$</units>
             </variant>
+        </variable>
+        <variable id="95" includeBareGround="false" dormant="false">
+            <standardName>soil respiration</standardName>
+            <longName>Total soil respiration (sum of heterotrophic respiration plus root contributions of autotrophic - maintenance and growth - respiration)</longName>
+            <shortName>rSoil</shortName>
+            <defaultUnits>kg m$^{-2}$ s$^{-1}$</defaultUnits>
             <variant>
                 <timeFrequency>monthly</timeFrequency>
                 <outputForm>grid</outputForm>
-                <nameInCode>leafmass_mo_g</nameInCode>
-                <units>kg m${-2}$</units>
+                <nameInCode>soilres_mo_g</nameInCode>
+                <units>kg m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>pft</outputForm>
+                <nameInCode>soilres_mo</nameInCode>
+                <units>kg m$^{-2}$ s$^{-1}$</units>
+            </variant>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>tile</outputForm>
+                <nameInCode>soilres_mo_t</nameInCode>
+                <units>kg m$^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
     </group>

@@ -7,7 +7,7 @@ module autotrophicRespiration
   implicit none
 
   public :: mainres
-  public :: GrowthRespiration
+  public :: growthRespiration
 
 contains
 
@@ -238,11 +238,11 @@ contains
 
   end subroutine mainres
   !! @}
-  !> \ingroup autotrophic_res_GrowthRespiration
+  !> \ingroup autotrophic_res_growthRespiration
   !! @{
   !> Calculates growth respiration for all PFTs
   !> @author Vivek Arora and Joe Melton
-  subroutine GrowthRespiration(il1,il2,ilg,sort,useTracer,nppveg,tracerNPP,&
+  subroutine growthRespiration(il1,il2,ilg,sort,useTracer,nppveg,tracerNPP,&
                                 rgveg,tracerRG)
 
     use classicParams,     only : icc,grescoef,zero
@@ -279,7 +279,7 @@ contains
       end do 
     end do 
     
-  end subroutine GrowthRespiration
+  end subroutine growthRespiration
   !! @}
   ! ---------------------------------------------------------------------------------------------------
   !> \namespace autotrophic_res

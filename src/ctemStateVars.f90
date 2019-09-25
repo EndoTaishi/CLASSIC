@@ -771,6 +771,7 @@ module ctemStateVars
     real, allocatable, dimension(:,:,:) :: gpp_mo        !<
     real, allocatable, dimension(:,:,:) :: vgbiomas_mo   !<
     real, allocatable, dimension(:,:,:) :: autores_mo    !<
+    real, allocatable, dimension(:,:,:) :: soilres_mo    !<
     real, allocatable, dimension(:,:,:) :: totcmass_mo   !<
     real, allocatable, dimension(:,:,:) :: nep_mo        !<
     real, allocatable, dimension(:,:,:) :: hetrores_mo   !<
@@ -826,6 +827,7 @@ module ctemStateVars
     real, allocatable, dimension(:) :: nbp_mo_g      !<
     real, allocatable, dimension(:) :: hetrores_mo_g !<
     real, allocatable, dimension(:) :: autores_mo_g  !<
+    real, allocatable, dimension(:) :: soilres_mo_g  !<
     real, allocatable, dimension(:) :: vgbiomas_mo_g !<
     real, allocatable, dimension(:) :: totcmass_mo_g !<
     real, allocatable, dimension(:) :: emit_co2_mo_g !<
@@ -890,6 +892,7 @@ module ctemStateVars
     real, allocatable, dimension(:,:) :: gpp_mo_t      !<
     real, allocatable, dimension(:,:) :: vgbiomas_mo_t !<
     real, allocatable, dimension(:,:) :: autores_mo_t  !<
+    real, allocatable, dimension(:,:) :: soilres_mo_t  !<
     real, allocatable, dimension(:,:) :: totcmass_mo_t !<
     real, allocatable, dimension(:,:) :: nep_mo_t      !<
     real, allocatable, dimension(:,:) :: hetrores_mo_t !<
@@ -1605,6 +1608,7 @@ contains
              ctem_mo%gpp_mo (nlat,nmos,icc), &
              ctem_mo%vgbiomas_mo (nlat,nmos,icc), &
              ctem_mo%autores_mo (nlat,nmos,icc), &
+             ctem_mo%soilres_mo (nlat,nmos,icc), &
              ctem_mo%humiftrsveg_mo (nlat,nmos,iccp2), &
              ctem_mo%totcmass_mo (nlat,nmos,iccp1), &
              ! COMBAK PERLAY
@@ -1659,6 +1663,7 @@ contains
              ctem_grd_mo%nbp_mo_g (nlat), &
              ctem_grd_mo%hetrores_mo_g (nlat), &
              ctem_grd_mo%autores_mo_g (nlat), &
+             ctem_grd_mo%soilres_mo_g (nlat), &
              ctem_grd_mo%vgbiomas_mo_g (nlat), &
              ctem_grd_mo%totcmass_mo_g (nlat), &
              ctem_grd_mo%emit_co2_mo_g (nlat), &
@@ -1699,6 +1704,7 @@ contains
              ctem_tile_mo%gpp_mo_t (nlat,nmos), &
              ctem_tile_mo%vgbiomas_mo_t (nlat,nmos), &
              ctem_tile_mo%autores_mo_t (nlat,nmos), &
+             ctem_tile_mo%soilres_mo_t (nlat,nmos), &
              ctem_tile_mo%totcmass_mo_t (nlat,nmos), &
              ! COMBAK PERLAY
              ctem_tile_mo%litrmass_mo_t (nlat,nmos), &
@@ -2101,6 +2107,7 @@ contains
       ctem_grd_mo%nbp_mo_g(i) = 0.0
       ctem_grd_mo%hetrores_mo_g(i) = 0.0
       ctem_grd_mo%autores_mo_g(i) = 0.0
+      ctem_grd_mo%soilres_mo_g(i) = 0.0
       ! COMBAK PERLAY
       ctem_grd_mo%litres_mo_g(i) = 0.0
       ctem_grd_mo%soilcres_mo_g(i) = 0.0
@@ -2146,6 +2153,7 @@ contains
         ctem_tile_mo%nbp_mo_t(i,m) = 0.0
         ctem_tile_mo%hetrores_mo_t(i,m) = 0.0
         ctem_tile_mo%autores_mo_t(i,m) = 0.0
+        ctem_tile_mo%soilres_mo_t(i,m) = 0.0
         ! COMBAK PERLAY
         ctem_tile_mo%litres_mo_t(i,m) = 0.0
         ctem_tile_mo%soilcres_mo_t(i,m) = 0.0
@@ -2191,6 +2199,7 @@ contains
           ctem_mo%nbp_mo(i,m,j) = 0.0
           ctem_mo%hetrores_mo(i,m,j) = 0.0
           ctem_mo%autores_mo(i,m,j) = 0.0
+          ctem_mo%soilres_mo(i,m,j) = 0.0
           ! COMBAK PERLAY
           ctem_mo%litres_mo(i,m,j) = 0.0
           ctem_mo%soilcres_mo(i,m,j) = 0.0
