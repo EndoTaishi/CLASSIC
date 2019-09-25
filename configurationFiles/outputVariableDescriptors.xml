@@ -2047,6 +2047,54 @@
                 <units>kg CO m$^{-2}$ s$^{-1}$</units>
             </variant>
         </variable>
+        <variable id="96" includeBareGround="false" dormant="false">
+            <standardName>BC Flux into Atmosphere due to Fire</standardName>
+            <longName>Black carbon emissions (expressed as a BC mass flux per unit area) from natural fires and human ignition fires as calculated by the fire module of the dynamic vegetation model</longName>
+            <shortName>fFireBC</shortName>
+            <defaultUnits>kg BC m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_bc_mo_g</nameInCode>
+                <units>kg BC m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="97" includeBareGround="false" dormant="false">
+            <standardName>OC Flux into Atmosphere due to Fire</standardName>
+            <longName>Organic carbon emissions (expressed as a OC mass flux per unit area) from natural fires and human ignition fires as calculated by the fire module of the dynamic vegetation model</longName>
+            <shortName>fFireOC</shortName>
+            <defaultUnits>kg OC m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_oc_mo_g</nameInCode>
+                <units>kg OC m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="98" includeBareGround="false" dormant="false">
+            <standardName>NOx Flux into Atmosphere due to Fire</standardName>
+            <longName>NOx emissions (expressed as a NOx mass flux per unit area) from natural fires and human ignition fires as calculated by the fire module of the dynamic vegetation model</longName>
+            <shortName>fFireNOX</shortName>
+            <defaultUnits>kg NOx m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_nox_mo_g</nameInCode>
+                <units>kg NOx m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
+        <variable id="99" includeBareGround="false" dormant="false">
+            <standardName>NMHC Flux into Atmosphere due to Fire</standardName>
+            <longName>Non-methane hydrocarbon emissions (expressed as a NMHC mass flux per unit area) from natural fires and human ignition fires as calculated by the fire module of the dynamic vegetation model</longName>
+            <shortName>fFireNMHC</shortName>
+            <defaultUnits>kg NMHC m$^{-2}$ s$^{-1}$</defaultUnits>
+            <variant>
+                <timeFrequency>monthly</timeFrequency>
+                <outputForm>grid</outputForm>
+                <nameInCode>emit_nmhc_mo_g</nameInCode>
+                <units>kg NMHC m$^{-2}$ s$^{-1}$</units>
+            </variant>
+        </variable>
     </group>
     <group type="land">
         <variable id="45" includeBareGround="false" dormant="false">

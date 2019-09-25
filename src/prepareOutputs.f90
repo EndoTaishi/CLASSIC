@@ -3656,6 +3656,10 @@ contains
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_g' ,timeStamp,'fFireCH4',[emit_ch4_mo_g(i)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co_mo_g' ,timeStamp,'fFireCO',[emit_co_mo_g(i)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_bc_mo_g' ,timeStamp,'fFireBC',[emit_bc_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_oc_mo_g' ,timeStamp,'fFireOC',[emit_oc_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_nox_mo_g' ,timeStamp,'fFireNOX',[emit_nox_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_nmhc_mo_g' ,timeStamp,'fFireNMHC',[emit_nmhc_mo_g(i)])          
           call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)])
         end if
         if (lnduseon) then
