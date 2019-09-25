@@ -12,13 +12,13 @@
     leap = .false. ,         ! True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
-        metFileFss = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/dswrf_v1.1.5_T63_chunked_1700_2017.nc',        !< location of the incoming shortwave radiation meteorology file
-        metFileFdl = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/dlwrf_v1.1.5_T63_chunked_1700_2017.nc',        !< location of the incoming longwave radiation meteorology file
-        metFilePre = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/pre_v1.1.5_T63_chunked_1700_2017.nc',        !< location of the precipitation meteorology file
-        metFileTa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/tmp_v1.1.5_T63_chunked_1700_2017.nc',         !< location of the air temperature meteorology file
-        metFileQa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/spfh_v1.1.5_T63_chunked_1700_2017.nc',         !< location of the specific humidity meteorology file
-        metFileUv = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/wind_v1.1.5_T63_chunked_1700_2017.nc',         !< location of the wind speed meteorology file
-        metFilePres = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv1.1.5/pres_v1.1.5_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
+        metFileFss = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dswrf_v2_T63_1700_2018.nc',        !< location of the incoming shortwave radiation meteorology file
+        metFileFdl = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dlwrf_v2_T63_1700_2018.nc',        !< location of the incoming longwave radiation meteorology file
+        metFilePre = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pre_v2_T63_1700_2018.nc',        !< location of the precipitation meteorology file
+        metFileTa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/tmp_v2_T63_1700_2018.nc',         !< location of the air temperature meteorology file
+        metFileQa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/spfh_v2_T63_1700_2018.nc',         !< location of the specific humidity meteorology file
+        metFileUv = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/wind_v2_T63_1700_2018.nc',         !< location of the wind speed meteorology file
+        metFilePres = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pres_v2_T63_1700_2018.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
     init_file = '/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/input_files/initFile_actlyr.nc' ,     !< location of the model initialization file
