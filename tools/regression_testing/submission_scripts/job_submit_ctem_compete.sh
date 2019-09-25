@@ -62,7 +62,7 @@ output_directory=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/ct
 # *** NB: This script checks all input files (as specified in the job options file).
 #         Files that are not needed for the run must either be commented out or specified as an empty string.
 
-job_options_file=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/input_files/job_options_ctem_compete.txt
+job_options_file=/home/rjm001/code/CLASSIC/tools/regression_testing/submission_scripts/job_options_ctem_compete.txt
 
 cdir=$( pwd )
 
