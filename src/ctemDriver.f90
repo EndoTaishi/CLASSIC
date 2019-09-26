@@ -915,7 +915,7 @@ contains
 
     use classicParams, only : icc, iccp1, kn, zero, grescoefmoss, deltat, &
                               grescoef
-    use autotrophicRespiration, only : GrowthRespiration
+    use autotrophicRespiration, only : growthRespiration
 
     implicit none
 
@@ -1003,7 +1003,7 @@ contains
 
           pheanveg(i,j) = ancgveg(i,j) ! to be used for phenology purposes
 
-          if (lfstatus(i,j) /= 4) then ! real :: leaves so use values
+          if (lfstatus(i,j) /= 4) then ! real leaves so use values
 
             anveg(i,j) = ancgveg(i,j)
             rmlveg(i,j) = rmlcgveg(i,j)
@@ -1038,13 +1038,9 @@ contains
 
         !> Now that we know maintenance respiration from leaf, stem, and root
         !! and gpp, we can find growth respiration for each vegetation type
-        call GrowthRespiration(il1,il2,ilg,sort,useTracer,nppveg,tracerNPP,&
+        call growthRespiration(il1,il2,ilg,sort,useTracer,nppveg,tracerNPP,&
                               rgveg,tracerRG)
-        ! if (nppveg(i,j) > zero) then
-        !   rgveg(i,j) = grescoef(sort(j)) * nppveg(i,j)
-        ! else
-        !   rgveg(i,j) = 0.0
-        ! end if
+
         nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
         
         if (useTracer > 0) then

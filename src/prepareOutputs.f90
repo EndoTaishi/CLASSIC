@@ -1842,6 +1842,8 @@ contains
     real, pointer, dimension(:,:,:) :: nbpvegrow
     real, pointer, dimension(:,:,:) :: hetroresvegrow
     real, pointer, dimension(:,:,:) :: autoresvegrow
+    real, pointer, dimension(:,:,:) :: rmrvegrow
+    real, pointer, dimension(:,:,:) :: rgvegrow
     ! COMBAK PERLAY
     real, pointer, dimension(:,:,:) :: litresvegrow
     real, pointer, dimension(:,:,:) :: soilcresvegrow
@@ -1873,6 +1875,8 @@ contains
     nppvegrow         => vrot%nppveg
     hetroresvegrow    => vrot%hetroresveg
     autoresvegrow     => vrot%autoresveg
+    rmrvegrow         => vrot%rmrveg
+    rgvegrow          => vrot%rgveg
     litresvegrow      => vrot%litresveg
     soilcresvegrow    => vrot%soilcresveg
     npprow            => vrot%npp
@@ -1915,6 +1919,9 @@ contains
             nbpvegrow(i,m,j) = nbpvegrow(i,m,j) * convertkgC
             hetroresvegrow(i,m,j) = hetroresvegrow(i,m,j) * convertkgC
             autoresvegrow(i,m,j) = autoresvegrow(i,m,j) * convertkgC
+            rmrvegrow = rmrvegrow(i,m,j) * convertkgC
+            rgvegrow = rgvegrow(i,m,j) * convertkgC
+            
             ! COMBAK PERLAY
             litresvegrow(i,m,j) = litresvegrow(i,m,j) * convertkgC
             soilcresvegrow(i,m,j) = soilcresvegrow(i,m,j) * convertkgC
@@ -2831,6 +2838,7 @@ contains
     real, pointer, dimension(:,:,:) :: gpp_mo
     real, pointer, dimension(:,:,:) :: vgbiomas_mo
     real, pointer, dimension(:,:,:) :: autores_mo
+    real, pointer, dimension(:,:,:) :: soilres_mo
     real, pointer, dimension(:,:,:) :: totcmass_mo
     ! COMBAK PERLAY
     real, pointer, dimension(:,:,:) :: litrmass_mo
@@ -2872,6 +2880,7 @@ contains
     real, pointer, dimension(:,:) :: gpp_mo_t
     real, pointer, dimension(:,:) :: vgbiomas_mo_t
     real, pointer, dimension(:,:) :: autores_mo_t
+    real, pointer, dimension(:,:) :: soilres_mo_t
     real, pointer, dimension(:,:) :: totcmass_mo_t
     ! COMBAK PERLAY
     real, pointer, dimension(:,:) :: litrmass_mo_t
@@ -2939,6 +2948,7 @@ contains
     real, pointer, dimension(:,:,:) :: rmsvegrow
     real, pointer, dimension(:,:,:) :: rmrvegrow
     real, pointer, dimension(:,:,:) :: rgvegrow
+    real, pointer, dimension(:,:,:) :: afrrootrow
     real, pointer, dimension(:,:,:) :: ailcgrow
     real, pointer, dimension(:,:,:) :: emit_co2row
     real, pointer, dimension(:,:,:) :: emit_corow
@@ -2998,6 +3008,7 @@ contains
     real, pointer, dimension(:) :: nbp_mo_g
     real, pointer, dimension(:) :: hetrores_mo_g
     real, pointer, dimension(:) :: autores_mo_g
+    real, pointer, dimension(:) :: soilres_mo_g
     real, pointer, dimension(:) :: vgbiomas_mo_g
     real, pointer, dimension(:) :: totcmass_mo_g
     real, pointer, dimension(:) :: emit_co2_mo_g
@@ -3079,6 +3090,7 @@ contains
     gpp_mo                =>ctem_mo%gpp_mo
     vgbiomas_mo           =>ctem_mo%vgbiomas_mo
     autores_mo            =>ctem_mo%autores_mo
+    soilres_mo            =>ctem_mo%soilres_mo
     totcmass_mo           =>ctem_mo%totcmass_mo
     litrmass_mo           =>ctem_mo%litrmass_mo
     soilcmas_mo           =>ctem_mo%soilcmas_mo
@@ -3114,6 +3126,7 @@ contains
     gpp_mo_t              =>ctem_tile_mo%gpp_mo_t
     vgbiomas_mo_t         =>ctem_tile_mo%vgbiomas_mo_t
     autores_mo_t          =>ctem_tile_mo%autores_mo_t
+    soilres_mo_t          =>ctem_tile_mo%soilres_mo_t
     totcmass_mo_t         =>ctem_tile_mo%totcmass_mo_t
     litrmass_mo_t         =>ctem_tile_mo%litrmass_mo_t
     soilcmas_mo_t         =>ctem_tile_mo%soilcmas_mo_t
@@ -3163,6 +3176,7 @@ contains
     rmsvegrow         => vrot%rmsveg
     rmrvegrow         => vrot%rmrveg
     rgvegrow          => vrot%rgveg
+    afrrootrow        => vrot%afrroot
     ailcgrow          => vrot%ailcg
     emit_co2row       => vrot%emit_co2
     emit_corow        => vrot%emit_co
@@ -3226,6 +3240,7 @@ contains
     nbp_mo_g            =>ctem_grd_mo%nbp_mo_g
     hetrores_mo_g       =>ctem_grd_mo%hetrores_mo_g
     autores_mo_g        =>ctem_grd_mo%autores_mo_g
+    soilres_mo_g        =>ctem_grd_mo%soilres_mo_g
     litres_mo_g         =>ctem_grd_mo%litres_mo_g
     soilcres_mo_g       =>ctem_grd_mo%soilcres_mo_g
     vgbiomas_mo_g       =>ctem_grd_mo%vgbiomas_mo_g
@@ -3289,6 +3304,9 @@ contains
         nbp_mo(i,m,j) = nbp_mo(i,m,j) + nbpvegrow(i,m,j) * oneOverDPM
         hetrores_mo(i,m,j) = hetrores_mo(i,m,j) + hetroresvegrow(i,m,j) * oneOverDPM
         autores_mo(i,m,j) = autores_mo(i,m,j) + autoresvegrow(i,m,j) * oneOverDPM
+        ! Calculate the total soil respiration (Rh + root contributions of Rm + Rg)
+        soilres_mo(i,m,j) = soilres_mo(i,m,j) + (hetroresvegrow(i,m,j) + rmrvegrow(i,m,j) &
+                                              + rgvegrow(i,m,j) * afrrootrow(i,m,j)) * oneOverDPM
         ! COMBAK PERLAY
         litres_mo(i,m,j) = litres_mo(i,m,j) + litresvegrow(i,m,j) * oneOverDPM
         soilcres_mo(i,m,j) = soilcres_mo(i,m,j) + soilcresvegrow(i,m,j) * oneOverDPM
@@ -3480,6 +3498,8 @@ contains
             ! nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,j)*fcancmxrow(i,m,j)
             hetrores_mo_t(i,m) = hetrores_mo_t(i,m) + hetrores_mo(i,m,j) * fcancmxrow(i,m,j)
             autores_mo_t(i,m) = autores_mo_t(i,m) + autores_mo(i,m,j) * fcancmxrow(i,m,j)
+            soilres_mo_t(i,m) = soilres_mo_t(i,m) + soilres_mo(i,m,j) * fcancmxrow(i,m,j)
+
             ! COMBAK PERLAY
             litres_mo_t(i,m) = litres_mo_t(i,m) + litres_mo(i,m,j) * fcancmxrow(i,m,j)
             soilcres_mo_t(i,m) = soilcres_mo_t(i,m) + soilcres_mo(i,m,j) * fcancmxrow(i,m,j)
@@ -3537,6 +3557,7 @@ contains
           nbp_mo_g(i) = nbp_mo_g(i) + nbp_mo_t(i,m) * FAREROT(i,m)
           hetrores_mo_g(i) = hetrores_mo_g(i) + hetrores_mo_t(i,m) * FAREROT(i,m)
           autores_mo_g(i) = autores_mo_g(i) + autores_mo_t(i,m) * FAREROT(i,m)
+          soilres_mo_g(i) = soilres_mo_g(i) + soilres_mo_t(i,m) * FAREROT(i,m)
           ! COMBAK PERLAY
           litres_mo_g(i) = litres_mo_g(i) + litres_mo_t(i,m) * FAREROT(i,m)
           soilcres_mo_g(i) = soilcres_mo_g(i) + soilcres_mo_t(i,m) * FAREROT(i,m)
@@ -3593,6 +3614,7 @@ contains
         call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo_g'     ,timeStamp,'nbp',[nbp_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo_g',timeStamp,'rh',[hetrores_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_g' ,timeStamp,'ra',[autores_mo_g(i)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilres_mo_g' ,timeStamp,'rSoil',[soilres_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_g' ,timeStamp,'fVegLitter',[litrfall_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_mo_g(i)])
@@ -3641,6 +3663,10 @@ contains
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_mo_g' ,timeStamp,'fFireCH4',[emit_ch4_mo_g(i)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co_mo_g' ,timeStamp,'fFireCO',[emit_co_mo_g(i)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_bc_mo_g' ,timeStamp,'fFireBC',[emit_bc_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_oc_mo_g' ,timeStamp,'fFireOC',[emit_oc_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_nox_mo_g' ,timeStamp,'fFireNOX',[emit_nox_mo_g(i)])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_nmhc_mo_g' ,timeStamp,'fFireNMHC',[emit_nmhc_mo_g(i)])          
           call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)])
         end if
         if (lnduseon) then
@@ -3677,6 +3703,7 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo'     ,timeStamp,'nbp',[nbp_mo(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo',timeStamp,'rh',[hetrores_mo(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo' ,timeStamp,'ra',[autores_mo(i,m,:)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilres_mo' ,timeStamp,'rSoil',[soilres_mo(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i,m,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,1:iccp1)])
 
@@ -3733,6 +3760,7 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo_t'     ,timeStamp,'nbp',[nbp_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo_t',timeStamp,'rh',[hetrores_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_t' ,timeStamp,'ra',[autores_mo_t(i,:)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilres_mo_t' ,timeStamp,'rSoil',[soilres_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,1:iccp1)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'leafmass_mo_t',timeStamp,'cLeaf',[leafmass_mo_t(i,:)])
