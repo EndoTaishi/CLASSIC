@@ -62,7 +62,7 @@ output_directory=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/ct
 # *** NB: This script checks all input files (as specified in the job options file).
 #         Files that are not needed for the run must either be commented out or specified as an empty string.
 
-job_options_file=/home/rjm001/code/CLASSIC/tools/regression_testing/submission_scripts/job_options_ctem_off.txt
+job_options_file=$CI_PROJECT_DIR/tools/regression_testing/submission_scripts/job_options_ctem_off.txt
 
 cdir=$( pwd )
 
@@ -578,7 +578,7 @@ wait
 
 # If necessary, stitch row/lat bands split across multiple output directories onto the full domain.
 
-mv /tmp/checksum_testing/* $output_directory
+mv /tmp/$runname/* $output_directory
 echo 'Executing classic_stitch_netcdf.sh'
 time ~rec001/public/classic/classic_stitch_netcdf.sh  $output_directory 32
 
