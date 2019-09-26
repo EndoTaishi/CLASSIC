@@ -919,7 +919,6 @@ contains
       litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex,latIndex,1], count = [1,1,nmos], format = [nlat,nmos])
       dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex,latIndex,1], count = [1,1,nmos], format = [nlat,nmos])
       fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
-
       gleafmasrow = ncGet3DVar(initid, 'gleafmas', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
@@ -940,6 +939,7 @@ contains
       ! COMBAK PERLAY
       litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos], format = [nlat,nmos,iccp2])
       soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos], format = [nlat,nmos,iccp2])
+      ! FLAG the order in the function ncGet4DVar should be checked carefully once this is turned on.
       ! litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex,latIndex,1,1,1], count = [1,1,iccp2,ignd,nmos], format = [nlat,nmos,iccp2,ignd])
       ! soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex,latIndex,1,1,1], count = [1,1,iccp2,ignd,nmos], format = [nlat,nmos,iccp2,ignd])
       ! COMBAK PERLAY
@@ -1269,10 +1269,7 @@ contains
     real, intent(in), optional :: latitude
     integer, intent(in), optional :: projLonInd
     integer, intent(in), optional :: projLatInd
-    integer :: lengthOfFile
-    integer :: lonloc, latloc
-    integer :: i, arrindex, arrindex2, ntimes, m, numPFTsinFile, d
-    real, dimension(:), allocatable :: fileTime
+
     logical, pointer :: projectedGrid
     logical, pointer :: transientCO2
     integer, pointer :: fixedYearCO2
@@ -1298,11 +1295,13 @@ contains
     !               tracer values in the init_file and the tracerCO2file are set to meaningful values for the experiment being run.
     ! useTracer = 2 means the tracer is 14C and will then call a 14C decay scheme.
     ! useTracer = 3 means the tracer is 13C and will then call a 13C fractionation scheme.
-
-
     integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
     integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
 
+    integer :: lengthOfFile
+    integer :: lonloc, latloc
+    integer :: i, arrindex, arrindex2, ntimes, m, numPFTsinFile, d, j
+    real, dimension(:), allocatable :: fileTime
     real, dimension(5) :: dateTime
     real :: startTime, endTime
     logical :: dummyVar
@@ -1310,7 +1309,6 @@ contains
 
     readMetStartYear => c_switch%readMetStartYear
     readMetEndYear   => c_switch%readMetEndYear
-
     projectedGrid   => c_switch%projectedGrid
     transientCO2    => c_switch%transientCO2
     fixedYearCO2    => c_switch%fixedYearCO2
@@ -1387,8 +1385,11 @@ contains
         if (arrindex == 0) stop ('getInput says: The CO2 file does not contain requested year')
 
         ! We read in only the suggested year
-        i = 1 ! offline nlat is always 1 so just set
-        co2concrow(i,:) = ncGet1DVar(CO2id,trim(co2VarName),start = [arrindex], count = [1])
+        ! Presently all cells get the exact same CO2 (we don't do it by cell) so 
+        ! just set all the same now.
+        do j = 1, nmos
+          co2concrow(:,j) = ncGet1DVar(CO2id,trim(co2VarName),start = [arrindex], count = [1])
+        end do
       end if
 
     case ('tracerCO2') ! tracer Carbon dioxide atmospheric values.
@@ -1431,8 +1432,11 @@ contains
         if (arrindex == 0) stop ('getInput says: The tracer CO2 file does not contain requested year')
 
         ! We read in only the suggested year
-        i = 1 ! always 1 offline.
-        tracerco2conc(i,:) = ncGet1DVar(tracerco2id,trim(tracerco2VarName),start = [arrindex], count = [1])
+        ! Presently all cells get the exact same tracerCO2 (we don't do it by cell) so 
+        ! just set all the same now.
+        do j = 1, nmos
+          tracerco2conc(:,j) = ncGet1DVar(tracerco2id,trim(tracerco2VarName),start = [arrindex], count = [1])
+        end do 
       end if
 
       ! Convert the units of the tracer depending on the tracer being simulated.
@@ -1482,8 +1486,11 @@ contains
         if (arrindex == 0) stop ('getInput says: The CH4 file does not contain requested year')
 
         ! We read in only the suggested year
-        i = 1 ! offline nlat is always 1 so just set
-        ch4concrow(i,:) = ncGet1DVar(ch4id,trim(ch4VarName),start = [arrindex], count = [1])
+        ! Presently all cells get the exact same CH4 (we don't do it by cell) so 
+        ! just set all the same now.
+        do j = 1, nmos
+          ch4concrow(:,j) = ncGet1DVar(ch4id,trim(ch4VarName),start = [arrindex], count = [1])
+        end do 
       end if
 
     case ('POPD') ! Population density

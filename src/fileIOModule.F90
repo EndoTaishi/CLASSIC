@@ -471,7 +471,8 @@ contains
 
     fixedFormat = localFormat
     allocate(ncGet3DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3)))
-    ncGet3DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
+    ncGet3DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat, order = [1,3,2])
+
   end function ncGet3DVar
   !! @}
   !-----------------------------------------------------------------------------------------------------------------------------------------------------

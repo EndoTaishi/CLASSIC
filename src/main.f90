@@ -2300,9 +2300,9 @@ contains
     NTLD = NMOS
 
     !> The parameter JLAT is calculated from DLATROW as the nearest integer :: value,
-    DLATROW(1) = latitude
+    DLATROW = latitude
     JLAT = NINT(DLATROW(1))
-    DLONROW(1) = longitude
+    DLONROW = longitude
 
     !> The timestep counter N for the run is initialized to 0, the daily
     !! averaging counter NCOUNT is set to 1, and the total number of
@@ -2320,8 +2320,8 @@ contains
     lopcount = 1
     leapnow = .false.
     lastDOY = 365
-    wetfrac_presgat(:) = - 9999. !< If transientOBSWETF or fixedYearOBSWETF != -9999 this variable will be overwritten with
-    !! real :: wetland fractions. Otherwise the negative is used as a switch so the dynamic
+    wetfrac_presgat = - 9999. !< If transientOBSWETF or fixedYearOBSWETF != -9999 this variable will be overwritten with
+    !! real wetland fractions. Otherwise the negative is used as a switch so the dynamic
     !! wetland extent is used instead of the prescribed.
 
     !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
@@ -2349,7 +2349,7 @@ contains
 
     !> Read in the model initial state
     call read_initialstate(lonIndex, latIndex)
-
+    
     if (ctem_on) then
       !> Read in the inputs for a run with biogeochemical component turned on
       call getInput('CO2') ! CO2 atmospheric concentration
@@ -2514,7 +2514,7 @@ contains
 
         ! Find the daylength of this day
         daylrow = findDaylength(real(iday),radjrow(1)) ! following rest of code, radjrow is always given index of 1 offline.
-
+        
         ! Update the lightning if fire is on and transientLGHT is true
         if (dofire .and. ctem_on) call updateInput('LGHT',runyr,imonth = imonth,iday = iday,dom = DOM)
 
@@ -2578,7 +2578,7 @@ contains
 
       !> classGather performs the gather operation, gathering variables from their
       !> positions as mosaic tiles within the modelled areas to long vectors of mosaic tiles
-
+      
       call classGather(TBARGAT, THLQGAT, THICGAT, TPNDGAT, ZPNDGAT, & ! Formerly CLASSG
                        TBASGAT, ALBSGAT, TSNOGAT, RHOSGAT, SNOGAT, &
                        TCANGAT, RCANGAT, SCANGAT, GROGAT, CMAIGAT, &
@@ -2641,7 +2641,7 @@ contains
       call initDiagnosticVars(nml, ilg)
 
       !========================================================================
-
+      
       !> energyWaterBalanceCheck does the initial calculations for the energy and water balance checks
 
       call energyWaterBalanceCheck(0, CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, & ! Formerly CLASSZ
@@ -2898,12 +2898,12 @@ contains
       if (ctem_on) then
 
         !> Accumulate variables not already accumulated but which are required by CTEM.
-        call accumulateForCTEM(nml)
+        call accumulateForCTEM(nml,ILMOS)
 
         if (ncount == nday) then
 
           ! Find daily averages of accumulated variables for CTEM
-          call dayEndCTEMPreparation(nml, nday)
+          call dayEndCTEMPreparation(nml, nday, ILMOS)
 
           ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
           ! and uses daily accumulated values of variables simulated by CLASS.

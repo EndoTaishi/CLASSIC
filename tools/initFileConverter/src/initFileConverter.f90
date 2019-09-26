@@ -84,14 +84,14 @@ program initFileConverter
     real, allocatable, dimension(:,:):: stemmassrow
     real, allocatable, dimension(:,:):: rootmassrow
     ! the tracer variables:
-    real, allocatable, dimension(:,:):: tracerGLeafMass
-    real, allocatable, dimension(:,:):: tracerBLeafMass
-    real, allocatable, dimension(:,:):: tracerStemMass
-    real, allocatable, dimension(:,:):: tracerRootMass
-    real, allocatable, dimension(:,:,:):: tracerLitrMass
-    real, allocatable, dimension(:,:,:):: tracerSoilCMass
-    real, allocatable, dimension(:):: tracerMossCMass
-    real, allocatable, dimension(:):: tracerMossLitrMass
+    ! real, allocatable, dimension(:,:):: tracerGLeafMass
+    ! real, allocatable, dimension(:,:):: tracerBLeafMass
+    ! real, allocatable, dimension(:,:):: tracerStemMass
+    ! real, allocatable, dimension(:,:):: tracerRootMass
+    ! real, allocatable, dimension(:,:,:):: tracerLitrMass
+    ! real, allocatable, dimension(:,:,:):: tracerSoilCMass
+    ! real, allocatable, dimension(:):: tracerMossCMass
+    ! real, allocatable, dimension(:):: tracerMossLitrMass
     
     real, allocatable, dimension(:,:):: pstemmassrow
     real, allocatable, dimension(:,:):: pgleafmassrow
@@ -105,9 +105,10 @@ program initFileConverter
     real, allocatable, dimension(:):: annsrpls
     real, allocatable, dimension(:):: annpcp
     real, allocatable, dimension(:):: dry_season_length
-    real, allocatable, dimension(:,:,:):: litrmassrow
-    real, allocatable, dimension(:,:,:):: soilcmasrow
-    !real, allocatable, dimension(:):: mlightng
+    real, allocatable, dimension(:,:):: litrmassrow
+    real, allocatable, dimension(:,:):: soilcmasrow
+    !real, allocatable, dimension(:,:,:):: litrmassrow
+    !real, allocatable, dimension(:,:,:):: soilcmasrow
     integer, allocatable, dimension(:,:):: lfstatusrow
     integer, allocatable, dimension(:,:):: pandaysrow
     real, allocatable, dimension(:,:):: slopefrac
@@ -250,19 +251,21 @@ contains
         allocate(bleafmasrow(NMTEST,icc))
         allocate(stemmassrow(NMTEST,icc))
         allocate(rootmassrow(NMTEST,icc))
-        allocate(litrmassrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
-        allocate(soilcmasrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
+        allocate(litrmassrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
+        allocate(soilcmasrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
+        !allocate(litrmassrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
+        !allocate(soilcmasrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
         allocate(lfstatusrow(NMTEST,icc))
         allocate(pandaysrow(NMTEST,icc))
         
-        allocate(tracerGLeafMass(NMTEST,icc))
-        allocate(tracerBLeafMass(NMTEST,icc))
-        allocate(tracerStemMass(NMTEST,icc))
-        allocate(tracerRootMass(NMTEST,icc))
-        allocate(tracerLitrMass(NMTEST,icc+2,ignd))
-        allocate(tracerSoilCMass(NMTEST,icc+2,ignd))
-        allocate(tracerMossCMass(NMTEST))
-        allocate(tracerMossLitrMass(NMTEST))
+        !allocate(tracerGLeafMass(NMTEST,icc))
+        !allocate(tracerBLeafMass(NMTEST,icc))
+        !allocate(tracerStemMass(NMTEST,icc))
+        !allocate(tracerRootMass(NMTEST,icc))
+        !allocate(tracerLitrMass(NMTEST,icc+2,ignd))
+        !allocate(tracerSoilCMass(NMTEST,icc+2,ignd))
+        !allocate(tracerMossCMass(NMTEST))
+        !allocate(tracerMossLitrMass(NMTEST))
         
         allocate(slopefrac(NMTEST,8))
         allocate(ipeatlandrow(NMTEST))
@@ -369,35 +372,39 @@ contains
             ! There are no legacy CTM files that use icc+2 (include the luc products pool) so 
             ! assume they only go to icc+1. Put a zero in the icc+2 position later.
             ! Also no CTM files will have per layer values so just put all in layer 1,
-            read(11,*) (litrmassrow(m,j,1),j=1,icc+1) 
-            read(11,*) (soilcmasrow(m,j,1),j=1,icc+1)
-            litrmassrow(m,icc+2,1)=0.
-            soilcmasrow(m,icc+2,1)=0.
+            ! read(11,*) (litrmassrow(m,j,1),j=1,icc+1) 
+            ! read(11,*) (soilcmasrow(m,j,1),j=1,icc+1)
+            ! litrmassrow(m,icc+2,1)=0.
+            ! soilcmasrow(m,icc+2,1)=0.
+            read(11,*) (litrmassrow(m,j),j=1,icc+1) 
+            read(11,*) (soilcmasrow(m,j),j=1,icc+1)
+
             read(11,*) (lfstatusrow(m,j),j=1,icc)
             read(11,*) (pandaysrow(m,j),j=1,icc)
         
         ! Distribute the litter and soil C across the top layers since we are now per layer
         ! this is just to speed up the time to equilibrium.
-        maxlayer = min(5,ignd-1)
-        do k = 1,maxlayer
-          do j = 1, icc+1
-            litrmassrow(m,j,k) = litrmassrow(m,j,1) / real(maxlayer)
-            soilcmasrow(m,j,k) = soilcmasrow(m,j,1) / real(maxlayer)
-          end do 
-        end do
+        ! maxlayer = min(5,ignd-1)
+        ! do k = 1,maxlayer
+        !   do j = 1, icc+1
+        !     litrmassrow(m,j,k) = litrmassrow(m,j,1) / real(maxlayer)
+        !     soilcmasrow(m,j,k) = soilcmasrow(m,j,1) / real(maxlayer)
+        !   end do 
+        ! end do
         
         end do
 
         ! None of the tracers will be in CTM files so just set to 0.
-        tracerGLeafMass = 0.
-        tracerBLeafMass = 0.
-        tracerStemMass = 0.
-        tracerRootMass = 0.
-        tracerLitrMass = 0.
-        tracerSoilCMass = 0.
-        tracerMossCMass = 0.
-        tracerMossLitrMass = 0. 
-        
+        ! tracerGLeafMass = 0.
+        ! tracerBLeafMass = 0.
+        ! tracerStemMass = 0.
+        ! tracerRootMass = 0.
+        ! tracerLitrMass = 0.
+        ! tracerSoilCMass = 0.
+        ! tracerMossCMass = 0.
+        ! tracerMossLitrMass = 0. 
+
+            ! Obsolete variables.
             !read(11,*) (mlightng(j),j=1,6)  !mean monthly lightning frequency
             !read(11,*) (mlightng(j),j=7,12) !flashes/km2.year, this is spread over other tiles below
             !read(11,*) extnprob
@@ -492,15 +499,15 @@ contains
             Cmossmas,&
             litrmsmoss,&
             dmoss,&
-            maxAnnualActLyr,&
-            tracerGLeafMass, &
-            tracerBLeafMass, &
-            tracerStemMass, &
-            tracerRootMass, &
-            tracerLitrMass, &
-            tracerSoilCMass, &
-            tracerMossCMass, &
-            tracerMossLitrMass
+            maxAnnualActLyr !,&
+            ! tracerGLeafMass, &
+            ! tracerBLeafMass, &
+            ! tracerStemMass, &
+            ! tracerRootMass, &
+            ! tracerLitrMass, &
+            ! tracerSoilCMass, &
+            ! tracerMossCMass, &
+            ! tracerMossLitrMass
             
         read(unit=10,nml = classicvars)
         !write(*,nml = classicvars)
@@ -651,8 +658,7 @@ contains
         allocate(dimArray(2),start(2),count(2))
         dimArray = (/lonDimId,latDimId/)
         start = (/1, 1 /)
-        count = (/1, 1 /)
-        call exportVariable('MID',units='-',long_name='Mosaic tile type identifier (1 for land surface, 0 for inland lake)',intvalues=MIDROT)
+        count = (/1, 1 /)        
         call exportVariable('GC',units='-',long_name='GCM surface descriptor - land surfaces (inc. inland water) is -1',intvalues=(/-1/))
         call exportVariable('nmtest',units='-',long_name='Number of tiles in each grid cell',intvalues=(/nmtest/))
         deallocate(dimArray,start,count)
@@ -719,6 +725,7 @@ contains
         count = (/1, 1, nmtest/)
         call exportVariable('DRN',units='-',long_name='Soil drainage index',values=DRNROT)
         call exportVariable('FARE',units='fraction',long_name='Tile fractional area of gridcell',values=FAREROT)
+        call exportVariable('MID',units='-',long_name='Mosaic tile type identifier (1 for land surface, 0 for inland lake)',intvalues=MIDROT)
         call exportVariable('SDEP',units='m',long_name='Soil permeable depth',values=SDEPROT)
         !call exportVariable('XSLP',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=XSLPROT)
         !call exportVariable('GRKF',units='-',long_name='Not in Use: parameters lateral movement of soil water',values=GRKFROT)
@@ -764,10 +771,10 @@ contains
             call exportVariable('gleafmas',units='kgC/m2',long_name='Green leaf mass',values2D=gleafmasrow)
             call exportVariable('stemmass',units='kgC/m2',long_name='Stem mass',values2D=stemmassrow)
             call exportVariable('rootmass',units='kgC/m2',long_name='Root mass',values2D=rootmassrow)
-            call exportVariable('tracerBLeafMass',units='kgC/m2',long_name='Universal tracer for Brown leaf mass',values2D=tracerBLeafMass)
-            call exportVariable('tracerGLeafMass',units='kgC/m2',long_name='Universal tracer for Green leaf mass',values2D=tracerGLeafMass)
-            call exportVariable('tracerStemMass',units='kgC/m2',long_name='Universal tracer for Stem mass',values2D=tracerStemMass)
-            call exportVariable('tracerRootMass',units='kgC/m2',long_name='Universal tracer for Root mass',values2D=tracerRootMass)
+            ! call exportVariable('tracerBLeafMass',units='kgC/m2',long_name='Universal tracer for Brown leaf mass',values2D=tracerBLeafMass)
+            ! call exportVariable('tracerGLeafMass',units='kgC/m2',long_name='Universal tracer for Green leaf mass',values2D=tracerGLeafMass)
+            ! call exportVariable('tracerStemMass',units='kgC/m2',long_name='Universal tracer for Stem mass',values2D=tracerStemMass)
+            ! call exportVariable('tracerRootMass',units='kgC/m2',long_name='Universal tracer for Root mass',values2D=tracerRootMass)
             call exportVariable('lfstatus',units='-',long_name='Leaf status, see Phenology',intvalues2D=lfstatusrow)
             call exportVariable('pandays',units='-',long_name='Days with +ve new photosynthesis, see Phenology',intvalues2D=pandaysrow)
             deallocate(dimArray,start,count)
@@ -779,9 +786,9 @@ contains
             count = (/1, 1, nmtest/)
             call exportVariable('ipeatland',units='-',long_name='Peatland flag: 0 = not a peatland, 1= bog, 2 = fen',intvalues=ipeatlandrow)
             call exportVariable('Cmossmas',units='kgC/m2',long_name='C in moss biomass',values=Cmossmas)
-            call exportVariable('tracerMossCMass',units='kgC/m2',long_name='Universal tracer for C in moss biomass',values=tracerMossCMass)
+            !call exportVariable('tracerMossCMass',units='kgC/m2',long_name='Universal tracer for C in moss biomass',values=tracerMossCMass)
             call exportVariable('litrmsmoss',units='kgC/m2',long_name='Moss litter mass',values=litrmsmoss)
-            call exportVariable('tracerMossLitrMass',units='kgC/m2',long_name='Universal tracer for C in Moss litter mass',values=tracerMossLitrMass)
+            !call exportVariable('tracerMossLitrMass',units='kgC/m2',long_name='Universal tracer for C in Moss litter mass',values=tracerMossLitrMass)
             call exportVariable('dmoss',units='m',long_name='Depth of living moss',values=dmoss)
             call exportVariable('maxAnnualActLyr',units='m',long_name='Active layer depth maximum over the e-folding period specified by parameter eftime',values=maxAnnualActLyr)
             deallocate(dimArray,start,count)
@@ -813,13 +820,19 @@ contains
             call exportVariable('fcancmx',units='-',long_name='PFT fractional coverage per grid cell',values2D=fcancmxrow)
 
             ! iccp2 variables
-            dimArray = (/lonDimId,latDimId,iccp2DimId,layerDimId,tileDimId/)
-            start = (/1, 1, 1 ,1, 1/)
-            count = (/1, 1, icc+2, ignd, nmtest/)
-            call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values3D=litrmassrow)
-            call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values3D=soilcmasrow)
-            call exportVariable('tracerLitrMass',units='kgC/m2',long_name='Universal tracer for Litter mass per soil layer',values3D=tracerLitrMass)
-            call exportVariable('tracerSoilCMass',units='kgC/m2',long_name='Universal tracer for Soil C mass per soil layer',values3D=tracerSoilCMass)
+            ! dimArray = (/lonDimId,latDimId,iccp2DimId,layerDimId,tileDimId/)
+            ! start = (/1, 1, 1 ,1, 1/)
+            ! count = (/1, 1, icc+2, ignd, nmtest/)
+            ! call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values3D=litrmassrow)
+            ! call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values3D=soilcmasrow)
+            ! call exportVariable('tracerLitrMass',units='kgC/m2',long_name='Universal tracer for Litter mass per soil layer',values3D=tracerLitrMass)
+            ! call exportVariable('tracerSoilCMass',units='kgC/m2',long_name='Universal tracer for Soil C mass per soil layer',values3D=tracerSoilCMass)
+            dimArray = (/lonDimId,latDimId,iccp2DimId,tileDimId/)
+            start = (/1, 1, 1 ,1/)
+            count = (/1, 1, icc+2, nmtest/)
+            call exportVariable('litrmass',units='kgC/m2',long_name='Litter mass per soil layer',values2D=litrmassrow)
+            call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values2D=soilcmasrow)
+            
             deallocate(dimArray,start,count)
 
             ! per month vars

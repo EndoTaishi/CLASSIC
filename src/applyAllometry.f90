@@ -11,7 +11,7 @@ module applyAllometry
 
 contains
 
-  !> \ingroup applyallometry_bio2str
+  !> \ingroup applyallometry_allometry
   !! @{
   !! Applies allometric relationships to converts biomass to
   !! structural attributes. This subroutine converts leaf, stem, and root biomass
@@ -29,7 +29,7 @@ contains
   !! vegetated fraction are updated
   !!
   !> @author V. Arora, J. Melton, Y. Peng, S. Sun
-  subroutine allometry (gleafmas, bleafmas, stemmass, rootmass, il1, il2, ilg, & ! In
+  subroutine allometry (gleafmas, bleafmas, stemmass, rootmass, il1, il2, ilg, & ! In  ! Formerly bio2str
                         zbotw, soildpth, fcancmx, ipeatland, maxAnnualActLyr, & ! In
                         ailcg, ailcb, ailc, zolnc, rmatc, rmatctem, slai, bmasveg, & ! Out
                         cmasvegc, veghght, rootdpth, alvisc, alnirc, paic, slaic)    ! Out
@@ -264,8 +264,8 @@ contains
         case ('NdlTr' , 'BdlTr', 'BdlSh')
           ! Do nothing for non-grass/crop
         case default
-          print * ,'Unknown CLASS PFT in bio2str ',classpfts(j)
-          call errorHandler('bio2str', - 1)
+          print * ,'Unknown CLASS PFT in allometry ',classpfts(j)
+          call errorHandler('allometry', - 1)
         end select
       end do ! loop 240
     end do ! loop 230
@@ -318,8 +318,8 @@ contains
               veghght(i,m) = min(1.0, (gleafmas(i,m) + fracbofg * bleafmas(i,m)) ** 0.3)
             end if
           case default
-            print * ,'Unknown CLASS PFT in bio2str ',classpfts(j)
-            call errorHandler('bio2str', - 2)
+            print * ,'Unknown CLASS PFT in allometry ',classpfts(j)
+            call errorHandler('allometry', - 2)
           end select
           lnrghlth(i,m) = log(0.10 * max(veghght(i,m),0.10))
 
@@ -425,7 +425,7 @@ contains
             write(6,2100) i,j,k,kend
 2100        format(' at (i) = (',i3,'),pft = ',i2,', depth = ',i2,' kend &
   is not assigned. kend  = ',i5)
-            call errorHandler('bio2str', - 3)
+            call errorHandler('allometry', - 3)
           end if
 
           etmp(i,j,1) = exp( - a(i,j) * zbotw(i,1))
@@ -470,7 +470,7 @@ contains
             write(6,2300) i,j,rmat_sum
 2300        format(' at (i) = (',i3,'),pft = ',i2,' fractions of roots &
             not adding to one. sum  = ',f12.7)
-            call errorHandler('bio2str', - 4)
+            call errorHandler('allometry', - 4)
           end if
         end if
       end do ! loop 412

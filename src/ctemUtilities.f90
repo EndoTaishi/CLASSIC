@@ -45,7 +45,7 @@ contains
   !! @{
   !> Prepare the CTEM input (physics) variables at the end of the day.
   !! @author V.Arora, J. Melton
-  subroutine dayEndCTEMPreparation (nml, nday)
+  subroutine dayEndCTEMPreparation (nml, nday, ILMOS)
 
     use classicParams, only : icc, ignd
     use ctemStateVars, only : vgat, ctem_tile
@@ -54,26 +54,28 @@ contains
 
     integer, intent(in) :: nml     !< Counter representing number of mosaic tiles on modelled domain that are land
     integer, intent(in) :: nday    !< Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
+    integer, intent(in)  :: ILMOS(:) !< Index of grid cell corresponding to current element
+    !< of gathered vector of land surface variables [ ]
 
-    integer, pointer, dimension(:) :: altotcount_ctm ! nlat  !< Counter used for calculating total albedo
-    real, pointer, dimension(:)    :: fsinacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: flinacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: altotacc_gat !(ilg)   !<
-    real, pointer, dimension(:)    :: netrad_gat !(ilg)     !<
-    real, pointer, dimension(:) :: anmossac_t
-    real, pointer, dimension(:) :: rmlmossac_t
-    real, pointer, dimension(:) :: gppmossac_t
-    real, pointer, dimension(:) :: fsnowacc_t       !<
-    real, pointer, dimension(:) :: taaccgat_t       !<
-    real, pointer, dimension(:) :: uvaccgat_t       !<
-    real, pointer, dimension(:) :: vvaccgat_t       !<
-    real, pointer, dimension(:,:) :: tbaraccgat_t !<
-    real, pointer, dimension(:,:) :: thliqacc_t  !<
-    real, pointer, dimension(:,:) :: thiceacc_t  !<
-    real, pointer, dimension(:,:) :: ancgvgac_t
-    real, pointer, dimension(:,:) :: rmlcgvga_t
-    integer, pointer, dimension(:) :: ipeatlandgat
+    integer, pointer :: altotcount_ctm(:) ! nlat  !< Counter used for calculating total albedo
+    real, pointer    :: fsinacc_gat(:) !(ilg)    !<
+    real, pointer    :: flutacc_gat(:) !(ilg)    !<
+    real, pointer    :: flinacc_gat(:) !(ilg)    !<
+    real, pointer    :: altotacc_gat(:) !(ilg)   !<
+    real, pointer    :: netrad_gat(:) !(ilg)     !<
+    real, pointer :: anmossac_t(:)
+    real, pointer :: rmlmossac_t(:)
+    real, pointer :: gppmossac_t(:)
+    real, pointer :: fsnowacc_t(:)       !<
+    real, pointer :: taaccgat_t(:)       !<
+    real, pointer :: uvaccgat_t(:)       !<
+    real, pointer :: vvaccgat_t(:)       !<
+    real, pointer :: tbaraccgat_t(:,:) !<
+    real, pointer :: thliqacc_t(:,:)  !<
+    real, pointer :: thiceacc_t(:,:)  !<
+    real, pointer :: ancgvgac_t(:,:)
+    real, pointer :: rmlcgvga_t(:,:)
+    integer, pointer :: ipeatlandgat(:)
 
     integer :: i, j
     real :: fsstar_gat
@@ -110,8 +112,8 @@ contains
       flinacc_gat(i) = flinacc_gat(i)/real(nday)
       flutacc_gat(i) = flutacc_gat(i)/real(nday)
 
-      if (altotcount_ctm(i) > 0) then
-        altotacc_gat(i) = altotacc_gat(i)/real(altotcount_ctm(i))
+      if (altotcount_ctm(ilmos(i)) > 0) then
+        altotacc_gat(i) = altotacc_gat(i)/real(altotcount_ctm(ilmos(i)))
       else
         altotacc_gat(i) = 0.
       end if
@@ -153,7 +155,7 @@ contains
   !! @{
   !> Accumulate the CTEM input (physics) variables at the end of each physics timestep
   !! @author V.Arora, J. Melton
-  subroutine accumulateForCTEM (nml)
+  subroutine accumulateForCTEM (nml, ILMOS)
 
     use classicParams,  only : icc, ignd, DELT, SBC
     use classStateVars, only : class_gat, class_rot
@@ -162,66 +164,68 @@ contains
     implicit none
 
     integer, intent(in) :: nml     !< Counter representing number of mosaic tiles on modelled domain that are land
+    integer, intent(in)  :: ILMOS(:) !< Index of grid cell corresponding to current element
+    !< of gathered vector of land surface variables [ ]
 
     integer :: i, j
 
-    real, pointer, dimension(:) :: FSIHGAT !< Near-infrared radiation incident on horizontal surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: FSVHGAT !< Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: ancsmoss
-    real, pointer, dimension(:) :: angsmoss
-    real, pointer, dimension(:) :: ancmoss
-    real, pointer, dimension(:) :: angmoss
-    real, pointer, dimension(:) :: rmlcsmoss
-    real, pointer, dimension(:) :: rmlgsmoss
-    real, pointer, dimension(:) :: rmlcmoss
-    real, pointer, dimension(:) :: rmlgmoss
-    real, pointer, dimension(:) :: ALIRGAT !< Diagnosed total near-infrared albedo of land surface [ ]
-    real, pointer, dimension(:) :: ALVSGAT !< Diagnosed total visible albedo of land surface [ ]
-    real, pointer, dimension(:) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: GTGAT   !< Diagnosed effective surface black-body temperature [K]
-    real, pointer, dimension(:) :: FDLGAT  !< Downwelling longwave radiation at bottom of atmosphere (i.e. incident on modelled land surface elements \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: PREGAT  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
-    real, pointer, dimension(:) :: FSNOGAT !< Diagnosed fractional snow coverage [ ]
-    real, pointer, dimension(:) :: TAGAT   !< Air temperature at reference height [K]
-    real, pointer, dimension(:) :: VLGAT   !< Meridional component of wind velocity \f$[m s^{-1} ]\f$
-    real, pointer, dimension(:) :: ULGAT   !< Zonal component of wind velocity \f$[m s^{-1} ]\f$
-    real, pointer, dimension(:) :: FSGGGAT !< Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:,:) :: TBARGAT !< Temperature of soil layers [K]
-    real, pointer, dimension(:) :: FSGSGAT !< Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: FSGVGAT !< Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:,:) :: THICGAT !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
-    real, pointer, dimension(:,:) :: THLQGAT !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
-    real, pointer, dimension(:,:) :: ancsveggat
-    real, pointer, dimension(:,:) :: ancgveggat
-    real, pointer, dimension(:,:) :: rmlcsveggat
-    real, pointer, dimension(:,:) :: rmlcgveggat
-    real, pointer, dimension(:) :: gppmossgat
-    real, pointer, dimension(:) :: anmossgat
-    real, pointer, dimension(:) :: rmlmossgat
-    real, pointer, dimension(:) :: FC      !<
-    real, pointer, dimension(:) :: FG      !<
-    real, pointer, dimension(:) :: FCS     !<
-    real, pointer, dimension(:) :: FGS     !<
-    integer, pointer, dimension(:) :: altotcount_ctm ! nlat  !< Counter used for calculating total albedo
-    real, pointer, dimension(:)    :: fsinacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: flutacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: flinacc_gat !(ilg)    !<
-    real, pointer, dimension(:)    :: altotacc_gat !(ilg)   !<
-    real, pointer, dimension(:)    :: netrad_gat !(ilg)     !<
-    real, pointer, dimension(:)    :: preacc_gat !(ilg)     !<
-    real, pointer, dimension(:) :: anmossac_t
-    real, pointer, dimension(:) :: rmlmossac_t
-    real, pointer, dimension(:) :: gppmossac_t
-    real, pointer, dimension(:) :: fsnowacc_t       !<
-    real, pointer, dimension(:) :: taaccgat_t       !<
-    real, pointer, dimension(:) :: uvaccgat_t       !<
-    real, pointer, dimension(:) :: vvaccgat_t       !<
-    real, pointer, dimension(:,:) :: tbaraccgat_t !<
-    real, pointer, dimension(:,:) :: thliqacc_t  !<
-    real, pointer, dimension(:,:) :: thiceacc_t  !<
-    real, pointer, dimension(:,:) :: ancgvgac_t
-    real, pointer, dimension(:,:) :: rmlcgvga_t
-    integer, pointer, dimension(:) :: ipeatlandgat
+    real, pointer :: FSIHGAT(:) !< Near-infrared radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+    real, pointer :: FSVHGAT(:) !< Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+    real, pointer :: ancsmoss(:)
+    real, pointer :: angsmoss(:)
+    real, pointer :: ancmoss(:)
+    real, pointer :: angmoss(:)
+    real, pointer :: rmlcsmoss(:)
+    real, pointer :: rmlgsmoss(:)
+    real, pointer :: rmlcmoss(:)
+    real, pointer :: rmlgmoss(:)
+    real, pointer :: ALIRGAT(:) !< Diagnosed total near-infrared albedo of land surface [ ]
+    real, pointer :: ALVSGAT(:) !< Diagnosed total visible albedo of land surface [ ]
+    real, pointer :: FSSROW(:)  !< Shortwave radiation \f$[W m^{-2} ]\f$
+    real, pointer :: GTGAT(:)   !< Diagnosed effective surface black-body temperature [K]
+    real, pointer :: FDLGAT(:)  !< Downwelling longwave radiation at bottom of atmosphere (i.e. incident on modelled land surface elements \f$[W m^{-2} ]\f$
+    real, pointer :: PREGAT(:)  !< Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+    real, pointer :: FSNOGAT(:) !< Diagnosed fractional snow coverage [ ]
+    real, pointer :: TAGAT(:)   !< Air temperature at reference height [K]
+    real, pointer :: VLGAT(:)   !< Meridional component of wind velocity \f$[m s^{-1} ]\f$
+    real, pointer :: ULGAT(:)   !< Zonal component of wind velocity \f$[m s^{-1} ]\f$
+    real, pointer :: FSGGGAT(:) !< Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
+    real, pointer :: TBARGAT(:,:) !< Temperature of soil layers [K]
+    real, pointer :: FSGSGAT(:) !< Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
+    real, pointer :: FSGVGAT(:) !< Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
+    real, pointer :: THICGAT(:,:) !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+    real, pointer :: THLQGAT(:,:) !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+    real, pointer :: ancsveggat(:,:)
+    real, pointer :: ancgveggat(:,:)
+    real, pointer :: rmlcsveggat(:,:)
+    real, pointer :: rmlcgveggat(:,:)
+    real, pointer :: gppmossgat(:)
+    real, pointer :: anmossgat(:)
+    real, pointer :: rmlmossgat(:)
+    real, pointer :: FC(:)      !<
+    real, pointer :: FG(:)      !<
+    real, pointer :: FCS(:)     !<
+    real, pointer :: FGS(:)     !<
+    integer, pointer :: altotcount_ctm(:) ! nlat  !< Counter used for calculating total albedo
+    real, pointer :: fsinacc_gat(:) !(ilg)    !<
+    real, pointer :: flutacc_gat(:) !(ilg)    !<
+    real, pointer :: flinacc_gat(:) !(ilg)    !<
+    real, pointer :: altotacc_gat(:) !(ilg)   !<
+    real, pointer :: netrad_gat(:) !(ilg)     !<
+    real, pointer :: preacc_gat(:) !(ilg)     !<
+    real, pointer :: anmossac_t(:)
+    real, pointer :: rmlmossac_t(:)
+    real, pointer :: gppmossac_t(:)
+    real, pointer :: fsnowacc_t(:)       !<
+    real, pointer :: taaccgat_t(:)       !<
+    real, pointer :: uvaccgat_t(:)       !<
+    real, pointer :: vvaccgat_t(:)       !<
+    real, pointer :: tbaraccgat_t(:,:) !<
+    real, pointer :: thliqacc_t(:,:)  !<
+    real, pointer :: thiceacc_t(:,:)  !<
+    real, pointer :: ancgvgac_t(:,:)
+    real, pointer :: rmlcgvga_t(:,:)
+    integer, pointer :: ipeatlandgat(:)
 
     anmossac_t        => ctem_tile%anmossac_t
     rmlmossac_t       => ctem_tile%rmlmossac_t
@@ -283,8 +287,7 @@ contains
 
     do i = 1,nml
 
-      fsinacc_gat(i) = fsinacc_gat(i) + FSSROW(1) ! FLAG ! Do this offline only (since all tiles are the same in a gridcell and we run
-      ! only one gridcell at a time. JM Feb 42016.
+      fsinacc_gat(i) = fsinacc_gat(i) + FSSROW(ilmos(I)) 
       flinacc_gat(i) = flinacc_gat(i) + fdlgat(i)
       flutacc_gat(i) = flutacc_gat(i) + sbc * gtgat(i) ** 4
       preacc_gat(i) = preacc_gat(i) + pregat(i) * delt
@@ -292,10 +295,10 @@ contains
       taaccgat_t(i) = taaccgat_t(i) + tagat(i)
       vvaccgat_t(i) = vvaccgat_t(i) + vlgat(i)
       uvaccgat_t(i) = uvaccgat_t(i) + ulgat(i)
-      if (FSSROW(I) > 0.) then
-        altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I) - &
+      if (FSSROW(ilmos(I)) > 0.) then
+        altotacc_gat(i) = altotacc_gat(i) + (FSSROW(ilmos(I)) - &
                           (FSGVGAT(I) + FSGSGAT(I) + FSGGGAT(I))) &
-                          /FSSROW(I)
+                          /FSSROW(ilmos(I))
         altotcount_ctm = altotcount_ctm + 1
       end if
 

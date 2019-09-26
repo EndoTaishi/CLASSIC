@@ -235,7 +235,7 @@ contains
   !> Finds the active layer depth and depth to the frozen water table.
   !! @author Joe Melton
   !!
-  subroutine findPermafrostVars (nltest, nmtest, iday)
+  subroutine findPermafrostVars (nmtest, nltest, iday)
 
     use classicParams, only : ignd, tfrez, eftime, efoldfact
     use classStateVars, only : class_rot, class_gat
