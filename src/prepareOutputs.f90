@@ -4042,6 +4042,8 @@ contains
     real, dimension(:), allocatable :: bulkSoilResp     !< Temporary variable used to produce the bulk soil carbon respiration quantity for output \f$[kg C m^{-2} s^{-1}]\f$
 
     real :: oneOverDPY
+    
+    real :: coverLow, coverHigh
 
     ! point pointers
 
@@ -4510,7 +4512,7 @@ contains
       call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr_g',timeStamp,'rh',[hetrores_yr_g(i)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr_g' ,timeStamp,'ra',[autores_yr_g(i)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
-
+      
       call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_yr_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_yr_g(i)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
       call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
@@ -4607,6 +4609,22 @@ contains
           call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
+          
+          ! For FireMIP calc the low vs high cover.
+          coverLow = 0.
+          coverHigh = 0.
+          do j = 1, icc
+            if (fcancmxrow(i,m,j) > 0.) then 
+              if (veghght_yr(i,m,j) < 5.) then
+                coverLow = coverLow + fcancmxrow(i,m,j)
+              else 
+                coverHigh = coverHigh + fcancmxrow(i,m,j)
+              end if 
+            end if 
+          end do
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'coverLow' ,timeStamp,'coverLow',[coverLow])
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'coverHigh' ,timeStamp,'coverHigh',[coverHigh])
+
 
           ! COMBAK PERLAY
           call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,1:iccp1)])
