@@ -21,6 +21,7 @@ module xmlManager
   logical                                   :: error, currentDormant = .true.
   character(len = 80)                       :: currentGroup, currentVariableName, variableSetType, variableSetDate, variableSetVersion
   real                                      :: xmlVersion
+  character(len=40)                         :: dormant
 
 contains
   !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -49,7 +50,7 @@ contains
   subroutine startfunc (tag, attribs, error)
     implicit none
     character(len =* ), intent(in)      :: tag, attribs(:,:)
-    character(len = 40)                 :: attribute, dormant
+    character(len = 40)                 :: attribute
     integer                             :: id
     logical, intent(in)                 :: error
     type(outputDescriptor), allocatable :: tempDescriptors(:)

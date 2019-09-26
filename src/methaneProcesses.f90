@@ -15,7 +15,7 @@ contains
   !! @{
   !> Calculates the uptake of atmospheric methane by oxic soils.
   !> @author J. Melton
-  subroutine soil_ch4uptake (il1, il2, ilg, tbar, & ! In
+  subroutine soil_ch4uptake (il1, il2, ilmos, ilg, tbar, & ! In
                              bi, thlq, thic, psis, & ! In
                              fcan, wetfdyn, wetfrac, & ! In
                              isand, atm_CH4, thp, & ! In
@@ -47,6 +47,7 @@ contains
     real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
     real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)
     integer, dimension(ilg,ignd), intent(in) :: isand !< flag for soil/bedrock/ice/glacier
+    integer, intent(in), dimension(:) :: ilmos        !< Index of gridcell corresponding to current element of gathered vector of land surface variables [ ]
     integer, intent(in) :: il1
     integer, intent(in) :: il2
     integer, intent(in) :: ilg
@@ -141,11 +142,12 @@ contains
       r_C = 1.0 - (0.75 * FCAN(i,3))
 
       !> Find the flux correction due to wetlands
+      ! Presently we assume the wetland fraction is split across 
 
-      if (wetfrac(i) > 0.) then  !> Use the prescribed wetland fractions
-        r_W = 1.0 - wetfrac(i)
+      if (wetfrac(ilmos(i)) > 0.) then  !> Use the prescribed wetland fractions
+        r_W = 1.0 - wetfrac(ilmos(i))
       else !> use the dynamically determined wetland area
-        r_W = 1.0 - wetfdyn(i)
+        r_W = 1.0 - wetfdyn(ilmos(i))
       end if
 
       !> Find the surface flux (CH4_soills) for each tile, then for each gridcell

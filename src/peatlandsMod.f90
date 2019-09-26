@@ -346,7 +346,7 @@ contains
     !   - Bring into rest of model and model formatting, convert to doxygen compatible code
     !   ----------------------------------
 
-    use classicParams, only :icc, ignd, zero, tanhq10, dctmin, dcbaset, bsrateltms, TFREZ
+    use classicParams, only :icc, ignd, tanhq10, dctmin, dcbaset, bsrateltms, TFREZ
 
     implicit none
 

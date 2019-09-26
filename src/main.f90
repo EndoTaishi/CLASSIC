@@ -2907,7 +2907,7 @@ contains
 
           ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
           ! and uses daily accumulated values of variables simulated by CLASS.
-          call ctem(fsnowacc_t, sandgat, & ! In
+          call ctem(fsnowacc_t, sandgat, ILMOS, & ! In
                     ilg, 1, nml, iday, radjgat, &! In
                     taaccgat_t, dlzwgat, ancgvgac_t, rmlcgvga_t, & ! In
                     zbtwgat, doMethane, & ! In

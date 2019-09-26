@@ -692,7 +692,7 @@ contains
     integer, intent(in)         :: ncStatus !< Status variable
     character( * ), optional      :: tag  !< Optional tag
     character(150)              :: message
-    integer                     :: status
+    integer                     :: status  ! Used only in parallel mode.
     if (present(tag)) then
       message = tag
     else
