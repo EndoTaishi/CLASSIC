@@ -1842,6 +1842,8 @@ contains
     real, pointer, dimension(:,:,:) :: nbpvegrow
     real, pointer, dimension(:,:,:) :: hetroresvegrow
     real, pointer, dimension(:,:,:) :: autoresvegrow
+    real, pointer, dimension(:,:,:) :: rmrvegrow
+    real, pointer, dimension(:,:,:) :: rgvegrow
     ! COMBAK PERLAY
     real, pointer, dimension(:,:,:) :: litresvegrow
     real, pointer, dimension(:,:,:) :: soilcresvegrow
@@ -1873,6 +1875,8 @@ contains
     nppvegrow         => vrot%nppveg
     hetroresvegrow    => vrot%hetroresveg
     autoresvegrow     => vrot%autoresveg
+    rmrvegrow         => vrot%rmrveg
+    rgvegrow          => vrot%rgveg
     litresvegrow      => vrot%litresveg
     soilcresvegrow    => vrot%soilcresveg
     npprow            => vrot%npp
@@ -1915,6 +1919,9 @@ contains
             nbpvegrow(i,m,j) = nbpvegrow(i,m,j) * convertkgC
             hetroresvegrow(i,m,j) = hetroresvegrow(i,m,j) * convertkgC
             autoresvegrow(i,m,j) = autoresvegrow(i,m,j) * convertkgC
+            rmrvegrow = rmrvegrow(i,m,j) * convertkgC
+            rgvegrow = rgvegrow(i,m,j) * convertkgC
+            
             ! COMBAK PERLAY
             litresvegrow(i,m,j) = litresvegrow(i,m,j) * convertkgC
             soilcresvegrow(i,m,j) = soilcresvegrow(i,m,j) * convertkgC
