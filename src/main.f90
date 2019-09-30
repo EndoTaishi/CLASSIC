@@ -2657,18 +2657,102 @@ contains
                                    DELZ, FCS, FGS, FC, FG, &
                                    1, NML, ILG, IGND, N)
 
-     !! ctemg2 takes variables in the 'row' format (nlat, nmos, ...)
-     !! and converts them to the 'gat' format (ilg, ...). This subroutine
-     !! should be only used for state variables that are updated from
-     !! external files as the run progresses. Since the model calculations operate
-     !! on the 'gat' form, any other variables need not be gathered
-     !! as they will already be in the correct format from the previous
-     !! model timestep.
-      call ctemg2 (ilmos, jlmos, nml, & ! In
-                  co2concrow, ch4concrow, daylrow, tracerCO2rot, & ! In
-                  popdinrow, nfcancmxrow, pddrow, dayl_maxrow, & ! In
-                  co2concgat, ch4concgat, daylgat, tracerCO2gat, & ! Out 
-                  popdingat, nfcancmxgat, pddgat, dayl_maxgat) ! Out 
+      ! ctemg2 takes variables in the 'row' format (nlat, nmos, ...)
+      ! and converts them to the 'gat' format (ilg, ...). At present
+      ! ctemg2 is bloated with many variables that do not require
+      ! gathering. This subroutine should ideally be only used for
+      ! state variables that are updated from external files as
+      ! the run progresses. Since the model calculations operate
+      ! on the 'gat' form, any other variables need not be gathered
+      ! as they will already be in the correct format from the previous
+      ! model timestep.
+      call ctemg2(fcancmxgat, rmatcgat, zolncgat, paicgat, &
+                  ailcgat, ailcggat, cmasvegcgat, slaicgat, &
+                  ailcgsgat, fcancsgat, fcancgat, rmatctemgat, &
+                  co2concgat, co2i1cggat, co2i1csgat, co2i2cggat, &
+                  co2i2csgat, xdiffusgat, slaigat, cfluxcggat, &
+                  cfluxcsgat, ancsveggat, ancgveggat, rmlcsveggat, &
+                  rmlcgveggat, canresgat, sdepgat, ch4concgat, &
+                  sandgat, claygat, orgmgat, &
+                  anveggat, rmlveggat, tbaraccgat_t, prbfrhucgat, &
+                  extnprobgat, pfcancmxgat, nfcancmxgat, &
+                  stemmassgat, rootmassgat, litrmassgat, gleafmasgat, &
+                  bleafmasgat, soilcmasgat, ailcbgat, flhrlossgat, &
+                  pandaysgat, lfstatusgat, grwtheffgat, lystmmasgat, &
+                  lyrotmasgat, tymaxlaigat, vgbiomasgat, gavgltmsgat, &
+                  stmhrlosgat, bmasveggat, colddaysgat, rothrlosgat, &
+                  alvsctmgat, alirctmgat, gavglaigat, nppgat, &
+                  nepgat, hetroresgat, autoresgat, soilcrespgat, &
+                  rmgat, rggat, nbpgat, litresgat, &
+                  socresgat, gppgat, dstcemlsgat, litrfallgat, &
+                  humiftrsgat, veghghtgat, rootdpthgat, rmlgat, &
+                  rmsgat, rmrgat, tltrleafgat, tltrstemgat, &
+                  tltrrootgat, leaflitrgat, roottempgat, afrleafgat, &
+                  afrstemgat, afrrootgat, wtstatusgat, ltstatusgat, &
+                  burnfracgat, smfuncveggat, lucemcomgat, lucltringat, &
+                  lucsocingat, nppveggat, dstcemls3gat, popdingat, &
+                  faregat, gavgscmsgat, rmlvegaccgat, pftexistgat, &
+                  rmsveggat, rmrveggat, rgveggat, vgbiomas_veggat, &
+                  gppveggat, nepveggat, &
+                  emit_co2gat, emit_cogat, emit_ch4gat, emit_nmhcgat, &
+                  emit_h2gat, emit_noxgat, emit_n2ogat, emit_pm25gat, &
+                  emit_tpmgat, emit_tcgat, emit_ocgat, emit_bcgat, &
+                  btermgat, ltermgat, mtermgat, daylgat, dayl_maxgat, &
+                  nbpveggat, hetroresveggat, autoresveggat, litresveggat, &
+                  soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat, &
+                  ch4WetSpecgat, slopefracgat, &
+                  wetfdyngat, ch4WetDyngat, ch4soillsgat, &
+                  twarmmgat, tcoldmgat, gdd5gat, &
+                  ariditygat, srplsmongat, defctmongat, anndefctgat, &
+                  annsrplsgat, annpcpgat, dry_season_lengthgat, &
+                  anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat, &
+                  litrmsmossgat, peatdepgat, Cmossmasgat, dmossgat, & ! thlqaccgat_m, &
+                  ipeatlandgat, pddgat, tracerCO2gat, &
+                  !          thicaccgat_m, ipeatlandgat, pddgat, & this line commented out.
+                  ilmos, jlmos, iwmos, jwmos, &
+                  nml, fcancmxrow, rmatcrow, zolncrow, paicrow, &
+                  ailcrow, ailcgrow, cmasvegcrow, slaicrow, &
+                  ailcgsrow, fcancsrow, fcancrow, rmatctemrow, &
+                  co2concrow, co2i1cgrow, co2i1csrow, co2i2cgrow, &
+                  co2i2csrow, xdiffus, slairow, cfluxcgrow, &
+                  cfluxcsrow, ancsvegrow, ancgvegrow, rmlcsvegrow, &
+                  rmlcgvegrow, canresrow, SDEPROT, ch4concrow, &
+                  SANDROT, CLAYROT, ORGMROT, &
+                  anvegrow, rmlvegrow, tbaraccrow_m, prbfrhucrow, &
+                  extnprobrow, pfcancmxrow, nfcancmxrow, &
+                  stemmassrow, rootmassrow, litrmassrow, gleafmasrow, &
+                  bleafmasrow, soilcmasrow, ailcbrow, flhrlossrow, &
+                  pandaysrow, lfstatusrow, grwtheffrow, lystmmasrow, &
+                  lyrotmasrow, tymaxlairow, vgbiomasrow, gavgltmsrow, &
+                  stmhrlosrow, bmasvegrow, colddaysrow, rothrlosrow, &
+                  alvsctmrow, alirctmrow, gavglairow, npprow, &
+                  neprow, hetroresrow, autoresrow, soilcresprow, &
+                  rmrow, rgrow, nbprow, litresrow, &
+                  socresrow, gpprow, dstcemlsrow, litrfallrow, &
+                  humiftrsrow, veghghtrow, rootdpthrow, rmlrow, &
+                  rmsrow, rmrrow, tltrleafrow, tltrstemrow, &
+                  tltrrootrow, leaflitrrow, roottemprow, afrleafrow, &
+                  afrstemrow, afrrootrow, wtstatusrow, ltstatusrow, &
+                  burnfracrow, smfuncvegrow, lucemcomrow, lucltrinrow, &
+                  lucsocinrow, nppvegrow, dstcemls3row, popdinrow, &
+                  FAREROT, gavgscmsrow, rmlvegaccrow, pftexistrow, &
+                  rmsvegrow, rmrvegrow, rgvegrow, vgbiomas_vegrow, &
+                  gppvegrow, nepvegrow, &
+                  emit_co2row, emit_corow, emit_ch4row, emit_nmhcrow, &
+                  emit_h2row, emit_noxrow, emit_n2orow, emit_pm25row, &
+                  emit_tpmrow, emit_tcrow, emit_ocrow, emit_bcrow, &
+                  btermrow, ltermrow, mtermrow, daylrow, dayl_maxrow, &
+                  nbpvegrow, hetroresvegrow, autoresvegrow, litresvegrow, &
+                  soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow, &
+                  ch4WetSpecrow, slopefracrow, &
+                  wetfdynrow, ch4WetDynrow, ch4soillsrow, &
+                  twarmmrow, tcoldmrow, gdd5row, &
+                  aridityrow, srplsmonrow, defctmonrow, anndefctrow, &
+                  annsrplsrow, annpcprow, dry_season_lengthrow, &
+                  anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow, &
+                  litrmsmossrow, peatdeprow, Cmossmasrow, dmossrow, &
+                  ipeatlandrow, pddrow, tracerCO2rot)
+      !    5      thlqaccrow_m, thicaccrow_m, ipeatlandrow, pddrow) this line commented out.
 
       !-----------------------------------------------------------------------
       !* ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
@@ -2854,7 +2938,7 @@ contains
                     surmncur, defmncur, srplscur, defctcur, &! In/Out
                     ariditygat, srplsmongat, defctmongat, anndefctgat, &! In/Out
                     annsrplsgat, annpcpgat, dry_season_lengthgat, &! In/Out
-                    pftexistgat, twarmmgat, tcoldmgat, gdd5gat, nppveggat, &! In/Out
+                    pftexistgat, twarmmgat, tcoldmgat, gdd5gat, &! In/Out
                     tracerStemMassgat, tracerRootMassgat, tracerGLeafMassgat, tracerBLeafMassgat, & ! In/Out
                     tracerSoilCMassgat, tracerLitrMassgat, tracerMossCMassgat, tracerMossLitrMassgat, & ! In/Out
                     nppgat, nepgat, hetroresgat, autoresgat, &! Out (Primary)
@@ -2874,14 +2958,14 @@ contains
                     emit_h2gat, emit_noxgat, emit_n2ogat, emit_pm25gat, &! Out (Secondary)
                     emit_tpmgat, emit_tcgat, emit_ocgat, emit_bcgat, &! Out (Secondary)
                     btermgat, ltermgat, mtermgat, burnvegfgat, &! Out (Secondary)
-                    litrfallveggat, humiftrsveggat, ltstatusgat,  &! Out (Secondary)
+                    litrfallveggat, humiftrsveggat, ltstatusgat, nppveggat, &! Out (Secondary)
                     afrleafgat, afrstemgat, afrrootgat, wtstatusgat, &! Out (Secondary)
                     rmlvegaccgat, rmsveggat, rmrveggat, rgveggat, &! Out (Secondary)
                     vgbiomas_veggat, gppveggat, nepveggat, nbpveggat, &! Out (Secondary)
                     hetroresveggat, autoresveggat, litresveggat, soilcresveggat, &! Out (Secondary)
                     nppmossgat, armossgat, &! Out (Secondary)
                     ccgat, mmgat)
-                    
+
           !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
           !     to reset here,prior to ctems2.
           do i = 1,nml
@@ -3013,20 +3097,17 @@ contains
       ! 'row' format, which is suitable for writing to output/restart
       ! files. If a variable is not written to either of those files,
       ! there is no need to scatter the variable as it will be in the
-      ! correct format for model calculations ('gat').
-      if (ncount == nday) call ctems2(fcancmxrow, rmatcrow, zolncrow, paicrow, &
+      ! correct format for model calclations ('gat').
+      call ctems2(fcancmxrow, rmatcrow, zolncrow, paicrow, &
                   ailcrow, ailcgrow, cmasvegcrow, slaicrow, &
                   ailcgsrow, fcancsrow, fcancrow, rmatctemrow, &
-                  !co2concrow, co2i1cgrow, co2i1csrow, co2i2cgrow, &
-                  !co2i2csrow, 
-                  xdiffus, slairow, cfluxcgrow, &
+                  co2concrow, co2i1cgrow, co2i1csrow, co2i2cgrow, &
+                  co2i2csrow, xdiffus, slairow, cfluxcgrow, &
                   cfluxcsrow, ancsvegrow, ancgvegrow, rmlcsvegrow, &
-                  rmlcgvegrow, canresrow, &
-                  !SDEPROT, ch4concrow, &
-                  !SANDROT, CLAYROT, ORGMROT, &
-                  anvegrow, rmlvegrow, tbaraccrow_m, &
-                  !prbfrhucrow, extnprobrow, 
-                  pfcancmxrow, nfcancmxrow, &
+                  rmlcgvegrow, canresrow, SDEPROT, ch4concrow, &
+                  SANDROT, CLAYROT, ORGMROT, &
+                  anvegrow, rmlvegrow, tbaraccrow_m, prbfrhucrow, &
+                  extnprobrow, pfcancmxrow, nfcancmxrow, &
                   stemmassrow, rootmassrow, litrmassrow, gleafmasrow, &
                   bleafmasrow, soilcmasrow, ailcbrow, flhrlossrow, &
                   pandaysrow, lfstatusrow, grwtheffrow, lystmmasrow, &
@@ -3068,16 +3149,13 @@ contains
                   nml, fcancmxgat, rmatcgat, zolncgat, paicgat, &
                   ailcgat, ailcggat, cmasvegcgat, slaicgat, &
                   ailcgsgat, fcancsgat, fcancgat, rmatctemgat, &
-                  !co2concgat, co2i1cggat, co2i1csgat, co2i2cggat, &
-                  !co2i2csgat, 
-                  xdiffusgat, slaigat, cfluxcggat, &
+                  co2concgat, co2i1cggat, co2i1csgat, co2i2cggat, &
+                  co2i2csgat, xdiffusgat, slaigat, cfluxcggat, &
                   cfluxcsgat, ancsveggat, ancgveggat, rmlcsveggat, &
-                  rmlcgveggat, canresgat, &
-                  !sdepgat, ch4concgat, &
-                  !sandgat, claygat, orgmgat, &
-                  anveggat, rmlveggat, tbaraccgat_t, &
-                  !prbfrhucgat, extnprobgat, 
-                  pfcancmxgat, nfcancmxgat, &
+                  rmlcgveggat, canresgat, sdepgat, ch4concgat, &
+                  sandgat, claygat, orgmgat, &
+                  anveggat, rmlveggat, tbaraccgat_t, prbfrhucgat, &
+                  extnprobgat, pfcancmxgat, nfcancmxgat, &
                   stemmassgat, rootmassgat, litrmassgat, gleafmasgat, &
                   bleafmasgat, soilcmasgat, ailcbgat, flhrlossgat, &
                   pandaysgat, lfstatusgat, grwtheffgat, lystmmasgat, &
