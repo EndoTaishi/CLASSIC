@@ -56,7 +56,7 @@
 
 # Location of output files.
 
-output_directory=/space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/ctem_on
+output_directory=/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_on
 
 # Location of job options file.
 # *** NB: This script checks all input files (as specified in the job options file).
