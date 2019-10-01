@@ -8,7 +8,7 @@ import shutil
 def main():
 
   # get the path where the netcdf folders are located
-  output_directory = sys.argv[1] + '/checksum_testing/' + sys.argv[2]
+  output_directory = sys.argv[1] + '/classic_checksums/' + sys.argv[2]
   internal_dirs = os.listdir(output_directory)
   files = []
   netdirs = []
