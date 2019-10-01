@@ -47,7 +47,7 @@ contains
                    surmncur, defmncur, srplscur, defctcur, &! In/ Out
                    aridity, srplsmon, defctmon, anndefct, &! In/ Out
                    annsrpls, annpcp, dry_season_length, &! In/ Out
-                   pftexist, twarmm, tcoldm, gdd5, nppveg,&! In/ Out
+                   pftexist, twarmm, tcoldm, gdd5, &! In/ Out
                    tracerStemMass, tracerRootMass, tracerGLeafMass, tracerBLeafMass, & ! In/Out
                    tracerSoilCMass, tracerLitrMass, tracerMossCMass, tracerMossLitrMass, & ! In/Out
                    npp, nep, hetrores, autores, & ! Out (Primary)
@@ -67,7 +67,7 @@ contains
                    emit_h2, emit_nox, emit_n2o, emit_pm25, & ! Out (Secondary)
                    emit_tpm, emit_tc, emit_oc, emit_bc, & ! Out (Secondary)
                    bterm_veg, lterm, mterm_veg, burnvegf, & ! Out (Secondary)
-                   litrfallveg, humtrsvg, ltstatus, & ! Out (Secondary)
+                   litrfallveg, humtrsvg, ltstatus, nppveg, & ! Out (Secondary)
                    afrleaf, afrstem, afrroot, wtstatus, & ! Out (Secondary)
                    rmlveg, rmsveg, rmrveg, rgveg, & ! Out (Secondary)
                    vgbiomas_veg, gppveg, nepveg, nbpveg, & ! Out (Secondary)
@@ -314,7 +314,6 @@ contains
     real, intent(inout) :: tracerMossCMass(:)      !< Tracer mass in moss biomass, \f$kg C/m^2\f$
     real, intent(inout) :: tracerMossLitrMass(:)   !< Tracer mass in moss litter, \f$kg C/m^2\f$
     real, dimension(ilg,icc), intent(inout) :: slai           !< storage/imaginary lai for phenology purposes
-    real, dimension(ilg,icc), intent(inout) :: nppveg         !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, dimension(ilg,icc), intent(inout) :: lambda         !< Fraction of npp that is to be used for
     !! horizontal expansion (lambda) during the next
     !! day (i.e. this will be determining
@@ -353,7 +352,8 @@ contains
     real, dimension(ilg,icc), intent(out) :: rmsveg         !< Maintenance respiration for stem for the CTEM pfts in u mol co2/m2. sec
     real, dimension(ilg,icc), intent(out) :: rmrveg         !< Maintenance respiration for root for the CTEM pfts in u mol co2/m2. sec
     real, dimension(ilg,icc), intent(out) :: rmlveg         !< Leaf maintenance respiration per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
-    real, dimension(ilg,icc), intent(out) :: gppveg         !< Gross primary productivity per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)    
+    real, dimension(ilg,icc), intent(out) :: gppveg         !< Gross primary productivity per PFT (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
+    real, dimension(ilg,icc), intent(out) :: nppveg         !< NPP for individual pfts, (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, dimension(ilg,icc), intent(out) :: rgveg          !< PFT level growth respiration (\f$\mu mol CO_2 m^{-2} s^{-1}\f$)
     real, dimension(ilg,iccp1), intent(out) :: nepveg       !<
     real, dimension(ilg,iccp1), intent(out) :: nbpveg       !<

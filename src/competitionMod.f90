@@ -1633,17 +1633,17 @@ contains
           expansion(i,j) = max(expansion(i,j),lambdaalt)
 
           expansion(i,j) = max(0.0,min(lambdamax,expansion(i,j)))
-          
+
           !> If tree and leaves still coming out, or if npp is negative, then do not expand
-          if ((lfstatus(i,j) == 1) .or. nppveg(i,j) < 0.0 .or. .not. pftexist(i,j)) then
+          if ((lfstatus(i,j) == 1) .or. nppveg(i,j) < 0.0 .or. .not.pftexist(i,j)) then
             select case (ctempfts(J))
             case ('NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr')
               expansion(i,j) = 0.0
             case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
               ! no change.
             case default
-              print * ,'Unknown PFT in expansion ',ctempfts(J)
-              call errorHandler('competitionMod', - 1)
+              print * ,'Unknown PFT in ctem.f90 ',ctempfts(J)
+              call errorHandler('ctem', - 1)
             end select
           end if
 
