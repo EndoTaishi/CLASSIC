@@ -17,9 +17,9 @@ E.g.
 
         bin/CLASSIC_serial configurationFiles/template_job_options_file.txt 105.23/40.91
 
-or, we can use the shorthand *0/0/0/0* to specify the whole domain since there is only one gridcell:
+or, we can use the shorthand *0/0* to specify the whole domain since there is only one gridcell:
 
-        bin/CLASSIC_serial configurationFiles/template_job_options_file.txt 0/0/0/0
+        bin/CLASSIC_serial configurationFiles/template_job_options_file.txt 0/0
 
 ## Special note about fire and mortality for runs at a point location
 

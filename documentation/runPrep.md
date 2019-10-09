@@ -11,7 +11,7 @@
 
 # Setting up the runtime environment {#Environ}
 
-To run CLASSIC you can either use your own immediate environment or use our Singularity container (described below). If you use your own immediate environment, the following Linux packages are required at a minimum:
+To run CLASSIC you can either use your own immediate environment or use our Singularity container (**RECOMMENDED** and described below). If you use your own immediate environment, the following Linux packages are required at a minimum:
 
 - make
 - libnetcdff-dev
@@ -61,41 +61,39 @@ Generally, on a Linux machine (Ubuntu in our particular case), one may use aptit
 
 ## Obtaining the CLASSIC Singularity container
 
-Download our container:
+Download our container from our CLASSIC community Zenodo page: https://zenodo.org/communities/classic. It is recommended you follow the [Quick Start Tutorial](https://cccma.gitlab.io/classic_pages/info/get_started/) if possible.
 
-`singularity pull shub://jormelton/containerCLASSIC`
+You can either use the `exec` command form or shell into the container (example assumes you are in the same folder as the .simg file):
 
-And shell into it (example assumes you are in the same folder as the .simg file):
-
-`singularity shell jormelton-containerCLASSIC-master-latest.simg`
+`singularity shell CLASSIC_container.simg`
 
 E.g.
 
-        acrnrjm@cccsing: ~> singularity shell /user/nphome1/rjm/jormelton-containerCLASSIC-master-latest.simg
+        acrnrjm@cccsing: ~> singularity shell /user/nphome1/rjm/CLASSIC_container.simg
         Singularity: Invoking an interactive shell within container...
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~>
+        Singularity CLASSIC_container.simg:~>
 
-If that is successful, you are now in the CLASSIC container environment. This environment contains all the libraries needed to run the model (Note this is a bare-bones installation with only the run-time environment. It does not presently contain a workflow or compiled model code).
+If that is successful, you are now in the CLASSIC container environment. This environment contains all the libraries needed to run the model (Note this is a bare-bones installation with only the run-time environment. It does not presently contain a workflow or compiled model code - see the [Quick Start Tutorial](https://cccma.gitlab.io/classic_pages/info/get_started/).
 
 E.g. test if gfortran is installed:
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~> gfortran
+        Singularity CLASSIC_container.simg:~> gfortran
         gfortran: fatal error: no input files
         compilation terminated.
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~>
+        Singularity CLASSIC_container.simg:~>
 
 And test for something that we know is not installed:
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~> okular
+        Singularity CLASSIC_container.simg:~> okular
         bash: okular: command not found
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~>
+        Singularity CLASSIC_container.simg:~>
 
 You can now navigate to the location of CLASSIC code, compile and run the model.
 
 E.g.
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> bin/CLASSIC
+        Singularity CLASSIC_container.simg:~/Documents/CLASSIC> bin/CLASSIC
          Usage is as follows
 
          bin/CLASSIC joboptions_file longitude/{longitude}/latitude/{latitude}
@@ -121,19 +119,19 @@ From the [Singularity manual](https://www.sylabs.io/guides/2.6/user-guide/bind_p
 
 This can demonstrated by an example in which a remote server is visible on the host operating system but not within the Singularity container. Using the -B option binds that path allowing it to now be accessible:
 
-        acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell ../../jormelton-containerCLASSIC-master-latest.simg 
+        acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell ../../CLASSIC_container.simg 
         Singularity: Invoking an interactive shell within container...
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017
+        Singularity CLASSIC_container.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017
         ls: cannot access '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017': No such file or directory
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> exit
+        Singularity CLASSIC_container.simg:~/Documents/CLASSIC> exit
         exit
 
-        acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell -B /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017 ../../jormelton-containerCLASSIC-master-latest.simg 
+        acrnrjm@cccsing: ~/Documents/CLASSIC> singularity shell -B /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017 ../../CLASSIC_container.simg 
         Singularity: Invoking an interactive shell within container...
 
-        Singularity jormelton-containerCLASSIC-master-latest.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017
+        Singularity CLASSIC_container.simg:~/Documents/CLASSIC> ls /raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017
         dlwrf_T63_chunked_1700_2017.nc dswrf_v1.1.5_T63_chunked_1700_2017.nc spfh_T63_chunked_1700_2017.nc ...
         
 This -B flag can be very useful when using a Vagrant box to run CLASSIC on a Windows, Mac or even Linux machine. The -B flag can point to the [synced folder](https://www.vagrantup.com/docs/synced-folders/basic_usage.html).

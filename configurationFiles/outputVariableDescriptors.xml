@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet type="CLASS" version="1.2" created="2019/9/25">
+<variableSet type="CLASS" version="1.2" created="2019/10/4">
     <group type="class">
         <variable id="0" includeBareGround="false" dormant="false">
             <standardName>Net Shortwave Surface Radiation</standardName>
@@ -1182,12 +1182,6 @@
                 <timeFrequency>annually</timeFrequency>
                 <outputForm>pft</outputForm>
                 <nameInCode>litrmass_yr</nameInCode>
-                <units>kg/m$^2$</units>
-            </variant>
-            <variant>
-                <timeFrequency>annually</timeFrequency>
-                <outputForm>tile</outputForm>
-                <nameInCode>litrmass_mo_t</nameInCode>
                 <units>kg/m$^2$</units>
             </variant>
             <variant>
