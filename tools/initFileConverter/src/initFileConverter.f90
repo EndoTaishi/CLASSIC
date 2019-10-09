@@ -83,6 +83,7 @@ program initFileConverter
     real, allocatable, dimension(:,:):: bleafmasrow
     real, allocatable, dimension(:,:):: stemmassrow
     real, allocatable, dimension(:,:):: rootmassrow
+    real, allocatable, dimension(:,:):: grwtheffrow
     ! the tracer variables:
     ! real, allocatable, dimension(:,:):: tracerGLeafMass
     ! real, allocatable, dimension(:,:):: tracerBLeafMass
@@ -251,6 +252,7 @@ contains
         allocate(bleafmasrow(NMTEST,icc))
         allocate(stemmassrow(NMTEST,icc))
         allocate(rootmassrow(NMTEST,icc))
+        allocate(grwtheffrow(NMTEST,icc))
         allocate(litrmassrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
         allocate(soilcmasrow(NMTEST,icc+2)) ! +2 due to bare ground and land use change products pools
         !allocate(litrmassrow(NMTEST,icc+2,ignd)) ! +2 due to bare ground and land use change products pools
@@ -417,6 +419,10 @@ contains
             read(11,*) twarmm, tcoldm, gdd5, aridity,srplsmon
             read(11,*) defctmon, anndefct, annsrpls, annpcp, dry_season_length
 
+            ! The grwtheffrow  won't be in any init files:
+            ! so set to a very high value.
+            grwtheffrow = 100.
+
     end subroutine loadCTMData
 
     ! ------------------------------------------------------------------------------------------------------
@@ -491,6 +497,7 @@ contains
             rootmassrow,&
             litrmassrow,&
             soilcmasrow,&
+            grwtheffrow, &
             lfstatusrow,&
             pandaysrow,&
             !mlightng,&
@@ -794,6 +801,7 @@ contains
             call exportVariable('gleafmas',units='kgC/m2',long_name='Green leaf mass',values2D=gleafmasrow)
             call exportVariable('stemmass',units='kgC/m2',long_name='Stem mass',values2D=stemmassrow)
             call exportVariable('rootmass',units='kgC/m2',long_name='Root mass',values2D=rootmassrow)
+            call exportVariable('grwtheff',units='(kg C/m^2)/(m2/m2)',long_name='Growth efficiency. Change in biomass per year per unit max. LAI,for use in mortality subroutine',values2D=grwtheffrow)
             ! call exportVariable('tracerBLeafMass',units='kgC/m2',long_name='Universal tracer for Brown leaf mass',values2D=tracerBLeafMass)
             ! call exportVariable('tracerGLeafMass',units='kgC/m2',long_name='Universal tracer for Green leaf mass',values2D=tracerGLeafMass)
             ! call exportVariable('tracerStemMass',units='kgC/m2',long_name='Universal tracer for Stem mass',values2D=tracerStemMass)
