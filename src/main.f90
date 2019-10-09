@@ -2426,28 +2426,47 @@ contains
       ! read in state variables (which come in with the 'row' format from the
       ! various input files).
 
-      call ctemg1(gleafmasgat, bleafmasgat, stemmassgat, rootmassgat, &
-                  fcancmxgat, zbtwgat, dlzwgat, sdepgat, ailcggat, ailcbgat, &
-                  ailcgat, zolncgat, rmatcgat, rmatctemgat, slaigat, &
-                  bmasveggat, cmasvegcgat, veghghtgat, &
-                  rootdpthgat, alvsctmgat, alirctmgat, &
-                  paicgat, slaicgat, faregat, &
-                  ipeatlandgat, maxAnnualActLyrGAT, &
-                  tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, &
-                  tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, &
-                  tracerMossCMassgat, tracerMossLitrMassgat, grwtheffgat, &
-                  ilmos, jlmos, iwmos, jwmos, &
-                  nml, &
-                  gleafmasrow, bleafmasrow, stemmassrow, rootmassrow, &
-                  fcancmxrow, ZBTWROT, DLZWROT, SDEPROT, ailcgrow, ailcbrow, &
-                  ailcrow, zolncrow, rmatcrow, rmatctemrow, slairow, &
-                  bmasvegrow, cmasvegcrow, veghghtrow, &
-                  rootdpthrow, alvsctmrow, alirctmrow, &
-                  paicrow, slaicrow, FAREROT, &
-                  ipeatlandrow, maxAnnualActLyrROT, &
-                  tracergLeafMassrot, tracerBLeafMassrot, tracerStemMassrot, &
-                  tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot, &
-                  tracerMossCMassrot, tracerMossLitrMassrot, grwtheffrow)
+      call ctemg1(gleafmasgat, bleafmasgat, stemmassgat, &  ! Out
+                         rootmassgat, fcancmxgat, zbtwgat, & ! Out
+                         dlzwgat, sdepgat, ailcggat, & ! Out
+                         ailcbgat, ailcgat, zolncgat, rmatcgat, & ! Out
+                         rmatctemgat, slaigat, bmasveggat, cmasvegcgat, & ! Out
+                         veghghtgat, rootdpthgat, alvsctmgat, alirctmgat, & ! Out
+                         paicgat, slaicgat, faregat, & ! Out
+                         ipeatlandgat, maxAnnualActLyrGAT, & ! Out
+                         tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, & ! Out
+                         tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, & ! Out
+                         tracerMossCMassgat, tracerMossLitrMassgat, & ! Out                     
+                         twarmmgat, tcoldmgat, gdd5gat, & ! Out
+                         ariditygat, srplsmongat, defctmongat, anndefctgat, & ! Out
+                         annsrplsgat, annpcpgat, dry_season_lengthgat, & ! Out
+                         litrmsmossgat, Cmossmasgat, dmossgat, & ! Out                     
+                         pandaysgat, lfstatusgat, slopefracgat, pstemmassgat, & ! Out
+                         pgleafmassgat,litrmassgat, soilcmasgat, grwtheffgat, & ! Out
+                         ilmos, jlmos, iwmos, jwmos, nml, &! In
+                         gleafmasrow, bleafmasrow, stemmassrow, rootmassrow, &! In
+                         fcancmxrow, zbtwrot, dlzwrot, sdeprot, &! In
+                         ailcgrow, ailcbrow, ailcrow, zolncrow, &! In
+                         rmatcrow, rmatctemrow, slairow, bmasvegrow, &! In
+                         cmasvegcrow, veghghtrow, rootdpthrow, alvsctmrow, &! In
+                         alirctmrow, paicrow, slaicrow, FAREROT, &! In
+                         ipeatlandrow, maxAnnualActLyrROT, &! In
+                         tracergLeafMassrot, tracerBLeafMassrot, tracerStemMassrot, &! In
+                         tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot, &! In
+                         tracerMossCMassrot, tracerMossLitrMassrot, & ! In
+                         twarmmrow, tcoldmrow, gdd5row, & ! In
+                         aridityrow, srplsmonrow, defctmonrow, anndefctrow, & ! In
+                         annsrplsrow, annpcprow, dry_season_lengthrow, & ! In
+                         litrmsmossrow, Cmossmasrow, dmossrow, & ! In
+                         pandaysrow, lfstatusrow, slopefracrow, pstemmassrow, & ! In
+                         pgleafmassrow, litrmassrow, soilcmasrow, grwtheffrow)! In
+
+      !> Find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
+      !! Set growth efficiency to some large number so that no growth related mortality
+      !! occurs in first year. For peatlands determine the peatdepth and the peat soil 
+      !! carbon amounts. Lastly find the maximum daylength for this location.
+      
+      !call ctemInit
 
       call allometry(gleafmasgat, bleafmasgat, stemmassgat, rootmassgat, & ! In
                      1, nml, ilg, zbtwgat, & ! In
