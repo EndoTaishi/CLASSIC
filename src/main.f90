@@ -2938,7 +2938,7 @@ contains
                     surmncur, defmncur, srplscur, defctcur, &! In/Out
                     ariditygat, srplsmongat, defctmongat, anndefctgat, &! In/Out
                     annsrplsgat, annpcpgat, dry_season_lengthgat, &! In/Out
-                    pftexistgat, twarmmgat, tcoldmgat, gdd5gat, &! In/Out
+                    pftexistgat, twarmmgat, tcoldmgat, gdd5gat, nppveggat, &! In/Out
                     tracerStemMassgat, tracerRootMassgat, tracerGLeafMassgat, tracerBLeafMassgat, & ! In/Out
                     tracerSoilCMassgat, tracerLitrMassgat, tracerMossCMassgat, tracerMossLitrMassgat, & ! In/Out
                     nppgat, nepgat, hetroresgat, autoresgat, &! Out (Primary)
@@ -2958,7 +2958,7 @@ contains
                     emit_h2gat, emit_noxgat, emit_n2ogat, emit_pm25gat, &! Out (Secondary)
                     emit_tpmgat, emit_tcgat, emit_ocgat, emit_bcgat, &! Out (Secondary)
                     btermgat, ltermgat, mtermgat, burnvegfgat, &! Out (Secondary)
-                    litrfallveggat, humiftrsveggat, ltstatusgat, nppveggat, &! Out (Secondary)
+                    litrfallveggat, humiftrsveggat, ltstatusgat,  &! Out (Secondary)
                     afrleafgat, afrstemgat, afrrootgat, wtstatusgat, &! Out (Secondary)
                     rmlvegaccgat, rmsveggat, rmrveggat, rgveggat, &! Out (Secondary)
                     vgbiomas_veggat, gppveggat, nepveggat, nbpveggat, &! Out (Secondary)

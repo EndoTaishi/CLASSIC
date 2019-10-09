@@ -545,13 +545,13 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
       CFLUXV_IN(I) = CFLUXV(I)
     end do
     !
-    call photosynCanopyConduct(AILCG, FCANC, TCAN, CO2CONC, & ! Formerly PHTSYN3
-                               PRESSG, FI, CFLUXV, QA, QSWNVC, IC, THLIQ, &
-                               ISAND, TA, RMATCTEM, COSZS, XDIFFUS, ILG, &
-                               IL1, IL2, IG, ICTEM, ISNOW, SLAI, &
-                               THFC, THLW, FCANCMX, L2MAX, NOL2PFTS, &
-                               RCPHTSYN, CO2I1, CO2I2, ANVEG, RMLVEG, &
-                               DAYL, DAYL_MAX)
+    call photosynCanopyConduct(AILCG, FCANC, TCAN, CO2CONC, & ! In ! Formerly PHTSYN3
+                               PRESSG, FI, CFLUXV, QA, QSWNVC, IC, THLIQ, & ! In
+                               ISAND, TA, RMATCTEM, COSZS, XDIFFUS, ILG, & ! In
+                               IL1, IL2, IG, ICTEM, ISNOW, SLAI, & ! In
+                               THFC, THLW, FCANCMX, L2MAX, NOL2PFTS, & ! In
+                               CO2I1, CO2I2, & ! In/Out
+                               RCPHTSYN, ANVEG, RMLVEG, DAYL, DAYL_MAX) ! Out
     !
     !       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
     !       * THAT WE GET (BALT-BEG) CONSERVATION.

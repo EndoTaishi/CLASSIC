@@ -3762,7 +3762,7 @@ contains
             call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_t' ,timeStamp,'ra',[autores_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'soilres_mo_t' ,timeStamp,'rSoil',[soilres_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
-            call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,1:iccp1)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,:)])
             call writeOutput1D(lonLocalIndex,latLocalIndex,'leafmass_mo_t',timeStamp,'cLeaf',[leafmass_mo_t(i,:)])
 
             ! COMBAK PERLAY
@@ -4575,8 +4575,7 @@ contains
         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetSpec_yr_g' ,timeStamp,'wetlandCH4spec',[ch4WetSpec_yr_g(i)])
       end if
 
-      ! We only want to record the fraction of the PFTs that are actually in existance.
-      if (PFTCompetition) then ! FLAG this needs to be tested !
+      if (PFTCompetition) then 
         do m = 1,nmtest
           sumfare = 0.0
           fcancmxNoSeed = 0.0
@@ -4584,9 +4583,9 @@ contains
           do j = 1,icc
             if (pftexistrow(i,1,j)) then
               pftExist(j) = 1.0
+            end if
               sumfare = sumfare + fcancmxrow(i,m,j)
               fcancmxNoSeed(j) = fcancmxrow(i,m,j)
-            end if
           end do
           call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist])
           call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxNoSeed(1:icc),1 - sumfare])

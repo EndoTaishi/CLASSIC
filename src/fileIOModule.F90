@@ -630,10 +630,10 @@ contains
     counter = 0
     if (present(realValues)) then
       counter = counter + 1
-      call checkNC(nf90_put_var(fileId, varId, reshape(realValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
+      call checkNC(nf90_put_var(fileId, varId, reshape(realValues, count, order = [1,2,4,3]), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
     else if (present(intValues)) then
       counter = counter + 1
-      call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
+      call checkNC(nf90_put_var(fileId, varId, reshape(intValues, count, order = [1,2,4,3]), start, count), tag = 'ncPut3DVar(' // trim(label) // ') ')
     end if
     if (counter /= 1) stop ('In function ncPut3DVar, please supply either intValues or realValues - just one')
   end subroutine ncPut3DVar

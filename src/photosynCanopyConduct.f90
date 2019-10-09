@@ -1,14 +1,13 @@
 !> \file
 !> Net Photosynthesis and canopy conductance
 !> @author V. Arora, J. Melton, M. Lazare
-subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! Formerly PHTSYN3
-                                  CFLUX, QA, QSWV, IC, THLIQ, ISAND, &
-                                  TA, RMAT, COSZS, XDIFFUS, ILG, &
-                                  IL1, IL2, IG, ICC, ISNOW, SLAI, &
-                                  THFC, THLW, FCANCMX, L2MAX, NOL2PFTS, &
-                                  !  ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
-                                  RC, CO2I1, CO2I2, AN_VEG, RML_VEG, &
-                                  DAYL, DAYL_MAX)
+subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & !In ! Formerly PHTSYN3
+                                  CFLUX, QA, QSWV, IC, THLIQ, ISAND, & !In
+                                  TA, RMAT, COSZS, XDIFFUS, ILG, & !In
+                                  IL1, IL2, IG, ICC, ISNOW, SLAI, & !In
+                                  THFC, THLW, FCANCMX, L2MAX, NOL2PFTS, & !In
+                                  CO2I1, CO2I2, & ! In/Out
+                                  RC, AN_VEG, RML_VEG, DAYL, DAYL_MAX) ! Out
 
   !     HISTORY:
   !
@@ -124,8 +123,8 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & ! F
   real, intent(in) :: QSWV(ILG)        !< ABSORBED VISIBLE PART OF SHORTWAVE RADIATION, \f$W/M^2\f$
   real, intent(in) :: TA(ILG)          !< AIR TEMPERATURE IN KELVINS
   real, intent(in) :: RMAT(ILG, ICC,IG) !< FRACTION OF ROOTS IN EACH LAYER (grid cell, vegetation, layer)
-  real, intent(out) :: CO2I1(ILG,ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FROM THE PREVIOUS TIME STEP WHICH GETS UPDATED FOR THE SINGLE LEAF OR THE SUNLIT PART OF THE TWO LEAF MODEL
-  real, intent(out) :: CO2I2(ILG,ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FOR THE SHADED PART OF THE TWO LEAF MODEL FROM THE PREVIOUS TIME STEP
+  real, intent(inout) :: CO2I1(ILG,ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FROM THE PREVIOUS TIME STEP WHICH GETS UPDATED FOR THE SINGLE LEAF OR THE SUNLIT PART OF THE TWO LEAF MODEL
+  real, intent(inout) :: CO2I2(ILG,ICC)   !< INTERCELLULAR \f$CO_2\f$ CONCENTRATION FOR THE SHADED PART OF THE TWO LEAF MODEL FROM THE PREVIOUS TIME STEP
   real :: CA               !<
   real :: CB               !<
   real, intent(in) :: THLIQ(ILG,IG)    !< LIQUID MOIS. CONTENT OF 3 SOIL LAYERS

@@ -536,9 +536,7 @@ contains
         !! Moore)
 
         Cso(i) = peatStorage(ewtable(i))
-        ! Cso(i) = (4056.6*ewtable(i)**2+72067.0*ewtable(i))*0.487/1000.0
         Csa(i) = peatStorage(peatdep(i)) - Cso(i)
-        ! Csa(i) = ((4056.6*peatdep(i)**2+72067.0*peatdep(i))*0.487/1000.0)-Cso(i)
 
         !> Find the soil respiration rate in Cso and Csa umol/m2/s.
         !! Moisture multiplier (0.025) indicates rate reduction in decomposition due
