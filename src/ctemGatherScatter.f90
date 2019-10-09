@@ -33,7 +33,7 @@ contains
                      ipeatlandgat, maxAnnualActLyrGAT, & ! Out
                      tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, & ! Out
                      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, & ! Out
-                     tracerMossCMassgat, tracerMossLitrMassgat, & ! Out
+                     tracerMossCMassgat, tracerMossLitrMassgat, grwtheffgat & ! Out
                      ilmos, jlmos, iwmos, jwmos, nml, &! In
                      gleafmasrow, bleafmasrow, stemmassrow, rootmassrow, &! In
                      fcancmxrow, zbtwrow, dlzwrow, sdeprow, &! In
@@ -44,7 +44,7 @@ contains
                      ipeatlandrow, maxAnnualActLyrROT, &! In
                      tracergLeafMassrot, tracerBLeafMassrot, tracerStemMassrot, &! In
                      tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot, &! In
-                     tracerMossCMassrot, tracerMossLitrMassrot)! In
+                     tracerMossCMassrot, tracerMossLitrMassrot, grwtheffrow)! In
 
     !
     !     2 May 2019  - Convert to f90 and put in this module.
@@ -94,6 +94,7 @@ contains
     real, intent(out) :: tracerrootMassgat(ilg,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(out) :: tracerlitrMassgat(ilg,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(out) :: tracersoilCMassgat(ilg,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, intent(out) :: grwtheffgat(ilg,icc)
 
     integer, intent(in) :: ilmos (ilg)
     integer, intent(in) :: jlmos  (ilg)
@@ -134,7 +135,7 @@ contains
     real, intent(in) :: tracerrootMassrot(nlat,nmos,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(in) :: tracerlitrMassrot(nlat,nmos,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(in) :: tracersoilCMassrot(nlat,nmos,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
-
+    real, intent(in) :: grwtheffrow(nlat,nmos,icc)
     ! Local
     integer ::  k, l, m
 
@@ -165,6 +166,7 @@ contains
         tracerbLeafMassgat(k,l) = tracerbLeafMassrot(ilmos(k),jlmos(k),l)
         tracerStemMassgat(k,l) = tracerStemMassrot(ilmos(k),jlmos(k),l)
         tracerRootMassgat(k,l) = tracerRootMassrot(ilmos(k),jlmos(k),l)
+        grwtheffgat(k,l) = grwtheffrow(ilmos(k),jlmos(k),l)
       end do
     end do ! loop 101
 

@@ -492,7 +492,7 @@ contains
           !       &         soilcmasrow(i,m,j,k)
           ! end do ! ignd
           ! COMBAK PERLAY
-          grwtheffrow(i,m,j) = 100.0   ! set growth efficiency to some large number
+          !grwtheffrow(i,m,j) = 100.0   ! set growth efficiency to some large number
           ! so that no growth related mortality occurs in
           ! first year
           lystmmasrow(i,m,j) = stemmassrow(i,m,j)

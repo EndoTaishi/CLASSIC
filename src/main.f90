@@ -2435,7 +2435,7 @@ contains
                   ipeatlandgat, maxAnnualActLyrGAT, &
                   tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, &
                   tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, &
-                  tracerMossCMassgat, tracerMossLitrMassgat, &
+                  tracerMossCMassgat, tracerMossLitrMassgat, grwtheffgat, &
                   ilmos, jlmos, iwmos, jwmos, &
                   nml, &
                   gleafmasrow, bleafmasrow, stemmassrow, rootmassrow, &
@@ -2447,7 +2447,7 @@ contains
                   ipeatlandrow, maxAnnualActLyrROT, &
                   tracergLeafMassrot, tracerBLeafMassrot, tracerStemMassrot, &
                   tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot, &
-                  tracerMossCMassrot, tracerMossLitrMassrot)
+                  tracerMossCMassrot, tracerMossLitrMassrot, grwtheffrow)
 
       call allometry(gleafmasgat, bleafmasgat, stemmassgat, rootmassgat, & ! In
                      1, nml, ilg, zbtwgat, & ! In
