@@ -12,11 +12,14 @@ for f in $rootdir/outputFiles/FLUXNETsites/*; do
     singularity exec $container python3 $rootdir/tools/convertOutputToCSV/convertNetCDFOutputToCSV_batch.py $f
     mkdir -p $f/csv
     yes | mv $f/*.csv $f/csv
+    mkdir -p $f/netCDF
+    yes | mv $f/*.nc $f/netCDF
   fi
 done
 # Run the plot generator on the FLUXNET outputs. Output may be quite substantial
 # if not all sites have output. This is to be expected and is not a problem.
-#singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/comparative_plot_generator.py $rootdir/outputFiles/FLUXNETsites -o $rootdir/outputFiles/plots
+sed -i "/observationalData =/s|\".*\"|\"$rootdir/inputFiles/observationalDataFLUXNET\"" $rootdir/tools/siteLevelFLUXNET/comparative_plot_generator.py
 singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/comparative_plot_generator.py $rootdir/outputFiles/FLUXNETsites -o $rootdir/outputFiles/plots
-
+singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/worldmap.py $rootdir/inputFiles/FLUXNETsites $rootdir/outputFiles/plots
 # Call script that will hook up AMBER librares and run AMBER on the output.
+singularity exec $container $rootdir/tools/siteLevelFLUXNET/setupAMBER.sh
