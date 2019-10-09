@@ -36,7 +36,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 #######################################################
 output_dir = ""
-observationalData = ""
+observationalData = "/home/acrp001/mattfortier2019/code/CLASSIC/inputFiles/observationalDataFLUXNET"
 simulatedRuns = []
 
 #######################################################
@@ -413,7 +413,7 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
                     dataframes[site].plot(kind="scatter", x="observed", y=run, color=colours[k+1], s=3, ax=axes[i][j], title=f"{site}({code})", label=run, zorder=3, alpha=0.7, legend=False)
                 fits = find_linear_fits(dataframes[site])
                 for k, run in enumerate(list(dataframes[site])[1:]):
-                    axes[i][j].text(x=0.02, y=0.9-0.1*k, s="{:5.3f} / {:5.1f} / {} / {}".format(fits[k][0], fits[k][1], stats[site][k]["r2"][:5], stats[site][k]["mse"][:5]), color=colours[k+1], transform=axes[i][j].transAxes)
+                    axes[i][j].text(x=0.02, y=0.9-0.1*k, s="y={:5.3f}x+{:4.1f} / {} / {}".format(fits[k][0], fits[k][1], stats[site][k]["r2"][:5], stats[site][k]["mse"][:5]), color=colours[k+1], transform=axes[i][j].transAxes)
                 for k, m in enumerate(fits):
                     axes[i][j].plot([floor, ceiling], [floor*m[0]+m[1], ceiling*m[0]+m[1]], color=colours[k+1], zorder=4, alpha=0.7)
                 axes[i][j].plot([floor, ceiling], [floor, ceiling], color=colours[0], zorder=1, alpha=0.7)
@@ -429,7 +429,7 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
                     i += 1
         for ii in range(num_plots, num_cols*num_rows):
             plt.delaxes(axes[math.floor(ii/num_cols), ii%num_cols])
-        fig.text(0.07, 1-(6/(7*num_rows)), "slope / bias / r$^2$ / rmse")
+        fig.text(0.072, 1-(6/(7*num_rows)), "line eqn / r$^2$ / rmse")
         fig.legend(handles, labels, loc=(0.083, 1-(3/(4*num_rows))))
         plt.savefig(output_dir + "/" + var["observational_attribute"] + "_scatter" + ".pdf")
         plt.close()

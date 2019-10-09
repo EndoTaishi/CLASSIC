@@ -34,8 +34,8 @@ for f in $inputs/*; do
     # Replace the init and restart files
     sed -i "/init_file/s|'.*'|'$f/${current}_init.nc'| ; /rs_file_to_overwrite/s|'.*'|'$f/rsfile.nc'|" $jof
 
-    # Turn off fires and land use
-    sed -i "/lnduseon/s|=\s*\..*\.\s*,|= \.false\. ,| ; /fixedYearLUC/s|=\s*[-0-9]*\s*,|= -9999 ,| ; /dofire/s|=\s*\..*\.\s*,|= \.false\. ,|" $jof
+    # Turn off fires and land use, and competition
+    sed -i "/lnduseon/s|=\s*\..*\.\s*,|= \.false\. ,| ; /fixedYearLUC/s|=\s*[-0-9]*\s*,|= -9999 ,| ; /dofire/s|=\s*\..*\.\s*,|= \.false\. ,| ; /PFTCompetition/s|=\s*\..*\.|= \.false\.|" $jof
 
     # Replace the IDISP, IZREF, ZRFH, and ZRFM
     sed -i "/IDISP/s|= [0-9\.]*\s*,|= 1 ,| ; /IZREF/s|= [0-9\.]*\s*,|= 1 ,| ; /ZRFH/s|= [0-9\.]*,|= $ZRFH ,| ; /ZRFM/s|= [0-9\.]*,|= $ZRFM ,|" $jof
