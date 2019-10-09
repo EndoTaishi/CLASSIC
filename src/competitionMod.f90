@@ -82,7 +82,7 @@ contains
     real, dimension(12,nilg), intent(inout) :: tmonth !< monthly temperatures
     real, dimension(nilg), intent(inout) :: anpcpcur  !< annual precipitation for current year (mm)
     real, dimension(nilg), intent(inout) :: anpecur   !< annual potential evaporation for current year (mm)
-    real, dimension(nilg), intent(inout) :: gdd5cur   !< growing degree days above 5 c for current year
+    real, dimension(nilg), intent(inout) :: gdd5cur   !< growing degree days above 5 C for current year
     real, dimension(nilg), intent(inout) :: surmncur  !< number of months with surplus water for current year
     real, dimension(nilg), intent(inout) :: defmncur  !< number of months with water deficit for current year
     real, dimension(nilg), intent(inout) :: srplscur  !< water surplus for the current month
@@ -90,9 +90,9 @@ contains
 
     ! the following are running averages in an e-folding sense
 
-    real, dimension(nilg), intent(inout) :: twarmm    !< temperature of the warmest month (c)
-    real, dimension(nilg), intent(inout) :: tcoldm    !< temperature of the coldest month (c)
-    real, dimension(nilg), intent(inout) :: gdd5      !< growing degree days above 5 c
+    real, dimension(nilg), intent(inout) :: twarmm    !< temperature of the warmest month (C)
+    real, dimension(nilg), intent(inout) :: tcoldm    !< temperature of the coldest month (C)
+    real, dimension(nilg), intent(inout) :: gdd5      !< growing degree days above 5 C
     real, dimension(nilg), intent(inout) :: aridity   !< aridity index, ratio of potential evaporation to precipitation
     real, dimension(nilg), intent(inout) :: srplsmon  !< number of months in a year with surplus water i.e.
     !< precipitation more than potential evaporation

@@ -3,7 +3,7 @@ before_script:
 stages:
  - setup
  - build
- - run
+ - submit
  - test
  - documentation
 
@@ -35,8 +35,8 @@ compile:
   except:
     - master@cccma/classic
 
-run:ctem_on:
-  stage: run
+submit:ctem_on:
+  stage: submit
   script:
     - tools/regression_testing/submission_scripts/job_submit_ctem_on.sh
     - echo "job submitted"
@@ -46,8 +46,8 @@ run:ctem_on:
   except:
     - master@cccma/classic
 
-run:ctem_off:
-  stage: run
+submit:ctem_off:
+  stage: submit
   script:
     - tools/regression_testing/submission_scripts/job_submit_ctem_off.sh
     - echo "job submitted"
@@ -57,8 +57,8 @@ run:ctem_off:
   except:
     - master@cccma/classic
 
-run:ctem_compete:
-  stage: run
+submit:ctem_compete:
+  stage: submit
   script:
     - tools/regression_testing/submission_scripts/job_submit_ctem_compete.sh
     - echo "job submitted"
@@ -72,12 +72,12 @@ regression_test:ctem_on:
   stage: test
   script:
     - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
-    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_on
-    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/scrd530 ctem_on
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/* 2>/dev/null || true
     - tools/regression_testing/verification.sh ctem_on
     - echo "regression test complete"
   dependencies:
-    - run:ctem_on
+    - submit:ctem_on
   except:
     - master@cccma/classic
 
@@ -85,12 +85,12 @@ retression_test:ctem_off:
   stage: test
   script:
     - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
-    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_off
-    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/scrd530 ctem_off
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/* 2>/dev/null || true
     - tools/regression_testing/verification.sh ctem_off
     - echo "regression test complete"
   dependencies:
-    - run:ctem_off
+    - submit:ctem_off
   except:
     - master@cccma/classic
 
@@ -98,12 +98,12 @@ retression_test:ctem_compete:
   stage: test
   script:
     - tools/regression_testing/sleepcheck.sh $( cat job_id.txt )
-    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/crp102 ctem_compete
-    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/crp102/checksum_testing/* 2>/dev/null || true
+    - tools/regression_testing/regtest.py /space/hall1/sitestore/eccc/crd/ccrp/scrd530 ctem_compete
+    - chmod 777 -R /space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/* 2>/dev/null || true
     - tools/regression_testing/verification.sh ctem_compete
     - echo "regression test complete"
   dependencies:
-    - run:ctem_compete
+    - submit:ctem_compete
   except:
     - master@cccma/classic
 

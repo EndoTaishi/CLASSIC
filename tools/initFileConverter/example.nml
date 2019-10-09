@@ -248,9 +248,42 @@
  ! Depth of living moss [ m ]
  dmoss = 0.,
  
- !< Active layer depth maximum over the e-folding period specified by parameter eftime [m]. It will be calculated 
+ ! Active layer depth maximum over the e-folding period specified by parameter eftime [m]. It will be calculated 
  ! as the model runs so this value can just be set to some deep depth.
- maxAnnualActLyr = 999.
+ maxAnnualActLyr = 999.,
  
+ ! The following vars are only used if competition between PFTs is turned on. You can leave these as is with inibioclim = .false. in the joboptions file. It will then take the first year of the run to determine some starting values. Later you can then take the restart file with the calculated bioclim values to start your next run within inibioclim = .true. You should also set start_bare=.true. as the pools in this example file are likely to cause a fail.
+ 
+ ! All are running averages in an e-folding sense. Only one value per grid cell (not per tile)
+ 
+ ! Temperature of the warmest month (PFTCompetition variable)(C) 
+ twarmm = -99., 
+ 
+ ! Temperature of the coldest month (PFTCompetition variable)(C) 
+ tcoldm = 99., 
+ 
+ ! Growing degree days above 5 C (PFTCompetition variable)
+ gdd5 = -99., 
+ 
+ ! Aridity index, ratio of potential evaporation to precipitation (PFTCompetition variable)
+ aridity = 99., 
+ 
+ ! Number of months in a year with surplus water i.e. precipitation more than potential evaporation (PFTCompetition variable)
+ srplsmon = -99.,
+ 
+ ! Number of months in a year with water deficit i.e. precipitation less than potential evaporation (PFTCompetition variable)
+ defctmon = -99.,
+ 
+ ! Annual water deficit (mm)
+ anndefct= 99.,
+ 
+ ! Annual water surplus (mm)
+ annsrpls= -99.,
+ 
+ ! Annual precipitation (mm)
+ annpcp,= -99.,
+ 
+ ! Annual maximum dry month length (months)
+ dry_season_length = -99.,
  
  /

@@ -95,16 +95,16 @@ program initFileConverter
     
     real, allocatable, dimension(:,:):: pstemmassrow
     real, allocatable, dimension(:,:):: pgleafmassrow
-    real, allocatable, dimension(:):: twarmm
-    real, allocatable, dimension(:):: tcoldm
-    real, allocatable, dimension(:):: gdd5
-    real, allocatable, dimension(:):: aridity
-    real, allocatable, dimension(:):: srplsmon
-    real, allocatable, dimension(:):: defctmon
-    real, allocatable, dimension(:):: anndefct
-    real, allocatable, dimension(:):: annsrpls
-    real, allocatable, dimension(:):: annpcp
-    real, allocatable, dimension(:):: dry_season_length
+    real :: twarmm ! These bioclimatic vars are per grid cell so don't require allocation.
+    real :: tcoldm
+    real :: gdd5
+    real :: aridity
+    real :: srplsmon
+    real :: defctmon
+    real :: anndefct
+    real :: annsrpls
+    real :: annpcp
+    real :: dry_season_length
     real, allocatable, dimension(:,:):: litrmassrow
     real, allocatable, dimension(:,:):: soilcmasrow
     !real, allocatable, dimension(:,:,:):: litrmassrow
@@ -410,10 +410,12 @@ contains
             !read(11,*) extnprob
             !read(11,*) prbfrhuc
             !read(11,*) dummy ! was stdaln but not used so dump.
-            !if (compete .and. inibioclim) then  !read in the bioclimatic parameters
-            !! read them into the first tile of each grid cell.
-            !read(11,*) twarmm(i,1), tcoldm(i,1), gdd5(i,1), aridity(i,1),srplsmon(i,1)
-            !read(11,*) defctmon(i,1), anndefct(i,1), annsrpls(i,1), annpcp(i,1), dry_season_length(i,1)
+            
+            
+            !read in the bioclimatic parameters
+            ! If your file does not have these, comment out below.
+            read(11,*) twarmm, tcoldm, gdd5, aridity,srplsmon
+            read(11,*) defctmon, anndefct, annsrpls, annpcp, dry_season_length
 
     end subroutine loadCTMData
 
@@ -499,7 +501,7 @@ contains
             Cmossmas,&
             litrmsmoss,&
             dmoss,&
-            maxAnnualActLyr !,&
+            maxAnnualActLyr,&
             ! tracerGLeafMass, &
             ! tracerBLeafMass, &
             ! tracerStemMass, &
@@ -507,7 +509,17 @@ contains
             ! tracerLitrMass, &
             ! tracerSoilCMass, &
             ! tracerMossCMass, &
-            ! tracerMossLitrMass
+            ! tracerMossLitrMass, &
+            twarmm, &
+            tcoldm, &
+            gdd5, &
+            aridity, &
+            srplsmon, &
+            defctmon, &
+            anndefct, &
+            annsrpls, &
+            annpcp, &
+            dry_season_length
             
         read(unit=10,nml = classicvars)
         !write(*,nml = classicvars)
@@ -755,6 +767,17 @@ contains
         !call exportVariable('ZRFH',units='m',long_name='Reference height associated with forcing air temperature and humidity',values=(/ZRFHROW/))
         !call exportVariable('ZRFM',units='m',long_name='Reference height associated with forcing wind speed',values=(/ZRFMROW/))
         call exportVariable('grclarea',units='km2',long_name='Area of grid cell',values=(/grclarea/))
+        call exportVariable('twarmm',units='degree C',long_name='temperature of the warmest month (running averages in an e-folding sense)',values=(/twarmm/))
+        call exportVariable('tcoldm',units='degree C',long_name='temperature of the warmest month (running averages in an e-folding sense)',values=(/tcoldm/))
+        call exportVariable('gdd5',units='days',long_name='growing degree days above 5 C (running averages in an e-folding sense)',values=(/gdd5/))
+        call exportVariable('aridity',units='-',long_name='aridity index, ratio of potential evaporation to precipitation (running averages in an e-folding sense)',values=(/aridity/))
+        call exportVariable('srplsmon',units='months',long_name='number of months in a year with surplus water i.e. precipitation more than potential evaporation(running averages in an e-folding sense)',values=(/srplsmon/))
+        call exportVariable('defctmon',units='months',long_name='number of months in a year with water deficit i.e. precipitation less than potential evaporation(running averages in an e-folding sense)',values=(/defctmon/))
+        call exportVariable('anndefct',units='mm',long_name='annual water deficit(running averages in an e-folding sense)',values=(/anndefct/))
+        call exportVariable('annsrpls',units='mm',long_name='annual water surplus (running averages in an e-folding sense)',values=(/annsrpls/))
+        call exportVariable('annpcp',units='mm',long_name='annual precipitation (running averages in an e-folding sense)',values=(/annpcp/))
+        call exportVariable('dry_season_length',units='months',long_name='annual maximum dry month length (running averages in an e-folding sense)',values=(/dry_season_length/))
+        
 
         deallocate(dimArray,start,count)
 
@@ -834,26 +857,6 @@ contains
             call exportVariable('soilcmas',units='kgC/m2',long_name='Soil C mass per soil layer',values2D=soilcmasrow)
             
             deallocate(dimArray,start,count)
-
-            ! per month vars
-            ! allocate(dimArray(3),start(3),count(3))
-            ! dimArray = (/lonDimId,latDimId,monthsDimId/)
-            ! start = (/1, 1, 1 /)
-            ! count = (/1, 1, 12/)
-            ! call exportVariable('mlightng',units='flashes/km2.year',long_name='mean monthly lightning freq. (total flashes)',values=mlightng)
-            ! 
-            ! deallocate(dimArray,start,count)
-
-            ! read(11,*) extnprob
-            ! read(11,*) prbfrhuc
-    !     float extnprob(lat, lon) ;
-    !         extnprob:_FillValue = -999.f ;
-    !         extnprob:units = "-" ;
-    !         extnprob:long_name = "Fire extinguishing probability (overwritten if POPD true)" ;
-    !     float prbfrhuc(lat, lon) ;
-    !         prbfrhuc:_FillValue = -999.f ;
-    !         prbfrhuc:units = "-" ;
-    !         prbfrhuc:long_name = "Probability of fire due to human causes (overwritten if POPD true)" ;
 
             end if
 

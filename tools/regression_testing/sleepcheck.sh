@@ -5,7 +5,7 @@ sleep 20
 let sleepcount=0
 while [ $sleepcount -lt 1080 ] ;
 do
-  status=$( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s ' ' | perl -pe 's/\s+/ /g' | cut -d ' ' -f 3 )
+  status=$( jobst -c $HDNODE 2>/dev/null | grep $1 | sed "s/|/ /g" | tr -s ' ' | cut -d ' ' -f 3 )
   status=${status#*|}
   if [ "$status" == "Q" ]; then
     echo "Queued!"
