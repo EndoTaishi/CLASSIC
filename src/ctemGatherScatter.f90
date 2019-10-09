@@ -33,7 +33,7 @@ contains
                      ipeatlandgat, maxAnnualActLyrGAT, & ! Out
                      tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, & ! Out
                      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, & ! Out
-                     tracerMossCMassgat, tracerMossLitrMassgat, grwtheffgat & ! Out
+                     tracerMossCMassgat, tracerMossLitrMassgat, grwtheffgat, & ! Out
                      ilmos, jlmos, iwmos, jwmos, nml, &! In
                      gleafmasrow, bleafmasrow, stemmassrow, rootmassrow, &! In
                      fcancmxrow, zbtwrow, dlzwrow, sdeprow, &! In
