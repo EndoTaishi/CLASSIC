@@ -631,39 +631,36 @@ contains
     ! COMBAK PERLAY
 
     !   Methane related variables
-    real, intent(out)  :: ch4WetSpecrow(nlat,nmos), ch4WetSpecgat(ilg), &
-                          wetfdynrow(nlat,nmos), wetfdyngat(ilg), &
-                          ch4WetDynrow(nlat,nmos), ch4WetDyngat(ilg), &
-                          ch4soillsrow(nlat,nmos), ch4soillsgat(ilg)
+    real, intent(out)  :: ch4WetSpecrow(nlat,nmos), wetfdynrow(nlat,nmos), &
+                          ch4WetDynrow(nlat,nmos), ch4soillsrow(nlat,nmos)
+    real, intent(in)   :: ch4WetSpecgat(ilg), wetfdyngat(ilg), &
+                          ch4WetDyngat(ilg), ch4soillsgat(ilg)
 
-    real, intent(out) :: twarmmrow(nlat,nmos), twarmmgat(ilg), &
-                         tcoldmrow(nlat,nmos), tcoldmgat(ilg), &
-                         gdd5row(nlat,nmos), gdd5gat(ilg), &
-                         aridityrow(nlat,nmos), ariditygat(ilg), &
-                         srplsmonrow(nlat,nmos), srplsmongat(ilg), &
-                         defctmonrow(nlat,nmos), defctmongat(ilg), &
-                         anndefctrow(nlat,nmos), anndefctgat(ilg), &
-                         annsrplsrow(nlat,nmos), annsrplsgat(ilg), &
-                         annpcprow(nlat,nmos), annpcpgat(ilg), &
-                         dry_season_lengthrow(nlat,nmos), &
-                         dry_season_lengthgat(ilg)
-
+    real, intent(out) :: twarmmrow(nlat,nmos), tcoldmrow(nlat,nmos), &
+                         gdd5row(nlat,nmos), aridityrow(nlat,nmos),  &
+                         srplsmonrow(nlat,nmos), defctmonrow(nlat,nmos),  &
+                         anndefctrow(nlat,nmos), annsrplsrow(nlat,nmos),  &
+                         annpcprow(nlat,nmos), dry_season_lengthrow(nlat,nmos)
+                         
+    real, intent(in) :: twarmmgat(ilg), tcoldmgat(ilg), gdd5gat(ilg), &
+                        ariditygat(ilg), srplsmongat(ilg), defctmongat(ilg), &
+                        anndefctgat(ilg), annsrplsgat(ilg), annpcpgat(ilg), &
+                        dry_season_lengthgat(ilg)
 
     !   Peatland variables
-    real, intent(out) :: anmossrow(nlat,nmos), anmossgat(ilg), &
-                         rmlmossrow(nlat,nmos), rmlmossgat(ilg), &
-                         gppmossrow(nlat,nmos), gppmossgat(ilg), &
-                         armossrow(nlat,nmos), armossgat(ilg), &
-                         nppmossrow(nlat,nmos), nppmossgat(ilg), &
-                         peatdeprow(nlat,nmos), peatdepgat(ilg), &
-                         litrmsmossrow(nlat,nmos), litrmsmossgat(ilg), &
-                         Cmossmasrow(nlat,nmos), Cmossmasgat(ilg), &
-                         dmossrow(nlat,nmos), dmossgat(ilg), &
-                         !    9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
-                         !    1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
-                         pddrow(nlat,nmos), pddgat(ilg)
+    real, intent(out) :: anmossrow(nlat,nmos), rmlmossrow(nlat,nmos),  &
+                         gppmossrow(nlat,nmos), armossrow(nlat,nmos),  &
+                         nppmossrow(nlat,nmos), peatdeprow(nlat,nmos),  &
+                         litrmsmossrow(nlat,nmos), Cmossmasrow(nlat,nmos),  &
+                         dmossrow(nlat,nmos), pddrow(nlat,nmos)
+                         
+    real, intent(in) :: anmossgat(ilg), rmlmossgat(ilg), gppmossgat(ilg), &
+                        armossgat(ilg), nppmossgat(ilg), peatdepgat(ilg), &
+                        litrmsmossgat(ilg), Cmossmasgat(ilg), dmossgat(ilg), &
+                        pddgat(ilg)
 
-    integer, intent(out) :: ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
+    integer, intent(out) :: ipeatlandrow(nlat,nmos)
+    integer, intent(in) :: ipeatlandgat(ilg)
 
     ! allocated with nlat,nmos,...:
     real, intent(out) :: tracermossCMassrot(nlat,nmos)     !< Tracer mass in moss biomass, \f$kg C/m^2\f$
@@ -683,15 +680,11 @@ contains
     real, intent(in) :: tracerrootMassgat(ilg,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(in) :: tracerlitrMassgat(ilg,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(in) :: tracersoilCMassgat(ilg,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    
     integer, intent(in) :: nml
+    integer, intent(in)  :: ilmos(ilg), jlmos(ilg), iwmos(ilg), jwmos(ilg) !     gather-scatter index arrays.
+    !
     integer ::  k,l,m
-    !
-    !
-    !     gather-scatter index arrays.
-    !
-    integer  :: ilmos(ilg), jlmos(ilg), iwmos(ilg), jwmos(ilg)
-
-    ! ------------
 
     !----------------------------------------------------------------------
     do k = 1,nml ! loop 100

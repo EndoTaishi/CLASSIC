@@ -15,7 +15,7 @@ inputFiles=sys.argv[1]
 
 # optional second argument is the output path
 if len(sys.argv) > 2:
-    outputFiles = sys.argv[2] + '/'
+    outputFiles = sys.argv[2]
 else:
     outputFiles = ''
 

@@ -245,8 +245,8 @@ def main():
         #    generate_functional_relationship_plots(dataframes, colours, IGBP)
 
 
-            print("Generating seasonal matrices...")
-            seasonal_plots(dataframes, colours, IGBP, var)
+        print("Generating seasonal matrices...")
+        seasonal_plots(dataframes, colours, IGBP, var)
         print("\n")
 
 
