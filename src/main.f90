@@ -2709,7 +2709,7 @@ contains
                   tltrrootgat, leaflitrgat, roottempgat, afrleafgat, &
                   afrstemgat, afrrootgat, wtstatusgat, ltstatusgat, &
                   burnfracgat, smfuncveggat, lucemcomgat, lucltringat, &
-                  lucsocingat, nppveggat, dstcemls3gat, popdingat, &
+                  lucsocingat, dstcemls3gat, popdingat, &
                   faregat, gavgscmsgat, rmlvegaccgat, pftexistgat, &
                   rmsveggat, rmrveggat, rgveggat, vgbiomas_veggat, &
                   gppveggat, nepveggat, &
@@ -2753,7 +2753,7 @@ contains
                   tltrrootrow, leaflitrrow, roottemprow, afrleafrow, &
                   afrstemrow, afrrootrow, wtstatusrow, ltstatusrow, &
                   burnfracrow, smfuncvegrow, lucemcomrow, lucltrinrow, &
-                  lucsocinrow, nppvegrow, dstcemls3row, popdinrow, &
+                  lucsocinrow, dstcemls3row, popdinrow, &
                   FAREROT, gavgscmsrow, rmlvegaccrow, pftexistrow, &
                   rmsvegrow, rmrvegrow, rgvegrow, vgbiomas_vegrow, &
                   gppvegrow, nepvegrow, &

@@ -977,7 +977,7 @@ contains
                      tltrrootgat, leaflitrgat, roottempgat, afrleafgat, &
                      afrstemgat, afrrootgat, wtstatusgat, ltstatusgat, &
                      burnfracgat, smfuncveggat, lucemcomgat, lucltringat, &
-                     lucsocingat, nppveggat, dstcemls3gat, popdingat, &
+                     lucsocingat, dstcemls3gat, popdingat, &
                      faregat, gavgscmsgat, rmlvegaccgat, pftexistgat, &
                      rmsveggat, rmrveggat, rgveggat, vgbiomas_veggat, &
                      gppveggat, nepveggat, &
@@ -1020,7 +1020,7 @@ contains
                      tltrrootrow, leaflitrrow, roottemprow, afrleafrow, &
                      afrstemrow, afrrootrow, wtstatusrow, ltstatusrow, &
                      burnfracrow, smfuncvegrow, lucemcomrow, lucltrinrow, &
-                     lucsocinrow, nppvegrow, dstcemls3row, popdinrow, &
+                     lucsocinrow, dstcemls3row, popdinrow, &
                      farerow, gavgscmsrow, rmlvegaccrow, pftexistrow, &
                      rmsvegrow, rmrvegrow, rgvegrow, vgbiomas_vegrow, &
                      gppvegrow, nepvegrow, &
@@ -1129,7 +1129,7 @@ contains
                          wtstatusgat(ilg,icc), ltstatusgat(ilg,icc), &
                          burnfracgat(ilg), smfuncveggat(ilg,icc), &
                          lucemcomgat(ilg), lucltringat(ilg), &
-                         lucsocingat(ilg), nppveggat(ilg,icc), &
+                         lucsocingat(ilg), &
                          dstcemls3gat(ilg), &
                          tracerCO2gat(ilg)
     !
@@ -1227,7 +1227,7 @@ contains
                         wtstatusrow(nlat,nmos,icc), ltstatusrow(nlat,nmos,icc), &
                         burnfracrow(nlat,nmos), smfuncvegrow(nlat,nmos,icc), &
                         lucemcomrow(nlat,nmos), lucltrinrow(nlat,nmos), &
-                        lucsocinrow(nlat,nmos), nppvegrow(nlat,nmos,icc), &
+                        lucsocinrow(nlat,nmos), &
                         dstcemls3row(nlat,nmos), tracerCO2rot(nlat,nmos)
     !
     !     fire variables
@@ -1409,7 +1409,6 @@ contains
         afrrootgat(k,l)  = afrrootrow(ilmos(k),jlmos(k),l)
         wtstatusgat(k,l) = wtstatusrow(ilmos(k),jlmos(k),l)
         ltstatusgat(k,l) = ltstatusrow(ilmos(k),jlmos(k),l)
-        nppveggat(k,l)   = nppvegrow(ilmos(k),jlmos(k),l)
         rmlvegaccgat(k,l) = rmlvegaccrow(ilmos(k),jlmos(k),l)
         rmsveggat(k,l)   = rmsvegrow(ilmos(k),jlmos(k),l)
         rmrveggat(k,l)   = rmrvegrow(ilmos(k),jlmos(k),l)

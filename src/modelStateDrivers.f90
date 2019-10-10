@@ -1615,7 +1615,6 @@ contains
         ! If we are using leap years, check if that year is a leap year
         call findLeapYears(fixedYearLGHT, dummyVar, lastDOY)
 
-        ! FLAG Not presently set up for leap years !
         allocate(LGHTFromFile(lastDOY))
         LGHTFromFile = ncGet1DVar(lghtid,trim(lghtVarName),start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 
