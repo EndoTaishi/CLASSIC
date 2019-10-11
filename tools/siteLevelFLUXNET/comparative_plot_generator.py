@@ -210,7 +210,7 @@ def main():
         if not os.path.isfile(obsFile):
             print("Could not find file: " + obsFile)
             sys.exit(1)
-            df_obs_full = pd.read_csv(obsFile, usecols=["time", var["observational_attribute"], "sitename", "IGBPcode"])
+        df_obs_full = pd.read_csv(obsFile, usecols=["time", var["observational_attribute"], "sitename", "IGBPcode"])
         df_obs_full['time'] = pd.to_datetime(df_obs_full['time'])
 
         # Keep all adjusted dataframes in a single dictionary
@@ -294,41 +294,41 @@ def generate_comparative_frame(df_obs, site, dataframes, var):
         df_sim = df_sim.rename(columns={var["observational_attribute"]: run["name"]})
         simulatedFrames.append(df_sim)
 
-    # Only include dates where we have overlapping data
-        # Drop all unnecessary columns
-        df_obs = df_obs.drop(columns=['IGBPcode', 'sitename'])
+# Only include dates where we have overlapping data
+    # Drop all unnecessary columns
+    df_obs = df_obs.drop(columns=['IGBPcode', 'sitename'])
 
-        # Remove -9999 values (csv sentinel value for no observation), apply multipliers
-        df_obs = df_obs[df_obs[var["observational_attribute"]] != -9999]
-        df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
-        #df_obs = df_obs.replace(-9999, np.nan)
-        df_obs[var["observational_attribute"]] = df_obs[var["observational_attribute"]].apply(lambda x: x*var["observational_multiplier"])
+    # Remove -9999 values (csv sentinel value for no observation), apply multipliers
+    df_obs = df_obs[df_obs[var["observational_attribute"]] != -9999]
+    df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
+    #df_obs = df_obs.replace(-9999, np.nan)
+    df_obs[var["observational_attribute"]] = df_obs[var["observational_attribute"]].apply(lambda x: x*var["observational_multiplier"])
 
-        if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
-            print("Missing data for " + site + ". Skipping...")
-            return False
-        df_obs.sort_values(by=['time'])
-        for df_sim in simulatedFrames:
-            df_sim.sort_values(by=['time'])
-        mintime = df_obs['time'][0] if simulatedFrames[0]['time'][0] < df_obs['time'][0] else simulatedFrames[0]['time'][0]
-        maxtime = simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] if simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] \
-            < df_obs['time'][df_obs['time'].count()-1] else df_obs['time'][df_obs['time'].count()-1]
-        df_obs = df_obs[df_obs['time'] >= mintime]
-        df_obs = df_obs[df_obs['time'] <= maxtime]
-        df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
-        for df_sim in simulatedFrames:
-            df_sim.drop(df_sim[df_sim['time'] < mintime].index, inplace=True)
-            df_sim.drop(df_sim[df_sim['time'] > maxtime].index, inplace=True)
-            df_sim.reset_index(drop=True, inplace=True) # go back to indexing from 0
-        if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
-            print("No overlapping data for " + site + ". Skipping...")
-            return False
+    if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
+        print("Missing data for " + site + ". Skipping...")
+        return False
+    df_obs.sort_values(by=['time'])
+    for df_sim in simulatedFrames:
+        df_sim.sort_values(by=['time'])
+    mintime = df_obs['time'][0] if simulatedFrames[0]['time'][0] < df_obs['time'][0] else simulatedFrames[0]['time'][0]
+    maxtime = simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] if simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] \
+        < df_obs['time'][df_obs['time'].count()-1] else df_obs['time'][df_obs['time'].count()-1]
+    df_obs = df_obs[df_obs['time'] >= mintime]
+    df_obs = df_obs[df_obs['time'] <= maxtime]
+    df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
+    for df_sim in simulatedFrames:
+        df_sim.drop(df_sim[df_sim['time'] < mintime].index, inplace=True)
+        df_sim.drop(df_sim[df_sim['time'] > maxtime].index, inplace=True)
+        df_sim.reset_index(drop=True, inplace=True) # go back to indexing from 0
+    if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
+        print("No overlapping data for " + site + ". Skipping...")
+        return False
 
     # Rename column
     df_obs = df_obs.rename(columns={var["observational_attribute"]: 'observed'})
 
     # Index by time, then concatenate the datasets by time
-        simulatedFrames.insert(0, df_obs)
+    simulatedFrames.insert(0, df_obs)
     for df_sim in simulatedFrames:
         if var["seconds_to_months"]:
             seconds_to_months(df_sim)
