@@ -2498,6 +2498,7 @@ contains
     call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4WetDyn_d_g' ,timeStamp,'wetlandCH4dyn',[ch4WetDyn_g(i)])
     call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_d_g' ,timeStamp,'soilCH4cons',[ch4soills_g(i)])
     call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_ch4_d_g' ,timeStamp,'fFireCH4',[emit_ch4_g(i)])
+    call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_d_g' ,timeStamp,'wetlandFrac',[wetfdyn_g(i)])
     ! litres_g(i),
     ! socres_g(i), &
     !         (dstcemls_g(i)+dstcemls3_g(i)), &
@@ -3621,6 +3622,7 @@ contains
         call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'leafmass_mo_g',timeStamp,'cLeaf',[leafmass_mo_g(i)])
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_mo_g',timeStamp,'cStem',[stemmass_mo_g(i)])
 
         ! COMBAK PERLAY
         call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])
