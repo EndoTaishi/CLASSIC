@@ -11,17 +11,21 @@
     metLoop = 8 ,            ! no. of times to cycle over the read-in meteorology
     leap = .false. ,         ! True if your meteorological forcing includes leap years
 
-    ! Meteorological forcing files:
-        metFileFss = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dswrf_T63_chunked_1700_2017.nc',        !< location of the incoming shortwave radiation meteorology file
-        metFileFdl = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/dlwrf_T63_chunked_1700_2017.nc',        !< location of the incoming longwave radiation meteorology file
-        metFilePre = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pre_T63_chunked_1700_2017.nc',        !< location of the precipitation meteorology file
-        metFileTa = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/tmp_T63_chunked_1700_2017.nc',         !< location of the air temperature meteorology file
-        metFileQa = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/spfh_T63_chunked_1700_2017.nc',         !< location of the specific humidity meteorology file
-        metFileUv = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/wind_T63_chunked_1700_2017.nc',         !< location of the wind speed meteorology file
-        metFilePres = '/raid/ra40/data/rjm/meteorologicalDatasets/CRU_JRA_v1.0.5_1901_2017/chunked_or_permuted_T63/pres_T63_chunked_1700_2017.nc',       !< location of the atmospheric pressure meteorology file
+    ! Meteorological forcing files. If you are using gridded meteorology and it all in local time you will need to
+    ! set allLocalTime = .true. in metModule.f90.  This will prevent it from adjusting the timezone of your meteorology.
+    ! For site-level simulations as long as you provide meteorology on the same timestep as the model physics (typically 
+    ! 30 minutes) your meteorology will be used as is.
+      metFileFss = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dswrf_v2_T63_1700_2018.nc',        !< location of the incoming shortwave radiation meteorology file
+      metFileFdl = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dlwrf_v2_T63_1700_2018.nc',        !< location of the incoming longwave radiation meteorology file
+      metFilePre = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pre_v2_T63_1700_2018.nc',        !< location of the precipitation meteorology file
+      metFileTa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/tmp_v2_T63_1700_2018.nc'         !< location of the air temperature meteorology file
+      metFileQa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/spfh_v2_T63_1700_2018.nc',         !< location of the specific humidity meteorology file
+      metFileUv = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/wind_v2_T63_1700_2018.nc',         !< location of the wind speed meteorology file
+      metFilePres = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pres_v2_T63_1700_2018.nc',       !< location of the atmospheric pressure meteorology file
+
 
 ! Initialization and restart files
-    init_file = 'inputFiles/initFile_bulkdetrital_ShangguanSDEP_GSDETexture_20layer-ISAND-delz-slope-iccp2-actlyr.nc' ,     !< location of the model initialization file
+    init_file = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/initfiles/global/initFile_CLASSIC_v1.0.nc' ,     !< location of the model initialization file
     rs_file_to_overwrite = 'rsFile.nc' ,      ! location of the existing netcdf file that will be 
                                               ! **overwritten** for the restart file typically here you
                                               !  will just copy the init_file and rename it so it can be
@@ -48,7 +52,7 @@
 
     !CO2 switches:
         transientCO2 = .true. , ! Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
-        CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
+        CO2File = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/CO2/TRENDY_CO2_1700-2018_GCP2019.nc' ,
         fixedYearCO2 = 1850 ,   ! If transientCO2 = .true., this is ignored.
 
     !CH4 switches:
@@ -57,7 +61,7 @@
 
           ! Read in of atmospheric methane concentration for soil CH4 uptake. 
           transientCH4 = .true. , ! Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
-          CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
+          CH4File = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/CH4/CH4_1700_2017_for_GCP_2018.nc',
           fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
           ! Wetland switches:
@@ -68,18 +72,18 @@
               ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
               ! dynamically determine wetland extent.
               transientOBSWETF = .false. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
-              OBSWETFFile = 'inputFiles/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
+              OBSWETFFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/wetland/global/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
               fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
     !Fire switches
         dofire = .true. ,               ! If true the fire disturbance parameterization is turned on.
 
             transientPOPD = .true. ,    ! Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
-            POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017_chunked.nc' ,
+            POPDFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/population/global/popd_trendyv8_1700-2018_t63.nc' ,
             fixedYearPOPD = 1850 ,      ! If transientPOPD = .true., this is ignored.
 
             transientLGHT= .true.      !use lightning strike time series, otherwise use fixedYearLGHT
-            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , ! Location of the netcdf file containing lightning strike values
+            LGHTFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/lightning/global/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , ! Location of the netcdf file containing lightning strike values
             fixedYearLGHT = 1850 ,    ! set the year to use for lightning strikes if transientLGHT is false.
 
     ! Competition switches:
@@ -97,7 +101,7 @@
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is
         ! not used at all.
         lnduseon = .false. ,
-        LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
+        LUCFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/landcover/global/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1700_2019_T63.nc' ,
         fixedYearLUC = 1850 ,
 
 ! Physics switches:
