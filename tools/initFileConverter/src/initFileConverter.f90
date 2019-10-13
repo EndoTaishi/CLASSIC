@@ -418,7 +418,7 @@ contains
             ! If your file does not have these, comment out below.
             read(11,*) twarmm, tcoldm, gdd5, aridity,srplsmon
             read(11,*) defctmon, anndefct, annsrpls, annpcp, dry_season_length
-
+            
             ! The grwtheffrow  won't be in any init files:
             ! so set to a very high value.
             grwtheffrow = 100.

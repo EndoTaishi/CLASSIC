@@ -222,7 +222,7 @@
  
  ! Growth efficiency. Change in biomass per year per unit max. LAI,for use in mortality subroutine. Set to 100. which gives essentially no growth-related mortality in the first year. This variable is then updated annually so this value only affects the first year of the run.
  grwtheffrow(1,1:9)= 9*100.,
-
+ 
  ! Leaf phenology status [ ] (1 = max growth, 2 = normal growth, 3 = leaf fall, 4 = no leaves)
  lfstatusrow(1,1:9)= 4*4,1,2*2, 2*1,
  

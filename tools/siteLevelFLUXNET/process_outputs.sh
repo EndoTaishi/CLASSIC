@@ -29,4 +29,4 @@ singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/comparative_
 singularity exec $container python3 $rootdir/tools/siteLevelFLUXNET/worldmap.py $rootdir/inputFiles/FLUXNETsites $rootdir/outputFiles/plots
 
 # Call script that will hook up AMBER librares and run AMBER on the output.
-singularity exec $container $rootdir/tools/siteLevelFLUXNET/setupAMBER.sh
+singularity exec $container $rootdir/tools/siteLevelFLUXNET/runAMBER.sh
