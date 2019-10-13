@@ -29,6 +29,10 @@ prepare_binary_folder:
 compile:
   stage: build
   script:
+    - echo $CI_BUILD_REF
+    - echo $CI_BUILD_ID
+    - echo $CI_BUILD_NAME
+    - echo $CI_BUILD_TOKEN
     - /usr/bin/make mode=ppp
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
