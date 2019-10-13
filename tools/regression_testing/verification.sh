@@ -2,6 +2,15 @@
 testcase=$1
 bdir=/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums
 rf=${CI_BUILD_REF:0:8}
+
+if [ ! -f $bdir/$testcase/checksums.csv ]; then
+  echo "Error: No checksums.csv file found for $testcase. Aborting pipeline."
+  exit 1
+elif [ -z "$(cat $bdir/$testcase/checksums.csv)" ]; then
+  echo "Error: checksums.csv file is empty for $testcase. Aborting pipeline."
+  exit 1
+fi
+
 mkdir -p $bdir/checksums/$rf
 mv $bdir/$testcase/checksums.csv $bdir/checksums/$rf/${testcase}_checksums.csv
 
