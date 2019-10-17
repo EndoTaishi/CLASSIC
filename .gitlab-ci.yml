@@ -126,6 +126,5 @@ pages:
     paths:
     - public
   only:
-==== BASE ====
-  - master@cccma/classic
-==== BASE ====
+  - branches@cccma/classic
+  - tags@cccma/classic
