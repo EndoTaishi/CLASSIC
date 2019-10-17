@@ -17,9 +17,9 @@ prepare_binary_folder:
     - fi
     - echo "setup complete"
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 compile:
   stage: build
@@ -28,9 +28,9 @@ compile:
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 submit:ctem_on:
   stage: submit
@@ -42,9 +42,9 @@ submit:ctem_on:
     paths:
       - job_id.txt
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 submit:ctem_off:
   stage: submit
@@ -56,9 +56,9 @@ submit:ctem_off:
     paths:
       - job_id.txt
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 submit:ctem_compete:
   stage: submit
@@ -70,9 +70,9 @@ submit:ctem_compete:
     paths:
       - job_id.txt
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 regression_test:ctem_on:
   stage: test
@@ -85,9 +85,9 @@ regression_test:ctem_on:
   dependencies:
     - submit:ctem_on
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 retression_test:ctem_off:
   stage: test
@@ -100,9 +100,9 @@ retression_test:ctem_off:
   dependencies:
     - submit:ctem_off
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 retression_test:ctem_compete:
   stage: test
@@ -115,9 +115,9 @@ retression_test:ctem_compete:
   dependencies:
     - submit:ctem_compete
   except:
-    - master@mfortier/classic
-    - develop@mfortier/classic
-    - tags@mfortier/classic
+    - master@mfortier/classctem
+    - develop@mfortier/classctem
+    - tags@mfortier/classctem
 
 pages:
   stage: build
@@ -134,6 +134,6 @@ pages:
     paths:
     - public
   only:
-  - master@mfortier/classic
-  - develop@mfortier/classic
-  - tags@mfortier/classic
+  - master@mfortier/classctem
+  - develop@mfortier/classctem
+  - tags@mfortier/classctem
