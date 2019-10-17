@@ -7,13 +7,6 @@ stages:
  - test
  - documentation
 
-check_location:
-  stage: setup
-  script:
-    - echo "HELLO FROM MASTER!"
-  only:
-    - master@CLASSIC_development/CLASSIC
-
 prepare_binary_folder:
   stage: setup
   script:
@@ -25,6 +18,8 @@ prepare_binary_folder:
     - echo "setup complete"
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 compile:
   stage: build
@@ -34,6 +29,8 @@ compile:
     - echo "compilation complete"
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 submit:ctem_on:
   stage: submit
@@ -46,6 +43,8 @@ submit:ctem_on:
       - job_id.txt
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 submit:ctem_off:
   stage: submit
@@ -58,6 +57,8 @@ submit:ctem_off:
       - job_id.txt
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 submit:ctem_compete:
   stage: submit
@@ -70,6 +71,8 @@ submit:ctem_compete:
       - job_id.txt
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 regression_test:ctem_on:
   stage: test
@@ -83,6 +86,8 @@ regression_test:ctem_on:
     - submit:ctem_on
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 retression_test:ctem_off:
   stage: test
@@ -96,6 +101,8 @@ retression_test:ctem_off:
     - submit:ctem_off
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 retression_test:ctem_compete:
   stage: test
@@ -109,6 +116,8 @@ retression_test:ctem_compete:
     - submit:ctem_compete
   except:
     - master@cccma/classic
+    - develop@cccma/classic
+    - tags@cccma/classic
 
 pages:
   stage: build
@@ -126,3 +135,5 @@ pages:
     - public
   only:
   - master@cccma/classic
+  - develop@cccma/classic
+  - tags@cccma/classic
