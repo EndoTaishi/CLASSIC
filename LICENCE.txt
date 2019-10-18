@@ -1,7 +1,8 @@
-CLASS-CTEM is distributed under the Open Government License - Canada (http://data.gc.ca/eng/open-government-licence-canada) and the GNU General Public License version 2.
-The text of both follows.
+CLASSIC is distributed under the Open Government License - Canada (http://data.gc.ca/eng/open-government-licence-canada) and the GNU General Public License version 2. The text of both follows. Also note that some portions of xml-fortran (http://xml-fortran.sourceforge.net) have been used in the CLASSIC code. The xml-fortran licence is also shown below.
 
-Open Government Licence - Canada
+=============================================
+
+1. Open Government Licence - Canada
 
 You are encouraged to use the Information that is available under this licence with only a few conditions.
 
@@ -52,9 +53,8 @@ Versioning
 This is version 2.0 of the Open Government Licence – Canada. The Information Provider may make changes to the terms of this licence from time to time and issue a new version of the licence. Your use of the Information will be governed by the terms of the licence in force as of the date you accessed the information.
 
 
-----------------------------
-                    GNU GENERAL PUBLIC LICENSE
-                       Version 3, 29 June 2007
+2. GNU GENERAL PUBLIC LICENSE
+  Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
  Everyone is permitted to copy and distribute verbatim copies
@@ -727,3 +727,40 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+
+
+3. xml-fortran licence
+   
+   Note: The official xml-fortran repository on sourceforge
+<http://xml-fortran.sourceforge.net> only lists the license as "BSD License". It
+is assumed that this refers to the 3-clause BSD license ("modified" or "new")
+that is shown below.
+
+================================================================================
+
+Copyright (c) 2011-2012 Paul K. Romano
+
+Copyright (c) 2008 Arjen Markus
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+
+    * Neither the name of the copyright holders nor the names of its
+      contributors may be used to endorse or promote products derived from this
+      software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

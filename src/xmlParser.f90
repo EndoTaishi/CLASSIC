@@ -1,6 +1,7 @@
 !> \file
-!> @author
-!> Ed Wisernig ???
+!> This xml parser is derived, in part, from xml-fortran (http://xml-fortran.sourceforge.net)
+!! Please see the LICENCE.txt for the licencing information. 
+!> @author Ed Wisernig 
 !ignoreLint(1050) ! do not lint this file; too many string literals that can be damaged
 module xmlparser
 
