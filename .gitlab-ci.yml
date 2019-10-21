@@ -113,10 +113,10 @@ retression_test:ctem_compete:
 
 pages:
   stage: build
-  image: alpine
+  image: ubuntu
   script:
-  - apk update
-  - apk add doxygen
+  - apt update
+  - apt install doxygen perl texlive-latex-base -y -f -m
   - doxygen Doxyfile
   - mv documentation/html/ public/
   - rm -r -f documentation/html
