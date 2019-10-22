@@ -36,8 +36,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 #######################################################
 output_dir = ""
-observationalData = "../fluxnet_data/test/outputs"
-compare_to_obs = True
+observationalData = "/home/acrp001/mattfortier2019/code/CLASSIC/inputFiles/observationalDataFLUXNET"
 simulatedRuns = []
 
 #######################################################
@@ -69,6 +68,12 @@ in each fluxnet site's simulation output.
 - input_multipliers is a list that will contain the scalar values which will be multiplied
 with the corresponding values in the input_attributes list. If no multiplication is necessary,
 it can be set to an array of 1's the same length as the input_attributes list.
+
+- show is a string that can be set to either "model", "obs", or "both". This determines what
+plots will be generated, and what will be included in those plots. For example, if you only want
+to see what the observational value of a variable is, select "obs". This will disable scatter plots
+for that variable and just show the observational value. If you want to see everything, set it to
+"both"
 '''
 
 #######################################################
@@ -79,7 +84,8 @@ variables = [
         "units": "kg C/m$^2$/month",
         "seconds_to_months": True,
         "input_attributes": ["gpp"],
-        "input_multipliers": [1]
+        "input_multipliers": [1],
+        "show": "both"
 
     },
     {
@@ -88,7 +94,8 @@ variables = [
         "units": "kg C/m$^2$/month",
         "seconds_to_months": True,
         "input_attributes": ["ra", "rh"], # reco is 1*ra + 1*rh
-        "input_multipliers": [1, 1]
+        "input_multipliers": [1, 1],
+        "show": "both"
 
     },
     {
@@ -97,7 +104,8 @@ variables = [
         "units": "kg C/m$^2$/month",
         "seconds_to_months": True,
         "input_attributes": ["nep"],
-        "input_multipliers": [1]
+        "input_multipliers": [1],
+        "show": "both"
 
     },
     {
@@ -106,7 +114,8 @@ variables = [
         "units": "W/m$^2$",
         "seconds_to_months": False,
         "input_attributes": ["hfss"],
-        "input_multipliers": [1]
+        "input_multipliers": [1],
+        "show": "both"
 
     },
     {
@@ -115,7 +124,8 @@ variables = [
         "units": "W/m$^2$",
         "seconds_to_months": False,
         "input_attributes": ["hfls"],
-        "input_multipliers": [1]
+        "input_multipliers": [1],
+        "show": "both"
 
     },
     {
@@ -124,17 +134,27 @@ variables = [
         "units": "W/m$^2$",
         "seconds_to_months": False,
         "input_attributes": ["rss", "rls"],
-        "input_multipliers": [1, 1]
+        "input_multipliers": [1, 1],
+        "show": "both"
 
+    },
+    {
+        "observational_attribute": "hfg",
+        "observational_multiplier": 1,
+        "units": "W/m$^2$",
+        "seconds_to_months": False,
+        "input_attributes": ["hfg"],
+        "input_multipliers": [1],
+        "show": "both"
     },
     {
         "observational_attribute": "imbalance",
         "observational_multiplier": 1,
         "units": "W/m$^2$",
         "seconds_to_months": False,
-        "input_attributes": ["rss", "rss"],
-        "input_multipliers": [1, -1]
-
+        "input_attributes": ["rss", "rls", "hfg", "hfss", "hfls"],
+        "input_multipliers": [1, 1, -1, -1, -1],
+        "show": "obs"
     }
 ]
 #######################################################
@@ -143,7 +163,7 @@ variables = [
 def main():
     avail_colours = ['k', 'm', 'c', 'r', 'g', 'b']
 
-    colours = ['k'] if compare_to_obs else []
+    colours = ['k']
     for run in simulatedRuns:
         colours.append(run["colour"])
 
@@ -170,7 +190,6 @@ def main():
     # Add any command-line output folders to the list of simulated runs
     if len(sys.argv) > 1:
         for item in sys.argv[1:]:
-            print(item)
             sim = {}
             sim["outputs"] = item
             name = re.match(r".*\/([^\/]*)\/outputs", item)
@@ -191,10 +210,7 @@ def main():
         if not os.path.isfile(obsFile):
             print("Could not find file: " + obsFile)
             sys.exit(1)
-        if compare_to_obs:
-            df_obs_full = pd.read_csv(obsFile, usecols=["time", var["observational_attribute"], "sitename", "IGBPcode"])
-        else:
-            df_obs_full = pd.read_csv(obsFile, usecols=["time", "sitename", "IGBPcode"])
+        df_obs_full = pd.read_csv(obsFile, usecols=["time", var["observational_attribute"], "sitename", "IGBPcode"])
         df_obs_full['time'] = pd.to_datetime(df_obs_full['time'])
 
         # Keep all adjusted dataframes in a single dictionary
@@ -219,7 +235,7 @@ def main():
                 else:
                     IGBP[site_code] = [site]
 
-        if compare_to_obs:
+        if var["show"] == "both":
             print("Running statistics...")
             run_statistics(dataframes, IGBP, var, stats)
         print("Generating timeseries and scatter matrices...")
@@ -228,9 +244,9 @@ def main():
         #if var["observational_attribute"] == "gpp":
         #    generate_functional_relationship_plots(dataframes, colours, IGBP)
 
-        if compare_to_obs:
-            print("Generating seasonal matrices...")
-            seasonal_plots(dataframes, colours, IGBP, var)
+
+        print("Generating seasonal matrices...")
+        seasonal_plots(dataframes, colours, IGBP, var)
         print("\n")
 
 
@@ -278,43 +294,41 @@ def generate_comparative_frame(df_obs, site, dataframes, var):
         df_sim = df_sim.rename(columns={var["observational_attribute"]: run["name"]})
         simulatedFrames.append(df_sim)
 
-    # Only include dates where we have overlapping data
-    if compare_to_obs:
-        # Drop all unnecessary columns
-        df_obs = df_obs.drop(columns=['IGBPcode', 'sitename'])
+# Only include dates where we have overlapping data
+    # Drop all unnecessary columns
+    df_obs = df_obs.drop(columns=['IGBPcode', 'sitename'])
 
-        # Remove -9999 values (csv sentinel value for no observation), apply multipliers
-        df_obs = df_obs[df_obs[var["observational_attribute"]] != -9999]
-        df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
-        #df_obs = df_obs.replace(-9999, np.nan)
-        df_obs[var["observational_attribute"]] = df_obs[var["observational_attribute"]].apply(lambda x: x*var["observational_multiplier"])
+    # Remove -9999 values (csv sentinel value for no observation), apply multipliers
+    df_obs = df_obs[df_obs[var["observational_attribute"]] != -9999]
+    df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
+    #df_obs = df_obs.replace(-9999, np.nan)
+    df_obs[var["observational_attribute"]] = df_obs[var["observational_attribute"]].apply(lambda x: x*var["observational_multiplier"])
 
-        if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
-            print("Missing data for " + site + ". Skipping...")
-            return False
-        df_obs.sort_values(by=['time'])
-        for df_sim in simulatedFrames:
-            df_sim.sort_values(by=['time'])
-        mintime = df_obs['time'][0] if simulatedFrames[0]['time'][0] < df_obs['time'][0] else simulatedFrames[0]['time'][0]
-        maxtime = simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] if simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] \
-            < df_obs['time'][df_obs['time'].count()-1] else df_obs['time'][df_obs['time'].count()-1]
-        df_obs = df_obs[df_obs['time'] >= mintime]
-        df_obs = df_obs[df_obs['time'] <= maxtime]
-        df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
-        for df_sim in simulatedFrames:
-            df_sim.drop(df_sim[df_sim['time'] < mintime].index, inplace=True)
-            df_sim.drop(df_sim[df_sim['time'] > maxtime].index, inplace=True)
-            df_sim.reset_index(drop=True, inplace=True) # go back to indexing from 0
-        if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
-            print("No overlapping data for " + site + ". Skipping...")
-            return False
+    if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
+        print("Missing data for " + site + ". Skipping...")
+        return False
+    df_obs.sort_values(by=['time'])
+    for df_sim in simulatedFrames:
+        df_sim.sort_values(by=['time'])
+    mintime = df_obs['time'][0] if simulatedFrames[0]['time'][0] < df_obs['time'][0] else simulatedFrames[0]['time'][0]
+    maxtime = simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] if simulatedFrames[0]['time'][simulatedFrames[0]['time'].count()-1] \
+        < df_obs['time'][df_obs['time'].count()-1] else df_obs['time'][df_obs['time'].count()-1]
+    df_obs = df_obs[df_obs['time'] >= mintime]
+    df_obs = df_obs[df_obs['time'] <= maxtime]
+    df_obs = df_obs.reset_index(drop=True) # go back to indexing from 0
+    for df_sim in simulatedFrames:
+        df_sim.drop(df_sim[df_sim['time'] < mintime].index, inplace=True)
+        df_sim.drop(df_sim[df_sim['time'] > maxtime].index, inplace=True)
+        df_sim.reset_index(drop=True, inplace=True) # go back to indexing from 0
+    if min(simulatedFrames[0][simulatedRuns[0]["name"]].count(), df_obs[var["observational_attribute"]].count()) == 0:
+        print("No overlapping data for " + site + ". Skipping...")
+        return False
 
     # Rename column
     df_obs = df_obs.rename(columns={var["observational_attribute"]: 'observed'})
 
     # Index by time, then concatenate the datasets by time
-    if compare_to_obs:
-        simulatedFrames.insert(0, df_obs)
+    simulatedFrames.insert(0, df_obs)
     for df_sim in simulatedFrames:
         if var["seconds_to_months"]:
             seconds_to_months(df_sim)
@@ -350,7 +364,12 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
     # Iterate through each IGBP code (eg. ENF, OSH, etc.)
     for code in IGBP.keys():
         for site in IGBP[code]:
-            dataframes[site].plot(title=f"{site}({code})", ax=axes[i][j], style=".-", lw=0.5, ms=3, legend=False, color=colours)
+            for c, run in enumerate(list(dataframes[site])):
+                if var["show"] == "model" and c == 0:
+                    continue
+                if var["show"] == "obs" and c > 0:
+                    continue
+                dataframes[site][run].plot(title=f"{site}({code})", ax=axes[i][j], style=".-", lw=0.5, ms=3, legend=False, color=colours[c])
             j += 1
             if j == num_cols:
                 j = 0
@@ -370,7 +389,7 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
     plt.savefig(output_dir + "/" + var["observational_attribute"] + "_time_series.pdf")
     plt.close()
     # Create the scatter plot matrix, if we're using observational data
-    if compare_to_obs:
+    if var["show"] == "both":
         handles = []
         labels = []
         fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
@@ -392,11 +411,11 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
                 axes[i][j].set_ylim([floor, ceiling])
                 for k, run in enumerate(list(dataframes[site])[1:]):
                     dataframes[site].plot(kind="scatter", x="observed", y=run, color=colours[k+1], s=3, ax=axes[i][j], title=f"{site}({code})", label=run, zorder=3, alpha=0.7, legend=False)
-                fits, r2 = find_linear_fits(dataframes[site])
+                fits = find_linear_fits(dataframes[site])
                 for k, run in enumerate(list(dataframes[site])[1:]):
-                    axes[i][j].text(x=0.02, y=0.9-0.1*k, s="{:5.3f} / {} / {}".format(fits[k], stats[site][k]["r2"][:5], stats[site][k]["mse"][:5]), color=colours[k+1], transform=axes[i][j].transAxes)
+                    axes[i][j].text(x=0.02, y=0.9-0.1*k, s="y={:5.3f}x+{:4.1f} / {} / {}".format(fits[k][0], fits[k][1], stats[site][k]["r2"][:5], stats[site][k]["mse"][:5]), color=colours[k+1], transform=axes[i][j].transAxes)
                 for k, m in enumerate(fits):
-                    axes[i][j].plot([floor, ceiling], [floor*m, ceiling*m], color=colours[k+1], zorder=4, alpha=0.7)
+                    axes[i][j].plot([floor, ceiling], [floor*m[0]+m[1], ceiling*m[0]+m[1]], color=colours[k+1], zorder=4, alpha=0.7)
                 axes[i][j].plot([floor, ceiling], [floor, ceiling], color=colours[0], zorder=1, alpha=0.7)
                 axes[i][j].set_position([0.075 + j*0.19, 1-((i+1)/num_rows)+(0.2/num_rows), 0.15, (1/num_rows)*(0.6)])
                 axes[i][j].xaxis.set_label_text("Observed")
@@ -410,8 +429,8 @@ def generate_plot_matrices(dataframes, colours, IGBP, var, stats):
                     i += 1
         for ii in range(num_plots, num_cols*num_rows):
             plt.delaxes(axes[math.floor(ii/num_cols), ii%num_cols])
-        fig.text(0.1, 1-(6/(7*num_rows)), "slope / r$^2$ / mse")
-        fig.legend(handles, labels, loc=(0.08, 1-(3/(4*num_rows))))
+        fig.text(0.072, 1-(6/(7*num_rows)), "line eqn / r$^2$ / rmse")
+        fig.legend(handles, labels, loc=(0.083, 1-(3/(4*num_rows))))
         plt.savefig(output_dir + "/" + var["observational_attribute"] + "_scatter" + ".pdf")
         plt.close()
 
@@ -441,12 +460,20 @@ def seasonal_plots(dataframes, colours, IGBP, var):
             if len(custom_legend) == 0:
                 runs = list(df)
                 for c, run in enumerate(list(df)):
+                    if var["show"] == "model" and c == 0:
+                        continue
+                    if var["show"] == "obs" and c > 0:
+                        continue
                     custom_legend.append(Line2D([0], [0], color=colours[c]))
                     custom_labels.append(run)
             df = df.reset_index()
             df['Month'] = df['time'].dt.month
             df = df.sort_values(by=['Month'])
             for c, run in enumerate(runs):
+                if var["show"] == "model" and c == 0:
+                    continue
+                if var["show"] == "obs" and c > 0:
+                    continue
                 sns.lineplot(data=df, x='Month', y=run, ax=axes[i][j], legend=False, ci="sd", color=colours[c], alpha=(0.6 if c == 0 else 1)).set_title(f"{site}({code})")
             # set all the axis properties
             axes[i][j].xaxis.set_major_locator(ticker.MaxNLocator(6))
@@ -535,14 +562,24 @@ def find_linear_fits(df):
     points = df.values
     points = points[~np.isnan(points).any(axis=1)]
     fits = []
-    r2 = []
-    def mse(b):
-        return sum(abs(a[1]-b*a[0])**2 for a in points_comp)
-    for i, run in enumerate(list(df)[1:]):
-        points_comp = points[:,[0,i+1]]
-        fits.append(scipy.optimize.minimize(mse, [1.0], method="Nelder-Mead").x[0])
-        # r2 should contain the coefficients of determination for each fit line
-    return fits, r2
+    def best_fit(X, Y):
+        xbar = sum(X)/len(X)
+        ybar = sum(Y)/len(Y)
+        n = len(X) # or len(Y)
+
+        numer = sum([xi*yi for xi,yi in zip(X, Y)]) - n * xbar * ybar
+        denum = sum([xi**2 for xi in X]) - n * xbar**2
+
+        b = numer / denum
+        a = ybar - b * xbar
+        return a, b
+    x=points[:,0]
+    y=points[:,1]
+    a, b = best_fit(list(x),list(y))
+    z = [b, a]
+    fits.append(z)
+    #fits.append(np.polyfit(x, y, 1))
+    return fits
 
 
 # Returns an appropriate floor for axis range from a dataframe

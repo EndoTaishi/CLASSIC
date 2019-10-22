@@ -108,12 +108,13 @@ contains
 
           if ((.not. leapnow .and. iday == 365) .or. (leapnow .and. iday == 366)) then
             if (tymaxlai(i,j) > zero) then
-              grwtheff(i,j) = (stemmass(i,j) + rootmass(i,j) &
-                              - lystmmas(i,j) + lyrotmas(i,j)) / tymaxlai(i,j)
+              grwtheff(i,j) = ((stemmass(i,j) + rootmass(i,j)) &
+                              - (lystmmas(i,j) + lyrotmas(i,j))) / tymaxlai(i,j)
             else
               grwtheff(i,j) = 0.0
             end if
             grwtheff(i,j) = max(0.0,grwtheff(i,j)) * 1000.0
+            
             lystmmas(i,j) = stemmass(i,j)
             lyrotmas(i,j) = rootmass(i,j)
           end if

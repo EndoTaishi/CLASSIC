@@ -84,7 +84,8 @@ At each physics time step, for each grid cell or modelled area, the following at
 - *GC* GCM surface descriptor
   - For land surfaces (inc. inland water) set it to -1
 
-
+  **Note** If you are using gridded meteorology and it is all in 'local' time you will need to set allLocalTime = .true. in metModule.f90.  This will prevent it from adjusting the timezone of your meteorology. For site-level simulations as long as you provide meteorology on the same timestep as the model physics (typically 30 minutes) your meteorology will be used as is. To determine if your meteorology is relative to Greenwich or in local time, look at your shortwave radiation. As you move through time do you see the sun move across longitudes (allLocalTime = .false.) or across latitudes (allLocalTime = .true.). It seems reanalysis will generally be false while climate model outputs are generally true.
+  
 ## Advisement regarding the physics timestep
 
 The length of the time step should be carefully considered in assembling the forcing data. CLASS has been designed to run at a time step of 30 minutes or less, and the explicit prognostic time stepping scheme used for the soil, snow and vegetation variables is based on this assumption. Longer time steps may lead to the emergence of numerical instabilities in the modelled prognostic variables. The physics timestep can be changed in the run parameters namelist file.

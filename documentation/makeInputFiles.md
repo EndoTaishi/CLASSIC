@@ -320,6 +320,10 @@ An ncdump of a properly formatted, global-scale, initialization file is included
             		rootmass:_FillValue = -999.f ;
             		rootmass:units = "kgC/m2" ;
             		rootmass:long_name = "Root mass" ;
+                double grwtheff(tile, icctem, lat, lon) ;
+                	grwtheff:units = "(kg C/m^2)/(m2/m2)" ;
+                	grwtheff:_FillValue = -999. ;
+                	grwtheff:long_name = "Growth efficiency. Change in biomass per year per unit max. LAI,for use in mortality subroutine" ;
             	double slope(slope) ;
             		slope:_FillValue = NaN ;
             		slope:long_name = "wetland slope fractions for 0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope threshold" ;

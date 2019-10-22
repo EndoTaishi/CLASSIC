@@ -29,13 +29,13 @@ for f in $inputs/*; do
     sed -i "/metFileFss/s|'.*'|'$f/metVar_sw.nc'| ; /metFileFdl/s|'.*'|'$f/metVar_lw.nc'| ; /metFilePre/s|'.*'|'$f/metVar_pr.nc'| ; /metFileTa/s|'.*'|'$f/metVar_ta.nc'| ; /metFileQa/s|'.*'|'$f/metVar_qa.nc'| ; /metFileUv/s|'.*'|'$f/metVar_wi.nc'| ; /metFilePres/s|'.*'|'$f/metVar_ap.nc'|" $jof
 
     # Use the proper CO2 file
-    sed -i "/CO2File/s|'.*'|'inputFiles/FLUXNETsites/TRENDY_CO2_1700_2018.nc'|" $jof
+    sed -i "/CO2File/s|'.*'|'inputFiles/TRENDY_CO2_1700_2018.nc'|" $jof
 
     # Replace the init and restart files
     sed -i "/init_file/s|'.*'|'$f/${current}_init.nc'| ; /rs_file_to_overwrite/s|'.*'|'$f/rsfile.nc'|" $jof
 
-    # Turn off fires and land use
-    sed -i "/lnduseon/s|=\s*\..*\.\s*,|= \.false\. ,| ; /fixedYearLUC/s|=\s*[-0-9]*\s*,|= -9999 ,| ; /dofire/s|=\s*\..*\.\s*,|= \.false\. ,|" $jof
+    # Turn off fires and land use, and competition
+    sed -i "/lnduseon/s|=\s*\..*\.\s*,|= \.false\. ,| ; /fixedYearLUC/s|=\s*[-0-9]*\s*,|= -9999 ,| ; /dofire/s|=\s*\..*\.\s*,|= \.false\. ,| ; /PFTCompetition/s|=\s*\..*\.|= \.false\.|" $jof
 
     # Replace the IDISP, IZREF, ZRFH, and ZRFM
     sed -i "/IDISP/s|= [0-9\.]*\s*,|= 1 ,| ; /IZREF/s|= [0-9\.]*\s*,|= 1 ,| ; /ZRFH/s|= [0-9\.]*,|= $ZRFH ,| ; /ZRFM/s|= [0-9\.]*,|= $ZRFM ,|" $jof

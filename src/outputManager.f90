@@ -826,6 +826,7 @@ contains
     if (posTimeWanted == 0) then
       print * ,'missing timestep in output file ',key,localStamp
       print * ,' ** Did you set leap = true but give CLASSIC inputs that do not have leap years?'
+      print * ,'OR did you try and write out a variable that is incorrectly specified in your output xml file?'
       stop
     else
       timeIndex = posTimeWanted

@@ -7,13 +7,6 @@ stages:
  - test
  - documentation
 
-check_location:
-  stage: setup
-  script:
-    - echo "HELLO FROM MASTER!"
-  only:
-    - master@CLASSIC_development/CLASSIC
-
 prepare_binary_folder:
   stage: setup
   script:
@@ -24,7 +17,8 @@ prepare_binary_folder:
     - fi
     - echo "setup complete"
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 compile:
   stage: build
@@ -33,40 +27,47 @@ compile:
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 submit:ctem_on:
   stage: submit
   script:
     - tools/regression_testing/submission_scripts/job_submit_ctem_on.sh
     - echo "job submitted"
+    - rm -f /space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_on/checksums.csv
   artifacts:
     paths:
       - job_id.txt
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 submit:ctem_off:
   stage: submit
   script:
     - tools/regression_testing/submission_scripts/job_submit_ctem_off.sh
     - echo "job submitted"
+    - rm -f /space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_off/checksums.csv
   artifacts:
     paths:
       - job_id.txt
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 submit:ctem_compete:
   stage: submit
   script:
     - tools/regression_testing/submission_scripts/job_submit_ctem_compete.sh
     - echo "job submitted"
+    - rm -f /space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_compete/checksums.csv
   artifacts:
     paths:
       - job_id.txt
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 regression_test:ctem_on:
   stage: test
@@ -79,7 +80,8 @@ regression_test:ctem_on:
   dependencies:
     - submit:ctem_on
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 retression_test:ctem_off:
   stage: test
@@ -92,7 +94,8 @@ retression_test:ctem_off:
   dependencies:
     - submit:ctem_off
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 retression_test:ctem_compete:
   stage: test
@@ -105,7 +108,8 @@ retression_test:ctem_compete:
   dependencies:
     - submit:ctem_compete
   except:
-    - master@cccma/classic
+    - branches@cccma/classic
+    - tags@cccma/classic
 
 pages:
   stage: build
@@ -122,4 +126,5 @@ pages:
     paths:
     - public
   only:
-  - master@cccma/classic
+  - branches@cccma/classic
+  - tags@cccma/classic

@@ -25,6 +25,13 @@ module metDisaggModule
   integer :: numberMetInputinDay  !< Number of MET input file timesteps that fit into one day
   integer :: tslongCount          !< Number of physics timesteps in the original met arrays
   integer :: shortSteps           !< Number of physics timesteps in one day
+  
+  logical, parameter :: allLocalTime = .false.  !< If your gridded meteorology is relative to Greenwich then set this 
+                                                !! to false. If the meteorology is all in local time set it to true. To
+                                                !! determine which, look at your shortwave radiation. As you move through time 
+                                                !! do you see the sun move across longitudes (allLocalTime = .false.) or across 
+                                                !! latitudes (allLocalTime = .true.). It seems reanalysis will generally be false 
+                                                !! while climate model outputs are generally true.
 
 contains
 
@@ -585,12 +592,15 @@ contains
     real, allocatable, dimension(:) :: tmpFss, tmpFdl, tmpPre, tmpTa, tmpQa, tmpUv, tmpPres
 
     !> Do a circular shift to the arrays (except Fss !) to adjust for the timezone
-    metFdl = cshift(metFdl,int(timeZoneOffset))
-    metPre = cshift(metPre,int(timeZoneOffset))
-    metTa = cshift(metTa,int(timeZoneOffset))
-    metQa = cshift(metQa,int(timeZoneOffset))
-    metUv = cshift(metUv,int(timeZoneOffset))
-    metPres = cshift(metPres,int(timeZoneOffset))
+    !! but only if you have the meteorology relative to Greenwich.
+    if (.not. allLocalTime) then 
+      metFdl = cshift(metFdl,int(timeZoneOffset))
+      metPre = cshift(metPre,int(timeZoneOffset))
+      metTa = cshift(metTa,int(timeZoneOffset))
+      metQa = cshift(metQa,int(timeZoneOffset))
+      metUv = cshift(metUv,int(timeZoneOffset))
+      metPres = cshift(metPres,int(timeZoneOffset))
+    end if 
 
     !> Transfer the present contents of the met*** arrays to temp ones.
     call move_alloc(metFss,tmpFss)

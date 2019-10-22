@@ -583,6 +583,8 @@ contains
     ! COMBAK PERLAY
     real, pointer, dimension(:,:,:) :: pstemmassrow         !< Stem mass from previous timestep, is value before fire. used by burntobare subroutine
     real, pointer, dimension(:,:,:) :: pgleafmassrow        !< Green leaf mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, pointer, dimension(:,:,:) :: grwtheffrow          !< growth efficiency. change in biomass per year per unit max.
+    !< lai (\f$kg c/m^2\f$)/(m2/m2),for use in mortality subroutine
     real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -635,6 +637,7 @@ contains
     rootmassrow       => vrot%rootmass
     pstemmassrow      => vrot%pstemmass
     pgleafmassrow     => vrot%pgleafmass
+    grwtheffrow       => vrot%grwtheff
     twarmm            => vrot%twarmm
     tcoldm            => vrot%tcoldm
     gdd5              => vrot%gdd5
@@ -923,18 +926,7 @@ contains
       bleafmasrow = ncGet3DVar(initid, 'bleafmas', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       stemmassrow = ncGet3DVar(initid, 'stemmass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
       rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])
-
-      !> If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-      if (dofire .and. PFTCompetition) then
-        do i = 1,nlat
-          do m = 1,nmos
-            do j = 1,icc
-              pstemmassrow(i,m,j) = stemmassrow(i,m,j)
-              pgleafmassrow(i,m,j) = rootmassrow(i,m,j)
-            end do
-          end do
-        end do
-      end if
+      grwtheffrow = ncGet3DVar(initid, 'grwtheff', start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos], format = [nlat,nmos,icc])      
 
       ! COMBAK PERLAY
       litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos], format = [nlat,nmos,iccp2])
@@ -1033,6 +1025,18 @@ contains
 
       end if ! if (PFTCompetition .and. start_bare)
 
+      !> If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+      if (dofire .and. PFTCompetition) then
+        do i = 1,nlat
+          do m = 1,nmos
+            do j = 1,icc
+              pstemmassrow(i,m,j) = stemmassrow(i,m,j)
+              pgleafmassrow(i,m,j) = rootmassrow(i,m,j)
+            end do
+          end do
+        end do
+      end if
+
     end if ! ctem_on
 
   end subroutine read_initialstate
@@ -1084,6 +1088,8 @@ contains
     real, pointer, dimension(:,:,:) :: bleafmasrow          !
     real, pointer, dimension(:,:,:) :: stemmassrow          !
     real, pointer, dimension(:,:,:) :: rootmassrow          !
+    real, pointer, dimension(:,:,:) :: grwtheffrow          !< growth efficiency. change in biomass per year per unit max.
+    !< lai (\f$kg c/m^2\f$)/(m2/m2),for use in mortality subroutine
     real, pointer, dimension(:,:,:) :: tracerGLeafMass      !< Tracer mass in the green leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerBLeafMass      !< Tracer mass in the brown leaf pool for each of the CTEM pfts, \f$kg c/m^2\f$
     real, pointer, dimension(:,:,:) :: tracerStemMass       !< Tracer mass in the stem for each of the CTEM pfts, \f$kg c/m^2\f$
@@ -1139,6 +1145,7 @@ contains
     dry_season_length => vrot%dry_season_length
     litrmassrow       => vrot%litrmass
     soilcmasrow       => vrot%soilcmas
+    grwtheffrow       => vrot%grwtheff
     lfstatusrow       => vrot%lfstatus
     pandaysrow        => vrot%pandays
     Cmossmas          => vrot%Cmossmas
@@ -1187,7 +1194,6 @@ contains
     call ncPut2DVar(rsid, 'maxAnnualActLyr', maxAnnualActLyr,start = [lonIndex,latIndex,1], count = [1,1,nmos])
 
     if (ctem_on) then
-
       call ncPut3DVar(rsid, 'fcancmx', fcancmxrow,start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos])
       call ncPut3DVar(rsid, 'gleafmas', gleafmasrow,start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos])
       call ncPut3DVar(rsid, 'bleafmas', bleafmasrow,start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos])
@@ -1196,6 +1202,8 @@ contains
       ! COMBAK PERLAY
       call ncPut3DVar(rsid, 'litrmass', litrmassrow,start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos])
       call ncPut3DVar(rsid, 'soilcmas', soilcmasrow,start = [lonIndex,latIndex,1,1], count = [1,1,iccp2,nmos])
+      call ncPut3DVar(rsid, 'grwtheff', grwtheffrow,start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos])
+
       ! do k = 1,ignd
       !   call ncPut3DVar(rsid, 'litrmass', litrmassrow(:,:,:,k),start = [lonIndex,latIndex,1,k,1], count = [1,1,iccp2,1,nmos])
       !   call ncPut3DVar(rsid, 'soilcmas', soilcmasrow(:,:,:,k),start = [lonIndex,latIndex,1,k,1], count = [1,1,iccp2,1,nmos])
@@ -1607,7 +1615,6 @@ contains
         ! If we are using leap years, check if that year is a leap year
         call findLeapYears(fixedYearLGHT, dummyVar, lastDOY)
 
-        ! FLAG Not presently set up for leap years !
         allocate(LGHTFromFile(lastDOY))
         LGHTFromFile = ncGet1DVar(lghtid,trim(lghtVarName),start = [lonloc,latloc,arrindex], count = [1,1,lastDOY])
 

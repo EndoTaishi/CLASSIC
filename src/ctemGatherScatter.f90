@@ -33,10 +33,16 @@ contains
                      ipeatlandgat, maxAnnualActLyrGAT, & ! Out
                      tracergLeafMassgat, tracerBLeafMassgat, tracerStemMassgat, & ! Out
                      tracerRootMassgat, tracerLitrMassgat, tracerSoilCMassgat, & ! Out
-                     tracerMossCMassgat, tracerMossLitrMassgat, & ! Out
+                     tracerMossCMassgat, tracerMossLitrMassgat, & ! Out                     
+                     twarmmgat, tcoldmgat, gdd5gat, & ! Out
+                     ariditygat, srplsmongat, defctmongat, anndefctgat, & ! Out
+                     annsrplsgat, annpcpgat, dry_season_lengthgat, & ! Out
+                     litrmsmossgat, Cmossmasgat, dmossgat, & ! Out                     
+                     pandaysgat, lfstatusgat, slopefracgat, pstemmassgat, & ! Out
+                     pgleafmassgat,litrmassgat, soilcmasgat, grwtheffgat, & ! Out
                      ilmos, jlmos, iwmos, jwmos, nml, &! In
                      gleafmasrow, bleafmasrow, stemmassrow, rootmassrow, &! In
-                     fcancmxrow, zbtwrow, dlzwrow, sdeprow, &! In
+                     fcancmxrow, zbtwrot, dlzwrot, sdeprot, &! In
                      ailcgrow, ailcbrow, ailcrow, zolncrow, &! In
                      rmatcrow, rmatctemrow, slairow, bmasvegrow, &! In
                      cmasvegcrow, veghghtrow, rootdpthrow, alvsctmrow, &! In
@@ -44,7 +50,13 @@ contains
                      ipeatlandrow, maxAnnualActLyrROT, &! In
                      tracergLeafMassrot, tracerBLeafMassrot, tracerStemMassrot, &! In
                      tracerRootMassrot, tracerLitrMassrot, tracerSoilCMassrot, &! In
-                     tracerMossCMassrot, tracerMossLitrMassrot)! In
+                     tracerMossCMassrot, tracerMossLitrMassrot, & ! In
+                     twarmmrow, tcoldmrow, gdd5row, & ! In
+                     aridityrow, srplsmonrow, defctmonrow, anndefctrow, & ! In
+                     annsrplsrow, annpcprow, dry_season_lengthrow, & ! In
+                     litrmsmossrow, Cmossmasrow, dmossrow, & ! In
+                     pandaysrow, lfstatusrow, slopefracrow, pstemmassrow, & ! In
+                     pgleafmassrow, litrmassrow, soilcmasrow, grwtheffrow)! In
 
     !
     !     2 May 2019  - Convert to f90 and put in this module.
@@ -94,6 +106,31 @@ contains
     real, intent(out) :: tracerrootMassgat(ilg,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(out) :: tracerlitrMassgat(ilg,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(out) :: tracersoilCMassgat(ilg,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, intent(out) :: twarmmgat(ilg)
+    real, intent(out) :: tcoldmgat(ilg)
+    real, intent(out) :: gdd5gat(ilg)
+    real, intent(out) :: ariditygat(ilg)
+    real, intent(out) :: srplsmongat(ilg)
+    real, intent(out) :: defctmongat(ilg)
+    real, intent(out) :: anndefctgat(ilg) 
+    real, intent(out) :: annsrplsgat(ilg)
+    real, intent(out) :: annpcpgat(ilg)
+    real, intent(out) :: dry_season_lengthgat(ilg)
+    real, intent(out) :: litrmsmossgat(ilg)
+    real, intent(out) :: Cmossmasgat(ilg)
+    real, intent(out) :: dmossgat(ilg)
+    integer, intent(out) :: pandaysgat(ilg,icc)
+    integer, intent(out) :: lfstatusgat(ilg,icc)
+    real, intent(out) :: slopefracgat(ilg,8)
+    real, intent(out) :: pstemmassgat(ilg,icc)
+    real, intent(out) :: pgleafmassgat(ilg,icc)
+    ! COMBAK PERLAY
+    real, intent(out)  :: soilcmasgat(ilg,iccp2)
+    real, intent(out)  :: litrmassgat(ilg,iccp2)
+    !real, intent(out)  :: soilcmasgat(ilg,iccp2,ignd)
+    !real, intent(out)  :: litrmassgat(ilg,iccp2,ignd)
+    ! COMBAK PERLAY
+    real, intent(out) :: grwtheffgat(ilg,icc)
 
     integer, intent(in) :: ilmos (ilg)
     integer, intent(in) :: jlmos  (ilg)
@@ -105,9 +142,9 @@ contains
     real, intent(in) :: stemmassrow(nlat,nmos,icc)
     real, intent(in) :: rootmassrow(nlat,nmos,icc)
     real, intent(in) :: fcancmxrow(nlat,nmos,icc)
-    real, intent(in) ::  zbtwrow(nlat,nmos,ignd)
-    real, intent(in) ::  dlzwrow(nlat,nmos,ignd)
-    real, intent(in) :: sdeprow(nlat,nmos)
+    real, intent(in) :: zbtwrot(nlat,nmos,ignd)
+    real, intent(in) :: dlzwrot(nlat,nmos,ignd)
+    real, intent(in) :: sdeprot(nlat,nmos)
     real, intent(in) :: ailcgrow(nlat,nmos,icc)
     real, intent(in) :: ailcbrow(nlat,nmos,icc)
     real, intent(in) :: ailcrow(nlat,nmos,ican)
@@ -134,18 +171,61 @@ contains
     real, intent(in) :: tracerrootMassrot(nlat,nmos,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(in) :: tracerlitrMassrot(nlat,nmos,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(in) :: tracersoilCMassrot(nlat,nmos,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    real, intent(in)  :: twarmmrow(nlat,nmos)
+    real, intent(in)  :: tcoldmrow(nlat,nmos)
+    real, intent(in)  :: gdd5row(nlat,nmos)
+    real, intent(in)  :: aridityrow(nlat,nmos)
+    real, intent(in)  :: srplsmonrow(nlat,nmos)
+    real, intent(in)  :: defctmonrow(nlat,nmos)
+    real, intent(in)  :: anndefctrow(nlat,nmos)
+    real, intent(in)  :: annsrplsrow(nlat,nmos)
+    real, intent(in)  :: annpcprow(nlat,nmos)                         
+    real, intent(in)  :: dry_season_lengthrow(nlat,nmos)
+    real, intent(in)  :: litrmsmossrow(nlat,nmos)
+    real, intent(in)  :: Cmossmasrow(nlat,nmos)
+    real, intent(in)  :: dmossrow(nlat,nmos)
+    integer, intent(in) :: pandaysrow(nlat,nmos,icc)
+    integer, intent(in) :: lfstatusrow(nlat,nmos,icc)
+    real, intent(in)  :: slopefracrow(nlat,nmos,8)
+    real, intent(in)  :: pstemmassrow(nlat,nmos,icc)
+    real, intent(in)  :: pgleafmassrow(nlat,nmos,icc)
+    ! COMBAK PERLAY
+    real, intent(in)  :: soilcmasrow(nlat,nmos,iccp2)
+    real, intent(in)  :: litrmassrow(nlat,nmos,iccp2)
+    !real, intent(in)  :: soilcmasrow(nlat,nmos,iccp2,ignd)
+    !real, intent(in)  :: litrmassrow(nlat,nmos,iccp2,ignd)
+    ! COMBAK PERLAY
+    real, intent(in) :: grwtheffrow(nlat,nmos,icc)
 
     ! Local
-    integer ::  k, l, m
+    integer ::  k, l, m, n
 
     !----------------------------------------------------------------------
     do k = 1,nml ! loop 100
-      sdepgat(k) = sdeprow(ilmos(k),jlmos(k))
+      sdepgat(k) = sdeprot(ilmos(k),jlmos(k))
       ipeatlandgat(k) = ipeatlandrow(ilmos(k),jlmos(k))
       faregat(k) = FAREROT(ilmos(k),jlmos(k))
       maxAnnualActLyrGAT(k) = maxAnnualActLyrROT(ilmos(k),jlmos(k))
       tracerMossCMassgat(k) = tracerMossCMassrot(ilmos(k),jlmos(k))
       tracermossLitrMassgat(k) = tracermossLitrMassrot(ilmos(k),jlmos(k))
+      twarmmgat(k)    = twarmmrow(ilmos(k),jlmos(k))
+      tcoldmgat(k)    = tcoldmrow(ilmos(k),jlmos(k))
+      gdd5gat(k)      = gdd5row(ilmos(k),jlmos(k))
+      ariditygat(k)   = aridityrow(ilmos(k),jlmos(k))
+      srplsmongat(k)  = srplsmonrow(ilmos(k),jlmos(k))
+      defctmongat(k)  = defctmonrow(ilmos(k),jlmos(k))
+      anndefctgat(k)  = anndefctrow(ilmos(k),jlmos(k))
+      annsrplsgat(k)  = annsrplsrow(ilmos(k),jlmos(k))
+      annpcpgat(k)    = annpcprow(ilmos(k),jlmos(k))
+      dry_season_lengthgat(k) = &
+                                dry_season_lengthrow(ilmos(k),jlmos(k))
+      litrmsmossgat(k) =  litrmsmossrow(ilmos(k),jlmos(k))
+      Cmossmasgat(k) = Cmossmasrow(ilmos(k),jlmos(k))
+      dmossgat(k) = dmossrow(ilmos(k),jlmos(k))
+      ipeatlandgat(k) = ipeatlandrow(ilmos(k),jlmos(k))
+      do n = 1,8
+        slopefracgat(k,n) = slopefracrow(ilmos(k),jlmos(k),n)
+      end do
     end do ! loop 100
 
     do l = 1,icc ! loop 101
@@ -165,6 +245,11 @@ contains
         tracerbLeafMassgat(k,l) = tracerbLeafMassrot(ilmos(k),jlmos(k),l)
         tracerStemMassgat(k,l) = tracerStemMassrot(ilmos(k),jlmos(k),l)
         tracerRootMassgat(k,l) = tracerRootMassrot(ilmos(k),jlmos(k),l)
+        pandaysgat(k,l)  = pandaysrow(ilmos(k),jlmos(k),l)
+        lfstatusgat(k,l) = lfstatusrow(ilmos(k),jlmos(k),l)
+        pstemmassgat(k,l) = pstemmassrow(ilmos(k),jlmos(k),l)
+        pgleafmassgat(k,l) = pgleafmassrow(ilmos(k),jlmos(k),l)
+        grwtheffgat(k,l) = grwtheffrow(ilmos(k),jlmos(k),l)
       end do
     end do ! loop 101
 
@@ -182,8 +267,8 @@ contains
 
     do l = 1,ignd ! loop 250
       do k = 1,nml
-        zbtwgat(k,l) = zbtwrow(ilmos(k),jlmos(k),l)
-        dlzwgat(k,l) = dlzwrow(ilmos(k),jlmos(k),l)
+        zbtwgat(k,l) = zbtwrot(ilmos(k),jlmos(k),l)
+        dlzwgat(k,l) = dlzwrot(ilmos(k),jlmos(k),l)
       end do
     end do ! loop 250
 
@@ -205,10 +290,16 @@ contains
 
     do l = 1,iccp2
       do k = 1,nml
+        ! COMBAK PERLAY
         do m = 1,ignd
           tracerSoilCMassgat(k,l,m) = tracerSoilCMassrot(ilmos(k),jlmos(k),l,m)
           tracerLitrMassgat(k,l,m) = tracerLitrMassrot(ilmos(k),jlmos(k),l,m)
+        !litrmassgat(k,l,m) = litrmassrow(ilmos(k),jlmos(k),l,m)
+        !soilcmasgat(k,l,m) = soilcmasrow(ilmos(k),jlmos(k),l,m)
         end do
+        litrmassgat(k,l) = litrmassrow(ilmos(k),jlmos(k),l)
+        soilcmasgat(k,l) = soilcmasrow(ilmos(k),jlmos(k),l)
+        ! COMBAK PERLAY
       end do
     end do
     return
@@ -540,39 +631,36 @@ contains
     ! COMBAK PERLAY
 
     !   Methane related variables
-    real, intent(out)  :: ch4WetSpecrow(nlat,nmos), ch4WetSpecgat(ilg), &
-                          wetfdynrow(nlat,nmos), wetfdyngat(ilg), &
-                          ch4WetDynrow(nlat,nmos), ch4WetDyngat(ilg), &
-                          ch4soillsrow(nlat,nmos), ch4soillsgat(ilg)
+    real, intent(out)  :: ch4WetSpecrow(nlat,nmos), wetfdynrow(nlat,nmos), &
+                          ch4WetDynrow(nlat,nmos), ch4soillsrow(nlat,nmos)
+    real, intent(in)   :: ch4WetSpecgat(ilg), wetfdyngat(ilg), &
+                          ch4WetDyngat(ilg), ch4soillsgat(ilg)
 
-    real, intent(out) :: twarmmrow(nlat,nmos), twarmmgat(ilg), &
-                         tcoldmrow(nlat,nmos), tcoldmgat(ilg), &
-                         gdd5row(nlat,nmos), gdd5gat(ilg), &
-                         aridityrow(nlat,nmos), ariditygat(ilg), &
-                         srplsmonrow(nlat,nmos), srplsmongat(ilg), &
-                         defctmonrow(nlat,nmos), defctmongat(ilg), &
-                         anndefctrow(nlat,nmos), anndefctgat(ilg), &
-                         annsrplsrow(nlat,nmos), annsrplsgat(ilg), &
-                         annpcprow(nlat,nmos), annpcpgat(ilg), &
-                         dry_season_lengthrow(nlat,nmos), &
-                         dry_season_lengthgat(ilg)
-
+    real, intent(out) :: twarmmrow(nlat,nmos), tcoldmrow(nlat,nmos), &
+                         gdd5row(nlat,nmos), aridityrow(nlat,nmos),  &
+                         srplsmonrow(nlat,nmos), defctmonrow(nlat,nmos),  &
+                         anndefctrow(nlat,nmos), annsrplsrow(nlat,nmos),  &
+                         annpcprow(nlat,nmos), dry_season_lengthrow(nlat,nmos)
+                         
+    real, intent(in) :: twarmmgat(ilg), tcoldmgat(ilg), gdd5gat(ilg), &
+                        ariditygat(ilg), srplsmongat(ilg), defctmongat(ilg), &
+                        anndefctgat(ilg), annsrplsgat(ilg), annpcpgat(ilg), &
+                        dry_season_lengthgat(ilg)
 
     !   Peatland variables
-    real, intent(out) :: anmossrow(nlat,nmos), anmossgat(ilg), &
-                         rmlmossrow(nlat,nmos), rmlmossgat(ilg), &
-                         gppmossrow(nlat,nmos), gppmossgat(ilg), &
-                         armossrow(nlat,nmos), armossgat(ilg), &
-                         nppmossrow(nlat,nmos), nppmossgat(ilg), &
-                         peatdeprow(nlat,nmos), peatdepgat(ilg), &
-                         litrmsmossrow(nlat,nmos), litrmsmossgat(ilg), &
-                         Cmossmasrow(nlat,nmos), Cmossmasgat(ilg), &
-                         dmossrow(nlat,nmos), dmossgat(ilg), &
-                         !    9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
-                         !    1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
-                         pddrow(nlat,nmos), pddgat(ilg)
+    real, intent(out) :: anmossrow(nlat,nmos), rmlmossrow(nlat,nmos),  &
+                         gppmossrow(nlat,nmos), armossrow(nlat,nmos),  &
+                         nppmossrow(nlat,nmos), peatdeprow(nlat,nmos),  &
+                         litrmsmossrow(nlat,nmos), Cmossmasrow(nlat,nmos),  &
+                         dmossrow(nlat,nmos), pddrow(nlat,nmos)
+                         
+    real, intent(in) :: anmossgat(ilg), rmlmossgat(ilg), gppmossgat(ilg), &
+                        armossgat(ilg), nppmossgat(ilg), peatdepgat(ilg), &
+                        litrmsmossgat(ilg), Cmossmasgat(ilg), dmossgat(ilg), &
+                        pddgat(ilg)
 
-    integer, intent(out) :: ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
+    integer, intent(out) :: ipeatlandrow(nlat,nmos)
+    integer, intent(in) :: ipeatlandgat(ilg)
 
     ! allocated with nlat,nmos,...:
     real, intent(out) :: tracermossCMassrot(nlat,nmos)     !< Tracer mass in moss biomass, \f$kg C/m^2\f$
@@ -592,15 +680,11 @@ contains
     real, intent(in) :: tracerrootMassgat(ilg,icc)       !< Tracer mass in the roots for each of the CTEM pfts, \f$kg c/m^2\f$
     real, intent(in) :: tracerlitrMassgat(ilg,iccp2,ignd)       !< Tracer mass in the litter pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
     real, intent(in) :: tracersoilCMassgat(ilg,iccp2,ignd)      !< Tracer mass in the soil carbon pool for each of the CTEM pfts + bareground and LUC products, \f$kg c/m^2\f$
+    
     integer, intent(in) :: nml
+    integer, intent(in)  :: ilmos(ilg), jlmos(ilg), iwmos(ilg), jwmos(ilg) !     gather-scatter index arrays.
+    !
     integer ::  k,l,m
-    !
-    !
-    !     gather-scatter index arrays.
-    !
-    integer  :: ilmos(ilg), jlmos(ilg), iwmos(ilg), jwmos(ilg)
-
-    ! ------------
 
     !----------------------------------------------------------------------
     do k = 1,nml ! loop 100
@@ -893,7 +977,7 @@ contains
                      tltrrootgat, leaflitrgat, roottempgat, afrleafgat, &
                      afrstemgat, afrrootgat, wtstatusgat, ltstatusgat, &
                      burnfracgat, smfuncveggat, lucemcomgat, lucltringat, &
-                     lucsocingat, nppveggat, dstcemls3gat, popdingat, &
+                     lucsocingat, dstcemls3gat, popdingat, &
                      faregat, gavgscmsgat, rmlvegaccgat, pftexistgat, &
                      rmsveggat, rmrveggat, rgveggat, vgbiomas_veggat, &
                      gppveggat, nepveggat, &
@@ -936,7 +1020,7 @@ contains
                      tltrrootrow, leaflitrrow, roottemprow, afrleafrow, &
                      afrstemrow, afrrootrow, wtstatusrow, ltstatusrow, &
                      burnfracrow, smfuncvegrow, lucemcomrow, lucltrinrow, &
-                     lucsocinrow, nppvegrow, dstcemls3row, popdinrow, &
+                     lucsocinrow, dstcemls3row, popdinrow, &
                      farerow, gavgscmsrow, rmlvegaccrow, pftexistrow, &
                      rmsvegrow, rmrvegrow, rgvegrow, vgbiomas_vegrow, &
                      gppvegrow, nepvegrow, &
@@ -1045,7 +1129,7 @@ contains
                          wtstatusgat(ilg,icc), ltstatusgat(ilg,icc), &
                          burnfracgat(ilg), smfuncveggat(ilg,icc), &
                          lucemcomgat(ilg), lucltringat(ilg), &
-                         lucsocingat(ilg), nppveggat(ilg,icc), &
+                         lucsocingat(ilg), &
                          dstcemls3gat(ilg), &
                          tracerCO2gat(ilg)
     !
@@ -1143,7 +1227,7 @@ contains
                         wtstatusrow(nlat,nmos,icc), ltstatusrow(nlat,nmos,icc), &
                         burnfracrow(nlat,nmos), smfuncvegrow(nlat,nmos,icc), &
                         lucemcomrow(nlat,nmos), lucltrinrow(nlat,nmos), &
-                        lucsocinrow(nlat,nmos), nppvegrow(nlat,nmos,icc), &
+                        lucsocinrow(nlat,nmos), &
                         dstcemls3row(nlat,nmos), tracerCO2rot(nlat,nmos)
     !
     !     fire variables
@@ -1325,7 +1409,6 @@ contains
         afrrootgat(k,l)  = afrrootrow(ilmos(k),jlmos(k),l)
         wtstatusgat(k,l) = wtstatusrow(ilmos(k),jlmos(k),l)
         ltstatusgat(k,l) = ltstatusrow(ilmos(k),jlmos(k),l)
-        nppveggat(k,l)   = nppvegrow(ilmos(k),jlmos(k),l)
         rmlvegaccgat(k,l) = rmlvegaccrow(ilmos(k),jlmos(k),l)
         rmsveggat(k,l)   = rmsvegrow(ilmos(k),jlmos(k),l)
         rmrveggat(k,l)   = rmrvegrow(ilmos(k),jlmos(k),l)

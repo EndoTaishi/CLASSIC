@@ -100,20 +100,19 @@ contains
               else !> not starting bare,but still make sure you have at least seed
                 nfcancmxrow(i,m,j) = max(seed,fcancmxrow(i,m,j))
               end if
-              barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
 
               !> Keep track of the non-crop nfcancmx for use in loop below.
               !> pftarrays keeps track of the nfcancmxrow for all non-crops
               !> indexposj and indexposm store the index values of the non-crops
-              !> in a continuous array for use later. n and k are then the indexes used by
+              !> in a continuous array for use later. k is then the indexes used by
               !> these arrays.
               pftarrays(i,m,k) = nfcancmxrow(i,m,j)
               indexposj(i,m,k) = j
-
-              n = n + 1
               k = k + 1
 
             end if ! crops
+            ! Reduce the bare fraction by the new PFT fractions
+            barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
           end do ! icc
         end do ! nmos
       end do ! nlat
@@ -126,6 +125,7 @@ contains
 
             !> Find out which of the non-crop PFTs covers the largest area.
             bigpft = maxloc(pftarrays(i,m,:))
+            
             !> j is then the nmos index and m is the icc index of the PFT with the largest area
             j = indexposj(i,m,bigpft(1))
       
@@ -134,10 +134,21 @@ contains
             !! amount is to ensure we don't have trouble later with an extremely
             !! small bare fraction. barf is a negative value.
             !!
-            nfcancmxrow(i,m,j) = nfcancmxrow(i,m,j) + barfm(i,j) - minbare
+            nfcancmxrow(i,m,j) = nfcancmxrow(i,m,j) + barfm(i,m) - minbare
 
+            if (nfcancmxrow(i,m,j) < seed) then 
+              ! If now it is too small, add seed back and see if that was sufficient
+              ! to make it none negative.
+              nfcancmxrow(i,m,j) = nfcancmxrow(i,m,j) + seed
+            
+              ! now recheck to make sure it isn't negative. If so kill the run 
+              ! and reassess the inputs fractions.
+              if (nfcancmxrow(i,m,j) < 0.) then
+                write(6, * )' lat/pft/tile',i,m,j,' is negative after adding seed to all. nfcancmx:',nfcancmxrow(i,m,j),' Check if initial values given are reasonable.'
+                call errorHandler('initializeLandCover', - 1)
           end if
-
+            end if 
+          end if
         end do ! nmos
       end do ! nlat
     end if  ! PFTCompetition

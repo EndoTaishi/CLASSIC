@@ -10,9 +10,8 @@ CLASSIC can be run in several different configurations, some of which require ad
   2. @ref initPopd
 3. [Competition for space between PFTs](@ref initClimComp)
 4. Prognostic simulation of methane emissions
-  1. [Rice agriculture](@ref initRice)
-  2. [Dynamically-determined wetlands](@ref initWetSlope)
-  3.  @ref initWetArea
+  1. [Dynamically-determined wetlands](@ref initWetSlope)
+  2.  @ref initWetArea
 5. [Peatlands](@ref initPeat)
 6. @ref inputLUC
 7. [Tracers](@ref tracers)

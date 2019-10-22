@@ -1,6 +1,6 @@
 &header
- LAT=  12.560,          ! Latitude of the grid cell in degrees
- LON=  19.691,          ! Longitude of the grid cell in degrees
+ LAT=  45.0,          ! Latitude of the grid cell in degrees
+ LON=  -90.0,          ! Longitude of the grid cell in degrees
  NMTEST= 1,             ! Number of tiles
  IGND= 3,               ! Number of soil layers
  ICAN= 4,               ! Number of physics (CLASS) PFTs. Make sure this matches what is in your run parameters namelist and the information below!
@@ -120,7 +120,7 @@
  ! CTEM (biogeochemical) variables:
  
  ! Max. fractional coverage of CTEM's pfts, but this can be modified by land-use change, and competition between pfts (if they are turned on) 
- fcancmxrow(1,1:9) = 1.0000, 3*0.0000, 1.0000, 0.4289, 0.57099, 0.62900, 0.37100,
+ fcancmxrow(1,1:9) = 0.0000, 0.0000, 0.0000, 0.5000, 0.0000, 0.17099, 0.12900, 0.17100, 0.0000,
  
  ! Green leaf mass for each of the CTEM pfts [kg C m^-2 ]
  gleafmasrow(1,1:9)= 4*0.0,  1.275E-003,  8.571E-002,  1.274E-002,  4.195E-004, 4.67E-002,
@@ -219,7 +219,10 @@
  !tracerSoilCMass(1,11,1)=1.0,
  !tracerSoilCMass(1,11,2)=1.0,
  !tracerSoilCMass(1,11,3)=1.0,
-
+ 
+ ! Growth efficiency. Change in biomass per year per unit max. LAI,for use in mortality subroutine. Set to 100. which gives essentially no growth-related mortality in the first year. This variable is then updated annually so this value only affects the first year of the run.
+ grwtheffrow(1,1:9)= 9*100.,
+ 
  ! Leaf phenology status [ ] (1 = max growth, 2 = normal growth, 3 = leaf fall, 4 = no leaves)
  lfstatusrow(1,1:9)= 4*4,1,2*2, 2*1,
  
@@ -248,9 +251,42 @@
  ! Depth of living moss [ m ]
  dmoss = 0.,
  
- !< Active layer depth maximum over the e-folding period specified by parameter eftime [m]. It will be calculated 
+ ! Active layer depth maximum over the e-folding period specified by parameter eftime [m]. It will be calculated 
  ! as the model runs so this value can just be set to some deep depth.
- maxAnnualActLyr = 999.
+ maxAnnualActLyr = 999.,
  
+ ! The following vars are only used if competition between PFTs is turned on. You can leave these as is with inibioclim = .false. in the joboptions file. It will then take the first year of the run to determine some starting values. Later you can then take the restart file with the calculated bioclim values to start your next run within inibioclim = .true. You should also set start_bare=.true. as the pools in this example file are likely to cause a fail.
+ 
+ ! All are running averages in an e-folding sense. Only one value per grid cell (not per tile)
+ 
+ ! Temperature of the warmest month (PFTCompetition variable)(C) 
+ twarmm = -99., 
+ 
+ ! Temperature of the coldest month (PFTCompetition variable)(C) 
+ tcoldm = 99., 
+ 
+ ! Growing degree days above 5 C (PFTCompetition variable)
+ gdd5 = -99., 
+ 
+ ! Aridity index, ratio of potential evaporation to precipitation (PFTCompetition variable)
+ aridity = 99., 
+ 
+ ! Number of months in a year with surplus water i.e. precipitation more than potential evaporation (PFTCompetition variable)
+ srplsmon = -99.,
+ 
+ ! Number of months in a year with water deficit i.e. precipitation less than potential evaporation (PFTCompetition variable)
+ defctmon = -99.,
+ 
+ ! Annual water deficit (mm)
+ anndefct= 99.,
+ 
+ ! Annual water surplus (mm)
+ annsrpls= -99.,
+ 
+ ! Annual precipitation (mm)
+ annpcp,= -99.,
+ 
+ ! Annual maximum dry month length (months)
+ dry_season_length = -99.,
  
  /

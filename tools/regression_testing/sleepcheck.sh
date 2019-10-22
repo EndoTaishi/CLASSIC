@@ -5,7 +5,7 @@ sleep 20
 let sleepcount=0
 while [ $sleepcount -lt 1080 ] ;
 do
-  status=$( jobst -c $HDNODE 2>/dev/null | grep $1 | sed "s/|/ /g" | tr -s ' ' | cut -d ' ' -f 3 )
+  status=$( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s '|' ' ' | cut -d ' ' -f 3 )
   status=${status#*|}
   if [ "$status" == "Q" ]; then
     echo "Queued!"
@@ -16,8 +16,6 @@ do
   else
     echo "Unexpected jobstat result:"
     echo $( jobst -c $HDNODE 2>/dev/null | grep $1 )
-    #echo $( jobst -c $HDNODE 2>/dev/null | grep $1 | tr -s ' ' | perl -pe 's/\s+/ /g' )
-    echo $status
   fi
   let sleepcount=$sleepcount+1
   sleep 5

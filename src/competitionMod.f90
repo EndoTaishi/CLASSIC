@@ -82,7 +82,7 @@ contains
     real, dimension(12,nilg), intent(inout) :: tmonth !< monthly temperatures
     real, dimension(nilg), intent(inout) :: anpcpcur  !< annual precipitation for current year (mm)
     real, dimension(nilg), intent(inout) :: anpecur   !< annual potential evaporation for current year (mm)
-    real, dimension(nilg), intent(inout) :: gdd5cur   !< growing degree days above 5 c for current year
+    real, dimension(nilg), intent(inout) :: gdd5cur   !< growing degree days above 5 C for current year
     real, dimension(nilg), intent(inout) :: surmncur  !< number of months with surplus water for current year
     real, dimension(nilg), intent(inout) :: defmncur  !< number of months with water deficit for current year
     real, dimension(nilg), intent(inout) :: srplscur  !< water surplus for the current month
@@ -90,9 +90,9 @@ contains
 
     ! the following are running averages in an e-folding sense
 
-    real, dimension(nilg), intent(inout) :: twarmm    !< temperature of the warmest month (c)
-    real, dimension(nilg), intent(inout) :: tcoldm    !< temperature of the coldest month (c)
-    real, dimension(nilg), intent(inout) :: gdd5      !< growing degree days above 5 c
+    real, dimension(nilg), intent(inout) :: twarmm    !< temperature of the warmest month (C)
+    real, dimension(nilg), intent(inout) :: tcoldm    !< temperature of the coldest month (C)
+    real, dimension(nilg), intent(inout) :: gdd5      !< growing degree days above 5 C
     real, dimension(nilg), intent(inout) :: aridity   !< aridity index, ratio of potential evaporation to precipitation
     real, dimension(nilg), intent(inout) :: srplsmon  !< number of months in a year with surplus water i.e.
     !< precipitation more than potential evaporation
@@ -394,7 +394,6 @@ contains
     do i = il1,il2 ! loop 100
       do j = 1,icc ! loop 102
         pftexist(i,j) = .false.
-        if (ctempfts(j) == 'BdlDCoTr') k = j ! save the index of 'BdlDCoTr'
         select case (ctempfts(j))
         case ('NdlEvgTr') !> needleleaf evergreen
           if (tcoldm(i) <= tcoldmax(sort(j)) .and. &
@@ -417,17 +416,7 @@ contains
         case ('BdlDDrTr') !> broadleaf deciduous dry
           if (tcoldm(i) >= tcoldmin(sort(j)) .and. &
               aridity(i) >= aridlmt(sort(j)) .and. &
-              dry_season_length(i) >= dryseasonlmt(sort(j))) then
-            pftexist(i,j) = .true.
-
-            if (k == 0) then
-              print * ,'You have specified BdlCoTr before BdlDDrTr in the PFT arrays, please switch the order'
-              call errorHandler('competition:existence', - 1)
-            end if
-            !> We don't want both broadleaf species co-existing so if it has BdlDDrTr
-            !> remove BdlDCoTr. k is the index of BdlDCoTr
-            pftexist(i,k) = .false.
-          end if
+              dry_season_length(i) >= dryseasonlmt(sort(j))) pftexist(i,j) = .true.
 
         case ('CropC3  ')
           pftexist(i,j) = .true.
@@ -452,6 +441,7 @@ contains
           print * ,'Unknown CTEM PFT in competition:existence ',ctempfts(j)
           call errorHandler('competition:existence', - 2)
         end select
+
       end do ! loop 102
     end do ! loop 100
     return
@@ -1642,8 +1632,8 @@ contains
             case ('CropC3  ','CropC4  ','GrassC3 ','GrassC4 ')
               ! no change.
             case default
-              print * ,'Unknown PFT in ctem.f90 ',ctempfts(J)
-              call errorHandler('ctem', - 1)
+              print * ,'Unknown PFT in expansion ',ctempfts(J)
+              call errorHandler('competitionMod', - 1)
             end select
           end if
 
