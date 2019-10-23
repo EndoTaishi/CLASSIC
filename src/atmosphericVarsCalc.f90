@@ -32,6 +32,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !     *                         IF NECESSARY.
   !
   use classicParams,        only : TFREZ, RGAS, RGASV, RHOW
+  use generalutils,         only : calcEsat
 
   implicit none
   !
@@ -116,14 +117,15 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !!
   do I = IL1,IL2 ! loop 100
     EA = QA(I) * PRESSG(I) / (0.622 + 0.378 * QA(I))
-    if (TA(I) >= TFREZ) then
-      CA = 17.269                   ! BDCS P?
-      CB = 35.86                    ! BDCS P?
-    else
-      CA = 21.874
-      CB = 7.66
-    end if
-    EASAT = 611.0 * EXP(CA * (TA(I) - TFREZ) / (TA(I) - CB))
+    ! if (TA(I) >= TFREZ) then
+    !   CA = 17.269                   
+    !   CB = 35.86                    
+    ! else
+    !   CA = 21.874
+    !   CB = 7.66
+    ! end if
+    ! EASAT = 611.0 * EXP(CA * (TA(I) - TFREZ) / (TA(I) - CB))
+    EASAT = calcEsat(TA(I)) !FLAG test
     VPD(I) = MAX(0.0,(EASAT - EA) / 100.0)
     PADRY(I) = PRESSG(I) - EA
     RHOAIR(I) = PADRY(I) / (RGAS * TA(I)) + EA / (RGASV * TA(I))
@@ -144,7 +146,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
     !! \f$\rho_{s, i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
     !!
     if (TA(I) <= TFREZ) then
-      RHOSNI(I) = 67.92 + 51.25 * EXP((TA(I) - TFREZ) / 2.59) ! BDCS P?
+      RHOSNI(I) = 67.92 + 51.25 * EXP((TA(I) - TFREZ) / 2.59) 
     else
       RHOSNI(I) = MIN((119.17 + 20.0 * (TA(I) - TFREZ)),200.0)
     end if
@@ -207,7 +209,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
         else if (TA(I) >= (TFREZ + 6.0)) then
           PHASE(I) = 0.0
         else
-          PHASE(I) = (0.0202 * (TA(I) - TFREZ) ** 6 - 0.3660 * & ! BDCS P?
+          PHASE(I) = (0.0202 * (TA(I) - TFREZ) ** 6 - 0.3660 * & 
                      (TA(I) - TFREZ) ** 5 + 2.0399 * (TA(I) - TFREZ) ** 4 - &
                      1.5089 * (TA(I) - TFREZ) ** 3 - 15.038 * &
                      (TA(I) - TFREZ) ** 2 + 4.6664 * (TA(I) - TFREZ) + 100.0) / &

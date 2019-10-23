@@ -571,7 +571,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         case ('Crops','Grass')   ! <Crops and Grass
           AIL(I,J) = PAI(I,J)
         case ('NdlTr') ! <Needleleaf
-          AIL(I,J) = PAI(I,J) * 0.90    ! BDCS P?
+          AIL(I,J) = PAI(I,J) * 0.90    
         case ('BdlTr','BdlSh') ! <Broadleaf
           AIL(I,J) = MAX((PAI(I,J) - PAIMIN(I,J)),0.0)
         case default
@@ -623,7 +623,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
   !     *        LOW VEGETATION:       0.003 M.
   !     *        FOREST:               0.01  M.
   !
-  THR_LAI = 1.0  ! BDCS P?
+  THR_LAI = 1.0  
   !>
   !! In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is
   !! calculated, for snow-free (FCAN) and snow-covered ground (FCANS). For needleleaf and broadleaf
@@ -737,7 +737,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     !
     if (IWF == 0) then
       if (ISAND(I,1) == - 4) then
-        ZPLIMG(I) = 0.001  ! BDCS P?
+        ZPLIMG(I) = 0.001  
       else if (ISAND(I,1) == - 3) then
         ZPLIMG(I) = 0.001
       else
@@ -896,8 +896,8 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
       PAICNS(I) = PAICNS(I) / FCS(I)
     end if
     !
-    CWLCAP(I) = 0.20 * PAICAN(I)  ! BDCS P?
-    CWLCPS(I) = 0.20 * PAICNS(I)  ! BDCS P?
+    CWLCAP(I) = 0.20 * PAICAN(I)  
+    CWLCPS(I) = 0.20 * PAICNS(I)  
     !
     RRESID(I) = 0.0
     if (RCAN(I) < 1.0E-5 .or. (FC(I) + FCS(I)) < 1.0E-5) then
@@ -964,8 +964,8 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     !
     ! Calculate the canopy storage capacity for precip:
 
-    CWFCAP(I) = 6.0 * PAICAN(I) * (0.27 + 46.0 / RHOSNI(I))   ! BDCS P?
-    CWFCPS(I) = 6.0 * PAICNS(I) * (0.27 + 46.0 / RHOSNI(I))   ! BDCS P?
+    CWFCAP(I) = 6.0 * PAICAN(I) * (0.27 + 46.0 / RHOSNI(I))   
+    CWFCPS(I) = 6.0 * PAICNS(I) * (0.27 + 46.0 / RHOSNI(I))   
     !
     SRESID(I) = 0.0
     if (SNCAN(I) < 1.0E-5 .or. (FC(I) + FCS(I)) < 1.0E-5) then
@@ -1111,9 +1111,9 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
     do I = IL1,IL2
       if (FC(I) > 0. .and. H(I,J) > 0.) then
         if (IDISP == 1)   DISP(I) = DISP(I) + FCAN (I,J) * &
-            LOG(0.7 * H(I,J))   ! BDCS P?
+            LOG(0.7 * H(I,J))   
         ZOMLNC(I) = ZOMLNC(I) + FCAN (I,J) / &
-                    ((LOG(ZBLEND(I) / (0.1 * H(I,J)))) ** 2)   ! BDCS P?
+                    ((LOG(ZBLEND(I) / (0.1 * H(I,J)))) ** 2)   
         ZOELNC(I) = ZOELNC(I) * &
                     (0.01 * H(I,J) * H(I,J) / ZORAT(IC)) ** FCAN(I,J)
       end if
@@ -1253,7 +1253,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         do J = 1,IC
           temp1 = temp1 + FCAN(I,J) * H(I,J)
         end do
-        CMASSC(I) = CMASSC(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & ! BDCS P?
+        CMASSC(I) = CMASSC(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & 
                     temp1 / FC(I)
       end if
       !> if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
@@ -1315,7 +1315,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
         do J = 1,IC
           temp1 = temp1 + FCANS(I,J) * HS(I,J)
         end do
-        CMASCS(I) = CMASCS(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * & ! BDCS
+        CMASCS(I) = CMASCS(I) + RHOAIR(I) * (SPHAIR / SPHVEG) * 0.7 * &
                     temp1 / FCS(I)
       end if
 
@@ -1397,7 +1397,7 @@ subroutine calcLandSurfParams (FC, FG, FCS, FGS, PAICAN, PAICNS, FSVF, FSVFS, & 
           if (ZROOT <= (ZBOTW(I,K) - DELZW(I,K) + 0.0001)) then
             RMAT(I,J,K) = 0.0
           else if (ZROOT <= ZBOTW(I,K)) then
-            RMAT(I,J,K) = (EXP( - 3.0 * (ZBOTW(I,K) - DELZW(I,K))) - & ! BDCS P?
+            RMAT(I,J,K) = (EXP( - 3.0 * (ZBOTW(I,K) - DELZW(I,K))) - & 
                           EXP( - 3.0 * ZROOT)) / (1.0 - EXP( - 3.0 * ZROOT))
           else
             RMAT(I,J,K) = (EXP( - 3.0 * (ZBOTW(I,K) - DELZW(I,K))) - &
