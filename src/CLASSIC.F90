@@ -95,7 +95,6 @@ contains
 
     implicit none
     
-    integer :: exit_size
     logical, intent(out) :: okExit
 
     ! Initialize our exit flag:
@@ -124,11 +123,8 @@ contains
     if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell), &
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
     
-    ! Run completed ok so set the exit flag    
-    ! First query again to make sure I haven't lost processes 
-    exit_size = 1
-    call MPI_COMM_SIZE(MPI_COMM_WORLD, exit_size, ierr) 
-    if (exit_size == size) okExit = .true.
+    ! Run completed ok so set the exit flag     
+    okExit = .true.
 
   end subroutine processLandCells
   !! @}
