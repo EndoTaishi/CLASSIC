@@ -186,7 +186,7 @@ subroutine canopyInterception (IWATER, R, TR, S, TS, RAICAN, SNOCAN, TCAN, CHCAP
       !>
       SLOAD = (CWFCAP(I) - SNOCAN(I)) * (1.0 - EXP( - SINT / CWFCAP(I)))
       SWXCES = SINT - SLOAD
-      SNUNLD = (SLOAD + SNOCAN(I)) * (1.0 - EXP( - 1.157E-6 * DELT))  ! BDCS P?
+      SNUNLD = (SLOAD + SNOCAN(I)) * (1.0 - EXP( - 1.157E-6 * DELT))  
       if (SWXCES > 0. .or. SNUNLD > 0.) then
         SDRIP(I) = (MAX(SWXCES,0.0) + SNUNLD) / (DELT * RHOSNI(I))
         if ((SDRIP(I) + STHRU) > 0.) then

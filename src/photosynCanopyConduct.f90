@@ -66,7 +66,8 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & !In
                             ISC4, MM, BB, VPD0, SN, SMSCALE, VMAX, REQITER, &
                             CO2IMAX, BETA1, BETA2, INICO2I, CHI, RMLCOEFF, &
                             GAMMA_W, GAMMA_M, TFREZ, ZERO, STD_PRESS
-
+  use generalutils,  only : calcEsat
+  
   implicit none
   !
   integer, DIMENSION(:,:), ALLOCATABLE  :: USESLAI
@@ -448,15 +449,16 @@ subroutine photosynCanopyConduct (AILCG, FCANC, TCAN, CO2CONC, PRESSG, FC, & !In
     !
     do I = IL1,IL2
       VPD(I) = 0.0
-      if (TCAN(I) >= TFREZ) then
-        CA = 17.269
-        CB = 35.86
-      else
-        CA = 21.874
-        CB = 7.66
-      end if
+      ! if (TCAN(I) >= TFREZ) then
+      !   CA = 17.269
+      !   CB = 35.86
+      ! else
+      !   CA = 21.874
+      !   CB = 7.66
+      ! end if
+      !EASAT  = 611.0 * EXP(CA * (TCAN(I) - TFREZ) / (TCAN(I) - CB))
+      EASAT  = calcEsat(TCAN(I)) !FLAG test.
       EA     = QA(I) * PRESSG(I) / (0.622 + 0.378 * QA(I))
-      EASAT  = 611.0 * EXP(CA * (TCAN(I) - TFREZ) / (TCAN(I) - CB))
       RH(I)  = EA / EASAT
       VPD(I) = EASAT - EA
       VPD(I) = MAX(0.0,VPD(I))
