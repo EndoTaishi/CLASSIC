@@ -487,16 +487,16 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
       if (ABS(TCAN(I)) < 1.0E-3)        TCAN(I) = TPOTA(I)
       QLWOC(I) = SBC * TCAN(I) * TCAN(I) * TCAN(I) * TCAN(I)
       !
-      ! if (TCAN(I) >= TFREZ) then
-      !   A(I) = 17.269
-      !   B(I) = 35.86
-      ! else
-      !   A(I) = 21.874
-      !   B(I) = 7.66
-      ! end if
-      ! WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
-      !        (TCAN(I) - B(I))) / PADRY(I)
-      WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
+      if (TCAN(I) >= TFREZ) then
+        A(I) = 17.269
+        B(I) = 35.86
+      else
+        A(I) = 21.874
+        B(I) = 7.66
+      end if
+      WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
+             (TCAN(I) - B(I))) / PADRY(I)
+      ! WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
       QCAN(I) = WCAN / (1.0 + WCAN)
       TVIRTC(I) = TCAN(I) * (1.0 + 0.61 * QCAN(I))
       if (ITC == 2) then
@@ -691,16 +691,16 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
   NUMIT = 0
   do I = IL1,IL2 ! loop 125
     if (FI(I) > 0. .and. ITER(I) == 1) then
-      ! if (TZERO(I) >= TFREZ) then
-      !   A(I) = 17.269
-      !   B(I) = 35.86
-      ! else
-      !   A(I) = 21.874
-      !   B(I) = 7.66
-      ! end if
-      ! WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
-      !            (TZERO(I) - B(I))) / PADRY(I)
-      WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
+      if (TZERO(I) >= TFREZ) then
+        A(I) = 17.269
+        B(I) = 35.86
+      else
+        A(I) = 21.874
+        B(I) = 7.66
+      end if
+      WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
+                 (TZERO(I) - B(I))) / PADRY(I)
+      ! WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
       Q0SAT(I) = WZERO(I) / (1.0 + WZERO(I))
       if (IWATER(I) > 0) then
         EVBETA(I) = 1.0
@@ -826,16 +826,16 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
         TZEROT = TVIRTC(I) / (1.0 + 0.61 * QZERO(I))
         if (ABS(RESID(I)) > 15.) then
           TZERO(I) = TZEROT
-          ! if (TZERO(I) >= TFREZ) then
-          !   A(I) = 17.269
-          !   B(I) = 35.86
-          ! else
-          !   A(I) = 21.874
-          !   B(I) = 7.66
-          ! end if
-          ! WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
-          !            (TZERO(I) - B(I))) / PADRY(I)
-          WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
+          if (TZERO(I) >= TFREZ) then
+            A(I) = 17.269
+            B(I) = 35.86
+          else
+            A(I) = 21.874
+            B(I) = 7.66
+          end if
+          WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
+                     (TZERO(I) - B(I))) / PADRY(I)
+          ! WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
           Q0SAT(I) = WZERO(I) / (1.0 + WZERO(I))
           QZERO(I) = EVBETA(I) * Q0SAT(I) + (1.0 - EVBETA(I)) * QAC(I)
           QLWOG(I) = SBC * TZERO(I) * TZERO(I) * TZERO(I) * TZERO(I)
@@ -1078,16 +1078,16 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
     if (FI(I) > 0. .and. ITER(I) == 1) then
       NIT = NIT + 1
       if (ITC == 1) then
-        ! if (TCAN(I) >= TFREZ) then
-        !   A(I) = 17.269
-        !   B(I) = 35.86
-        ! else
-        !   A(I) = 21.874
-        !   B(I) = 7.66
-        ! end if
-        ! WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
-        !        (TCAN(I) - B(I))) / PADRY(I)
-        WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
+        if (TCAN(I) >= TFREZ) then
+          A(I) = 17.269
+          B(I) = 35.86
+        else
+          A(I) = 21.874
+          B(I) = 7.66
+        end if
+        WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
+               (TCAN(I) - B(I))) / PADRY(I)
+        ! WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
         QCAN(I) = WCAN / (1.0 + WCAN)
         TVIRTC(I) = TCAN(I) * (1.0 + 0.61 * QCAN(I))
       end if
@@ -1200,16 +1200,16 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
               XEVAP(I) = 1.0 / RA(I)
             end if
           end if
-          ! if (TCAN(I) >= TFREZ) then
-          !   A(I) = 17.269
-          !   B(I) = 35.86
-          ! else
-          !   A(I) = 21.874
-          !   B(I) = 7.66
-          ! end if
-          ! WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
-          !        (TCAN(I) - B(I))) / PADRY(I)
-          WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
+          if (TCAN(I) >= TFREZ) then
+            A(I) = 17.269
+            B(I) = 35.86
+          else
+            A(I) = 21.874
+            B(I) = 7.66
+          end if
+          WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
+                 (TCAN(I) - B(I))) / PADRY(I)
+          ! WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
           WC(I) = WCAN
           QCAN(I) = WCAN / (1.0 + WCAN)
           QCAN(I) = RA(I) * XEVAP(I) * QCAN(I) + (1.0 - RA(I) * XEVAP(I)) * &
@@ -1436,16 +1436,16 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
         TCANT = TVIRTA(I) / (1.0 + 0.61 * QCAN(I))
         if (ABS(RESID(I)) > 100.) then
           TCAN(I) = TCANT
-          ! if (TCAN(I) >= TFREZ) then
-          !   A(I) = 17.269
-          !   B(I) = 35.86
-          ! else
-          !   A(I) = 21.874
-          !   B(I) = 7.66
-          ! end if
-          ! WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
-          !        (TCAN(I) - B(I))) / PADRY(I)
-          WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
+          if (TCAN(I) >= TFREZ) then
+            A(I) = 17.269
+            B(I) = 35.86
+          else
+            A(I) = 21.874
+            B(I) = 7.66
+          end if
+          WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
+                 (TCAN(I) - B(I))) / PADRY(I)
+          ! WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
           QCAN(I) = WCAN / (1.0 + WCAN)
           if (FSNOWC(I) > 0.0) then
             YEVAP = FRAINC(I) + FSNOWC(I)
@@ -1566,11 +1566,11 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
                       SNOCAN(I)) + TFREZ
           QMELTC(I) = - CLHMLT * RAICAN(I) / DELT
           RAICAN(I) = 0.0
-          ! A(I) = 21.874
-          ! B(I) = 7.66
-          ! WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
-          !        (TCAN(I) - B(I))) / PADRY(I)
-          WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
+          A(I) = 21.874
+          B(I) = 7.66
+          WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
+                 (TCAN(I) - B(I))) / PADRY(I)
+          ! WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
           QCAN(I) = WCAN / (1.0 + WCAN)
           TVIRTC(I) = TCAN(I) * (1.0 + 0.61 * QCAN(I))
         end if
@@ -1631,11 +1631,11 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
                       RAICAN(I)) + TFREZ
           QMELTC(I) = CLHMLT * SNOCAN(I) / DELT
           SNOCAN(I) = 0.0
-          ! A(I) = 17.269
-          ! B(I) = 35.86
-          ! WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
-          !        (TCAN(I) - B(I))) / PADRY(I)
-          WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
+          A(I) = 17.269
+          B(I) = 35.86
+          WCAN = 0.622 * 611.0 * EXP(A(I) * (TCAN(I) - TFREZ) / &
+                 (TCAN(I) - B(I))) / PADRY(I)
+          ! WCAN = 0.622 * calcEsat(TCAN(I)) / PADRY(I) !FLAG test.
           QCAN(I) = WCAN / (1.0 + WCAN)
           TVIRTC(I) = TCAN(I) * (1.0 + 0.61 * QCAN(I))
         end if

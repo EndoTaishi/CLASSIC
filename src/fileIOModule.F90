@@ -695,7 +695,7 @@ contains
     integer, intent(in)         :: ncStatus !< Status variable
     character( * ), optional      :: tag  !< Optional tag
     character(150)              :: message
-    integer                     :: status  ! Used only in parallel mode.
+
     if (present(tag)) then
       message = tag
     else
@@ -705,12 +705,9 @@ contains
     if (ncStatus /= nf90_noerr) then
       print*,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
       print*,'Stopping the run for this cell'
-#if PARALLEL
-            !call MPI_ABORT(MPI_COMM_WORLD, - 1, status)
-            call abandonCell
-#endif
-      stop
+      call abandonCell
     end if
+    
   end subroutine checkNC
   !! @}
 

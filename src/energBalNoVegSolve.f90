@@ -454,16 +454,16 @@ subroutine energBalNoVegSolve (ISNOW, FI, & ! Formerly TSOLVE
     if (FI(I) > 0. .and. ITER(I) == 1) then
       NIT = NIT + 1
       CFLUXM(I) = CFLUX(I)
-      ! if (TZERO(I) >= TFREZ) then
-      !   A(I) = 17.269
-      !   B(I) = 35.86
-      ! else
-      !   A(I) = 21.874
-      !   B(I) = 7.66
-      ! end if
-      ! WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
-      !            (TZERO(I) - B(I))) / PADRY(I)
-      WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
+      if (TZERO(I) >= TFREZ) then
+        A(I) = 17.269
+        B(I) = 35.86
+      else
+        A(I) = 21.874
+        B(I) = 7.66
+      end if
+      WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
+                 (TZERO(I) - B(I))) / PADRY(I)
+      ! WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
       Q0SAT(I) = WZERO(I) / (1.0 + WZERO(I))
       if (IWATER(I) > 0) then
         EVBETA(I) = 1.0
@@ -735,16 +735,16 @@ subroutine energBalNoVegSolve (ISNOW, FI, & ! Formerly TSOLVE
         TZEROT = TVIRTA(I) / (1.0 + 0.61 * QZERO(I))
         if (ABS(RESID(I)) > 50.) then
           TZERO(I) = TZEROT
-          ! if (TZERO(I) >= TFREZ) then
-          !   A(I) = 17.269
-          !   B(I) = 35.86
-          ! else
-          !   A(I) = 21.874
-          !   B(I) = 7.66
-          ! end if
-          ! WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
-          !            (TZERO(I) - B(I))) / PADRY(I)
-          WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
+          if (TZERO(I) >= TFREZ) then
+            A(I) = 17.269
+            B(I) = 35.86
+          else
+            A(I) = 21.874
+            B(I) = 7.66
+          end if
+          WZERO(I) = 0.622 * 611.0 * EXP(A(I) * (TZERO(I) - TFREZ) / &
+                     (TZERO(I) - B(I))) / PADRY(I)
+          ! WZERO(I) = 0.622 * calcEsat(TZERO(I)) / PADRY(I) !FLAG test.
           Q0SAT(I) = WZERO(I) / (1.0 + WZERO(I))
           QZERO(I) = EVBETA(I) * Q0SAT(I) + (1.0 - EVBETA(I)) * QA(I)
           QLWOUT(I) = SBC * TZERO(I) * TZERO(I) * TZERO(I) * TZERO(I)
