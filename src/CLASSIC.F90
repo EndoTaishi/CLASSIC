@@ -24,7 +24,6 @@ program CLASSIC
 
   double precision  :: time
   integer           :: ierr, rank, size, i, cell, blocks, remainder
-  logical           :: okExit
 
   ! MAIN PROGRAM
 
@@ -67,10 +66,8 @@ program CLASSIC
   
   ! Close all of the output netcdf files and the restart file
   ! (these were written to so need to ensure buffer is flushed)
-  if (okExit) then 
-    call closeNCFiles
-    call closeNCFiles(rsid)
-  end if 
+  call closeNCFiles
+  call closeNCFiles(rsid)
   
 #if PARALLEL
     !> Shut down the MPI session
@@ -123,9 +120,6 @@ contains
     if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell), &
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
     
-    ! Run completed ok so set the exit flag     
-    okExit = .true.
-
   end subroutine processLandCells
   !! @}
   !----------------------------------------------------------------------------------------
