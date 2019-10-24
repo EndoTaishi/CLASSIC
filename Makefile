@@ -26,8 +26,8 @@
 #   - All executable names are labelled with the mode appended.
 
 # Object files
-OBJ = fileIOModule.o classicParams.o ctemStateVars.o classStateVars.o peatlandsMod.o \
-	generalUtils.o ctemUtilities.o calcLandSurfParams.o groundAlbedo.o mvidx.o fourBandAlbedo.o \
+OBJ = classicParams.o ctemStateVars.o classStateVars.o peatlandsMod.o \
+	generalUtils.o fileIOModule.o ctemUtilities.o calcLandSurfParams.o groundAlbedo.o mvidx.o fourBandAlbedo.o \
 	SNOW_ALBVAL.o SNOW_TRANVAL.o snowAlbedoTransmiss.o soilHeatFluxPrep.o waterInfiltrateUnsat.o \
 	canopyInterception.o waterFlowNonInfiltrate.o snowAging.o  energyBudgetPrep.o waterInfiltrateSat.o canopyAlbedoTransmiss.o \
 	classGatherScatter.o waterFlowInfiltrate.o snowSublimation.o energBalVegSolve.o waterCalcPrep.o methaneProcesses.o \
