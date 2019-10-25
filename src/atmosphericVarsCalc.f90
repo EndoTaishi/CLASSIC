@@ -117,15 +117,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !!
   do I = IL1,IL2 ! loop 100
     EA = QA(I) * PRESSG(I) / (0.622 + 0.378 * QA(I))
-    ! if (TA(I) >= TFREZ) then
-    !   CA = 17.269                   
-    !   CB = 35.86                    
-    ! else
-    !   CA = 21.874
-    !   CB = 7.66
-    ! end if
-    ! EASAT = 611.0 * EXP(CA * (TA(I) - TFREZ) / (TA(I) - CB))
-    EASAT = calcEsat(TA(I)) !FLAG test
+    EASAT = calcEsat(TA(I))
     VPD(I) = MAX(0.0,(EASAT - EA) / 100.0)
     PADRY(I) = PRESSG(I) - EA
     RHOAIR(I) = PADRY(I) / (RGAS * TA(I)) + EA / (RGASV * TA(I))

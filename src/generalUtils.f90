@@ -88,7 +88,7 @@ contains
   !! the parameterization of Emanuel, 1994. 
   !! @author Joe Melton
   !!
-  real function calcEsat (ta)
+  real function calcEsat(ta)
 
     use classicParams, only : TFREZ
 

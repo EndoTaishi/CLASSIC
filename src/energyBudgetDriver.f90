@@ -957,16 +957,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !
     do I = IL1,IL2 ! loop 175
       if (FCS(I) > 0.) then
-        if (TACCS(I) >= TFREZ) then
-          CA = 17.269
-          CB = 35.86
-        else
-          CA = 21.874
-          CB = 7.66
-        end if
-        WACSAT = 0.622 * 611.0 * EXP(CA * (TACCS(I) - TFREZ) / &
-                 (TACCS(I) - CB)) / PADRY(I)
-        !WACSAT = 0.622 * calcEsat(TACCS(I)) / PADRY(I) !FLAG test.
+        WACSAT = 0.622 * calcEsat(TACCS(I)) / PADRY(I)
         QACSAT = WACSAT / (1.0 + WACSAT)
         EVPPOT(I) = EVPPOT(I) + FCS(I) * RHOAIR(I) * CFLUX(I) * &
                     (QACSAT - QA(I))
@@ -1310,16 +1301,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !
     do I = IL1,IL2 ! loop 375
       if (FC(I) > 0.) then
-        if (TACCO(I) >= TFREZ) then
-          CA = 17.269
-          CB = 35.86
-        else
-          CA = 21.874
-          CB = 7.66
-        end if
-        WACSAT = 0.622 * 611.0 * EXP(CA * (TACCO(I) - TFREZ) / &
-                 (TACCO(I) - CB)) / PADRY(I)
-        ! WACSAT = 0.622 * calcEsat(TACCO(I)) / PADRY(I) !FLAG test.
+        WACSAT = 0.622 * calcEsat(TACCO(I)) / PADRY(I)
         QACSAT = WACSAT / (1.0 + WACSAT)
         EVPPOT(I) = EVPPOT(I) + FC(I) * RHOAIR(I) * CFLUX(I) * &
                     (QACSAT - QA(I))
