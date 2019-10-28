@@ -7,6 +7,7 @@ module generalUtils
 
   public :: abandonCell
   public :: findDaylength
+  public :: calcEsat
   public :: findCloudiness
   public :: findLeapYears
   public :: findPermafrostVars
@@ -79,6 +80,29 @@ contains
     findDaylength = 24.0 - (24.0/pi) * acos(term)
 
   end function findDaylength
+  !! @}
+  !---------------------------------------------------------------------------------------
+  !> \ingroup generalutils_calcEsat
+  !! @{
+  !> Calculate the saturated vapour pressure in Pa. Based upon 
+  !! the parameterization of Emanuel, 1994 \cite Emanuel1994-dt. 
+  !! @author Joe Melton
+  !!
+  real function calcEsat(ta)
+
+    use classicParams, only : TFREZ
+
+    implicit none
+
+    real, intent(in) :: ta  ! air/canopy temperature (K)
+    
+    if (ta >= tfrez) then
+      calcEsat = exp(53.67957 - 6743.769/ta - 4.8451 * log(TA)) * 100. !100 converts from hPa to Pa.
+    else !
+      calcEsat = exp(23.33086 - 6111.72784/ta + 0.15215 * log(TA)) * 100. !100 converts from hPa to Pa.
+    end if
+      
+  end function calcEsat
   !! @}
   !---------------------------------------------------------------------------------------
   !> \ingroup generalutils_findLeapYears

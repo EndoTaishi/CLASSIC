@@ -32,6 +32,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !     *                         IF NECESSARY.
   !
   use classicParams,        only : TFREZ, RGAS, RGASV, RHOW
+  use generalutils,         only : calcEsat
 
   implicit none
   !
@@ -90,13 +91,13 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !! \f$e_a = q_a p /[0.622 + 0.378 q_a ]\f$
   !!
   !! where p is the surface atmospheric pressure. For the
-  !! saturated vapour pressure, a standard empirical equation is
-  !! utilized relating \f$e_{a, sat}\f$ to the temperature \f$T_a\f$ and the freezing
+  !! saturated vapour pressure, following Emanuel (1994) \cite Emanuel1994-dt
+  !! \f$e_{a, sat}\f$ is from the temperature \f$T_a\f$ and the freezing
   !! point \f$T_f\f$:
   !!
-  !! \f$e_{a, sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]\f$    \f$T_a \geq T_f\f$
+  !! \f$e_{sat} = exp[53.67957 - 6743.769 / T - 4.8451 * ln(T)]       T \geq T_f\f$
   !!
-  !! \f$e_{a, sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]\f$     \f$T_a < T_f\f$
+  !! \f$e_{sat} = exp[23.33086 - 6111.72784 / T + 0.15215 * log(T)]    T < T_f\f$
   !!
   !! The partial pressure of dry air, \f$p_{dry}\f$, is obtained by subtracting
   !! \f$e_a\f$ from p, and the density of the air is calculated as the sum of
@@ -116,14 +117,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !!
   do I = IL1,IL2 ! loop 100
     EA = QA(I) * PRESSG(I) / (0.622 + 0.378 * QA(I))
-    if (TA(I) >= TFREZ) then
-      CA = 17.269                   ! BDCS P?
-      CB = 35.86                    ! BDCS P?
-    else
-      CA = 21.874
-      CB = 7.66
-    end if
-    EASAT = 611.0 * EXP(CA * (TA(I) - TFREZ) / (TA(I) - CB))
+    EASAT = calcEsat(TA(I))
     VPD(I) = MAX(0.0,(EASAT - EA) / 100.0)
     PADRY(I) = PRESSG(I) - EA
     RHOAIR(I) = PADRY(I) / (RGAS * TA(I)) + EA / (RGASV * TA(I))
@@ -141,10 +135,11 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
     !! upper limit of 200 kg m-3:
     !!
     !! \f$\rho_{s, i} = 67.92 + 51.25 exp[(T_a – T_f)/2.59]\f$ \f$T_a < T_f\f$
+    !!
     !! \f$\rho_{s, i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
     !!
     if (TA(I) <= TFREZ) then
-      RHOSNI(I) = 67.92 + 51.25 * EXP((TA(I) - TFREZ) / 2.59) ! BDCS P?
+      RHOSNI(I) = 67.92 + 51.25 * EXP((TA(I) - TFREZ) / 2.59) 
     else
       RHOSNI(I) = MIN((119.17 + 20.0 * (TA(I) - TFREZ)),200.0)
     end if
@@ -207,7 +202,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
         else if (TA(I) >= (TFREZ + 6.0)) then
           PHASE(I) = 0.0
         else
-          PHASE(I) = (0.0202 * (TA(I) - TFREZ) ** 6 - 0.3660 * & ! BDCS P?
+          PHASE(I) = (0.0202 * (TA(I) - TFREZ) ** 6 - 0.3660 * & 
                      (TA(I) - TFREZ) ** 5 + 2.0399 * (TA(I) - TFREZ) ** 4 - &
                      1.5089 * (TA(I) - TFREZ) ** 3 - 15.038 * &
                      (TA(I) - TFREZ) ** 2 + 4.6664 * (TA(I) - TFREZ) + 100.0) / &

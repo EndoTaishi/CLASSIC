@@ -1919,8 +1919,8 @@ contains
             nbpvegrow(i,m,j) = nbpvegrow(i,m,j) * convertkgC
             hetroresvegrow(i,m,j) = hetroresvegrow(i,m,j) * convertkgC
             autoresvegrow(i,m,j) = autoresvegrow(i,m,j) * convertkgC
-            rmrvegrow = rmrvegrow(i,m,j) * convertkgC
-            rgvegrow = rgvegrow(i,m,j) * convertkgC
+            rmrvegrow(i,m,j) = rmrvegrow(i,m,j) * convertkgC
+            rgvegrow(i,m,j) = rgvegrow(i,m,j) * convertkgC
             
             ! COMBAK PERLAY
             litresvegrow(i,m,j) = litresvegrow(i,m,j) * convertkgC

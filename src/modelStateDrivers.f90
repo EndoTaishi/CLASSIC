@@ -1078,11 +1078,12 @@ contains
     real, pointer, dimension(:,:)   :: RHOSROT
     real, pointer, dimension(:,:)   :: GROROT
     real, pointer, dimension(:,:)   :: maxAnnualActLyr  !< Active layer depth maximum over the e-folding period specified by parameter eftime (m).
-
+    real, pointer, dimension(:,:)   :: SDEPROT
     logical, pointer :: ctem_on
     logical, pointer :: PFTCompetition
     logical, pointer :: lnduseon
     integer, pointer :: useTracer
+    integer, pointer, dimension(:,:) :: ipeatlandrow   !< Peatland switch: 0 = not a peatland, 1 = bog, 2 = fen
     real, pointer, dimension(:,:,:) :: fcancmxrow           !
     real, pointer, dimension(:,:,:) :: gleafmasrow          !
     real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -1128,6 +1129,7 @@ contains
     PFTCompetition    => c_switch%PFTCompetition
     lnduseon          => c_switch%lnduseon
     useTracer         => c_switch%useTracer
+    ipeatlandrow      => vrot%ipeatland
     fcancmxrow        => vrot%fcancmx
     gleafmasrow       => vrot%gleafmas
     bleafmasrow       => vrot%bleafmas
@@ -1175,6 +1177,7 @@ contains
     RHOSROT           => class_rot%RHOSROT
     GROROT            => class_rot%GROROT
     maxAnnualActLyr   => class_rot%maxAnnualActLyrROT
+    SDEPROT           => class_rot%SDEPROT
 
     call ncPut2DVar(rsid, 'FARE', FAREROT,start = [lonIndex,latIndex,1], count = [1,1,nmos])
     call ncPut3DVar(rsid, 'FCAN', FCANROT,start = [lonIndex,latIndex,1,1], count = [1,1,icp1,nmos])
@@ -1193,6 +1196,11 @@ contains
     call ncPut2DVar(rsid, 'GRO', GROROT,start = [lonIndex,latIndex,1], count = [1,1,nmos])
     call ncPut2DVar(rsid, 'maxAnnualActLyr', maxAnnualActLyr,start = [lonIndex,latIndex,1], count = [1,1,nmos])
 
+    ! If the peatland module is on, the SDEP reflects the peat depth so can change throughout a run. 
+    ! as a result, the SDEP needs to be written back to the restart file. If this is the case, for simplicity,
+    ! write the SDEP for all tile in the grid cell. 
+    if (any(ipeatlandrow /= 0)) call ncPut2DVar(rsid, 'SDEP', SDEPROT,start = [lonIndex,latIndex,1], count = [1,1,nmos])
+    
     if (ctem_on) then
       call ncPut3DVar(rsid, 'fcancmx', fcancmxrow,start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos])
       call ncPut3DVar(rsid, 'gleafmas', gleafmasrow,start = [lonIndex,latIndex,1,1], count = [1,1,icc,nmos])

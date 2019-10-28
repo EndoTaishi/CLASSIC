@@ -184,7 +184,8 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !
   use classicParams,      only : DELT, TFREZ, GRAV, SBC, VKC, VMIN, HCPICE, &
                                  HCPW, SPHAIR, RHOW, RHOICE
-
+  use generalutils,  only : calcEsat
+  
   implicit none
   !
   !     * INTEGER CONSTANTS.
@@ -687,11 +688,13 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !! The mixing ratio is a function of the saturation vapour pressure \f$e_{ac, sat}\f$ at the canopy air temperature:
   !! \f$w_{ac, sat} = 0.622 e_{ac, sat} /(p_{dry} )\f$
   !!
-  !! A standard empirical equation for the saturation vapour pressure dependence on the temperature T is
-  !! used:
-  !! \f[e_{sat} = 611.0 exp[17.269(T – T_f)/(T – 35.86)]      T \geq T_f \f]
-  !! \f[e_{sat} = 611.0 exp[21.874(T – T_f)/(T – 7.66)]       T < T_f \f]
-  !! where \f$T_f\f$ is the freezing point.
+  !! For the saturated vapour pressure, following Emanuel (1994) \cite Emanuel1994-dt
+  !! \f$e_{sat}\f$ is from the temperature \f$T_a\f$ and the freezing
+  !! point \f$T_f\f$:
+  !!
+  !! \f$e_{sat} = exp[53.67957 - 6743.769 / T - 4.8451 * ln(T)]       T \geq T_f\f$
+  !!
+  !! \f$e_{sat} = exp[23.33086 - 6111.72784 / T + 0.15215 * log(T)]    T < T_f\f$
   !!
   !! At the end of the blocks of code dealing with the four subareas, several more diagnostic variables are evaluated.
   !! Again, these calculations are generally straightforward. The effective black-body surface temperature \f$T_{0, eff}\f$
@@ -956,15 +959,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !
     do I = IL1,IL2 ! loop 175
       if (FCS(I) > 0.) then
-        if (TACCS(I) >= TFREZ) then
-          CA = 17.269
-          CB = 35.86
-        else
-          CA = 21.874
-          CB = 7.66
-        end if
-        WACSAT = 0.622 * 611.0 * EXP(CA * (TACCS(I) - TFREZ) / &
-                 (TACCS(I) - CB)) / PADRY(I)
+        WACSAT = 0.622 * calcEsat(TACCS(I)) / PADRY(I)
         QACSAT = WACSAT / (1.0 + WACSAT)
         EVPPOT(I) = EVPPOT(I) + FCS(I) * RHOAIR(I) * CFLUX(I) * &
                     (QACSAT - QA(I))
@@ -1308,15 +1303,7 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
     !
     do I = IL1,IL2 ! loop 375
       if (FC(I) > 0.) then
-        if (TACCO(I) >= TFREZ) then
-          CA = 17.269
-          CB = 35.86
-        else
-          CA = 21.874
-          CB = 7.66
-        end if
-        WACSAT = 0.622 * 611.0 * EXP(CA * (TACCO(I) - TFREZ) / &
-                 (TACCO(I) - CB)) / PADRY(I)
+        WACSAT = 0.622 * calcEsat(TACCO(I)) / PADRY(I)
         QACSAT = WACSAT / (1.0 + WACSAT)
         EVPPOT(I) = EVPPOT(I) + FC(I) * RHOAIR(I) * CFLUX(I) * &
                     (QACSAT - QA(I))

@@ -24,7 +24,6 @@ program CLASSIC
 
   double precision  :: time
   integer           :: ierr, rank, size, i, cell, blocks, remainder
-  logical           :: okExit
 
   ! MAIN PROGRAM
 
@@ -63,14 +62,12 @@ program CLASSIC
   call generateOutputFiles
   
   ! Run model over the land grid cells, in parallel or serial
-  call processLandCells(okExit)
+  call processLandCells
   
   ! Close all of the output netcdf files and the restart file
   ! (these were written to so need to ensure buffer is flushed)
-  if (okExit) then 
-    call closeNCFiles
-    call closeNCFiles(rsid)
-  end if 
+  call closeNCFiles
+  call closeNCFiles(rsid)
   
 #if PARALLEL
     !> Shut down the MPI session
@@ -85,7 +82,7 @@ contains
   !> \ingroup CLASSIC_processLandCells
   !! @{
   !> Runs the model over all of the land cells.
-  subroutine processLandCells(okExit)
+  subroutine processLandCells
 
     ! PROCESS LAND CELLS
     ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells, stored in lonLandCell and latLandCell
@@ -94,12 +91,7 @@ contains
     use fileIOModule
 
     implicit none
-    
-    logical, intent(out) :: okExit
-
-    ! Initialize our exit flag:
-    okExit = .false.
-    
+        
     ! Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
     ! CTEM variable structures. This has to be done before call to main_driver.
     call allocClassVars()
@@ -123,9 +115,6 @@ contains
     if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell), &
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
     
-    ! Run completed ok so set the exit flag     
-    okExit = .true.
-
   end subroutine processLandCells
   !! @}
   !----------------------------------------------------------------------------------------

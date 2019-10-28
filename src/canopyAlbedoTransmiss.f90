@@ -262,9 +262,9 @@ subroutine canopyAlbedoTransmiss (ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN
   !     * ASSIGN CONSTANT EXPONENTIATION TERMS: EXPMAX1=EXP(-0.4/0.9659),
   !     * EXPMAX2=EXP(-0.4/0.7071), EXPMAX3=EXP(-0.4/0.2588)
   !
-  EXPMAX1 = 0.6609  ! BDCS P?
-  EXPMAX2 = 0.5680  ! BDCS P?
-  EXPMAX3 = 0.2132  ! BDCS P?
+  EXPMAX1 = 0.6609  
+  EXPMAX2 = 0.5680  
+  EXPMAX3 = 0.2132  
   !!
   !> At the beginning of the subroutine, values are assigned to
   !! exponentiation terms and a series of work arrays is
@@ -352,7 +352,7 @@ subroutine canopyAlbedoTransmiss (ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN
           TRCLRV = EXP( - 0.4 * PAI(I,J) / COSZS(I))
           !              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  ! JM EDIT
           !              TRCLRV=EXP(TMP)
-          TRCLDV = 0.30 * EXP( - 0.4 * PAI(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &            ! BDCS P?
+          TRCLDV = 0.30 * EXP( - 0.4 * PAI(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &            
                    PAI(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAI(I,J) / 0.2588)
           TRCLRT = EXP( - 0.3 * PAI(I,J) / COSZS(I))
           !              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    ! JM EDIT
@@ -391,7 +391,7 @@ subroutine canopyAlbedoTransmiss (ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN
       do I = IL1,IL2 ! loop 250
         if (COSZS(I) > 0. .and. FCAN(I,J) > 0.) then
           TRCLRV = MIN(EXP( - 0.7 * PAI(I,J)),EXP( - 0.4 / COSZS(I)))
-          TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX1) &            ! BDCS P?
+          TRCLDV = 0.30 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX1) &            
                    + 0.50 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX2) &
                    + 0.20 * MIN(EXP( - 0.7 * PAI(I,J)),EXPMAX3)
           TRCLRT = MIN(EXP( - 0.4 * PAI(I,J)),EXP( - 0.4 / COSZS(I)))
@@ -498,7 +498,7 @@ subroutine canopyAlbedoTransmiss (ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN
     if (FC(I) > 0. .and. COSZS(I) > 0.) then
       TRVSCN(I) = TRVSCN(I) / FC(I)
       TRIRCN(I) = TRIRCN(I) / FC(I)
-      TRVSCN(I) = MIN( TRVSCN(I),0.90 * (1.0 - ALVSCN(I)) )  ! BDCS P?
+      TRVSCN(I) = MIN( TRVSCN(I),0.90 * (1.0 - ALVSCN(I)) )  
       TRIRCN(I) = MIN( TRIRCN(I),0.90 * (1.0 - ALIRCN(I)) )
     end if
     if (TRVSCN(I) > 1. .or. TRVSCN(I) < 0.) IPTBAD = I
@@ -517,11 +517,11 @@ subroutine canopyAlbedoTransmiss (ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN
     case ('NdlTr') !-------------------------------------------------------
       do I = IL1,IL2 ! loop 500
         if (COSZS(I) > 0. .and. FCANS(I,J) > 0.) then
-          TRCLRV = EXP( - 0.4 * PAIS(I,J) / COSZS(I))   ! BDCS P?
+          TRCLRV = EXP( - 0.4 * PAIS(I,J) / COSZS(I))   
           !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  ! JM EDIT
           !              TRCLRV=EXP(TMP)
           TRCLDV = 0.30 * EXP( - 0.4 * PAIS(I,J) / 0.9659) + 0.50 * EXP( - 0.4 * &
-                   PAIS(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAIS(I,J) / 0.2588)   ! BDCS P?
+                   PAIS(I,J) / 0.7071) + 0.20 * EXP( - 0.4 * PAIS(I,J) / 0.2588)   
           TRCLRT = EXP( - 0.3 * PAIS(I,J) / COSZS(I))
           !              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    ! JM EDIT
           !              TRCLRT = EXP(TMP)
@@ -770,15 +770,15 @@ subroutine canopyAlbedoTransmiss (ALVSCN, ALIRCN, ALVSCS, ALIRCS, TRVSCN, TRIRCN
   !
   do I = IL1,IL2 ! loop 850
     if ((FCS(I) + FC(I)) > 0.0) then
-      if (TA(I) <= 268.15) then  ! BDCS P?
-        RCT(I) = 250.   ! BDCS P?
-      else if (TA(I) < 278.15) then  ! BDCS P?
+      if (TA(I) <= 268.15) then  
+        RCT(I) = 250.   
+      else if (TA(I) < 278.15) then  
         RCT(I) = 1. / (1. - (278.15 - TA(I)) * .1)
-      else if (TA(I) > 313.15) then  ! BDCS P?
+      else if (TA(I) > 313.15) then  
         if (TA(I) >= 323.15) then
-          RCT(I) = 250.   ! BDCS P?
+          RCT(I) = 250.   
         else
-          RCT(I) = 1. / (1. - (TA(I) - 313.15) * 0.1)  ! BDCS P?
+          RCT(I) = 1. / (1. - (TA(I) - 313.15) * 0.1)  
         end if
       else
         RCT(I) = 1.

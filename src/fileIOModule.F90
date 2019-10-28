@@ -688,11 +688,14 @@ contains
   !! @{
   !> Checks for errors in the NetCDF access process
   subroutine checkNC (ncStatus, tag)
+    
+    use generalUtils, only : abandonCell
+    
     implicit none
     integer, intent(in)         :: ncStatus !< Status variable
     character( * ), optional      :: tag  !< Optional tag
     character(150)              :: message
-    integer                     :: status  ! Used only in parallel mode.
+
     if (present(tag)) then
       message = tag
     else
@@ -700,12 +703,11 @@ contains
     end if
 
     if (ncStatus /= nf90_noerr) then
-      print * ,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
-#if PARALLEL
-            call MPI_ABORT(MPI_COMM_WORLD, - 1, status)
-#endif
-      stop
+      print*,'netCDF error with tag ', trim(message), ' : ', trim(nf90_strerror(ncStatus))
+      print*,'Stopping the run for this cell'
+      call abandonCell
     end if
+    
   end subroutine checkNC
   !! @}
 
