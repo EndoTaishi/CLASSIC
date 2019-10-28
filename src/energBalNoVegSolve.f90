@@ -425,12 +425,14 @@ subroutine energBalNoVegSolve (ISNOW, FI, & ! Formerly TSOLVE
   !!
   !! \f$w(0)_{sat} = 0.622 e(0)_{sat}/(p_{dry})\f$
   !!
-  !! where \f$p_{dry}\f$ is the partial pressure of dry air. A standard
-  !! empirical equation for the saturation vapour pressure dependence
-  !! on the temperature T is used:
+  !! where \f$p_{dry}\f$ is the partial pressure of dry air. For the
+  !! saturated vapour pressure, following Emanuel (1994) \cite Emanuel1994-dt
+  !! \f$e_{sat}\f$ is from the temperature \f$T_a\f$ and the freezing
+  !! point \f$T_f\f$:
   !!
-  !! \f$e_{sat} = 611.0 exp[17.269 (T – T_f)/(T – 35.86)]    T \geq T_f\f$
-  !! \f$e_{sat} = 611.0 exp[21.874 (T – T_f)/(T – 7.66)]     T < T_f\f$
+  !! \f$e_{sat} = exp[53.67957 - 6743.769 / T - 4.8451 * ln(T)]       T \geq T_f\f$
+  !!
+  !! \f$e_{sat} = exp[23.33086 - 6111.72784 / T + 0.15215 * log(T)]    T < T_f\f$
   !!
   !! where \f$T_f\f$ is the freezing point. If there is a snow cover or
   !! ponded water present on the surface (IWATER > 0), the surface

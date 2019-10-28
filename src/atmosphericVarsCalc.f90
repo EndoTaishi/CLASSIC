@@ -91,13 +91,13 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
   !! \f$e_a = q_a p /[0.622 + 0.378 q_a ]\f$
   !!
   !! where p is the surface atmospheric pressure. For the
-  !! saturated vapour pressure, a standard empirical equation is
-  !! utilized relating \f$e_{a, sat}\f$ to the temperature \f$T_a\f$ and the freezing
+  !! saturated vapour pressure, following Emanuel (1994) \cite Emanuel1994-dt
+  !! \f$e_{a, sat}\f$ is from the temperature \f$T_a\f$ and the freezing
   !! point \f$T_f\f$:
   !!
-  !! \f$e_{a, sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]\f$    \f$T_a \geq T_f\f$
+  !! \f$e_{sat} = exp[53.67957 - 6743.769 / T - 4.8451 * ln(T)]       T \geq T_f\f$
   !!
-  !! \f$e_{a, sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]\f$     \f$T_a < T_f\f$
+  !! \f$e_{sat} = exp[23.33086 - 6111.72784 / T + 0.15215 * log(T)]    T < T_f\f$
   !!
   !! The partial pressure of dry air, \f$p_{dry}\f$, is obtained by subtracting
   !! \f$e_a\f$ from p, and the density of the air is calculated as the sum of
@@ -135,6 +135,7 @@ subroutine atmosphericVarsCalc (VPD, TADP, PADRY, RHOAIR, RHOSNI, RPCP, TRPCP, &
     !! upper limit of 200 kg m-3:
     !!
     !! \f$\rho_{s, i} = 67.92 + 51.25 exp[(T_a – T_f)/2.59]\f$ \f$T_a < T_f\f$
+    !!
     !! \f$\rho_{s, i} = 119.17 + 20.0 (T_a – T_f)\f$           \f$T_a \geq T_f\f$
     !!
     if (TA(I) <= TFREZ) then

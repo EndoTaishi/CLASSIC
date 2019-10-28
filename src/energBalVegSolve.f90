@@ -425,10 +425,10 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
   !! The saturation mixing ratio is a function of the saturation vapour pressure \f$e_c\f$ at the canopy temperature:
   !! \f$w_c = 0.622 e_c /(p_{dry} )\f$
   !! where \f$p_{dry}\f$ is the partial pressure of dry air. A standard empirical equation for the saturation vapour
-  !! pressure dependence on the temperature T is used:
+  !! pressure dependence on the temperature T is used following Emanuel (1994) \cite Emanuel1994-dt
+  !! \f$e_{sat} = exp[53.67957 - 6743.769 / T - 4.8451 * ln(T)]       T \geq T_f\f$
   !!
-  !! \f$e_{sat} = 611.0 exp[17.269(T - T_f)/(T - 35.86)]    T \geq T_f\f$
-  !! \f$e_{sat} = 611.0 exp[21.874(T - T_f)/(T - 7.66)]     T < T_f\f$
+  !! \f$e_{sat} = exp[23.33086 - 6111.72784 / T + 0.15215 * log(T)]    T < T_f\f$
   !!
   !! where \f$T_f\f$ is the freezing point. The virtual temperature of the air in the canopy space, \f$T_{ac, v}\f$ , is likewise
   !! calculated from the canopy air temperature \f$T_{ac}\f$ and the specific humidity in the canopy air space, \f$q_{ac}\f$ , as
@@ -1009,6 +1009,7 @@ subroutine energBalVegSolve (ISNOW, FI, & ! Formerly TSOLVC
   !! DRCOEF and FLXSURFZ is equivalent to \f$1/r_a\f$ .) Thus, \f$T_{a, c}\f$ and \f$q_{a, c}\f$ can be evaluated as
   !!
   !! \f$T_{a, c} = [T_{a, pot} /r_a + T_c /r_b + T(0)_{pot} /r_{a, , g} ]/[1/r_a + 1/r_b + 1/r_{a, , g} ]\f$
+  !!
   !! \f$q_{a, c} = [q_a /r_a + q_c /(r_b + r_c) + q(0)/r_{a, , g} ]/[1/r_a + 1/(r_b + r_c) + 1/r_{a, , g} ]\f$
   !!
   !! If the water vapour flux is towards the canopy leaves, or if the canopy is snow-covered or rain-covered, \f$r_c\f$

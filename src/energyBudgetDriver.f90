@@ -688,11 +688,13 @@ subroutine energyBudgetDriver (TBARC, TBARG, TBARCS, TBARGS, THLIQC, THLIQG, & !
   !! The mixing ratio is a function of the saturation vapour pressure \f$e_{ac, sat}\f$ at the canopy air temperature:
   !! \f$w_{ac, sat} = 0.622 e_{ac, sat} /(p_{dry} )\f$
   !!
-  !! A standard empirical equation for the saturation vapour pressure dependence on the temperature T is
-  !! used:
-  !! \f[e_{sat} = 611.0 exp[17.269(T – T_f)/(T – 35.86)]      T \geq T_f \f]
-  !! \f[e_{sat} = 611.0 exp[21.874(T – T_f)/(T – 7.66)]       T < T_f \f]
-  !! where \f$T_f\f$ is the freezing point.
+  !! For the saturated vapour pressure, following Emanuel (1994) \cite Emanuel1994-dt
+  !! \f$e_{sat}\f$ is from the temperature \f$T_a\f$ and the freezing
+  !! point \f$T_f\f$:
+  !!
+  !! \f$e_{sat} = exp[53.67957 - 6743.769 / T - 4.8451 * ln(T)]       T \geq T_f\f$
+  !!
+  !! \f$e_{sat} = exp[23.33086 - 6111.72784 / T + 0.15215 * log(T)]    T < T_f\f$
   !!
   !! At the end of the blocks of code dealing with the four subareas, several more diagnostic variables are evaluated.
   !! Again, these calculations are generally straightforward. The effective black-body surface temperature \f$T_{0, eff}\f$
