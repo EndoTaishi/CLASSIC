@@ -17,22 +17,22 @@ modelOutputType <- "siteLevel"
 mod.id <- "FLUXNET"
 
 # Set the git repository path (needed when referencing scripts and LaTeX assets)
-amber.gitrepo.path <- "/home/acrp001/mattfortier2019/code/CLASSIC/tools/siteLevelFLUXNET/AMBER"
+amber.gitrepo.path <- ""
 
 # Where the amber outputs will be stored (directory). Also acts as a working directory for the amber run
-outputDir <- "/home/acrp001/mattfortier2019/code/CLASSIC/outputFiles/AMBER"
+outputDir <- ""
 
 # Where the CLASSIC NetCDF model output is stored (directory)
-mod.path <- "nopath"
+mod.path <- ""
 
 # Where the CLASSIC CSV model output is stored (directory)  ??? Only necessary for siteLevel runs?
-mod.csv.path <- "/home/acrp001/mattfortier2019/code/CLASSIC/outputFiles/FLUXNETsites"
+mod.csv.path <- ""
 
 # Where the NetCDF reference data (ilamb) is stored (directory)
-ref.path <- "norefpath"
+ref.path <- ""
 
 # Where the CSV reference data (FluxNet) is stored (directory)
-ref.csv.path <- "/home/acrp001/mattfortier2019/code/CLASSIC/inputFiles/observationalDataFLUXNET"
+ref.csv.path <- ""
 
 # Set your number of cores used to run amber in parallel:
 numCores <- 2
@@ -52,7 +52,7 @@ end.date.plot <- "2017-12"
 pdf2png <- TRUE
 
 # Path to conda-managed CDO utility (only used in Canada runs)
-amber.cdo <- '/space/hall1/sitestore/eccc/crd/ccrp/mib001/usr_conda/envs/r-amber/bin/cdo'
+amber.cdo <- ""
 
 #-------------------------------------------------------------------------------
 # Comparing two amber runs
