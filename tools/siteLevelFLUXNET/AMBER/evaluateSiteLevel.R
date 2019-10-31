@@ -21,7 +21,7 @@ unit.conv.mod <- 86400 * 1000  # optional unit conversion for model data
 unit.conv.ref <- 86400 * 1000  # optional unit conversion for reference data
 variable.unit <- "gC m$^{-2}$ day$^{-1}$"  # unit after conversion (LaTeX notation)
 scores.fluxnet.site(long.name, mod.csv, mod.csv.path, ref.csv, mod.id, ref.id,
-                    unit.conv.mod, unit.conv.ref, variable.unit, sites)
+                    unit.conv.mod, unit.conv.ref, variable.unit, sites, outputDir = outputDir)
 print(paste("Evaluation of", long.name, "for", mod.id, "and", ref.id, "completed.", sep = " "))
 #-------------------------------------------------------------------------------
 # reco (ecosystem respiration):
@@ -34,7 +34,7 @@ unit.conv.mod <- 86400 * 1000  # optional unit conversion for model data
 unit.conv.ref <- 86400 * 1000  # optional unit conversion for reference data
 variable.unit <- "gC m$^{-2}$ day$^{-1}$"  # unit after conversion (LaTeX notation)
 scores.fluxnet.site(long.name, mod.csv, mod.csv.path = preprocessDir, ref.csv, mod.id, ref.id,
-                    unit.conv.mod, unit.conv.ref, variable.unit, sites)
+                    unit.conv.mod, unit.conv.ref, variable.unit, sites, outputDir = outputDir)
 print(paste("Evaluation of", long.name, "for", mod.id, "and", ref.id, "completed.", sep = " "))
 #-------------------------------------------------------------------------------
 # nee (net ecosystem exchange):
@@ -44,10 +44,10 @@ ref.csv <- paste(ref.csv.path, "nee_monthly_fluxnet.csv", sep = "/")
 mod.id <- 'CLASSIC-Sitelevel' # define a model experiment ID
 ref.id <- "Fluxnet"  # give reference dataset a name
 unit.conv.mod <- 86400 * 1000  # optional unit conversion for model data
-unit.conv.ref <- 86400 * 1000  # optional unit conversion for reference data
+unit.conv.ref <- (-1)*86400 * 1000  # optional unit conversion for reference data
 variable.unit <- "gC m$^{-2}$ day$^{-1}$"  # unit after conversion (LaTeX notation)
 scores.fluxnet.site(long.name, mod.csv, mod.csv.path = preprocessDir, ref.csv, mod.id, ref.id,
-                    unit.conv.mod, unit.conv.ref, variable.unit, sites)
+                    unit.conv.mod, unit.conv.ref, variable.unit, sites, outputDir = outputDir)
 print(paste("Evaluation of", long.name, "for", mod.id, "and", ref.id, "completed.", sep = " "))
 #-------------------------------------------------------------------------------
 # RADIATION
@@ -62,7 +62,7 @@ unit.conv.mod <- 1  # optional unit conversion
 unit.conv.ref <- 1  # optional unit conversion
 variable.unit <- "W m$^{-2}$"  # unit after conversion (LaTeX notation)
 scores.fluxnet.site(long.name, mod.csv, mod.csv.path = preprocessDir, ref.csv, mod.id, ref.id,
-                    unit.conv.mod, unit.conv.ref, variable.unit, sites)
+                    unit.conv.mod, unit.conv.ref, variable.unit, sites, outputDir = outputDir)
 print(paste("Evaluation of", long.name, "for", mod.id, "and", ref.id, "completed.", sep = " "))
 #-------------------------------------------------------------------------------
 # HEAT FLUXES
@@ -77,7 +77,7 @@ unit.conv.mod <- 1  # optional unit conversion for model data
 unit.conv.ref <- 1  # optional unit conversion for reference data
 variable.unit <- "W m$^{-2}$"  # unit after conversion (LaTeX notation)
 scores.fluxnet.site(long.name, mod.csv, mod.csv.path, ref.csv, mod.id, ref.id,
-                    unit.conv.mod, unit.conv.ref, variable.unit, sites)
+                    unit.conv.mod, unit.conv.ref, variable.unit, sites, outputDir = outputDir)
 print(paste("Evaluation of", long.name, "for", mod.id, "and", ref.id, "completed.", sep = " "))
 #-------------------------------------------------------------------------------
 # hfss (sensible heat flux):
@@ -90,9 +90,9 @@ unit.conv.mod <- 1  # optional unit conversion for model data
 unit.conv.ref <- 1  # optional unit conversion for reference data
 variable.unit <- "W m$^{-2}$"  # unit after conversion (LaTeX notation)
 scores.fluxnet.site(long.name, mod.csv, mod.csv.path, ref.csv, mod.id, ref.id,
-                    unit.conv.mod, unit.conv.ref, variable.unit, sites)
+                    unit.conv.mod, unit.conv.ref, variable.unit, sites, outputDir = outputDir)
 print(paste("Evaluation of", long.name, "for", mod.id, "and", ref.id, "completed.", sep = " "))
 #-------------------------------------------------------------------------------
 # summarize results in a table and a plot
-scores.tables(plot.width = 6, plot.height = 3, myMargin = c(4, 7, 3, 4))
+scores.tables(plot.width = 6, plot.height = 3, myMargin = c(4, 7, 3, 4), outputDir = outputDir)
 #-------------------------------------------------------------------------------'

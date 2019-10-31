@@ -11,22 +11,27 @@
 #-------------------------------------------------------------------------------
 # (1) Delete any old files you may have.
 #-------------------------------------------------------------------------------
+# Create (if doesn't exist) and Set the output directory as a working directory:
+dir.create(outputDir, recursive = TRUE, showWarnings = FALSE)
+# Create a new preprocess folder if it doesn't exist already
+preprocessDir <- paste(outputDir, "preprocess", sep = "/")
+dir.create(preprocessDir, recursive = TRUE, showWarnings = FALSE)
 # Delete any old amber-related files under <outputDir>
 # EXCEPT amber_methods.tex and our <preprocessDir>
 to_delete <- c(
   # NetCDF
   list.files(path = ".", pattern = paste("(AGLBIO-|ALBS-|BURNT-|CSOIL-|GPP-|HFLS-|",
-                                         "HFSS-|LAI-|MRRO-|NEE-|RECO-|RLS-|RNS-|",
-                                         "RSS-|SNW-|score_|scoreinputs).*\\.nc$", sep = ""), full.names = TRUE),
+                                     "HFSS-|LAI-|MRRO-|NEE-|RECO-|RLS-|RNS-|",
+                                     "RSS-|SNW-|score_|scoreinputs).*\\.nc$", sep = ""), full.names = TRUE),
   # PDF
   list.files(path = ".", pattern = paste("(AGLBIO-|ALBS-|BURNT-|CSOIL-|GPP-|HFLS-|",
-                                         "HFSS-|LAI-|MRRO-|NEE-|RECO-|RLS-|RNS-|",
-                                         "RSS-|SNW-|score_|scoreinputs|",
-                                         "amberResults|-plotNc).*\\.pdf$", sep = ""), full.names = TRUE),
+                                     "HFSS-|LAI-|MRRO-|NEE-|RECO-|RLS-|RNS-|",
+                                     "RSS-|SNW-|score_|scoreinputs|",
+                                     "amberResults|-plotNc).*\\.pdf$", sep = ""), full.names = TRUE),
   # PNG
   list.files(path = ".", pattern = paste("(AGLBIO-|ALBS-|BURNT-|CSOIL-|GPP-|HFLS-|",
-                                         "HFSS-|LAI-|MRRO-|NEE-|RECO-|RLS-|RNS-|",
-                                         "RSS-|SNW-|score_|scoreinputs|-plotNc).*\\.png$", sep = ""), full.names = TRUE),
+                                     "HFSS-|LAI-|MRRO-|NEE-|RECO-|RLS-|RNS-|",
+                                     "RSS-|SNW-|score_|scoreinputs|-plotNc).*\\.png$", sep = ""), full.names = TRUE),
   # LATEX
   list.files(path = ".", pattern = "(score_|scoreinputs).*\\.tex$", full.names = TRUE),
   # Preprocessed inputs (if they exist, but leave the folder alone)
@@ -62,20 +67,18 @@ print("All R packages required to run AMBER have been loaded.")
 #-------------------------------------------------------------------------------
 # (3) Preprocess selected variables
 #-------------------------------------------------------------------------------
-# Create a new preprocess folder if it doesn't exist already
-preprocessDir <- paste(outputDir, "preprocess", sep = "/")
-dir.create(preprocessDir, recursive = TRUE, showWarnings = FALSE)
 
 # Preprocess selected CLASSIC outputs to make the data comparabale to reference data
+
 source("preprocessSiteLevel.R")
 print("preprocessSiteLevel.R: DONE")
 
 #-------------------------------------------------------------------------------
 # (4) Run AMBER
 #-------------------------------------------------------------------------------
+
 # record time when AMBER was started:
 amber.start <- Sys.time()
-
 # run the evaluation script:
 source("evaluateSiteLevel.R")
 print("evaluateSiteLevel.R: DONE")
@@ -95,6 +98,7 @@ for (src in to_rename) {
 #-------------------------------------------------------------------------------
 # (6) Compile LaTeX file
 #-------------------------------------------------------------------------------
+
 # Copy files related to the LaTeX document from amber.gitrepo.path to the working dir (outputPath)
 to_copy <- grep(
   list.files(path = file.path(amber.gitrepo.path, "scripts", "assets"), full.names = TRUE),
@@ -119,20 +123,17 @@ system("pdflatex amber_methods; bibtex amber_methods; pdflatex amber_methods; pd
 
 # (c) Add all plots to amber_methods.pdf.
 # Plots are added in the order they were produced, except for the score plots, which are put first.
-if (compareTwoRuns == FALSE) {
-    system("pdfunite amber_methods.pdf score_without_massweighting.pdf $(ls -rt ./*-*.pdf) tmp.pdf")
-} else {
-    system("pdfunite amber_methods.pdf scores_compare.pdf $(ls -rt ./*-*.pdf) tmp.pdf")
-}
+if (compareTwoRuns == FALSE) {system("pdfunite amber_methods.pdf score_without_massweighting.pdf $(ls -rt *-*.pdf) tmp.pdf")}
+if (compareTwoRuns == TRUE) {system("pdfunite amber_methods.pdf scores_compare.pdf $(ls -rt *-*.pdf) tmp.pdf")}
 
 # (d) Make a PDF outline using plot names (first page: n=13)
-system('n=13 ; for i in $(ls -tr ./*-*.pdf) ; do echo "[/Page $n /Title ($i) /OUT pdfmark" ; n=$((n+1)) ; done > index.info')
+system('n=13 ; for i in $(ls -tr *-*.pdf) ; do echo "[/Page $n /Title ($i) /OUT pdfmark" ; n=$((n+1)) ; done > index.info')
 
 # (e) Add outline to PDF document
 system("gs -sDEVICE=pdfwrite -q -dBATCH -dNOPAUSE -sOutputFile=amberResults.pdf -dPDFSETTINGS=/prepress index.info -f tmp.pdf")
 
 # (f) remove files that are no longer needed
-system("rm ./tmp.pdf; rm ./index.info; rm ./amber_methods.pdf")
+system("rm tmp.pdf; rm index.info; rm amber_methods.pdf")
 print("Your AMBER run has completed. Please find your results in the document amberResults.pdf.")
 
 #-------------------------------------------------------------------------------
@@ -141,3 +142,5 @@ duration <- amber.start - amber.end  # time duration
 duration <- abs(duration)
 #-------------------------------------------------------------------------------
 print(duration)
+
+
