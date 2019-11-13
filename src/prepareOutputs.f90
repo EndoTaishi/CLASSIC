@@ -28,7 +28,7 @@ contains
 
     use classStateVars, only : class_rot, class_gat, initRowVars
     use ctemStateVars, only : c_switch, vrot
-    use classicParams, only : ignd, icc, SBC, TFREZ
+    use classicParams, only : ignd, icc, SBC, TFREZ, convertkgC
     use outputManager, only : writeOutput1D, consecDays
 
     implicit none
@@ -50,6 +50,7 @@ contains
     real :: FSSTAR
     real :: TCN, TPN, TSN, TSURF, ZSN
     real :: an_grd, rml_grd, totvegarea
+    real :: temp
     real, dimension(:), allocatable :: anveggrd, rmlveggrd, fcanctot
     integer :: i, j, m
 
@@ -64,12 +65,12 @@ contains
     real, pointer, dimension(:) :: FGS       !< Subarea fractional coverage of modelled area - snow-covered bare ground [ ]
 
     real, pointer, dimension(:,:,:) :: ailcgrow     !< Green LAI for CTEM's pfts
-    real, pointer, dimension(:,:,:) :: anvegrow     !< Net photosynthesis rate for each pft
-    real, pointer, dimension(:,:,:) :: rmlvegrow    !< Leaf maintenance respiration rate for each pft
-    real, pointer, dimension(:,:,:) :: ancsvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over snow subarea
-    real, pointer, dimension(:,:,:) :: ancgvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over ground subarea
-    real, pointer, dimension(:,:,:) :: rmlcsvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over snow subarea
-    real, pointer, dimension(:,:,:) :: rmlcgvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over ground subarea
+    real, pointer, dimension(:,:,:) :: anvegrow     !< Net photosynthesis rate for each pft \f$[kg C m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: rmlvegrow    !< Leaf maintenance respiration rate for each pft \f$[kg C m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: ancsvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over snow subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: ancgvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over ground subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: rmlcsvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over snow subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: rmlcgvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over ground subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
 
     real, pointer, dimension(:,:) :: FAREROT !< Fractional coverage of mosaic tile on modelled area
     real, pointer, dimension(:,:) :: CDHROT  !< Surface drag coefficient for heat [ ]
@@ -670,8 +671,10 @@ contains
               anvegrow(i,m,j) = 0.0
               rmlvegrow(i,m,j) = 0.0
             else
-              anvegrow(i,m,j) = ancsvegrow(i,m,j) * FSNOROT(i,m) + ancgvegrow(i,m,j) * (1. - FSNOROT(i,m))
-              rmlvegrow(i,m,j) = rmlcsvegrow(i,m,j) * FSNOROT(i,m) + rmlcgvegrow(i,m,j) * (1. - FSNOROT(i,m))
+              ! Add up the snow covered and non fluxes. Also convert from umol CO2/m2/s to kgC/m2/s. 
+              temp = (ancsvegrow(i,m,j) * FSNOROT(i,m) + ancgvegrow(i,m,j) * (1. - FSNOROT(i,m))) * convertkgC              
+              rmlvegrow(i,m,j) = (rmlcsvegrow(i,m,j) * FSNOROT(i,m) + rmlcgvegrow(i,m,j) * (1. - FSNOROT(i,m))) * convertkgC
+              anvegrow(i,m,j) = temp + rmlvegrow(i,m,j) ! Add back in the rmLeaf to make it gross primary productivity.
             end if
           end do
           if (dopertileoutput) then
