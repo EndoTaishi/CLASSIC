@@ -1241,7 +1241,7 @@ kn(16:20)  =0.46, 0.44, 0.46, 0.00, 0.00,
       chi(16:20) = -0.30, -0.30, 0.00,-0.30, 0.00,
 
     ! photosynthesis down regulation parameters equivalent co2 fertilization effect that we want model to yield
-      gamma_w = 0.17,
+      gamma_w = 0.35,
 
     ! equivalent co2 fertilization effect that model actually gives without any photosynthesis down-regulation
       gamma_m = 0.95,

@@ -16,7 +16,7 @@ l2max = 3 ,
 &classicparams
 
 ! This file contains all of the CTEM parameters that are read in by
-! readin_params in the ctem_params.f90 file. The format is a fortran
+! readin_params in the classic_params.f90 file. The format is a fortran
 ! namelist. It ignores anything after a '!'. The array syntax is not the
 ! same as usual fortran. It is presently set up so it is easy to see how
 ! the CTEM level PFT values correspond to the CLASS level ones. Pay attention
@@ -43,7 +43,7 @@ modelpft(13:15)= 1,     1,   0,   ! CLASS PFT 4 BDL SHRUB (BdlSh)
 !               EVG   DCD-CLD
 
 ! List of CLASS-level PFTs
-classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass','BdlSh'
+classpfts = 'NdlTr' , 'BdlTr', 'Crops', 'Grass', 'BdlSh'
 
 ! List of CTEM PFTs
 ! **Note: 'BdlDCoTr' should be specified before 'BdlDDrTr' due to some code in competition.
@@ -524,6 +524,10 @@ kn(13:15) = 0.50, 0.50, 0.00,
     humicfac(10:12)   = 0.42, 0.42, 0.42,
     humicfac(13:15)   = 0.42, 0.42, 0.00,
 
+    !> Humification factor - used for transferring carbon from litter into soil c pool. This is the
+    !! value used for bare ground or LUC pools.
+    humicfac_bg = 0.45,
+
     !> Minimum lai below which a pft doesn't expand
     laimin(1:3)     = 1.0,   1.0,  0.0, 
     laimin(4:6)    = 1.5,   1.0,  1.0, 
@@ -847,7 +851,6 @@ kn(13:15) = 0.50, 0.50, 0.00,
     !< Factor to reduce respiration by for temps below tcrit
     frozered = 0.1,   
 
-
 ! landuse_change_mod.f90 parameters: --------------
 ! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!
 
@@ -1164,6 +1167,20 @@ kn(13:15) = 0.50, 0.50, 0.00,
     !! roots can penetrate. (years)
     eftime = 10.0,        
 
+! soil_ch4uptake parameters: -----------------------------
+
+    !< Diffusivity of CH4 in air (cm^2 s^-1) @ STP
+    D_air = 0.196        
+    
+    !< Scaling factor takes CH4_soills to mg CH4 m^-2 s^-1 (units: \f$mg CH_4 ppmv^{-1} s^{-1} m^{-2} cm{-1}\f$)
+    g_0 = 6.79051E-3   ! 586.7 / 86400.
+    
+    !< Constant derived in Curry (2007) from comparison against measurements (-)
+    betaCH4 = 0.8      
+      
+    !< Base oxidation rate derived in Curry (2007) from comparison against measurements \f$(s^{-1})\f$
+    k_o = 5.03E-5        
+
 ! turnover.f parameters: ---------------------------------
 
     !> Stemlife, turnover time scale for stem for different pfts
@@ -1189,16 +1206,13 @@ kn(13:15) = 0.50, 0.50, 0.00,
     !>Rita Wania's thesis suggests about 0.25, but we get a better agreement to outputs from the Walter's model if we use 0.16.
     !>Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to
     !>know the function, so leave constant for now ratio is \f$mol ch_4\f$ to \f$mol co_2\f$
-    ratioch4     = 0.135, ! New value based on Vivek's work of Aug 2016.
+    ratioch4     = 0.125, ! New value based on Vivek's work of Aug 2016.
 
     !>ratio of wetland to upland respiration\n
     !>Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis.  These were summed as "hetrores".
     !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
     !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
-    wtdryres     = 0.45,
-
-    !< constant value for secondary (ch4wet2) methane emissions calculation
-    factor2      = 0.015,
+    wtdryres     = 0.23, 0.37, 0.23,
 
     !< Northern zone for wetland determination (degrees North)
     lat_thrshld1 = 40.0,
@@ -1206,14 +1220,14 @@ kn(13:15) = 0.50, 0.50, 0.00,
     !< Boundary with southern zone for wetland determination (degrees North)
     lat_thrshld2 = -35.0,
 
-    !< Soil wetness threshold in the North zone
-    soilw_thrshN = 0.55,
+    !< Soil wetness thresholds in the North zone
+    soilw_thrshN = 0.45, 0.65,
 
-    !< Soil wetness threshold in the Equatorial zone
-    soilw_thrshE = 0.80,
+    !< Soil wetness thresholds in the Equatorial zone
+    soilw_thrshE = 0.55, 0.85,
 
-    !< Soil wetness threshold in the South zone
-    soilw_thrshS = 0.70,
+    !< Soil wetness thresholds in the South zone
+    soilw_thrshS = 0.70, 0.85,
 
 ! Photosynthesis parameters: --------------------------------------------------
 
@@ -1323,10 +1337,8 @@ kn(13:15) = 0.50, 0.50, 0.00,
       chi(13:15) = 0.17, 0.17, 0.00,
 
     ! photosynthesis down regulation parameters equivalent co2 fertilization effect that we want model to yield
-      gamma_w = 0.17,
+      gamma_w = 0.35,
 
     ! equivalent co2 fertilization effect that model actually gives without any photosynthesis down-regulation
       gamma_m = 0.95,
-
 /
-
