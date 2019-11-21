@@ -1289,6 +1289,7 @@ contains
     real, dimension(:,:), pointer :: groundHeatFluxROT !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, dimension(:,:), pointer :: SNOROT
     real, dimension(:,:), pointer :: WSNOROT
+    real, dimension(:,:), pointer :: RHOSROT        !< Density of snow \f$[kg m^{-3}]\f$
     real, dimension(:,:), pointer :: ROFROT
     real, dimension(:,:), pointer :: QFSROT
     real, dimension(:,:), pointer :: QFGROT
@@ -1309,13 +1310,14 @@ contains
     real, pointer, dimension(:) :: HFSACC_MO
     real, pointer, dimension(:) :: QEVPACC_MO
     real, pointer, dimension(:) :: groundHeatFlux_MO  !< Heat flux at soil surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: SNOACC_MO
-    real, pointer, dimension(:) :: WSNOACC_MO
-    real, pointer, dimension(:) :: ROFACC_MO
-    real, pointer, dimension(:) :: PREACC_MO
+    real, pointer, dimension(:) :: SNOACC_MO      !< Mass of snow pack \f$[kg m^{-2} ]\f$
+    real, pointer, dimension(:) :: ZSNACC_MO      !< Depth of snow pack \f$[ m ]\f$
+    real, pointer, dimension(:) :: WSNOACC_MO     !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+    real, pointer, dimension(:) :: ROFACC_MO      !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:) :: PREACC_MO      !< Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
     real, pointer, dimension(:) :: EVAPACC_MO    !< Diagnosed total surface evaporation water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
     real, pointer, dimension(:) :: TRANSPACC_MO
-    real, pointer, dimension(:) :: TAACC_MO
+    real, pointer, dimension(:) :: TAACC_MO     !< Air temperature at reference height [K]
     real, pointer, dimension(:) :: ACTLYR_MO
     real, pointer, dimension(:) :: FTABLE_MO
     real, pointer, dimension(:) :: ACTLYR_MIN_MO
@@ -1364,6 +1366,7 @@ contains
     groundHeatFluxROT => class_rot%groundHeatFluxROT
     SNOROT          => class_rot%SNOROT
     WSNOROT         => class_rot%WSNOROT
+    RHOSROT         => class_rot%RHOSROT
     ROFROT          => class_rot%ROFROT
     QFSROT          => class_rot%QFSROT
     QFGROT          => class_rot%QFGROT
@@ -1391,6 +1394,7 @@ contains
     QEVPACC_MO        => class_out%QEVPACC_MO
     groundHeatFlux_MO => class_out%groundHeatFlux_MO
     SNOACC_MO         => class_out%SNOACC_MO
+    ZSNACC_MO         => class_out%ZSNACC_MO
     WSNOACC_MO        => class_out%WSNOACC_MO
     ROFACC_MO         => class_out%ROFACC_MO
     PREACC_MO         => class_out%PREACC_MO
@@ -1439,6 +1443,9 @@ contains
       QEVPACC_MO(I) = QEVPACC_MO(I) + QEVPROT(I,M) * FAREROT(I,M)
       groundHeatFlux_MO(I) = groundHeatFlux_MO(I) + groundHeatFluxROT(I,M) * FAREROT(I,M) !*()*()*()*()*()*()
       SNOACC_MO(I) = SNOACC_MO(I) + SNOROT(I,M) * FAREROT(I,M)
+      if (RHOSROT(I,M) > 0.0) ZSNACC_MO(I) = &
+                                  ZSNACC_MO(I) + SNOROT(I,M)/RHOSROT(I,M) * FAREROT(I,M)
+
       TAACC_MO(I) = TAACC_MO(I) + TAROW(I) * FAREROT(I,M)
       ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
       FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
@@ -1515,6 +1522,7 @@ contains
         QEVPACC_MO(I) = QEVPACC_MO(I)/real(NDMONTH)
         groundHeatFlux_MO(I) = groundHeatFlux_MO(I)/real(NDMONTH)
         SNOACC_MO(I) = SNOACC_MO(I)/real(NDMONTH)
+        ZSNACC_MO(I) = ZSNACC_MO(I)/real(NDMONTH)
         WSNOACC_MO(I) = WSNOACC_MO(I)/real(NDMONTH)
         TAACC_MO(I) = TAACC_MO(I)/real(NDMONTH)
         ACTLYR_MO(I) = ACTLYR_MO(I)/real(NDMONTH)
@@ -1546,6 +1554,7 @@ contains
         ! rather than the first day of the next month.
         timeStamp = consecDays + monthend(imonth + 1) - 1
 
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'sisnthick_mo'   ,timeStamp,'sisnthick', [ZSNACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
