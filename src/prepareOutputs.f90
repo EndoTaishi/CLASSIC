@@ -147,6 +147,7 @@ contains
     real, pointer, dimension(:,:) :: TSNOROT !< Snowpack temperature [K]
     real, pointer, dimension(:,:) :: TPNDROT !< Temperature of ponded water [K]
     real, pointer, dimension(:,:) :: ZPNDROT !< Depth of ponded water [m]
+    real, pointer, dimension(:,:,:) :: dlzwrot !< Permeable thickness of soil layer [m]
 
     real, dimension(:), pointer :: PREROW    !< Surface precipitation rate \f$[kg m^{-2}  s^{-1} ]\f$
     real, dimension(:), pointer :: UVROW     !< Wind speed at reference height \f$[m s^{-1} ]\f$
@@ -325,6 +326,7 @@ contains
     TSNOROT=> class_rot%TSNOROT
     TPNDROT=> class_rot%TPNDROT
     ZPNDROT=> class_rot%ZPNDROT
+    dlzwrot => class_rot%dlzwrot
     PREROW  => class_rot%PREROW
     UVROW => class_rot%UVROW
     TAROW  => class_rot%TAROW
@@ -619,10 +621,11 @@ contains
                     + QFGROT(I,M) + QFCROT(I,M,1) + QFCROT(I,M,2) + QFCROT(I,M,3) ! FLAG this only considers the top 3 layers !!
           call writeOutput1D(lonLocalIndex,latLocalIndex,'evspsbl_hh_t'   ,timeStamp,'evspsbl', [EVAPSUM])
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'thic_hh_t',timeStamp,'mrsfl', [THICROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh_t',timeStamp,'gflx', [GFLXROT(I,M,:)])  ! name
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I,M,:)])  
+          ! For mrsll and mrsfl, add in conversion from m3/m3 to kg/m2
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I,M,:) * 1000. * DLZWROT(I,M,J)]) 
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'thic_hh_t',timeStamp,'mrsfl', [THICROT(I,M,:) * 1000. * DLZWROT(I,M,J)])  
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh_t',timeStamp,'gflx', [GFLXROT(I,M,:)])  
 
         end do
       end if
@@ -804,6 +807,7 @@ contains
     real, pointer, dimension(:,:) :: RCANROT        !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
     real, pointer, dimension(:,:) :: SCANROT        !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
     real, pointer, dimension(:,:) :: GROROT         !< Vegetation growth index [ ]
+    real, pointer, dimension(:,:,:) :: dlzwrot      !< Permeable thickness of soil layer [m]
 
     real, pointer, dimension(:) :: FSSROW           !< Shortwave radiation \f$[W m^{-2} ]\f$
     real, pointer, dimension(:) :: FDLROW           !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
@@ -824,8 +828,8 @@ contains
     real, pointer, dimension(:,:) :: OVRACC_M       !< Overland flow from top of soil column \f$[kg m^{-2} s^{-1} ]\f$ (accumulated)
     real, pointer, dimension(:,:) :: WTBLACC_M
     real, pointer, dimension(:,:,:) :: TBARACC_M    !< Temperature of soil layers [K] (accumulated)
-    real, pointer, dimension(:,:,:) :: THLQACC_M    !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
-    real, pointer, dimension(:,:,:) :: THICACC_M    !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
+    real, pointer, dimension(:,:,:) :: THLQACC_M    !< Volumetric frozen water content of soil layers \f$[kg m^{-2}]\f$ (accumulated)
+    real, pointer, dimension(:,:,:) :: THICACC_M    !< Volumetric liquid water content of soil layers \f$[kg m^{-2}]\f$ (accumulated)
     real, pointer, dimension(:,:) :: ALVSACC_M      !< Diagnosed total visible albedo of land surface [ ] (accumulated)
     real, pointer, dimension(:,:) :: ALIRACC_M      !< Diagnosed total near-infrared albedo of land surface [ ] (accumulated)
     real, pointer, dimension(:,:) :: WSNOACC_M      !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$ (accumulated)
@@ -873,6 +877,7 @@ contains
     RCANROT => class_rot%RCANROT
     SCANROT => class_rot%SCANROT
     FAREROT=> class_rot%FAREROT
+    dlzwrot   => class_rot%dlzwrot
     PREACC_M  => class_rot%PREACC_M
     GTACC_M   => class_rot%GTACC_M
     QEVPACC_M => class_rot%QEVPACC_M
@@ -927,8 +932,8 @@ contains
         ! WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)  ! FLAG fix !
         do J = 1,IGND
           TBARACC_M(I,M,J) = TBARACC_M(I,M,J) + TBARROT(I,M,J)
-          THLQACC_M(I,M,J) = THLQACC_M(I,M,J) + THLQROT(I,M,J)
-          THICACC_M(I,M,J) = THICACC_M(I,M,J) + THICROT(I,M,J)
+          THLQACC_M(I,M,J) = THLQACC_M(I,M,J) + THLQROT(I,M,J) * 1000. * DLZWROT(I,M,J) ! converted to kg/m2
+          THICACC_M(I,M,J) = THICACC_M(I,M,J) + THICROT(I,M,J) * 1000. * DLZWROT(I,M,J) ! converted to kg/m2
         end do
         ALVSACC_M(I,M) = ALVSACC_M(I,M) + ALVSROT(I,M) * FSVHROW(I)
         ALIRACC_M(I,M) = ALIRACC_M(I,M) + ALIRROT(I,M) * FSIHROW(I)
@@ -1156,12 +1161,6 @@ contains
       ! !                     ROFACC_M(I,M)=ROFACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1
       ! !                     OVRACC_M(I,M)=OVRACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1]
       ! !                     WTBLACC_M(I,M)=WTBLACC_M(I,M)/REAL(NDAY)
-      ! !                     do J=1,IGND
-      ! !                         TBARACC_M(I,M,J)=TBARACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THLQACC_M(I,M,J)=THLQACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THICACC_M(I,M,J)=THICACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THALACC_M(I,M,J)=THALACC_M(I,M,J)/REAL(NDAY)
-      ! ! 726                         CONTINUE
       ! !
       ! !                     IF (FSINACC_M(I,M)>0.0) THEN
       ! !                         ALVSACC_M(I,M)=ALVSACC_M(I,M)/(FSINACC_M(I,M)*0.5)
@@ -1328,8 +1327,8 @@ contains
     real, pointer, dimension(:) :: GROUNDEVAP
     real, pointer, dimension(:) :: CANOPYEVAP
     real, pointer, dimension(:,:) :: TBARACC_MO
-    real, pointer, dimension(:,:) :: THLQACC_MO
-    real, pointer, dimension(:,:) :: THICACC_MO
+    real, pointer, dimension(:,:) :: THLQACC_MO   !< Volumetric liquid water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
+    real, pointer, dimension(:,:) :: THICACC_MO   !< Volumetric frozen water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
     real, pointer, dimension(:) :: MRSO_MO
     real, pointer, dimension(:,:) :: MRSOL_MO
     integer, pointer, dimension(:) :: altotcntr_m

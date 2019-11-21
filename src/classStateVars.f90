@@ -638,8 +638,8 @@ module classStateVars
 
     ! allocated with nlat,nmos,ignd:
     real, allocatable, dimension(:,:,:) :: TBARACC_M        !< Temperature of soil layers [K] (accumulated for means)
-    real, allocatable, dimension(:,:,:) :: THLQACC_M        !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
-    real, allocatable, dimension(:,:,:) :: THICACC_M        !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:,:) :: THLQACC_M        !< Volumetric liquid water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:,:) :: THICACC_M        !< Volumetric frozen water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
     real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !< Temperature of soil layers [K] (accumulated for CTEM)
 
 
@@ -763,8 +763,8 @@ module classStateVars
 
     ! allocated with nlat,ignd:
     real, allocatable, dimension(:,:) :: TBARACC_MO !< Temperature of soil layers [K] (accumulated for means)
-    real, allocatable, dimension(:,:) :: THLQACC_MO !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
-    real, allocatable, dimension(:,:) :: THICACC_MO !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:) :: THLQACC_MO !< Volumetric liquid water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
+    real, allocatable, dimension(:,:) :: THICACC_MO !< Volumetric frozen water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
 
     !   YEARLY OUTPUT FOR CLASS GRID-MEAN
 
