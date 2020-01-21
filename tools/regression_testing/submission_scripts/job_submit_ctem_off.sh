@@ -65,7 +65,7 @@ output_directory=/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/
 job_options_file=$CI_PROJECT_DIR/tools/regression_testing/submission_scripts/job_options_ctem_off.txt
 
 cdir=$( pwd )
-echo "Cdir $cdir"
+
 # Location of compiled CLASSIC executable.
 
 # For the supercomputer:

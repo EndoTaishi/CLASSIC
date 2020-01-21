@@ -27,7 +27,7 @@
                                               !  will just copy the init_file and rename it so it can be
                                               ! overwritten.
 ! Namelist of model parameters
-    runparams_file = '/fs/home/fs1/eccc/crd/ccrn_shr/scrd108/builds/51d31566/0/CLASSIC_development/CLASSIC/configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
+    runparams_file = '/space/hall3/sitestore/eccc/crd/ccrn/users/scrd108/gitlab-runner/builds/51d31566/0/CLASSIC_development/CLASSIC/configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
 
 ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     ! set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
@@ -160,7 +160,7 @@
 ! Output options:
 
     output_directory = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_on' ,        !< Directory where the output netcdfs will be placed
-    xmlFile = '/fs/home/fs1/eccc/crd/ccrn_shr/scrd108/builds/51d31566/0/CLASSIC_development/CLASSIC/configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
+    xmlFile = '/space/hall3/sitestore/eccc/crd/ccrn/users/scrd108/gitlab-runner/builds/51d31566/0/CLASSIC_development/CLASSIC/configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
     doperpftoutput = .false. ,   ! Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level
