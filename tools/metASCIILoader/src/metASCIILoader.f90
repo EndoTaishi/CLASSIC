@@ -79,6 +79,8 @@ contains
             read(10,*)readinmet(j)
           end do
         else ! old fixed format style, prone to formatting issues so best to avoid if you can!
+          print*,timesteps
+          
           do j = 1, timesteps
             read(10, fmt = format)readinmet(j)%hour, readinmet(j)%minute, readinmet(j)%day, readinmet(j)%year, &
                                   readinmet(j)%shortWave, readinmet(j)%longWave, readinmet(j)%precipitation, &
@@ -261,7 +263,7 @@ contains
             fileId = ncOpen(filename, nf90_write)
         endif
 
-        ! Put in data
+        ! Put in data        
         call ncPutVar(fileId, label, realValues = variable, start = [1, 1, 1], count = [1, 1, size(variable)])
 
         call ncClose(fileId)

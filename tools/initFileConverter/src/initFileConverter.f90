@@ -296,6 +296,7 @@ contains
           READ(10,5030) (VPDAROT(M,J),J=1,ICAN),(VPDBROT(M,J),J=1,ICAN)
           READ(10,5030) (PSGAROT(M,J),J=1,ICAN),(PSGBROT(M,J),J=1,ICAN)
           READ(10,5040) DRNROT(M),SDEPROT(M),FAREROT(M)
+          print*,'ok'
           READ(10,5090) XSLPROT(M),GRKFROT(M),WFSFROT(M),WFCIROT(M),MIDROT(M),SOCIROT(M)
           ! The soil colour index is a 'relatively' new input requirement. It is possible some older INI files 
           ! would not have this information in them. If not then throw an error and stop the run.
