@@ -12,13 +12,19 @@
 #
 # serial        - compiles code for serial runs using the GNU compiler on the local platform (default)
 # parallel      - compiles code for parallel runs using the GNU compiler on the local platform
-# ppp           - compiles code for parallel runs using the Intel compiler on the front-ends
-# supercomputer - compiles code for parallel runs using the Intel compiler on the supercomputers
+# supercomputer - compiles code for parallel runs using the Intel compiler on the ECCC supercomputers
+# ppp           - compiles code for parallel runs using the Intel compiler on the ECCC front-ends
+#                 *** NB: Before running make, support for the parallel netCDF library must first be enabled 
+#                         using this command:
+#                         . ssmuse-sh -x hpco/exp/hdf5-netcdf4/parallel/openmpi-3.1.2/static/intel-19.0.3.199/01
 
 # The "cray" mode uses the native Cray compiler on the supercomputers. It still requires testing.
 
 # ==================================================================================================================
 
+# Modifications: Ed Chan, Dec 2019.
+#   - Revised supercomputer/ppp compiler/linker options, which are now the same on both platforms.
+#   - On ppp, support for the parallel netCDF library must now be enabled PRIOR to running make.
 # Modifications: Ed Chan, Sep 2018.
 #   - Updated various compiler options.
 #   - Added "cray" and "ppp" modes.
@@ -60,7 +66,7 @@ ifeq ($(mode), supercomputer)
 	# Include/library flags should NOT be specified as the appropriate ones should be available via the loaded module.
 	COMPILER = ftn
 	# Fortran Flags.
- 	FFLAGS = -DPARALLEL -r8 -align array64byte -O1 -g -init=arrays -init=zero -traceback -module $(ODIR)
+        FFLAGS = -DPARALLEL -r8 -g -O2 -mp1 -xCORE-AVX2 -align array64byte -init=arrays -init=zero -traceback -module $(ODIR)
 else ifeq ($(mode), cray)
 	# Wrapper to the default Fortran compiler loaded via a module. The following is specific to the Cray compiler.
 	# Include/library flags should NOT be specified as the appropriate ones should be available via the loaded module.
@@ -68,18 +74,17 @@ else ifeq ($(mode), cray)
 	# Fortran Flags. Note: -g prevents most optimizations, -rm gives listings.
 	FFLAGS = -DPARALLEL -s real64 -e0 -ez -O2 -g
 else ifeq ($(mode), ppp)
-	# Location of parallel netCDF library.
-	NCLIBS=/fs/ssm/comm/eccc/ccrn/nemo/nemo-1.0/openmpi-1.6.5/enable-shared/intelcomp-2016.1.156/ubuntu-14.04-amd64-64
-	# Open MPI wrapper to the default Fortran compiler. The following is specific to the Intel compiler.
-	# Note: -xCORE-AVX2 generates specialized (optimized) code which must be supported by the system's processors.
-	# Include/library flags for Open MPI should NOT be specified as the appropriate ones should be available via the wrapper.
-	COMPILER = mpif90
-	# Fortran Flags. Switches are as close as possible to those used for Intel on the Cray supercomputer.
-	FFLAGS = -DPARALLEL -xCORE-AVX2 -r8 -align array64byte -O1 -g -init=arrays -init=zero -traceback -module $(ODIR)
-	# Include Flags for netCDF.
-	IFLAGS = -I$(NCLIBS)/include
-	# Library Flags for netCDF.
-	LFLAGS = -L$(NCLIBS)/lib -lnetcdff -lnetcdf -lhdf5_hl -lhdf5
+        # NB: Support for parallel netCDF library must first be enabled prior to running make via:
+        #     . ssmuse-sh -x hpco/exp/hdf5-netcdf4/parallel/openmpi-3.1.2/static/intel-19.0.3.199/01
+        # Open MPI wrapper to the default Fortran compiler. The following is specific to the Intel compiler.
+        # Include/library flags for Open MPI should NOT be specified as the appropriate ones should be available via the wrapper.
+        COMPILER = mpif90
+        # Fortran Flags.
+        FFLAGS = -DPARALLEL -r8 -g -O2 -mp1 -xCORE-AVX2 -align array64byte -init=arrays -init=zero -traceback -module $(ODIR)
+        # For debugging:
+        #FFLAGS = -DPARALLEL -r8 -g -O1 -mp1 -xCORE-AVX2 -align array64byte -init=arrays -init=zero -traceback -fpe0 -module $(ODIR)
+        # Library Flags for netCDF.
+        LFLAGS = -lnetcdff -lnetcdf -lhdf5_hl -lhdf5 -lz -lcurl
 else ifeq ($(mode), parallel)
         # Parallel compiler.
         COMPILER = mpif90
