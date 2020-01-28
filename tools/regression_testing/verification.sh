@@ -1,6 +1,6 @@
 #!/bin/bash
 testcase=$1
-bdir=/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums
+bdir=/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums
 rf=${CI_BUILD_REF:0:8}
 
 if [ ! -f $bdir/$testcase/checksums.csv ]; then

@@ -12,22 +12,22 @@
     leap = .false. ,         ! True if your meteorological forcing includes leap years
 
     ! Meteorological forcing files:
-        metFileFss = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dswrf_v2_T63_1700_2018.nc',        !< location of the incoming shortwave radiation meteorology file
-        metFileFdl = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dlwrf_v2_T63_1700_2018.nc',        !< location of the incoming longwave radiation meteorology file
-        metFilePre = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pre_v2_T63_1700_2018.nc',        !< location of the precipitation meteorology file
-        metFileTa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/tmp_v2_T63_1700_2018.nc',         !< location of the air temperature meteorology file
-        metFileQa = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/spfh_v2_T63_1700_2018.nc',         !< location of the specific humidity meteorology file
-        metFileUv = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/wind_v2_T63_1700_2018.nc',         !< location of the wind speed meteorology file
-        metFilePres = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pres_v2_T63_1700_2018.nc',       !< location of the atmospheric pressure meteorology file
+        metFileFss = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dswrf_v2_T63_1700_2018.nc',        !< location of the incoming shortwave radiation meteorology file
+        metFileFdl = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/dlwrf_v2_T63_1700_2018.nc',        !< location of the incoming longwave radiation meteorology file
+        metFilePre = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pre_v2_T63_1700_2018.nc',        !< location of the precipitation meteorology file
+        metFileTa = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/tmp_v2_T63_1700_2018.nc',         !< location of the air temperature meteorology file
+        metFileQa = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/spfh_v2_T63_1700_2018.nc',         !< location of the specific humidity meteorology file
+        metFileUv = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/wind_v2_T63_1700_2018.nc',         !< location of the wind speed meteorology file
+        metFilePres = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/meteorology/global/CRUJRAv2/pres_v2_T63_1700_2018.nc',       !< location of the atmospheric pressure meteorology file
 
 ! Initialization and restart files
-    init_file = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/input_files/initFile_CLASSIC_v1.0.nc' ,     !< location of the model initialization file
-    rs_file_to_overwrite = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/input_files/rsfile.nc' ,      ! location of the existing netcdf file that will be 
+    init_file = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/input_files/initFile_CLASSIC_v1.0.nc' ,     !< location of the model initialization file
+    rs_file_to_overwrite = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/input_files/rsfile.nc' ,      ! location of the existing netcdf file that will be 
                                               ! **overwritten** for the restart file typically here you
                                               !  will just copy the init_file and rename it so it can be
                                               ! overwritten.
 ! Namelist of model parameters
-    runparams_file = '/fs/home/fs1/eccc/crd/ccrn_shr/scrd108/builds/51d31566/1/CLASSIC_development/CLASSIC/configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
+    runparams_file = '/space/hall3/sitestore/eccc/crd/ccrn/users/scrd108/gitlab-runner/builds/51d31566/1/CLASSIC_development/CLASSIC/configurationFiles/template_run_parameters.txt' ,    ! location of the namelist file containing the model parameters
 
 ! CTEM (biogeochemistry) switches:
  ctem_on = .false. ,     ! set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
@@ -48,7 +48,7 @@
 
     !CO2 switches:
         transientCO2 = .false. , ! Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
-        CO2File = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/CO2/TRENDY_CO2_1700_2017_for_GCP_2018.nc' ,
+        CO2File = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/CO2/TRENDY_CO2_1700_2017_for_GCP_2018.nc' ,
         fixedYearCO2 = 1850 ,   ! If transientCO2 = .true., this is ignored.
 
     !CH4 switches:
@@ -57,7 +57,7 @@
 
           ! Read in of atmospheric methane concentration for soil CH4 uptake. 
           transientCH4 = .false. , ! Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
-          CH4File = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/CH4/CH4_1700_2017_for_GCP_2018.nc',
+          CH4File = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/CH4/CH4_1700_2017_for_GCP_2018.nc',
           fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
           ! Wetland switches:
@@ -68,18 +68,18 @@
               ! to false and set fixedYearOBSWETF to -9999. The slope fractions in the init_file will then be used to
               ! dynamically determine wetland extent.
               transientOBSWETF = .true. ,  ! use observed wetland fraction time series, otherwise use fixedYearOBSWETF
-              OBSWETFFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/wetland/global/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
+              OBSWETFFile = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/wetland/global/gcp-ch4_wetlands_1838-2017_t63_final_daily.nc',             ! Location of the netcdf file containing observed wetland fraction
               fixedYearOBSWETF = -9999 ,    ! set the year to use for observed wetland fraction if transientOBSWETF is false.
 
     !Fire switches
         dofire = .false. ,               ! If true the fire disturbance parameterization is turned on.
 
             transientPOPD = .true. ,    ! Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
-            POPDFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/population/global/POPD_annual_1700_2017_T63_chunked.nc' ,
+            POPDFile = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/population/global/POPD_annual_1700_2017_T63_chunked.nc' ,
             fixedYearPOPD = 1850 ,      ! If transientPOPD = .true., this is ignored.
 
             transientLGHT= .true.      !use lightning strike time series, otherwise use fixedYearLGHT
-            LGHTFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/lightning/global/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , ! Location of the netcdf file containing lightning strike values
+            LGHTFile = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/lightning/global/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050_chunked.nc' , ! Location of the netcdf file containing lightning strike values
             fixedYearLGHT = 1850 ,    ! set the year to use for lightning strikes if transientLGHT is false.
 
     ! Competition switches:
@@ -97,7 +97,7 @@
         ! not updated beyond the initial read in of landcover for fixedYearLUC, or if -9999 then the LUCFile is
         ! not used at all.
         lnduseon = .false. ,
-        LUCFile = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/landcover/global/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
+        LUCFile = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_inputs/landcover/global/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_chunked.nc' ,
         fixedYearLUC = -9999 ,
 
 ! Physics switches:
@@ -159,8 +159,8 @@
 
 ! Output options:
 
-    output_directory = '/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_off' ,        !< Directory where the output netcdfs will be placed
-    xmlFile = '/fs/home/fs1/eccc/crd/ccrn_shr/scrd108/builds/51d31566/1/CLASSIC_development/CLASSIC/configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
+    output_directory = '/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_off' ,        !< Directory where the output netcdfs will be placed
+    xmlFile = '/space/hall3/sitestore/eccc/crd/ccrn/users/scrd108/gitlab-runner/builds/51d31566/1/CLASSIC_development/CLASSIC/configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
     doperpftoutput = .false. ,   ! Switch for making extra output files that are at the per PFT level
     dopertileoutput = .false. , ! Switch for making extra output files that are at the per tile level

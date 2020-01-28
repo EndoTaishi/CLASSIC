@@ -666,19 +666,19 @@ contains
   !! its representation, the number of same-length data items with the same checksum can
   !! be expressed through the binary coefficient
   !!
-  !! \f[ {n\choose b} \f]
+  !! \f[ \binom{n}{b} \f] 
   !!
   !! If we assume the worst case where \f$b=\frac{n}{2}\f$, then we are left with
   !!
-  !! \f[ {n\choose n/2} \f]
+  !! \f[ \binom{n}{n/2} \f]
   !!
   !! Dividing by the total number of possible values for an n-digit binary number,
   !! we find the probability of a false positive checksum to be, in the worst case:
   !!
-  !! \f[ \large \frac{{n\choose n/2}}{2^n} \f]
+  !! \f[ \frac{\binom{n}{n/2}}{2^n} \f]
   !!
   !! Due to the cascading effects of any logical changes to the model, all 7 groups
-  !! of variables (6 if peatlands is diabled) will be affected. The smallest of these
+  !! of variables (6 if peatlands are disabled) will be affected. The smallest of these
   !! groups consists of 3 arrays of numbers for which checksums are computed. With the
   !! conservative assumption that each array contains only a single 32-bit number, the
   !! probability of a false positive (in the absolute worst case) becomes:

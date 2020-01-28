@@ -56,7 +56,7 @@
 
 # Location of output files.
 
-output_directory=/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_on
+output_directory=/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_on
 
 # Location of job options file.
 # *** NB: This script checks all input files (as specified in the job options file).
@@ -95,7 +95,7 @@ lat1=-28 ; lat2=60 ; lon1=120 ; lon2=220
 
 # Email to send job start/end/abort notifications.
 
-email="Matthew.Fortier@canada.ca"
+email="joe.melton@canada.ca"
 
 # For the ppp (otherwise ignored), set the size of /tmp to reserve on each node for output files.
 #
@@ -306,6 +306,7 @@ nodes='3'
 # Loop to compute job parameters, giving the user an option to choose a different number of nodes.
 
 flag=false
+
 while :
 do
 
@@ -492,10 +493,10 @@ echo
 # ----------------------------------------
 
 if [ $platform = ppp ] ; then
-  pbs_line="#PBS -l select=$nodes:ncpus=44:mem=${mem}:res_tmpfs=${tmpfs}:res_image=ppp_eccc_all_default_ubuntu-14.04-amd64_latest,place=free"
+  pbs_line="#PBS -l select=$nodes:ncpus=40:mem=${mem}:res_image=eccc/eccc_all_ppp_ubuntu-18.04-amd64_latest,place=free"
   copy=scp
 else
-  pbs_line="#PBS -l select=$nodes:ncpus=36:vntype=cray_compute,place=scatter"
+  pbs_line="#PBS -l select=$nodes:ncpus=40:vntype=cray_compute,place=scatter"
   copy=mcp
 fi
 
@@ -504,30 +505,27 @@ cat <<endjob > CLASSIC_${runname}.job
 #PBS -S /bin/bash
 #PBS -N $runname
 #PBS -l walltime=$wallclock
-#PBS -q development
+#PBS -q development 
 #PBS -j oe
-#PBS -o $run_files_directory/${runname}_$(date +%F_%T)_${HDNODE#*-}.out
+#PBS -o $run_files_directory/${runname}_$(date +%F_%H-%M-%S)_${HDNODE#*-}.out
 $pbs_line
 #PBS -m abe -M $email
+#PBS -W umask=022
 
 # Set required environment variables.
 
 if [ $platform = ppp ] ; then
-  export LD_LIBRARY_PATH=/fs/ssm/comm/eccc/ccrn/nemo/nemo-1.0/openmpi-1.6.5/enable-shared/intelcomp-2016.1.156/ubuntu-14.04-amd64-64/lib:\$LD_LIBRARY_PATH
-  export OMPI_MCA_orte_tmpdir_base=/run/shm
-  export OMPI_MCA_btl_openib_if_include=mlx5_0
-  export RUMPIRUN_ENV=LD_LIBRARY_PATH
+  . ssmuse-sh -x hpco/exp/hdf5-netcdf4/parallel/openmpi-3.1.2/static/intel-19.0.3.199/01
+  export RUMPIRUN_ENV="LD_LIBRARY_PATH OMP_NUM_THREADS UCX_NET_DEVICES"
 else
-  # Load modules consistent with CDT version.
-  module load cdt/18.08
   # Load performance profiling tools (CrayPat lite).
-  module load perftools-base
+  #module load perftools-base # should already be loaded
   module load perftools-lite
-  # Load modules with the required libraries.
-  module load cray-mpich
-  module load cray-hdf5-parallel
-  module load cray-netcdf-hdf5parallel
+  # Load modules with the required libraries. Note that cray-netcdf conflicts with cray-netcdf-hdf5parallel.
+  #module load cray-mpich     # should already be loaded
+  module swap cray-netcdf cray-netcdf-hdf5parallel
 fi
+
 
 cd $run_files_directory
 
@@ -547,12 +545,12 @@ fi
 # Create run directory on tmpfs and get local copy of restart file (1 MPI task per node).
 
 if [ "\$MPI_RANK" = 0 ] ; then
-  mkdir -p /tmp/$runname/checksums
+  mkdir /tmp/$runname
   $copy $rs_file_to_overwrite /tmp/$runname/rsFile_modified.nc
   cd /tmp/$runname
 fi
 
-# Run the model (all MPI tasks per node).
+# Run the model (all MPI tasks per node). 
 
 $executable $job_options_file \$2/\$3/\$4/\$5
 
@@ -569,7 +567,7 @@ endcat
 
 chmod u+x run_model_script
 
-# Distribute the execution of the model across all nodes.
+# Distribute the execution of the model across all nodes. 
 
 echo 'Executing CLASSIC'
 $command_lines
@@ -577,9 +575,8 @@ wait
 
 # If necessary, stitch row/lat bands split across multiple output directories onto the full domain.
 
-mv /tmp/$runname/* $output_directory
 echo 'Executing classic_stitch_netcdf.sh'
-time ~rec001/public/classic/classic_stitch_netcdf.sh  $output_directory 32
+time ~rec001/public/classic/classic_stitch_netcdf.sh $output_directory 32
 
 endjob
 
@@ -590,7 +587,11 @@ rm -f GC.nc GC_subdomain.nc
 # Submit the job.
 
 
-jobsub -c $HDNODE CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
+if [ $platform = ppp ] ; then
+  jobsub -c $HDNODE CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
+else
+  qsub CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
+fi
 
 echo
 echo 'Job submission is complete.'

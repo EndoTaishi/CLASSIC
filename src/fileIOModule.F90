@@ -23,6 +23,7 @@ module fileIOModule
   public  :: ncEndDef           !> Ends the definition mode.
   public  :: ncReDef            !> Enters definition mode.
   public  :: ncClose            !> Closes a given file.
+  public  :: ncGetAtt           !> Gets an attribute from a file.
   public  :: ncPutAtt           !> Writes an attribute to a file. Can take in attributes of the char/int/real :: types. Only one type can be used at a time.
   public  :: ncGetVar           !> Returns the variable content
   public  :: ncGetDimValues     !> Returns the values stored in a dimension (e.g. get Lon, Lat or Time values)
@@ -48,7 +49,7 @@ contains
   !> Creates a new netCDF file and returns the file id.
   integer function ncCreate(fileName, cmode)
     implicit none
-    character( * ), intent(in)    :: fileName !< File name
+    character(*), intent(in)    :: fileName !< File name
     integer, intent(in)         :: cmode    !< Creation mode
 #if PARALLEL
         integer                     :: mode, status, info
@@ -72,7 +73,7 @@ contains
   !> Opens an existing netCDF file and returns the file id.
   integer function ncOpen(fileName, omode)
     implicit none
-    character( * ), intent(in)    :: fileName !< File name
+    character(*), intent(in)    :: fileName !< File name
     integer, intent(in)         :: omode    !< Open mode
 #if PARALLEL
         integer                     :: mode, status, info
@@ -97,7 +98,7 @@ contains
   integer function ncGetVarId (fileId, label)
     implicit none
     integer, intent(in)         :: fileId   !< File id
-    character( * ), intent(in)    :: label    !< netCDF variable label
+    character(*), intent(in)    :: label    !< netCDF variable label
     call checkNC(nf90_inq_varid(fileId, label, ncGetVarId), tag = 'ncGetVarId(' // trim(label) // ') hint - check if nameInCode is in the xml file, or perhaps you have a duplicate')
   end function ncGetVarId
   !! @}
@@ -148,7 +149,7 @@ contains
   integer function ncGetDimId (fileId, label)
     implicit none
     integer, intent(in)         :: fileId   !< File id
-    character( * ), intent(in)    :: label    !< Variable label
+    character(*), intent(in)    :: label    !< Variable label
     call checkNC(nf90_inq_dimid(fileId, label, ncGetDimId), tag = 'ncGetDimId(' // trim(label) // ') ')
   end function ncGetDimId
   !! @}
@@ -159,7 +160,7 @@ contains
   integer function ncGetDimLen (fileId, label)
     implicit none
     integer, intent(in)             :: fileId   !< File id
-    character( * ), intent(in)        :: label    !< Dimension label
+    character(*), intent(in)        :: label    !< Dimension label
     integer                         :: dimId    !< Dimension id
     dimId = ncGetDimId(fileId, label)
     call checkNC(nf90_inquire_dimension(fileId, dimId, len = ncGetDimLen), tag = 'ncGetDimLen(' // trim(label) // ') ')
@@ -173,7 +174,7 @@ contains
     implicit none
     integer, intent(in)        :: fileId   !< File id
     integer, intent(in)        :: length   !< Dimension length
-    character( * ), intent(in) :: label    !< Label
+    character(*), intent(in) :: label    !< Label
 #if PARALLEL
     integer                    :: locaLength
 #endif
@@ -198,7 +199,7 @@ contains
     integer, intent(in)                         :: fileId   !< File id
     integer, intent(in)                         :: dimIds(:)!< Dimension ids
     integer, intent(in)                         :: type     !< Variable type
-    character( * ), intent(in)                    :: label    !< Variable label
+    character(*), intent(in)                    :: label    !< Variable label
     call checkNC(nf90_def_var(fileId, label, type, dimIds, ncDefVar), tag = 'ncDefVar(' // trim(label) // ') ')
   end function ncDefVar
   !! @}
@@ -222,7 +223,7 @@ contains
     call checkNC(nf90_redef(fileId))
   end subroutine ncReDef
   !! @}
-  !-----------------------------------------------------------------------------------------------------------------------------------------------------
+  !------------------------------------------------------------------------------------------------------------
   !> \ingroup fileIOMOdule_ncClose
   !! @{
   !> Closes a given file.
@@ -232,7 +233,28 @@ contains
     call checkNC(nf90_close(fileId))
   end subroutine ncClose
   !! @}
-  !-----------------------------------------------------------------------------------------------------------------------------------------------------
+  !----------------------------------------------------------------------------------------------------------
+  
+  !> \ingroup fileIOMOdule_ncGetAtt
+  !! @{
+  !> Returns a variables' attribute value.
+  function ncGetAtt(fileId,var,attributeName)
+    implicit none
+    integer, intent(in)                 :: fileId    !< File id
+    character(*), intent(in)            :: attributeName  !< Name of the attribute to query
+    character(*), intent(in)            :: var  !< Name of the variable to query
+    integer                             :: varId     !< Variable id
+    character(len=80)                  :: ncGetAtt  !< Attribute requested
+    
+    ! Get the variable ID for var
+    call checkNC(nf90_inq_varid(fileId, var, varId))
+    
+    ! Get the value of attributeName
+    call checkNC(nf90_get_att(fileId, varId, attributeName, ncGetAtt))
+
+  end function ncGetAtt
+  !! @}
+  !----------------------------------------------------------------------------------------------------------
   !> \ingroup fileIOMOdule_ncPutAtt
   !! @{
   !> Writes an attribute to a file. Can take in attributes of the char/int/real :: types. Only one type can be used at a time.
@@ -241,8 +263,8 @@ contains
     integer, intent(in)     :: fileId   !< File id
     integer, intent(in)     :: varId    !< Variable id
 
-    character( * )            :: label
-    character( * ), optional  :: charValues
+    character(*)            :: label
+    character(*), optional  :: charValues
     integer, optional       :: intValues
     real, optional          :: realValues
     integer                 :: counter
@@ -268,7 +290,7 @@ contains
   function ncGetVar (fileId, label, start, count)
     implicit none
     integer, intent(in)                             :: fileId       !< File id
-    character( * ), intent(in)                        :: label        !< Label
+    character(*), intent(in)                        :: label        !< Label
     integer, intent(in)                             :: start(:)     !< Start array
     integer, intent(in)                             :: count(:)     !< Count array
     real, allocatable                               :: ncGetVar(:)  !< Return type
@@ -323,7 +345,7 @@ contains
   function ncGetDimValues (fileId, label, start, count, start2D, count2D)
     implicit none
     integer, intent(in)                         :: fileId   !< File id
-    character( * ), intent(in)                    :: label    !< Label
+    character(*), intent(in)                    :: label    !< Label
     integer                                     :: varId, ndims
     integer, intent(in), optional               :: start(1), count(1)
     integer, intent(in), optional               :: start2D(2), count2D(2)
@@ -358,7 +380,7 @@ contains
   function ncGet1DVar (fileId, label, start, count)
     implicit none
     integer, intent(in)                         :: fileId
-    character( * ), intent(in)                    :: label
+    character(*), intent(in)                    :: label
     integer, intent(in)                         :: start(:)
     integer, intent(in), optional               :: count(:)
     real, allocatable                           :: ncGet1DVar(:)
@@ -391,7 +413,7 @@ contains
   function ncGet2DVar (fileId, label, start, count, format)
     implicit none
     integer, intent(in)                         :: fileId
-    character( * ), intent(in)                    :: label
+    character(*), intent(in)                    :: label
     integer, intent(in)                         :: start(:)
     integer, intent(in), optional               :: count(:), format(:)
     real, allocatable                           :: ncGet2DVar(:,:)
@@ -436,7 +458,7 @@ contains
   function ncGet3DVar (fileId, label, start, count, format)
     implicit none
     integer, intent(in)                         :: fileId
-    character( * ), intent(in)                    :: label
+    character(*), intent(in)                    :: label
     integer, intent(in)                         :: start(:)
     integer, intent(in), optional               :: count(:), format(:)
     real, allocatable                           :: ncGet3DVar(:,:,:)
@@ -482,7 +504,7 @@ contains
   function ncGet4DVar (fileId, label, start, count, format)
     implicit none
     integer, intent(in)                         :: fileId
-    character( * ), intent(in)                    :: label
+    character(*), intent(in)                    :: label
     integer, intent(in)                         :: start(:)
     integer, intent(in), optional               :: count(:), format(:)
     real, allocatable                           :: ncGet4DVar(:,:,:,:)
@@ -527,7 +549,7 @@ contains
   subroutine ncPutDimValues (fileId, label, realValues, intValues, start, count)
     implicit none
     integer, intent(in)                 :: fileId       !< File id
-    character( * ), intent(in)            :: label        !< Label
+    character(*), intent(in)            :: label        !< Label
     real, intent(in), optional       :: realValues(:)!< Array of reals
     integer, intent(in), optional    :: intValues(:) !< Array of ints
     integer, intent(in), optional       :: start(1)     !< Start array
@@ -561,7 +583,7 @@ contains
   subroutine ncPutVar (fileId, label, realValues, intValues, start, count)
     implicit none
     integer, intent(in)                                     :: fileId           !< File id
-    character( * ), intent(in)                                :: label            !< Label
+    character(*), intent(in)                                :: label            !< Label
     real, intent(in), optional                              :: realValues(:)    !< Array of reals
     integer, intent(in), optional                           :: intValues(:)     !< Array of ints
     integer, intent(in)                                     :: start(:)         !< Start array
@@ -591,7 +613,7 @@ contains
   subroutine ncPut2DVar (fileId, label, realValues, intValues, start, count)
     implicit none
     integer, intent(in)                                     :: fileId   !< File id
-    character( * ), intent(in)                                :: label    !< Label
+    character(*), intent(in)                                :: label    !< Label
     real, intent(in), optional                              :: realValues(:,:)    !< Array of reals
     integer, intent(in), optional                           :: intValues(:,:)     !< Array of ints
     integer, dimension(:), intent(in)                       :: start    !< Start array
@@ -619,7 +641,7 @@ contains
   subroutine ncPut3DVar (fileId, label, realValues, intValues, start, count)
     implicit none
     integer, intent(in)                                     :: fileId   !< File id
-    character( * ), intent(in)                                :: label    !< Label
+    character(*), intent(in)                                :: label    !< Label
     real, intent(in), optional                              :: realValues(:,:,:)    !< Array of reals
     integer, intent(in), optional                           :: intValues(:,:,:)     !< Array of ints
     integer, dimension(:), intent(in)                       :: start    !< Start array
@@ -693,7 +715,7 @@ contains
     
     implicit none
     integer, intent(in)         :: ncStatus !< Status variable
-    character( * ), optional      :: tag  !< Optional tag
+    character(*), optional      :: tag  !< Optional tag
     character(150)              :: message
 
     if (present(tag)) then

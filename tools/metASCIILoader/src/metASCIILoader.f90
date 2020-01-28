@@ -1,16 +1,29 @@
 program metASCIILoader
     use fileIOModule
     implicit none
-    real, allocatable   :: shortWave(:), longWave(:), precipitation(:), &
-        temperature(:), humidity(:), wind(:), pressure(:), time(:)
-    integer, allocatable    :: hour(:), minute(:), day(:), year(:)
+    type :: met_record 
+      integer :: hour
+      integer :: minute
+      integer :: day
+      integer ::  year
+      real :: shortWave
+      real :: longWave
+      real :: precipitation
+      real :: temperature
+      real :: humidity
+      real :: wind
+      real :: pressure
+    end type met_record
+    type(met_record), allocatable, dimension(:) :: readinmet
+    real, allocatable :: time(:)
     character(300)          :: inputFile, charLon, charLat,charContainsLeaps
-    logical                 :: containsLeaps
+    logical                 :: containsLeaps,csvFileType
     integer                 :: timesteps, i, currentYear
     integer, dimension(12)  :: daysInMonth = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]
     real, parameter         :: fillValue = 1.E38
     real                    :: lon, lat
 
+    csvFileType = .true. ! Assume at first we are given a csv file.
     call processArguments
     open(unit = 10, file = inputFile, form = 'formatted', status = 'old', action = 'read')
     call initializeData
@@ -23,10 +36,19 @@ contains
         if (iargc() .ne. 4) then
             print*,'Usage is: metASCIILoader [input file] [lon] [lat] [containsLeaps]'
             print*,'containsLeaps should be true if the file contains leap years, otherwise false'
+            print*,'Legacy files should have the .MET suffix (all caps) and will be parsed with a fixed'
+            print*,'format. Otherwise CSV files are accepted.'
             stop
         endif
 
         call getarg(1, inputFile)
+        
+        ! Check if it is a fixed format old style file or a CSV. This uses MET in the name. This means 
+        ! it can get confused by MET anywhere in the name!
+        if (index(inputFile,'MET') > 0) then
+          csvFileType=.false.
+        end if 
+          
         call getarg(2, charLon)
         call getarg(3, charLat)
         call getarg(4, charContainsLeaps)
@@ -44,28 +66,27 @@ contains
 
         inquire(file = inputFile, size = fileSize)
         timesteps = (fileSize + 1) / 91;
-        allocate(hour(timesteps))
-        allocate(minute(timesteps))
-        allocate(day(timesteps))
-        allocate(year(timesteps))
-        allocate(shortWave(timesteps))
-        allocate(longWave(timesteps))
-        allocate(precipitation(timesteps))
-        allocate(temperature(timesteps))
-        allocate(humidity(timesteps))
-        allocate(wind(timesteps))
-        allocate(pressure(timesteps))
+        allocate(readinmet(timesteps))
         allocate(time(timesteps))
     end subroutine initializeData
 
     subroutine loadData()
-        integer                 :: i
+        integer                 :: j
         character(*), parameter :: format = '(1X, I2, I3, I5, I6, 2F9.2, E14.4, F9.2, E12.3, F8.2, F12.2, 3F9.2, F9.4)'
 
-        do i = 1, timesteps
-            read(unit = 10, fmt = format) hour(i), minute(i), day(i), year(i), &
-                shortWave(i), longWave(i), precipitation(i), temperature(i), humidity(i), wind(i), pressure(i)
-        enddo
+        if (csvFileType) then 
+          do j = 1, timesteps
+            read(10,*)readinmet(j)
+          end do
+        else ! old fixed format style, prone to formatting issues so best to avoid if you can!
+          print*,timesteps
+          
+          do j = 1, timesteps
+            read(10, fmt = format)readinmet(j)%hour, readinmet(j)%minute, readinmet(j)%day, readinmet(j)%year, &
+                                  readinmet(j)%shortWave, readinmet(j)%longWave, readinmet(j)%precipitation, &
+                                  readinmet(j)%temperature, readinmet(j)%humidity, readinmet(j)%wind, readinmet(j)%pressure
+          end do
+        end if 
     end subroutine loadData
 
     logical function isLeapYear(thisYear)
@@ -105,17 +126,17 @@ contains
     subroutine processTimesteps
         currentYear = 0
         do i = 1, timesteps
-            if (currentYear /= year(i)) then
-                currentYear = year(i)
+            if (currentYear /= readinmet(i)%year) then
+                currentYear = readinmet(i)%year
                 if (containsLeaps) then
-                  if (isLeapYear(year(i))) then
+                  if (isLeapYear(readinmet(i)%year)) then
                     daysInMonth(2) = 29
                   else
                     daysInMonth(2) = 28
                   endif
                 endif
             endif
-            time(i) = buildTimestep(hour(i), minute(i), day(i), year(i))
+            time(i) = buildTimestep(readinmet(i)%hour, readinmet(i)%minute, readinmet(i)%day, readinmet(i)%year)
         enddo
     end subroutine processTimesteps
 
@@ -125,13 +146,13 @@ contains
     end function charToReal
 
     subroutine exportData
-        call exportVariable('sw', shortWave)
-        call exportVariable('lw', longWave)
-        call exportVariable('pr', precipitation)
-        call exportVariable('ta', temperature)
-        call exportVariable('qa', humidity)
-        call exportVariable('wi', wind)
-        call exportVariable('ap', pressure)
+        call exportVariable('sw', readinmet%shortWave)
+        call exportVariable('lw', readinmet%longWave)
+        call exportVariable('pr', readinmet%precipitation)
+        call exportVariable('ta', readinmet%temperature)
+        call exportVariable('qa', readinmet%humidity)
+        call exportVariable('wi', readinmet%wind)
+        call exportVariable('ap', readinmet%pressure)
     end subroutine exportData
 
     subroutine exportVariable(label, variable)
@@ -242,7 +263,7 @@ contains
             fileId = ncOpen(filename, nf90_write)
         endif
 
-        ! Put in data
+        ! Put in data        
         call ncPutVar(fileId, label, realValues = variable, start = [1, 1, 1], count = [1, 1, size(variable)])
 
         call ncClose(fileId)

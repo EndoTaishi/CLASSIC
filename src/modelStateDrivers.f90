@@ -19,6 +19,7 @@ module modelStateDrivers
   public  :: updateInput
   public  :: getMet
   public  :: updateMet
+  public  :: checkTimeUnits
   public  :: deallocInput
   private :: closestCell
 
@@ -426,13 +427,16 @@ contains
 
     if (ctem_on) then
       co2id = ncOpen(CO2File,nf90_nowrite)
+      call checkTimeUnits(co2id,CO2File)  ! Check that the file has the expected time units      
       co2VarName = ncGetVarName(co2id)
       if (doMethane) then
         ch4id = ncOpen(CH4File,nf90_nowrite)
+        call checkTimeUnits(ch4id,CH4File)  ! Check that the file has the expected time units      
         ch4VarName = ncGetVarName(ch4id)
       end if
       if (useTracer > 0) then
         tracerco2id = ncOpen(tracerCO2File,nf90_nowrite)
+        call checkTimeUnits(tracerco2id,tracerCO2File)  ! Check that the file has the expected time units      
         ! 14C has different values depending on latitudional bands. The expected
         ! input file is from CMIP6 and it splits the bands as follows:
         ! Southern Hemisphere (30-90°S), Tropics (30°S-30°N),
@@ -444,34 +448,45 @@ contains
       end if
       if (dofire) then
         popid = ncOpen(POPDFile,nf90_nowrite)
+        call checkTimeUnits(popid,POPDFile)  ! Check that the file has the expected time units      
         popVarName = ncGetVarName(popid)
         lghtid = ncOpen(LGHTFile,nf90_nowrite)
+        call checkTimeUnits(lghtid,LGHTFile)  ! Check that the file has the expected time units      
         lghtVarName = ncGetVarName(lghtid)
       end if
       if (lnduseon .or. (fixedYearLUC /= - 9999)) then
         lucid = ncOpen(LUCFile,nf90_nowrite)
+        call checkTimeUnits(lucid,LUCFile)  ! Check that the file has the expected time units      
         lucVarName = ncGetVarName(lucid)
       end if
       if (transientOBSWETF .or. (fixedYearOBSWETF /= - 9999)) then
         obswetid = ncOpen(OBSWETFFile,nf90_nowrite)
+        call checkTimeUnits(obswetid,OBSWETFFile)  ! Check that the file has the expected time units      
         obswetVarName = ncGetVarName(obswetid)
       end if
     end if
 
     !> Open the meteorological forcing files and find the variable name in the file
     metFssId    = ncOpen(metFileFss,nf90_nowrite)
+    call checkTimeUnits(metFssId,metFileFss)  ! Check that the file has the expected time units      
     metFssVarName = ncGetVarName(metFssId)
     metFdlId    = ncOpen(metFileFdl,nf90_nowrite)
+    call checkTimeUnits(metFdlId,metFileFdl)  ! Check that the file has the expected time units      
     metFdlVarName = ncGetVarName(metFdlId)
     metPreId    = ncOpen(metFilePre,nf90_nowrite)
+    call checkTimeUnits(metPreId,metFilePre)  ! Check that the file has the expected time units      
     metPreVarName = ncGetVarName(metPreId)
     metTaId     = ncOpen(metFileTa,nf90_nowrite)
+    call checkTimeUnits(metTaId,metFileTa)  ! Check that the file has the expected time units      
     metTaVarName = ncGetVarName(metTaId)
     metQaId     = ncOpen(metFileQa,nf90_nowrite)
+    call checkTimeUnits(metQaId,metFileQa)  ! Check that the file has the expected time units      
     metQaVarName = ncGetVarName(metQaId)
     metUvId     = ncOpen(metFileUv,nf90_nowrite)
+    call checkTimeUnits(metUvId,metFileUv)  ! Check that the file has the expected time units      
     metUvVarName = ncGetVarName(metUvId)
     metPresId   = ncOpen(metFilePres,nf90_nowrite)
+    call checkTimeUnits(metPresId,metFilePres)  ! Check that the file has the expected time units      
     metPresVarName = ncGetVarName(metPresId)
 
   end subroutine read_modelsetup
@@ -2187,6 +2202,37 @@ contains
   end subroutine updateMet
 
   !! @}
+  !---------------------------------------------------------------------------------------
+  
+  !> \ingroup modelstatedrivers_checkTimeUnits
+  !! @{
+  !> Checks the netcdf file attributes to make sure the time units are in the 
+  !! expected "day as %Y%m%d.%f" format.
+  !! @author Joe Melton
+  !!
+  subroutine checkTimeUnits(ncid,fileName)
+
+    implicit none
+
+    integer, intent(in)  :: ncid
+    character(*), intent(in) :: fileName
+    character(80)     :: fileUnits
+    character(len=80) :: expected = "day as %Y%m%d.%f"
+    character(len=80) :: altexpected = "day as YYYYMMDD.FFFF" ! possible variant.
+
+    ! Get the time units that are in the file
+    fileUnits = ncGetAtt(ncid,'time','units')
+    
+    ! Check that against what we are expecting
+    if (trim(fileUnits) /= trim(expected) .and. trim(fileUnits) /= trim(altexpected)) then
+      print*,'Time units in your file',trim(fileName),' are "',trim(fileUnits),'"'
+      print*,'but CLASSIC expects: ',expected
+      print*,'----- Run aborting. -----'
+      stop
+    end if     
+  end subroutine checkTimeUnits
+  !! @}
+
   ! ------------------------------------------------------------------------------------
 
   !> \ingroup modelstatedrivers_closestCell

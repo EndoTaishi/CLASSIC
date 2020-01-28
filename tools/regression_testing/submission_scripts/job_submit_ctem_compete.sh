@@ -56,7 +56,7 @@
 
 # Location of output files.
 
-output_directory=/space/hall1/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_compete
+output_directory=/space/hall3/sitestore/eccc/crd/ccrp/scrd530/classic_checksums/ctem_compete
 
 # Location of job options file.
 # *** NB: This script checks all input files (as specified in the job options file).
@@ -126,7 +126,7 @@ export PATH=/fs/ssm/hpco/exp/mib002/anaconda2/anaconda2-5.0.1-hpcobeta2/anaconda
 # The metric is defined as the number of grid cells that can be run over the length of the simulation
 # (in years) per hour (i.e. gridcells*years/hour) and can be estimated by timing a (short) model run.
 # It is used to estimate the number of nodes required to run the entire simulation under the constraint
-# of the max wajob_options_filellclock time permitted on each node.
+# of the max wallclock time permitted on each node.
 #
 # On ppp1/ppp2, ~1950 grid cells can typically be run for 25 years in ~0.75 hours.
 # If A = 1950, B = 25 and C = 0.75, then A*B/C = 1950*25/0.75 = 65000 gridcell-years/hour.
@@ -493,10 +493,10 @@ echo
 # ----------------------------------------
 
 if [ $platform = ppp ] ; then
-  pbs_line="#PBS -l select=$nodes:ncpus=44:mem=${mem}:res_tmpfs=${tmpfs}:res_image=ppp_eccc_all_default_ubuntu-14.04-amd64_latest,place=free"
+  pbs_line="#PBS -l select=$nodes:ncpus=40:mem=${mem}:res_image=eccc/eccc_all_ppp_ubuntu-18.04-amd64_latest,place=free"
   copy=scp
 else
-  pbs_line="#PBS -l select=$nodes:ncpus=36:vntype=cray_compute,place=scatter"
+  pbs_line="#PBS -l select=$nodes:ncpus=40:vntype=cray_compute,place=scatter"
   copy=mcp
 fi
 
@@ -507,28 +507,25 @@ cat <<endjob > CLASSIC_${runname}.job
 #PBS -l walltime=$wallclock
 #PBS -q development
 #PBS -j oe
-#PBS -o $run_files_directory/${runname}_$(date +%F_%T)_${HDNODE#*-}.out
+#PBS -o $run_files_directory/${runname}_$(date +%F_%H-%M-%S)_${HDNODE#*-}.out
 $pbs_line
 #PBS -m abe -M $email
+#PBS -W umask=022
 
 # Set required environment variables.
 
 if [ $platform = ppp ] ; then
-  export LD_LIBRARY_PATH=/fs/ssm/comm/eccc/ccrn/nemo/nemo-1.0/openmpi-1.6.5/enable-shared/intelcomp-2016.1.156/ubuntu-14.04-amd64-64/lib:\$LD_LIBRARY_PATH
-  export OMPI_MCA_orte_tmpdir_base=/run/shm
-  export OMPI_MCA_btl_openib_if_include=mlx5_0
-  export RUMPIRUN_ENV=LD_LIBRARY_PATH
+  . ssmuse-sh -x hpco/exp/hdf5-netcdf4/parallel/openmpi-3.1.2/static/intel-19.0.3.199/01
+  export RUMPIRUN_ENV="LD_LIBRARY_PATH OMP_NUM_THREADS UCX_NET_DEVICES"
 else
-  # Load modules consistent with CDT version.
-  module load cdt/18.08
   # Load performance profiling tools (CrayPat lite).
-  module load perftools-base
+  #module load perftools-base # should already be loaded
   module load perftools-lite
-  # Load modules with the required libraries.
-  module load cray-mpich
-  module load cray-hdf5-parallel
-  module load cray-netcdf-hdf5parallel
+  # Load modules with the required libraries. Note that cray-netcdf conflicts with cray-netcdf-hdf5parallel.
+  #module load cray-mpich     # should already be loaded
+  module swap cray-netcdf cray-netcdf-hdf5parallel
 fi
+
 
 cd $run_files_directory
 
@@ -548,7 +545,7 @@ fi
 # Create run directory on tmpfs and get local copy of restart file (1 MPI task per node).
 
 if [ "\$MPI_RANK" = 0 ] ; then
-  mkdir -p /tmp/$runname/checksums
+  mkdir /tmp/$runname
   $copy $rs_file_to_overwrite /tmp/$runname/rsFile_modified.nc
   cd /tmp/$runname
 fi
@@ -578,7 +575,6 @@ wait
 
 # If necessary, stitch row/lat bands split across multiple output directories onto the full domain.
 
-mv /tmp/$runname/* $output_directory
 echo 'Executing classic_stitch_netcdf.sh'
 time ~rec001/public/classic/classic_stitch_netcdf.sh  $output_directory 32
 
@@ -594,7 +590,7 @@ rm -f GC.nc GC_subdomain.nc
 if [ $platform = ppp ] ; then
   jobsub -c $HDNODE CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
 else
-  qsub CLASSIC_${runname}.job
+  qsub CLASSIC_${runname}.job | cut -d '.' -f 1 > $cdir/job_id.txt
 fi
 
 echo

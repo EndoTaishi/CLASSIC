@@ -28,7 +28,7 @@ contains
 
     use classStateVars, only : class_rot, class_gat, initRowVars
     use ctemStateVars, only : c_switch, vrot
-    use classicParams, only : ignd, icc, SBC, TFREZ
+    use classicParams, only : ignd, icc, SBC, TFREZ, convertkgC
     use outputManager, only : writeOutput1D, consecDays
 
     implicit none
@@ -50,6 +50,7 @@ contains
     real :: FSSTAR
     real :: TCN, TPN, TSN, TSURF, ZSN
     real :: an_grd, rml_grd, totvegarea
+    real :: temp
     real, dimension(:), allocatable :: anveggrd, rmlveggrd, fcanctot
     integer :: i, j, m
 
@@ -64,12 +65,12 @@ contains
     real, pointer, dimension(:) :: FGS       !< Subarea fractional coverage of modelled area - snow-covered bare ground [ ]
 
     real, pointer, dimension(:,:,:) :: ailcgrow     !< Green LAI for CTEM's pfts
-    real, pointer, dimension(:,:,:) :: anvegrow     !< Net photosynthesis rate for each pft
-    real, pointer, dimension(:,:,:) :: rmlvegrow    !< Leaf maintenance respiration rate for each pft
-    real, pointer, dimension(:,:,:) :: ancsvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over snow subarea
-    real, pointer, dimension(:,:,:) :: ancgvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over ground subarea
-    real, pointer, dimension(:,:,:) :: rmlcsvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over snow subarea
-    real, pointer, dimension(:,:,:) :: rmlcgvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over ground subarea
+    real, pointer, dimension(:,:,:) :: anvegrow     !< Net photosynthesis rate for each pft \f$[kg C m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: rmlvegrow    !< Leaf maintenance respiration rate for each pft \f$[kg C m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: ancsvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over snow subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: ancgvegrow   !< Net photosynthetic rate for CTEM's pfts for canopy over ground subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: rmlcsvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over snow subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:,:,:) :: rmlcgvegrow  !< Leaf respiration rate for CTEM' pfts forcanopy over ground subarea \f$[\mu mol CO_2 m^{-2} s^{-1} ]\f$
 
     real, pointer, dimension(:,:) :: FAREROT !< Fractional coverage of mosaic tile on modelled area
     real, pointer, dimension(:,:) :: CDHROT  !< Surface drag coefficient for heat [ ]
@@ -146,6 +147,7 @@ contains
     real, pointer, dimension(:,:) :: TSNOROT !< Snowpack temperature [K]
     real, pointer, dimension(:,:) :: TPNDROT !< Temperature of ponded water [K]
     real, pointer, dimension(:,:) :: ZPNDROT !< Depth of ponded water [m]
+    real, pointer, dimension(:,:,:) :: dlzwrot !< Permeable thickness of soil layer [m]
 
     real, dimension(:), pointer :: PREROW    !< Surface precipitation rate \f$[kg m^{-2}  s^{-1} ]\f$
     real, dimension(:), pointer :: UVROW     !< Wind speed at reference height \f$[m s^{-1} ]\f$
@@ -324,6 +326,7 @@ contains
     TSNOROT=> class_rot%TSNOROT
     TPNDROT=> class_rot%TPNDROT
     ZPNDROT=> class_rot%ZPNDROT
+    dlzwrot => class_rot%dlzwrot
     PREROW  => class_rot%PREROW
     UVROW => class_rot%UVROW
     TAROW  => class_rot%TAROW
@@ -618,10 +621,11 @@ contains
                     + QFGROT(I,M) + QFCROT(I,M,1) + QFCROT(I,M,2) + QFCROT(I,M,3) ! FLAG this only considers the top 3 layers !!
           call writeOutput1D(lonLocalIndex,latLocalIndex,'evspsbl_hh_t'   ,timeStamp,'evspsbl', [EVAPSUM])
 
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'thic_hh_t',timeStamp,'mrsfl', [THICROT(I,M,:)])  ! name
-          call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh_t',timeStamp,'gflx', [GFLXROT(I,M,:)])  ! name
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'tbar_hh_t',timeStamp,'tsl', [TBARROT(I,M,:)])  
+          ! For mrsll and mrsfl, add in conversion from m3/m3 to kg/m2
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'thlq_hh_t',timeStamp,'mrsll', [THLQROT(I,M,:) * 1000. * DLZWROT(I,M,J)]) 
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'thic_hh_t',timeStamp,'mrsfl', [THICROT(I,M,:) * 1000. * DLZWROT(I,M,J)])  
+          call writeOutput1D(lonLocalIndex,latLocalIndex,'gflx_hh_t',timeStamp,'gflx', [GFLXROT(I,M,:)])  
 
         end do
       end if
@@ -670,8 +674,10 @@ contains
               anvegrow(i,m,j) = 0.0
               rmlvegrow(i,m,j) = 0.0
             else
-              anvegrow(i,m,j) = ancsvegrow(i,m,j) * FSNOROT(i,m) + ancgvegrow(i,m,j) * (1. - FSNOROT(i,m))
-              rmlvegrow(i,m,j) = rmlcsvegrow(i,m,j) * FSNOROT(i,m) + rmlcgvegrow(i,m,j) * (1. - FSNOROT(i,m))
+              ! Add up the snow covered and non fluxes. Also convert from umol CO2/m2/s to kgC/m2/s. 
+              temp = (ancsvegrow(i,m,j) * FSNOROT(i,m) + ancgvegrow(i,m,j) * (1. - FSNOROT(i,m))) * convertkgC              
+              rmlvegrow(i,m,j) = (rmlcsvegrow(i,m,j) * FSNOROT(i,m) + rmlcgvegrow(i,m,j) * (1. - FSNOROT(i,m))) * convertkgC
+              anvegrow(i,m,j) = temp + rmlvegrow(i,m,j) ! Add back in the rmLeaf to make it gross primary productivity.
             end if
           end do
           if (dopertileoutput) then
@@ -801,6 +807,7 @@ contains
     real, pointer, dimension(:,:) :: RCANROT        !< Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
     real, pointer, dimension(:,:) :: SCANROT        !< Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
     real, pointer, dimension(:,:) :: GROROT         !< Vegetation growth index [ ]
+    real, pointer, dimension(:,:,:) :: dlzwrot      !< Permeable thickness of soil layer [m]
 
     real, pointer, dimension(:) :: FSSROW           !< Shortwave radiation \f$[W m^{-2} ]\f$
     real, pointer, dimension(:) :: FDLROW           !< Downwelling longwave sky radiation \f$[W m^{-2} ]\f$
@@ -821,8 +828,8 @@ contains
     real, pointer, dimension(:,:) :: OVRACC_M       !< Overland flow from top of soil column \f$[kg m^{-2} s^{-1} ]\f$ (accumulated)
     real, pointer, dimension(:,:) :: WTBLACC_M
     real, pointer, dimension(:,:,:) :: TBARACC_M    !< Temperature of soil layers [K] (accumulated)
-    real, pointer, dimension(:,:,:) :: THLQACC_M    !< Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
-    real, pointer, dimension(:,:,:) :: THICACC_M    !< Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$ (accumulated)
+    real, pointer, dimension(:,:,:) :: THLQACC_M    !< Volumetric frozen water content of soil layers \f$[kg m^{-2}]\f$ (accumulated)
+    real, pointer, dimension(:,:,:) :: THICACC_M    !< Volumetric liquid water content of soil layers \f$[kg m^{-2}]\f$ (accumulated)
     real, pointer, dimension(:,:) :: ALVSACC_M      !< Diagnosed total visible albedo of land surface [ ] (accumulated)
     real, pointer, dimension(:,:) :: ALIRACC_M      !< Diagnosed total near-infrared albedo of land surface [ ] (accumulated)
     real, pointer, dimension(:,:) :: WSNOACC_M      !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$ (accumulated)
@@ -870,6 +877,7 @@ contains
     RCANROT => class_rot%RCANROT
     SCANROT => class_rot%SCANROT
     FAREROT=> class_rot%FAREROT
+    dlzwrot   => class_rot%dlzwrot
     PREACC_M  => class_rot%PREACC_M
     GTACC_M   => class_rot%GTACC_M
     QEVPACC_M => class_rot%QEVPACC_M
@@ -924,8 +932,8 @@ contains
         ! WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)  ! FLAG fix !
         do J = 1,IGND
           TBARACC_M(I,M,J) = TBARACC_M(I,M,J) + TBARROT(I,M,J)
-          THLQACC_M(I,M,J) = THLQACC_M(I,M,J) + THLQROT(I,M,J)
-          THICACC_M(I,M,J) = THICACC_M(I,M,J) + THICROT(I,M,J)
+          THLQACC_M(I,M,J) = THLQACC_M(I,M,J) + THLQROT(I,M,J) * 1000. * DLZWROT(I,M,J) ! converted to kg/m2
+          THICACC_M(I,M,J) = THICACC_M(I,M,J) + THICROT(I,M,J) * 1000. * DLZWROT(I,M,J) ! converted to kg/m2
         end do
         ALVSACC_M(I,M) = ALVSACC_M(I,M) + ALVSROT(I,M) * FSVHROW(I)
         ALIRACC_M(I,M) = ALIRACC_M(I,M) + ALIRROT(I,M) * FSIHROW(I)
@@ -1153,12 +1161,6 @@ contains
       ! !                     ROFACC_M(I,M)=ROFACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1
       ! !                     OVRACC_M(I,M)=OVRACC_M(I,M)   ! became [kg m-2 day-1] instead of [kg m-2 s-1]
       ! !                     WTBLACC_M(I,M)=WTBLACC_M(I,M)/REAL(NDAY)
-      ! !                     do J=1,IGND
-      ! !                         TBARACC_M(I,M,J)=TBARACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THLQACC_M(I,M,J)=THLQACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THICACC_M(I,M,J)=THICACC_M(I,M,J)/REAL(NDAY)
-      ! !                         THALACC_M(I,M,J)=THALACC_M(I,M,J)/REAL(NDAY)
-      ! ! 726                         CONTINUE
       ! !
       ! !                     IF (FSINACC_M(I,M)>0.0) THEN
       ! !                         ALVSACC_M(I,M)=ALVSACC_M(I,M)/(FSINACC_M(I,M)*0.5)
@@ -1287,6 +1289,7 @@ contains
     real, dimension(:,:), pointer :: groundHeatFluxROT !< Heat flux at soil surface \f$[W m^{-2} ]\f$
     real, dimension(:,:), pointer :: SNOROT
     real, dimension(:,:), pointer :: WSNOROT
+    real, dimension(:,:), pointer :: RHOSROT        !< Density of snow \f$[kg m^{-3}]\f$
     real, dimension(:,:), pointer :: ROFROT
     real, dimension(:,:), pointer :: QFSROT
     real, dimension(:,:), pointer :: QFGROT
@@ -1307,13 +1310,14 @@ contains
     real, pointer, dimension(:) :: HFSACC_MO
     real, pointer, dimension(:) :: QEVPACC_MO
     real, pointer, dimension(:) :: groundHeatFlux_MO  !< Heat flux at soil surface \f$[W m^{-2} ]\f$
-    real, pointer, dimension(:) :: SNOACC_MO
-    real, pointer, dimension(:) :: WSNOACC_MO
-    real, pointer, dimension(:) :: ROFACC_MO
-    real, pointer, dimension(:) :: PREACC_MO
+    real, pointer, dimension(:) :: SNOACC_MO      !< Mass of snow pack \f$[kg m^{-2} ]\f$
+    real, pointer, dimension(:) :: ZSNACC_MO      !< Depth of snow pack \f$[ m ]\f$
+    real, pointer, dimension(:) :: WSNOACC_MO     !< Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+    real, pointer, dimension(:) :: ROFACC_MO      !< Total runoff from soil \f$[kg m^{-2} s^{-1} ]\f$
+    real, pointer, dimension(:) :: PREACC_MO      !< Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
     real, pointer, dimension(:) :: EVAPACC_MO    !< Diagnosed total surface evaporation water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
     real, pointer, dimension(:) :: TRANSPACC_MO
-    real, pointer, dimension(:) :: TAACC_MO
+    real, pointer, dimension(:) :: TAACC_MO     !< Air temperature at reference height [K]
     real, pointer, dimension(:) :: ACTLYR_MO
     real, pointer, dimension(:) :: FTABLE_MO
     real, pointer, dimension(:) :: ACTLYR_MIN_MO
@@ -1325,8 +1329,8 @@ contains
     real, pointer, dimension(:) :: GROUNDEVAP
     real, pointer, dimension(:) :: CANOPYEVAP
     real, pointer, dimension(:,:) :: TBARACC_MO
-    real, pointer, dimension(:,:) :: THLQACC_MO
-    real, pointer, dimension(:,:) :: THICACC_MO
+    real, pointer, dimension(:,:) :: THLQACC_MO   !< Volumetric liquid water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
+    real, pointer, dimension(:,:) :: THICACC_MO   !< Volumetric frozen water content of soil layers \f$[kg m^{-2}]\f$ (accumulated for means)
     real, pointer, dimension(:) :: MRSO_MO
     real, pointer, dimension(:,:) :: MRSOL_MO
     integer, pointer, dimension(:) :: altotcntr_m
@@ -1362,6 +1366,7 @@ contains
     groundHeatFluxROT => class_rot%groundHeatFluxROT
     SNOROT          => class_rot%SNOROT
     WSNOROT         => class_rot%WSNOROT
+    RHOSROT         => class_rot%RHOSROT
     ROFROT          => class_rot%ROFROT
     QFSROT          => class_rot%QFSROT
     QFGROT          => class_rot%QFGROT
@@ -1389,6 +1394,7 @@ contains
     QEVPACC_MO        => class_out%QEVPACC_MO
     groundHeatFlux_MO => class_out%groundHeatFlux_MO
     SNOACC_MO         => class_out%SNOACC_MO
+    ZSNACC_MO         => class_out%ZSNACC_MO
     WSNOACC_MO        => class_out%WSNOACC_MO
     ROFACC_MO         => class_out%ROFACC_MO
     PREACC_MO         => class_out%PREACC_MO
@@ -1437,6 +1443,9 @@ contains
       QEVPACC_MO(I) = QEVPACC_MO(I) + QEVPROT(I,M) * FAREROT(I,M)
       groundHeatFlux_MO(I) = groundHeatFlux_MO(I) + groundHeatFluxROT(I,M) * FAREROT(I,M) !*()*()*()*()*()*()
       SNOACC_MO(I) = SNOACC_MO(I) + SNOROT(I,M) * FAREROT(I,M)
+      if (RHOSROT(I,M) > 0.0) ZSNACC_MO(I) = &
+                                  ZSNACC_MO(I) + SNOROT(I,M)/RHOSROT(I,M) * FAREROT(I,M)
+
       TAACC_MO(I) = TAACC_MO(I) + TAROW(I) * FAREROT(I,M)
       ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
       FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
@@ -1513,6 +1522,7 @@ contains
         QEVPACC_MO(I) = QEVPACC_MO(I)/real(NDMONTH)
         groundHeatFlux_MO(I) = groundHeatFlux_MO(I)/real(NDMONTH)
         SNOACC_MO(I) = SNOACC_MO(I)/real(NDMONTH)
+        ZSNACC_MO(I) = ZSNACC_MO(I)/real(NDMONTH)
         WSNOACC_MO(I) = WSNOACC_MO(I)/real(NDMONTH)
         TAACC_MO(I) = TAACC_MO(I)/real(NDMONTH)
         ACTLYR_MO(I) = ACTLYR_MO(I)/real(NDMONTH)
@@ -1542,7 +1552,8 @@ contains
 
         ! Prepare the timestamp for this month (need in size 1 array)
         timeStamp = consecDays 
-        
+
+        call writeOutput1D(lonLocalIndex,latLocalIndex,'sisnthick_mo'   ,timeStamp,'sisnthick', [ZSNACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
