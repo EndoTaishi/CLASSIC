@@ -3226,7 +3226,7 @@ contains
       end if ! ncount eq nday
 
       !=======================================================================
-
+              
       ! Half-hourly physics outputs
       if  (doHhOutput .and. &
           (runyr >= jhhsty) .and. &
@@ -3282,6 +3282,10 @@ contains
         if (doAnnualOutput) call ctem_annual_aw(lonLocalIndex, latLocalIndex, iday, runyr, nltest, nmtest, lastDOY)
         
       end if
+        
+      ! Increment the consecDays if it is the end of the day. This  
+      ! is used to create timestamps for the output files.
+      if (NCOUNT == NDAY) consecDays = consecDays + 1.
 
       ! Check if it is the last timestep of the last day of the year
       if ((IDAY == lastDOY) .and. (NCOUNT == NDAY)) then
@@ -3290,10 +3294,6 @@ contains
 
         ! Write to the restart file
         call write_restart(lonIndex,latIndex)
-
-        ! Increment the timestamp year (it is the number of consecutive days since the refyr. refyr is set
-        ! to the first year of the run in outputManager so consecDays is 0 initially then increments up.)
-        consecDays = consecDays + lastDOY
 
         ! Increment the runyr
         runyr = runyr + 1
@@ -3337,7 +3337,7 @@ contains
     ! This is stored in outputManager so that means it retains its values between
     ! grid cells run. It must be reset here to ensure the value doesn't carry over to
     ! the next grid cell !
-    consecDays = 0.
+    consecDays = 1.
 
     return
 

@@ -465,7 +465,7 @@ contains
 
     ! timestart = "days since "//str(refyr)//"-01-01 00:00"
     format_string = "(A11,I4,A12)"
-    write (timestart,format_string) "days since ",refyr,"-01-01 00:00"
+    write (timestart,format_string) "days since ",refyr-1,"-12-31 00:00"
     call ncPutAtt(ncid,varid,'units',charvalues = trim(timestart))
 
     if (leap) then
@@ -582,6 +582,7 @@ contains
     real, allocatable, dimension(:) :: temptime
     integer :: totsteps, totyrs, i, st, en, j, m, cnt, totyrs2
     integer :: lastDOY, length, styr, endyr,numsteps
+    real :: runningDays
     logical :: leapnow
 
     logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
@@ -618,17 +619,23 @@ contains
 
     !  refyr is set to be the start year of the run.
     refyr = readMetStartYear
-    consecDays = 0.
+    
+    ! Consecutive days counter is initialized at 1.
+    consecDays = 1.
 
+    if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
+    
     select case (trim(timeFreq))
 
     case ("annually")
       totyrs = (readMetEndYear - readMetStartYear + 1) * metLoop
       totsteps = totyrs
       allocate(timeVect(totsteps))
+      runningDays = 0.
       do i = 1, totsteps
         if (leap) call findLeapYears(readMetStartYear + i - 1,leapnow,lastDOY)
-        timeVect(i) = (readMetStartYear + i - 1 - refyr) * lastDOY
+        timeVect(i) = runningDays + real(lastDOY)
+        runningDays = runningDays + real(lastDOY)
       end do
 
     case ("monthly")
@@ -644,17 +651,19 @@ contains
         print * ,'determineTime says: Warning - jmosty is set to a year beyond the end of the run'
         print * ,'monthly files will still be made but will include all years'
       end if
+      runningDays = 0.
       totsteps = totyrs * 12
       allocate(timeVect(totsteps))
       do i = 1, totyrs
         ! Find out if this year is a leap year. It adjusts the monthend array.
-        if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
+        if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)        
         do m = 1, 12
           j = ((i - 1) * 12) + m
-          timeVect(j) = (styr + i - 1 - refyr) * lastDOY + monthend(m + 1) - 1
+          timeVect(j) = runningDays + real(monthend(m + 1))
         end do
+        runningDays = runningDays + real(lastDOY)
       end do
-
+    
     case ("daily")
       ! Daily may start writing later (after jdsty) and end earlier (jdendy) so make sure to account for that.
       ! Also likely doesn't do all days of the year. Lastly if leap years are on, it changes the timestamps
@@ -688,11 +697,11 @@ contains
       allocate(timeVect(0))
       cnt = 0
       ! Create the time vector to write to the file
-      !               do i = 1, totyrs2
+      runningDays = 0
       do i = jdsty + 1, totyrs2 + jdsty
         if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
-        st = max(1, jdstd) - 1  ! minus 1 since we are referencing the 01-01 day of refyr
-        en = min(jdendd, lastDOY) - 1 ! minus 1 since we are referencing the 01-01 day of refyr
+        st = max(1, jdstd)
+        en = min(jdendd, lastDOY)
         totsteps = totsteps + (en - st + 1)
         allocate(temptime(totsteps))
         length = size(timeVect)
@@ -701,8 +710,9 @@ contains
         end if
         do j = st,en
           cnt = cnt + 1
-          temptime(cnt) = (i - 1 - refyr) * lastDOY + j
+          temptime(cnt) = runningDays + j  
         end do
+        runningDays = runningDays + lastDOY
         call move_alloc(temptime,timeVect)
       end do
 
@@ -739,10 +749,11 @@ contains
       allocate(timeVect(0))
       cnt = 0
       numsteps = int(86400./DELT)
+      runningDays = 0
       do i = jhhsty + 1, totyrs2 + jhhsty
         if (leap) call findLeapYears(styr + i - 1,leapnow,lastDOY)
-        st = max(1, jhhstd) - 1  ! minus 1 since we are referencing the 01-01 day of refyr
-        en = min(jhhendd, lastDOY) - 1 ! minus 1 since we are referencing the 01-01 day of refyr
+        st = max(1, jhhstd) 
+        en = min(jhhendd, lastDOY) 
         totsteps = totsteps + (en - st + 1) * numsteps
         allocate(temptime(totsteps))
         length = size(timeVect)
@@ -752,12 +763,13 @@ contains
         do j = st,en
           do m = 1,numsteps
             cnt = cnt + 1
-            temptime(cnt) = (i - 1 - refyr) * lastDOY + j + (m - 1) / real(numsteps)
+            temptime(cnt) = runningDays + j + (m - 1) / real(numsteps)
           end do
         end do
+        runningDays = runningDays + lastDOY
         call move_alloc(temptime,timeVect)
       end do
-
+      
     case default
       print * ,'addTime says - Unknown timeFreq: ',timeFreq
       stop

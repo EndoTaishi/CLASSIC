@@ -59,10 +59,10 @@ module classicParams
   ! BW=2.38E+3/1004.5
   ! SLP=1.0/(T1S-T2S)
 
-  ! These month arrays are possibly overwritten in runclassctem due to leap years.
-  integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
-  integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
-  integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !< mid-month day
+  ! These month arrays can be overwritten during leap years.
+  integer, dimension(12) :: monthdays !< days in each month
+  integer, dimension(13) :: monthend  !< calender day at end of each month
+  integer, dimension(12) :: mmday     !< mid-month day
   integer, parameter :: nmon = 12 !< Number of months in a year
 
   ! Additional values for RPN and GCM common blocks:
@@ -1108,6 +1108,11 @@ contains
 
     ! Determine the efoldfact parameter which is calculated from eftime.
     efoldfact = exp( - 1.0 / eftime)
+    
+    ! Assign these values, may be overwritten (in findLeapYears in generalUtils) if using leap years
+    monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] ! days in each month
+    monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] ! calender day at end of each month
+    mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] ! mid-month day
 
   end subroutine readInParams
   !! @}

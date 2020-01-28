@@ -489,8 +489,8 @@ contains
 
 
     ! Prepare the timestamp for this timestep.
-    timeStamp = consecDays + real(iday - 1) + ((real(ncount) - 1.) / real(nday))
-
+    timeStamp = consecDays + ((real(ncount) - 1.) / real(nday))
+    
     ! Now prepare and write out the grid averaged physics variables to output files
     do I = 1,NLTEST
 
@@ -1013,8 +1013,8 @@ contains
 
       ! Now write to file the grid average values
 
-      ! Prepare the timestamp for this month. Take one day off since it referenced to 01-01 of the refyr.
-      timeStamp = consecDays + iday - 1
+      ! Transfer the consecDays to timeStamp (since we need a size 1 array)
+      timeStamp = consecDays 
 
       do i = 1,nltest
         if (altotcntr_d(i) > 0) then
@@ -1540,10 +1540,9 @@ contains
         tovere = 0.
         if (EVAPACC_MO(I) > 0.) tovere = TRANSPACC_MO(I)/EVAPACC_MO(I)
 
-        ! Prepare the timestamp for this month. Take one day off so it is the last day of the month
-        ! rather than the first day of the next month.
-        timeStamp = consecDays + monthend(imonth + 1) - 1
-
+        ! Prepare the timestamp for this month (need in size 1 array)
+        timeStamp = consecDays 
+        
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsinacc_mo' ,timeStamp,'rsds', [FSINACC_MO(I)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
@@ -2481,8 +2480,8 @@ contains
 
     i = 1 ! offline nltest is always 1.
 
-    ! Prepare the timestamp for this timestep.
-    timeStamp = consecDays + real(iday) - 1.
+    ! Transfer the consecDays to timeStamp (since we need a size 1 array)
+    timeStamp = consecDays 
 
     !> Write grid average values
 
@@ -3604,8 +3603,8 @@ contains
 
         ! Prepare the timestamp for this month
 
-        ! Take one day off so it is the last day of the month rather than the first day of the next month.
-        timeStamp(1) = consecDays + monthend(imonth + 1) - 1
+        ! Transfer the timestamp (need in size 1 array)
+        timeStamp(1) = consecDays
 
         call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
         call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
