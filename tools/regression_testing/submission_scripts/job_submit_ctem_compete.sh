@@ -103,7 +103,7 @@ email="Matthew.Fortier@canada.ca"
 # The size of /tmp is specified in MB and is taken from the RAM available per node. Note that the more
 # space is reserved for tmpfs, the less RAM is available to run the job.
 
-# "available RAM" = 210GB - $tmpfs     (each ppp node has up to 210GB of usable RAM)
+# "available RAM" = 160GB - $tmpfs     (each ppp node has up to 160GB of usable RAM)
 
 tmpfs=10000
 
@@ -140,7 +140,7 @@ case "$HOSTID" in
   *ppp*) platform=ppp
          phi=60000           # gridcell-years/hour metric for ppp1/ppp2 (err on the safe side, so set slightly lower than 65000)
          max_wallclock=6
-         mem=210G ;;         # max memory limit for the job
+         mem=160G ;;         # max memory limit for the job
   *)     echo "Current platform $HOSTID is not supported. Please log into hare/brooks or ppp1/ppp2 and try again." && exit ;;
 esac
 
