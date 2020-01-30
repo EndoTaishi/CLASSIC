@@ -23,6 +23,7 @@ prepare_binary_folder:
 compile:
   stage: build
   script:
+    - . ssmuse-sh -x hpco/exp/hdf5-netcdf4/parallel/openmpi-3.1.2/static/intel-19.0.3.199/01
     - /usr/bin/make mode=ppp
     - cp -r bin/* ~/tmp/CLASSIC
     - echo "compilation complete"
