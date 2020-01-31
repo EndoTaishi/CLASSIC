@@ -146,7 +146,7 @@ case "$HOSTID" in
          max_wallclock=3 ;;
   *ppp*) platform=ppp
          max_wallclock=6 ;;
-  *)     echo "Current platform $HOSTID is not supported. Please log into hare/brooks or ppp1/ppp2 and try again." && exit -1 ;;
+  *)     echo "Current platform $HOSTID is not supported. Please log into daley/banting or ppp3/ppp4 and try again." && exit -1 ;;
 esac
 
 # -----------------------------------------------------------------------------------------------
@@ -553,7 +553,8 @@ fi
 # Create run directory on tmpfs and get local copy of restart file (1 MPI task per node).
 
 if [ "\$MPI_RANK" = 0 ] ; then
-  mkdir /tmp/$runname
+  #mkdir /tmp/$runname
+  mkdir -p /tmp/$runname/checksums
   $copy $rs_file_to_overwrite /tmp/$runname/rsFile_modified.nc
   cd /tmp/$runname
 fi
